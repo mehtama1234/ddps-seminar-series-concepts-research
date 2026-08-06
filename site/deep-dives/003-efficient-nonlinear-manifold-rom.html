@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Youngsoo Choi: Efficient Nonlinear Manifold Reduced Order Model</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../index.html">DDPS Concept Lab</a>
+    <nav>
+      <a href="../index.html">Overview</a>
+      <a href="../deep-dives.html">Deep Dives</a>
+      <a href="../concepts.html">Concepts</a>
+      <a href="../talks.html">Talks</a>
+      <a href="../evidence.html">Evidence</a>
+      <a href="../transcripts.html">Transcripts</a>
+    </nav>
+  </header>
+  <main>
+<p><a href="../deep-dives.html">Back to deep dives</a></p>
+<section class="page-head">
+  <p class="eyebrow">Talk 3 · Lawrence Livermore National Laboratory</p>
+  <h1>Youngsoo Choi: Efficient Nonlinear Manifold Reduced Order Model</h1>
+  <p class="lede">This short lecture explains how nonlinear manifold ROMs can recover accuracy on advection-dominated problems while hyper-reduction makes the nonlinear decoder practical.</p>
+  <p><a href="https://www.youtube.com/watch?v=GcK2theDr34">YouTube source</a> · <a href="../talks/03.html">Talk page</a></p>
+</section>
+<div class="two-col">
+  <section class="detail"><h2>Core Problem</h2><p>Linear-subspace ROMs are fast when solution snapshots live near a low-dimensional linear space. Advection-dominated flows, shocks, and moving structures often do not. A nonlinear manifold can represent these solution families more accurately, but naive nonlinear manifold ROMs can be slower than the full-order model because decoder and residual terms still scale with the full state dimension.</p></section>
+  <section class="detail"><h2>First-Principles Model</h2><p>A full-order simulation evolves a very large state. A ROM replaces that state with a small latent coordinate. In a linear ROM, reconstruction is a basis times coefficients. In a nonlinear manifold ROM, reconstruction is a nonlinear decoder, often learned with an autoencoder. The remaining bottleneck is that evaluating the nonlinear residual may still require full-dimensional work, so hyper-reduction samples only the terms needed to approximate the residual.</p></section>
+</div>
+<section class="detail">
+  <h2>Key Claims</h2>
+  <ul><li>Surrogate models are essential for multi-query settings such as design optimization because full simulations can be too expensive.</li><li>More intrusive surrogate models can be more accurate but usually require more access to the governing equations and can be harder to accelerate.</li><li>Nonlinear manifold ROMs use nonlinear maps, such as autoencoder decoders, instead of linear basis reconstruction.</li><li>Without hyper-reduction, nonlinear manifold ROMs can remain impractical because nonlinear terms still scale with the full-order model size.</li><li>Gappy POD-style sampling can reduce the number of nonlinear decoder outputs that must be computed.</li><li>On an advection-dominated viscous Burgers example, the nonlinear manifold ROM matches the full-order solution better than a linear-subspace ROM.</li></ul>
+</section>
+<section>
+  <h2>Important Terms</h2>
+  <div class="two-col"><article class="detail"><h3>Nonlinear Manifold ROM</h3><p>A reduced-order model that reconstructs full states from latent variables using a nonlinear map rather than a linear basis.</p></article><article class="detail"><h3>Autoencoder Decoder</h3><p>The neural map from low-dimensional latent coordinates back to an approximate full-order state.</p></article><article class="detail"><h3>Hyper-Reduction</h3><p>A technique that reduces the cost of residual or nonlinear-term evaluation by sampling a subset of entries instead of evaluating the full vector.</p></article><article class="detail"><h3>Gappy POD</h3><p>A reconstruction method that uses selected samples of a field to approximate the full field in a reduced basis.</p></article><article class="detail"><h3>Advection-Dominated Flow</h3><p>A flow where transport of features dominates and often makes linear reduced spaces inefficient.</p></article></div>
+</section>
+<section class="detail">
+  <h2>Connections Across The Series</h2>
+  <ul><li>This is a compact continuation of the shock-wave lecture: if transport breaks linear low-rank structure, use nonlinear coordinates.</li><li>It connects to later latent-space and autoencoder ROM talks by making the decoder cost explicit.</li><li>It also establishes a recurring DDPS theme: the representation is only half the method; the online cost model matters.</li></ul>
+</section>
+<div class="two-col">
+  <section class="detail"><h2>Practical Caution</h2><p>A nonlinear latent representation can look accurate but still be slower than the original solver if residual evaluation is not also reduced. Practical ROM design must measure both approximation error and online evaluation cost.</p></section>
+  <section class="detail"><h2>Takeaway</h2><p>The lecture&#x27;s first-principles lesson is that nonlinear manifolds solve a representation problem, while hyper-reduction solves a cost problem. A useful ROM needs both.</p></section>
+</div>
+<section>
+  <h2>Selected Transcript Phrases</h2>
+  <blockquote>One full simulation takes 7.4 days.</blockquote><blockquote>More intrusiveness means more accuracy.</blockquote><blockquote>NM ROM uses a non-linear manifold representation using non-linear map G.</blockquote><blockquote>These non-linear terms still scale with the full order model size.</blockquote><blockquote>NM ROM achieves less than 1% maximum relative error.</blockquote>
+</section>
+</main>
+</body>
+</html>

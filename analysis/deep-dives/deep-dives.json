@@ -268,5 +268,329 @@
       "Compute reduced order model directly from the data."
     ],
     "takeaway": "The lecture's key idea is to learn the small dynamical system that classical reduction would have produced, but to infer it directly from data when the full discretized model is unavailable or too costly."
+  },
+  {
+    "id": "003-efficient-nonlinear-manifold-rom",
+    "talk_index": 3,
+    "title": "Youngsoo Choi: Efficient Nonlinear Manifold Reduced Order Model",
+    "speaker": "Youngsoo Choi",
+    "organization": "Lawrence Livermore National Laboratory",
+    "one_sentence": "This short lecture explains how nonlinear manifold ROMs can recover accuracy on advection-dominated problems while hyper-reduction makes the nonlinear decoder practical.",
+    "core_problem": "Linear-subspace ROMs are fast when solution snapshots live near a low-dimensional linear space. Advection-dominated flows, shocks, and moving structures often do not. A nonlinear manifold can represent these solution families more accurately, but naive nonlinear manifold ROMs can be slower than the full-order model because decoder and residual terms still scale with the full state dimension.",
+    "first_principles_model": "A full-order simulation evolves a very large state. A ROM replaces that state with a small latent coordinate. In a linear ROM, reconstruction is a basis times coefficients. In a nonlinear manifold ROM, reconstruction is a nonlinear decoder, often learned with an autoencoder. The remaining bottleneck is that evaluating the nonlinear residual may still require full-dimensional work, so hyper-reduction samples only the terms needed to approximate the residual.",
+    "key_claims": [
+      "Surrogate models are essential for multi-query settings such as design optimization because full simulations can be too expensive.",
+      "More intrusive surrogate models can be more accurate but usually require more access to the governing equations and can be harder to accelerate.",
+      "Nonlinear manifold ROMs use nonlinear maps, such as autoencoder decoders, instead of linear basis reconstruction.",
+      "Without hyper-reduction, nonlinear manifold ROMs can remain impractical because nonlinear terms still scale with the full-order model size.",
+      "Gappy POD-style sampling can reduce the number of nonlinear decoder outputs that must be computed.",
+      "On an advection-dominated viscous Burgers example, the nonlinear manifold ROM matches the full-order solution better than a linear-subspace ROM."
+    ],
+    "important_terms": [
+      {
+        "term": "Nonlinear Manifold ROM",
+        "meaning": "A reduced-order model that reconstructs full states from latent variables using a nonlinear map rather than a linear basis."
+      },
+      {
+        "term": "Autoencoder Decoder",
+        "meaning": "The neural map from low-dimensional latent coordinates back to an approximate full-order state."
+      },
+      {
+        "term": "Hyper-Reduction",
+        "meaning": "A technique that reduces the cost of residual or nonlinear-term evaluation by sampling a subset of entries instead of evaluating the full vector."
+      },
+      {
+        "term": "Gappy POD",
+        "meaning": "A reconstruction method that uses selected samples of a field to approximate the full field in a reduced basis."
+      },
+      {
+        "term": "Advection-Dominated Flow",
+        "meaning": "A flow where transport of features dominates and often makes linear reduced spaces inefficient."
+      }
+    ],
+    "stanford_connections": [
+      "This is a compact continuation of the shock-wave lecture: if transport breaks linear low-rank structure, use nonlinear coordinates.",
+      "It connects to later latent-space and autoencoder ROM talks by making the decoder cost explicit.",
+      "It also establishes a recurring DDPS theme: the representation is only half the method; the online cost model matters."
+    ],
+    "practical_caution": "A nonlinear latent representation can look accurate but still be slower than the original solver if residual evaluation is not also reduced. Practical ROM design must measure both approximation error and online evaluation cost.",
+    "selected_evidence": [
+      "One full simulation takes 7.4 days.",
+      "More intrusiveness means more accuracy.",
+      "NM ROM uses a non-linear manifold representation using non-linear map G.",
+      "These non-linear terms still scale with the full order model size.",
+      "NM ROM achieves less than 1% maximum relative error."
+    ],
+    "takeaway": "The lecture's first-principles lesson is that nonlinear manifolds solve a representation problem, while hyper-reduction solves a cost problem. A useful ROM needs both."
+  },
+  {
+    "id": "005-entropy-stable-conservation-laws",
+    "talk_index": 5,
+    "title": "Jesse Chan: Entropy Stable Schemes For Nonlinear Conservation Laws",
+    "speaker": "Jesse Chan",
+    "organization": "Rice University",
+    "one_sentence": "This lecture explains entropy stability as a principled way to keep high-order discretizations of nonlinear conservation laws robust near shocks, turbulence, and under-resolved features.",
+    "core_problem": "High-order numerical methods can be accurate on smooth PDE solutions but fragile on nonlinear conservation laws. Shocks, turbulence, and under-resolved gradients can cause blow-up unless the method adds filtering, limiting, or artificial viscosity. Those fixes can work, but they create a tuning tradeoff between robustness and accuracy.",
+    "first_principles_model": "A nonlinear conservation law transports conserved variables through fluxes. For many physical systems there is an entropy or energy-like quantity that should satisfy an inequality. An entropy-stable discretization is built so the semi-discrete numerical scheme respects the analogous entropy inequality, making stability a structural property rather than an after-the-fact patch.",
+    "key_claims": [
+      "Burgers, shallow water, Euler, Navier-Stokes, and MHD systems can be viewed through nonlinear conservation laws with entropy structure.",
+      "High-order DG methods are attractive because they combine geometric flexibility with high-order accuracy.",
+      "Under-resolved shocks and turbulence make naive high-order schemes non-robust.",
+      "Traditional stabilization through artificial viscosity, filtering, or slope limiting can reduce accuracy and require tuning.",
+      "Entropy-stable schemes use entropy variables, numerical fluxes, and discrete entropy inequalities to build robustness into the scheme.",
+      "The framework can be extended beyond collocation-style methods toward modal DG and reduced-order modeling."
+    ],
+    "important_terms": [
+      {
+        "term": "Nonlinear Conservation Law",
+        "meaning": "A PDE expressing that conserved quantities change through fluxes across boundaries."
+      },
+      {
+        "term": "Entropy Inequality",
+        "meaning": "A mathematical inequality for an energy-like convex entropy quantity that physically relevant solutions should satisfy."
+      },
+      {
+        "term": "Entropy Variables",
+        "meaning": "Variables obtained by differentiating the entropy with respect to conservative variables."
+      },
+      {
+        "term": "Discontinuous Galerkin Method",
+        "meaning": "A high-order finite-element-style discretization that represents solutions locally and couples cells through numerical fluxes."
+      },
+      {
+        "term": "Artificial Viscosity",
+        "meaning": "Added numerical diffusion used to stabilize under-resolved features, often at the cost of accuracy."
+      }
+    ],
+    "stanford_connections": [
+      "This lecture adds the numerical-analysis side of robustness to the ML-heavy talks: physical validity depends on discretization structure too.",
+      "It connects to fluid simulation and reduced-order modeling because learned or reduced models inherit stability issues from the equations they approximate.",
+      "It is a useful counterweight to black-box surrogates: before learning the solution, understand what the numerical scheme must preserve."
+    ],
+    "practical_caution": "Do not evaluate a learned fluid surrogate only by short-horizon error. If the underlying conservation-law structure or entropy behavior is wrong, under-resolved shocks and turbulence can create unstable or nonphysical rollouts.",
+    "selected_evidence": [
+      "They generally blow up whenever they encounter under-resolved solutions.",
+      "Shocks and turbulence... are highly under-resolved solutions most of the time.",
+      "I wanted to avoid the common metrics used for higher schemes... artificial viscosity filtering... slope limiting.",
+      "They can tend to reduce the amount of the accuracy.",
+      "A class of nonlinear conservation laws which all admit an entropy inequality."
+    ],
+    "takeaway": "Entropy stability is the idea that robustness should be built from the physics of the PDE, not bolted on after the scheme starts failing."
+  },
+  {
+    "id": "006-schwarz-multiscale-solid-coupling",
+    "talk_index": 6,
+    "title": "Irina Tezaur: Schwarz Alternating Method For Concurrent Multiscale Coupling In Solid Mechanics",
+    "speaker": "Irina Tezaur",
+    "organization": "Sandia National Laboratories",
+    "one_sentence": "This lecture presents Schwarz alternating domain decomposition as a way to couple different solid-mechanics models across scales without forcing the whole domain to use one resolution or solver.",
+    "core_problem": "Engineering solids often contain localized small-scale physics that determines global behavior. Simulating the entire structure at the finest scale is too expensive, but coupling coarse and fine models can introduce artificial interface errors, incompatible solvers, and unstable information exchange.",
+    "first_principles_model": "Domain decomposition splits a difficult PDE domain into subdomains. Schwarz iteration solves each subproblem while exchanging boundary or overlap information with neighboring subdomains, repeatedly updating until the coupled solution is consistent. For multiscale mechanics, this allows different discretizations, material models, or time integrators to coexist in different regions.",
+    "key_claims": [
+      "Concurrent multiscale coupling is needed when a local small-scale event controls system-level performance.",
+      "The coupling method should allow different solvers and time integrators in different regions.",
+      "The interface should not introduce nonphysical artifacts.",
+      "Schwarz alternating methods decompose a complex domain into simpler subdomains and iteratively build the global solution.",
+      "The approach has convergence theory for finite-deformation quasistatic nonlinear PDEs.",
+      "Small overlap regions can be sufficient in practical examples, but non-overlapping and contact cases require additional care."
+    ],
+    "important_terms": [
+      {
+        "term": "Concurrent Multiscale Coupling",
+        "meaning": "A simulation approach where different scales are solved at the same time in different parts of the domain."
+      },
+      {
+        "term": "Schwarz Alternating Method",
+        "meaning": "An iterative domain-decomposition method that solves subdomain problems and exchanges boundary or overlap information."
+      },
+      {
+        "term": "Overlap Region",
+        "meaning": "A shared region between subdomains used to pass solution information and promote convergence."
+      },
+      {
+        "term": "Finite Deformation",
+        "meaning": "A mechanics regime where deformations are large enough that nonlinear geometry and material response matter."
+      },
+      {
+        "term": "Interface Artifact",
+        "meaning": "A nonphysical behavior introduced by coupling models or meshes incorrectly across a subdomain boundary."
+      }
+    ],
+    "stanford_connections": [
+      "This lecture broadens DDPS from learned surrogates to hybrid numerical coupling: not every data-driven physical simulation problem is solved by replacing the solver.",
+      "It connects to hybrid twins because real systems often need local high-fidelity patches inside larger coarse models.",
+      "It also reinforces the importance of interface conditions, a recurring issue in multiphysics and differentiable-simulation workflows."
+    ],
+    "practical_caution": "A multiscale simulation can fail at the coupling interface even if each submodel is correct in isolation. The handoff of boundary, overlap, or contact information is part of the model.",
+    "selected_evidence": [
+      "A small-scale event will eventually determine the performance of the entire system.",
+      "Allow us to use different solvers and time integrators in different regions.",
+      "We don't want the coupling to introduce any non-physical artifacts.",
+      "The earliest known domain decomposition method.",
+      "You decompose that domain into simpler subdomains."
+    ],
+    "takeaway": "The first-principles lesson is that multiscale modeling is an interface problem: the global prediction is only as trustworthy as the exchange rule between local and coarse physics."
+  },
+  {
+    "id": "007-interpretable-fluid-machine-learning",
+    "talk_index": 7,
+    "title": "Steven Brunton: Interpretable And Generalizable Machine Learning For Fluid Mechanics",
+    "speaker": "Steven Brunton",
+    "organization": "University of Washington",
+    "one_sentence": "This lecture argues that fluid ML should prefer parsimonious, interpretable, physically meaningful models that generalize beyond the data distribution.",
+    "core_problem": "Fluid mechanics produces high-dimensional data and expensive simulations, but black-box prediction alone is not enough. A model can reproduce seen trajectories while failing under new regimes, controls, geometries, or parameters if it has not captured the sparse physical structure behind the flow.",
+    "first_principles_model": "Many fluid systems are high-dimensional in measurement space but lower-dimensional in the right coordinates, and their governing dynamics often use only a sparse subset of possible terms. Interpretable ML tries to discover those coordinates, active terms, closures, or discrepancy corrections rather than learning an opaque input-output map.",
+    "key_claims": [
+      "Machine learning for engineering can be viewed as optimization and regression over rich data.",
+      "Generalization requires more than fitting trajectories; models should capture simple structure where it exists.",
+      "The principle of parsimony motivates sparse models: as simple as possible, but no simpler.",
+      "Sparse Identification of Nonlinear Dynamics (SINDy) learns governing equations from measured states and derivatives.",
+      "Choosing the right coordinate system can turn a high-dimensional fluid problem into a low-dimensional model.",
+      "ML can also focus on discrepancy modeling: learning the mismatch between an imperfect physical model and observed dynamics."
+    ],
+    "important_terms": [
+      {
+        "term": "Parsimony",
+        "meaning": "The modeling principle that a useful explanation should use the simplest structure sufficient to describe the phenomenon."
+      },
+      {
+        "term": "SINDy",
+        "meaning": "Sparse Identification of Nonlinear Dynamics, a method that selects a small number of active terms from a library of candidate dynamics."
+      },
+      {
+        "term": "Sparse Regression",
+        "meaning": "Regression that encourages most candidate coefficients to be zero, leaving only the important terms."
+      },
+      {
+        "term": "Coordinate Discovery",
+        "meaning": "Finding variables in which complicated high-dimensional dynamics become simpler."
+      },
+      {
+        "term": "Discrepancy Modeling",
+        "meaning": "Learning the mismatch term between an approximate physical model and the true observed system."
+      }
+    ],
+    "stanford_connections": [
+      "This is the conceptual bridge between ROMs, operator inference, and scientific ML: learn structure, not just outputs.",
+      "It connects to later surrogate and closure talks because closures are often discrepancy models for unresolved physics.",
+      "It also gives a benchmark for interpretability: can the learned object be inspected as equations, modes, balances, or correction terms?"
+    ],
+    "practical_caution": "A neural model that forecasts fluid snapshots may still be scientifically weak if it does not expose the variables, balances, or closure terms driving the flow. Generalization should be tested under changed regimes, not only interpolation.",
+    "selected_evidence": [
+      "It would not generalize beyond fall.",
+      "Things should be as simple as possible and no simpler.",
+      "Mathematically today in my opinion is sparsity.",
+      "Sparse identification of nonlinear dynamics or SINDy.",
+      "If we pull out the right coordinate system you can get a very very simple model."
+    ],
+    "takeaway": "The lecture's first-principles message is that interpretability is not cosmetic. In fluids, interpretable structure is often what makes out-of-distribution generalization possible."
+  },
+  {
+    "id": "008-mathematical-heart-multiphysics",
+    "talk_index": 8,
+    "title": "Alfio Quarteroni: The Mathematical Heart",
+    "speaker": "Alfio Quarteroni",
+    "organization": "EPFL / Politecnico di Milano",
+    "one_sentence": "This lecture treats the heart as a coupled multiphysics, multiscale simulation problem spanning electrophysiology, mechanics, blood flow, valves, circulation, and coronary perfusion.",
+    "core_problem": "Heart function is not a single PDE or a single simulator. Electrical activation drives contraction; contraction deforms tissue; deformation moves blood; valves open and close; coronary flow perfuses the myocardium; and the whole organ couples to external circulation. Each subsystem has different scales, meshes, equations, and numerical requirements.",
+    "first_principles_model": "A computational heart model starts from geometry, meshes, and core cardiac physics modules. Electrophysiology models electrical propagation through the myocardium. Active and passive mechanics model contraction and tissue deformation. Fluid dynamics models blood in chambers and vessels. Circulation and perfusion models provide boundary and network coupling. The system-level model is the coupling of these modules.",
+    "key_claims": [
+      "First-principles mathematical models can describe the electrical, mechanical, and fluid-dynamical processes of the heart.",
+      "The heart is a classical multiphysics problem with multiscale behavior in space and time.",
+      "Patient-specific geometry can come from CT, MRI, atlas models, or CAD-like solid models.",
+      "Different meshes may be needed for myocardium electrophysiology/mechanics and chamber blood flow.",
+      "Core cardiac models include electrophysiology, active mechanics, passive mechanics, fluid dynamics, valve motion, and coronary perfusion.",
+      "Large finite-element and reduced-order libraries are needed because full models are computationally heavy and uncertainty matters."
+    ],
+    "important_terms": [
+      {
+        "term": "Electrophysiology",
+        "meaning": "The modeling of electrical activation and propagation through heart tissue."
+      },
+      {
+        "term": "Active Mechanics",
+        "meaning": "Cell-level contractile mechanics that generate force in response to electrical activation."
+      },
+      {
+        "term": "Passive Mechanics",
+        "meaning": "Organ-level tissue deformation due to material elasticity and loading."
+      },
+      {
+        "term": "Fluid-Structure Interaction",
+        "meaning": "Coupling between blood flow and deforming cardiac walls or valves."
+      },
+      {
+        "term": "Multiscale Perfusion",
+        "meaning": "Modeling blood supply through large coronary vessels and many smaller intramyocardial vessels using different-scale descriptions."
+      }
+    ],
+    "stanford_connections": [
+      "This is the playlist's clean example of a hybrid multiphysics simulator where data-driven methods must respect several coupled physical modules.",
+      "It connects to ROMs because patient-specific studies and uncertainty quantification need faster surrogates of expensive heart simulations.",
+      "It connects to differentiable simulation and inverse problems because clinical use often asks for parameter estimation from patient data."
+    ],
+    "practical_caution": "A model of one cardiac subsystem can be correct but clinically misleading if the coupling is wrong. The hard part is not just solving electrophysiology, mechanics, or flow separately; it is making their time scales, boundary conditions, and feedback loops consistent.",
+    "selected_evidence": [
+      "Electrical, mechanical and fluid-dynamical processes occurring in the heart.",
+      "A classical multi-physics problem featuring multi-scale solutions in space and time.",
+      "They include the electrophysiology, the active mechanics... the passive mechanics... the fluid dynamics.",
+      "We need however a second grid... for simulating the fluid dynamical processes.",
+      "You have to account for variability and uncertainty."
+    ],
+    "takeaway": "The heart lecture shows what first-principles scientific ML must eventually handle: not a single learned model, but a coupled computational physiology stack."
+  },
+  {
+    "id": "009-data-driven-fluid-graphics",
+    "talk_index": 9,
+    "title": "Byungsoo Kim: Data-Driven Methods For Fluid Simulations In Computer Graphics",
+    "speaker": "Byungsoo Kim",
+    "organization": "ETH Zurich / Disney Research Studios",
+    "one_sentence": "This lecture explains how graphics-oriented fluid simulation uses data-driven methods to trade some physical exactness for speed, visual quality, controllability, and artist direction.",
+    "core_problem": "Computer graphics needs fluid simulations that look plausible, run fast enough for production workflows, and can be controlled by artists. Scientific accuracy is valuable, but the primary objective is often visual appearance and directability rather than strict numerical fidelity.",
+    "first_principles_model": "A physics-based graphics simulator generates motion for water, smoke, splashes, or related materials. Data-driven methods can replace expensive solver pieces, enhance coarse simulation detail, operate in latent space, stylize flow fields, or optimize controls through differentiable simulation. The governing constraint is not only physics; it is the production objective of plausible, controllable visual output.",
+    "key_claims": [
+      "Physics-based animation has matured, but production workflows still need efficient and controllable simulation tools.",
+      "Graphics can sometimes sacrifice exact accuracy for performance, controllability, and visual appearance.",
+      "Deep learning can accelerate particle or grid-based fluid solvers and pressure solves.",
+      "Latent-space fluid solvers use autoencoders and sequence models to integrate lower-dimensional states.",
+      "Data-driven methods can enhance visual detail through turbulence synthesis, splash augmentation, and super-resolution.",
+      "Differentiable physics gives a natural interface for optimizing controllers or initial conditions toward a target state."
+    ],
+    "important_terms": [
+      {
+        "term": "Art-Directable Simulation",
+        "meaning": "A simulation workflow that lets artists control visual outcomes while retaining physical plausibility."
+      },
+      {
+        "term": "Fluid Stylization",
+        "meaning": "Applying style-transfer ideas to fluid volumes, such as smoke motifs or colorization."
+      },
+      {
+        "term": "Super-Resolution For Flow",
+        "meaning": "Learning to add high-resolution, temporally coherent detail to coarse fluid simulations."
+      },
+      {
+        "term": "Latent-Space Fluid Solver",
+        "meaning": "A solver that evolves compressed latent representations instead of full-resolution fields."
+      },
+      {
+        "term": "Differentiable Physics Control",
+        "meaning": "Using gradients through a simulator to optimize motion controllers or initial states."
+      }
+    ],
+    "stanford_connections": [
+      "This talk clarifies that DDPS objectives vary by domain: graphics values controllability and appearance differently from engineering verification.",
+      "It connects to differentiable physics by showing a concrete creative-control use case for simulator gradients.",
+      "It also links to latent-space ROMs and super-resolution as practical examples of learned simulation acceleration."
+    ],
+    "practical_caution": "A graphics surrogate should not be judged by engineering accuracy standards alone, but the reverse is also true: a visually plausible flow model may be unacceptable for scientific prediction or safety-critical design.",
+    "selected_evidence": [
+      "For visual effect artists it is necessary to have a physically plausible but computational efficient and also art-directable simulation tool.",
+      "It's allowed to sacrifice accuracy to some extent for performance and controllability.",
+      "Deep learning methods can provide faster realistic and more controllable simulations.",
+      "Latent space fluid solvers with auto encoders and LSTM architectures.",
+      "Differentiability... optimize its motion controller or initial parameter settings to achieve a target state."
+    ],
+    "takeaway": "The lecture's first-principles lesson is that the evaluation target defines the simulator: graphics DDPS optimizes plausible controllable appearance, while engineering DDPS optimizes predictive reliability."
   }
 ]
