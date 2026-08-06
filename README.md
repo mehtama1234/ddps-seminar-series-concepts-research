@@ -11,9 +11,9 @@ https://www.youtube.com/playlist?list=PLy9rIbGDXrG2Ly0LPYNuNn1ohQTqO6mmp
 - Usable transcripts: 139
 - Transcript words: 1,397,488
 - First-pass concepts: 9
-- Detailed deep dives: 31
+- Detailed deep dives: 38
 - Evidence anchors: 27
-- Static HTML pages: 187
+- Static HTML pages: 194
 
 ## End-to-End Goal
 
