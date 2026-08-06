@@ -5506,5 +5506,491 @@
       "Fault detection and isolation."
     ],
     "takeaway": "The first-principles lesson is that when decisions require mechanisms, learning should try to recover equations and not only approximate outputs."
+  },
+  {
+    "id": "104-regularized-rom-control-navier-stokes",
+    "talk_index": 104,
+    "title": "Francesco Ballarin: Regularized Reduced Order Models for Control of Navier-Stokes Equations",
+    "speaker": "Francesco Ballarin",
+    "organization": "Universita Cattolica del Sacro Cuore",
+    "one_sentence": "This lecture studies how regularization and stabilization make reduced-order models more reliable for controlling convection-dominated Navier-Stokes flows.",
+    "core_problem": "Convection-dominated incompressible Navier-Stokes simulations can produce spurious oscillations when under-resolved, and ROMs inherit an even harder version of this problem because the reduced basis may not represent all stabilizing scales. Control adds another difficulty: the ROM must not only simulate the flow but guide it toward a target configuration.",
+    "first_principles_model": "A full-order stabilized discretization uses numerical regularization to control unresolved scales. A ROM compresses the flow field, but the compression can remove dissipation and destabilize the reduced dynamics. The talk compares two regularized ROM strategies: evolve-filter-relax, where a reduced state is evolved, filtered, and relaxed to suppress spurious content, and approximate deconvolution, where filtering is paired with a reconstruction of unresolved information. These ideas are then tied to feedback control for Navier-Stokes systems.",
+    "key_claims": [
+      "Stabilization is standard in under-resolved full-order flow simulation, but its ROM counterpart is less well understood.",
+      "Convection-dominated and marginally resolved flows are especially sensitive to missing scales.",
+      "Control problems require the ROM to remain accurate under feedback, not only under open-loop simulation.",
+      "Evolve-filter-relax regularization can be used inside a reduced-order feedback control setting.",
+      "Approximate-deconvolution regularization offers another way to compensate for filtering effects.",
+      "The right ROM must balance speed, stability, and control-relevant accuracy."
+    ],
+    "important_terms": [
+      {
+        "term": "Navier-Stokes Equations",
+        "meaning": "The PDEs governing incompressible or compressible fluid flow."
+      },
+      {
+        "term": "Convection-Dominated Flow",
+        "meaning": "A flow regime where transport dominates diffusion, often creating sharp features and numerical instability."
+      },
+      {
+        "term": "Evolve-Filter-Relax ROM",
+        "meaning": "A regularized ROM that evolves a reduced state, filters it, and relaxes the result to improve stability."
+      },
+      {
+        "term": "Approximate Deconvolution",
+        "meaning": "A technique that attempts to reconstruct unfiltered information from filtered variables."
+      },
+      {
+        "term": "Feedback Control",
+        "meaning": "A control strategy that uses the current system state to choose actions that drive the system toward a target."
+      }
+    ],
+    "stanford_connections": [
+      "This lecture connects ROMs, flow control, numerical stabilization, and closure modeling.",
+      "It complements operator-inference and projection-method talks by focusing on what happens when unresolved scales destabilize a reduced controller.",
+      "It also links to digital twins because controlled flow systems need fast surrogates with stable online behavior."
+    ],
+    "practical_caution": "A regularized ROM can be stable but biased. For control, the stabilizing term must preserve the control-relevant dynamics rather than only damping visible oscillations.",
+    "selected_evidence": [
+      "Regularized reduced order models for control of navier stokes equations.",
+      "Under-resolved or marginally-resolved simulations of convection-dominated flows.",
+      "Incompressible Navier-Stokes equations.",
+      "Evolve-filter-relax regularized ROM.",
+      "Approximate deconvolution."
+    ],
+    "takeaway": "The first-principles lesson is that reduced flow control needs stabilization designed for the reduced dynamics, not just compression of the full solver."
+  },
+  {
+    "id": "105-gpt-pinn-tgpt-pinn-parametric-pdes",
+    "talk_index": 105,
+    "title": "Yanlai Chen: GPT-PINN and TGPT-PINN",
+    "speaker": "Yanlai Chen",
+    "organization": "UMass Dartmouth",
+    "one_sentence": "This lecture presents GPT-PINN and TGPT-PINN as meta-learning approaches that reuse pretrained PINNs for fast parametric PDE solving.",
+    "core_problem": "PINNs can solve nonlinear PDEs, but training them repeatedly for many parameter settings is too slow for multi-query or real-time use. They can also be overparameterized relative to the structure of a parametric PDE family.",
+    "first_principles_model": "A standard PINN learns one PDE solution by balancing data and physics residual losses. GPT-PINN changes the unit of reuse: it treats pretrained PINNs at selected parameter configurations as activation functions inside a small outer meta-network. The outer network grows one hidden neuron at a time and learns parametric dependence across the domain. TGPT-PINN adds a transformation layer before the pretrained PINN layer, enabling nonlinear model reduction.",
+    "key_claims": [
+      "PINN training remains time-consuming in multi-query and real-time parametric PDE settings.",
+      "GPT-PINN is a network of networks in which pretrained PINNs become components of a meta-network.",
+      "The outer meta-network can be hyper-reduced to a single hidden layer with far fewer neurons.",
+      "The method adaptively grows the hidden layer one neuron at a time.",
+      "The goal is accurate and efficient approximation across the full parameter domain.",
+      "TGPT-PINN adds a transformation layer to support nonlinear model reduction."
+    ],
+    "important_terms": [
+      {
+        "term": "PINN",
+        "meaning": "A physics-informed neural network trained with losses that include differential-equation residuals."
+      },
+      {
+        "term": "GPT-PINN",
+        "meaning": "Generative Pre-Trained PINN, a meta-learning architecture that combines pretrained PINNs for parametric PDEs."
+      },
+      {
+        "term": "TGPT-PINN",
+        "meaning": "Transformed GPT-PINN, a variant with an added transformation layer for nonlinear reduction."
+      },
+      {
+        "term": "Parametric PDE",
+        "meaning": "A PDE family whose solution changes with physical, geometric, or boundary-condition parameters."
+      },
+      {
+        "term": "Meta-Network",
+        "meaning": "A higher-level network that combines or controls other networks."
+      }
+    ],
+    "stanford_connections": [
+      "This talk connects PINNs, reduced-order modeling, meta-learning, and parametric surrogate modeling.",
+      "It complements neural operator lectures by learning a family of PDE solutions rather than retraining for each parameter.",
+      "It also fits the recurring DDPS theme of turning expensive repeated simulation into reusable learned structure."
+    ],
+    "practical_caution": "Pretrained PINN components are useful only if the selected parameter configurations cover the important solution regimes. Poor coverage can make the meta-network interpolate confidently but incorrectly.",
+    "selected_evidence": [
+      "Generative Pre-Trained PINN (GPT-PINN).",
+      "A brand-new meta-learning paradigm for parametric systems.",
+      "Its outer-/meta-network is hyper-reduced.",
+      "Grows this hidden layer one neuron at a time.",
+      "Transformed GPT-PINN, TGPT-PINN."
+    ],
+    "takeaway": "The first-principles lesson is that parametric PDE learning becomes faster when expensive physics-trained subnetworks are reused as basis functions for a smaller meta-model."
+  },
+  {
+    "id": "106-ddps-supply-chain-enterprise-optimization",
+    "talk_index": 106,
+    "title": "Burcu Beykal: A DDPS Engineering Approach for Supply Chain Management and Enterprise-Wide Optimization",
+    "speaker": "Burcu Beykal",
+    "organization": "University of Connecticut",
+    "one_sentence": "This lecture applies data-driven process systems engineering to supply-chain and enterprise-wide optimization problems with coupled planning and scheduling decisions.",
+    "core_problem": "Modern industrial enterprises coordinate many interconnected production, planning, scheduling, and supply-chain decisions. Optimizing each layer separately can produce infeasible or brittle operations because lower-level scheduling constraints feed back into higher-level planning decisions.",
+    "first_principles_model": "Supply-chain management can be formulated as a hierarchical optimization problem. The planning layer acts like a leader choosing strategic or aggregate decisions, while scheduling layers act as followers imposing feasibility constraints from detailed operations. Bi-level programming captures this leader-follower structure, but large numbers of integer variables make the resulting mathematical programs difficult. A DDPS approach combines data-driven modeling, process-systems structure, and optimization algorithms to make these interdependent decisions tractable.",
+    "key_claims": [
+      "Supply-chain and enterprise systems are multi-dimensional, multi-purpose, and multi-product systems.",
+      "Robust coordination across planning and scheduling layers is essential for efficiency, resiliency, productivity, and profitability.",
+      "Bi-level programming is well suited because scheduling problems can constrain planning decisions.",
+      "Integer-heavy scheduling subproblems create major algorithmic challenges.",
+      "A process systems engineering perspective provides structure for otherwise burdensome enterprise optimization.",
+      "Data-driven methods can support practical optimization across interconnected industrial activities."
+    ],
+    "important_terms": [
+      {
+        "term": "Enterprise-Wide Optimization",
+        "meaning": "Optimization across multiple connected layers of an industrial enterprise rather than a single unit operation."
+      },
+      {
+        "term": "Supply Chain Management",
+        "meaning": "Coordinating material, production, inventory, logistics, and market-facing decisions."
+      },
+      {
+        "term": "Bi-Level Programming",
+        "meaning": "An optimization formulation with leader and follower problems whose decisions interact."
+      },
+      {
+        "term": "Mixed-Integer Optimization",
+        "meaning": "Optimization involving both continuous and integer decision variables."
+      },
+      {
+        "term": "Process Systems Engineering",
+        "meaning": "The field combining modeling, optimization, control, and systems thinking for chemical and industrial processes."
+      }
+    ],
+    "stanford_connections": [
+      "This talk broadens DDPS beyond PDEs into operational decision systems.",
+      "It connects data-driven modeling with constrained optimization and control.",
+      "It also parallels agentic planning discussions: local feasible actions must be coordinated with global objectives."
+    ],
+    "practical_caution": "A data-driven optimizer can recommend infeasible decisions if the lower-level constraints are simplified too aggressively. Enterprise optimization needs feasibility checks at the operational layer.",
+    "selected_evidence": [
+      "Supply Chain management and Enterprise wide optimization.",
+      "Multi-dimensional, multi-purpose, and multi-product systems.",
+      "Optimal coordination of each element and their robust response to changing market conditions.",
+      "Bi-level programming is well-suited.",
+      "High numbers of integer variables are present in the scheduling problems."
+    ],
+    "takeaway": "The first-principles lesson is that enterprise optimization is a coupled hierarchy: decisions are only good if they remain feasible across all planning and scheduling layers."
+  },
+  {
+    "id": "107-vertical-reasoning-learning-discovery",
+    "talk_index": 107,
+    "title": "Yexiang Xue: Vertical Reasoning Enhanced Learning, Generation and Scientific Discovery",
+    "speaker": "Yexiang Xue",
+    "organization": "Purdue University",
+    "one_sentence": "This lecture argues that embedding explicit reasoning modules inside learning systems can improve generation, symbolic regression, PDE discovery, and counting problems.",
+    "core_problem": "Machine learning is strong at pattern fitting, while automated reasoning is strong at satisfying explicit constraints. Autonomous scientific agents need both, but integrating reasoning and learning remains difficult.",
+    "first_principles_model": "Vertical reasoning means putting a structured reasoning process inside or alongside a learned model rather than using it only after generation. In image generation, SPRING embeds spatial reasoning inside a deep generator so outputs satisfy constraints and transfer zero-shot. In scientific discovery, reasoning narrows the search space for symbolic regression and PDE learning. In satisfiable modulo counting, reasoning over XOR constraints improves solver guarantees.",
+    "key_claims": [
+      "Automated reasoning and machine learning are complementary pillars of AI.",
+      "Spatial reasoning can be integrated directly into a generative network.",
+      "Reasoning modules can improve constraint satisfaction and interpretability.",
+      "Vertical reasoning can accelerate symbolic regression and PDE discovery.",
+      "Streamlining XOR constraints can improve satisfiable modulo counting.",
+      "The broader goal is autonomous agents that integrate learning and reasoning rather than choosing one."
+    ],
+    "important_terms": [
+      {
+        "term": "Vertical Reasoning",
+        "meaning": "A reasoning layer embedded into a learning or generation pipeline to enforce structure and guide search."
+      },
+      {
+        "term": "SPRING",
+        "meaning": "Spatial Reasoning INtegrated Generator, a generator with an embedded spatial reasoning module."
+      },
+      {
+        "term": "Symbolic Regression",
+        "meaning": "Searching over mathematical expressions to discover equations from data."
+      },
+      {
+        "term": "Satisfiable Modulo Counting",
+        "meaning": "A problem class combining logical constraints with counting or probabilistic reasoning."
+      },
+      {
+        "term": "XOR Constraints",
+        "meaning": "Logical parity constraints that can structure and accelerate solver search."
+      }
+    ],
+    "stanford_connections": [
+      "This talk connects directly to the first-principles reasoning and scientific discovery themes from the broader study system.",
+      "It complements symbolic regression, PDE discovery, and constrained generation lectures.",
+      "It also links to modern agent design: learned policies need explicit reasoning and verification when constraints matter."
+    ],
+    "practical_caution": "Embedding reasoning can improve reliability, but only for constraints that are correctly formalized. Missing or wrong constraints can make the system confidently satisfy the wrong problem.",
+    "selected_evidence": [
+      "Vertical reasoning enhanced learning generation and scientific discovery.",
+      "Spatial Reasoning INtegrated Generator (SPRING).",
+      "Embeds a spatial reasoning module inside a deep generative network.",
+      "Expedite symbolic regression, and to learn Partial Differential Equations.",
+      "XOR constraints enables solvers with constant approximation guarantees."
+    ],
+    "takeaway": "The first-principles lesson is that reasoning can act as an internal scaffold for learning, generation, and discovery when the task has explicit structure."
+  },
+  {
+    "id": "108-autoencoders-aerodynamic-predictions",
+    "talk_index": 108,
+    "title": "Gianluca Iaccarino: AutoEncoders for Aerodynamic Predictions",
+    "speaker": "Gianluca Iaccarino",
+    "organization": "Stanford University",
+    "one_sentence": "This lecture uses autoencoders to learn low-dimensional latent representations for predicting aerodynamic flow over wing geometries.",
+    "core_problem": "Aerodynamic prediction over many wing geometries requires fast generation of unseen flow cases, but flow fields are high-dimensional and nonlinear. Linear compression can miss separated-flow structure, while black-box nonlinear compression raises trust and uncertainty questions.",
+    "first_principles_model": "An autoencoder maps a high-dimensional flow field into a low-dimensional latent code and then decodes that code back to a flow field. If the dataset is carefully constructed, the latent variables can align with meaningful aerodynamic inputs and performance quantities. The lecture compares nonlinear autoencoder compression against Gaussian process regression and linear compression, while investigating uncertainty from architecture, hyperparameters, and training-data amount.",
+    "key_claims": [
+      "Autoencoders can provide nonlinear compression for aerodynamic flow data.",
+      "The latent representation can support prediction for new wing geometries.",
+      "Careful dataset construction can make latent variables interpretable in terms of aerodynamic performance.",
+      "The method is tested for both attached and separated flow conditions.",
+      "Internal or model-form uncertainties arise from architecture choices, hyperparameters, and training-data size.",
+      "Comparisons with Gaussian processes and linear compression clarify when nonlinear latent models add value."
+    ],
+    "important_terms": [
+      {
+        "term": "Autoencoder",
+        "meaning": "A neural network trained to compress data into a latent representation and reconstruct it."
+      },
+      {
+        "term": "Latent Variable",
+        "meaning": "A learned low-dimensional coordinate representing important variation in the original data."
+      },
+      {
+        "term": "Separated Flow",
+        "meaning": "A flow regime where the boundary layer detaches from the surface, creating complex wake behavior."
+      },
+      {
+        "term": "Model-Form Uncertainty",
+        "meaning": "Uncertainty caused by choices in the model architecture or assumptions, not just data noise."
+      },
+      {
+        "term": "Nonlinear Compression",
+        "meaning": "Dimensionality reduction that uses nonlinear mappings rather than linear subspaces."
+      }
+    ],
+    "stanford_connections": [
+      "This talk connects autoencoders, ROMs, latent spaces, and uncertainty-aware aerodynamic prediction.",
+      "It complements nonlinear manifold ROM talks by focusing on interpretability of latent coordinates.",
+      "It also links to design workflows, where new geometries must be evaluated quickly."
+    ],
+    "practical_caution": "A smooth latent space can look interpretable while hiding extrapolation. Trust requires checking architecture sensitivity, data coverage, and performance on unseen flow regimes.",
+    "selected_evidence": [
+      "Auto encoders for aerodynamic predictions.",
+      "Non-linear compression to construct a low-dimensional latent representation.",
+      "Generate new (unseen) cases.",
+      "Latent variables that can be interpreted in terms of aerodynamic performance.",
+      "Uncertainties due to the autoencoder architecture, the hyperparameters and the amount of the training data."
+    ],
+    "takeaway": "The first-principles lesson is that useful aerodynamic ML compresses flow fields into latent variables that are predictive, interpretable, and uncertainty-aware."
+  },
+  {
+    "id": "109-locally-backpropagated-forward-forward",
+    "talk_index": 109,
+    "title": "Fabio Giampaolo: Learning Paradigms for Neural Networks: The Locally Backpropagated Forward-Forward Algorithm",
+    "speaker": "Fabio Giampaolo",
+    "organization": "University of Naples Federico II",
+    "one_sentence": "This lecture explores an alternative neural-network training paradigm that combines local backpropagation with Hinton's forward-forward idea.",
+    "core_problem": "Backpropagation is effective but can be awkward when models include non-differentiable components, distributed heterogeneous devices, or physics-related modules that do not fit a clean end-to-end differentiable graph.",
+    "first_principles_model": "Standard backpropagation optimizes a global objective by sending gradients backward through the whole network. The forward-forward algorithm instead trains layers using local goodness criteria for positive and negative examples. The locally backpropagated forward-forward strategy tries to keep useful gradient-based optimization inside local modules while reducing dependence on a single global backward pass.",
+    "key_claims": [
+      "Backpropagation remains the dominant neural-network training method.",
+      "Certain real-world and physics-related settings expose weaknesses of global end-to-end backpropagation.",
+      "Non-differentiable components can break standard gradient flow.",
+      "Distributed learning over heterogeneous devices motivates more local training strategies.",
+      "The locally backpropagated forward-forward algorithm merges backpropagation with forward-forward training.",
+      "The aim is to broaden where deep-learning strategies can be applied."
+    ],
+    "important_terms": [
+      {
+        "term": "Backpropagation",
+        "meaning": "The standard algorithm for computing gradients through a neural network using the chain rule."
+      },
+      {
+        "term": "Forward-Forward Algorithm",
+        "meaning": "A training paradigm associated with Geoffrey Hinton that uses forward passes and local goodness measures instead of global backpropagation."
+      },
+      {
+        "term": "Local Learning",
+        "meaning": "Training where modules or layers use local objectives rather than relying only on a global loss."
+      },
+      {
+        "term": "Non-Differentiable Component",
+        "meaning": "A model part whose output cannot be smoothly differentiated with respect to its input or parameters."
+      },
+      {
+        "term": "Heterogeneous Devices",
+        "meaning": "Computing systems composed of different device types or capabilities."
+      }
+    ],
+    "stanford_connections": [
+      "This talk connects learning algorithms, distributed training, and scientific ML architectures.",
+      "It complements physics-informed talks where differentiability assumptions can fail.",
+      "It also links to broader discussions of algorithmic progress beyond transformer architecture: training rules themselves matter."
+    ],
+    "practical_caution": "Alternative training paradigms must be judged by optimization stability, scaling behavior, and task performance, not only by biological or distributed-computing appeal.",
+    "selected_evidence": [
+      "Backpropagation is the most widely used method for training Neural Networks.",
+      "Non-differentiable components within neural architectures.",
+      "Distributed learning on heterogeneous devices.",
+      "Locally Backpropagated Forward Forward training strategy.",
+      "Merges the effectiveness of backpropagation with the appealing attributes of the Forward-Forward algorithm."
+    ],
+    "takeaway": "The first-principles lesson is that local objectives can make learning more modular, but they must still solve the credit-assignment problem well enough to compete with backpropagation."
+  },
+  {
+    "id": "110-rom-computer-graphics-sound",
+    "talk_index": 110,
+    "title": "Doug James: Recent Progress in Reduced-Order Modeling for Computer Graphics and Sound",
+    "speaker": "Doug James",
+    "organization": "Stanford University",
+    "one_sentence": "This lecture shows how reduced-order modeling supports art-directable physics simulation and physically based sound synthesis.",
+    "core_problem": "Graphics and sound applications need physically plausible simulations that are fast, controllable, and stable for artists and interactive systems. Full simulation can be too expensive, while coarse simulation may produce different folds, wrinkles, drapes, or acoustic behavior when upsampled.",
+    "first_principles_model": "Reduced-order modeling can preserve essential physical behavior while lowering simulation cost. For cloth and thin shells, progressive simulation uses coarse-to-fine level-of-detail methods based on multiscale model reduction for incremental potential contact, allowing designers to work coarsely and then up-res consistently. For water sound, reduced vibration models of coupled acoustic bubbles synthesize physically grounded audio from fluid events.",
+    "key_claims": [
+      "Progressive simulation enables art-directable physics for cloth and thin shells.",
+      "Coarse-to-fine level-of-detail methods can support both quasistatic and dynamic scenarios.",
+      "Multiscale model reduction helps preserve consistency when simulations are up-resed.",
+      "A key goal is avoiding artifacts or unexpected changes in folds, wrinkles, and drapes.",
+      "Reduced-order vibration models can synthesize water sounds using coupled acoustic bubbles.",
+      "Graphics applications require both physical plausibility and controllable workflows."
+    ],
+    "important_terms": [
+      {
+        "term": "Progressive Simulation",
+        "meaning": "A simulation workflow that starts coarse and increases resolution while maintaining consistent behavior."
+      },
+      {
+        "term": "Level of Detail",
+        "meaning": "A representation strategy that changes simulation or rendering resolution depending on need."
+      },
+      {
+        "term": "Incremental Potential Contact",
+        "meaning": "A formulation for robustly handling contact in deformable simulation."
+      },
+      {
+        "term": "Coupled Acoustic Bubbles",
+        "meaning": "Interacting bubble oscillators that contribute to physically based water sound."
+      },
+      {
+        "term": "Art-Directable Physics",
+        "meaning": "Physical simulation designed to be controllable by artists while remaining plausible."
+      }
+    ],
+    "stanford_connections": [
+      "This talk connects ROMs with computer graphics, sound synthesis, and human-in-the-loop design.",
+      "It complements engineering ROM lectures by emphasizing perceptual and creative constraints.",
+      "It also links multiscale modeling to practical interactive simulation."
+    ],
+    "practical_caution": "Graphics ROMs are judged by consistency and plausibility as well as physical error. A reduced model that is numerically accurate but artistically uncontrollable can still fail the application.",
+    "selected_evidence": [
+      "Recent progress in reduced-order modeling for computer graphics and sound.",
+      "Progressive simulation for art-directable physics.",
+      "Coarse-to-fine, level-of-detail simulation methods.",
+      "Up-res and still get consistent, higher-fidelity results.",
+      "Reduced-order vibration models for synthesizing water sound using coupled acoustic bubbles."
+    ],
+    "takeaway": "The first-principles lesson is that ROMs are not only for engineering prediction; they also make physical simulation usable in creative, interactive, and perceptual systems."
+  },
+  {
+    "id": "111-intrusive-mor-neural-network-approximants",
+    "talk_index": 111,
+    "title": "Francesco Romor: Intrusive Model Order Reduction Using Neural Network Approximants",
+    "speaker": "Francesco Romor",
+    "organization": "Weierstrass Institute",
+    "one_sentence": "This lecture proposes an intrusive and interpretable ROM approach that uses neural networks as nonlinear solution-manifold approximants while retaining physical models online.",
+    "core_problem": "Linear projection-based ROMs struggle when the solution manifold has slowly decaying Kolmogorov n-width, because too many reduced modes are needed for accuracy. Neural networks can approximate nonlinear manifolds, but many neural ROMs become non-intrusive black-box surrogates that abandon the governing model during prediction.",
+    "first_principles_model": "The method keeps the physical and numerical model in the online stage while using neural networks to approximate the nonlinear solution manifold. Autoencoders further compress linear approximations into latent coordinates. Hyper-reduction then reduces the cost of evaluating the retained model terms, so the method aims to combine nonlinear approximation power with intrusive interpretability.",
+    "key_claims": [
+      "Slow Kolmogorov n-width decay limits efficient linear reduced bases.",
+      "Neural networks can provide accurate nonlinear regressions of solution manifolds.",
+      "Most existing implementations are black-box surrogates.",
+      "The proposed methodology is intrusive because it retains the underlying physical and numerical model online.",
+      "Autoencoders compress the dimensionality of linear approximations to latent coordinates.",
+      "Adaptive hyper-reduction is needed to make the retained model computationally efficient."
+    ],
+    "important_terms": [
+      {
+        "term": "Intrusive MOR",
+        "meaning": "Model order reduction that uses access to the governing equations or numerical operators."
+      },
+      {
+        "term": "Kolmogorov n-Width",
+        "meaning": "A measure of how well a solution manifold can be approximated by an n-dimensional linear subspace."
+      },
+      {
+        "term": "Solution Manifold",
+        "meaning": "The set of all solutions produced as parameters or inputs vary."
+      },
+      {
+        "term": "Autoencoder",
+        "meaning": "A neural network that learns to encode and decode data through a low-dimensional latent space."
+      },
+      {
+        "term": "Hyper-Reduction",
+        "meaning": "Techniques that reduce the cost of evaluating nonlinear or high-dimensional terms in a ROM."
+      }
+    ],
+    "stanford_connections": [
+      "This talk sits at the intersection of intrusive ROMs, autoencoders, nonlinear manifolds, and scientific ML.",
+      "It complements non-intrusive neural surrogate talks by showing why retaining equations can matter.",
+      "It also connects to manifold-learning discussions where linear subspaces are insufficient."
+    ],
+    "practical_caution": "Intrusive neural ROMs require access to and careful handling of the governing numerical model. They can be more interpretable than black-box surrogates but harder to deploy when only simulator input-output data are available.",
+    "selected_evidence": [
+      "Intrusive model order reduction of parametric PDEs using neural networks.",
+      "Slowly decaying Kolmogorov n-width.",
+      "Neural networks as solution manifold approximants.",
+      "Retaining the underlying physical and numerical models during the predictive/online stage.",
+      "Autoencoders to further compress the dimensionality."
+    ],
+    "takeaway": "The first-principles lesson is that nonlinear neural compression can be combined with intrusive physics rather than replacing the equations entirely."
+  },
+  {
+    "id": "112-optimization-projection-operators-reduced-dynamics",
+    "talk_index": 112,
+    "title": "Alberto Padovan: Model Reduction via Optimization of Projection Operators and Reduced-Order Dynamics",
+    "speaker": "Alberto Padovan",
+    "organization": "University of Illinois Urbana-Champaign",
+    "one_sentence": "This lecture introduces a non-intrusive framework that learns oblique projection operators and reduced-order dynamics directly from data.",
+    "core_problem": "Black-box solvers make non-intrusive ROMs attractive, but standard data-driven reduction often uses orthogonal POD projections. For systems with large-amplitude transient growth, the relevant low-dimensional subspace may be easy to identify, yet orthogonal projection onto it can produce inaccurate reduced dynamics.",
+    "first_principles_model": "Projection-based ROMs need two ingredients: a low-dimensional subspace and a rule for projecting the full state onto that subspace. Orthogonal projection is simple but not always dynamically appropriate. Oblique projection can better preserve input-output or transient-growth behavior, but it is usually computed intrusively from governing equations. The proposed method learns both oblique projection operators and polynomial reduced dynamics from trajectories by solving an optimization problem on product manifolds such as Grassmann and Stiefel manifolds.",
+    "key_claims": [
+      "Non-intrusive model reduction is valuable for systems simulated by black-box solvers.",
+      "Large-amplitude transient growth can make orthogonal projections poor even when POD finds a good subspace.",
+      "Oblique projection operators can improve predictive accuracy.",
+      "Traditional oblique projections often require intrusive access to governing equations.",
+      "The proposed framework identifies projection operators and reduced dynamics directly from data.",
+      "Polynomial reduced dynamics and manifold optimization provide the mathematical structure of the fitting problem."
+    ],
+    "important_terms": [
+      {
+        "term": "Oblique Projection",
+        "meaning": "A projection onto one subspace along directions not necessarily orthogonal to that subspace."
+      },
+      {
+        "term": "Proper Orthogonal Decomposition",
+        "meaning": "A linear reduction method that identifies high-energy modes from snapshot data."
+      },
+      {
+        "term": "Transient Growth",
+        "meaning": "Temporary amplification of perturbations even when asymptotic dynamics may be stable."
+      },
+      {
+        "term": "Grassmann Manifold",
+        "meaning": "The mathematical space of fixed-dimensional subspaces."
+      },
+      {
+        "term": "Polynomial Reduced Dynamics",
+        "meaning": "Reduced equations whose right-hand side is represented by polynomial functions of reduced variables."
+      }
+    ],
+    "stanford_connections": [
+      "This lecture connects non-intrusive ROMs, projection geometry, transient dynamics, and manifold optimization.",
+      "It complements balanced truncation and control-oriented ROM talks by emphasizing that the projection itself is part of the model.",
+      "It also links to black-box simulator settings where equation access is unavailable."
+    ],
+    "practical_caution": "Learning oblique projections from data can improve accuracy, but it adds identifiability and optimization challenges. The learned projection should be tested outside the training trajectories.",
+    "selected_evidence": [
+      "Non-intrusive optimization of projection operators.",
+      "Large-amplitude transient growth.",
+      "Proper Orthogonal Decomposition (POD).",
+      "Oblique projection operators.",
+      "Simultaneously identify oblique projection operators and reduced-order dynamics directly from data."
+    ],
+    "takeaway": "The first-principles lesson is that model reduction is not only about choosing a subspace; the projection geometry can determine whether the reduced dynamics are predictive."
   }
 ]
