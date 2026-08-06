@@ -129,7 +129,7 @@ def render_deep_dives(deep_dives: list[dict[str, Any]], talks_by_index: dict[int
   <div class="two-col">{terms}</div>
 </section>
 <section class="detail">
-  <h2>Connection To Stanford Agent Learning</h2>
+  <h2>Connections Across The Series</h2>
   <ul>{connections}</ul>
 </section>
 <div class="two-col">

@@ -1,1 +1,272 @@
-[]
+[
+  {
+    "id": "001-why-pinns-fail-to-train",
+    "talk_index": 1,
+    "title": "Paris Perdikaris: When And Why PINNs Fail To Train",
+    "speaker": "Paris Perdikaris",
+    "organization": "University of Pennsylvania",
+    "one_sentence": "This lecture explains that physics-informed neural networks fail not because the idea of adding physics is wrong, but because the resulting optimization problem can become stiff, spectrally biased, and badly balanced across loss terms.",
+    "core_problem": "PINNs turn a PDE problem into a composite neural-network training problem: fit data, boundary conditions, initial conditions, and PDE residuals at the same time. That sounds elegant, but the optimizer may not give each constraint useful gradient signal, especially for high-frequency, multiscale, or boundary-sensitive solutions.",
+    "first_principles_model": "A PINN represents the unknown field with a differentiable neural network. Automatic differentiation evaluates derivatives, the PDE residual becomes a loss term, and gradient descent updates the network. The real object being solved is therefore not just the PDE; it is a constrained optimization dynamics. If that dynamics is stiff or biased, the PDE can be simple while training still fails.",
+    "key_claims": [
+      "Physics can be inserted through architecture-level inductive bias or through loss-level regularization; PINNs mostly use the second route.",
+      "PINNs are unconventional regularizers because they regularize the function output and its derivatives rather than just the network weights.",
+      "Even simple linear elliptic problems can fail if the training dynamics cannot satisfy boundary conditions or high-frequency structure.",
+      "PINN gradient flow can become stiff, forcing impractically small learning rates if trained naively.",
+      "Different loss terms can produce imbalanced gradients, so one constraint can dominate while another receives almost no useful update.",
+      "Neural tangent kernel analysis helps diagnose spectral bias: low-frequency components are learned faster than high-frequency components."
+    ],
+    "important_terms": [
+      {
+        "term": "Physics-Informed Neural Network",
+        "meaning": "A neural network trained to represent a solution field while penalizing violations of a governing differential equation and its boundary or initial conditions."
+      },
+      {
+        "term": "Composite Loss",
+        "meaning": "A training objective made from several terms, such as data mismatch, boundary loss, initial-condition loss, and PDE residual loss."
+      },
+      {
+        "term": "Gradient Flow Stiffness",
+        "meaning": "A training pathology where the continuous-time optimization dynamics contains widely separated scales, making stable gradient descent require tiny steps."
+      },
+      {
+        "term": "Gradient Imbalance",
+        "meaning": "A failure mode where different loss components produce very different gradient magnitudes, so some constraints are effectively ignored."
+      },
+      {
+        "term": "Spectral Bias",
+        "meaning": "The tendency of standard neural networks trained by gradient descent to learn low-frequency functions before high-frequency functions."
+      }
+    ],
+    "stanford_connections": [
+      "This is the natural starting point for the playlist because it separates the PINN idea from PINN trainability.",
+      "It connects to later talks on weak forms, adaptive weighting, operator learning, and structure-preserving architectures.",
+      "It gives a diagnostic mindset: do not ask only whether the physics loss is correct; ask whether the optimizer can actually use it."
+    ],
+    "practical_caution": "Do not treat a small PDE residual term as proof that the learned field is physically reliable. The loss weights, collocation points, network architecture, optimizer, and frequency content can all change whether the method is solving the intended problem.",
+    "selected_evidence": [
+      "Failure can happen at any time even for the simplest problems.",
+      "This gradient flow problem becomes very stiff.",
+      "Stiffness leads to imbalance gradients during back propagation.",
+      "The network cannot really change the parameters in order to fit the boundary condition.",
+      "Neural networks are known to suffer from spectral bias."
+    ],
+    "takeaway": "The first-principles lesson is that PINNs are optimization systems, not magic PDE solvers. Their success depends on whether the training dynamics can transmit the right physical constraints into the right function components."
+  },
+  {
+    "id": "002-distilling-nonlinear-shock-waves",
+    "talk_index": 2,
+    "title": "Donsub Rim: Distilling Nonlinear Shock Waves",
+    "speaker": "Donsub Rim",
+    "organization": "Courant Institute / NYU",
+    "one_sentence": "This lecture explains why classical linear reduced-order models struggle on transport-dominated problems and how nonlinear representations can capture moving shocks and interfaces more efficiently.",
+    "core_problem": "Classical ROMs assume a solution manifold can be well represented by a low-dimensional linear space. Transport-dominated problems break that assumption: a pulse or shock moving across a domain can generate many nearly orthogonal snapshots, so linear rank grows even when the underlying motion is simple.",
+    "first_principles_model": "For transport, the low-dimensional object is often not the field values themselves but the map that moves information through space. If a feature is translated, the set of snapshots may be high-rank, while the characteristic flow or deformation map may be low-dimensional. Nonlinear model reduction tries to represent that moving geometry directly.",
+    "key_claims": [
+      "Transport-dominated and moving-interface problems are hard for traditional reduced models.",
+      "Kolmogorov n-width explains why a linear basis can need many modes even for simple moving discontinuities.",
+      "The solution manifold may be high-rank while the characteristic map that transports the solution is low-dimensional.",
+      "Nonlinear reduced representations can be built by composing reduced bases with learned or constructed maps.",
+      "Shock formation creates additional difficulty because the characteristic representation can break or become non-smooth.",
+      "Deep networks can be interpreted as a way to distill a large solution representation into a smaller nonlinear reduced network."
+    ],
+    "important_terms": [
+      {
+        "term": "Transport-Dominated Problem",
+        "meaning": "A PDE problem where motion, advection, shocks, or interfaces dominate the dynamics."
+      },
+      {
+        "term": "Kolmogorov n-width",
+        "meaning": "A measure of how well a solution manifold can be approximated by an n-dimensional linear subspace."
+      },
+      {
+        "term": "Characteristic Map",
+        "meaning": "A map describing how points or features move through the domain under transport dynamics."
+      },
+      {
+        "term": "Nonlinear Reduced Model",
+        "meaning": "A reduced model that approximates a solution manifold using nonlinear coordinates or transformations instead of only a linear basis."
+      },
+      {
+        "term": "Reduced Deep Network",
+        "meaning": "A specialized compact neural representation intended to approximate a solution family more efficiently than a large generic network."
+      }
+    ],
+    "stanford_connections": [
+      "This connects directly to the reduced-order modeling concept page and gives the first major exception to linear ROM intuition.",
+      "It prepares later lectures on nonlinear manifolds, registration-based reduction, and latent-space simulation.",
+      "It also explains why data-driven simulation cannot ignore geometry: a simple translation can look high-dimensional in raw coordinates."
+    ],
+    "practical_caution": "If a ROM fails on shocks or advection, the problem may not be lack of data. The coordinate system may be wrong: the low-dimensional structure may live in transport maps, not in linear combinations of snapshots.",
+    "selected_evidence": [
+      "Transport dominated problems are hard to handle with traditional reduced models.",
+      "Low-dimensional reduced spaces cannot exist.",
+      "The solution manifold itself is not low rank.",
+      "There is still a low dimensional structure available.",
+      "When there's shock formation."
+    ],
+    "takeaway": "The lecture's key move is to distinguish low-dimensional physics from low-rank snapshots. Moving waves can be simple in the right coordinates and expensive in the wrong ones."
+  },
+  {
+    "id": "004-non-intrusive-roms-with-pinns",
+    "talk_index": 4,
+    "title": "Jan Hesthaven: Non-Intrusive ROMs Using Physics-Informed Neural Networks",
+    "speaker": "Jan Hesthaven",
+    "organization": "EPFL",
+    "one_sentence": "This lecture frames neural networks as tools for removing bottlenecks in reduced-order modeling, especially when the full simulator is a black box and projection-based intrusive access is unavailable.",
+    "core_problem": "Projection-based ROMs are powerful when you can access the governing operators, but many real solvers are legacy, classified, commercial, or otherwise black-box. For nonlinear problems, even intrusive ROMs can lose speed because evaluating projected nonlinear operators may require returning to the full state dimension.",
+    "first_principles_model": "A ROM trades generality for speed by learning a compact map from parameters to solution coefficients. If the full operator is accessible, projection gives equations for those coefficients. If the operator is not accessible, a neural network can learn the parameter-to-coefficient map from simulator input-output data, and physics-informed terms can improve consistency.",
+    "key_claims": [
+      "Reduced-order modeling accelerates repeated parameterized PDE solves by representing solutions in a low-dimensional basis.",
+      "Nonlinear problems introduce a bottleneck because projected nonlinear operators may still depend on the full-order state.",
+      "Non-intrusive ROMs are needed when the solver is only available as an input-output code.",
+      "A neural network can map parameters directly to reduced-basis expansion coefficients.",
+      "If a good reduced basis exists, the parameter-to-coefficient map should often be smooth enough for a small neural network.",
+      "Physics-informed neural nets can be used as part of ROM construction rather than as a wholesale replacement for numerical analysis."
+    ],
+    "important_terms": [
+      {
+        "term": "Intrusive ROM",
+        "meaning": "A reduced-order model that requires access to the solver operators or internal discretized equations."
+      },
+      {
+        "term": "Non-Intrusive ROM",
+        "meaning": "A reduced-order model built from input-output data without modifying or inspecting the full solver."
+      },
+      {
+        "term": "Expansion Coefficients",
+        "meaning": "The low-dimensional coordinates multiplying reduced basis vectors to reconstruct an approximate solution."
+      },
+      {
+        "term": "Projection Bottleneck",
+        "meaning": "The cost or access problem that appears when reduced equations require full-order operator evaluations."
+      },
+      {
+        "term": "Overfitting In ROM Nets",
+        "meaning": "A failure mode where the neural parameter-to-coefficient map is too rich for the available simulator samples."
+      }
+    ],
+    "stanford_connections": [
+      "This gives the practical ROM workflow behind many later talks: offline snapshots, reduced basis construction, online fast prediction.",
+      "It links PINNs to a narrower engineering role: solving ROM bottlenecks rather than replacing full solvers.",
+      "It connects to uncertainty and design loops because ROMs are most useful when many repeated simulations are required."
+    ],
+    "practical_caution": "A neural ROM is only useful if the reduced basis is good and the learned coefficient map generalizes. Increasing neural-network size without enough simulator data can make the online predictor worse.",
+    "selected_evidence": [
+      "Creating the reduced model becomes intrusive.",
+      "All you have is a piece of code that can provide you input output.",
+      "The key problem becomes how to go from choosing a parameter.",
+      "Let's use a neural net for this exercise.",
+      "When you don't have enough data... you're overfitting."
+    ],
+    "takeaway": "The lecture's central lesson is pragmatic: use neural networks where classical ROM workflows have bottlenecks, especially black-box solvers and nonlinear coefficient maps."
+  },
+  {
+    "id": "010-differentiable-physics-simulations",
+    "talk_index": 10,
+    "title": "Nils Thuerey: Differentiable Physics Simulations For Deep Learning",
+    "speaker": "Nils Thuerey",
+    "organization": "Technical University of Munich",
+    "one_sentence": "This lecture argues for tightly coupling simulators and deep learning by making the simulator differentiable, so gradients from physical dynamics can guide learning, inverse problems, and control.",
+    "core_problem": "Using simulators only as data generators creates a weak connection between physics and learning. Many applications need the model to know how changing an input, parameter, or control would change the simulated outcome. That requires gradients through the simulator.",
+    "first_principles_model": "A simulator maps initial states, parameters, or controls to future physical states. If we can differentiate that map, we can optimize causes from effects: reduce numerical error, infer controls, improve designs, and train networks inside the physical loop. The simulator becomes part of the computational graph rather than an external data source.",
+    "key_claims": [
+      "Physical models and numerical methods are valuable and should be kept where possible, while learning handles errors, observations, and uncertain components.",
+      "Forward simulation predicts what happens; inverse problems ask what inputs or controls would produce a desired outcome.",
+      "Supervised learning from simulator data is useful but loosely coupled to physics.",
+      "Putting physics only into a loss is tighter, but differentiable simulation gives a still tighter simulator-learning integration.",
+      "The key object is a gradient of the simulation with respect to the state or input.",
+      "Differentiable solvers can support solver-in-the-loop learning, control, and correction of numerical errors."
+    ],
+    "important_terms": [
+      {
+        "term": "Differentiable Simulator",
+        "meaning": "A simulator that provides gradients of outputs with respect to inputs, states, controls, or parameters."
+      },
+      {
+        "term": "Solver-In-The-Loop",
+        "meaning": "A learning setup where a numerical solver is part of the training loop and contributes gradient information."
+      },
+      {
+        "term": "Adjoint",
+        "meaning": "A method for efficiently propagating sensitivities backward through a simulation or optimization problem."
+      },
+      {
+        "term": "Inverse Problem",
+        "meaning": "A problem where observed or desired outcomes are used to infer hidden causes, parameters, or controls."
+      },
+      {
+        "term": "Numerical Error Correction",
+        "meaning": "Learning a correction that reduces errors introduced by coarse grids, low-order methods, or approximate solvers."
+      }
+    ],
+    "stanford_connections": [
+      "This is the differentiable-simulation anchor for the playlist and complements PINNs by putting the solver inside learning rather than only adding residual penalties.",
+      "It connects to control, inverse design, fluid simulation, and later foundation-model-for-science discussions.",
+      "It also gives a bridge between classical adjoint methods and modern automatic differentiation."
+    ],
+    "practical_caution": "Differentiability is useful only if the gradients are meaningful and computationally feasible. Large multiphysics codes, long rollouts, discontinuities, and unstable adjoints can still make the approach hard.",
+    "selected_evidence": [
+      "Ideally there shouldn't be much of a boundary between learning and simulation.",
+      "We have a gradient of this simulation.",
+      "This actually lets us combine simulation very neatly with the deep learning process.",
+      "The first example... is this solver in the loop project.",
+      "Differentiable solvers is a very useful tool."
+    ],
+    "takeaway": "The first-principles lesson is that gradients turn simulation from a black-box data source into an optimization object. That is why differentiable physics is central to inverse problems, control, and scientific ML."
+  },
+  {
+    "id": "011-operator-inference-nonlinear-dynamics",
+    "talk_index": 11,
+    "title": "Pawan Goyal: Physics-Informed Learning For Nonlinear Dynamical Systems",
+    "speaker": "Pawan Goyal",
+    "organization": "Max Planck Institute for Dynamics of Complex Technical Systems",
+    "one_sentence": "This lecture presents operator inference as a way to learn reduced dynamical models directly from data while preserving known physical structure.",
+    "core_problem": "Engineering design, control, optimization, and uncertainty studies need dynamical models that can be simulated repeatedly. High-fidelity discretized models can be too expensive, and legacy or commercial codes may not expose the matrices needed for classical projection-based model reduction.",
+    "first_principles_model": "A dynamical system can often be reduced to a low-dimensional state if the important behavior lies in dominant modes. Operator inference tries to learn the reduced operators directly from trajectory data, using the assumed physical structure of the governing equations so the learned model resembles the ROM that would have been obtained intrusively.",
+    "key_claims": [
+      "Dynamical models are needed to analyze transient behavior under changing operating conditions.",
+      "Two bottlenecks are discretization of complex processes and the high dimensionality of high-fidelity models.",
+      "The goal is to move from PDE data directly to reduced-order models without requiring access to a discretized model.",
+      "Operator inference learns reduced operators from data while using the known structure of the physical model.",
+      "If the data are informative enough, the learned operators can approximate intrusive POD-style reduced models.",
+      "The approach is especially relevant when the data come from legacy codes, commercial solvers, or dedicated simulation toolboxes."
+    ],
+    "important_terms": [
+      {
+        "term": "Operator Inference",
+        "meaning": "A method that learns the operators of a reduced dynamical system from state trajectory data."
+      },
+      {
+        "term": "High-Fidelity Model",
+        "meaning": "A detailed discretized physical model with many degrees of freedom, often too expensive for repeated simulation."
+      },
+      {
+        "term": "Dominant Modes",
+        "meaning": "Low-dimensional directions that capture the main behavior of a high-dimensional dynamical system."
+      },
+      {
+        "term": "Legacy Code",
+        "meaning": "A simulator that can produce input-output data but does not easily expose internal discretization or operator matrices."
+      },
+      {
+        "term": "Physics-Structured Learning",
+        "meaning": "Learning constrained by known equation structure instead of fitting an unconstrained black-box predictor."
+      }
+    ],
+    "stanford_connections": [
+      "This continues the non-intrusive ROM theme but focuses on learning the reduced dynamics themselves.",
+      "It connects to differentiable simulation and inverse problems because a learned reduced model can become the fast inner loop for control.",
+      "It also reinforces the series-wide pattern: use data to infer missing operators, but keep physical structure whenever possible."
+    ],
+    "practical_caution": "Operator inference is not just curve fitting. If the assumed operator structure is wrong or the training trajectories do not excite important modes, the reduced model may look accurate on short rollouts and fail in prediction or control.",
+    "selected_evidence": [
+      "We have focused on operator inference approach to learn dynamical systems.",
+      "We need dynamical models to analyze transient behavior.",
+      "There are two main bottleneck.",
+      "Can we go out of these two steps?",
+      "Compute reduced order model directly from the data."
+    ],
+    "takeaway": "The lecture's key idea is to learn the small dynamical system that classical reduction would have produced, but to infer it directly from data when the full discretized model is unavailable or too costly."
+  }
+]
