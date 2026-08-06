@@ -916,5 +916,383 @@
       "Our models should not be expected to be valid over a range of Reynolds numbers."
     ],
     "takeaway": "The first-principles lesson is that turbulence ROMs are filtered models. If the unresolved scales are ignored, the reduced model is not merely lower-dimensional; it is missing physics."
+  },
+  {
+    "id": "018-functions-functionals-operators-dnns",
+    "talk_index": 18,
+    "title": "George Karniadakis: Approximating Functions, Functionals, And Operators Using Deep Neural Networks",
+    "speaker": "George Karniadakis",
+    "organization": "Brown University",
+    "one_sentence": "This lecture connects PINNs and DeepONets by showing how neural networks can approximate not only functions, but functionals and operators that map functions to functions.",
+    "core_problem": "Many physical systems are not one fixed input-output map between finite vectors. They are families of PDE solves, inverse problems, or system responses where the input may itself be a function, such as an initial condition, forcing, geometry, coefficient field, or sensor history. Standard neural networks can approximate functions, but simulation requires learning solution operators and doing so with limited data.",
+    "first_principles_model": "A function maps points to values. A functional maps a function to a scalar. An operator maps a function to another function. DeepONet represents an operator by combining a branch network that encodes the input function, often through sensors, with a trunk network that encodes the output location. Physics-informed losses and conservation laws can regularize these models when data are sparse or noisy.",
+    "key_claims": [
+      "Scientific ML often needs to learn from small data by using physics as priors or regularization.",
+      "PINNs are especially powerful for inverse problems because measurements help guide the optimization.",
+      "Operator learning is broader than learning a single solution; it approximates mappings between function spaces.",
+      "DeepONet uses branch and trunk networks to learn operators with continuous inputs and outputs.",
+      "The representation of the input function through sensors or basis choices matters.",
+      "Neural operator ideas can support digital-twin-like models of large physical systems."
+    ],
+    "important_terms": [
+      {
+        "term": "Functional",
+        "meaning": "A map whose input is a function and whose output is usually a scalar."
+      },
+      {
+        "term": "Operator",
+        "meaning": "A map from one function to another function, such as a PDE solution map."
+      },
+      {
+        "term": "DeepONet",
+        "meaning": "A neural operator architecture with a branch network for the input function and a trunk network for output coordinates."
+      },
+      {
+        "term": "Sensor Representation",
+        "meaning": "A finite set of sampled values used to represent an input function for training or inference."
+      },
+      {
+        "term": "Physics-Informed Regularization",
+        "meaning": "Using governing equations or conservation laws to constrain a learned model when data are limited."
+      }
+    ],
+    "stanford_connections": [
+      "This is the main operator-learning anchor for the early DDPS sequence and extends the PINN lectures from solving one PDE to learning a whole solution map.",
+      "It connects to graph simulation and ROM-net because all three ask how to represent physical states and maps compactly.",
+      "It also connects to hybrid twins because an operator model can serve as a fast learned component inside a larger twin."
+    ],
+    "practical_caution": "Operator learning still depends on the distribution of input functions and how they are represented. A DeepONet trained on one function family may not generalize to very different forcings, geometries, or sensor layouts.",
+    "selected_evidence": [
+      "Approximating functions functionals and operators using deep neural networks.",
+      "Unlike other approaches that rely on big data, here we learn from small data.",
+      "A branch associated with this... and then there's a trunk.",
+      "We map from an infinite dimensional space to an infinite... space.",
+      "How you represent the input space is important."
+    ],
+    "takeaway": "The first-principles lesson is that scientific ML often needs to learn maps between spaces of functions, not just labels. Neural operators are built for that level of abstraction."
+  },
+  {
+    "id": "019-graph-networks-physical-simulation",
+    "talk_index": 19,
+    "title": "Alvaro Sanchez-Gonzalez And Tobias Pfaff: Learning Physical Simulation With Graph Networks",
+    "speaker": "Alvaro Sanchez-Gonzalez and Tobias Pfaff",
+    "organization": "DeepMind",
+    "one_sentence": "This lecture explains graph networks as learned simulators that represent particles, meshes, and deformable systems as graphs and advance them through message passing.",
+    "core_problem": "Learned simulators can be fast, but many neural architectures generalize poorly outside the training distribution. Physical simulations also come in many discretizations: particles, triangular meshes, tetrahedral meshes, and adaptive cloth meshes. A useful architecture should handle variable structure and generalize to larger or different systems.",
+    "first_principles_model": "A physical state can be encoded as a graph: nodes represent particles or mesh vertices, edges represent neighborhood interactions, and features store physical quantities. A graph network performs message passing so local interactions update edge and node representations. An encode-process-decode model then predicts the next simulation state, and repeated next-step prediction creates a rollout.",
+    "key_claims": [
+      "Graph networks can model particle, mesh, and deformable simulations with the same broad architecture.",
+      "The model learns next-step prediction and then rolls out over time.",
+      "Message passing mirrors the local pairwise or neighborhood interactions common in physics.",
+      "Permutation equivariance makes predictions independent of arbitrary node and edge ordering.",
+      "Using relative local structure helps extrapolate to larger domains and different positions.",
+      "Graph structure can generalize better than fixed-grid CNN-style representations for irregular simulation domains."
+    ],
+    "important_terms": [
+      {
+        "term": "Graph Network",
+        "meaning": "A neural architecture operating on nodes, edges, and graph-level features."
+      },
+      {
+        "term": "Message Passing",
+        "meaning": "A computation where edge and node features are updated by exchanging information across graph neighborhoods."
+      },
+      {
+        "term": "Encode-Process-Decode",
+        "meaning": "A graph-network pipeline that encodes a physical state, repeatedly processes messages, and decodes an updated state."
+      },
+      {
+        "term": "Rollout",
+        "meaning": "Repeatedly applying a one-step simulator to predict a trajectory over many time steps."
+      },
+      {
+        "term": "Permutation Equivariance",
+        "meaning": "The property that reordering graph nodes or edges does not change the physical meaning of the prediction."
+      }
+    ],
+    "stanford_connections": [
+      "This talk adds a representation alternative to grids and bases: graph structure can track physical adjacency directly.",
+      "It connects to operator learning because both learn reusable physical maps, but graph networks emphasize local interaction structure.",
+      "It also connects to long-rollout robustness concerns in fluid and turbulence talks because one-step errors compound over rollout."
+    ],
+    "practical_caution": "A graph simulator must be evaluated on rollout stability and out-of-distribution geometries, not just one-step error. Local message passing helps generalization, but it does not guarantee physical conservation or stability by itself.",
+    "selected_evidence": [
+      "We learn a next step prediction model.",
+      "The model is an encode process decode graph network.",
+      "They are learned using the same model with the same architecture.",
+      "Graph networks were based on something called message passing.",
+      "This property allows the model... to be used on systems that are much larger."
+    ],
+    "takeaway": "The first-principles lesson is that physical simulation is often local and relational. Graph networks exploit that by learning interactions on the structure the simulator already uses."
+  },
+  {
+    "id": "020-neural-architecture-search-surrogates",
+    "talk_index": 20,
+    "title": "Romit Maulik: Neural Architecture Search For Surrogate Modeling",
+    "speaker": "Romit Maulik",
+    "organization": "Argonne National Laboratory",
+    "one_sentence": "This lecture presents neural architecture search as a way to automate surrogate-model design and use architecture ensembles for uncertainty quantification.",
+    "core_problem": "Surrogate modeling often depends on hand-designed architectures, hyperparameters, bottlenecks, symmetry assumptions, and sequence-model choices. That manual tuning can dominate the workflow, and it can hide better architectures that a human would not naturally try, especially for geophysical forecasts or autoencoder-based reduced models.",
+    "first_principles_model": "A neural architecture can be represented as a directed acyclic graph of operations. Neural architecture search defines a search space over layers, widths, skip connections, dropout, tensor operations, and hyperparameters. An optimizer such as aging evolution treats architectures like genomes, evaluates them on validation performance, and evolves better candidates. Sampling the search space can also produce ensembles for UQ.",
+    "key_claims": [
+      "DeepHyper automates neural architecture and hyperparameter search across many neural-network families.",
+      "Architecture search can discover non-intrusive surrogate models from data.",
+      "The search space can be represented as a directed acyclic graph of possible operations.",
+      "Aging evolution interprets candidate architectures as genomes and optimizes validation performance.",
+      "NAS can challenge default assumptions, such as symmetric autoencoder designs.",
+      "Architecture ensembles can support uncertainty quantification by sampling high-dimensional model-form choices."
+    ],
+    "important_terms": [
+      {
+        "term": "Neural Architecture Search",
+        "meaning": "Automated search over neural-network structures and hyperparameters."
+      },
+      {
+        "term": "Search Space",
+        "meaning": "The set of possible architectures, operations, and hyperparameters the algorithm is allowed to explore."
+      },
+      {
+        "term": "Aging Evolution",
+        "meaning": "An evolutionary NAS algorithm that keeps, mutates, and replaces candidate architectures over time."
+      },
+      {
+        "term": "Architecture Ensemble",
+        "meaning": "A collection of different trained architectures used to improve prediction or quantify model uncertainty."
+      },
+      {
+        "term": "Asymmetric Autoencoder",
+        "meaning": "An encoder-decoder model whose encoder and decoder structures are not forced to mirror each other."
+      }
+    ],
+    "stanford_connections": [
+      "This talk is a tooling counterpart to ROM-net and nonlinear manifold ROMs: architecture design can be part of the scientific workflow.",
+      "It connects to uncertainty and robustness because ensembles over architectures expose model-form variability.",
+      "It also connects to hyper-reduction because sparse or efficient architectures can matter for online cost."
+    ],
+    "practical_caution": "NAS does not remove the need for physics-aware evaluation. If the objective rewards only validation error, the search can produce models that are accurate on held-out data but unstable, too large, or physically implausible in deployment.",
+    "selected_evidence": [
+      "Automate the construction of neural networks and the optimization of its hyper parameters.",
+      "Represent the neural network as a directed acyclic graph.",
+      "The aging evolution algorithm actually interprets... neural networks as a genetic algorithm.",
+      "Uncertainty quantification and deep learning is a big issue.",
+      "By losing the restriction of symmetry our auto encoders were actually able to get far better performance."
+    ],
+    "takeaway": "The first-principles lesson is that model architecture is itself a design variable. NAS searches that variable instead of relying only on human defaults."
+  },
+  {
+    "id": "021-fractional-operators-control-ml",
+    "talk_index": 21,
+    "title": "Harbir Antil: Applications Of Fractional Operators From Optimal Control To Machine Learning",
+    "speaker": "Harbir Antil",
+    "organization": "George Mason University",
+    "one_sentence": "This lecture introduces fractional operators as nonlocal models useful in imaging, geophysics, optimal control, data science, and deep neural networks.",
+    "core_problem": "Many physical and data systems have nonlocal behavior, long-range correlations, memory, or anomalous diffusion that classical integer-order differential operators do not express naturally. Modeling those effects with local derivatives alone can miss the interaction structure of heterogeneous materials, images, or reacting flows.",
+    "first_principles_model": "A fractional operator generalizes differentiation or diffusion to non-integer order. Instead of only local derivatives, the operator can encode interactions across distance or history. The fractional Laplacian is one example: it can smooth or diffuse information in a way that reflects nonlocal structure. Fractional exponents can also become parameters to infer or random variables for uncertainty.",
+    "key_claims": [
+      "Fractional calculus is useful for anomalous diffusion and systems with long-range or hereditary effects.",
+      "Fractional operators can replace nonlinear image-regularization models with tractable linear fractional PDEs in some settings.",
+      "Optimal control of fractional PDEs introduces new analysis and computational challenges.",
+      "Unknown fractional exponents can be modeled as parameters or random variables.",
+      "Fractional operators can be used inside deep neural network architectures.",
+      "Chemical reacting flows provide a difficult time-scale example where fractional neural ideas may help."
+    ],
+    "important_terms": [
+      {
+        "term": "Fractional Operator",
+        "meaning": "A differential or integral operator of non-integer order, often encoding nonlocal behavior."
+      },
+      {
+        "term": "Fractional Laplacian",
+        "meaning": "A nonlocal generalization of the Laplace operator used in diffusion, imaging, and PDE models."
+      },
+      {
+        "term": "Anomalous Diffusion",
+        "meaning": "Diffusion behavior that does not follow the standard local Brownian diffusion model."
+      },
+      {
+        "term": "Hereditary Property",
+        "meaning": "A dependence on past states or history, often modeled with fractional dynamics."
+      },
+      {
+        "term": "Fractional DNN",
+        "meaning": "A deep neural network architecture or dynamics inspired by fractional-order operators."
+      }
+    ],
+    "stanford_connections": [
+      "This talk broadens the operator-learning discussion by emphasizing operators with nonlocal physics.",
+      "It connects to optimal control and UQ because fractional exponents and nonlocal dynamics can become uncertain control-relevant parameters.",
+      "It also complements graph networks: both are ways to represent interactions beyond a fixed local grid stencil."
+    ],
+    "practical_caution": "Fractional models are powerful but introduce modeling choices: the fractional order, boundary treatment, and numerical realization all affect the behavior. They should be justified by the physical nonlocality, not added as a generic complexity knob.",
+    "selected_evidence": [
+      "Applications of fractional operators from optimal control to machine learning.",
+      "Long-range correlations or hereditary material properties.",
+      "Modeled by fractional-order differential operators.",
+      "You have to solve a more challenging problem with the fractional Laplacian.",
+      "I started with several applications of fractional operators in imaging in geophysics... and machine learning."
+    ],
+    "takeaway": "The first-principles lesson is that not all dynamics are local. Fractional operators give scientific ML a language for nonlocality, memory, and anomalous transport."
+  },
+  {
+    "id": "022-rom-net-dnn-assisted-model-reduction",
+    "talk_index": 22,
+    "title": "David Ryckelynck: Model Order Reduction Assisted By Deep Neural Networks",
+    "speaker": "David Ryckelynck",
+    "organization": "MINES ParisTech",
+    "one_sentence": "This lecture presents ROM-net as a projection-based model reduction framework where neural networks select or adapt local reduced models for high-dimensional inputs such as images.",
+    "core_problem": "Many practical simulations have stochastic or image-like inputs whose variability strongly affects quantities of interest. A single global reduced basis may be inefficient or uninterpretable across such variability, while fully black-box neural surrogates may lose the structure and hyper-reduction benefits of projection-based ROMs.",
+    "first_principles_model": "ROM-net combines deep learning with projection-based ROM. A dictionary of local reduced-order models is built, often by clustering simplified simulations and computing local reduced bases. A feedforward neural network maps an input tensor, such as an image of a defect, to the appropriate local ROM or latent subspace. This gives a piecewise-linear reduced representation that can remain compatible with hyper-reduction.",
+    "key_claims": [
+      "ROM-net extends model order reduction to settings with high-dimensional image-like parameters.",
+      "Sparse dictionary learning can be interpreted as a piecewise-linear latent space.",
+      "Clustering data allows each cluster to receive its own local reduced basis.",
+      "Local ROM dictionaries can improve interpretability compared with opaque autoencoders.",
+      "Hyper-reduction is straightforward when the latent structure is piecewise linear.",
+      "The method is designed to use existing simulation data while retaining information from classical mathematical models."
+    ],
+    "important_terms": [
+      {
+        "term": "ROM-net",
+        "meaning": "A neural-network-assisted framework that connects input data to projection-based reduced-order models."
+      },
+      {
+        "term": "Dictionary-Based ROM",
+        "meaning": "A collection of local reduced models from which one is selected or combined for a given input."
+      },
+      {
+        "term": "Sparse Dictionary Learning",
+        "meaning": "Learning representations that use only a small number of dictionary elements or local latent components."
+      },
+      {
+        "term": "Piecewise Linear Latent Space",
+        "meaning": "A latent representation made from multiple local linear subspaces rather than one global linear space."
+      },
+      {
+        "term": "Image-Type Parameter",
+        "meaning": "A high-dimensional input, such as tomography data, used as a simulation parameter."
+      }
+    ],
+    "stanford_connections": [
+      "This talk sits between non-intrusive ROM, NAS, and nonlinear manifold ROMs: it uses neural networks to route among structured reduced models.",
+      "It connects to hybrid twins because image or sensor inputs can choose the right local twin behavior.",
+      "It also reinforces a recurring DDPS theme: neural networks are often most valuable when they assist classical reduction rather than replace it."
+    ],
+    "practical_caution": "The number and quality of clusters matter. Too few local models may underfit heterogeneous inputs, while too many increase memory and training demands. The neural routing model must also be validated under input variability.",
+    "selected_evidence": [
+      "Model order reduction assisted by deep neural network so-called ROM-net.",
+      "Images are input parameter for numerical models.",
+      "Sparse dictionary learning can be understood as a piecewise linear latent space.",
+      "For each cluster we can use... SVD... to get... a proper reduced basis.",
+      "A ROMnet is a feed forward artificial neural network that ends with a reduced order model."
+    ],
+    "takeaway": "The first-principles lesson is that neural networks can choose the right reduced model for the input, while projection and hyper-reduction keep the solver structure."
+  },
+  {
+    "id": "023-optimization-feature-tracking-rom",
+    "talk_index": 23,
+    "title": "Matthew Zahr: Model Reduction Of PDEs Via Optimization-Based Feature Tracking",
+    "speaker": "Matthew Zahr",
+    "organization": "University of Notre Dame",
+    "one_sentence": "This lecture explains how optimization-based feature tracking deforms the computational domain so shocks and discontinuities align before model reduction.",
+    "core_problem": "Convection-dominated PDEs with shocks and discontinuities are hard for standard ROMs because moving features create high-rank snapshot sets. If the basis is fixed while shocks move, many modes are required and reduced solutions may smear or oscillate.",
+    "first_principles_model": "Instead of approximating moving discontinuities in fixed coordinates, feature tracking moves the mesh or domain so discontinuities align in a reference configuration. The method formulates shock tracking as an optimization problem over both the DG solution and mesh coordinates. In the reduced setting, it simultaneously optimizes reduced state coordinates and reduced mesh deformation coordinates.",
+    "key_claims": [
+      "Shock tracking can be formulated as an optimization problem over solution and mesh coordinates.",
+      "High-order DG properties such as consistency, conservation, and accuracy are preserved by embedding DG equations as constraints.",
+      "Domain deformation aligns discontinuities across snapshots to improve compression.",
+      "The reduced problem optimizes over both the ROM state and the mesh deformation.",
+      "Boundary-preserving maps are needed so mesh motion does not destroy the physical domain.",
+      "Feature tracking allows linear-subspace tools such as SVD to remain useful for convection-dominated problems."
+    ],
+    "important_terms": [
+      {
+        "term": "Feature Tracking",
+        "meaning": "Moving the mesh or coordinate system so important solution features such as shocks remain aligned."
+      },
+      {
+        "term": "Implicit Shock Tracking",
+        "meaning": "An optimization-based method that locates shocks through the solution and mesh solve rather than explicit front construction."
+      },
+      {
+        "term": "Domain Deformation",
+        "meaning": "A transformation of the computational domain used to align moving features."
+      },
+      {
+        "term": "Reduced Mesh Coordinates",
+        "meaning": "Low-dimensional variables controlling mesh deformation in a reduced model."
+      },
+      {
+        "term": "Boundary-Preserving Map",
+        "meaning": "A mapping that moves interior mesh points while keeping domain boundaries valid."
+      }
+    ],
+    "stanford_connections": [
+      "This talk is the optimization-based counterpart to registration-based ROMs: both reduce transport by aligning features.",
+      "It connects to entropy-stable schemes because shock handling is not only a learning problem but a discretization and geometry problem.",
+      "It also connects to nonlinear manifold ROMs because domain deformation creates a nonlinear representation while keeping linear tools useful."
+    ],
+    "practical_caution": "Tracking features adds its own optimization and mesh-validity problems. A bad deformation map can preserve low rank while damaging boundaries, conservation, or solver robustness.",
+    "selected_evidence": [
+      "Optimization based implicit feature tracking.",
+      "Formulated as an optimization problem over the DG solution and mesh coordinates.",
+      "We want to deform the domain... to align... the shock.",
+      "Minimizing over the ROM state... and the mesh.",
+      "Introduce this mapping... to guarantee that the boundaries are preserved."
+    ],
+    "takeaway": "The first-principles lesson is that for shocks, model reduction can start by making the coordinate system follow the physics before compressing the state."
+  },
+  {
+    "id": "024-model-constrained-deep-learning",
+    "talk_index": 24,
+    "title": "Tan Bui-Thanh: Model-Constrained Deep Learning For Inference, Control And UQ",
+    "speaker": "Tan Bui-Thanh",
+    "organization": "University of Texas at Austin",
+    "one_sentence": "This lecture presents model-constrained deep learning as a way to embed scientific forward models inside inference, control, and uncertainty quantification workflows.",
+    "core_problem": "Inverse problems and control tasks cannot rely on unconstrained prediction alone. Measurements may be sparse, noisy, high-dimensional, and indirect, while the unknown parameter space can be high-dimensional. Bayesian or optimization-based inference may require many expensive forward PDE solves.",
+    "first_principles_model": "A forward model maps parameters or shapes to observations by solving a PDE. An inverse problem tries to recover parameters from observations. In Bayesian inversion, the solution is a posterior distribution over parameters. Model-constrained deep learning places the mathematical model inside the neural or variational approximation so learning respects the physics while reducing the cost of exploring the posterior or control space.",
+    "key_claims": [
+      "Scientific ML combines scientific computing, which uses law-derived models, with machine learning, which learns data-driven models.",
+      "Forward problems solve PDEs from known parameters; inverse problems reconstruct hidden causes from limited measurements.",
+      "High-dimensional parameters and high-dimensional data create severe computational challenges.",
+      "Bayesian inverse problems are expensive because posterior exploration repeatedly calls the forward model.",
+      "Variational approaches can approximate the posterior with a parameterized distribution.",
+      "The key idea is to put the underlying mathematical model inside the variational or deep-learning architecture."
+    ],
+    "important_terms": [
+      {
+        "term": "Model-Constrained Deep Learning",
+        "meaning": "A learning approach where predictions or latent variables are constrained by a governing scientific model."
+      },
+      {
+        "term": "Forward Problem",
+        "meaning": "Computing observations or states from known parameters by solving the physical model."
+      },
+      {
+        "term": "Inverse Problem",
+        "meaning": "Inferring hidden parameters, shapes, or sources from observations."
+      },
+      {
+        "term": "Posterior Distribution",
+        "meaning": "A probability distribution over unknowns after combining prior assumptions with observed data."
+      },
+      {
+        "term": "Variational Inference",
+        "meaning": "Approximating a difficult posterior distribution with a tractable parameterized distribution."
+      }
+    ],
+    "stanford_connections": [
+      "This talk is a direct bridge between differentiable simulation, implicit layers, and uncertainty-aware scientific ML.",
+      "It connects to hybrid twins because real twins need inference and UQ, not only forward prediction.",
+      "It also connects to control because decision quality depends on model-constrained inference of the current state and uncertainty."
+    ],
+    "practical_caution": "A model-constrained neural method is only as reliable as both pieces: the forward model must represent the relevant physics, and the variational or neural approximation must capture the posterior uncertainty well enough for the downstream decision.",
+    "selected_evidence": [
+      "Model constrained deep learning approaches for inference control and uncertainty quantification.",
+      "The forward problem... you just solve for the electromagnetic waves or field.",
+      "The inverse problem is more difficult.",
+      "The posterior is the solution... probability density.",
+      "Put the underlying mathematical model inside the variational encoder."
+    ],
+    "takeaway": "The first-principles lesson is that inference and control need learning systems that respect the forward physics while making uncertainty computation tractable."
   }
 ]
