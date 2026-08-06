@@ -1,0 +1,3872 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:03.000 --> 00:00:05.580
+All right, everyone. Welcome to the TDPs seminar today. And before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk and please use the chat room to post your questions so that we can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences there will no classify discussion is allowed so watch out. Finally, the talk today will be recorded and uploaded in our YouTube channel. Okay, that's about it. Let me introduce our speaker today. It is an honor to host H. S. Udaykumar , who is a roll Carver professor of mechanical engineering, and Associate Dean for Research graduate programs and faculty in the College of Engineering at the University of Iowa. He received a BTech in aerospace engineering from the Indian Institute of Technology and MS and PhD degrees from the University of Florida. He has published over 150 journal papers in varied topic areas of biomedical and mechanical engineering. His research focus is on multiscale modeling and simulation of a wide range of moving boundary problems in thermo mechanical systems ranging from phase change thermal stories, biomedical applications involving cardiovascular and gastro in intestine, intestinal mechanics, energetic material dynamics and proportions and munitions, and multi phase flows at all speeds. He has been supported by grants from NSF, we take her foundation, biomedical engineering, Grant and I add H and we research grants and the multiple concurrent grants from various DoD agencies. Today, they will present an exciting topic which is data driven multiscale simulations for materials by design of anesthetic materials. Please enjoy and expect a wonderful talk now without further ado, let me pass the baton today by asking one random question as usual, since it is Friday, in order to recommend a movie for the weekend. Whoever wants to watch movie this weekend? Today's random question is What is your favorite movie? Will they expect that? No, I didn't expect that. My favorite movie. My favorite movie would be Apollo Apollo 13. I think that's my favorite movie. Because it's, you know, I loved how Tom Hanks I love space. And I always show that movie to my students as a great motivating movie for engineers, you know, because that particular scene when they cobbled together the device to scrub the co2 in the module, you know, is an excellent example of hands on engineering in a very, very high pressure situation. And of course, I forced my daughters to watch it as a Christmas movie, which doesn't go very well in our house. But yeah, that's my favorite movie. Thank you. Thank you for sharing it. Okay, the stage is yours. Okay. Thank you. Thank you. Thank you. Yeah, thanks for for inviting me. You know, being to Livermore I was saying earlier this year, and it's great to be returning back, although virtually. I hope you can see my screen still young soon. Okay, great. Great. Um, so yeah, so I will, I'll be talking today about data driven multiscale simulations for energetic materials. This is work that is funded by the Air Force Mudie program. And by there are parts of it that are NSF dmrf Program grant funded and also parts of it from a CRO. And I do want to mention that this is collaborative work with Steven Beck, who is actually the deep learning person. I'm a collaborator on this. And fun, who's also a deep learning person working with Steve back at Virginia. And we've been working on this for for quite a while now, I would say last three or four years in the Marine Program. So I'm going to try to give a you know, I was kind of deciding whether to go do eat or go broad, and I'd settle for somewhere in the middle. So it might be, you know, not wholly satisfying for everybody, depending on what they prefer. But hopefully it will give you a sense for what what we have done so far and where we are heading with this. Okay. Okay, so. So I don't know whether everybody is familiar with energetic materials, I will assume there are others who are not in energetic, so I'll give a very brief account of what we're doing here. So, experiments, various types of experiments show that energetic materials are very sensitive, obviously, and their sensitivity depends on the microstructure of the material. So, you know, here is an example of a sensitivity curve. This particular one is called James curve, on the x axis is what's called the power flux and the y axis is what's called energy fluence, you can think of the x axis as being the pressure shock pressure, and the y axis is being the shock pulse width, or a flyer thickness. So typically, these are impact experiments with a flyer coming in at a certain velocity. So x axis is the shock pressure induced by the flyer and the y axis is the thickness of the pulse. And in this plane, the curve separates above the curve is critical in the sense that the explosive, or the energetic material will will detonate and below the curve, it will not detonate. So it's the criticality curve. And you can see that for two different micro structures, class three and class five of each MX This is prestige MX, you can see that the criticality envelopes are very different that is, you know, it, the material sensitivity is significantly influenced by the microstructure. In particular, it's influenced by the porosity of the material, you can see that in those micro structures, there are all these great cracks and pores and so on. And so the the prevalence of these sites determine determines the criticality curve for these metals. So, and this is not just one experiment, there are, you know, scores of experiments that show various dependencies on the microstructure. So this is the fundamental kind of underlying feature of what we're going to try to understand. Through our work. What we want want to do is predictive models for indirect materials. And they are inherently multi scale because as I said, the eventual fate of the explosiveness, sensitivity and so on all the material at the macro scale depends on what's going on in the microstructure, which I shall call the mezzo scale for the purpose of this talk. And then, of course, what happens here is determined by the molecular scale properties of the material, you know, what is its strength? In particular, you know, how does it what is its equation of state and other thermo physical properties. So, there is a telescoping of molecular scale properties on to measure scale properties, and then all the way to macro scale. So, we need to build all of this connectivity across scales in order to predictively simulate what's going to happen to an energetic material, when it's chock loaded in my talk is going to be all about shock loading, because that's the regime of interest. At least in my work, there are lots of sub shock, detonations and so on, but we won't be covering that that type of event in this talk. So, fundamentally, the mechanism that leads to sensitivity at the measure scale is when you when you lower the shock, you find hotspots and these hotspots typically localized and defects in the material. So this could be cracks or pores or something. There are many, many mechanisms of hotspots formation from these defects. But in the shock regime, or high shock regime, when we're talking about you know, 10 GPA plus or even, let's say six GPA plus shock loading, the primary cause of localization is the collapse of pores. So these pores collapse. Strength does matter, but they're it's nearly a hydrodynamic collapse. And when they collapse, there is jetting and other form other high speed phenomena that happen just like cavitation bubbles. And you form a hotspot and hotspots then trigger reactions, and then the reaction front propagates and then fills the material. And that then the, you know, it's off to the races at that point. And if there is a coupling between this reaction and the shock, the shock will then transition to a detonation and then you get what is called shock to detonation transition, and you get, you know, full, full blow up for the metal. So that's the mechanism that we want to capture. Now this has been forever A very long time, you know, especially exemplified by the by the phenomenal work of Craig Tarver and others, you had Livermore and other labs as well. Typically, these these phenomena of the hotspot formation and mesoscale phenomena leading to the macroscale detonation were typically inserted into hydro codes by using what are called Burn models or reactive burn models. There are many, many flavors of these, you know, depending on on what your speed is, you can, you can use many of these which are well calibrated for some particular formulations of energetic materials. But a common one or a popular one is credit, Tarver and others, Turbo Nichols, a lot of people live a more contributing to this. It's called the ignition and growth model where there's an ignition rate term, that is pressure that is dependent on the density and the compressibility, the material and the great term growth rate term of hotspots that is tragic dependent. So this is a semi empirical model phenomenological model, where all these parameters, ie x and so on are fit to experiments. And so there are lots of experiments conducted for each population. And then you get these models. Now, these are the traditional routes of empirical empirical burn models. What we mean by data driven models is that we are going to use simulations, as opposed to physical experiments to obtain these ignition and growth rate parameters. Right. So so this is, the burden then is placed on how well you can simulate the phenomena. And there are lots of uncertainties there for even for quite common materials like HX, and TTB, and so on. And then we're going to try to extract data in some meaningful form from the mesoscale simulations. And then we're going to construct these ignition and growth rates from those simulations. So this is a data driven approach that we're going to take. So multi scaling is necessary. Just to kind of recap all of that, multi scaling is necessary measure scale phenomena play a very large role, particularly hotspot phenomena. And we have to somehow bring together these hotspot phenomena into a burn model. And we are choosing the path of a data driven burn model that is informed by direct numerical simulations. So that's the overall trajectory here. So, so essentially, to kind of put that in a broader context that applies to a wide range of materials, we are developing data driven structure, Property Performance linkages for heterogeneous energetic metals. And so that's, that's the overarching theme here. So just to give a sense for how, but in our particular case, we are approaching this, and this is, you know, not very uncommon, this would be a standard route for anybody pursuing this activity. So the structure part consists of, you know, images that we might get off an energetic material, this is a pressed energetic material I'm showing here, but it could be a PBX plastic bonded explosive, where you would have in the formulation, you would have some kind of binder, and then you would have the crystals and then you would have porosity, so there'll be three phases there, here, we have two phases, what one would do do is once given a particular microstructure, suppose we want to predict the sensitivity of the material that has this particular microstructure, we can you know, extract by sampling this microstructure, otherwise just statistical analysis, we can obtain some idea of, you know what to characterize its morphology. So, we would get some PDFs of, you know, wide size distributions or wide other features of the voids, you know, surface specific surface area of the voids, and so on and so forth. So, that's, that's the first structural analysis part. The second part would be the property determination. So, one will do direct numerical simulations to extract properties of the material, for example, its sensitivity, and one would then take those simulations and inform some DD models. And in our particular case, we have developed three different types of DD models, data driven here. I try not to say data driven to too often I'll just say BD. And the three different types are what we call what I call message, park and missile. They're all of course, appropriately and creatively named to do you know, exercise our creative Creativity in this project, very limited exercise. But those are, those are our models, I will explain what message is, what Park is I will leave out missile missile is a model that we just recently have sent out into the world as a publication. And that's still not fully, fully established. So I'm going to talk about missile, sorry, message and Mark Park, two different types of data driven models, when we take these data driven models and feed it to macro scale hydrocarbons as the ignition of growth rates, and then we predict the sensitivity. So this structure here, the structure part, the property part and the performance part. So that's those are the three things. And we have linked all of these in multiscale framework successfully in in two different efforts. So I'll summarize those two efforts today. Okay, so. So just very briefly, 10,000 foot view message is, is a data driven model that employs Gaussian random process surrogate modeling techniques. And we develop this, you know, for the last five years or so, and I'll show some, some capabilities of that. But I'm going to focus today more on Park, which is the deep learning approach and spend a lot of time on this one missile is something that's a semi analytical data driven approach that we have recently come up with this, it's it's fast and dirty. It may not be as physically sophisticated, or accurate as Park and Miss message, but it does a fairly good job of predicting energetic material sensitivity. So those are the three types of models. And out of all these three models, we extract the very same thing, which is the ignition and growth rates in an in an IG model framework. And then we can put those into a macro scale code. So the primary goal of our DD modeling effort is to bridge the measures what I call the mezzo scale, which is the microstructure and the macro scale, which is the homogenized behave material and, and provide the closure models for the macro scale. And so it's in this structure Property Performance Framework. We have different packages that we have, we have so far constructed. The overarching package that deals with the structure part is called matter IQ, which is a Python and pi torch. package. And then we do all the simulations the mezzo scale as well as macroscale simulation with an in house code called scimitar 3d, which is a Fortran 95. So that is basically our workhorse solver solver for lots of problems. So just to describe very briefly in a couple of slides what scimitar 3d is, so similar 3d semadar, 3d stands for solver for computing emerged, moving interfaces and transport with adaptive refinement in 3d. And these were, you know, publications that our group put out, you know, as for the last decade or so, various kinds of problems solved with seminar training, just to show a variety of things that we've done. So we've done problems of high speed impact, you know, computation of real geometries, micro structures and so on damage mechanics, poor collapse, of course, three dimensional and two dimensional course for collapse in HX and other materials, fragmentation, impact and fragmentation and blast wave interaction with particles. So, compressible multi material multi phase flows is what scimitar 3d is capable of doing. It is a cartesian grid fixed cartesian grid oil Arian sharp interface solver, which means that all the all the interfaces you see here between materials is treated sharply and tracked very much similar to front tracking, but using level sets. So it's a level set based techniques. So what you see here, for example, or zero level sets of the plate and an impactor and so we track explicitly the level sets. So it's a level set based interface. And it's called adaptive local refinement to get features that are very fine. And it's paralyzed and uses image processing to process micro structures. So we can go directly from an image to full blown calculation on a fixed mesh, using, you know, semadar, 3d, so everything, everything on the mesh is described in the form of level sets. Okay, so, so that's the solver and we're going to use that I'm going to not talk about the solver anymore, because that's what we're going to use For all our simulations. So the first approach for the DD modeling is message. And this was this paper came out in 2018. And we've used this for many, many things since then. And in the in the message approach, what we do is we bridge the scales between the measure scale, that is the microstructure and the macro scale, to get the performance simulation, we bridge it using single pore collapse simulations. So this is important as a distinction, the single pore collapse simulations are very fast, you can do hundreds of them in a couple of days. And then you can collect the data from the single pole simulations. And what we do is we we get this hypersurface, or a surrogate model for the ignition and growth rates of the single poles as a function of the shock pressure, the shock pulse width, the porosity, the diameter of the voids are the other size and shape of the voids, these three parameters are size and shape of the voids, and then we get a surrogate model. And the surrogate model is used to close the macroscale simulation. So that's, that's message. And so just to show an example of how message works, the workflow of it, suppose we have micro structures, and these were provided to us by AFRL Eglin from Eric Wiley and Chris Bolex group. So we have these pressed HMS micro structures, we know that ferocity, and we know the size of it, we can take these micro structures, and we can analyze them to obtain things like the probability density functions of the Void size, the aspect ratio of the voids and the orientation of the voids in the material. voids are the main features here that we're interested in is pressed metal, there is no binder. And so then we can take the statistics of the morphology. And then we also that's the structure part. In the property part, what we do is we construct these hyper surfaces for the ignition and growth rates in in the space spanned by the shock pressure and the wide diameter. So we're doing single void simulations, we are varying diameters of the Void varying the shock pressures, and we collecting data, and we use the what's called dynamic Kriging, which is a kind of GRP approach Gaussian random process approach to construct these hyper surfaces. So, these hyper surfaces tell us about the mesoscale sensitivity or the vector that is, you know, if you if you subject one pore, to the given pressure, and the pore is of a certain size, what is the ignition and growth rate of hotspots from that one pour. So somehow, we have to take this information and convey it to the macroscale to get the performance aspect of it. So this is just a brief picture of how we populate the parameter space, which is the pressure and diameter of the void, we do numerical simulations here. And these are adaptively done, where there's an active learning process that is in the GRP and that indicates where we need more data. So, we then follow that and do the simulations and then we have an you know, measure RMSE of to determine the convergence of the surrogate in the hyperscale hypersurface. And so, then we say okay, now, we have a hypersurface that we can use for for our for our calculations at the macro scale. Now, so, these are again, based on the single poll data, we we do the poor collapse react to for collapse calculations, we collect data on the void collapse in a void area, the hotspot temperature, the hotspot area and mass of mass production of reactive material, that comes out of one poll. And using that data, we extract these these quantities the F dot ignition and F dot growth, and these are taken simply from the data and we calculate the slopes of these, these this curve which is the mass fraction reacted, and from that, from that curve, we determine the F dot ignition which is the rate of ignition due to due to a particular hotspot. And then we also get the rate of growth when it settles down into the growth phase. So, initially when the pour pour collapses, you form this ignition ignites the material around it and so that's the ignition phase between one and two. And then that ignited hotspot if it survives, if it is critical, they will grow and then then we take between when it's in the steady state growth phase we take the growth rate. So that's how we get the F dot ignition at DOD growth once We have these dot international growth, then in order to close the macro scale simulation, all we have to do is multiply that F dot ignition group by the porosity of the metal. And then we get what macro scale requires, which is the lambda dot ignition and lambda and our growth. And again, those are exactly mean exactly the same things as in Tarvaris ignition and growth model. So, we kind of plugged into the ignition growth modeling framework essentially. Okay, so, then what we do is using that information of the surrogate, we evaluate the performance and that is done as follows. So, we do you know, in a coupon, one dimensional calculations of shock propagation of a particular pressure and pulse width, and once we propagate the shock to the homogenized, macroscale metal, we need this information of the ladder dot lambda dot ignition and grow just like in any ignition and growth model. And what we do is we get that from the hypersurfaces. So, for a particular point, if we know the pressure there, we can go in and we know the microstructure that is the void size and all that we can go and interrogate the data from the hypersurfaces. And then that gives us the heat release rate in that particular cell. And so we put that into a macro scale and we look at, you know, what happens to the shock. And if the shock rises to the On Demand Pressure, then we say okay, that that's critical, right. And so that's how we construct these dreams curve. So here I'm showing using message with the method I just described, which is based on the surrogate modeling, I'm showing a comparison between experiment the black line is the experiments done at Eglin Air Force Base for HTML is a particular microstructure of h2o mix, which is classified and so we know you know very well characterized microstructure and we use message which is the red line here to calculate the Jas curve, that is the sensitivity curve. And as you can see, you know, the message does a fairly good job of of construct of matching experiment, in terms of the sensitivity the metro. So the red line is message, the pink, the purple line is park and I will, I will show how that works in a second. So, basically, our objective is to get this E theoretical the energy, the critical energy for detonation. And so that's the data that that best fits this particular experimental curve. And our critical energy is very, very, in good agreement with the experiment using message. So we can successfully now telescope, the microstructure or information and predict the sensitivity of, of a metal as a function of its microstructure. We have done other other micro structures as well with success, Uri, and that that, again, was provided to us by AFRL. There are a whole other lots of other things we've done with the surrogate based modeling. They've done inverse modeling, there is one if you know the, if you know the criticality can be determined material properties. We've done that recently. And that's worked out in quite interesting ways. And we're also doing transfer learning. So if we know something about h of x, can we say something about our dx, and that work is ongoing in an NSF project on meta learning. So it's been quite successful, the message route has been quite successful. So the second route of data driven modeling that we've been pursuing in our Murie project excuse me, is called park park stands for physics aware record and convolution. This is a paper a couple of two or three papers that have come out recently with Steve back group and this one came out in science advances this year. And so I will briefly discuss what what Park stands for. So Park is part of a larger effort that is part of a package that we are working on called matter IQ, which is an AI based toolkit for materials by design. So, Park fits into that as as the DD model. And its work jointly Of course with Steve and Fung and and we are just to give you a very broad idea of what meta IQ is all about. So in meta IQ, which is again for metals but design what we are trying to do is we are We have different components to the package. The first one is a synthetic synthetic microstructure generator. Because we don't have a large number of microstructural samples, we want to take in archetypal samples that maybe you have one image for, but then generate an ensemble of samples, so we can do statistical modeling of it. And then we can actually do DNS simulations on that ensemble. So that's the synthetic microstructure part. Then we have machine learning models for various purposes. And I'll highlight some of them in the following segment. And then we have actor critic design optimizers. So we can optimize micro structures based on their performance characteristics. And then we connect everything, because we have Fortran modules for for the solvers. There's legacy modules. And then we have all the Python and pytorch, we have wrappers that connect all of these into an actual design tool. So so that's the framework in which Parque fits as the DD platform. So in so the matter IQ DD platform is, in terms of the structure, it's a deep learning based approach for generating and experimenting with synthetic micro structures. So we can change micro structures in various ways to conduct these experiments, and I'll describe how that works. And then we do simulations and the simulations then feed into a deep learning based approach to predict meso scale dynamics, and then that then feeds into the macro scale performance evaluation. So this loop is basically closed by Park. So let me talk a little bit about the structure part and how DD works into the structure part. Here we can synthesize micro structures using CNNs. And this work has been published in a couple of papers last the last few years, starting from 2020. So basically, we use Gann approach for synthesizing micro structures. If you're very broadly, Gann is an adversarial contest between watt generator network and a discriminator network where the generator tries to deceive the discriminator by generating sub samples of microstructures in the discriminator, then being the discriminator you know, attempts to push the generator closer and closer to the target image by by minimizing an error between the two between the candidate microstructure and the target microstructure. And eventually, you know, through this process, they converge to a particular hopefully to the target microstructure or facsimiles near off. So that's the that's the strategy and it's in the paper by Shannon at all in 2020. And basically, the what we have shown in that paper is that we can take one snapshot of an energetic material microstructure and generate many many similar microstructure with similar characteristics. So, then we can do numerical experiments on them. So, these are some ground truth samples of micro structures that we obtained from from AFRL. The middle row is a transfer learning based approach and results from that and lower row is the Gann final Gann approach that we settled on. As you can see the Gann approach gives nice clean microstructures the transfer learning approach can have some local glitches these are close ups of parts of this micro structure, and we found the gap gap and actually produces nice crisp micro structures that emulate the real microstructure. And we also done in that paper, we show quantitative comparisons of various statistics of these microstructures showing that the black line here is ground truth and these are probability densities of the Void size, aspect ratio and orientation of the voids. And we show that you know our again approach produces real microstructures with quantitative similarity as well. So you know, we're capturing the the characteristics of real microstructure and this can also be extended to three dimensions the The paper also addresses 3d micro structures or in this particular case of sandstone, where you can take the ground truth sandstone, microstructure and synthesize it and generate ensembles of synthesized micro structures. And these are showing 2d slices of these microstructures and quantitative comparisons, they're very dense, I won't go into it, but you can look at various metrics of the quantitative characteristics of the real microstructure and synthesize and we show that you know, the synthesized micro structures capture the characteristics of the, of the real microstructures Remapping. So, that's, that's the structure generation part now, what this allows us to do in a materials by design standpoint is that we can manipulate the microstructure. So, once we have the baseline microstructure that that emulates the real microstructure, then we can can turn knobs literally in in the generator, basically we are modulating the latent variables and by modulating the latent variables, we can change the structure of the metal. So, for example, just to show one one instance by performing a particular operation here we go from this initial small microstructure, small grain size microstructure and we can manipulate the my the latent variables to go towards larger finally, to a larger microstructure. And we can do this in for various other things as well for example, here we can control the orientation of the of the crystals or the voids. In fact, we have shown that depending on the void orientation, the sensitivity of the material can change massively wider oriented along the shock propagation direction tend to be more sensitive than voids that are oriented normal to the prop propagation. So, we can actually investigate the effects of the orientation of voids and so on and so, we can now kind of manipulate the microstructures virtually to to get different void void orientations, we can also look at mixtures of sizes by modulating the latent variables, the uniformity when you if we mark toggle the latent variables in a certain way we get bimodal mixtures and so on and so forth. So, we can now control the microstructures virtually and these are done you know these are a picture of the latent variable weights here and by different weights of the of the latent variables, we can we get different crystal sizes void sizes and so, this allows for flexibility in making different micro structures, we can also paint micro structures using this approach, which is to say that we can spatially vary the microstructure. So, this is microstructure was generated with small grains on one end and large grains on the other end. So, we can do that we can also paint micro structural regions. So, here we have taken the Hawkeye which is the University of Iowa symbol. And we've gotten permission to do that from our, from our university, which is very important. And what we show here is that we want to put large crystals in this yellow region and small crystals in the black region. So, we imprinted imprinted that haka image in on to this microstructure if you can see here, these are the large crystals, and then the surroundings a small crystals, and we actually 3d printed this, we have a depth score grant with the collaborator, Professor Shawn song. And he he does pressure jet printing. And so this is sugar crystals, of course, being university that's we can only handle sugar. And so, you know, here you can see that, you know, there's a, the Hawkeyes, larger crystals are printed over here. And these are all small crystals. And zooming into the this region here you can see the large crystals of the Hawkeye symbol. So so we can actually transmit our micro structures to somebody who does 3d printing and actually do that. And then of course, finally, we will use these micro structures, the synthetic ones, and look at the response shock response a bit in simulation. So this is for large, small crystals, and it's for large crystals. And you can see the growth rate of hotspots is very different in the two of them. So that's that's the facility now we're also doing other things. Irene Fung, who's actually at Livermore for the summer, I think is working on manipulating micro structures to explore design in the following way that she's actually she can actually modulate damage on the microstructure. So she's coming up with a deep learning approach so that we can take a input microstructure. And we can actually remove all the damage from in there and then re damage it in a controlled way. So that we can insert as as much damage as we want, because we want to study the effect of, of damaged micro structures on the sensitivity. So that's the idea over there. Okay, so, in fact, I will actually, in the interest of time skip through earnings work, because they want to get to part I think I'm, I'm actually mean. So how much time do I have? Maybe five to 10 minutes. Okay. Let's say 10 minutes. Okay, I'm gonna take 10 Because I, okay, so in part, we're basically what part does is that it? It learns from the DNS stimulations, and then it can actually do predictions once it's learned from it. So you know, we are asking questions like can can we train an AI model to assimilate the physics of energy localization, can an AI model serve as a surrogate for DNS calculations, and can AI models provide physical insight so we don't want it to be a black box, we want interpretability. So we want to get information out of out of park. And as I said, Park fits into this, this overall framework where as a data driven modeling entity, so we this is the DDS DD model that we're using in the larger metros design optimization and discovery framework of matter IQ. Park basically, the idea behind Park is that we are going to formulate the shock and use hotspot evolution as a dynamical system. That is we pick this variable x from the physics of the problem. And in our particular case, we pick x to be a function basically consists of a vector of the temperature of the hotspots, the pressure in the in the domain and the microstructure, because the microstructure evolves. So it goes from becoming from voids to wide collapse, and then eventually to become hotspots. So we want to track the evolution of all three things, the temperature, the pressure, and the microstructure. And so we train the model to learn those three aspects, the evolution of those three aspects from numerical simulations. And that's the idea behind Park. So basically, Park is assimilates knowledge of how that evolution of this field X takes place. And, and we formulate it as a recurrent recurrent neural network where we have differentiator in integrator networks, and these differentiator and integrated networks, assimilate the derivatives of the variable x, and then they perform the integration. And the time, the time evolution is, is a simulated within Park to eventually predict what happens at the end when the hotspots finally grow and merge in the metro. So just to show an example of a park calculation, so this, the top row is DNS for this microstructure. This is the park prediction for that microstructure after training. So so you can see that sorry. So Park does a good job of predicting what happens hotspot, the location of the hotspot, the frequency of the hotspots, and so on. And the advantage is that, while the DNS would take days on HPC Park would be would just be, you know, really quick prediction. So it predicts the time evolution of hotspots. And it also predicts the pressure. As you can see, the pressure is not as well predicted as the temperature because the pressure has smaller gradients than the temperature the temperature is much sharper, but it does a fairly decent job of predicting the pressure evolution as well. So this x which is an avoid collapse, evolution of microstructure evolution, so this is in a park exercised on many, many different micro structures. The left side ground truth and the rights are predicted it's I know it's very difficult to see this, but basically the overall messages in a park predictions are in good agreement. And this is a quantitative comparison. So for various microstructures we've worked Park and we've done DNS and the confidence intervals here are the microstructure variability due to microstructure variability. So this is the hotspot temperature versus time. The Hotspot area versus time as you can see park in the mean and also in terms of the distribution. Park produces good hotspot area evolution over time, in good agreement with the ground truth, the rate of change of area of the hotspot versus time is also in good agreement with the, with the ground truth. So we get the hotspot dynamics. Right. Now we've used this part model to do the multiscale full multi scale. So basically that came out in a paper in cap actually just just just recently, ever we can take a macro scale image sample, we can do the statistical analysis of it, we do DNS simulations between Park and then Park predicts the the hotspot growth rate and so on. And we feed that to the macroscale simulation and predict SDT and the criticality on going up. And this is the Jas envelope of our predicted by message. So message sorry, park park is the purple one messages the red one. So the two approaches somewhat in the in the low pressure range. As you can see, there's more sensitivity, and they straddle the experimental data, while in the high pressure range, they do a very good agreement with each other. And also with experiment. So this is, this is a demonstration that we now can put all of the pieces together in a multiscale framework. Now the question is, of course, did we learn physics? Or is it just pictures? And so can it tell us something in order to investigate this, we tested Park in many, many ways. First, we tested this to a, an off the shelf physics naive models for for learning. And we showed that park does a better job or you know, in fact, some of the physics naive off the shelf codes that we tried this on, you know, did not match with the, with the ground truth, but we are able to match closely with the ground truth. The second thing we tested was looking at time evolution beyond training, that is we trained part for a certain time, and then we let part go. And then we do the DNS for those longer times and see if it captures the evolution correctly. Beyond the training time averages and extrapolation and park does that successfully. Then, we also looked at outlier micro structures, we had trained park on a certain set of micro structures, and then we picked microstructures parts of the microstructured that were quite quite different from what we are trained Park on and we looked at whether it can actually predict the you know the behavior of those sensitivity of those. For example, very, very large crystal like that, we do a DNS. And then we also look at Park and as with the park and predict where the hotspots are. We also tested Park to unseen loading conditions that is we trained park on a certain set of pressures and we looked at other pressures. And there as well Park captures the physics and gives us the hotspot correct hotspot growth rates. So, aside from this, we also asked the question can park tell us some information about the physics? So in order to do this, we asked a question. From our simulation, we noted that only a small subset of voids generate hotspots. And why is that what is particularly interesting about those critical voids, and can we get information about this. So we used the saliency map which is a derivative of the temperature array with respect to the microstructure. And we have these two fields, the temperature field and the microstructure appeal. So we can then establish this the sensitivity matrix. And that is what I'm calling the saliency map field. And so if we threshold the saliency map field, we find that there are the saliency map tells us which voids went critical and formed hotspots. And so we can superimpose this on the microstructure. And we can examine these voids that caused the hotspots, as you can see the the vast majority of voids failed to produce hotspots. So then we're asking what is special about these critical hotspots, and we zoom in there, and we try to correlate that the morphology information with the sensitivity information. And what we find is, you know, by doing this analysis is the following. And it's actually, you know, we, it matches with, with the physics that we had earlier learned in various other works, which is that this is the this the critical voice and this is the non critical voice. And as you can see, the critical voice don't look terribly different from the non critical voice. You know, but there are subtle differences and there's subtle differences are as follows. So, if you look at the average voice diameter of critical voids, they tend to be smaller than the average diameter of the non critical points. If you look at the aspect ratio of the critical voice versus non critical voice as they elongate Ignis, they're not terribly different, but if you look at the orientation, it has a very strong effect. So, critical voids are nearly horizontal with respect to the immediate horizontal with respect to the shop direction, whereas the non critical words are oriented much more in parallel to the sharp direction. So that orientation has a significant impact on sensitivity. Okay, so I think I can summarize this now. So, basically park can predict Well, the response can be B, we used about 35 DNS simulation, so, the data is not terribly large, and part manages to gather information from that. And we showed that part does produce physically meaningful and physically insightful results that we can interrogate. And so, I think there are further developments of park that I will not go into right now, we are working on improving accuracy for week hotspots. And, and, and other other accuracy issues and robustness issues. But so let me summarize, finish by putting this slide on meta IQ. So, basically, we now have the ability to manipulate structures, we can do simulations that feed into data driven models, and we can predict the macroscale phenomena of sensitivity in a multiscale setting. So, I'll finish there. Thank you. Thank you so much for the wonderful talk today. Let's have a q&amp;a session. I don't see any question in chat room. So, if you anyone has questions, please unmute yourself and ask on a knowledge, base your hands or unmute yourself and just speak either way. Anyone? Larry, yeah. Yeah. I was wondering, had you looked at applying your technique to samples of varying initial density where you might have porous materials versus very dense materials? Yes, Larry, thanks for the question I we did two microstructures you know, we don't have access to too many samples, we did an AR 10 microstructure and and a plus five microstructure both press H MX. And our predictions of sensitivity were were in accord with experiments on those two micro structures both done at AFRL Eglin we are actually working on a third now we are doing PB X's and we are working on a third microstructure as well which is very different from those two micro structures. So the porosity is much lower. So, we are doing that right now. Very, very impressive work. Thank you very much. Thank you Laurie. Just to add clarification to the old hen had a 7% porosity and the class five had a 14 14% porosity. So quite different microstructure Okay. Thank you. Thank you. Okay, we have a another question in chapter one. And by Cooper, he asked, did you look at the difference in the surface area for the critical versus non critical voice therapists area No, so, this, so, we looked at diameter aspect ratio right. So, aspect ratio is not terribly sensitive to the aspect ratio, it is sensitive to the diameter. So, this surface area does matter. And in fact, this is you know, common common knowledge and surface parasitic surface area does matter. So, smaller voids tend to be more sensitive than the larger voids for a given aspect ratio. So, that's, you know, that sort of or finding a specific surface there for a given porosity then that means that there will be a larger surface area specific surface area with smaller points. So, that's specific surface area is important. And it's consistent with both Park findings as well as message findings. Thank you. You have a curve, you know the results of the massive results of the curve from the park. One is under estimating the other one is over estimate Adding in physics point of view or application point of view fits fits is more valuable is under estimating is better or overestimating is better in criticality as well, I think we're having needed would be better best, I guess, but I know, I sort of have an in. So let me actually Oh, yes. You were mentioning this one, right? Yeah. Yeah. Previous one. Yeah, that one? Yeah. This one? Yeah. For some reason, oh, hang on one second. Okay. Yeah. So this, this region is the most difficult part. So you know, this one is actually fairly straightforward to predict, which, you know, is, it's heartening that we can do that, but but I would, I would rather have good predictions over here. The problem over here is in we working on this is that over here, it's not truly hydrodynamic the void collapse here. So this there is a, there is also physics missing, I think at this in this area of the plot. Because as you approach about five GPA, and so on, you can get effects of shear bands and other strength related aspects of the material. And those are not terribly well modeled currently in our work. And we are trying to remedy that by by using better physical models for this to represent the strength. And we made some progress on that. So that's ongoing work. But I think so I would, in answering your question young so I don't know if this is particularly issue with the more the DD models themselves? Or is it actually a misrepresentation of the physics there? Until we fix the physics I would not know what to say about those two things. You know, okay. Yeah. Looks like if you average those two, then you'd be in good shape. Today, this is kayo. I've got a couple of questions. In regards to park I didn't see a void void interaction term or a is some kind of provision for void void interaction, what role do you believe that plays in what determines a critical defect morphology, size orientation, whatever. The point in my in my estimation, the void void interaction part is inherent clean learned by Park. Whereas in the message model, we have to have another surrogate model, which we have, and we have to insert it into message which we have done in order to get these curves. So, in message, we have to make an effort to include worldwide interaction because it relies on single word calculations. Whereas because pork relies on a full DNS, and the full DNS already has the worldwide interactions in it, I think pork actually takes that into account. Now, having said that, we've done recent work that shows that for white small void sizes, by which I mean about a one micron diameter void sizes via interactions may not be a terribly strong effect. For larger void diameters, we find worldwide interactions are very strong effect. So I think in this instance, because the void sizes in class five center around about point five micron I don't know if the void size interactions will play a major role in in this in the discrepancies that exist in the predicted predictions for this particular case. But I think Park actually should take into account wide wide interactions. Yeah, of course, you have the ignition and ignition criticality, and then the growth and you know, there there are opportunities in both phases to take place. But, yeah, I mean, I think that the Yeah, it seems like some kind of provision for part going forward that considers the possibility but clearly having first you know, as a first order the the void itself is probably one of the I guess, like you're saying the most one One of the most important things, yes, in regards to the low pressure regime that you're pointing to? Do you believe that there are fundamental mechanism changes? It seems like you're implying that by saying over a certain pressure regime, it's hydrodynamic, you know, under that could be more of a viscous and other kinds of interactions that perhaps we don't normally encounter, whether it be surface physics or other kinds of modes or what have you. Right. Have any thoughts about that specifically, mechanism changes? Yes, yes, I certainly do, actually. So if you look at, you know, where, where we are about five GPA, five GPA, is about the, about the pressure at which we find that most, the voids are sort of borderline, they're about they're not collapsing in full hydrodynamic mode. And if we do the calculations of that, in fact, with the Johnson cook model, the independent model and so on, to that you guys actually have published on we find that, you know, there are, there are shear bands, and there is a significant change of mode of collapse of the Void from, whereas for high pressures, it's hydrodynamic, you know, in the jetting mode, for the lower pressures, it tend to be more of a closure mode. In fact, as he goes lower pressures, it closes the sideways pinching mode, rather than a jet mode. And in the sideways pinching mode, sharp, the shear bands play a very large role. So I think there is there is definitely some kind of mechanism transition, because below we know about, you know, five GPA or so you really don't get criticality. So, you know, the wide may collapse, but it collapses so weakly, that you don't get criticality. So there is there is something here happening both in terms of, well, first of all, in terms of the mode of collapse, and the strength of the material, kind of playing a role. But secondly, also, I think this, this region is much more sensitive to the MS chemical kinetics models, and we've done quite a bit of examination of that, which can, you know, this curve that I'm showing even for message can move all the way out here with a lawyer, you know, with a chemist in one chemistry bottle reaction chemistry model, and all the way to the other side with another chemistry model. And we found that, in fact, doing an inverse analysis that the best fit to the experimental data from the chemistry models comes from, you know, the Henson, one equation, global kinetics model. So, that also plays a role clearly that the chemical kinetics because it temperatures here, due to avoid collapse, and lower pressures tend to be borderline. So if you if you it's very, so the reaction kinetics model is very sensitive in that region in predicting the criticality. So there's a lot going on in that region that really needs a lot of looking into, and that's actually the interesting region for us. Because, you know, that's the threshold. And if we can predict that correctly, then you know, that that's not a terribly great model. So, so this variation here is of concern, but I would, I would first try to get the physics right before trying to, you know, figure out which DD model is better, in that sense. So, there's a lot going on there too much work to be done in that region. Thank you, Dave. And Greg, great talk. Thanks, Gail. Any other questions from audience? Well, I'm, I have a rather a comments than questions about the naming, physics aware you know, there are a lot of active research going on in physics simulation and and also, you know, the machine learning side. One example is a physics informed neural network. And another one is more traditional way of bringing the physics into the data model is using the projection base for this to reduce certain model. It's clear that why they are calling their data to do method is physics aware physics informed because they actually using underlying governing equations to build a data driven model, but but your park model I don't see that. And I do, I do see that data is generated from DNS model, which is, you know, solving the physics governing equations. But in theory, Data driven it's the physics model is not directly integrated into the into the model. So, yeah there is a something debatable here whether you can call it physics aware, I know that you have shown that you know generalizability at the end, you know, your park model actually predicted some physical characteristics right some some ratio the rate, but still I don't see where the physics is incorporated in the process of building the motor itself. So, you So, yes, so, this has come up quite frequently, especially with the pin the pin framework and so on. So, clearly in pin there are you know, there are in particular the divergence free velocity constraint is built into the network, right. Not not only that actual governing equations, they are operating not absolutely, so, in some sense, we are much more or somewhere we are in between that or that philosophy of of making the network emulate the full governing equations, and the reduced order modeling, in the sense that we are trying to learn because it is intended to be a bridge between the mezzo and macro scale simulations, we are abstracting from the measure scale, what is physically relevant to the macro scale, in our particular case, what is physically relevant is the temperature field, the pressure field and the microstructural evolution. You know, the system of equations we are solving is very, very large, it is a reactive, fully compressible system with interfaces in full interfacial dynamics. You know, we we don't want to be in the situation where we impose upon the network, the need to solve that entire system of equations where that's not the idea here, the idea is to use some of our expert intuition in picking the physics that needs to be learned by the network. And we coupled those three elements, the temperature, the pressure, and the microstructure within the vector x. And so we are trying to look at the coupling of the physics between the shock and the hotspot and the void. And in that sense, we are keying in what is required in terms of physical ingredients into the network. And we are making it actually emulate the the evolution of the process through the differential equations. So, you know, if we don't do that, we don't get the results for the hotspot evolution that as I've shown, we don't get the correct results. So and then, you know, the other tests, I showed that we are actually capturing physics, and we are making, you know, extracting insights that are physically meaningful, and match with expert knowledge. I think in those senses, you know, what we have is a physically aware system. You know, it's not it's not physical physics is not the same as the physics inform neural networks. It's not the philosophy, the philosophy, it's not a reduced order model. It's, it's using physics and physical knowledge and integrating that into a neural network that produces for us what we need, which is taking the information from the meso scale and transmitting it to the macro scale. So that's, that's my, that's my overall kind of outlook on what we are trying to do. Okay, okay. Is it Is there any other questions? Well, I mean, we actually pass the 10 minutes to sorry, no, no, no, no, sorry. It means, you know, we are very interested in your work. So I think it's a good time to wrap up. Well, let's thank our speaker today for the wonderful talk and wonderful q&amp;a sessions. A lot of applause, here. And yeah, let's, let's wrap up here. Thank you, everyone. And if you do have a question, please email who they directly I'm sure Woody is going to answer your questions recently. Well, and then yeah, and then, you know, of course the future collaborations between Lawrence Livermore and and your group and I think it's it's already going on so let's continue to do so. Thank you they were the ones that thank you guys bye
+
+
+00:00:05.580 --> 00:00:09.990
+ 
+
+
+00:00:09.990 --> 00:00:15.030
+ 
+
+
+00:00:15.030 --> 00:00:19.920
+ 
+
+
+00:00:19.920 --> 00:00:22.740
+ 
+
+
+00:00:22.740 --> 00:00:27.600
+ 
+
+
+00:00:27.600 --> 00:00:31.650
+ 
+
+
+00:00:31.650 --> 00:00:37.260
+ 
+
+
+00:00:37.260 --> 00:00:41.700
+ 
+
+
+00:00:41.700 --> 00:00:45.120
+ 
+
+
+00:00:45.120 --> 00:00:49.110
+ 
+
+
+00:00:49.110 --> 00:00:53.760
+ 
+
+
+00:00:53.760 --> 00:00:57.240
+ 
+
+
+00:00:57.240 --> 00:01:03.450
+ 
+
+
+00:01:03.450 --> 00:01:08.190
+ 
+
+
+00:01:08.190 --> 00:01:13.320
+ 
+
+
+00:01:13.320 --> 00:01:18.150
+ 
+
+
+00:01:18.150 --> 00:01:22.650
+ 
+
+
+00:01:22.650 --> 00:01:26.880
+ 
+
+
+00:01:27.480 --> 00:01:31.920
+ 
+
+
+00:01:31.920 --> 00:01:35.310
+ 
+
+
+00:01:35.310 --> 00:01:42.330
+ 
+
+
+00:01:42.360 --> 00:01:47.640
+ 
+
+
+00:01:47.640 --> 00:01:52.380
+ 
+
+
+00:01:52.380 --> 00:01:57.330
+ 
+
+
+00:01:57.330 --> 00:02:03.810
+ 
+
+
+00:02:03.810 --> 00:02:08.220
+ 
+
+
+00:02:08.250 --> 00:02:13.110
+ 
+
+
+00:02:13.110 --> 00:02:16.830
+ 
+
+
+00:02:16.860 --> 00:02:20.820
+ 
+
+
+00:02:20.820 --> 00:02:24.030
+ 
+
+
+00:02:24.060 --> 00:02:28.530
+ 
+
+
+00:02:28.530 --> 00:02:32.100
+ 
+
+
+00:02:32.130 --> 00:02:36.300
+ 
+
+
+00:02:36.300 --> 00:02:42.510
+ 
+
+
+00:02:42.810 --> 00:02:47.700
+ 
+
+
+00:02:47.700 --> 00:02:49.200
+
+
+00:02:52.170 --> 00:02:56.460
+ 
+
+
+00:02:57.000 --> 00:03:02.490
+ 
+
+
+00:03:02.490 --> 00:03:08.430
+ 
+
+
+00:03:08.460 --> 00:03:11.760
+ 
+
+
+00:03:11.910 --> 00:03:17.610
+ 
+
+
+00:03:17.610 --> 00:03:23.040
+ 
+
+
+00:03:23.040 --> 00:03:27.540
+ 
+
+
+00:03:27.540 --> 00:03:30.120
+ 
+
+
+00:03:30.120 --> 00:03:34.620
+ 
+
+
+00:03:35.880 --> 00:03:39.660
+ 
+
+
+00:03:39.780 --> 00:03:40.280
+
+
+00:03:41.280 --> 00:03:45.570
+ 
+
+
+00:03:45.570 --> 00:03:50.820
+ 
+
+
+00:03:50.820 --> 00:03:57.570
+ 
+
+
+00:03:57.570 --> 00:03:59.490
+ 
+
+
+00:04:01.140 --> 00:04:03.540
+
+
+00:04:03.690 --> 00:04:07.470
+ 
+
+
+00:04:07.500 --> 00:04:10.920
+ 
+
+
+00:04:10.920 --> 00:04:18.450
+ 
+
+
+00:04:18.480 --> 00:04:23.250
+ 
+
+
+00:04:23.250 --> 00:04:29.730
+ 
+
+
+00:04:29.730 --> 00:04:33.360
+ 
+
+
+00:04:33.360 --> 00:04:38.280
+ 
+
+
+00:04:38.430 --> 00:04:42.690
+ 
+
+
+00:04:42.690 --> 00:04:47.160
+ 
+
+
+00:04:47.160 --> 00:04:51.150
+ 
+
+
+00:04:51.150 --> 00:04:57.600
+ 
+
+
+00:04:57.690 --> 00:05:02.130
+ 
+
+
+00:05:02.130 --> 00:05:05.220
+ 
+
+
+00:05:05.220 --> 00:05:08.790
+ 
+
+
+00:05:08.790 --> 00:05:12.180
+ 
+
+
+00:05:12.210 --> 00:05:15.180
+ 
+
+
+00:05:15.210 --> 00:05:15.710
+
+
+00:05:16.620 --> 00:05:19.080
+
+
+00:05:19.229 --> 00:05:22.919
+ 
+
+
+00:05:22.919 --> 00:05:26.609
+ 
+
+
+00:05:26.609 --> 00:05:30.329
+ 
+
+
+00:05:30.329 --> 00:05:36.239
+ 
+
+
+00:05:36.239 --> 00:05:41.879
+ 
+
+
+00:05:41.879 --> 00:05:46.019
+ 
+
+
+00:05:46.019 --> 00:05:50.729
+ 
+
+
+00:05:50.729 --> 00:05:55.019
+ 
+
+
+00:05:55.019 --> 00:05:59.489
+ 
+
+
+00:05:59.489 --> 00:06:03.209
+ 
+
+
+00:06:03.209 --> 00:06:07.469
+ 
+
+
+00:06:07.469 --> 00:06:11.699
+ 
+
+
+00:06:11.699 --> 00:06:14.759
+ 
+
+
+00:06:14.759 --> 00:06:18.179
+ 
+
+
+00:06:18.179 --> 00:06:24.269
+ 
+
+
+00:06:24.299 --> 00:06:27.779
+ 
+
+
+00:06:27.779 --> 00:06:31.979
+ 
+
+
+00:06:31.979 --> 00:06:34.139
+ 
+
+
+00:06:34.139 --> 00:06:37.619
+ 
+
+
+00:06:37.619 --> 00:06:41.099
+ 
+
+
+00:06:41.999 --> 00:06:46.439
+ 
+
+
+00:06:46.439 --> 00:06:50.009
+ 
+
+
+00:06:50.009 --> 00:06:53.369
+ 
+
+
+00:06:53.369 --> 00:06:56.639
+ 
+
+
+00:06:56.639 --> 00:06:59.579
+ 
+
+
+00:07:00.209 --> 00:07:04.499
+ 
+
+
+00:07:04.529 --> 00:07:08.879
+ 
+
+
+00:07:08.909 --> 00:07:12.359
+ 
+
+
+00:07:12.389 --> 00:07:15.929
+ 
+
+
+00:07:16.139 --> 00:07:19.649
+ 
+
+
+00:07:19.679 --> 00:07:22.559
+ 
+
+
+00:07:22.559 --> 00:07:27.989
+ 
+
+
+00:07:27.989 --> 00:07:30.659
+ 
+
+
+00:07:30.659 --> 00:07:35.609
+ 
+
+
+00:07:35.639 --> 00:07:39.899
+ 
+
+
+00:07:39.899 --> 00:07:42.299
+ 
+
+
+00:07:42.299 --> 00:07:45.059
+ 
+
+
+00:07:45.059 --> 00:07:49.469
+ 
+
+
+00:07:49.469 --> 00:07:52.709
+ 
+
+
+00:07:52.709 --> 00:07:56.549
+ 
+
+
+00:07:56.549 --> 00:08:00.659
+ 
+
+
+00:08:00.749 --> 00:08:04.169
+ 
+
+
+00:08:04.169 --> 00:08:07.559
+ 
+
+
+00:08:07.559 --> 00:08:10.889
+ 
+
+
+00:08:11.399 --> 00:08:15.599
+ 
+
+
+00:08:15.599 --> 00:08:17.939
+ 
+
+
+00:08:17.939 --> 00:08:21.509
+ 
+
+
+00:08:21.809 --> 00:08:25.739
+ 
+
+
+00:08:25.889 --> 00:08:28.739
+ 
+
+
+00:08:28.739 --> 00:08:34.439
+ 
+
+
+00:08:35.039 --> 00:08:39.419
+ 
+
+
+00:08:39.419 --> 00:08:43.799
+ 
+
+
+00:08:43.799 --> 00:08:47.909
+ 
+
+
+00:08:47.909 --> 00:08:51.629
+ 
+
+
+00:08:52.679 --> 00:08:56.609
+ 
+
+
+00:08:56.609 --> 00:09:01.259
+ 
+
+
+00:09:01.289 --> 00:09:04.529
+ 
+
+
+00:09:04.529 --> 00:09:11.369
+ 
+
+
+00:09:11.369 --> 00:09:15.659
+ 
+
+
+00:09:18.179 --> 00:09:20.729
+ 
+
+
+00:09:20.729 --> 00:09:25.439
+ 
+
+
+00:09:25.439 --> 00:09:28.919
+ 
+
+
+00:09:28.919 --> 00:09:34.079
+ 
+
+
+00:09:34.109 --> 00:09:37.259
+ 
+
+
+00:09:37.259 --> 00:09:40.199
+ 
+
+
+00:09:40.199 --> 00:09:43.679
+ 
+
+
+00:09:43.679 --> 00:09:46.739
+ 
+
+
+00:09:46.739 --> 00:09:49.019
+ 
+
+
+00:09:49.019 --> 00:09:52.799
+ 
+
+
+00:09:53.099 --> 00:09:56.309
+ 
+
+
+00:09:56.309 --> 00:10:00.869
+ 
+
+
+00:10:00.869 --> 00:10:05.999
+ 
+
+
+00:10:06.179 --> 00:10:12.449
+ 
+
+
+00:10:12.449 --> 00:10:18.269
+ 
+
+
+00:10:18.269 --> 00:10:21.449
+ 
+
+
+00:10:21.449 --> 00:10:27.509
+ 
+
+
+00:10:27.509 --> 00:10:32.729
+ 
+
+
+00:10:32.729 --> 00:10:36.839
+ 
+
+
+00:10:37.319 --> 00:10:42.449
+ 
+
+
+00:10:42.449 --> 00:10:45.809
+ 
+
+
+00:10:45.839 --> 00:10:51.269
+ 
+
+
+00:10:51.299 --> 00:10:58.589
+ 
+
+
+00:10:58.589 --> 00:11:02.069
+ 
+
+
+00:11:02.069 --> 00:11:06.509
+ 
+
+
+00:11:06.509 --> 00:11:08.879
+ 
+
+
+00:11:08.879 --> 00:11:12.809
+ 
+
+
+00:11:12.809 --> 00:11:16.769
+ 
+
+
+00:11:16.799 --> 00:11:21.389
+ 
+
+
+00:11:21.389 --> 00:11:24.779
+ 
+
+
+00:11:24.779 --> 00:11:27.509
+ 
+
+
+00:11:27.509 --> 00:11:32.399
+ 
+
+
+00:11:32.429 --> 00:11:36.599
+ 
+
+
+00:11:36.599 --> 00:11:39.539
+ 
+
+
+00:11:39.539 --> 00:11:43.289
+ 
+
+
+00:11:43.289 --> 00:11:47.969
+ 
+
+
+00:11:47.969 --> 00:11:52.589
+ 
+
+
+00:11:52.589 --> 00:11:56.759
+ 
+
+
+00:11:56.759 --> 00:12:00.509
+ 
+
+
+00:12:00.509 --> 00:12:05.069
+ 
+
+
+00:12:05.069 --> 00:12:07.709
+ 
+
+
+00:12:07.709 --> 00:12:10.979
+ 
+
+
+00:12:10.979 --> 00:12:14.729
+ 
+
+
+00:12:14.729 --> 00:12:19.199
+ 
+
+
+00:12:19.199 --> 00:12:22.019
+ 
+
+
+00:12:22.019 --> 00:12:25.559
+ 
+
+
+00:12:25.559 --> 00:12:28.769
+ 
+
+
+00:12:28.769 --> 00:12:33.629
+ 
+
+
+00:12:33.629 --> 00:12:37.289
+ 
+
+
+00:12:37.289 --> 00:12:43.019
+ 
+
+
+00:12:43.019 --> 00:12:45.779
+ 
+
+
+00:12:45.779 --> 00:12:49.349
+ 
+
+
+00:12:49.349 --> 00:12:52.559
+ 
+
+
+00:12:53.519 --> 00:12:58.559
+ 
+
+
+00:12:58.559 --> 00:13:03.119
+ 
+
+
+00:13:03.119 --> 00:13:07.529
+ 
+
+
+00:13:07.529 --> 00:13:10.139
+ 
+
+
+00:13:10.139 --> 00:13:15.539
+ 
+
+
+00:13:15.539 --> 00:13:18.209
+ 
+
+
+00:13:18.209 --> 00:13:21.179
+ 
+
+
+00:13:21.179 --> 00:13:25.139
+ 
+
+
+00:13:25.139 --> 00:13:29.819
+ 
+
+
+00:13:29.819 --> 00:13:33.539
+ 
+
+
+00:13:33.539 --> 00:13:37.349
+ 
+
+
+00:13:37.349 --> 00:13:41.009
+ 
+
+
+00:13:41.009 --> 00:13:44.369
+ 
+
+
+00:13:44.369 --> 00:13:47.759
+ 
+
+
+00:13:47.789 --> 00:13:51.509
+ 
+
+
+00:13:51.539 --> 00:13:55.799
+ 
+
+
+00:13:55.799 --> 00:13:59.309
+ 
+
+
+00:13:59.309 --> 00:14:04.739
+ 
+
+
+00:14:04.739 --> 00:14:08.339
+ 
+
+
+00:14:08.339 --> 00:14:10.889
+ 
+
+
+00:14:10.889 --> 00:14:14.909
+ 
+
+
+00:14:14.909 --> 00:14:19.079
+ 
+
+
+00:14:19.079 --> 00:14:22.859
+ 
+
+
+00:14:22.859 --> 00:14:27.089
+ 
+
+
+00:14:27.089 --> 00:14:31.499
+ 
+
+
+00:14:31.499 --> 00:14:35.219
+ 
+
+
+00:14:35.759 --> 00:14:41.759
+ 
+
+
+00:14:41.759 --> 00:14:47.699
+ 
+
+
+00:14:47.759 --> 00:14:52.679
+ 
+
+
+00:14:52.709 --> 00:14:57.059
+ 
+
+
+00:14:58.530 --> 00:15:02.370
+ 
+
+
+00:15:02.370 --> 00:15:07.530
+ 
+
+
+00:15:07.530 --> 00:15:12.210
+ 
+
+
+00:15:12.210 --> 00:15:18.420
+ 
+
+
+00:15:18.420 --> 00:15:23.970
+ 
+
+
+00:15:24.360 --> 00:15:27.690
+ 
+
+
+00:15:27.840 --> 00:15:30.210
+ 
+
+
+00:15:30.210 --> 00:15:32.670
+ 
+
+
+00:15:32.670 --> 00:15:36.120
+ 
+
+
+00:15:36.120 --> 00:15:39.600
+ 
+
+
+00:15:39.600 --> 00:15:43.860
+ 
+
+
+00:15:43.890 --> 00:15:46.680
+ 
+
+
+00:15:46.710 --> 00:15:50.820
+ 
+
+
+00:15:51.390 --> 00:15:54.630
+ 
+
+
+00:15:55.710 --> 00:15:58.140
+
+
+00:15:58.350 --> 00:16:03.720
+ 
+
+
+00:16:03.720 --> 00:16:07.620
+ 
+
+
+00:16:07.710 --> 00:16:12.450
+ 
+
+
+00:16:12.990 --> 00:16:16.470
+ 
+
+
+00:16:16.470 --> 00:16:20.010
+ 
+
+
+00:16:20.010 --> 00:16:23.790
+ 
+
+
+00:16:23.790 --> 00:16:27.840
+ 
+
+
+00:16:27.840 --> 00:16:31.920
+ 
+
+
+00:16:31.950 --> 00:16:38.070
+ 
+
+
+00:16:38.100 --> 00:16:41.670
+ 
+
+
+00:16:41.670 --> 00:16:45.150
+ 
+
+
+00:16:45.150 --> 00:16:48.630
+ 
+
+
+00:16:48.630 --> 00:16:51.840
+ 
+
+
+00:16:51.840 --> 00:16:56.040
+ 
+
+
+00:16:56.040 --> 00:17:01.680
+ 
+
+
+00:17:01.680 --> 00:17:06.420
+ 
+
+
+00:17:06.420 --> 00:17:09.030
+ 
+
+
+00:17:09.030 --> 00:17:13.650
+ 
+
+
+00:17:13.650 --> 00:17:17.940
+ 
+
+
+00:17:17.940 --> 00:17:23.400
+ 
+
+
+00:17:23.400 --> 00:17:27.930
+ 
+
+
+00:17:27.930 --> 00:17:31.050
+ 
+
+
+00:17:31.050 --> 00:17:37.440
+ 
+
+
+00:17:38.220 --> 00:17:42.300
+ 
+
+
+00:17:42.300 --> 00:17:46.110
+ 
+
+
+00:17:46.110 --> 00:17:52.620
+ 
+
+
+00:17:52.620 --> 00:17:57.300
+ 
+
+
+00:17:57.330 --> 00:18:00.990
+ 
+
+
+00:18:00.990 --> 00:18:04.620
+ 
+
+
+00:18:04.650 --> 00:18:08.160
+ 
+
+
+00:18:08.160 --> 00:18:11.700
+ 
+
+
+00:18:11.700 --> 00:18:16.800
+ 
+
+
+00:18:16.800 --> 00:18:20.910
+ 
+
+
+00:18:21.480 --> 00:18:25.890
+ 
+
+
+00:18:25.920 --> 00:18:29.790
+ 
+
+
+00:18:29.790 --> 00:18:35.700
+ 
+
+
+00:18:35.700 --> 00:18:39.090
+ 
+
+
+00:18:39.090 --> 00:18:44.100
+ 
+
+
+00:18:44.130 --> 00:18:47.250
+ 
+
+
+00:18:47.250 --> 00:18:51.720
+ 
+
+
+00:18:51.750 --> 00:18:56.580
+ 
+
+
+00:18:56.580 --> 00:19:00.900
+ 
+
+
+00:19:00.900 --> 00:19:04.440
+ 
+
+
+00:19:04.440 --> 00:19:08.880
+ 
+
+
+00:19:08.880 --> 00:19:14.280
+ 
+
+
+00:19:14.280 --> 00:19:18.120
+ 
+
+
+00:19:18.120 --> 00:19:22.740
+ 
+
+
+00:19:22.740 --> 00:19:26.790
+ 
+
+
+00:19:26.790 --> 00:19:29.490
+ 
+
+
+00:19:29.490 --> 00:19:34.740
+ 
+
+
+00:19:34.740 --> 00:19:37.530
+ 
+
+
+00:19:37.530 --> 00:19:42.900
+ 
+
+
+00:19:42.900 --> 00:19:48.000
+ 
+
+
+00:19:48.000 --> 00:19:52.860
+ 
+
+
+00:19:52.860 --> 00:19:55.860
+ 
+
+
+00:19:56.100 --> 00:19:59.460
+ 
+
+
+00:19:59.460 --> 00:20:02.580
+ 
+
+
+00:20:02.580 --> 00:20:08.910
+ 
+
+
+00:20:08.910 --> 00:20:12.210
+ 
+
+
+00:20:12.210 --> 00:20:17.520
+ 
+
+
+00:20:17.700 --> 00:20:20.970
+ 
+
+
+00:20:20.970 --> 00:20:24.240
+ 
+
+
+00:20:24.630 --> 00:20:28.440
+ 
+
+
+00:20:28.440 --> 00:20:33.030
+ 
+
+
+00:20:33.030 --> 00:20:36.690
+ 
+
+
+00:20:36.690 --> 00:20:40.230
+ 
+
+
+00:20:40.230 --> 00:20:43.380
+ 
+
+
+00:20:43.560 --> 00:20:50.400
+ 
+
+
+00:20:50.430 --> 00:20:55.320
+ 
+
+
+00:20:55.320 --> 00:21:00.270
+ 
+
+
+00:21:00.300 --> 00:21:04.110
+ 
+
+
+00:21:04.110 --> 00:21:07.140
+ 
+
+
+00:21:07.140 --> 00:21:10.230
+ 
+
+
+00:21:10.260 --> 00:21:14.040
+ 
+
+
+00:21:14.040 --> 00:21:18.540
+ 
+
+
+00:21:18.540 --> 00:21:22.920
+ 
+
+
+00:21:22.920 --> 00:21:25.710
+ 
+
+
+00:21:27.000 --> 00:21:32.250
+ 
+
+
+00:21:32.550 --> 00:21:37.590
+ 
+
+
+00:21:37.590 --> 00:21:41.910
+ 
+
+
+00:21:41.910 --> 00:21:46.650
+ 
+
+
+00:21:46.650 --> 00:21:50.520
+ 
+
+
+00:21:50.520 --> 00:21:54.090
+ 
+
+
+00:21:54.090 --> 00:21:56.490
+ 
+
+
+00:21:56.490 --> 00:22:00.960
+ 
+
+
+00:22:01.020 --> 00:22:07.230
+ 
+
+
+00:22:07.230 --> 00:22:09.810
+ 
+
+
+00:22:09.810 --> 00:22:13.710
+ 
+
+
+00:22:13.740 --> 00:22:16.800
+ 
+
+
+00:22:16.800 --> 00:22:20.280
+ 
+
+
+00:22:20.280 --> 00:22:22.560
+ 
+
+
+00:22:22.560 --> 00:22:28.440
+ 
+
+
+00:22:28.440 --> 00:22:33.300
+ 
+
+
+00:22:33.420 --> 00:22:37.050
+ 
+
+
+00:22:37.050 --> 00:22:42.300
+ 
+
+
+00:22:42.300 --> 00:22:48.150
+ 
+
+
+00:22:48.180 --> 00:22:51.030
+ 
+
+
+00:22:51.030 --> 00:22:54.930
+ 
+
+
+00:22:54.930 --> 00:22:57.930
+ 
+
+
+00:22:57.930 --> 00:23:04.140
+ 
+
+
+00:23:04.140 --> 00:23:09.390
+ 
+
+
+00:23:09.390 --> 00:23:12.960
+ 
+
+
+00:23:12.960 --> 00:23:16.920
+ 
+
+
+00:23:16.920 --> 00:23:20.550
+ 
+
+
+00:23:20.550 --> 00:23:24.180
+ 
+
+
+00:23:24.180 --> 00:23:30.030
+ 
+
+
+00:23:30.030 --> 00:23:34.530
+ 
+
+
+00:23:34.530 --> 00:23:38.130
+ 
+
+
+00:23:38.130 --> 00:23:43.140
+ 
+
+
+00:23:44.130 --> 00:23:49.830
+ 
+
+
+00:23:49.830 --> 00:23:53.310
+ 
+
+
+00:23:53.310 --> 00:23:57.210
+ 
+
+
+00:23:57.210 --> 00:24:02.220
+ 
+
+
+00:24:02.430 --> 00:24:06.870
+ 
+
+
+00:24:06.870 --> 00:24:10.800
+ 
+
+
+00:24:10.830 --> 00:24:15.000
+ 
+
+
+00:24:15.000 --> 00:24:19.170
+ 
+
+
+00:24:19.170 --> 00:24:23.430
+ 
+
+
+00:24:23.430 --> 00:24:27.300
+ 
+
+
+00:24:27.330 --> 00:24:31.200
+ 
+
+
+00:24:31.230 --> 00:24:34.620
+ 
+
+
+00:24:34.620 --> 00:24:37.680
+ 
+
+
+00:24:37.680 --> 00:24:42.480
+ 
+
+
+00:24:42.480 --> 00:24:46.140
+ 
+
+
+00:24:46.140 --> 00:24:49.860
+ 
+
+
+00:24:49.860 --> 00:24:54.510
+ 
+
+
+00:24:54.510 --> 00:24:57.930
+ 
+
+
+00:24:57.930 --> 00:25:01.890
+ 
+
+
+00:25:01.920 --> 00:25:05.730
+ 
+
+
+00:25:05.730 --> 00:25:10.500
+ 
+
+
+00:25:10.500 --> 00:25:13.920
+ 
+
+
+00:25:13.920 --> 00:25:17.010
+ 
+
+
+00:25:17.010 --> 00:25:20.220
+ 
+
+
+00:25:20.220 --> 00:25:23.700
+ 
+
+
+00:25:23.700 --> 00:25:27.270
+ 
+
+
+00:25:28.230 --> 00:25:32.370
+ 
+
+
+00:25:32.370 --> 00:25:36.360
+ 
+
+
+00:25:36.360 --> 00:25:40.170
+ 
+
+
+00:25:40.170 --> 00:25:44.490
+ 
+
+
+00:25:44.610 --> 00:25:49.260
+ 
+
+
+00:25:49.260 --> 00:25:54.930
+ 
+
+
+00:25:54.960 --> 00:25:57.930
+ 
+
+
+00:25:57.930 --> 00:26:02.040
+ 
+
+
+00:26:02.040 --> 00:26:05.970
+ 
+
+
+00:26:05.970 --> 00:26:10.140
+ 
+
+
+00:26:10.230 --> 00:26:14.070
+ 
+
+
+00:26:14.070 --> 00:26:20.250
+ 
+
+
+00:26:20.250 --> 00:26:24.450
+ 
+
+
+00:26:24.450 --> 00:26:27.060
+ 
+
+
+00:26:27.060 --> 00:26:31.890
+ 
+
+
+00:26:31.890 --> 00:26:35.730
+ 
+
+
+00:26:35.730 --> 00:26:41.460
+ 
+
+
+00:26:41.520 --> 00:26:44.760
+ 
+
+
+00:26:44.760 --> 00:26:49.140
+ 
+
+
+00:26:49.170 --> 00:26:52.980
+ 
+
+
+00:26:52.980 --> 00:26:56.460
+ 
+
+
+00:26:56.460 --> 00:27:01.500
+ 
+
+
+00:27:01.500 --> 00:27:05.910
+ 
+
+
+00:27:05.940 --> 00:27:10.290
+ 
+
+
+00:27:10.290 --> 00:27:14.010
+ 
+
+
+00:27:14.010 --> 00:27:18.990
+ 
+
+
+00:27:19.020 --> 00:27:22.770
+ 
+
+
+00:27:22.800 --> 00:27:27.060
+ 
+
+
+00:27:27.060 --> 00:27:31.110
+ 
+
+
+00:27:31.110 --> 00:27:34.440
+ 
+
+
+00:27:34.440 --> 00:27:40.770
+ 
+
+
+00:27:40.800 --> 00:27:44.070
+ 
+
+
+00:27:44.070 --> 00:27:48.900
+ 
+
+
+00:27:48.900 --> 00:27:52.830
+ 
+
+
+00:27:52.830 --> 00:27:58.050
+ 
+
+
+00:27:58.050 --> 00:28:01.440
+ 
+
+
+00:28:01.440 --> 00:28:06.420
+ 
+
+
+00:28:06.420 --> 00:28:11.490
+ 
+
+
+00:28:11.490 --> 00:28:13.980
+ 
+
+
+00:28:14.700 --> 00:28:17.850
+ 
+
+
+00:28:17.850 --> 00:28:20.610
+ 
+
+
+00:28:20.760 --> 00:28:24.930
+ 
+
+
+00:28:24.930 --> 00:28:29.730
+ 
+
+
+00:28:29.730 --> 00:28:33.390
+ 
+
+
+00:28:33.390 --> 00:28:38.790
+ 
+
+
+00:28:39.780 --> 00:28:44.370
+ 
+
+
+00:28:44.370 --> 00:28:49.410
+ 
+
+
+00:28:49.410 --> 00:28:59.250
+ 
+
+
+00:28:59.250 --> 00:29:04.650
+ 
+
+
+00:29:04.650 --> 00:29:07.440
+ 
+
+
+00:29:07.440 --> 00:29:14.010
+ 
+
+
+00:29:14.010 --> 00:29:19.860
+ 
+
+
+00:29:19.980 --> 00:29:26.370
+ 
+
+
+00:29:27.570 --> 00:29:31.860
+ 
+
+
+00:29:33.420 --> 00:29:38.010
+ 
+
+
+00:29:38.010 --> 00:29:43.890
+ 
+
+
+00:29:43.890 --> 00:29:48.660
+ 
+
+
+00:29:48.660 --> 00:29:53.520
+ 
+
+
+00:29:54.390 --> 00:29:57.930
+ 
+
+
+00:29:57.930 --> 00:30:03.180
+ 
+
+
+00:30:03.180 --> 00:30:06.990
+ 
+
+
+00:30:07.050 --> 00:30:10.590
+ 
+
+
+00:30:10.590 --> 00:30:16.230
+ 
+
+
+00:30:16.500 --> 00:30:20.880
+ 
+
+
+00:30:20.880 --> 00:30:24.240
+ 
+
+
+00:30:25.230 --> 00:30:29.610
+ 
+
+
+00:30:29.610 --> 00:30:32.700
+ 
+
+
+00:30:32.700 --> 00:30:35.610
+ 
+
+
+00:30:35.640 --> 00:30:41.820
+ 
+
+
+00:30:41.820 --> 00:30:46.560
+ 
+
+
+00:30:46.560 --> 00:30:50.580
+ 
+
+
+00:30:50.580 --> 00:30:55.200
+ 
+
+
+00:30:55.200 --> 00:30:59.970
+ 
+
+
+00:31:00.000 --> 00:31:03.510
+ 
+
+
+00:31:03.510 --> 00:31:09.690
+ 
+
+
+00:31:09.690 --> 00:31:16.350
+ 
+
+
+00:31:16.380 --> 00:31:20.700
+ 
+
+
+00:31:20.700 --> 00:31:23.760
+ 
+
+
+00:31:23.760 --> 00:31:26.910
+ 
+
+
+00:31:26.910 --> 00:31:30.840
+ 
+
+
+00:31:30.870 --> 00:31:35.250
+ 
+
+
+00:31:36.090 --> 00:31:39.840
+ 
+
+
+00:31:39.840 --> 00:31:43.230
+ 
+
+
+00:31:43.260 --> 00:31:48.000
+ 
+
+
+00:31:48.000 --> 00:31:53.550
+ 
+
+
+00:31:53.550 --> 00:31:57.720
+ 
+
+
+00:31:57.720 --> 00:32:03.840
+ 
+
+
+00:32:03.840 --> 00:32:09.690
+ 
+
+
+00:32:10.380 --> 00:32:14.220
+ 
+
+
+00:32:14.220 --> 00:32:19.590
+ 
+
+
+00:32:19.590 --> 00:32:24.480
+ 
+
+
+00:32:24.480 --> 00:32:29.520
+ 
+
+
+00:32:29.520 --> 00:32:34.140
+ 
+
+
+00:32:34.140 --> 00:32:38.640
+ 
+
+
+00:32:38.670 --> 00:32:46.110
+ 
+
+
+00:32:46.110 --> 00:32:52.410
+ 
+
+
+00:32:52.950 --> 00:32:56.400
+ 
+
+
+00:32:56.400 --> 00:33:00.150
+ 
+
+
+00:33:00.180 --> 00:33:04.620
+ 
+
+
+00:33:04.620 --> 00:33:08.970
+ 
+
+
+00:33:08.970 --> 00:33:14.580
+ 
+
+
+00:33:14.580 --> 00:33:19.500
+ 
+
+
+00:33:19.500 --> 00:33:23.220
+ 
+
+
+00:33:23.220 --> 00:33:28.080
+ 
+
+
+00:33:28.080 --> 00:33:31.350
+ 
+
+
+00:33:31.350 --> 00:33:35.130
+ 
+
+
+00:33:35.130 --> 00:33:41.880
+ 
+
+
+00:33:41.880 --> 00:33:46.800
+ 
+
+
+00:33:46.800 --> 00:33:51.720
+ 
+
+
+00:33:51.720 --> 00:33:55.230
+ 
+
+
+00:33:55.260 --> 00:33:57.720
+ 
+
+
+00:33:57.720 --> 00:34:01.590
+ 
+
+
+00:34:01.590 --> 00:34:04.440
+ 
+
+
+00:34:04.440 --> 00:34:10.320
+ 
+
+
+00:34:10.470 --> 00:34:13.470
+ 
+
+
+00:34:13.500 --> 00:34:17.220
+ 
+
+
+00:34:17.220 --> 00:34:21.570
+ 
+
+
+00:34:21.570 --> 00:34:24.930
+ 
+
+
+00:34:24.930 --> 00:34:29.820
+ 
+
+
+00:34:29.850 --> 00:34:32.910
+ 
+
+
+00:34:33.360 --> 00:34:36.480
+ 
+
+
+00:34:36.480 --> 00:34:39.990
+ 
+
+
+00:34:39.990 --> 00:34:43.860
+ 
+
+
+00:34:43.860 --> 00:34:48.030
+ 
+
+
+00:34:48.030 --> 00:34:54.060
+ 
+
+
+00:34:54.090 --> 00:34:57.870
+ 
+
+
+00:34:57.870 --> 00:35:01.740
+ 
+
+
+00:35:01.740 --> 00:35:06.090
+ 
+
+
+00:35:06.090 --> 00:35:10.920
+ 
+
+
+00:35:10.920 --> 00:35:14.190
+ 
+
+
+00:35:14.190 --> 00:35:17.190
+ 
+
+
+00:35:17.190 --> 00:35:21.930
+ 
+
+
+00:35:22.920 --> 00:35:26.130
+ 
+
+
+00:35:26.130 --> 00:35:30.600
+ 
+
+
+00:35:30.600 --> 00:35:33.510
+ 
+
+
+00:35:33.840 --> 00:35:37.350
+ 
+
+
+00:35:37.350 --> 00:35:44.550
+ 
+
+
+00:35:44.700 --> 00:35:49.560
+ 
+
+
+00:35:49.950 --> 00:35:52.740
+ 
+
+
+00:35:52.740 --> 00:35:56.460
+ 
+
+
+00:35:56.460 --> 00:36:00.240
+ 
+
+
+00:36:00.240 --> 00:36:04.680
+ 
+
+
+00:36:04.680 --> 00:36:10.800
+ 
+
+
+00:36:10.800 --> 00:36:14.670
+ 
+
+
+00:36:14.670 --> 00:36:19.350
+ 
+
+
+00:36:19.350 --> 00:36:23.550
+ 
+
+
+00:36:23.610 --> 00:36:28.710
+ 
+
+
+00:36:29.160 --> 00:36:32.010
+ 
+
+
+00:36:32.010 --> 00:36:36.720
+ 
+
+
+00:36:36.720 --> 00:36:41.880
+ 
+
+
+00:36:41.880 --> 00:36:45.750
+ 
+
+
+00:36:45.750 --> 00:36:50.220
+ 
+
+
+00:36:50.220 --> 00:36:54.510
+ 
+
+
+00:36:54.510 --> 00:36:58.500
+ 
+
+
+00:36:58.500 --> 00:37:02.220
+ 
+
+
+00:37:02.220 --> 00:37:08.010
+ 
+
+
+00:37:08.010 --> 00:37:12.870
+ 
+
+
+00:37:12.870 --> 00:37:16.020
+ 
+
+
+00:37:16.080 --> 00:37:20.970
+ 
+
+
+00:37:20.970 --> 00:37:27.090
+ 
+
+
+00:37:27.480 --> 00:37:32.040
+ 
+
+
+00:37:32.040 --> 00:37:36.750
+ 
+
+
+00:37:36.750 --> 00:37:41.190
+ 
+
+
+00:37:41.190 --> 00:37:45.060
+ 
+
+
+00:37:45.060 --> 00:37:48.330
+ 
+
+
+00:37:49.230 --> 00:37:52.500
+ 
+
+
+00:37:52.500 --> 00:37:57.000
+ 
+
+
+00:37:57.000 --> 00:37:59.460
+
+
+00:38:01.050 --> 00:38:04.710
+ 
+
+
+00:38:04.740 --> 00:38:08.940
+ 
+
+
+00:38:08.940 --> 00:38:13.710
+ 
+
+
+00:38:13.710 --> 00:38:17.580
+ 
+
+
+00:38:17.880 --> 00:38:22.560
+ 
+
+
+00:38:22.560 --> 00:38:27.810
+ 
+
+
+00:38:27.810 --> 00:38:30.840
+ 
+
+
+00:38:30.840 --> 00:38:33.630
+ 
+
+
+00:38:33.990 --> 00:38:38.760
+ 
+
+
+00:38:38.760 --> 00:38:43.740
+ 
+
+
+00:38:43.740 --> 00:38:47.160
+ 
+
+
+00:38:47.160 --> 00:38:51.300
+ 
+
+
+00:38:51.300 --> 00:38:55.860
+ 
+
+
+00:38:55.920 --> 00:38:59.970
+ 
+
+
+00:38:59.970 --> 00:39:03.960
+ 
+
+
+00:39:03.960 --> 00:39:09.000
+ 
+
+
+00:39:09.000 --> 00:39:12.810
+ 
+
+
+00:39:12.810 --> 00:39:15.540
+ 
+
+
+00:39:15.540 --> 00:39:19.290
+ 
+
+
+00:39:20.070 --> 00:39:25.110
+ 
+
+
+00:39:25.350 --> 00:39:27.690
+ 
+
+
+00:39:27.690 --> 00:39:30.600
+ 
+
+
+00:39:30.600 --> 00:39:35.760
+ 
+
+
+00:39:35.790 --> 00:39:39.570
+ 
+
+
+00:39:39.570 --> 00:39:44.130
+ 
+
+
+00:39:44.130 --> 00:39:47.580
+ 
+
+
+00:39:47.580 --> 00:39:54.270
+ 
+
+
+00:39:54.270 --> 00:39:58.680
+ 
+
+
+00:39:58.680 --> 00:40:02.850
+ 
+
+
+00:40:03.270 --> 00:40:07.440
+ 
+
+
+00:40:07.440 --> 00:40:12.120
+ 
+
+
+00:40:12.120 --> 00:40:15.600
+ 
+
+
+00:40:15.600 --> 00:40:18.300
+ 
+
+
+00:40:18.330 --> 00:40:22.890
+ 
+
+
+00:40:22.890 --> 00:40:26.100
+ 
+
+
+00:40:26.100 --> 00:40:31.950
+ 
+
+
+00:40:31.950 --> 00:40:32.520
+
+
+00:40:34.830 --> 00:40:39.690
+ 
+
+
+00:40:39.990 --> 00:40:44.550
+ 
+
+
+00:40:44.550 --> 00:40:49.320
+ 
+
+
+00:40:49.320 --> 00:40:53.280
+ 
+
+
+00:40:53.280 --> 00:40:56.910
+ 
+
+
+00:40:56.910 --> 00:41:00.210
+ 
+
+
+00:41:00.210 --> 00:41:03.960
+ 
+
+
+00:41:03.960 --> 00:41:08.700
+ 
+
+
+00:41:08.700 --> 00:41:10.980
+ 
+
+
+00:41:10.980 --> 00:41:14.490
+ 
+
+
+00:41:14.490 --> 00:41:20.010
+ 
+
+
+00:41:20.010 --> 00:41:26.040
+ 
+
+
+00:41:26.040 --> 00:41:31.110
+ 
+
+
+00:41:31.140 --> 00:41:34.410
+ 
+
+
+00:41:34.410 --> 00:41:41.370
+ 
+
+
+00:41:41.370 --> 00:41:45.570
+ 
+
+
+00:41:45.570 --> 00:41:51.210
+ 
+
+
+00:41:51.210 --> 00:41:55.410
+ 
+
+
+00:41:55.680 --> 00:42:00.030
+ 
+
+
+00:42:00.030 --> 00:42:03.810
+ 
+
+
+00:42:03.810 --> 00:42:06.930
+ 
+
+
+00:42:06.930 --> 00:42:09.930
+ 
+
+
+00:42:10.020 --> 00:42:15.420
+ 
+
+
+00:42:15.420 --> 00:42:18.360
+ 
+
+
+00:42:18.570 --> 00:42:22.740
+ 
+
+
+00:42:22.740 --> 00:42:26.820
+ 
+
+
+00:42:26.820 --> 00:42:31.980
+ 
+
+
+00:42:31.980 --> 00:42:37.680
+ 
+
+
+00:42:37.770 --> 00:42:45.360
+ 
+
+
+00:42:45.360 --> 00:42:49.470
+ 
+
+
+00:42:49.500 --> 00:42:53.610
+ 
+
+
+00:42:53.610 --> 00:42:58.560
+ 
+
+
+00:42:58.590 --> 00:43:01.770
+ 
+
+
+00:43:01.770 --> 00:43:07.050
+ 
+
+
+00:43:07.050 --> 00:43:11.130
+ 
+
+
+00:43:11.340 --> 00:43:16.320
+ 
+
+
+00:43:16.320 --> 00:43:20.760
+ 
+
+
+00:43:20.760 --> 00:43:25.890
+ 
+
+
+00:43:25.890 --> 00:43:29.460
+ 
+
+
+00:43:29.490 --> 00:43:36.810
+ 
+
+
+00:43:36.840 --> 00:43:41.850
+ 
+
+
+00:43:41.850 --> 00:43:45.960
+ 
+
+
+00:43:45.960 --> 00:43:50.700
+ 
+
+
+00:43:50.730 --> 00:43:54.870
+ 
+
+
+00:43:54.870 --> 00:44:00.240
+ 
+
+
+00:44:00.930 --> 00:44:05.880
+ 
+
+
+00:44:05.880 --> 00:44:09.330
+ 
+
+
+00:44:09.330 --> 00:44:12.660
+ 
+
+
+00:44:12.660 --> 00:44:16.020
+ 
+
+
+00:44:16.170 --> 00:44:19.920
+ 
+
+
+00:44:19.920 --> 00:44:23.640
+ 
+
+
+00:44:23.640 --> 00:44:26.970
+ 
+
+
+00:44:26.970 --> 00:44:29.190
+ 
+
+
+00:44:29.190 --> 00:44:32.100
+ 
+
+
+00:44:32.460 --> 00:44:35.100
+ 
+
+
+00:44:35.100 --> 00:44:39.150
+ 
+
+
+00:44:39.150 --> 00:44:43.230
+ 
+
+
+00:44:43.230 --> 00:44:46.260
+ 
+
+
+00:44:46.260 --> 00:44:49.890
+ 
+
+
+00:44:50.010 --> 00:44:54.150
+ 
+
+
+00:44:54.300 --> 00:44:58.470
+ 
+
+
+00:44:58.680 --> 00:45:03.270
+ 
+
+
+00:45:03.270 --> 00:45:07.650
+ 
+
+
+00:45:07.650 --> 00:45:11.580
+ 
+
+
+00:45:11.610 --> 00:45:17.940
+ 
+
+
+00:45:17.940 --> 00:45:21.360
+ 
+
+
+00:45:21.360 --> 00:45:25.740
+ 
+
+
+00:45:25.740 --> 00:45:31.530
+ 
+
+
+00:45:31.560 --> 00:45:36.720
+ 
+
+
+00:45:36.720 --> 00:45:40.770
+ 
+
+
+00:45:40.770 --> 00:45:44.220
+ 
+
+
+00:45:44.220 --> 00:45:49.260
+ 
+
+
+00:45:49.260 --> 00:45:54.450
+ 
+
+
+00:45:54.660 --> 00:45:58.170
+ 
+
+
+00:45:58.170 --> 00:46:01.410
+ 
+
+
+00:46:01.410 --> 00:46:04.080
+ 
+
+
+00:46:04.080 --> 00:46:07.470
+ 
+
+
+00:46:07.470 --> 00:46:13.110
+ 
+
+
+00:46:13.110 --> 00:46:17.670
+ 
+
+
+00:46:17.670 --> 00:46:22.230
+ 
+
+
+00:46:22.230 --> 00:46:25.050
+ 
+
+
+00:46:25.050 --> 00:46:29.340
+ 
+
+
+00:46:29.340 --> 00:46:33.360
+ 
+
+
+00:46:33.360 --> 00:46:38.670
+ 
+
+
+00:46:38.700 --> 00:46:43.200
+ 
+
+
+00:46:43.200 --> 00:46:47.610
+ 
+
+
+00:46:48.120 --> 00:46:52.530
+ 
+
+
+00:46:52.830 --> 00:46:56.250
+ 
+
+
+00:46:56.250 --> 00:46:59.160
+ 
+
+
+00:46:59.430 --> 00:47:02.460
+ 
+
+
+00:47:02.460 --> 00:47:05.730
+ 
+
+
+00:47:05.730 --> 00:47:08.550
+ 
+
+
+00:47:08.550 --> 00:47:12.150
+ 
+
+
+00:47:12.450 --> 00:47:18.240
+ 
+
+
+00:47:18.240 --> 00:47:21.210
+ 
+
+
+00:47:21.210 --> 00:47:24.750
+ 
+
+
+00:47:24.750 --> 00:47:29.130
+ 
+
+
+00:47:29.130 --> 00:47:32.880
+ 
+
+
+00:47:33.600 --> 00:47:37.770
+ 
+
+
+00:47:37.770 --> 00:47:41.490
+ 
+
+
+00:47:41.820 --> 00:47:45.420
+ 
+
+
+00:47:45.510 --> 00:47:49.980
+ 
+
+
+00:47:49.980 --> 00:47:53.040
+ 
+
+
+00:47:53.040 --> 00:47:56.280
+ 
+
+
+00:47:56.280 --> 00:48:01.500
+ 
+
+
+00:48:01.500 --> 00:48:05.760
+ 
+
+
+00:48:05.760 --> 00:48:09.270
+ 
+
+
+00:48:09.300 --> 00:48:14.100
+ 
+
+
+00:48:14.100 --> 00:48:17.340
+ 
+
+
+00:48:17.340 --> 00:48:20.430
+ 
+
+
+00:48:20.430 --> 00:48:24.720
+ 
+
+
+00:48:24.720 --> 00:48:29.730
+ 
+
+
+00:48:30.270 --> 00:48:34.410
+ 
+
+
+00:48:34.410 --> 00:48:36.480
+ 
+
+
+00:48:36.480 --> 00:48:39.480
+ 
+
+
+00:48:39.480 --> 00:48:44.160
+ 
+
+
+00:48:44.160 --> 00:48:48.330
+ 
+
+
+00:48:48.330 --> 00:48:52.260
+ 
+
+
+00:48:52.260 --> 00:48:55.680
+ 
+
+
+00:48:55.680 --> 00:48:58.110
+ 
+
+
+00:48:58.110 --> 00:49:02.160
+ 
+
+
+00:49:02.400 --> 00:49:06.510
+ 
+
+
+00:49:06.510 --> 00:49:08.760
+ 
+
+
+00:49:08.760 --> 00:49:12.990
+ 
+
+
+00:49:12.990 --> 00:49:17.010
+ 
+
+
+00:49:17.010 --> 00:49:22.080
+ 
+
+
+00:49:22.080 --> 00:49:25.860
+ 
+
+
+00:49:26.040 --> 00:49:30.180
+ 
+
+
+00:49:30.210 --> 00:49:33.630
+ 
+
+
+00:49:33.630 --> 00:49:36.210
+ 
+
+
+00:49:36.210 --> 00:49:38.700
+ 
+
+
+00:49:38.700 --> 00:49:43.350
+ 
+
+
+00:49:43.380 --> 00:49:47.400
+ 
+
+
+00:49:47.400 --> 00:49:50.700
+ 
+
+
+00:49:50.700 --> 00:49:53.520
+ 
+
+
+00:49:53.520 --> 00:49:57.030
+ 
+
+
+00:49:57.030 --> 00:49:59.820
+ 
+
+
+00:49:59.820 --> 00:50:03.420
+ 
+
+
+00:50:03.420 --> 00:50:07.380
+ 
+
+
+00:50:07.470 --> 00:50:11.970
+ 
+
+
+00:50:11.970 --> 00:50:18.060
+ 
+
+
+00:50:18.060 --> 00:50:21.780
+ 
+
+
+00:50:22.080 --> 00:50:25.500
+ 
+
+
+00:50:25.500 --> 00:50:26.190
+
+
+00:50:26.970 --> 00:50:27.690
+
+
+00:50:29.520 --> 00:50:33.210
+ 
+
+
+00:50:33.210 --> 00:50:40.470
+ 
+
+
+00:50:40.470 --> 00:50:44.730
+ 
+
+
+00:50:44.730 --> 00:50:50.310
+ 
+
+
+00:50:50.310 --> 00:50:55.410
+ 
+
+
+00:50:55.410 --> 00:51:00.810
+ 
+
+
+00:51:00.840 --> 00:51:03.630
+ 
+
+
+00:51:03.630 --> 00:51:09.360
+ 
+
+
+00:51:09.630 --> 00:51:14.520
+ 
+
+
+00:51:15.330 --> 00:51:20.340
+ 
+
+
+00:51:20.340 --> 00:51:25.290
+ 
+
+
+00:51:25.290 --> 00:51:29.610
+ 
+
+
+00:51:29.610 --> 00:51:32.760
+ 
+
+
+00:51:32.760 --> 00:51:35.310
+ 
+
+
+00:51:36.240 --> 00:51:36.990
+
+
+00:51:37.710 --> 00:51:41.340
+ 
+
+
+00:51:41.340 --> 00:51:46.620
+ 
+
+
+00:51:47.250 --> 00:51:52.200
+ 
+
+
+00:51:54.300 --> 00:52:00.780
+ 
+
+
+00:52:00.780 --> 00:52:02.730
+
+
+00:52:05.700 --> 00:52:10.230
+
+
+00:52:11.910 --> 00:52:18.150
+ 
+
+
+00:52:18.150 --> 00:52:21.330
+ 
+
+
+00:52:21.330 --> 00:52:24.780
+ 
+
+
+00:52:26.670 --> 00:52:32.880
+ 
+
+
+00:52:32.880 --> 00:52:37.230
+ 
+
+
+00:52:38.100 --> 00:52:44.460
+ 
+
+
+00:52:44.460 --> 00:52:50.400
+ 
+
+
+00:52:50.400 --> 00:52:54.750
+ 
+
+
+00:52:54.750 --> 00:52:59.580
+ 
+
+
+00:52:59.580 --> 00:53:03.510
+ 
+
+
+00:53:03.510 --> 00:53:07.050
+ 
+
+
+00:53:07.050 --> 00:53:10.470
+ 
+
+
+00:53:11.190 --> 00:53:13.560
+
+
+00:53:15.780 --> 00:53:18.510
+ 
+
+
+00:53:19.110 --> 00:53:23.430
+ 
+
+
+00:53:23.430 --> 00:53:29.280
+ 
+
+
+00:53:29.280 --> 00:53:30.570
+
+
+00:53:30.660 --> 00:53:32.910
+
+
+00:53:34.290 --> 00:53:38.010
+ 
+
+
+00:53:38.070 --> 00:53:41.910
+ 
+
+
+00:53:41.910 --> 00:53:44.880
+ 
+
+
+00:53:47.550 --> 00:53:54.480
+
+
+00:53:55.050 --> 00:53:58.980
+ 
+
+
+00:53:58.980 --> 00:54:01.830
+ 
+
+
+00:54:02.040 --> 00:54:05.100
+ 
+
+
+00:54:05.100 --> 00:54:08.760
+ 
+
+
+00:54:08.760 --> 00:54:12.450
+ 
+
+
+00:54:12.450 --> 00:54:18.570
+ 
+
+
+00:54:18.570 --> 00:54:23.760
+ 
+
+
+00:54:23.760 --> 00:54:29.790
+ 
+
+
+00:54:29.790 --> 00:54:32.550
+ 
+
+
+00:54:32.550 --> 00:54:34.230
+
+
+00:54:34.230 --> 00:54:38.790
+ 
+
+
+00:54:41.010 --> 00:54:44.130
+ 
+
+
+00:54:44.130 --> 00:54:44.640
+
+
+00:54:47.910 --> 00:54:51.120
+
+
+00:54:51.150 --> 00:54:55.920
+ 
+
+
+00:54:56.070 --> 00:54:59.640
+ 
+
+
+00:54:59.640 --> 00:55:04.560
+ 
+
+
+00:55:04.560 --> 00:55:09.510
+ 
+
+
+00:55:09.900 --> 00:55:13.350
+ 
+
+
+00:55:15.660 --> 00:55:20.040
+ 
+
+
+00:55:20.040 --> 00:55:26.190
+ 
+
+
+00:55:26.940 --> 00:55:28.980
+ 
+
+
+00:55:29.220 --> 00:55:34.200
+ 
+
+
+00:55:35.490 --> 00:55:40.920
+ 
+
+
+00:55:40.950 --> 00:55:44.970
+ 
+
+
+00:55:44.970 --> 00:55:47.610
+ 
+
+
+00:55:47.640 --> 00:55:51.030
+ 
+
+
+00:55:51.270 --> 00:55:54.900
+ 
+
+
+00:55:55.590 --> 00:56:00.360
+ 
+
+
+00:56:00.360 --> 00:56:04.830
+ 
+
+
+00:56:04.830 --> 00:56:09.390
+ 
+
+
+00:56:09.390 --> 00:56:14.220
+ 
+
+
+00:56:14.250 --> 00:56:19.770
+ 
+
+
+00:56:19.770 --> 00:56:24.420
+ 
+
+
+00:56:24.420 --> 00:56:28.560
+ 
+
+
+00:56:29.610 --> 00:56:34.830
+ 
+
+
+00:56:34.830 --> 00:56:37.860
+ 
+
+
+00:56:37.860 --> 00:56:42.840
+ 
+
+
+00:56:42.840 --> 00:56:48.480
+ 
+
+
+00:56:48.480 --> 00:56:55.620
+ 
+
+
+00:56:55.650 --> 00:56:59.670
+ 
+
+
+00:56:59.670 --> 00:57:04.020
+ 
+
+
+00:57:04.020 --> 00:57:05.850
+
+
+00:57:07.110 --> 00:57:09.060
+
+
+00:57:10.110 --> 00:57:13.560
+ 
+
+
+00:57:13.560 --> 00:57:17.490
+
+
+00:57:17.490 --> 00:57:24.180
+ 
+
+
+00:57:24.180 --> 00:57:32.820
+ 
+
+
+00:57:32.820 --> 00:57:37.530
+ 
+
+
+00:57:37.530 --> 00:57:43.200
+ 
+
+
+00:57:43.200 --> 00:57:45.270
+
+
+00:57:45.330 --> 00:57:50.640
+
+
+00:57:50.970 --> 00:57:56.400
+ 
+
+
+00:57:56.460 --> 00:58:03.840
+ 
+
+
+00:58:03.840 --> 00:58:08.340
+ 
+
+
+00:58:08.340 --> 00:58:13.110
+ 
+
+
+00:58:13.110 --> 00:58:15.840
+ 
+
+
+00:58:15.840 --> 00:58:19.080
+ 
+
+
+00:58:19.080 --> 00:58:22.560
+ 
+
+
+00:58:22.560 --> 00:58:26.490
+ 
+
+
+00:58:26.490 --> 00:58:29.310
+ 
+
+
+00:58:29.370 --> 00:58:36.030
+ 
+
+
+00:58:36.030 --> 00:58:39.390
+ 
+
+
+00:58:39.390 --> 00:58:46.020
+ 
+
+
+00:58:46.020 --> 00:58:51.030
+ 
+
+
+00:58:51.030 --> 00:58:54.660
+ 
+
+
+00:58:54.660 --> 00:58:59.400
+ 
+
+
+00:58:59.400 --> 00:59:05.040
+ 
+
+
+00:59:05.040 --> 00:59:10.920
+ 
+
+
+00:59:10.920 --> 00:59:14.820
+ 
+
+
+00:59:14.820 --> 00:59:18.780
+ 
+
+
+00:59:18.780 --> 00:59:20.130
+
+
+00:59:23.730 --> 00:59:26.310
+ 
+
+
+00:59:26.310 --> 00:59:29.370
+ 
+
+
+00:59:29.370 --> 00:59:37.590
+ 
+
+
+00:59:37.590 --> 00:59:42.660
+ 
+
+
+00:59:42.660 --> 00:59:47.730
+ 
+
+
+00:59:47.730 --> 00:59:54.570
+ 
+
+
+00:59:54.750 --> 00:59:59.670
+ 
+
+
+00:59:59.670 --> 01:00:02.910
+ 
+
+
+01:00:02.910 --> 01:00:06.660
+ 
+
+
+01:00:07.200 --> 01:00:11.190
+ 
+
+
+01:00:11.910 --> 01:00:15.810
+ 
+
+
+01:00:15.810 --> 01:00:19.440
+ 
+
+
+01:00:19.440 --> 01:00:27.960
+ 
+
+
+01:00:27.960 --> 01:00:31.200
+ 
+
+
+01:00:31.200 --> 01:00:36.840
+ 
+
+
+01:00:36.840 --> 01:00:40.020
+ 
+
+
+01:00:40.530 --> 01:00:41.250
+
+
+01:00:41.280 --> 01:00:44.610
+ 
+
+
+01:00:44.640 --> 01:00:51.480
+ 
+
+
+01:00:51.480 --> 01:00:57.480
+ 
+
+
+01:00:57.480 --> 01:01:00.900
+ 
+
+
+01:01:00.900 --> 01:01:05.130
+ 
+
+
+01:01:05.130 --> 01:01:08.190
+ 
+
+
+01:01:08.190 --> 01:01:15.300
+ 
+
+
+01:01:15.360 --> 01:01:19.320
+ 
+
+
+01:01:19.320 --> 01:01:22.500
+ 
+
+
+01:01:23.130 --> 01:01:25.860
+ 
+
+
+01:01:25.860 --> 01:01:29.160
+ 
+
+
+01:01:29.160 --> 01:01:33.540
+ 
+
+
+01:01:33.540 --> 01:01:37.320
+ 
+
+
+01:01:37.320 --> 01:01:39.930
+ 
+
+
+01:01:39.930 --> 01:01:43.320
+ 
+
+
+01:01:43.350 --> 01:01:47.670
+ 
+
+
+01:01:47.670 --> 01:01:52.350
+ 
+
+
+01:01:52.350 --> 01:01:56.460
+ 
+
+
+01:01:56.460 --> 01:02:00.240
+ 
+
+
+01:02:00.240 --> 01:02:03.780
+ 
+
+
+01:02:04.920 --> 01:02:07.710
+ 
+
+
+01:02:07.710 --> 01:02:10.890
+ 
+
+
+01:02:10.890 --> 01:02:16.620
+ 
+
+
+01:02:16.650 --> 01:02:19.830
+ 
+
+
+01:02:19.830 --> 01:02:24.570
+ 
+
+
+01:02:24.570 --> 01:02:29.040
+ 
+
+
+01:02:29.070 --> 01:02:32.730
+ 
+
+
+01:02:32.730 --> 01:02:35.610
+ 
+
+
+01:02:35.610 --> 01:02:39.390
+ 
+
+
+01:02:39.390 --> 01:02:42.810
+ 
+
+
+01:02:42.810 --> 01:02:48.330
+ 
+
+
+01:02:49.050 --> 01:02:53.880
+ 
+
+
+01:02:54.000 --> 01:02:57.540
+ 
+
+
+01:02:57.540 --> 01:03:01.350
+ 
+
+
+01:03:01.380 --> 01:03:04.860
+ 
+
+
+01:03:04.860 --> 01:03:10.950
+ 
+
+
+01:03:10.950 --> 01:03:14.100
+ 
+
+
+01:03:14.100 --> 01:03:17.400
+ 
+
+
+01:03:17.400 --> 01:03:21.270
+ 
+
+
+01:03:21.270 --> 01:03:25.530
+ 
+
+
+01:03:25.530 --> 01:03:30.000
+ 
+
+
+01:03:30.000 --> 01:03:34.980
+ 
+
+
+01:03:34.980 --> 01:03:39.000
+ 
+
+
+01:03:39.000 --> 01:03:43.620
+ 
+
+
+01:03:43.650 --> 01:03:45.210
+ 
+
+
+01:03:45.960 --> 01:03:51.090
+ 
+
+
+01:03:51.090 --> 01:03:53.250
+
+
+01:03:55.620 --> 01:04:01.350
+ 
+
+
+01:04:01.350 --> 01:04:07.800
+ 
+
+
+01:04:07.800 --> 01:04:14.250
+ 
+
+
+01:04:14.250 --> 01:04:18.000
+ 
+
+
+01:04:18.000 --> 01:04:22.140
+ 
+
+
+01:04:22.170 --> 01:04:25.830
+ 
+
+
+01:04:25.830 --> 01:04:30.840
+ 
+
+
+01:04:30.840 --> 01:04:35.910
+ 
+
+
+01:04:35.910 --> 01:04:40.410
+ 
+
+
+01:04:40.410 --> 01:04:45.240
+ 
+
+
+01:04:45.270 --> 01:04:51.480
+ 
+
+
+01:04:51.480 --> 01:04:56.370
+ 
+
+
+01:04:56.580 --> 01:05:01.620
+ 
+
+
+01:05:01.620 --> 01:05:06.270
+ 
+
+
+01:05:06.270 --> 01:05:14.010
+ 
+
+
+01:05:14.070 --> 01:05:18.660
+ 
+
+
+01:05:18.690 --> 01:05:23.040
+ 
+
+
+01:05:23.040 --> 01:05:29.190
+ 
+
+
+01:05:29.190 --> 01:05:34.380
+ 
+
+
+01:05:34.410 --> 01:05:37.980
+ 
+
+
+01:05:38.039 --> 01:05:41.129
+
+
+01:05:41.160 --> 01:05:45.900
+ 
+
+
+01:05:45.900 --> 01:05:51.000
+ 
+
+
+01:05:51.030 --> 01:05:56.040
+ 
+
+
+01:05:56.040 --> 01:06:01.380
+ 
+
+
+01:06:03.300 --> 01:06:07.500
+ 
+
+
+01:06:07.620 --> 01:06:08.160
+
+
+01:06:09.390 --> 01:06:14.730
+ 
+
+
+01:06:14.730 --> 01:06:22.230
+ 
+
+
+01:06:22.230 --> 01:06:26.790
+ 
+
+
+01:06:26.790 --> 01:06:32.970
+ 
+
+
+01:06:32.970 --> 01:06:37.110
+ 
+
+
+01:06:37.110 --> 01:06:42.570
+ 
+
+
+01:06:42.570 --> 01:06:46.410
+ 
+
+
+01:06:46.440 --> 01:06:48.690
+ 
+
+
+01:06:48.690 --> 01:06:52.320
+ 
+
+
+01:06:52.320 --> 01:06:53.010
+
+
+01:06:55.770 --> 01:06:57.210
+ 
+
+
+01:06:57.210 --> 01:07:01.770
+ 
+
+
+01:07:01.830 --> 01:07:05.220
+ 
+
+
+01:07:05.220 --> 01:07:11.580
+ 
+
+
+01:07:11.580 --> 01:07:17.610
+ 
+
+
+01:07:17.610 --> 01:07:22.200
+ 
+
+
+01:07:22.200 --> 01:07:28.590
+ 
+
+
+01:07:28.590 --> 01:07:31.770
+ 
+
+
+01:07:31.770 --> 01:07:35.520
+ 
+
+
+01:07:35.520 --> 01:07:40.890
+ 
+
+
+01:07:40.890 --> 01:07:44.970
+ 
+
+
+01:07:44.970 --> 01:07:49.680
+ 
+
+
+01:07:49.740 --> 01:07:53.580
+ 
+
+
+01:07:53.580 --> 01:07:58.860
+ 
+
+
+01:07:58.950 --> 01:08:02.430
+ 
+
+
+01:08:02.970 --> 01:08:04.980
+
+
+01:08:06.120 --> 01:08:10.710
+ 
+
+
+01:08:10.710 --> 01:08:14.580
+ 
+
+
+01:08:14.910 --> 01:08:20.130
+ 
+
+
+01:08:20.130 --> 01:08:23.190
+ 
+
+
+01:08:24.240 --> 01:08:28.710
+ 
+
+
+01:08:28.710 --> 01:08:35.100
+ 
+
+
+01:08:35.100 --> 01:08:40.650
+ 
+
+
+01:08:40.650 --> 01:08:44.370
+ 
+
+
+01:08:44.370 --> 01:08:47.580
+ 
+
+
+01:08:47.580 --> 01:08:53.490
+ 
+
+
+01:08:53.490 --> 01:08:58.020
+ 
+
+
+01:08:58.050 --> 01:09:02.970
+ 
+
+
+01:09:02.970 --> 01:09:05.010
+ 
+
+
+01:09:05.010 --> 01:09:10.410
+ 
+
+
+01:09:10.440 --> 01:09:12.180
+ 
+
+
+01:09:12.420 --> 01:09:13.710
+
+
+01:09:16.380 --> 01:09:18.420
+ 
+
+
+01:09:21.390 --> 01:09:24.300
+ 
+
+
+01:09:25.500 --> 01:09:26.580
+
+
+01:09:26.970 --> 01:09:32.340
+ 
+
+
+01:09:32.340 --> 01:09:36.960
+ 
+
+
+01:09:36.990 --> 01:09:40.740
+ 
+
+
+01:09:40.800 --> 01:09:48.990
+ 
+
+
+01:09:49.080 --> 01:09:54.480
+ 
+
+
+01:09:54.480 --> 01:10:00.930
+ 
+
+
+01:10:00.930 --> 01:10:07.470
+ 
+
+
+01:10:07.470 --> 01:10:10.920
+ 
+
+
+01:10:11.370 --> 01:10:15.900
+ 
+
+
+01:10:15.930 --> 01:10:19.830
+ 
+
+
+01:10:19.830 --> 01:10:20.850
+
+
+01:10:21.900 --> 01:10:24.540
+
+

@@ -1,0 +1,1475 @@
+all right
+okay um
+welcome to the ddps seminar everyone
+let's go over some logistics uh first
+please mute yourself during the talk
+unless you have questions if you have
+questions you are welcome to meet and
+ask
+otherwise please your use chat room to
+post your questions so that we can
+address them in q a session at the end
+second
+today's ddps seminar is open to external
+audiences therefore no classified
+discussion is allowed finally the talk
+today will be recorded
+all right that's about it now let me
+introduce our speaker today
+it is an honor to host peter banner who
+is a director of max planck institute of
+dynamics of complex technical systems
+meghdaberg the germany
+since 2003 he has been a professor for
+mathematics in industry and technology
+with
+the tu
+chemnitz
+since 2011 he has also been an honorary
+professor with the otto von
+gurvik
+university of derberg
+germany he is a scion fellow
+class of 2017
+he received a diploma in mathematics
+from the al wth aiken university in
+germany in 2000
+no 1993
+from 1993 to 1997 he worked toward the
+phd at the university of kansas
+lawrence and u.s
+and the tu chemnis
+jikao germany where he received a phd in
+mathematics in february 1997. in 2001 he
+obtained the
+habilitation in mathematics from the
+university of braman germany
+he was an assistant professor with the
+university of brandman germany from 1997
+to 2001 after spending a
+term as a visiting associate professor
+with the tu
+amber cam
+the germany he was a lecturer in
+mathematics with the teu
+berlin from 2001 to 2003.
+all right uh his research interests
+include scientific machine learning and
+computing numerical
+mathematics systems theory and optimal
+control a particular emphasis that has
+been on applying methods from numerical
+linear algebra and matrix theory
+in systems and control theory recent
+research focuses on numerical methods
+for optimal control of systems modeled
+by evolution equations
+model order reduction krylov subspace
+methods for structured or quadratic
+eigen problems
+and using machine learning for
+identifying dynamical systems
+researching in all these areas is
+accompanied by the development of
+algorithms and mathematical software
+suitable for modern and high performance
+computer architectures today
+peter will present an interesting topic
+which is identification of nonlinear
+dynamical systems from
+noisy measurements
+please enjoy and expect a wonderful talk
+now without further due let me pass the
+button by asking one random question as
+usual since peter is from germany
+what is your favorite things to do in
+germany
+after answering that question see you
+can um stage will be yours
+visiting uh football games of bayern
+munich
+ah okay so you're the fan of the fire
+munich okay that's awesome i had a good
+night last night for those who are
+following
+day one
+okay nice nice okay the stick is yours
+okay thank you susan thanks for the nice
+introduction and i'm not sure what i
+should say thank you for um
+raising the expectations so high as you
+did
+yeah this talk is um
+joint work with pawan who spoke in this
+seminar earlier this year in a way it is
+a continuation of of his work um
+and i should say that um power did most
+of the technical work here in this this
+uh
+what i present today and he's he's
+around so
+i hope he can ask the
+nasty technical questions that will come
+up at the end of the talk
+certainly but i will do my best to
+explain the material and to show you
+what we've been doing
+um
+just move this speaker
+window a little bit so you can see my
+own screen better okay so
+before i go into the talk i would like
+to acknowledge
+some research funding they were
+supporting this research partially the
+one is
+from a research training school of the
+german national science foundation the
+dfg which is called mathematical
+complexity reduction and the second is
+the
+big mugs it's a max planck research
+network and big data driven material
+science
+it's not so much related to the topic of
+the talk but
+this when we started this network that
+yeah tracked me into uh looking into
+machine learning more than we did before
+that and uh parwan was higher than this
+network as a postdoc
+after he did this
+he graduated and um
+yeah he has been driving
+you know the driver's seat and um
+machine learning in my department for
+the last three years
+um yeah so today's
+talk is uh following this line of
+research
+so i think the identification of
+dynamical systems from data
+is something that
+[Music]
+has
+inspired generations of researchers and
+systems and control theory early
+i should have actually added this slide
+here early
+works you can find already in the 1960s
+interestingly you can find even a
+textbook from 1996 about using
+artificial neural networks for
+identifying dynamical systems from jose
+van der waller and
+barton moore and
+a third author which may have just
+missed but of course in 1996 they did
+not have the machinery the hardware to
+make use of really deep neural networks
+so this topic was a little bit neglected
+for 20 years
+and received renewed interest since deep
+learning and
+yeah machine learning as a more general
+area of research
+has gained so much popularity
+the the age of
+discovering nonlinear systems
+[Music]
+is i think just blossoming even though
+there is a lot of literature and
+research and liquids are available
+from the last three decades in their
+software and so on but a lot of
+challenges remained and one of the
+challenges is how to deal with
+noisy measurements and
+how
+to provide
+data for the training and so on so we'll
+focus a little bit on these topics and
+try to
+add a few
+bits and pieces to the tool set of of
+methods to identify
+non-linear dynamics from measurements
+okay so
+this is the outline of the talk i will
+just briefly introduce the topic i think
+talks in this direction have been given
+quite a bit in this seminar series so
+i will not
+start with adam and eve but
+basically start where
+r1 left
+a couple of months ago
+we will then formulate the working
+hypothesis of the sparse
+identification of nonlinear dynamics
+approach the cindy approach
+that was popularized by nathan kutz and
+stephen brunton a couple of years ago
+and um
+we will focus on one issue with this
+approach and
+um suggest a new variant uh which we
+call a rumor cutter cindy will become
+obvious why it's called
+i will give you some extensions of the
+approach or
+show how it works on several benchmark
+examples that are also used in the
+penis paper by nathan and stephen and
+some other
+examples as well and we also look at
+just a few extensions
+the approach
+and in the end we will add a higher
+level of noise and that
+means we will have to use it with
+slightly different approach but it's
+blended into this talk because it also
+is based on uh using the the same roller
+cutter scheme that we use in the um
+all right so um just as a teaser
+dynamical processes are omnipresent in
+computational science and engineering
+you see three
+pictures of typical processes on the
+right on the bottom you see a cfd
+simulation around the
+[Music]
+turbine
+you see a
+micro circuit or nano circuit
+in the middle and the top this is
+actually an example from our own
+institute where we also have engineering
+departments we have four departments i'm
+the mathematician and then there are
+three engineering departments and this
+is batch an example of batch
+chromatography which is a non-linear
+coupled system of partial differential
+equations describing the separation of
+two
+products from a from a liquid
+we'll not use this example here in this
+talk but i have used it quite a bit on
+model reduction talks that we gave on
+production it's it's an interesting
+problem
+we
+assuming now that we do not have
+a model for the process that we are
+studying but we
+assume that we can measure any of these
+things that we have here for instance
+you can you know what you feed into a
+and b
+and you know what you you measure what
+you extract
+um at the end
+so this is the
+um the mix the mixture and this is then
+the separated liquids that you can
+measure at the end
+and you can take time serious on how
+much of the liquid of the a you get at
+a certain point how much of the b
+you want to find the mathematical model
+because why do you want to do that you
+want to
+design a controller to attenuate
+disturbances
+of your potentially optimized process if
+it's not optimized yet you may want to
+optimize it with mathematical
+optimization which also again needs a
+model in order to apply optimization
+algorithms and you may also want to be
+able to predict the future behavior for
+instance for the turbine if it's the
+turbine of your boeing 747 that we're
+hopefully all using soon again
+um you want to know when it breaks right
+um and you want to know that in advance
+to take measures
+to land safely so this these are these
+are the motivations of finding
+models from data of dynamical systems
+some of them
+so the general setup we will be using in
+this talk mostly is
+just an autonomous non-linear dynamical
+system
+with time derivative it's denoted by x
+dot and the vector field describing the
+right hand side
+as f f x
+and then you can find in the literal of
+course many um
+neural network approaches to
+yeah provide
+the output
+or the dynamics of the system
+from measured data and those
+recurrent neural networks being used for
+this long short time memory networks
+that
+roughly require no prior knowledge on
+the physics of the process
+they are not always possible
+as possible as you would like them to be
+to be used in this in control and
+optimization
+you don't get governing equations
+directly from them
+i mean that can be worked in and this is
+basically where this what i'm talking
+about
+um converges to
+these approaches or with these
+approaches also
+and they do not all too often not well
+generalize outside the area where they
+are trained that's the
+good old generalizability problem of
+neural network approaches
+so um we are following here the uh path
+of
+making some hypothesis
+that allows us to identify actually
+model equations and
+this path
+is
+essentially what is known
+in the community nowadays as cindy as i
+already said uh by uh
+popularized
+uh by by nathan and stephen and um added
+with a lot of features and so on
+the basic idea is um
+that
+we assume that the function f the vector
+field f
+can be described by
+a small number of terms of nonlinear
+functions
+and
+the idea is now to to build a dictionary
+of candidates
+from which we pick
+uh terms that
+at the end of the day give us an f that
+can describe the data that we have
+mentioned
+and such as such a feature dictionary
+which we will call
+capital phi of x
+could look like that so it will have
+polynomials
+up to a certain degree so this would be
+all the polynomials that have degree two
+as an example given below
+if
+if our state we have n states so the
+state vector x has n components to
+potential possible polynomials would be
+x 1 square x 1 x 2
+x 2 x 1 is the same so it would not be
+added here x1 x3 x1 x4 and so on and
+then you go all the way up to xn square
+you do the same for cubics
+quintix quartix whatever you want to
+what you think you need there's a little
+bit of
+that that's actually the shortcoming of
+this approach you would have to have an
+idea which kind of terms
+you need in order not to make the the
+dictionary too
+too thick basically
+exponential functions trigonometric
+functions you put in what you like
+and then
+the vector
+psi is the vector that picks
+the features from your dictionary that
+at the end of the day define your
+function f that you need to describe the
+dynamics
+the so the challenge now is first of all
+you have to define your dictionary
+and i'm assumed that this
+that this is given in some sense
+um
+and we want to compute the vector psi
+so this is um this basically this idea
+is
+brought into the engineering
+world i think
+maybe first in the paper by bungard
+libsyn in
+and it was formalized and extended in
+the zindy work by by
+procter and cuts
+appearing in penis in 2016.
+[Music]
+so how do we get the psi we compute it
+by
+solving this minimization problem
+[Music]
+which
+already shows where we have the
+difficulty in this approach or one of
+the difficult pieces we need data for
+the derivative x dot
+and
+well
+there was a remark that the libsyn paper
+has a different approach of course the
+approach is different but it uh
+i think it's this is an idea to
+reverse engineer a function from data
+and doing that with
+a number of features let's put it let's
+keep it on this basis here
+data
+so it might be for several reasons might
+be difficult to get good data for the
+derivative
+numerical differentiation
+could be used i mean of the data
+based on the data that you have in your
+time series but we know that this is
+often doesn't give good good results
+also of course the construction of the
+rich enough feature dictionary
+allows efficient
+is important and
+there we hopefully have some idea on the
+physics that we want to
+model
+some domain knowledge that helps us to
+to find a good dictionary say
+and for the derivative data we want to
+suggest an approach
+that
+is based on
+using
+an idea from numerical analysis what
+that
+that we all know from our first class in
+numerical analysis
+that can be used to solve ordinary
+differential equations the roon cutter
+scheme but here it's not used to solve
+but it's used to
+find a different minimization problem
+that
+that does not require um to
+find derivative data from the time
+series that we have available
+um
+so just as a
+spot recollection of your
+undergraduate years
+um
+what is the wrong scheme given a
+differential equation in the form that
+we want to
+basically identify
+setting
+we and given we have a function value of
+the solution x at the
+time t i we want to predict
+uh the function x at time t i plus 1.
+um
+and then the rumor cutter scheme
+is just one of many many many methods
+that we learn all in undergraduate
+school
+um
+it it uses
+it's one of the explicit methods
+that does not require solving nonlinear
+systems to
+compute x of t t i plus one it's just
+using a weighted sum of the vector field
+um
+evaluated at specific locations
+think
+often these are called this computing
+the stage derivatives so usually you
+compute
+basically the the vector field
+at
+points between or you approximate the
+vector field at points between
+e i and t i plus 1. here's how it looks
+like precisely
+everybody remembers it's this weighted
+sum of these stage derivatives where k1
+is just the function evaluated at e i
+and so on
+um
+and then you get an approximation of
+x of t i plus 1.
+it
+has um
+an error that is in
+uh behaves like h
+to the power four so this is nice
+um
+it doesn't have very good stability
+properties when solving stiff
+differential equations but this is not
+the focus here
+the focus will be to
+make use of it in the in within the
+cindy approach and the notation that we
+will be using for this formula here
+will be this capital f with the archive
+for
+identifying
+identifying the the fourth order
+explicitly classical wrong
+scheme
+so um the only i mean the issue is here
+of course we cannot
+apply it here in our context to the data
+because uh
+the function f is not known this is what
+we want to identify right so
+cannot
+use this this scheme per se but
+we know that we we have our working
+sparsity hypothesis so we apply the
+rumor cutter scheme for our
+answers yeah but
+phi of x times psi
+times the
+selection vector that selects the
+features from the dictionary
+so
+we have we put in our working hypothesis
+or component wise it looks like this
+and
+so we would get in in
+component wise this equation and this is
+what the standard cindy approach would
+would now use if
+derivative information is provided
+so but we
+want to use the archive 4 scheme and
+this means
+we use
+[Music]
+sorry
+okay
+we use the following we
+with the help of the akka4 scheme our
+data
+our time series data would
+have to
+satisfy
+this equal in this equality if it were
+produced by archive 4 but it's it's
+usually not the case we don't know how
+it is
+provided but that we know that the akka
+4 scheme would be a good approximation
+of the time evolution
+if at least if the step size is small
+enough
+okay so we um insert now in our archive
+4 formula our representation of the
+function f
+that is represented now by our
+dictionary and our selection vector
+and um
+we make the evaluations in the archive 4
+scheme based on the
+sparse hopefully sparse if these sigma
+vectors are sparse
+representation of our function
+and this would lead then um
+in a well
+a visual way to a procedure like that um
+you start with you have input data
+that's your
+your state at time ti
+you feed it into your um
+uh yeah
+representation feature
+map
+representation
+and then apply the necessary steps in
+the room cutter schemes to get at the
+output
+x1 now of course we don't know the um
+the sparse vector or the the
+selection vector side is what we want to
+compute so this now gives us
+the following regression problem that
+looks like this yeah so we have
+the task to determine
+the sparsest possible
+psi vectors minimizing this problem so
+that the data would follow the
+roomakuta4 evolution
+um as we all know
+this this is an
+impressive sensing problem that is np
+hard to find the l0
+minimizer
+so we do the usual thing we do the
+one norm relaxation
+um by appending
+this relaxation term
+and we all know we know that this often
+even gives you the fastest possible
+vector under the rrp property
+that we but that we may not have here
+but at least we get something close by
+um
+what we then do is we use
+the similar the same sequential
+thresholding algorithm that was
+suggested in the paper by
+uh stephen brunton and nathan kutz
+just applied now for this regression
+problem
+presenting problem
+that
+that we have formulated it's slightly
+differently from the original paper
+where
+you would have to use the derivative
+information that we not do not employ
+so here's just this thresholding
+algorithm
+we solve the lasso problem one
+find the
+indices
+that are
+below a certain threshold lambda set
+them to zero then with the
+indices that the the the components of
+the sigma vector set to zero we solve
+the optimization problem again
+and
+loop until the error
+is
+small enough
+until the convergence is
+is established so that we do not get any
+improve
+um
+and then we take this this um
+these this uh computed selection vectors
+um and
+pick the and the corresponding elements
+from our dictionary dictionary to define
+the function
+um
+so this is this is basically the
+procedure so it's um
+[Music]
+similar in a sense then then what is
+done in the standard cindy just we have
+replaced
+this optimization problem
+from the originals in the approach but
+this one based on the rumor cuda scheme
+still a non-linear non-convex
+optimization problem
+for the computation we use a
+gradient-based optimization for instance
+atom
+is now popular in the machine learning
+days
+we use
+for the gradient computation approach
+implemented in pytorch
+for finding lambda that's also i think
+already suggested in the
+the cindy paper we use a
+cross-validation approach
+and let me see let us see how this works
+the first example is from the original
+paper it's a
+cubic oscillator
+a cubic temp oscillator it's a
+two-dimensional
+very simple
+differential system of differential
+equations so it has
+the only terms in the right hand side
+are all cubic
+[Music]
+the feature dictionary that we use in
+this test contains all the polynomials
+up to degree five
+and we compare our approach with the
+standards in the approach and this is
+what we get so this is uh these are
+face spaces
+of the solutions
+of the clean data in red and the
+standards in the in dotted line and the
+our approach in the
+black
+connected line
+and you see that for small
+time serious data with small kind of
+small step size i should say that the
+training data was
+obtained with
+adaptive ode solver of order four five
+so um
+it's not not at all related um to the
+rumor cutter scheme that we use in the
+identification
+you see that for small enough depth step
+sizes both approaches are able to
+identify the dynamics quite well
+but if if you make the step size
+large enough you can see that
+the standards in the approach becomes
+unstable while we are still are able to
+approximate the dynamics quite well and
+you can see the reason
+in this table
+for them let's just look at the last
+row where we have the largest step size
+or
+used
+we are still identifying a model
+with um
+only cubic terms in the right hand side
+with our approach
+and a little bit of
+error in the coefficients compared to
+the original model
+but the standards in the approach using
+the same threshold values in the
+iterative thresholding
+does also insert
+quadratic terms
+and also
+a quintic term here for instance and
+here into the model and this at the end
+of the day
+leads to the larger errors already for
+the next larger
+next smaller step size
+0.05
+we see that
+cindy does identify
+terms in the
+right-hand side the vector field that
+are not present in the clean proof
+ground proof model
+all right so that was um
+happy to see that that our approach was
+able to deal with this
+we also tested fitzyu nagumo which is an
+example that we often use for testing
+non-linear model reduction method it's a
+very simple and basic model for the
+spiking of a neuron in your in the brain
+um
+here it's a even a simplified version of
+that uh the
+you know
+model reduction we often have uh the
+first equation
+um spatially it was um distributed so
+that is a pde
+um but here we have a cubic term in the
+original model
+and again the feature dictionary that we
+use contains the polynomials up to
+degree five we do the same comparison
+we see again that for the
+largest step size
+cindy's starts to deviate from the
+ground roof
+while we are still able to
+follow the ground group very nicely with
+the
+akka 4 or aka casindi approach then you
+see that
+for the larger
+step sizes
+cindy identifies terms that are not
+present in the original model while we
+that basically only those terms that are
+also present in the ground group
+um
+okay
+so extensions we can add parameters to
+our description of the dynamics so we
+play a little trick here that that we
+augment our states by the parameters to
+define a new state variable x mu and
+then we append also the right hand side
+because this is for type for
+parameters that do not vary with time so
+their time derivative is zero so the
+augmentation of the vector field is easy
+and this is not something we do
+we would not need to identify if we
+do this immediately
+and then we also add
+polynomial or say features of mu
+in the dictionary
+we test this here for an example that is
+also often used in the
+cindy and sparse identification
+literature as the parametric normal form
+which
+exhibits
+bifurcations depending on the parameter
+mu
+here
+we
+look at
+data
+that we
+corrupt
+corrupt artificially by a very small
+tiny fraction of
+gaussian white noise
+to see how robust this is with respect
+to little proto-patients
+dictionary this time we only added
+polynomials up to degree three
+and we see that um akasindi is also
+able for the
+on the test set of the
+parameters
+for which we have no data collected
+to reproduce the solutions
+in face space
+quite nicely
+again for herefore
+we see that
+the archive for cindy discovers a more
+parsimonious model than the standard
+cindy approach and there's also again
+a few terms here in the standards in the
+approach that are
+not present in the ground so
+our approach shows a little bit of
+advantage here as well
+we can also do rational functions on the
+right hand side which is important in
+this example that i showed you from the
+process engineering from separating of
+chemicals
+you usually have
+rational terms in the model descriptions
+so if we have data we would expect that
+we want to
+identify also rational functions
+now if your ground rule for instance
+would have such a rational right hand
+side you would have to put that into
+your feature space
+to identify it essentially
+or this this this term
+which of course as you don't know what
+the the the
+rational functions involved in the
+right-hand side you cannot do and you
+cannot
+uh yeah do this for many many values of
+the of a parameter for instance in front
+of the x term here in denominator
+so what we do in this this case is um
+we expand our approach to allow for two
+sparse selectors
+and we apply them in the denominator and
+in the enumerator
+so that we have two different
+representations
+as one would do also often in other
+computations with rational functions
+um
+so we would
+say if you assume that this is a
+rational function we would identify a
+sparse polynomial
+in the enumerator and the sparse
+polynomial in the denominator
+and we have tested this for the
+like michaelis-menten
+kinetics equation which
+in the easiest
+form
+for an enzyme dynamics looks for
+instance like this
+and
+we use different
+initial values
+to get the training trajectories
+and then we learn the model with our
+rational archive for akasindi approach
+and
+what we show here is so this is the
+range where the
+initial values of the training data were
+and this this is outside the training
+range so these are
+the initial conditions
+that we have not our not trained our
+model on
+and we can see that
+for this simple example at least we get
+a generalizable
+model from the data
+that works well
+outside its training which regime
+okay
+so far let's see where are we with time
+okay
+we have presented
+say
+added
+a little bit of
+yeah
+a different approach to deal with the
+problem of using um
+derivative data in the in the zindy
+approach
+the scheme that we propose does not
+require any estimate of derivatives
+um
+uh
+of course the as with all dictionary
+learning approaches
+um the quality um
+depends highly on the
+quality of the dictionary
+and we also see that
+this approach or we saw it at least in
+one example
+behaves rather robustly in the presence
+of small noise
+up to five percent i think
+we saw in the examples that it's working
+still quite well but beyond that
+we
+see that as an issue
+and this approach will also not work
+anymore
+so
+we looked into this problem more
+recently
+this is rather new work that was just
+i think submitted last week or the week
+before to the archive
+and
+to deal with the noise we
+we make now use of
+ideas from neural networks
+but combine it again with with the
+archive 4 scheme that we have been using
+in the cindy approach as well so this
+connects the two approaches
+so how is this done
+the first step is
+to learn to find an implicit
+representation of our data
+so
+this is done by a straightforward
+feedforward neural network
+that takes time as the input and that
+takes
+the state
+at the out as the output and then we
+compare it to the
+noisy measurement as a loss function and
+we learn essentially the
+uh the implicit representation
+so this this filters should filter the
+noise
+um
+of course we need to regularize because
+otherwise the network would overfit and
+we do this again with a room cutter
+scheme
+so
+we again
+know that this is a time series that
+comes from a differential equation and
+the rumor cutter scheme is able to
+approximate the time the
+evolution of a new of a dynamical system
+so these the time series should and the
+output of
+the roon cutter schemes should be close
+by
+and so we we filter essentially this
+data again
+by uh requiring that it follows that the
+evolution that the
+scheme would predict
+of course for that we also need the
+right hand side for our dynamical syst
+in order to make use of the rumor cuda
+scheme and this because we don't know
+anything else at the moment
+we also
+represent by another neural network so
+the whole approach looks like that we
+take the noisy time series data
+we
+find an implicit representation
+for the
+for this time series using this first
+neural network
+then um
+we
+run this through the wrong cutter scheme
+which requires another neural network to
+represent the non-linear the vector
+field the nonlinear dynamics the right
+hand side
+and
+yeah and at the end of the day we get an
+implicit representation of the
+of the denoised data as well as of the
+dynamics
+and how is the learning process
+controlled it's controlled by the loss
+function so that our implicit
+representation
+should fit the data
+at the same time the
+the denoised data
+should
+follow
+the dynamics
+that is behind the process and that we
+see that we
+yeah get from the rumor cutter scheme
+applied
+to the other network whose parameters we
+called phi so there's
+parameters i think um
+five you know
+theta for the implicit representation of
+the data and phi for
+uh the dynamics and we also include um
+the gradient loss here in the log in the
+loss function we can do that because we
+know that the
+time derivative of our states
+this would be represented by the neural
+network we learned for the dynamics
+and as we have the implicit
+representation of the data
+by this feedforward neural network we
+can use automatic differentiation to get
+derivative data for this implicit
+representation so we can evaluate this
+loss function and
+so we have um and we have of course
+these two weighting parameters to get
+this representation
+so with that we hope to be able to find
+um a representation of the dynamics of
+the time series
+um
+for
+noisy measurements
+and i should mention here that there is
+no need for a
+uniform
+mesh on which this time series is
+collected can also be sparsely collected
+with
+um
+varying
+variant time distance
+uh so there's no assumption on the time
+criteria
+so here we we test again this is this
+example for the fitsunagumo that we
+already saw
+we collect the data for a certain
+initial condition and corrupt corrupted
+by different noise levels
+and what you see here is
+let me see
+this was just covering my
+slide here um so this is the the top row
+is for the noise level five percent so
+little noise you see the
+in green
+that is a little bit of variance around
+the ground roof the denoised
+the clean data
+and to see the denoised data
+and here you see also in face space
+noisy and the denoised data
+and you see the vector field that we
+identify with this neural network
+approach
+and then we crank up the noise level up
+to 40 percent
+so you see basically the the noisy data
+and face base gives you a point cloud
+from which you cannot see much
+but um with our approach we are able to
+uh find a model that produces these um
+limit cycles
+in the face space that we uh know
+exists in the in the um
+google model
+even for this noise level of 40 percent
+um
+okay so this brings me already to the
+end of the talk
+um
+what we have um i don't know it's not
+quite the end sorry there's one more
+point um
+this approach that i just
+showed demonstrated here for these
+simple
+ordinary differential data obtained from
+ordinary differential equations
+could be extended if we make the
+assumption that the
+data
+that we measure is
+[Music]
+would be modeled or would come from a
+model
+that would require a partial
+differential equation so this is this is
+where we are currently at um
+here we also have um the spatial to take
+the spatial coordinates that we then
+assume that they exist in the pde model
+as uh inputs for this implicit network
+in order to denoise the data
+oops
+and
+yeah
+the
+neural network defined the vector field
+here was modeled then using a cnn
+that also makes use of the spatial
+information and this is relatively new
+thing that if you have a question on how
+this is done exactly and
+powerpoint will be happy to answer
+so you see this approach working at work
+for the purpose equation here
+you see
+an initial data that
+statum that we often see in examples
+a strong front in the initial condition
+that fades out
+with time
+here we have noise level five percent so
+this is not so much
+um
+here we go up to 20
+you see that um the measurements it
+looks already quite rough for this level
+of noise and we see that the denoised um
+solution here
+denoise data it shows a little bit of
+wiggles down here but it
+the main features of the solution are
+very well recovered
+okay this is now the end of the talk um
+what we have done is we have blended
+cindy with a rumor cutter scheme to
+avoid
+derivative estimation
+from the time series data
+we have extended this to cover also
+cases where we have additional design
+stationary design parameters
+or
+want to discover
+rational
+non-linearities
+we also have proposed an approach to
+denoise the measurements and
+simultaneously learn the dynamical model
+which then is it
+goes back to a black box scheme of
+course
+but we could use this denoised data then
+with the cindy approach
+uh with the aka cindy approach to
+discover the
+analytic equations if you wish this is a
+next step that we
+have
+also to implement i suppose and test
+and the other thing
+is that we
+also know
+it's just an idea at this moment
+that from the model reduction
+world where many of us come from
+that the solutions of pde models
+often evolve in low dimensional
+manifolds this is why model reduction
+model reduction
+um
+uh based on reduced basis or so on is
+successful
+so how can we incu
+make use of that in in this this
+this approach
+so yeah
+okay
+that's that's that's all um thanks for
+your attention and here are
+a few references that we have been using
+in particular this is the the one
+pre-print for the related to the first
+part of the call it's been out for
+a while
+it's just recently
+okay thank you so much peter uh that was
+a wonderful talk um
+and we do have a
+several
+questions let's start with a uh the
+question from rob he asked
+how is this compared to the use of
+levenberg
+markford as a simple feeding technique
+well
+i cannot say that because we haven't
+done this comparison
+i'm also not so much experienced with
+the
+different
+different different techniques um
+certainly something that we can that we
+should that we should test in the in the
+future yeah so i cannot really say
+anything informed here because we just
+haven't done
+this on this level
+okay the next question is by faye can
+you show the effects
+can you show the effects of the
+denoising implicit
+neural network by feeding the dynamical
+neural network directly without it
+i'm not sure whether i understood that
+question please
+right okay uh
+um if if you cannot mute yourself and
+verify that's right
+so um my question is so if you just
+finish
+your noisy data with the dynamical
+neural network without the the noising
+step
+um
+yeah
+don't think i mean in that case we would
+not have
+an easy way to
+use the gradient loss i think
+and that that might
+not give
+as smooth results as as the approach
+that i showed
+maybe maybe parvan if i don't know
+whether you have done this these
+experiments
+in the course of the action um
+say some anything here
+probably if you can admit
+um yes i think what what peter
+just now said it i think the the
+derivative if you if you don't miss
+master derivative information like uh
+with the one derivative which you get
+from random and also one derivative
+which you can get from the implicit
+neural network if you don't mismatch
+then there will be even more vegans
+around basically
+so i think this this part of loss is
+also very important to to have
+uh denoise data for if you have a large
+amount of noise on the data
+okay uh next question is by kodi uh have
+you seen the paper on
+archived paper by
+fuja and alves
+they used cindy to identify pdes in an
+integral formulation from noisy
+pic simulation data
+in their case denoising did not work
+well
+i think they just tried gaussian
+smoothing but the integral formulation
+worked well
+i must admit that i have not read that
+paper so far so i it's hard for me to
+comment on that
+i'm not sure the power has
+had a look at it but
+i cannot i cannot say um
+cannot comment on their work input
+that's right whether this is an effect
+that we will observe if we go to to
+higher to more complicated pde models
+it's of course hard to predict and that
+that would be interesting to see and i
+think if they um
+we will have a look at this paper and
+see what kind of um
+examples they they use and we'll try it
+with our approach whether we can uh
+have to run into the same difficulties
+or whether we
+get something
+better
+it would be yeah that would be
+definitely
+interesting to see
+right right okay next question is uh by
+beta
+is your rk full cindy approach also
+applicable for finding the second order
+dynamics
+um
+arcar 4 would probably not be the right
+thing to do then
+but there are of course
+the akka4 can be
+exchange for
+any other integrator basically right
+um so if we in if i would like to
+identify a second order dynamics i would
+then
+[Music]
+go make for instance to a leapfrog team
+or whatever or new uh newmark method um
+as the as the filter for this approach
+yeah and i think that can be done here
+but we haven't done that yet
+okay
+next question is by nathaniel he has the
+classical problem with cindy is what
+happens if your operator isn't easy to
+guess a dictionary or a priory
+you touched on this with rational
+functions have you done any experiments
+on your denoising strategy when the
+dynamics to be learned can only be
+approximated by the dictionary and not
+exactly represented
+now this this is also beyond our current
+experimentation i think
+unless uh taiwan has done anything any
+thing in that regard in the last days
+but that
+yeah i mean
+of course there's a hierarchy of
+difficulties and we are
+very low in that hierarchy at the moment
+of the difficulties that you can add in
+the identification
+the identification process yeah
+as i said it's the
+um
+[Music]
+optimizing the choice of the dictionary
+automatically i think is this is beyond
+the work we have been doing and that
+that is i think an important question
+in order to make these these approaches
+more successful even
+yeah yeah okay
+next question is by anders nice talk uh
+have you tried your approach on a pure
+wave propagation problem
+um
+[Music]
+pure wave not i think it's all the
+burgers is the damped wave in the sense
+i think we can go to to rather low
+viscosities with this approach
+in comparison to some model reduction
+approaches that get problems with
+these viscosities
+i would have to think about
+well
+[Music]
+if you know that you have a pure
+transport phenomenon in your problem
+i think one would also need to take this
+into account in the integrator that is
+used in the scheme archive 4 wouldn't be
+the the the choice there
+but there are of course integrators that
+are designed
+to
+stately reproduce
+wave phenomena and
+i think that would be from the
+implementation side would be more
+complicated also probably
+computationally it would get a little
+bit more involved but i think that that
+could be done whether it really works i
+cannot say at this moment but i would
+recommend using a different integrator
+nice nice okay uh next question is from
+me
+is okay cindy available as an open
+source code
+i think um
+carbon can answer that i think it's a
+github
+available
+yeah i think it's still not public maybe
+in the next weeks it will be
+okay since you guys just uh published in
+the in the archive right yeah yeah okay
+i'd like to see the open source quote um
+once it is available in public okay i do
+not see any more questions okay so
+is there any other questions from
+audiences
+no
+okay uh with that uh let's conclude uh
+thank you so much for the great talk
+peter uh it was it was really really
+well done uh i learned a lot
+so thank you so much
+thanks to all the participants for
+listening and for staying until the end
+that's awesome it's it's a seven o'clock
+for four in germany right yeah
+okay all right
+thank you again
+with that we will conclude the seminar
+today and we will see everyone uh in the
+next ddps seminar until then uh stay
+stay
+safe
+and see you next time okay bye bye bye
+bye
+okay bye

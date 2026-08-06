@@ -1,0 +1,1072 @@
+so um welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rues as usual
+first of all please mute yourself during
+the talk if you have immediate questions
+you are welcome to unmute and ask or
+otherwise please use the chat room to
+post your questions so that we can
+address them in the Q&A session at the
+end second today's seminars is open to
+external audience so no classified
+discussion is allowed finally the talk
+will be recorded and upload to our
+YouTube channel now let me introduce our
+speaker it is an honor to host Analisa
+quen who is the professor and the
+associate chair in the Department of
+Mathematics at the University of Houston
+she earned her Bachelor and master
+degrees in the aerospace engineering at
+Poly Technical deino in 2005 and
+received a PhD in Applied Mathematics
+from epfl in 2009 her interest are in
+the general area of computational
+partial differential equations and more
+specifically in computational fluid
+mechanics with various applications in
+medicine biomedical engineering and osic
+science she is the recipient of the 2021
+to 2022 William andlower harlet
+Foundation Fellowship from the Harvard
+redcliff Institute she is serving as the
+associate editor of the S journal on
+scientific Computing and is the founding
+editor of advances of computational
+Science and and Engineering today she
+will talk about reducing the cost of
+ocean modeling with a data driven ROM
+and Lees please enjoy the wonderful talk
+now without further Ado let me hand it
+over to
+analysa thank you very much Tony for the
+uh kind introduction and for the
+invitation uh to give this talk in this
+uh webinar series it is a great pleasure
+for me to give this talk today uh and uh
+good morning
+everyone uh Tony said I'll talk about
+using reduced order modeling and large
+Ed simulation to reduce the
+computational cost of uh ocean modeling
+this is Joint work with Lander basabi
+who is a graduate student at University
+of Houston mikelo and joh Luigi Roa from
+cisa in
+Italy let me start by telling you why uh
+one would be interested in reducing the
+computational cost of ocean modeling
+well there are several reasons for that
+the first is that if we are interested
+in simulating the whole Ocean or even
+parts of the ocean we're typically
+looking at large computational
+domains uh in addition we have a
+requirement on the mesh size that we
+need to use for the simulations for the
+moment I'm just right in here that the
+mesh size has to be smaller than uh a
+given Quant quantity and I'll specify
+that later uh the point that I'm trying
+to make here is just is that not only we
+have large computational domains we have
+also a um requirement on the mesh size
+uh that is typically rather stringent so
+we need high resolution across uh large
+domains and then uh the last Point uh is
+that we are typically interested in
+longtime intervals
+the um the picture that I show uh that I
+put here uh on the slide is showing a
+phytoplankton as a tracer of a an ocean
+G subtropical Jers are sustained
+currents spinning thousands of
+kilometers across the Pacific and
+Atlantic Ocean uh and I am mentioning
+them because we will see these gers in
+the simulation that I will show later
+but also because so uh gers are hostile
+environments with nutrients that are in
+short supply nonetheless as you can see
+in this picture that is a courtesy of
+NASA uh phytoplankton lives there and
+how that is possible for a phytop
+plantant to live within uh a g has been
+a mystery for a long time and it's just
+about a few years ago that it was found
+that the a phytop growth uh happens
+thanks to a layer of water below the
+ocean surface that allows nutrients to
+cycle back to the surface and so I
+wanted to mention this too because the
+model that I will use for the ocean
+simulation includes
+stratification so layers uh within the
+ocean all right so let me tell you what
+we are doing to reduce uh the
+computational cost of these otherwise
+expensive computationally expensive
+simulations first we consider a
+simplified PD model and I will discuss
+that
+first then we use a predictive
+datadriven reduce order
+model uh which we will see drastically
+reduce the computational time uh however
+still for the
+reduced order modeling we need training
+data that come from computationally
+expensive simulations so after
+introducing the ROM I will uh talk about
+an efficient large IDE simulation model
+uh so that we can reduce the
+computational cost for the training data
+uh there is a fourth um work that I
+wanted to mention uh although I'm not
+talking about today which is the um we
+are uh in the process of using
+randomized pod for parametric studies so
+this uh um the model that we use
+features several parameters so one might
+be interested in the
+parameters varying in a certain range
+and so while today I only talk about
+time as a parameter we can extend uh the
+ROM that I talk about today to include
+physical parameters and we contain the
+computational cost for that by using
+randomized pod but again this is just
+work in progress I wanted to mention it
+but I'm not talking about it
+today let me start with the model and as
+I said is a simplified model it uh comes
+from the Quasi geostrophic equations
+which are one of the most commonly used
+models for Mid latitude wind driven
+ocean
+Dynamics the equations come from the
+incompressible navi Stokes equations
+under some simplifying
+assumptions the first of these
+simplifying assumptions is that the
+depth is much smaller than the
+meridional length in an ocean and um
+that is true in the sense that in an O
+the ocean is wide uh thousands of
+kilometers of square kilometers but the
+depth is only up to 11 kilometers so if
+uh we take this into account we can go
+from the incompressible nav stes
+equations to the shallow water
+equation so then uh we further simplify
+the shallow water equations by
+considering that we are near hydrostatic
+and geostrophic
+balance and one important assumption for
+the quas geostrophic equations is the
+so-called beta plane
+approximation um which amounts to a
+approximating the Earth so a sphere with
+a tangent plane so you see in uh the
+figure here this is again courtesy of
+NASA you um see uh ocean the formation
+of ocean gers uh in the Atlantic so you
+see Florida here and the uh Us East
+Coast uh let's say that you're
+interested in uh simulations near the uh
+New England so you would consider it uh
+a domain in the region of interest uh
+you you uh the note as y equal to Z the
+center of your region of interest and
+there you're approximating the Earth
+with its tangent
+plane so this is the Quasi geostrophic
+equations and they assume that the ocean
+is one layer at constant density and
+temperature and depth which can be a
+crude approximation so the uh extension
+that we consider is the two layer quasi
+geostrophic equations and it's an
+extension that attempts to capture
+stratification so now we have two layers
+U again at constant uh density
+temperature and uh depth and um that
+they are on the one hand driven by the
+ocean we were saying this is a model uh
+uh for wind driven ocean Dynamics and
+then in contact with the bottom of the
+ocean for the bottom layer so I will be
+talking about ROM and Lees for this
+model the two layer qu geostrophic
+equations of course you can add layers
+to it so add stratification go over just
+two
+layers let me show you what the model
+looks like in its non-dimensional form
+so we have uh four equations here the
+top two describe the Dynamics of the top
+layer and the bottom two for the bottom
+layer uh so in you see the for a forcing
+term for the top layer that comes from
+the wind it's a wind driven Dynamics and
+instead in the bottom layer you see this
+term here with a um that it represents
+friction with the bottom of the ocean
+the variables in this uh coupled problem
+are q1 and Q2 which are the potential
+vortic vorticities for layer one top
+layer and Layer Two bottom layer and uh
+s which is the stream function so we
+have uh s 1 and S 2 and um you see that
+uh in the uh for the uh top layer the
+equations are Written In terms of
+potential vorticity for the top layer
+stream function for the top layer but
+you also have the stream function for
+the bottom layer so the terms that you
+see here are coupling the Dynamics of
+the top layer with the Dynamics of the
+bottom layer uh and uh similarly you
+have similar terms uh in the bottom
+layer as I was saying these are the
+equations once you have made them
+non-dimensional and So You observe the
+uh some well-known uh non-dimensional
+numbers the first one that is probably
+the uh a better known is the rainolds
+number that you see here at the
+denominator uh as you know the rolds
+number is the ratio of inertial force to
+viscus force and then there are other
+two non-dimensional numbers the rosby
+number which is perhaps less known and
+that gives you uh an indication of the
+ratio of the inertial inertial force to
+the coroli force and uh and you you have
+it
+here and the third non-dimensional
+number is the fruit number uh that gives
+you the uh ratio of flow inertia to
+external force fields which in this case
+is
+gravity and uh you see it in all four
+equations as I was saying earlier if you
+wish
+to run a simulation of uh with this
+model uh you need to be careful uh uh
+with uh the resolution in uh your mesh
+because you need to be able to resolve
+the so-called Mo scale that is the scale
+that it's telling that your mesh needs
+to be able to resolve and that depends
+on l l is just a characteristic size for
+your domain and then it depends on the
+ratio of rosby number to rainolds number
+so you see that the cases that are
+challenging are for large rainolds and
+small
+rosby one uh note that I want to make
+here is that the arals number is
+typically computed with the Edie
+viscosity not the actual viscosity of
+water viscosity of water in the metric
+system would be of the order of 10 to
+the -6 so it will give you very large
+rainho number and so it would force you
+to use very fine computational meshes so
+what is typically done is that that the
+value of the viscosity is artificially
+increased uh to be able to use a mesh
+that is much coarser we can look at this
+as really the crudest kind of larg
+simulation right where you introduce in
+your system a an artificial viscosity
+which is constant
+and that is done so that again we can
+cson the mesh and so we are able to run
+a simulation with the uh Computing
+facilities that are
+disposal uh and the in the literature
+the rainolds number with this artificial
+value for the viscosity ranges between
+few thousand to few hundred again
+depending on the Computing facilities
+that people
+have let me show you some uh a sample of
+uh the solution that you get for a um an
+extension of a standard test the Double
+J Test uh this is used widely used in
+the case of the single layer quas
+geostrophic equation and we've extended
+it to the two layer
+case um and we have rosby which is 10 to
+the -3 and rainold which is
+450 for uh for the mesh to result the
+mon scale with these uh values uh we
+need uh we need it to be 256 by 5 12 and
+we're interested in running the
+simulation uh for 100 time units uh with
+a uh standard uh uh Computing server
+that takes about 8 days and 5 hours uh
+so even with the addition of this
+artificial viscosity it's still Sim um a
+computationally intensive
+simulation and what I'm showing you here
+is the uh potential vorticity in layer
+one in two subsequent uh for two
+subsequent time units 2021 and the
+potential vorticity in Layer Two and uh
+the point that I want to make here is
+that you see that there is um strong
+convection dominance in this problem and
+that is why
+after I introduce the reduce order model
+I'm going to talk about adding to this
+Ed uh crude Eddie viscosity model an
+additional large Eddie model to be able
+to reduce the computational
+time now before I tell you what we have
+done for the two layer quas geostrophic
+equation I want to tell you what has
+been done in the literature and uh to be
+able to do that I just want to remind
+you
+uh the difference between Galler ROM so
+sorder models that use gallin projection
+versus data driven WR although I'm sure
+that you uh you are all aware of this
+just a uh brief reminder so we have a
+genetic problem that depends on time and
+uh red uh a um standard reduce order
+model uh uses a uh two-phase procedure
+in the first phase
+called offline what you do is that you
+generate snapshots so you sample your
+solution at certain times with those
+snapshots you construct a reduced basis
+and here I am saying that the number of
+bases you uh should be of the order of
+10 and in doing that I am
+prioritizing computational savings so I
+want to ensure that I have indeed a
+reduced basis so that I can have a
+method that is computationally
+efficient uh once I have the reduced
+bases I can approximate my variable U as
+a linear combination of the basis
+functions that I just found and um
+coefficients that I still need to find
+uh in a uh gallan ROM I would take this
+approximation and plug it into uh my
+problem so that I can construct the ROM
+operators here I'm calling a uh The
+Matrix that you get when uh you uh
+Associated to the linear operators in
+your problem and B The Matrix that is
+associated with the nonlinear operators
+so that is what you do offline once and
+for all and then on online you simply
+run your ROM which tells you how the um
+the uh a which is the vector collecting
+all the coefficients that you have here
+evolves over time
+time um all right in the case of a data
+driven ROM the first three steps in the
+offline procedure are the same the
+difference is that now I want to be
+blind to the underlying uh physical
+problem and so I'm not going to plug the
+ROM approximation into my uh set of into
+my uh problem physical problem I just
+want to train a model with the values of
+a the vector of the uh coefficients for
+the reduced bis functions for the
+snapshots and then online what I do is
+that I learn the evolution of a from
+applying the train
+model one point that I want to make
+before telling you what is in the
+literature is um about how uh the uh IG
+values for the uh quasi geostrophic
+equations
+Decay because one of the techniques that
+is widely used to construct the Rong
+basis is uh pod so proper orthogonal
+decomposition and what that does is it h
+gives you the number of modes that are
+ranked with based on the uh their igen
+values from largest to smallest and so
+uh in this slide I am plotting the IG
+value DK for the uh quasi geostrophic
+equation and that is in blue against
+other well-known uh convection dominated
+problems like the flow past the cylinder
+uh which I believe in this case is a th
+for rolds at 1,000 and the um 3D
+turbulent Channel flow for rainolds that
+is around
+13,000 so here you see the dec Theon
+value dek for the um flow past the
+cylinder um which is slow
+but it's not too slow you could still
+retain of the order of 10 modes and have
+a reasonably uh accurate uh ROM but you
+see that in the case of the Quasi
+geostrophic equations the EG value Decay
+is extremely small so if you
+prioritize um uh computational
+efficiency as we said earlier so you
+just want to retain order of 10 modes
+that is going to give you a um
+simulation that
+if that is going to give you a ROM
+approximation that is not accurate
+because the
+modes that you are desing are very much
+relevant to the Dynamics of the
+system so with that uh this is a summary
+of recent papers on ROMs for qge
+models uh everything not
+everything uh it's mostly related to the
+single single layer
+qg and uh there is uh uh gallin ROMs
+using pod to generate the B is uh the
+reduced bases that use Lees so large ID
+simulation inspired closure models or
+data driven closure models these models
+are needed needed so that you can bring
+bring back into your real the effect of
+the modes that you are discarding but
+that are relevant to the Dynamics of the
+system um there is hybrid uh a uh hybrid
+gallin projection data driven R proposed
+in
+2019 and in there what they're doing is
+they're taking a convex combination of a
+solution given by a Goring from and a
+solution given by a data dream ROM uh
+using neural networks to learn the
+evolution of the modal
+coefficients uh finally uh and more
+recently uh data driven ROM using pod in
+combination with DMD or lstm so it
+seemed to us that the combination of pod
+and lstm was the most promising to
+extend to the two layers qu geotropic
+equation and so that's what we
+did all that we could find on the two
+layer quasi geostrophic equations is uh
+a uh paper that dates back to 2016 on
+expansion of the baroc clinic barotropic
+components of the two two layer
+qg so this is what we
+do uh for
+uh for the
+Pod uh so we perform pod not on the
+potential icity and the stream uh
+function but on the their fluctuations
+with respect to the time average over
+the training interval so what we're
+doing is we are running the um the
+simulation for half of the time interval
+of interest and then we want to use the
+uh ROM to simulate the remaining half of
+the time interval of
+Interest so over the um first a half we
+find the average denoted with the TAA
+and then we get the fluctuation over the
+average uh we do this for the four
+variables so the two potential vtic and
+the two string functions and perform pod
+to extract the first R modes again we
+are really forcing that our number to be
+small to prioritize computational
+efficiency and uh then what the does is
+that over the entire time interval so we
+want to see how well we approximate the
+flow for the time interval that was used
+for training and then as I said uh for
+uh the same amount of time that was not
+seen though in the training phase and uh
+so for the uh entire time interval we
+take the average computed over the
+training interval and we are summing the
+um ROM approximation for the
+fluctuation with the uh basis function
+extracted from pod and coefficients that
+we have to
+learn the way we learn the coefficients
+is by using uh a long shortterm memory
+Network these are uh recurrent neural
+networks that have layers made of cells
+and um here is uh what a cell looks like
+that the we are using CN to represent
+the cell State and uh that is the that
+serves as the long-term memory of the
+network in each cell we have a forget
+gate which decides what information to
+discard from the cell State we have an
+input gate so that is FN the forget gate
+we have an input gate I in that
+determines which information to add to
+the cell State and uh finally we have an
+output gate uh that controls the
+information to be passed to the next
+cell based on the cell State and the
+input uh all the hyperparameters that we
+have used are specified in this uh PR
+print uh that uh is available on archive
+uh what we found that uh the network is
+most sensitive to is the um hyper
+parameter called look back window uh
+which is how many uh time steps you use
+uh to determine how um how the solution
+over how many time steps you Ed to
+determine the uh model coefficients of
+the next
+time so let me show you uh how this um
+data driven ROM that uses p
+to find a reduced basis and lstm to
+learn the model coefficients for this
+double Jer test that I was mentioning
+earlier we have a special domain which
+is 01 * -11 so rectangular domain
+remember we are in uh we are using
+non-dimensional variables and we are
+interested over the Dynamics for 100
+time units
+uh the rosby number and the rainolds
+number are the same that I mentioned
+earlier and now you see also fruit
+number the friction coefficient with the
+bottom of the ocean and the the ratio of
+the depth between the two layers so here
+we're saying the two layer um are have
+the same depth which is half of the uh
+ocean entire ocean depth we use a a mesh
+size that resolves the monk scale for
+the given parameters and then we have a
+Time step which is of the order of 10 to
+the
+5th um as I said the uh full order
+simulation for this problem takes over
+eight
+days West are uh the ROM that we are
+proposing uh we can uh of course reduce
+that by a lot and uh let me tell you how
+what we did here we considered uh 401
+snapshots for each of the four variables
+over a time interval 10 to 50 and we are
+uh uh requesting only uh 10 basis
+functions for the reduced basis so we're
+taking the first 10 pod modes and we are
+setting now the look back window to 10
+we uh perform several um uh we we um use
+several values of the look B when and
+then found that this was the um the one
+that was giv the most accurate
+results the uh prediction time interval
+is from 50 to 100 time units and the
+computational time that it takes the ROM
+to uh to simulate these remaining 50
+time units is less than 1 second so here
+you see the time average Fields average
+over the entire uh time uh interval of
+Interest so 0 to 100 uh reconstruct from
+the solution reconstructed with the ROM
+again using 10 pod modes and look back
+window equal to 10 um on the First
+Column you see the average potential
+vorticity in top layer and bottom layer
+and on the left column you see the uh
+average stream function top layer bottom
+layer uh in each sub panel you have the
+uh full order method on the left and the
+uh
+ROM uh the the solution computed by the
+ROM on the right now let me start with
+the uh potential vorticity you see that
+the solution is not very accurate at the
+interface it gets spoiled but away from
+the interface uh it can uh correctly
+capture the average and this is true
+both for the top layer and the bottom
+layer uh the uh stream functions is
+better reconstructed by the the the by
+the ROM here again the time average in
+fact you see that we can uh well
+reproduce the shape of the gers as well
+as the magnitude of the average stream
+function both for the top layer and the
+bottom
+layer what I am reporting on the slide
+is also the root mean square error for
+all the
+cases um so so why we have a better
+approximation for the uh stream function
+than for the uh potential vorticity this
+is due to the fact that with 10 basis
+function you are retaining about uh 50%
+between 50 and 60% of the igen value
+energy for the stream function the
+stream function has some a somewhat
+faster IG value DEC than the potential
+vorticity while for the potential
+vorticity uh with 10 basis function
+you're only retaining 10% of the I value
+energy so uh it's we can improve these
+results by simply increasing the number
+of the uh basis functions 10 is somewhat
+drastic and again was to so that the
+computational savings were
+prioritized so that this was a um a
+comparison in terms of time average but
+we also checked uh time dependent
+quantities and what I'm showing you here
+is a comparison of the evolution of the
+model
+coefficients uh you have here the first
+and the third model coefficient for the
+uh potential vorticity in the top layer
+and same first and third model
+coefficient for the um potential
+verticity in the bottom layer
+with uh the blue line is true in the
+sense that the evolution of the
+coefficients for the uh full order
+Solutions in Orange you have the
+Reconstruction so the uh ROM
+reconstructing the time window the
+solution over the time window that was
+used for the training and in green the
+um reconstruction of the solution for
+the time window that was not used for
+the training and considering that for
+for the potential verticity we're
+retaining only 10 to 20% of the I value
+energy this is um a rather a
+surprisingly good result and let me
+mention that the uh the as as you can
+see here there was no instability um
+that arised in the uh solution with the
+ROM which again is surprising given the
+fact that we are discarding modes that
+are important into the Dynamics of the
+problem now in uh the remaining time
+that I have which is uh how much 15
+minutes maybe what have Okay I uh want
+to go back to this uh slide over here
+where um I was showing that if you
+wanted to do a full order simulation for
+the entire uh time interval of interest
+that takes over 8 days which means that
+if you're
+uh generating data over half of the uh
+time interval to be able to train the
+data driven ROM you're still stuck with
+a 4-day
+simulation so the work that I'm uh
+talking about next is so that we can
+reduce this time here and drastically
+reduce it now for us to be able to do
+that we chose not to go down a data
+driven path but a path that is physics
+driven so as I mentioned um earlier this
+is a problem that is convection
+dominated and uh as you know in a uh
+turbulent flow you have um turbulent
+structur so addes that spin in
+increasingly larger uh range of scales
+as the Ral number increases uh and um if
+uh you want to have a uh Sol a computed
+solution that is physical you need to be
+able to either resolve all of those
+scales or account for the scales that
+are not resolved if you resolve all the
+scales so if you can afford a mesh that
+is fine enough to cap to capture all the
+vertices in your problem from vertices
+that are as larg as the domain
+comparable in size with the size of the
+domain down to the smallest vertices
+that have the called mot of scale that
+is that is a DNS of course in a problem
+like ocean modeling that is out of
+question you're not able to do that and
+uh and so um you need to use one of the
+Alternatives that are two direct
+numerical simulation that have been
+developed over the uh over the
+years the uh two approaches that have
+become more widespread in uh in science
+and Industry are Lees so larg simulation
+and run rolds average nav stocks
+equations in the case of Lees you choose
+to just take a mesh that is coarser than
+you should take it uh to be and resolve
+part of the vortices in your flow and
+then you choose to model the effect of
+the uh edies that are not uh resolved
+directly and uh since uh what happens at
+the smaller uh at the smaller sces is
+dissipation of energy what this is doing
+is uh bringing in terms into your
+problem that dissipate the energy of the
+system the other approach is Rens where
+you resolve the flow average and model
+everything else we uh chose to work with
+Lees and uh in particular we uh focused
+on an approach that adds an extra set of
+equations to the problem in our case the
+two layer qg with the extra problem
+being a differential low pass
+filter that is intended to smooth out uh
+numerical
+oscillations so let me tell you how this
+uh method works this uh alas method
+works for a generic problem if I show it
+how it works for the two layer qg it's
+just too messy so let me let me just
+talk about it in
+general let's consider a uh generic
+fluid model here uh and let youu be the
+variable m is just contains all the
+operators that are in your fluid model
+now take the model and discretize it in
+time for example with backward Oiler
+again this is a choice for uh uh
+Simplicity one can use different uh time
+discretization schemes so uh we have now
+the problem discrete in time now if we
+further apply space discretization to
+the time discrete problem and choose to
+use a mesh that has a mesh size much
+larger than the colog of scale the
+solution that we get out of our solver
+uh typically features non-physical
+oscillations uh if you're lucky that
+leads just to a breakdown of your
+simulation and so you know that there is
+something wrong if you're not lucky the
+simulation keeps going you think you
+have a physical solution but you do not
+so um the uh idea is to attenuate or
+remove the oscillations through a
+filtering
+operation so we propose to use a
+three-step
+algorithm the first is evolve which
+means that you're app you're using the
+solver that that you have without the
+filter with the difference that you are
+not accepting the solution that you get
+out of it as the end of Step solution
+it's just an intermediate solution that
+at step two you filter so you take the
+solution that comes out of the evolv
+step filter it with a generic spal
+filter and get a v bar the filtered
+solution uh the third step here is just
+a simple relaxation so you take a linear
+combination
+of the Evolve variable and the filtered
+variable with a relaxation parameter
+that varies between zero and
+one now if you look at the um at the
+algorithm like this it might not look
+like standard Le modeling to you but you
+can easily see the connection between
+the Evolve filter relax algorithm and
+Lees modeling if you shift the index
+from n + 1 to n in steps two and three
+and plug them into step one so here you
+can write this in terms of U of unu N
+and once you have un n you plug it into
+uh step one that will have VN and V Barn
+that you can get from step two so what
+you get through the those three steps is
+um so what you're actually solving is
+your original problem plus a term that
+as you see is explicitly
+treated and it is designed to be uh to
+to dissipate
+energy so when you look at it like this
+it looks more like a standard uh Lees
+model now if you're looking at this
+ratio here of filtering parameter and
+time step and you're not liking it
+because this blows up as the uh time
+step is reduced
+nobody is well nothing is really
+preventing you from taking the
+relaxation parameter to be a multiple of
+the time step so that here you get a
+parameter that is not depending on the
+time step and so what the Evolve filter
+relax algorithm gives you is a Time
+stepping procedure to solve a problem
+that is that contains the terms from
+your original problem
+plus an extra term that is designed to
+dissipate
+energy um now let me see if I have time
+uh I let me tell you briefly what kind
+of uh spatial filter we use at step two
+also actually you know maybe uh instead
+of doing that let me tell you why it is
+advantageous to have a procedure that is
+in uh in three steps like this the first
+one is that you have a procedure that is
+modular so you typically have a solver
+for um lower rainold number flow and by
+adding two simpler steps you can upgrade
+your uh solver so that also higher Ros
+number flow can be simulated so
+modularity is the First advant Advantage
+that you have here that gives you also
+ease of implementation and then the
+second Advantage is that you have um
+flexibility in the choice of the uh
+spatial
+filter the special the uh particular uh
+spatial filter that we use is um
+nonlinear it is well established um wri
+in here a partial selection of works
+that I have used it uh and uh
+for this is mostly for the
+incompressible um nav equations and the
+filter is like this it is the uh inverse
+of identity plus calligraphic L which is
+minus the Divergence of a an artificial
+diffusion times the
+gradient so the artificial diffusion is
+where the where the nonlinearity comes
+into play and it is defined as the
+filtering radius so that is the radius
+of the domain where you extracting you
+are extracting in the information for
+the filtering and that is typically
+taken of the order of the mesh size
+times an indicator function that takes
+as input the Evolve variable and the
+indicator function is really crucial
+here it takes values between zero and
+one with the value being close to zero
+in the regions of the domain where you
+do not need local filtering so where the
+solution is in quote smooth enough
+and instead the uh value of the
+indicator function is closer to one
+where we want to filter the uh computed
+solution out of the evolved step so
+really here the indicator function is a
+key player because it is telling you
+where in your domain you should add
+artificial diffusion and how much uh
+artificial diffusion you should be
+adding so it's uh again the indicator
+function is crucial to the success of
+the uh Evol filter relax algorithm there
+is a lot of literature on possible
+indicator functions and they are mostly
+based on the physics of the problem so
+they're trying to identify structures in
+the flow that are that are coherent that
+don't break down and dissipate uh energy
+instead uh we decided to work with an
+indicator function that is more
+mathematics based than physics
+based so we Define it like this to
+define the indicator function we use the
+uh linear helmets filter uh which is
+simply the filter that I showed you
+earlier where you take the indicator
+function to be equal to one everywhere
+so it becomes a linear
+filter uh this uh the inverse of the
+filter is
+unbounded and the the convolution the
+approximated the convolution operator is
+a bounded regular approximation for the
+inverse of the filter so we Define the
+indicator function using the filter so
+we are filtering the uh evolve variable
+if the Evolve variable uh has large
+oscillations between elements uh the
+filter will smooth them out then the
+convolution is only an approximation for
+the inverse of the filter so if you have
+this large oscillations it's not going
+to be able to reconstruct the Evolve
+velocity and so this difference becomes
+different from zero the it gets closer
+to zero if the Evolve velocity uh is uh
+um smooth so that the filter uh doesn't
+do much to it and the approximated the
+convolution operator can reconstruct
+it um so here uh is a
+comparison between the same problem as
+before the two two Jer uh uh benchmark
+test on and we're looking at the time
+average uh uh stream function for the
+top layer uh on the first uh column here
+you see the solution G given by in
+quotes DNS meaning the using the
+rainolds number they has only the that
+uses the Ed viscosity that remember
+forces you to take a rather fine mesh
+which is what gives you a large
+computational time if you take it the
+mesh and make make it um eight time
+coarser because you want uh you want the
+simulation to be cheaper and just run
+your solver for the two layer qu
+geostrophic equations you see that what
+you get the solution that you get out of
+there is just not physical because
+you're not uh your system is not
+dissipating energy correctly if you add
+the nonlinear filter you are you can uh
+you obtain a solution that is closer to
+the DNS solution in terms of shape of
+the gerss and also magnitude of the
+solution this is for layer one and this
+is the comparison for Layer Two DNS two
+layer qg on the co mesh without the
+nonlinear filter and with the nonlinear
+filter again you see an improvement of
+the solution without the filter and with
+a mesh that is 8 time corser and the use
+of the nonlinear filter you go from
+having to wait 8 days for your
+simulation to finish to having uh to
+wait only a couple of hours sorry uh oh
+yes um this is um sorry I didn't notice
+that here you have a mesh that it's even
+coarser than that that's why you go from
+2 hours to 44 minutes and uh though you
+know we can argue that this is already
+too course to be able to retrieve an
+accurate apprach o imation of the
+solution from DNS now let me
+finish uh What uh we did to be able to
+reduce the computational time
+considerably is to combine a data driven
+ROM and a physics driven large ID
+simulation technique um I put here on
+the slides the uh papers where uh the
+details of the work that I show today
+are discussed and uh this is the open
+source of solware that is based on open
+Pham that we've used for the uh full
+order simulations so with that let me
+thank you for your
+attention yes thanks for the wonderful
+talk Anda is a very interesting and
+complete on both physics and data drien
+method um so I don't see any questions
+in the chat room yet but uh as we give
+the audience a moment together there
+first I jump in questions to King STS so
+um probably I will start with first for
+question so I'm curious how the external
+forcing by the win in the equation yes
+yeah it's model is it time dependent or
+independent no in this case we we just
+uh it's a constant and it's a sign
+function mhm yes this is how uh so and
+you um I'm telling you what we set it
+for the that two
+G um
+Benchmark MH sorry let me actually get
+here uh here right in in for this test
+it's simply a uh sign function uh in the
+Y variable so that you observe the
+formation of the two
+gers yes but uh you're right I mean in a
+uh in a realistic case so not in the
+case of this particular Benchmark this
+would be a forcing that depends with
+time right yes so this kind of like
+independ time independent force is based
+on some kind of physics assumption on
+the like the stress pattern on of the
+wind or something else I would think
+that is just some kind of averaging
+because so you you see that what you get
+with that kind of sign function in the Y
+variable is the formation of two gerss
+and these G structures right are
+observed in oceans
+and so I would suspect that you know in
+average that would be a reasonable
+approximation I see yeah I asking
+because I'm thinking whether the P rstm
+Rom that you train can be like adapted
+to like predictive cases even like not
+in the fluid numbers yes I see what
+you're saying if you have a the wind
+that varies in an unpredictable way
+right is that yeah yes we haven't tried
+that yes absolutely I see and like a
+really a closely related question is
+okay considering all these parametric
+things like the flid number the r number
+so I I also saw that Comm growth M with
+DEC is a little slow in the in the so if
+you imagur the full parametri case so
+would it be very hard to get a um
+Dimension reduction in the P
+basis um so that is the thing right
+because here here we didn't we managed
+to have simulation ROM um simulations
+that were stable and approximated that
+the time average quantities and the time
+dependent quantities reasonably well
+without having to um account for the
+discarding modes right and um so I
+suspect that here with the STM and the
+fact that you have a dynamics that is
+oscillating over this average uh helps
+for that um in what you could do right
+uh in in the case of uh different
+parameters is add to the model some
+closure I see right yes in the and this
+is not if we go to for example the um
+the gallin Run
+right in this case uh this is what you
+would use if Ral to 10 would be enough
+to capture the Dynamics of your system
+but if it it is not sufficient like in
+the case of the qge uh or the other
+convection dominated problem what you
+can do is add a term here just like you
+do in LS right to model the effect of
+those discarded modes I see
+okay maybe we have minutes for a quick
+question so maybe I can ask one more so
+as you mentioned the Lo back window is a
+very sensitive parameter in the so per
+ask for any if you have any insights on
+or experience on deciding the low back
+window in the setting of R and I imagine
+the L window has to be long enough to
+capture the temporal changes and if it's
+too long it will be overfitting so
+correct ex that's exactly our experience
+and I wish I had a better answer for you
+than we just did TR trial and error but
+I don't we we started from Two and then
+we increased it until we saw that it was
+not improving the uh approximation
+anymore and 10 was that sweet spot after
+which we were seeing that overfitting
+that you're talking about I see yes do
+you see any relation between the optim I
+mean the 10 the window of 10 is related
+to the number of pod modes or if you
+like increase or decrease the no no no
+no we've changed also the number of pod
+modes and uh that did not seem to affect
+the fact that 10 was the best value for
+the um for the look back window

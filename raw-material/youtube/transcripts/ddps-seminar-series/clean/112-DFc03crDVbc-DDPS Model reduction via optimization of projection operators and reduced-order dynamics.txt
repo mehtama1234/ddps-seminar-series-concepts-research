@@ -1,0 +1,1452 @@
+can you see the screen MH okay
+great all right
+awesome all right let me introduce you
+um welcome to the ddps seminar everyone
+uh before we introduce our invited
+speaker let's go over some rules and
+Logistics first of all please mute
+yourself during the talk but if you have
+questions you can unmute and ask
+questions or use chat room to post your
+questions so that we can address them in
+Q&A session at the end second today's
+ddps seminar is open to external
+audiences uh therefore no classified
+discussion is allowed uh finally The
+Talk today will be recorded and uploaded
+in our YouTube channel oh that's about
+it let me briefly introduce our speaker
+today it is an honor to host Dr Alberto
+p van who is a post-doctoral
+researcher uh in the department of
+aerospace engineering at the University
+of Illinois Oran campaign he obtained
+his PhD from Princeton University in
+August 2022 and his research interests
+lie at the intersection of fluid
+mechanics dynamical systems and control
+theory Alberto's current work focuses on
+the development of data driven methods
+for model reduction of fluid flows as
+well as on the analysis and control of
+Supersonic and Hypersonic wall bounded
+flows today Alberto will talk about data
+driven model reduction via non-intrusive
+optimization of projection operators and
+redu to the Dynamics I'm sure we are
+going to hear a wonderful talk from him
+um now let me um ask a somewhat informal
+questions to Alberto uh just to get to
+know him better here we go are you ready
+M to ready all right this is the best
+random question I came up with after
+hearing about your background I happen
+to know you you love soccer and if you
+can
+share your favorite soccer player um in
+history in history not not just uh in
+history favorite soccer player um I
+would say uh Paulo Malini was the uh AC
+Milan captain yeah I I'll go with him if
+I had to choose one yeah do you do do
+you have the reason uh well he was the
+he was the captain of uh my uh my
+favorite team for a long time and uh I
+guess he known as one of the best
+defenders uh uh to ever play the game so
+a yeah that's why very great okay um
+it's stage is stage is years Al to uh
+what was that stage each years it's it's
+your time to give your presentation yeah
+okay thank you Dr Choy for uh uh for U
+inviting me uh at the ddps seminar
+series uh today I'll talk about um
+datadriven model reduction via
+non-inclusive optimization of projection
+operators and reduced order Dynamics and
+here's a the outline of my talk I'll go
+over a a few slides of introduction and
+motivation and I'm sure that uh most if
+not all of you are familiar with some of
+the some of the concepts I'll be talking
+about um then I'll go over a an overview
+of some existing formulations we'll
+touch upon Petro galery models which are
+intrusive and then uh we'll talk about
+an existing non-intrusive formulation
+which is known as operator inference
+after that uh I'll present the uh the
+main topic of this of this presentation
+which is nitron this is a it's a
+non-intrusive trajectory based
+optimization of reduced order models uh
+and is an extension of of existing
+methods that we've recently come up with
+uh and then uh I'll show some examples
+we have three examples of increasing
+complexity a to a toy model uh a
+onedimensional pte and then the
+two-dimensional The Driven cavity flow
+okay so uh even though I'm sure that
+most of you are familiar with the
+overarching idea of model reduction I
+thought it'd be good to uh uh to set
+some foundations uh just in case and and
+and so physical systems that we're
+interested in interested in studying or
+simulating like fluids or solids are
+described by partial differential
+equations
+and after spatial discretization we
+obtain systems of Odes with many degrees
+of freedom so here's a brief example we
+have the incompressible number Stokes
+equations and after spatial
+discretization using finite difference
+fin a volume finite element you name it
+your your favorite spatial
+discretization scheme we obtain a system
+of Odes where here for instance U subd
+is the velocity on a on a mesh and PD is
+the pressure uh and uh and Q is the is
+the spatially discretized state and so
+the main challenge associated with this
+high dimensionality is computational
+cost and uh this can come in many
+flavors but uh most notably uh one is
+the cost associated with uh integrating
+equation one in time uh and number two
+could be uh related to the cursor
+dimensionality during tasks such as
+optimization control design and system
+analysis so to reduce cost we'd like to
+find a reduced order model uh which is a
+system uh given in equation 2 that
+behaves like equation one in some sense
+but it's much cheaper to work with and
+the reason why it's cheaper to work with
+is because the uh reduced order model
+State Z has Dimension that is usually
+much slower than the dimension of Q so
+we can integrate uh and work with
+equation 2 in a u in a more
+computationally efficient manner all
+right so there are many approaches and
+many decades of literature on uh mod
+reduction for for physical systems but
+most of them tend to T to share this uh
+this type of architecture that I'll
+discuss in a second uh so the first step
+is we we start from the uh what we call
+the full order model or the F uh this is
+this specially discretized number Stokes
+equations if you're working with fluids
+Q is the is the state Vector could be
+the velocity density or any any flow
+variable you're interested in uh and U
+in in case there's a uh there's control
+input for instance uh could be a
+boundary forcing a volumetric forcing uh
+whatever type of actuate uh control
+input you might have on your on your
+system and so A reduced order model uh
+can be described schematically as
+follows we have three components we have
+an encoder a decoder and ROM Dynamics uh
+so the decoder is a possibly nonlinear
+function that takes you from the high
+dimensional space uh onto a low
+dimensional space this this could be a
+linear Subspace or a nonlinear manifold
+uh and so basically this operation is
+that of of of of a compression so we'll
+go from high dimension to low Dimension
+once we're in low Dimensions uh we have
+the ROM dynamics that uh evolve the low
+dimensional State uh in time
+and then finally we have a decoder uh
+which goes which is is a possibly
+nonlinear map from the low dimensional
+space to the high dimensional space and
+gives us uh this quantity Q hat which is
+the approximate solution uh q and
+hopefully uh once we've gone through
+this pipeline Q hat is not so far away
+from the ground truth solution q and as
+I was saying there are many different
+approaches to uh uh to this and and that
+gives the literature so the encoder and
+decoder it could be linear it could be
+nonlinear um uh the encoder and decoder
+could be constrained to define a
+projection so where for instance uh the
+the uh encoder is is a left inverse of
+decoder and so we are implicitly
+defining a a projection and then also uh
+it could be intrusive or non- intrusive
+in the sense that um uh the computations
+that give us um uh FM si uh could be
+relying on the full order model or could
+be relying exclusively on data without
+any knowledge of the governing equations
+that uh uh generated the data itself and
+then as far as the round Dynamics go we
+could have uh continuous time Dynamics
+uh discrete time Dynamics and again they
+could be computed intrusively or uh non
+intrusively uh depending on the specific
+application all right so on today's talk
+we're going to constraint ourselves uh
+to encoder and decoders that are linear
+so they can be represented as uh n by R
+matrices in this specific case uh also
+we constrain them to Define a linear
+projection uh so here you see that the
+uh the encoder uh is a left inverse of
+of the decoder by Design and then also
+the reduced order model Dynamics are
+continuous in time and so today's
+overarching question is how do we learn
+fee s and the ROM Dynamics G non-
+intrusively uh with the additional
+constraint then FMI Define an oblique
+projection all right so why do we insist
+on projections in the first place so uh
+as I said before if the encoder is the
+left inverse of the decoder then we're
+implicit ly defining a projection
+operator which I call P and if p is
+equal to P then the projection is
+orthogonal and if they're not equal then
+the projection is uh oblique so here's a
+here's a schematic of uh what an
+orthogonal and oblique projections do so
+if we have a threedimensional vector Q
+in threedimensional space uh and we have
+a Target Subspace uh which is the span
+of Fe then an orthogonal projection uh
+will basically take q and project it
+onto fe uh in the direction of the
+orthogonal complement of Fe um but if we
+want to have an oblique projection
+instead we need an additional component
+which is another Subspace s I'm sorry
+the another Subspace which is given by
+the span of s and so uh the oblique
+projection will take the vector q and
+project it onto onto the span of Fe
+along the orthogonal complement of uh of
+the span of s and so in general we like
+projections because if if the vector Q
+lies in the range of the projection uh
+then basically project the the
+projection operator P Act is effectively
+the identity uh operate operator on on
+its range and So intuitively speaking
+and from from a physical standpoint this
+means that the operation of encoding and
+decoding the F state does not introduce
+a spe drift in the ROM state so
+basically what we're saying if the ROM
+Dynam if the reduced order model state
+is evolving uh we want it to be evolving
+because of the ROM Dynamics not because
+of the of the operation of encoding and
+decoding going from high dimensional to
+low dimensional space so this is uh
+Loosely speaking the reason why we like
+projections now why do we like oblique
+projections so there's many reasons why
+we you know going over all the reasons
+why it would take a lot of time uh but
+in general uh we need oblique
+projections for uh systems that are
+commonly referred to as non-normal and
+so where uh um Loosely speaking uh low
+energy states that we might not be able
+to see in a Sim
+are nonetheless dynamically important
+and so to capture those types of
+mechanisms we need oblique projections
+so I thought I'd give you an example of
+uh the reason why oblique projections
+are good so this is not quite an
+explanation of uh why we need them but
+more so evidence of the fact that we do
+need them so uh as a simple example here
+we have a the the complex ginsborg low
+equation uh we'll go back to a
+description of it uh in in in a little
+bit but for for now the important thing
+is that we have a 1D PD and we'd like to
+be able to compute reduced order models
+that are uh that can predict the time
+history of the output y uh in response
+to some input U uh and so that that's
+the name of the game so instead of
+solving this pde uh we want in this
+specific case five dimensional reduced
+order models that can tell us what
+happens to why as we force the system
+with some unknown unseen input U and so
+uh I'll try to unpack unpack this figure
+uh as best I can so what we did here is
+we forced equation for with an Impulse
+so we uh started from nonzero initial
+condition uh in the span of B at initial
+time and then we let the simulation go
+and we compute U uh I'm sorry Y and so
+the ground Truth uh history of the
+output Y is given by the black line and
+then what we do here is we use four
+different model reduction approaches to
+compute five-dimensional reduced order
+models and I'll describe each one of
+them uh in detail in a little bit but uh
+for now the important thing is the
+following so we have the first two
+methods are uh one is intrusive and the
+other one is not intrusive but the
+important thing is that they they both
+rely on orthogonal projections onto a
+low dimensional Subspace the bottom two
+are one is intrusive the other one is
+non intrusive and it's the one I'll be
+talking about uh mostly today but the
+more the most important thing is that uh
+they compress the data using oblique
+projections and you see the striking
+difference between uh the predicted
+capabilities of models that use oblique
+projections over models that use
+orthogonal projections both models using
+oblique projections are doing a great
+job at tracking the ground truth history
+of the output uh whereas the the the
+models that rely on orthogonal
+projections are not doing that that
+great a job and this is also true for a
+different type of input uh we're forcing
+with a sinusoid now uh but the the
+picture Remains qualitatively the Same
+in the sense that uh oblique protection
+ROMs are doing a good job of tracking
+the output whereas orthogonal protection
+ROMs are uh are not really uh giving us
+good pred prediction uh of what happens
+to Y in response to U all right so I
+hope this this was uh I guess convincing
+evidence enough of of of the reason why
+we need oblique projections uh for uh
+for model reduction so here's an
+overview of uh some existing
+formulations um so perhaps the most
+well-known uh uh approach for uh to
+obtain a reduced D model is is petal
+luring uh and so this is an intrusive
+approach and Computing the reduced T
+model requires knowledge and access to
+the full order governing equ governing
+equations and so if we have the if the
+the F equations are given by equation
+five this again could be the the
+spatially discretized N Stokes equations
+then the Petro galeran Dynamics are
+given by equation six and what equation
+six is telling us that is that uh we are
+constraining uh the state q uh to the
+range of the projection for all times
+and also uh not only are we projecting
+the state onto the range of P but we're
+also projecting the Dynamics F onto the
+range of p and so we obtain this uh this
+model that uh is to be designed in such
+a way that uh Q hat is as close as
+possible uh to uh the original uh the
+original state q uh and so even though
+the state q hat in this specific the way
+of written it has the same dimension of
+the state q uh the Dynamics in six can
+be realized by a low dimensional system
+where the dimension uh of the state Z is
+that of the rank of the projection and
+so we see that uh
+basically the takeaway from this slide
+is that petaler model the the degrees of
+freedom in petaler model so what we uh
+what we get to choose are uh the
+matrices FMI but once we choose th those
+the ROM Dynamics are uh fully determined
+by fepi and by the full order Dynamics f
+um I would like to point out that
+actually uh we don't need to specify FMI
+more so as the their span so really a
+Peter model is not a function of of the
+matrices FMI but rather a function of
+the the the spaces that they span and
+we'll we'll come back to that in a in a
+little bit so the name so question is
+how do we pick FMI there different ways
+to do that perhaps the most uh popular
+one is uh
+pod fodal lurking is a weakly intrusive
+approach and it's uh historically the
+simplest way to choose FM side in fact
+it goes like this we collect data from a
+full order
+simulation uh we stack it into a matrix
+and we take it SVD uh then what we do is
+we retain the first R Columns of U uh we
+call these the leading r pod modes and
+then we simply set F equal toi equal to
+the first rpod modes uh once we have fee
+we can easily compute uh the ROM
+Dynamics as shown uh in bullet point 3
+and so this implicitly defines an
+orthogonal projection onto the range of
+the Pod modes uh and the ROM is known as
+a gurin model um and so from an in
+standpoint what we're doing here is we
+are projecting the governing equations
+onto the span of the most energetic uh
+features uh of of uh of the system
+however uh as as as as as I discussed
+briefly a few minutes ago there might be
+uh non-energetic states that are
+dynamically relevant so that's that's
+when we need oblique projections
+and so uh a common way to get an oblique
+projection is balance truncation and so
+and it it was uh was first developed in
+1981 so it's a somewhat old formulation
+uh and it's a tool from linear control
+theory and the method is highly
+intrusive and I'll describe in a in a
+minute what I what I mean by it and so
+um balance proc balance truncation
+procedes as follows we start from the
+nonlinear governing equations and first
+step is we need to linearize about a
+fixed point so here a is the
+linearization of of f uh uh is the
+derivative of f with respect to State
+and the input Matrix u b is the
+derivative of f with respect to the
+control input and so now we've obtain
+we've we've obtained a linear timing
+baring system uh which we can work with
+we we like LTI systems because we kind
+of know everything there's to know about
+LTI systems and we can work with them
+pretty easily and so the the name of the
+game in balance truncation is the follow
+is is is is the following we want to
+find and truncate a set of coordinates
+where the controllability and
+observability gramms are equal and
+diagonal now the the specific details
+are are not important but basically to
+find FM s we need to compute uh these
+integrals in the parenthesis and you see
+that these integrals which are the
+gramians depend on a and a star which is
+the ad joint of a and so in that sense
+uh this method is very intrusive because
+uh we cannot treat the solver as a
+blackbox we have to go into the solver
+we have to linearize it then we have to
+compute it adile so that those are very
+uh intrusive operations in any case once
+we have FMI we can compute we can go
+back to our nonlinear system and we can
+obtain a peteran representation of it as
+follows so as I was saying uh this
+method is very intrusive because not
+only do we need to query F to compute
+ROM Dynamics but we also need to access
+the linearization and its agine around a
+steady state so that's that's an
+intrusive uh um that's that's an
+intrusive operation uh the third uh
+approach I'll be discussing today uh
+really briefly is is an ol formulation
+that we developed a couple years ago um
+and it's called troop it's trajectory
+based optimization of oblique
+projections and uh it produces a a ROM
+as follows the the the actual concept is
+is pretty straightforward uh we collect
+rectory data and we and and we save it
+from from a full order simulation and
+then uh what we want to do is we want to
+find subspaces uh B and W that define an
+oblique projection uh that minimize the
+SC function uh which is just the mean
+square error between the the ground
+truth data and the and the Bron
+prediction subject to a petrop alerin
+model uh of this form so remember that
+as I said before a noblique projection
+is not really a function of FM but it's
+a function of the subspaces V and W that
+they span so the optimization problem is
+carried out in terms of these subspaces
+and the appropriate optimization space
+is the grasp and manifold and we'll
+we'll come back to that uh in in a
+second once we discuss uh nitron but the
+takea away from this is this is an
+extremely intrusive procedure so if you
+want to compute the gradient of the cost
+function with respect to the subspaces
+then uh you can sort of see how we'll
+have to compute uh the linearization of
+F and its adint along entire entire
+trajectory so the the reduced order
+model is a function of FMI but these
+fed into the cfd solver so if you want
+to compute gradients we'll have to
+differentiate the cfd solver and that's
+uh that's extremely intrusive um okay so
+uh enough with intrusive methods we
+we'll move on to uh to uh one uh
+intrusive a non-intrusive formulation
+which is operator inference which is
+very much related to uh to nitron uh as
+we'll we'll see in a second so uh I'll
+provide a brief description of it uh
+here so as we were saying in petery
+models the only thing that we can choose
+are
+FMI uh and then the ROM Dynamics G are
+tied to the F Dynamics F in purely data
+driven methods we can also choose G as a
+matter of fact we're forced to because
+data is the only thing that we have to
+uh to back out G we cannot really access
+the the governing equations and so
+operator inference proceeds as follows
+the first step is we collect data from
+from a representative trajectory and we
+do pod and uh we uh we let FM equal b
+equal to equal to the Pod mode so we're
+implicitly defining we're compressing
+the data from a high dimensional space
+to the low dimensional space uh via
+orthogonal projection onto the span of
+pod modes and so the second step is the
+following well as I just said we we
+compress the data onto the span of pod
+modes and we get uh coefficients Z but
+we also uh want to get the coefficients
+uh we also want to get the time rate of
+change of those coefficients so we we we
+take the time derivative of the full
+order State and we projected onto the
+span of the Pod modes and so assuming
+that uh the reduced order Dynamics are
+polinomial form so they can be written
+as uh as as as as in this equation here
+uh operator inference solves uh this Le
+squares problem where basically we we
+want to find reduced order tensors a HB
+and however many others that minimize
+the difference between the ROM Dynamics
+and the time rate of change of the
+projection of the f State onto the Pod
+modes uh on on on the span of the Pod
+modes so basically in in operator
+inference we set the encoder decoder to
+be given by the Pod modes that defines
+an orthogonal projection and on the span
+of those modes we want to find uh
+polinomial Dynamics uh by fitting uh
+tensors okay great so this is kind of uh
+the overview of the methods that are uh
+inherently connected with with nitron
+which which I'll be talking about in a
+second uh I'd like to point out that
+there are many different other ways to
+to do model reduction as I said in the
+introduction discrete time uh uh uh
+discrete time Dynamics uh nonlinear
+encoder decoders but uh as far as we're
+concerned today this is uh what we will
+be uh comparing nitrum against so here
+we go so this is non-intrusive
+trajectory based optimization of reduced
+or models and uh this method kind of
+brings together Concepts both from
+intrusive model and uh and from operator
+inference but the the the beauty of it
+is that uh we we we will not need access
+to the governing equations and we can do
+the optimization purely from data and so
+loosely speaking is what we do is we
+simultaneously non intrusively look for
+optimal th S and G given full order
+trajectories and so uh this is the full
+order model um here again this could be
+any uh spatially discretized PD we have
+an initial condition condition q and
+then also we might be interested in some
+observable why uh this could be uh
+pressure at a wall could be sheer stress
+could be the velocity profile somewhere
+uh on on your computational grid and
+then what we're looking for are reduced
+order models of this form so uh we have
+the the Dynamics of uh of the ROM
+evolving the the coefficients on the
+span of a projection that will be
+defined shortly uh the initial condition
+is the projection of the initial
+condition of the farm onto the span of
+Fe and then we have the predicted output
+y
+hat and so uh a couple of things I want
+to I want to discuss a couple of things
+before we lay we we we lay down the uh
+the optimization problem in mathematical
+terms the first thing that we observe is
+that the ROM is not a function of Fe
+itself is a function of of of of the
+Subspace that span by Fe and so in fact
+you can it can be shown that for any
+invertible Matrix uh Matrix uh M of size
+R by R uh this relationship holds this
+means that uh if we stretch and rotate
+uh Fe we're not changing the reduced D
+model uh so our dimensional subspaces of
+RN are elements of the grasp and
+manifold uh and so we'll be looking for
+an optimal V uh on uh on the on the
+grasp and
+manifold uh a similar symmetry does not
+hold from s in fact there exist
+invertible R byr matrices M uh where uh
+equal where this equality doesn't hold
+so meaning that if we're if we rotate
+and stretch SI we do change the reduced
+order model and so uh the ROM is not a
+function of the span of s but rather a
+function of s itself uh nonetheless we
+want s to have rank R otherwise we
+wouldn't be able to define a projection
+and so uh without loss of generality we
+can take s to be an element of the
+steifel manifold uh which is the space
+of orthonormal n byr matrices and the
+third assumption well
+well the the the Assumption we make next
+on the ROM Dynamics is that they are
+polinomial and so we we're kind of
+borrowing this from operator inference
+that we described a minute ago and so
+yeah we're saying the polinomial
+Dynamics are polinomial uh the ROM
+Dynamics are polinomial so uh the
+parameters we'll have to learn from data
+are these tensors a h and b uh in Red so
+altogether the uh the red quantities on
+this slide are uh the ones we will be
+try to fit will will try to fit from
+data okay so mathematically this is the
+optimization problem so we have uh
+ground truth observations from the F
+called y collected at at some temporal
+temporal instances TI and then we have a
+reduced order model of polinomial form
+that will give us a prediction y hat at
+the same at the same uh at the same
+times and what we want to do is we want
+to minimize this cost function uh by
+choosing uh a Subspace B on the grasman
+manifold a uh a NR Matrix on the on the
+Ste manifold and reduced order tensors
+that Define the Dynamics and so the
+optimization uh is carried out on this
+product manifold of the grasman steel
+and as many linear spaces as uh the
+number of tensors that we're trying to
+fit from
+data okay so how do we compute the
+gradient so the the the the trick is
+that this manifold M that we've just
+defined maybe it's best if I go back
+it's an abstract manifold it's abstract
+in the sense that The Grassman is a is a
+is a manifold of subspaces and subspaces
+are uh uh abstract entities that we
+cannot represent on a computer the only
+way we can represent Subspace B on a
+computer is indirectly through through
+fee and then V is equal to the range of
+Fe so how do we uh how do we uh deal
+with this abstraction the way to do it
+is to work uh to view the steifel and
+the grasp and manifolds as
+submanifolds of an ambient space whose
+object whose elements can be represented
+easily on a computer so Ste can be
+viewed as an embedded sub manifold of
+ukian space of matrices of size n by R
+and then if we Define a metric on this
+space uh the the steifel manifold will
+inherit it and the grasper manifold can
+be viewed as a quotient manifold of the
+non orthogonal steal manifold so these
+are uh these are this is the space of uh
+n by r atries uh of rank R um and so
+again if we Define the um a met a metric
+on this base then the Gras manifold will
+inherit it um once we've done that uh it
+is possible to define the gradient of
+the cost function uh in terms of ukian
+space objects so for instance we can we
+we can Define the gradient of the cost
+function with respect to with respect to
+the Subspace V in terms of in terms of
+of of fee and so we can easily compute
+that on uh on a computer and so the
+approach is is quite standard we have
+our cost we we use the method of lrange
+multipliers we have our cost function we
+append uh the constraints uh and here
+Lambda are the lrange multipliers uh uh
+it can be shown that these satisfy a
+reduced order adjoint equations and then
+once we once we turn the crank on
+calculus variations uh it can be shown
+that the gradients uh that the gradient
+of the cost function with respect to the
+parameters can be computed in closed
+form so for instance just to give you a
+sense of what this might look like the
+gradient of L with respect to a looks
+like this right and so uh you can think
+of and and the procedure that gives you
+the gradient is uh it's it's it's it's
+very much akin to a back propagation uh
+when you're training neural networks uh
+the the I guess the the the the beauty
+of the way we laid out the problem is
+that the the gradient of of our quote
+unquote neural network uh it can be
+computed in close form and so we don't
+need automatic differentiation to carry
+out this
+optimization all right so uh I guess
+it's it's time for uh for some results
+now and we'll look at three different
+examples toy model a 1D PD and a lid
+driven cavity flow so the toy model is a
+system of uh three
+Odes uh it's it's very simple system uh
+we State X1 X2 and X3 we have an input U
+and what we're interested in is uh in uh
+um the time history of the outut Y in
+response to input c um this new here is
+a parameter uh that we've introduced to
+show the the need for oblique
+projections versus orthogonal
+projections so if you take if new is
+very small or even new or even equal to
+zero for the sake of the discussion uh
+the Dynamics become effectively linear
+but most importantly uh they are
+governed by a diagonal uh linear
+operator diagonal operator is normal uh
+and so we
+we expect that model reduction
+approaches that rely on orthogonal
+protections will give us uh good reduced
+order models uh instead if new is large
+the system is nonlinear but uh but more
+importantly the the this nonlinearity
+has a special feature so we see that it
+depends on X3 and so if you look at what
+X3 does X3 is the fastest decaying state
+of the system so it decays uh well its
+Dynamics are linear and it decays with
+the with with rate minus5 uh and so this
+X3 is the least
+energetic uh state of the system but
+nonetheless it has a very large effect
+on the Dynamics of X1 X2 so uh if if new
+is large of course and so if new is
+large we expect that uh we're going to
+need oblique projections for model
+reduction uh because we oblique
+projections give us the possibility of
+detecting the fact that low energy
+states uh might be very important from
+from ad dynamical
+standpoint uh okay so we consider two
+different cases uh new equal to 5 and
+new equal to 20 and we train the models
+with with four step responses so we
+we'll uh we we have a step input uh U we
+put it into the Dynamics and then we
+collect the time time history of why in
+response to these four uh these four
+steps uh just to be clear I'm not making
+a we're not Computing a parametric ROM
+as a function new we're considering two
+separate cases just to show uh when you
+may or may not need oblique project C
+for mot reduction so here uh we're
+showing the average testing error across
+100 step responses for new equal to 5
+and here for new equal to 20 so we see
+that for new equal to 5 we've seen that
+the Dynamics are effectively uh linear
+and normal so uh all model reduction
+approaches including those that use uh
+orthogonal projections namely podal
+lurking and operator inference are doing
+pretty well the error is is very is very
+low and even though we're improving on
+it with with our formulation there's
+really no need for oblique projections
+in this specific case but if we if we
+turn up the value of new then the
+Dynamics uh become more quote unquote
+non-normal where the this low energy
+state is becoming more dynamically
+important and we see that the two model
+reduction formulations that Leever
+leverage uh oblique projections uh are
+performing significantly better than uh
+orthogonal projection based reduced
+order models and so uh this is uh these
+are plots that are uh U computed using
+step responses this is what we trained
+on but what about different types of
+inputs um so here we put in uh sinusoids
+and so we didn't train on sinusoids and
+and we hope that our uh that our
+training has given us models that are
+capable of telling us what happens in
+response to a different type of input
+that we haven't seen before and so if
+new is small again and the Dynamics are
+effectively normal uh we see that uh all
+model reduction formulations are are
+doing are doing extremely well there's
+no distinction between between them at
+least from a qualitative standpoint but
+then if we uh if we turn on if we uh
+turn up the the value new we start
+seeing some some major discrepancies and
+we see that uh uh troop and nitrum uh
+that Rel oblique projections are
+tracking the ground truth output uh very
+well uh but the other two formulations
+uh are not doing so good a job as it can
+be seen from uh from this figure okay so
+this is this is all for for uh the
+reduced order model we'll move on to a
+more complicated system you've already
+seen this uh briefly in the um in the
+introductory section of of the talk uh
+but uh so this is the complex Ginsburg
+low equation so this is a
+one-dimensional PD uh and um uh where
+here new gamma and mu and a are
+parameters um we choose them so that the
+origin is linearly stable uh the system
+however despite the fact that it's
+stable uh it will um exhibit large
+amplitude Transit growth and this is
+this is due to the fact that the uh
+linear operator here is it's non normal
+uh and so again uh this is one of those
+instances where we'll need whether we
+work intrusively or non- intrusively we
+need to compress the data using oblique
+projections um and so the what just just
+just for the sake of example what what
+we'd like to do is to be able to predict
+uh outputs y uh in response to inputs uh
+uh B uh bu and so uh here in this figure
+I'm showing the spatial distribution of
+the input and output operators B and C
+here we have B uh in black and and C in
+red and so uh from a physical standpoint
+we're we're forcing the system uh uh
+Upstream uh and we're and we are
+observing the response Downstream and
+and and this is this is typical of uh
+spatially developing flows for instance
+where take a j for instance where you
+might actuate near the nozzle but then
+you want to look at what happens to the
+to to to verticity uh Downstream and so
+this is this is kind of what we're
+trying to uh to emulate here in this
+example and we look for models with
+Dimension five and we train with four uh
+impulse response uh impulse responses uh
+so the spatial distribution of the
+impulse uh is in the span of B uh what
+we what we what we VAR is the amplitude
+uh of the impulse magnitude U at time
+zero and so uh once we train uh then we
+test across 25 uh impulse responses with
+unseen amplitudes uh and here we have
+again pod Garing operator inference
+troop and our formulation nitron and we
+see that uh nitr and Troop uh for that
+matter uh are uh doing very well uh and
+they're uh they're maintaining uh a very
+low uh average error uh across time and
+here on the right hand side uh is is a
+representative uh trajectory of the
+output y uh taken from one of these
+impulses that we that we tested on and
+so we see that um both troop and nitrum
+are capable of tracking the ground truth
+um time history of the alpha y but the
+other two formulations uh with
+orthogonal projections uh are not really
+uh capable uh of giving us a a a
+faithful prediction of of what happens
+to the to the full order system in
+response to the input and then just for
+just to make sure that we've learned
+Dynamics and and we haven't overfit uh
+impulses uh we uh we change the we
+change the forcing input on the left
+hand side we're forcing with the sodal
+input uh with frequency Omega this is
+roughly the natural frequency of of the
+full order Dynamics and we see that
+we're um again we're tracking the output
+uh pretty well um and this is the analog
+for the second harmonic of the
+fundamental frequency and again we see
+that we're we're doing a pretty good job
+here as well um you can see some minor
+discrepancy
+uh here at at at later time uh this is
+probably due to the fact that uh the
+frequency content to Omega wasn't uh
+that dominant in the training data set
+so the model hasn't really seen a lot of
+two Omega structures uh showing up uh in
+uh in the in in the training data set so
+uh I I guess that uh the fouring with
+with frequency 2 Omega are somewhat out
+of distribution for uh nonetheless we're
+we're performing uh much better than
+than uh uh the other methods uh using
+orthogonal projections and much better
+than than operator inference which is
+non
+insures okay so this is the last example
+I'll be talking about so this is the uh
+I guess the the highest degree of
+complex complexity we've considered this
+is a uh two-dimensional incompressible
+uh lid driven cavity flow at Reynolds
+number
+8300 um the top boundary uh of of the
+domain moves with horizontal velocity U
+equal to 1
+and we spatially discretize the N Stokes
+equations with a finite difference uh uh
+scheme on a 100 by 100 grid so what we
+want to do here for the sake of example
+we want to Mo we want models that are
+capable of predicting uh the whole
+velocity field so the the the whole uh U
+andv velocity field on the whole domain
+in response to inputs that enter the
+flow via spatially localized body Forest
+that is placed uh near the uh top right
+corner so you can envision just being
+like a a gausian uh spatial profile that
+injects U uh that acts as a body force
+on the momentum equation of of of of the
+fluid um so what we do is we train
+reduced order models of Dimension 50
+with seven impulse
+responses and uh just to give you a
+sense for how this flow behaves uh I
+I've plotted the energy of the uh
+perturbation from the from the training
+trajectories um over time and what I
+mean by bir perturbations these are uh
+fluctuations about uh the study State uh
+that exists at rals number 8300 and so
+most notably what happens here is that
+um after an initial decay in energy uh
+the energy spikes back up at roughly at
+time equals uh five or six and this is
+uh this is typical behavior of of
+non-normal systems um where there's
+transient energy growth and and in this
+specific case it's pretty high amplitude
+um if the system was normal then uh the
+the energy wouldn't Spike back up and it
+would it would keep on decaying back to
+zero uh and also I'd like to point out
+that uh uh this this figure also
+indicates that the system is is quite
+nonlinear because uh these uh uh these
+lines are not scalar multiples of each
+other so if the Dynamics were linear
+then uh the these these would be scalar
+multiples of each other but they're not
+in this case so we're looking at a
+nonlinear system uh
+that has underlying non-normal like
+Dynamics all right so uh we do not apply
+troop in this specific case because it's
+because it's very intrusive but what we
+consider is pret of Garing projection
+operator inference and nitr and so this
+is the training uh error for the seven
+uh trajectories training trajectories we
+considered and this is the testing error
+for uh uh unseen uh impulses and we see
+that uh with nitron we've managed to uh
+keep the error pretty low even at times
+uh before 10 where we have that huge
+spike in energy um in the in the
+training trajectories and um and testing
+trajectories uh for that matter so the
+question we're asking next is okay we we
+we have a model that performs pretty
+well on uh impulse on on impulses um how
+does it perform on unseen inputs and so
+as before we forc the system uh Cally
+and so we consider we have six different
+runs and we consider uh harmonics of the
+frequency 1.25 and harmonics of the
+frequency one these are frequencies that
+are relevant uh for the the full order
+uh Dynamics and we see that in all
+settings we're doing a really good job
+at tracking the the energy the evolution
+of the energy of the of the
+perturbations uh for as I said uh for
+all for all scenarios in particular I
+want to point out that um at long time
+aside from uh perhaps discrepancies in
+amplitude we are uh we're getting the
+right phase of these oscillations and
+also at Early Times we're we're we're
+doing very well at tracking uh the
+initial growth uh uh of energy before
+the system settles onto a uh onto onto a
+force limit cycle um and so this is what
+snapshots from these Solutions look like
+we have top left the full order model
+this is ground this is ground truth
+solution computed from cfd this is
+nitron uh again these are 50 dimensional
+models operator inference and podal
+aring you see that podal aring and
+operator inference are underestimating
+the uh the magnitude of the verticity
+that arises in response to these sinodal
+inputs but also they're uh they're not
+uh predicting the face correctly so if
+if you look at this blue vertical
+structure here at x equal to 0.5 at the
+bottom of the cavity you see that uh
+operator inference and uh podal luring
+predict structures that are out of phase
+uh with that uh that structure by
+contrast uh nitron is doing a uh very
+good job at at predicting both the
+amplitude of the verticity field and the
+phase of vertical structures and here's
+another set of snapshots for a low
+frequency uh forcing input in this case
+again nitrum is uh capable of predicting
+uh given a good prediction of what
+happens to the Flow by contrast operator
+inference and P guring are uh uh they
+seem to be overestimating the V struct
+the vertical uh the magnitude of the
+verticity and they are not giving a
+faithful
+representation of the type of vertical
+structures that uh we see in response to
+the input okay so in conclusion we have
+introduced a novel non-intrusive model
+reduction framework for systems that
+exhibit large amplitud trans and growth
+uh and the key takeaway U is that we
+improve on existing non-intrusive
+methods by projecting the high
+dimensional data onto low dimensional
+Subspace via oblique projection and
+that's the key the the the Improvement
+here is that we're capable of uh
+Computing oblique projections directly
+from data uh for um for model reduction
+uh future work here we're considering
+linear projections onto onto linear sub
+spaces but uh it would be interesting to
+extend the formulation um to uh
+nonlinear projections onto uh polinomial
+manifolds uh and uh it it would be
+fascinating to be able to do so while
+keeping uh the uh while still being able
+to compute the gradient uh in close form
+and we'll have to see if we're able able
+to do that without relying on um
+automatic
+differentiation um yeah so I'd like to
+acknowledge contributions from uh my uh
+collaborators and co-authors bla bmer
+and Professor Boni at uh uiu and
+Professor Bon is my uh postdoc
+supervisor and then of course funding
+from uh the National Science Foundation
+okay well uh thank you for listening and
+I'm I'm I'm very happy to take any
+questions thank you thank you so much
+for the wonderful talk Alberto great job
+um okay let's have a Q&A sessions we do
+have a question from um the chat having
+asked thanks for the talk it was very
+interesting can you give us a more
+insight explanation on how oblique
+projection performs better than
+orthogonal projection right right yeah
+so let me see if I
+can per Okay so
+uh from a from a I guess from a I'm
+trying to give an answer from a physical
+but also mathematical standpoint so
+typically when we do orthogonal
+projections
+uh we we look at pod and and we we use
+pod to do so and pod will take
+trajectories and look and will give you
+a projection onto the features that are
+most energetic so for instance in this
+simple toy model um uh pod would tell
+you that the most energetic states are
+X1 and X2 and so we'd be performing uh
+we'd be projecting would would the
+reduced order model of would be
+neglecting uh the state X3 um the
+trouble with that is that the state X3
+even though is uh is very low energy
+because of the case very fast it's
+extremely dynamically important because
+we see that X3 has a large impact on the
+energetic structures so we have a
+situation where where we have uh high
+energy structures but their Dynamics is
+uh very much affected by low energy
+structures that procedures like pod
+would completely disregard so what an
+oblique projection lets you do is it
+lets you identify the high energy
+Subspace so that will it will give you
+fee high energy Subspace but it also
+lets the Poss gives you the possibility
+of choosing S and S can be chosen in
+such a way that it accounts for the fact
+that X3 is dynamically important
+so when you have a oblique projection
+you have uh more degrees of freedom if
+you will you have the Subspace where you
+project onto and you but but you also
+have a Subspace that tells you the
+direction along which to project and so
+uh by doing that um uh you're capable of
+of of that's that's that's Loosely
+speaking why oblique projection
+operators tend to work better um than
+orthal projection operators yeah all
+right thank you um next question is by
+gel
+why is the error consistently higher
+near T is equal to zero for example for
+slide
+27 across the
+board is yeah can you go to 27 is this
+due to the increased complexity of the
+function at all your times which
+diminishes later or is there another
+Factor contributing to this behavior
+that I might be missing right what
+happens with
+um where am
+I um what happens with these models if
+you extra Pate to times that your model
+hasn't seen uh right uh yeah so so
+there's two questions there I guess uh
+um the first one is why is the error uh
+consistently higher at Early Times okay
+so uh
+basically
+uh oblique in general uh okay so most
+most of the contribution to the cost
+function error is due to um the the long
+time Dynamics uh of the system so for
+instance if you if you have a limit
+cycle for for example uh a good reduced
+order model will be a a model that gives
+you the correct amplitude of the uh of
+the limit cycle oscillations and the
+correct phase and so in order to do that
+it might not be necessary to minimize
+the error at Early Times well important
+is that the ROM
+trajectory uh and
+the uh is in the correct phase with the
+farm trajectory once the farm enters the
+low dimensional Subspace so basically it
+it it's it's kind of it's kind of a
+feature it's kind of a it's kind of
+something that we have to live with like
+the initial condition that we are giving
+that we are looking at might not be
+closed to the Subspace uh that we're
+projecting uh that we're using for model
+reduction uh and we're okay with that uh
+what oblique projections allow us to do
+is that over time the ROM trajectory and
+the farm trajectory will approach each
+other and will continue in a
+synchronized fashion and so and at that
+point the ROM will be very good and the
+error will be very low so that's kind of
+uh early time errors is is kind of
+something that uh there's not much we
+can do about because the initial
+condition might be far away from the low
+dimensional Subspace that we're uh
+considering for model reduction so I
+hope that answers the question U second
+question that we had that uh was uh
+extra how does the model perform for
+long times uh well as uh it performs
+very well I guess so in uh this case for
+the toy model we've trained from 0 to 10
+uh but uh we're testing uh well the
+sosal input uh is is carried out for 30
+time units uh and uh so it's three times
+the temporal uh extension of the uh yeah
+it's like three times the length of the
+training uh data set uh and the same
+goes for uh the complex G below equation
+and the lid driven cavity flow uh we we
+we would hope that uh it's kind of
+a uh it's important that models are able
+to extrapolate in time uh and the the
+way to guarantee that is to make sure
+that we're actually learning good
+Dynamics uh and that we're not of course
+over fitting uh once uh once we're
+confident that the ROM uh is uh that the
+ROM Dynamics and the projection is is
+good then uh we tend to observe that the
+model is is is is very capable of
+extrapolating to to very long times that
+uh hadn't seen
+before yeah awesome well foll to that I
+me your uh examples
+are uh statistically periodic or the
+deterministically periodic right um
+if so if you
+are um extrapolating time domains um you
+have seen those Data before so it's you
+are able to capture that using the self
+space you trained uh with the obl
+project projections and operator
+inference um yeah I I'd like to point
+out that uh yes and no uh no in the
+sense that we we don't train on periodic
+dat data we train on impulses right so
+the the type of uh although the the the
+information contained within those
+impulses is enough yeah that the model
+uh figures out uh that uh if you force
+sinos Sally you will induce a limit
+cycle and with a certain frequency and
+amplitude and so that that that that's
+why it's uh capable of of of of of of
+giving good predictions for for a long
+time yeah so uh yeah I I I I I agree
+like uh the the the model is uh at the
+end of the day as as in with for any
+other data driven method uh uh if if the
+input is uh you know in distribution
+then we expect it to do well if for some
+reason we have inputs that uh that no
+signature on the training data then uh
+the model might fail yeah yeah uh
+totally agree um any other
+questions um I have a couple of
+questions so
+all right so before I go to my question
+yes uh Fe
+fero as two questions he said very
+interesting talk uh the his first
+question is do you have a follow ative
+estimate of the time saving of nitro ROM
+compared to the form in the example so
+basically speed up is talking about
+right um and second question is which
+criterian did you use to decide the
+dimension of the reduced model uh basis
+dimension of 50 great question for the
+for for the for the last example I guess
+yeah well okay so as far as speed up
+goes I haven't computed it but for this
+example we have uh okay so this would be
+uh two flow variables uh will be 20,000
+dimensional not if I'm not
+mistaken and so 20,000 degrees of versus
+50 I don't know you do the math like a
+thousand times
+faster roughly depending on yeah it's uh
+yeah it's it's quite a bit faster um and
+uh um as far as the other okay why why
+did you how did you pick the dimension
+okay so I picked the dimension by doing
+pod first and and and looking at the
+decay of the singular values of the
+training of the training data set and
+the leading 50 modes uh gave us uh I
+forget like roughly 99% of the total
+variance uh in the in the data so that's
+that's that's a very common Criterion to
+to pick the the underly ROM Dimension
+yeah all right um thank you Kel
+ask does it make sense to test this
+approach on chaotic equations such as
+the Len system that's a fantastic
+question
+uh um there might be a little bit of uh
+difficulties with that uh in that uh
+okay uh let's
+see um it might it might make sense to
+do it I I would actually be very curious
+to see what happens but uh one needs to
+be careful when Computing the gradient
+right uh because uh for uh when we're
+Computing the we're integrating the ROM
+ad equation in time and so effectively
+we're back propagating the error through
+uh the through the trajectories if the
+system is chaotic then then the then the
+gradient will blow up uh so uh there are
+uh I'm not too familiar with literature
+on how to handle that but I know there
+are ways to uh optimize systems uh uh
+you know in the presence of of of chaos
+so um one might need to do a little bit
+of trickery uh to uh to be able to to to
+carry out the optimization but um yeah
+uh in in principle yes uh I I would
+believe that it would make sense to uh
+uh to look uh to to apply this
+formulation to chaotic systems
+yeah thank for thank you um so going
+back to my questions my first question
+is kind of related to uh what diesel
+asked earlier um about you know earlier
+times you got higher eror and
+um for example you know the leet driven
+cavity uh problems um it clearly has a
+high energy phase and later on that
+energy dies dies out so there um for the
+particular problem if you if I have to
+divide the the simulation into two phase
+you know there's a allly phase and later
+phase there's a the concept called the
+time window the Ram uh where you can you
+know come up with a different set of the
+basis for the for different phase so in
+the beginning phase you you know tailor
+your basis so that it can capture the
+high energy better and then later on you
+know it's easier problem so you probably
+get away with the smaller dimension of
+the basis so I I think you know you you
+could extend your algorithm to time in
+doing framework uh to even uh further
+improve the this I uh the the relative
+better in the all time phase yeah that's
+that's that's a very that's very
+interesting thought uh yeah so I guess
+that uh that approach would uh let us
+maybe uh decrease the initial initial
+error due to the fact that the uh that
+the initial condition is far away from
+the Subspace we're projecting onto but
+then we move on to a different Subspace
+yeah uh later on time that that's that
+yeah that's a great thought um and yeah
+I mean there's a more discussions onto
+it but um yes that's the basic idea um
+and when you go from one phase to the
+another phase you could come up with a
+some sort of physics indicator depending
+on the applications so that that
+indicator tells you automatically where
+to change from you know first phase to
+the second
+phase because we don't want to manually
+you know cut at this time yes so yeah um
+my my second question is okay you have
+presented um in the context of the
+reproductive case
+only and natural Next Step would be the
+parameterization like the generalization
+of your method um if you can share any
+thoughts uh on that because that's
+natural next step right right uh yeah so
+if we want to have
+parametric uh reduced order models I
+guess that
+what and if I if I had to think about it
+really quick how to do it would be to uh
+interpolate across in in in parameter
+space uh and of course uh we'd have to
+be uh we'd have to be careful about how
+we do that because we're uh like at each
+at each parameter where we actually
+perform a fit we we are uh Computing uh
+subspaces and elements of of Steal
+manifold and so we we we we we'd have to
+interpolate on on on those manifolds and
+also we'd have to guarantee that uh the
+interpolated at uh on once we
+interpolate uh we preserve the property
+that uh F and S Define define a
+projection um yeah so um I guess that th
+those would be the the first concerns um
+yeah but yeah it's very very much uh
+next step on on how to extend it and I
+welcome any sort of input you guys are
+all experts in in these topics yeah yeah
+so there there is a interpolation in s
+manifold uh there's a tech for that so I
+I can definitely definitely share that
+with you but yeah totally agree um you
+know interpolation would be a way to go
+um yeah for the
+parameterizations right awesome okay um
+all right is there any other
+question okay if not let's thank our
+speaker for the wonderful talk thank you
+so much Alberto um thank so much thank
+you for joining very nice work and after
+this talk hopefully there will be more
+collaboration between Lawrence Li and
+your your I I I would love that let's uh
+let's let's keep in touch all right
+sounds good okay thanks for having me
+again byebye thank you bye

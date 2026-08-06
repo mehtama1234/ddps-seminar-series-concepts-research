@@ -1,0 +1,2230 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:02.800 --> 00:00:10.760
+All right, welcome everyone to DTPs seminar&nbsp;
+today, before we introduce our invited speaker,&nbsp;&nbsp;
+
+00:00:10.760 --> 00:00:16.320
+let's go over some rules and logistics. First&nbsp;
+of all, please mute yourself during the talk,
+
+00:00:17.400 --> 00:00:20.000
+but if you have questions, you&nbsp;
+cannot mute and ask questions&nbsp;&nbsp;
+
+00:00:20.000 --> 00:00:23.720
+during the talk. But otherwise, if you want to be
+
+00:00:24.400 --> 00:00:28.160
+don't, you don't. If you don't want&nbsp;
+to interrupt the presentations,&nbsp;&nbsp;
+
+00:00:28.160 --> 00:00:32.640
+you can use chat room and post your&nbsp;
+questions so that we can address them&nbsp;&nbsp;
+
+00:00:32.640 --> 00:00:38.200
+in Q and A session at the end. Second, today's&nbsp;
+DDPS seminar is open to external audience,&nbsp;&nbsp;
+
+00:00:38.200 --> 00:00:42.280
+therefore no classified discussion is&nbsp;
+allowed. So please watch out. Finally,&nbsp;&nbsp;
+
+00:00:42.280 --> 00:00:47.520
+the talk today will be recorded and uploaded&nbsp;
+in our YouTube channel. That's about it. Let&nbsp;&nbsp;
+
+00:00:47.520 --> 00:00:55.160
+me introduce our speaker today. It is an honor to&nbsp;
+host Dr Kyung Min Yao, who is a research scientist&nbsp;&nbsp;
+
+00:00:55.160 --> 00:01:05.680
+at IBM TJ Watson Research Center. He received a&nbsp;
+PhD in applied math from Brown University in 2011
+
+00:01:05.680 --> 00:01:08.800
+before joining IBM and research in 2013
+
+00:01:08.800 --> 00:01:14.960
+he was a postdoctoral fellow at the Lawrence&nbsp;
+Berkeley National Lab. Dr Yao has been working&nbsp;&nbsp;
+
+00:01:14.960 --> 00:01:22.360
+on a range of research areas from soft matter&nbsp;
+physics to atmospheric sciences. Since joining&nbsp;&nbsp;
+
+00:01:22.360 --> 00:01:27.880
+IBM Research, his research interest has&nbsp;
+been focused on hybrid physics, statistics,&nbsp;&nbsp;
+
+00:01:27.880 --> 00:01:36.240
+models and deep learning for random dynamical&nbsp;
+systems. Today, Dr Yao will talk about reducing&nbsp;&nbsp;
+
+00:01:36.240 --> 00:01:44.720
+data resolution for better reconstruction, super&nbsp;
+resolution of Navier stokes flow. I'm sure we are&nbsp;&nbsp;
+
+00:01:44.720 --> 00:01:51.920
+going to hear a wonderful talk. Now, let me before&nbsp;
+we before I pass the button to the doctor. Yeah,&nbsp;&nbsp;
+
+00:01:51.920 --> 00:01:57.840
+let me ask a in somewhat informal&nbsp;
+questions to get to know him better.
+
+00:01:59.480 --> 00:01:59.840
+So
+
+00:02:01.440 --> 00:02:04.240
+I know you like to travel with family,&nbsp;&nbsp;
+
+00:02:04.240 --> 00:02:10.080
+and I happens to know that your wife&nbsp;
+is, you know, some artists, yeah, job,
+
+00:02:11.280 --> 00:02:20.360
+if you can share your the most favorite, the place&nbsp;
+you have been so far and and, Hello, yeah. So it's&nbsp;&nbsp;
+
+00:02:20.360 --> 00:02:28.160
+more like a so my spare time is mostly devoted to&nbsp;
+helping out my wife, and she's actually painter.&nbsp;&nbsp;
+
+00:02:28.160 --> 00:02:36.320
+Bucha also does a photography and so on. So we&nbsp;
+kind of most impressed, most interesting places.&nbsp;&nbsp;
+
+00:02:36.320 --> 00:02:45.000
+We traveled to our Iceland. So we went to Iceland&nbsp;
+like three times or in the winter, so that you&nbsp;&nbsp;
+
+00:02:45.000 --> 00:02:51.560
+don't really got interrupted by any other people.&nbsp;
+So it was quite fascinating. If you go Iceland in&nbsp;&nbsp;
+
+00:02:51.560 --> 00:02:58.800
+winter, always be prepared, because, you know,&nbsp;
+sometimes this can happen one time, the first&nbsp;&nbsp;
+
+00:02:58.800 --> 00:03:07.160
+time we went to Iceland, then we actually got&nbsp;
+stuck in a mountain and stayed night in the car,&nbsp;&nbsp;
+
+00:03:07.160 --> 00:03:14.360
+and the next day we walked down the mountain to&nbsp;
+get rescued. So it was very fascinating place to&nbsp;&nbsp;
+
+00:03:14.360 --> 00:03:21.960
+us. Was it because of the snowstorm? Yeah, because&nbsp;
+of snow, I rented a small car which couldn't move,&nbsp;&nbsp;
+
+00:03:21.960 --> 00:03:27.280
+so I tried to shovel it out, but it didn't&nbsp;
+work. So yeah, next day we walked like three,&nbsp;&nbsp;
+
+00:03:27.280 --> 00:03:34.800
+four hours to find a farm and get rescued. So oh&nbsp;
+my goodness, that sounds devastating. Devastating.&nbsp;&nbsp;
+
+00:03:34.800 --> 00:03:41.000
+It was interesting. It was interesting. Okay,&nbsp;
+well, thank you for sharing though. Okay, well,&nbsp;&nbsp;
+
+00:03:41.000 --> 00:03:47.200
+thank you for sharing interesting story. Okay,&nbsp;
+the floor is yours. Okay, great. Thank you,&nbsp;&nbsp;
+
+00:03:47.200 --> 00:03:53.600
+Dr Cha for the introduction and the invitation.&nbsp;
+So I'm Kyung Min from IBM Research. The topic&nbsp;&nbsp;
+
+00:03:53.600 --> 00:04:00.120
+I'm going to talk today is mostly about&nbsp;
+like good old fashioned state estimation&nbsp;&nbsp;
+
+00:04:00.120 --> 00:04:08.680
+problem. But here the interest is that when we&nbsp;
+use super resolutions, sometimes we can get a&nbsp;&nbsp;
+
+00:04:08.680 --> 00:04:15.640
+better reconstruction of the ground truth state,&nbsp;
+particularly when the data is noisy. So this is&nbsp;&nbsp;
+
+00:04:15.640 --> 00:04:22.400
+the joint study with my collaborators,&nbsp;
+Maggie Mike and Segi. So in this study,&nbsp;&nbsp;
+
+00:04:22.400 --> 00:04:29.760
+we almost all contributed equally. Maggie mostly&nbsp;
+did the numerical simulations, and Mike and Segi&nbsp;&nbsp;
+
+00:04:29.760 --> 00:04:36.880
+were responsible for the theoretical derivations.&nbsp;
+I just did a little bit of everything. So so this&nbsp;&nbsp;
+
+00:04:36.880 --> 00:04:44.520
+is actually motivation of the study. When you have&nbsp;
+some observation of physical phenomena. It's very&nbsp;&nbsp;
+
+00:04:44.520 --> 00:04:52.280
+difficult to get away from corruption. This is&nbsp;
+one example how they actually measure the fluid&nbsp;&nbsp;
+
+00:04:52.280 --> 00:05:00.360
+velocity. The device shown on top left is called&nbsp;
+Particle Tracking velocimetry. We call it PTV. So.
+
+00:05:00.360 --> 00:05:06.520
+So in this PTB, they have suspensions&nbsp;
+of neutrally buoyant particles,&nbsp;&nbsp;
+
+00:05:06.520 --> 00:05:12.440
+and the movement of this neutral rebound&nbsp;
+particle is captured by high speed camera,&nbsp;&nbsp;
+
+00:05:12.440 --> 00:05:16.720
+so that you eventually end up&nbsp;
+with some images, something like
+
+00:05:17.920 --> 00:05:22.760
+bottom left. And then if you can&nbsp;
+identify the positions of the particle,&nbsp;&nbsp;
+
+00:05:22.760 --> 00:05:29.640
+comparing both images, then you can find, you&nbsp;
+can approximate the velocity at some locations.&nbsp;&nbsp;
+
+00:05:30.320 --> 00:05:34.040
+And you can imagine, if we&nbsp;
+use this kind of device,&nbsp;&nbsp;
+
+00:05:34.040 --> 00:05:39.400
+then the measurement we are getting out&nbsp;
+of this PTV is highly noisy, so the high&nbsp;&nbsp;
+
+00:05:39.400 --> 00:05:46.360
+resolution measurement we can get into something&nbsp;
+look like top left corner on the right figure.
+
+00:05:47.160 --> 00:05:51.920
+Although we can have some small scale&nbsp;
+structures, the data is highly corrupted,&nbsp;&nbsp;
+
+00:05:51.920 --> 00:05:59.400
+so it's very difficult to understand what's really&nbsp;
+going on. And then later, if we change the, say,&nbsp;&nbsp;
+
+00:05:59.400 --> 00:06:05.320
+some parameters such as the length of average&nbsp;
+or green space, or length of correlations,&nbsp;&nbsp;
+
+00:06:05.320 --> 00:06:13.120
+then you can move from the top left to the bottom&nbsp;
+right. So at this stage, now we have the much&nbsp;&nbsp;
+
+00:06:13.120 --> 00:06:20.480
+smooth velocity field. But the problem is that&nbsp;
+now all the high, small scale structures went&nbsp;&nbsp;
+
+00:06:20.480 --> 00:06:27.560
+away. So now the question we have is that, how can&nbsp;
+we what kind of resolution we want to work with,&nbsp;&nbsp;
+
+00:06:27.560 --> 00:06:35.640
+and how can we deal with the noise? So one of the&nbsp;
+interesting thing, one of the interesting, one of&nbsp;&nbsp;
+
+00:06:35.640 --> 00:06:41.040
+the interest is that if we can start from this&nbsp;
+bottom right corner that you've barely smoothed&nbsp;&nbsp;
+
+00:06:41.040 --> 00:06:49.640
+out low resolution information. And if we can use&nbsp;
+this information to reconstruct this high scale,&nbsp;&nbsp;
+
+00:06:49.640 --> 00:06:55.720
+a very high wave number phenomena, then&nbsp;
+that's going to be the ideal scenario,&nbsp;&nbsp;
+
+00:06:55.720 --> 00:07:00.280
+and that's where the super resolution&nbsp;
+comes in. So super resolution is this&nbsp;&nbsp;
+
+00:07:00.280 --> 00:07:05.800
+is not like a new area. Super resolution&nbsp;
+has been studied for a few decades. Now,&nbsp;&nbsp;
+
+00:07:05.800 --> 00:07:14.080
+the classical super resolution problem is actually&nbsp;
+using a sequence of low resolution images to&nbsp;&nbsp;
+
+00:07:14.080 --> 00:07:20.160
+reconstruct the high resolution data. So when you&nbsp;
+have some observation function which is fixed,&nbsp;&nbsp;
+
+00:07:20.160 --> 00:07:26.400
+the observation function in this case is&nbsp;
+denoted by this matrix, M, for example.
+
+00:07:26.400 --> 00:07:31.880
+Then this high resolution the ground truth&nbsp;
+data is projected on this low resolution&nbsp;&nbsp;
+
+00:07:31.880 --> 00:07:39.520
+image by observation function. And then, as&nbsp;
+we combine different frames of moving object,&nbsp;&nbsp;
+
+00:07:39.520 --> 00:07:46.320
+then different areas are captured by this, this&nbsp;
+observation function, then the basic idea is that&nbsp;&nbsp;
+
+00:07:46.320 --> 00:07:52.600
+we can stitch these different information&nbsp;
+together to generate the high resolution,&nbsp;&nbsp;
+
+00:07:52.600 --> 00:07:59.200
+high resolution image. So in this example, they&nbsp;
+actually shows that if we combine these many,&nbsp;&nbsp;
+
+00:07:59.200 --> 00:08:07.280
+like 55 low resolution frames, then they could&nbsp;
+come up with this high resolution, high resolution
+
+00:08:08.040 --> 00:08:11.440
+reconstruction of ground truth.
+
+00:08:11.440 --> 00:08:19.240
+But we with the development of deep learning now,&nbsp;
+the idea of super resolution has been changes&nbsp;&nbsp;
+
+00:08:19.240 --> 00:08:25.360
+that, instead of solving optimization problems&nbsp;
+to reconstruct the high resolution information&nbsp;&nbsp;
+
+00:08:25.360 --> 00:08:31.520
+by using a low resolution sequence of low&nbsp;
+resolutions. Now the idea is that we do every of&nbsp;&nbsp;
+
+00:08:31.520 --> 00:08:39.200
+these reconstruction in the training time. So once&nbsp;
+we have a tremendous amount of training data, then&nbsp;&nbsp;
+
+00:08:39.200 --> 00:08:46.960
+we do we can actually find a structure from this&nbsp;
+low resolution image to generate high resolution&nbsp;&nbsp;
+
+00:08:46.960 --> 00:08:53.800
+reconstruction, so that instead of having multiple&nbsp;
+images, now in deep learning time, we are mostly&nbsp;&nbsp;
+
+00:08:53.800 --> 00:09:01.120
+looking at a single image super resolution, that&nbsp;
+we just give this information. And we want to zoom&nbsp;&nbsp;
+
+00:09:01.120 --> 00:09:08.000
+in to we want to zoom into these rectangles and&nbsp;
+get a high resolution image. So this results show&nbsp;&nbsp;
+
+00:09:08.000 --> 00:09:15.600
+these super resolutions for this super resolution&nbsp;
+for this particular area, and this Bicubic is just&nbsp;&nbsp;
+
+00:09:15.600 --> 00:09:20.920
+like a simple bicu interpolation, which is mostly&nbsp;
+similar to the low resolution data we have. But&nbsp;&nbsp;
+
+00:09:20.920 --> 00:09:28.760
+when you apply this deep learning method, as shown&nbsp;
+here, the deep learning method provides much more&nbsp;&nbsp;
+
+00:09:28.760 --> 00:09:39.760
+realistic images than the and simple by keeping&nbsp;
+interpolations. So thanks to the success of deep&nbsp;&nbsp;
+
+00:09:39.760 --> 00:09:47.120
+learning in this single image, super resolutions&nbsp;
+now it has been applied to many different physical&nbsp;&nbsp;
+
+00:09:47.120 --> 00:09:54.000
+problems in first example shown here. Now they&nbsp;
+are. They went to really extreme. The super&nbsp;&nbsp;
+
+00:09:54.000 --> 00:09:59.920
+resolution problems that people usually looked&nbsp;
+at is mostly like four times or eight times.
+
+00:09:59.920 --> 00:10:05.280
+Super resolution. But in this particular&nbsp;
+study, they looked at a 50 times super&nbsp;&nbsp;
+
+00:10:05.280 --> 00:10:12.240
+resolution problem that they started to&nbsp;
+start from very low resolution image,&nbsp;&nbsp;
+
+00:10:12.240 --> 00:10:19.480
+and then they obscured it to the medium they&nbsp;
+have two models. One is that of scaling from&nbsp;&nbsp;
+
+00:10:19.480 --> 00:10:25.000
+low resolution to medium resolution, and they&nbsp;
+have another model stage of scaling from medium&nbsp;&nbsp;
+
+00:10:25.000 --> 00:10:31.560
+resolution to high resolutions. So that they&nbsp;
+claimed that if we have this step wide approaches,&nbsp;&nbsp;
+
+00:10:31.560 --> 00:10:37.000
+they could achieve 50 times super&nbsp;
+resolutions. And model was applied&nbsp;&nbsp;
+
+00:10:37.000 --> 00:10:43.920
+to some global scale climate problems. In&nbsp;
+this case, they the what's shown on the&nbsp;&nbsp;
+
+00:10:43.920 --> 00:10:50.520
+left is the original low resolution image,&nbsp;
+and using the method they can generate,&nbsp;&nbsp;
+
+00:10:50.520 --> 00:10:58.480
+they can generate the super resolution data shown&nbsp;
+on the right, which looks much more realistic,
+
+00:10:58.480 --> 00:11:04.680
+but more quantitative. Study is shown on&nbsp;
+the right. In this case, in this study,&nbsp;&nbsp;
+
+00:11:04.680 --> 00:11:10.840
+they are looking at the top round&nbsp;
+channel flows. So here it's mostly&nbsp;&nbsp;
+
+00:11:10.840 --> 00:11:17.000
+like a four time super resolution problem.&nbsp;
+The right most column shows the DN Omega&nbsp;&nbsp;
+
+00:11:17.000 --> 00:11:21.720
+simulation. That's the ground truth. And&nbsp;
+when they supply the low resolution data,&nbsp;&nbsp;
+
+00:11:21.720 --> 00:11:28.560
+which is shown on the left, then their neural&nbsp;
+network can generate the higher resolution data,&nbsp;&nbsp;
+
+00:11:28.560 --> 00:11:34.480
+which looks much more realistic. And what's very&nbsp;
+what's interesting in this study is that when you&nbsp;&nbsp;
+
+00:11:34.480 --> 00:11:41.840
+look at the energy spectrum of the super&nbsp;
+resolution research that is shown on here
+
+00:11:41.840 --> 00:11:43.000
+in this
+
+00:11:43.760 --> 00:11:51.280
+energy spectrum, the black line is ground truth,&nbsp;
+and the vertical line shown here is the cut off&nbsp;&nbsp;
+
+00:11:51.280 --> 00:11:57.800
+length, meaning that they generate the low&nbsp;
+resolution data by using spectral filter,&nbsp;&nbsp;
+
+00:11:57.800 --> 00:12:04.600
+which cuts off All the old high wave number of&nbsp;
+information after the reconstruction, the energy&nbsp;&nbsp;
+
+00:12:04.600 --> 00:12:12.320
+spectrum of the reconstructed field is shown as&nbsp;
+symbols which is almost identical to the ground&nbsp;&nbsp;
+
+00:12:12.320 --> 00:12:20.600
+truth. So it means that this is super resolution&nbsp;
+method can actually recover the ground truth,
+
+00:12:22.400 --> 00:12:29.520
+which is very generating the images that is very&nbsp;
+close to the physical phenomena that's happening.&nbsp;&nbsp;
+
+00:12:29.520 --> 00:12:32.200
+But what we actually need to
+
+00:12:33.240 --> 00:12:37.440
+remember here is that even though there&nbsp;
+was success in Super, you know, applying&nbsp;&nbsp;
+
+00:12:37.440 --> 00:12:45.040
+super resolutions for the physical problems, the&nbsp;
+super resolution is a reported problem, so that&nbsp;&nbsp;
+
+00:12:45.680 --> 00:12:53.040
+you don't really have a unique solutions to match&nbsp;
+the low resolution data. So there can be infinite&nbsp;&nbsp;
+
+00:12:53.040 --> 00:12:57.760
+number of solutions to match the low resolution&nbsp;
+data from high resolutions. One example shown here&nbsp;&nbsp;
+
+00:12:57.760 --> 00:13:04.240
+is that on the left we can have apparently broad&nbsp;
+image of Obama. But after the reconstruction, they&nbsp;&nbsp;
+
+00:13:04.240 --> 00:13:11.600
+get someone else. And what is shown here is that&nbsp;
+they have the very broad image of some person,&nbsp;&nbsp;
+
+00:13:11.600 --> 00:13:17.720
+and they their neural network is generating&nbsp;
+many different possibilities, and all of these&nbsp;&nbsp;
+
+00:13:17.720 --> 00:13:25.680
+possibilities apparently different people can&nbsp;
+match the low resolution data. So in a sense,&nbsp;&nbsp;
+
+00:13:25.680 --> 00:13:31.880
+super resolution is important problem. There is&nbsp;
+no unique solution. So one possibility is that if&nbsp;&nbsp;
+
+00:13:31.880 --> 00:13:38.800
+we have the recall super resolution reconstruction&nbsp;
+of a single image to image, then the reconstructed&nbsp;&nbsp;
+
+00:13:38.800 --> 00:13:46.240
+field may satisfy the kinematic conditions. For&nbsp;
+example, if we have incompressible flows, then it&nbsp;&nbsp;
+
+00:13:46.240 --> 00:13:53.840
+may satisfy the mass conservation. But there is no&nbsp;
+guarantee that this satisfies the net, satisfy the&nbsp;&nbsp;
+
+00:13:53.840 --> 00:13:59.040
+reconstruct field satisfies this a dynamic&nbsp;
+constraint, such as moment conservation.&nbsp;&nbsp;
+
+00:13:59.960 --> 00:14:05.400
+So there are new studies that comes out.&nbsp;
+They in this individual studies, the people&nbsp;&nbsp;
+
+00:14:05.400 --> 00:14:13.400
+are started looking at the sequence to sequence&nbsp;
+reconstruction. So now we are going back to the&nbsp;&nbsp;
+
+00:14:13.400 --> 00:14:19.960
+classical time of day. We try to reconstruct.&nbsp;
+We try to do the super resolution based on&nbsp;&nbsp;
+
+00:14:19.960 --> 00:14:29.720
+the sequential information and in to actually&nbsp;
+satisfies the dynamic constraint. So in this plot,
+
+00:14:30.800 --> 00:14:37.080
+the top, in this study, what they did is&nbsp;
+that they are looking at the sequence of&nbsp;&nbsp;
+
+00:14:37.080 --> 00:14:42.160
+low resolution images centered around the&nbsp;
+high resolution reconstruction they want&nbsp;&nbsp;
+
+00:14:42.160 --> 00:14:48.280
+to have. And then in this plot, the&nbsp;
+figure on the right is ground truth,&nbsp;&nbsp;
+
+00:14:48.280 --> 00:14:56.160
+and one left is the multiple, multiple time&nbsp;
+step snapshot reconstruction, and the left&nbsp;&nbsp;
+
+00:14:56.160 --> 00:15:00.680
+is single natural reconstruction.&nbsp;
+So it looks almost the same, but.
+
+00:15:00.680 --> 00:15:06.840
+The multiple snapshot is a little bit better.&nbsp;
+So when you get the statistical properties&nbsp;&nbsp;
+
+00:15:06.840 --> 00:15:12.560
+that is shown here, again, this is the energy&nbsp;
+spectrum of turbulent flows. The black line&nbsp;&nbsp;
+
+00:15:12.560 --> 00:15:18.880
+is ground truth. And here, this blue line&nbsp;
+is the multiple snapshot reconstruction,&nbsp;&nbsp;
+
+00:15:18.880 --> 00:15:24.640
+and this red line is a single snapshot&nbsp;
+reconstruction. So they actually showed&nbsp;&nbsp;
+
+00:15:24.640 --> 00:15:31.280
+that having multiple snapshots to the&nbsp;
+reconstruction super resolution has a&nbsp;&nbsp;
+
+00:15:31.280 --> 00:15:38.480
+better accuracy than single snapshot, one single&nbsp;
+snapshot to snapshot of super resolutions.
+
+00:15:38.480 --> 00:15:44.280
+And this is the study that just came out in&nbsp;
+this society, they also have the similar idea.
+
+00:15:45.480 --> 00:15:53.320
+Instead of minimizing the error between low&nbsp;
+resolution and high resolution in each snapshot,&nbsp;&nbsp;
+
+00:15:53.320 --> 00:16:01.800
+now they are proposing to have a time marching&nbsp;
+error to satisfy the dynamic constraint and in&nbsp;&nbsp;
+
+00:16:01.800 --> 00:16:09.080
+fear on the right in this figure, the left&nbsp;
+first column is ground truth. Second column&nbsp;&nbsp;
+
+00:16:09.080 --> 00:16:15.960
+is the low resolution data. They essentially&nbsp;
+take the scales and and the compute the and get&nbsp;&nbsp;
+
+00:16:15.960 --> 00:16:22.680
+the average inside of scale. And right columns&nbsp;
+are super resolution reconstructions using this&nbsp;&nbsp;
+
+00:16:22.680 --> 00:16:29.720
+dynamic loss. And you can see that they are very&nbsp;
+close with okay. Do you have Kirsten, Yes, Doctor,&nbsp;&nbsp;
+
+00:16:29.720 --> 00:16:36.800
+can you talk about conservation properties like&nbsp;
+mass, momentum and energy in this super resolution
+
+00:16:37.960 --> 00:16:41.120
+because they are important for&nbsp;
+incompressible flows? Yeah,&nbsp;&nbsp;
+
+00:16:41.120 --> 00:16:43.800
+that's actually very good, Kirsten, so
+
+00:16:44.480 --> 00:16:45.920
+in this case,
+
+00:16:46.800 --> 00:16:52.040
+that's actually one of the purpose why we&nbsp;
+want to, why this author was going into this,
+
+00:16:52.560 --> 00:16:58.920
+this kind of time matching loss to the time&nbsp;
+matching rules, essentially having compelling the&nbsp;&nbsp;
+
+00:16:58.920 --> 00:17:03.960
+moment momentum conservations between the ground&nbsp;
+juice data and the super in the super resolution&nbsp;&nbsp;
+
+00:17:03.960 --> 00:17:13.320
+models to satisfy, so that each likely to satisfy&nbsp;
+the momentum conservation. But in always that
+
+00:17:13.840 --> 00:17:20.160
+the this is this provides a soft constraint, not&nbsp;
+harder constraint. So always, the issues with this&nbsp;&nbsp;
+
+00:17:20.160 --> 00:17:26.200
+deep learning model is that it's very hard to&nbsp;
+make the model to satisfy the hard constraint.&nbsp;&nbsp;
+
+00:17:26.200 --> 00:17:32.520
+So we it may approximately satisfy the moment&nbsp;
+conservation, but not exactly also same story&nbsp;&nbsp;
+
+00:17:32.520 --> 00:17:39.000
+goes to the mass conservation. So usually you&nbsp;
+need to have the actual mass conservation in
+
+00:17:39.800 --> 00:17:45.840
+in the in rows function. Otherwise&nbsp;
+it's going to be very tricky to
+
+00:17:45.840 --> 00:17:52.800
+trick it to 35 Okay, so with a&nbsp;
+different another question here,&nbsp;&nbsp;
+
+00:17:52.800 --> 00:18:03.000
+yeah, it says the Sean is asking, what is the&nbsp;
+definition for the N theta and variable fee?
+
+00:18:03.000 --> 00:18:07.480
+Oh, this fee is a time marching operator,
+
+00:18:07.480 --> 00:18:10.680
+and U is ground truth value.
+
+00:18:10.680 --> 00:18:17.560
+And then here what it is that it is first&nbsp;
+to C is a projection to the low resolution&nbsp;&nbsp;
+
+00:18:17.560 --> 00:18:24.320
+data. And then n we and then we apply N for the&nbsp;
+reconstruction, then applying it to the time,&nbsp;&nbsp;
+
+00:18:24.320 --> 00:18:28.760
+much more parameter. So we first to have&nbsp;
+the ground truth to the low resolutions,&nbsp;&nbsp;
+
+00:18:29.480 --> 00:18:33.800
+and then neural network to reconstruct&nbsp;
+high resolutions. And then applying time,&nbsp;&nbsp;
+
+00:18:33.800 --> 00:18:40.400
+much more parameter, and comparing these two.&nbsp;
+So the anyway, the method here is that if you&nbsp;&nbsp;
+
+00:18:40.400 --> 00:18:46.880
+look at this error plot. So this figure, the&nbsp;
+vertical line is the l2 error. Horizontal line&nbsp;&nbsp;
+
+00:18:46.880 --> 00:18:54.920
+is some computation parameters. And this green&nbsp;
+line is a single snapshot super resolutions.&nbsp;&nbsp;
+
+00:18:54.920 --> 00:19:02.560
+And this red line, this blue line, is multi&nbsp;
+snapshot of super resolutions, and it shows the&nbsp;&nbsp;
+
+00:19:02.560 --> 00:19:11.280
+multi snap super resolutions has a smaller errors&nbsp;
+than the single snap charge. So it has better
+
+00:19:11.280 --> 00:19:17.640
+it has a better approximation of ground truth.&nbsp;
+And what's interesting in this study is that
+
+00:19:18.960 --> 00:19:27.480
+they compare the flow field predictions using the&nbsp;
+data or simulations, and the super resolutions,&nbsp;&nbsp;
+
+00:19:27.480 --> 00:19:31.920
+data simulation, in this case, may&nbsp;
+use Newtonian logic. And what they&nbsp;&nbsp;
+
+00:19:31.920 --> 00:19:37.680
+found is that when there is a&nbsp;
+noise in the initial conditions,
+
+00:19:37.680 --> 00:19:40.640
+then in Super resolutions, the noise
+
+00:19:41.320 --> 00:19:47.960
+in Super later, super resolution method, the&nbsp;
+noise effect of the noise doesn't propagate a lot,&nbsp;&nbsp;
+
+00:19:47.960 --> 00:19:54.840
+you know, in downstream, so that the noise is&nbsp;
+quickly removed while they are you they when they&nbsp;&nbsp;
+
+00:19:54.840 --> 00:20:00.000
+use data or simulations, the noise propagates&nbsp;
+much longer, meaning that super resolution or.
+
+00:20:00.000 --> 00:20:03.600
+Also has some denouement capability.
+
+00:20:03.600 --> 00:20:05.440
+So the
+
+00:20:06.000 --> 00:20:12.280
+so this also did study essentially&nbsp;
+say that in Super resolutions,&nbsp;&nbsp;
+
+00:20:12.840 --> 00:20:18.440
+we want to have some dynamic we want to improve&nbsp;
+some dynamic effect. And that's actually what&nbsp;&nbsp;
+
+00:20:18.440 --> 00:20:25.480
+we are interested in in in this study. So&nbsp;
+if we simply, if we simplify the system,&nbsp;&nbsp;
+
+00:20:25.480 --> 00:20:31.880
+now we can have, we can simplify the system&nbsp;
+in this way that we have the original system,&nbsp;&nbsp;
+
+00:20:31.880 --> 00:20:37.880
+that that has the equation, that has the&nbsp;
+time machine system of a high resolution&nbsp;&nbsp;
+
+00:20:37.880 --> 00:20:45.960
+information denoted by mu, H, and we, and we,&nbsp;
+when we and then from this original system,&nbsp;&nbsp;
+
+00:20:45.960 --> 00:20:53.880
+now we get the high resolution information that&nbsp;
+is filtered to generate the low resolution data.
+
+00:20:53.880 --> 00:20:59.720
+And then we have another system that is&nbsp;
+called observer this observer system is&nbsp;&nbsp;
+
+00:20:59.720 --> 00:21:07.240
+supposed to have the high same occasion with&nbsp;
+the high resolution system. But this observer,
+
+00:21:08.400 --> 00:21:13.200
+this observer system, doesn't really&nbsp;
+have the same initial conditions as&nbsp;&nbsp;
+
+00:21:13.200 --> 00:21:19.880
+well as it. It doesn't really have the direct&nbsp;
+information over this high resolution ground&nbsp;&nbsp;
+
+00:21:19.880 --> 00:21:28.120
+truth. We only have an observation of this low&nbsp;
+resolution information. Then the and DC, this&nbsp;&nbsp;
+
+00:21:29.760 --> 00:21:36.240
+very simple schematic, explains that is&nbsp;
+captured the essence of this dynamic,&nbsp;&nbsp;
+
+00:21:36.240 --> 00:21:44.640
+super resolution problem we are looking at. Then&nbsp;
+the next question we can naturally have is that
+
+00:21:44.640 --> 00:21:49.760
+when we have very complex nonlinear dynamical&nbsp;
+system that is used that can be chaotic,&nbsp;&nbsp;
+
+00:21:49.760 --> 00:21:55.000
+such as neighbors applications, then for&nbsp;
+chaotic systems, what we know is that even&nbsp;&nbsp;
+
+00:21:55.000 --> 00:22:01.880
+small perturbations eventually make the make two&nbsp;
+systems diverge. But in this observer system,&nbsp;&nbsp;
+
+00:22:01.880 --> 00:22:07.320
+we don't, we don't see the ground truth&nbsp;
+of this high resolution information.&nbsp;&nbsp;
+
+00:22:07.320 --> 00:22:13.440
+We only see the filtered low resolution&nbsp;
+information. Then the question is that,&nbsp;&nbsp;
+
+00:22:13.440 --> 00:22:18.760
+when the system is chaotic, whether this&nbsp;
+is a super resolution model can really
+
+00:22:19.360 --> 00:22:23.120
+approximate the ground truth or not,
+
+00:22:23.120 --> 00:22:23.520
+and
+
+00:22:25.320 --> 00:22:31.600
+in TRA and the answer to this question is&nbsp;
+comes from very interesting phenomena called&nbsp;&nbsp;
+
+00:22:31.600 --> 00:22:40.440
+Chaos synchronization. So chaos synchronization&nbsp;
+means that when you have two chaotic systems,&nbsp;&nbsp;
+
+00:22:40.440 --> 00:22:46.120
+sometimes by exchanging informations,&nbsp;
+these two chaos systems can synchronize&nbsp;&nbsp;
+
+00:22:46.120 --> 00:22:52.200
+with each other. So this is one of the&nbsp;
+early examples of chaos synchronization,&nbsp;&nbsp;
+
+00:22:52.200 --> 00:22:58.440
+that on the left hand we have the&nbsp;
+original Ross equations, RO system,&nbsp;&nbsp;
+
+00:22:58.960 --> 00:23:04.560
+and on the right hand we have another Ross&nbsp;
+system that is starting from different initial&nbsp;&nbsp;
+
+00:23:04.560 --> 00:23:12.400
+conditions. But what they found is that if&nbsp;
+we share, if we have one of the dimensions&nbsp;&nbsp;
+
+00:23:12.400 --> 00:23:19.840
+of this original system to drive this observer,&nbsp;
+this observer system, then eventually we can,&nbsp;&nbsp;
+
+00:23:19.840 --> 00:23:26.040
+we can get this observer system synchronized&nbsp;
+with the original system. So that this kind&nbsp;&nbsp;
+
+00:23:26.040 --> 00:23:32.800
+of synchronized synchronization of character&nbsp;
+system has been studied, studies extensively,&nbsp;&nbsp;
+
+00:23:32.800 --> 00:23:39.960
+and there is a very nice review of this corporate&nbsp;
+dynamic system in this in this paper. So this&nbsp;&nbsp;
+
+00:23:39.960 --> 00:23:48.680
+kind of Kirsten synchronization was actually&nbsp;
+observed in turbulent flows. So in this study,
+
+00:23:49.200 --> 00:23:56.200
+they what they in this, this is very interesting&nbsp;
+study where they have this navy soxification,&nbsp;&nbsp;
+
+00:23:56.200 --> 00:24:03.720
+and they use some kind of spectra filter to&nbsp;
+generate the low resolution data denoted by u1
+
+00:24:03.720 --> 00:24:09.640
+and then now they have the observer system. This&nbsp;
+observer system only using this low resolution&nbsp;&nbsp;
+
+00:24:09.640 --> 00:24:19.920
+data and moving in time. What they found&nbsp;
+is that this delta t is the deviation of&nbsp;&nbsp;
+
+00:24:19.920 --> 00:24:27.360
+this this this observer system from the ground&nbsp;
+truth, and then what they found is that this,
+
+00:24:27.360 --> 00:24:35.480
+this, this deviation is actually diminishing&nbsp;
+to the motion accuracy. And the rate of this
+
+00:24:35.480 --> 00:24:45.600
+decay of the deviation is exponentially fast,&nbsp;
+so that they actually found when, when the
+
+00:24:47.240 --> 00:24:56.080
+when, when the low resolution data covers&nbsp;
+up to 10 or 15 times comor of time scale,
+
+00:24:56.080 --> 00:25:00.280
+then you can the this low resolution,&nbsp;
+this is super resolution, six.
+
+00:25:00.280 --> 00:25:05.960
+Can actually recover the ground truth&nbsp;
+almost exactly. So here the left one&nbsp;&nbsp;
+
+00:25:05.960 --> 00:25:12.800
+is the input data. That's the low resolution&nbsp;
+data, and the right column is the is the super&nbsp;&nbsp;
+
+00:25:12.800 --> 00:25:18.720
+resolution reconstruction that that really&nbsp;
+preserve a very small scale characteristics,&nbsp;&nbsp;
+
+00:25:18.720 --> 00:25:23.960
+and it actually converges the&nbsp;
+original high resolution system.
+
+00:25:23.960 --> 00:25:27.840
+So the same study has been there also has been
+
+00:25:29.640 --> 00:25:35.600
+same study on the chaos synchronization in&nbsp;
+neighbor sub flows. And what they suggested&nbsp;&nbsp;
+
+00:25:35.600 --> 00:25:44.840
+is that this chaos synchronization in neighbors&nbsp;
+applications actually occurs over a wide range&nbsp;&nbsp;
+
+00:25:44.840 --> 00:25:52.920
+of a parameters. And then they they suggested&nbsp;
+that this chaos synchronization is actually a&nbsp;&nbsp;
+
+00:25:52.920 --> 00:25:59.560
+properties of networkation, not the spec,&nbsp;
+not related to specific data or simulation&nbsp;&nbsp;
+
+00:25:59.560 --> 00:26:08.520
+algorithms. So this type of convergence&nbsp;
+of observer system to super resolution,&nbsp;&nbsp;
+
+00:26:08.520 --> 00:26:15.000
+observer system to to to ground truth has&nbsp;
+been studied a lot in data or simulation&nbsp;&nbsp;
+
+00:26:15.000 --> 00:26:20.920
+community. So this is one of the old study&nbsp;
+that was done by orphan TT. This is very&nbsp;&nbsp;
+
+00:26:20.920 --> 00:26:28.240
+classic study that should mathematically&nbsp;
+show proof that in 2d tolerance, that this
+
+00:26:29.560 --> 00:26:34.880
+this super resolution also so data or&nbsp;
+simulation actually converges to the ground&nbsp;&nbsp;
+
+00:26:34.880 --> 00:26:41.720
+truth. In more recent studies, they actually&nbsp;
+mathematically proved, also intuitive flows&nbsp;&nbsp;
+
+00:26:41.720 --> 00:26:46.600
+that when you use a super when you have super&nbsp;
+resolution models, under certain conditions&nbsp;&nbsp;
+
+00:26:46.600 --> 00:26:53.520
+that this is super resolution, the error of this&nbsp;
+super resolution model decreases exponentially&nbsp;&nbsp;
+
+00:26:53.520 --> 00:27:00.200
+fast and converges to the ground truth system&nbsp;
+with the motion accuracy. So what essentially&nbsp;&nbsp;
+
+00:27:00.200 --> 00:27:08.640
+says is that when we have a very clean system&nbsp;
+that is noise, that doesn't contain any noise,&nbsp;&nbsp;
+
+00:27:08.640 --> 00:27:16.360
+then super resolution model have the potential&nbsp;
+to actually reconstruct the ground truth,&nbsp;&nbsp;
+
+00:27:16.360 --> 00:27:23.560
+in particular for the Navy assort fluid. Then&nbsp;
+let's go back to the motivation in the beginning&nbsp;&nbsp;
+
+00:27:23.560 --> 00:27:31.880
+that we start now. We are looking at the system&nbsp;
+that is not noise free. We are interested in&nbsp;&nbsp;
+
+00:27:31.880 --> 00:27:39.520
+reconstruction of noise observations. Then we have&nbsp;
+many different behaviors. We have depending on the&nbsp;&nbsp;
+
+00:27:39.520 --> 00:27:45.720
+filter we are using, we can have many different&nbsp;
+resolutions. Now we want to have some guideline,&nbsp;&nbsp;
+
+00:27:45.720 --> 00:27:53.040
+watch the resolution we want to work with, and if&nbsp;
+we want to, if we use some of these resolutions,&nbsp;&nbsp;
+
+00:27:53.040 --> 00:27:59.200
+whether we have a guarantee of some kind&nbsp;
+of convergence to the ground truth system,&nbsp;&nbsp;
+
+00:27:59.200 --> 00:28:06.360
+so that, so far, there are many studies of super&nbsp;
+resolutions in for dynamic, turbulent flows and&nbsp;&nbsp;
+
+00:28:06.360 --> 00:28:13.200
+many physical systems. Most of this, most of&nbsp;
+the studies have been, have been empirical,&nbsp;&nbsp;
+
+00:28:13.200 --> 00:28:19.800
+and what we wanted to do achieve in this study&nbsp;
+is to provide some theoretical guideline whether&nbsp;&nbsp;
+
+00:28:19.800 --> 00:28:27.880
+this is super resolution model is actually working&nbsp;
+well if it works under what kind of conditions.
+
+00:28:27.880 --> 00:28:36.240
+So let me now talk about the problem setup of our&nbsp;
+study here we are still looking at two dimension,&nbsp;&nbsp;
+
+00:28:36.240 --> 00:28:42.480
+two dimensional, turbulent flows. The original&nbsp;
+system we are we are interested is that we&nbsp;&nbsp;
+
+00:28:42.480 --> 00:28:47.600
+are using is something called chrome work&nbsp;
+flow. This is essentially two dimensional&nbsp;&nbsp;
+
+00:28:47.600 --> 00:28:54.374
+incompressible Navier solicitation. And here&nbsp;
+the driving force is given by some signs,&nbsp;&nbsp;
+
+00:28:54.374 --> 00:29:00.040
+some sinusoidal function, some sine function.&nbsp;
+And then the computational domain is periodic.&nbsp;&nbsp;
+
+00:29:00.040 --> 00:29:07.440
+So we have two pi in two pi in both directions,&nbsp;
+and we use a pseudo spectra solver with 512,
+
+00:29:07.440 --> 00:29:12.520
+mode in each directions. So in the initial&nbsp;
+conditions, we randomly generate the initial&nbsp;&nbsp;
+
+00:29:12.520 --> 00:29:20.960
+conditions by by seeding a very high wave&nbsp;
+number of vertices. And then as time goes,&nbsp;&nbsp;
+
+00:29:20.960 --> 00:29:28.200
+we the vortices evolved to generate the turbulent&nbsp;
+field, as shown here. This plot is starting. This&nbsp;&nbsp;
+
+00:29:28.200 --> 00:29:37.800
+plot is a time evolution of the vorticity field,&nbsp;
+starting from time equal to zero to 13. So
+
+00:29:37.800 --> 00:29:43.840
+now we have the observer system.&nbsp;
+The Observer system is same as,&nbsp;&nbsp;
+
+00:29:43.840 --> 00:29:51.320
+the same as the ground truth system, so each&nbsp;
+it has, it's still neighbors application to&nbsp;&nbsp;
+
+00:29:51.320 --> 00:29:56.000
+the but this observer system has a different&nbsp;
+initial condition than the ground truth system,&nbsp;&nbsp;
+
+00:29:56.000 --> 00:29:59.880
+because we don't, we don't know the initial&nbsp;
+conditions, and this observer system is.
+
+00:29:59.880 --> 00:30:08.720
+Output to the ground truth by this feedback&nbsp;
+mechanism. Here l is some parameter that related&nbsp;&nbsp;
+
+00:30:08.720 --> 00:30:18.440
+to the relaxation time scale of this observer&nbsp;
+system to the ground truth. And this C is a rule.&nbsp;&nbsp;
+
+00:30:18.440 --> 00:30:26.160
+This is a role, resolution, projection operator,&nbsp;
+and this C is defined as in this equation.&nbsp;&nbsp;
+
+00:30:26.160 --> 00:30:36.280
+Essentially, what this operator does is we compute&nbsp;
+average velocity in sub domain denoted by omega j,&nbsp;&nbsp;
+
+00:30:36.280 --> 00:30:43.480
+and then we distribute this average over the&nbsp;
+over this subdomain. So if you look at the figure&nbsp;&nbsp;
+
+00:30:43.480 --> 00:30:49.760
+on the right, then this is the total computational&nbsp;
+domain. Then we divide this total computational&nbsp;&nbsp;
+
+00:30:49.760 --> 00:30:57.920
+domain into a disjoint subdomains, and in each&nbsp;
+subdomain we compute the average velocity,
+
+00:30:58.600 --> 00:31:03.720
+and then they distribute this average,&nbsp;
+average velocity within this sub domain.&nbsp;&nbsp;
+
+00:31:03.720 --> 00:31:12.560
+So we have a piecewise continuous velocity&nbsp;
+field in in in the in the whole domain.
+
+00:31:12.560 --> 00:31:18.440
+And this observer system is solved by a second&nbsp;
+order finite, different finite element method,&nbsp;&nbsp;
+
+00:31:18.440 --> 00:31:25.080
+so so that it has lower order accuracy than&nbsp;
+the one used for the data generation process&nbsp;&nbsp;
+
+00:31:25.080 --> 00:31:33.040
+and and this priority should satisfy some of&nbsp;
+the regularity conditions that is shown here.
+
+00:31:33.680 --> 00:31:38.920
+But I will get back to this&nbsp;
+conditions later in the talk.
+
+00:31:38.920 --> 00:31:44.680
+And we generate the noise observation,&nbsp;
+the noise observation, is generated by&nbsp;&nbsp;
+
+00:31:44.680 --> 00:31:51.640
+adding a adding white noise to the&nbsp;
+ground truth. So this is a small y,&nbsp;&nbsp;
+
+00:31:51.640 --> 00:31:58.040
+so this you is a high resolution ground truth.&nbsp;
+And then we add a random noise, white noise&nbsp;&nbsp;
+
+00:31:58.040 --> 00:32:05.880
+to this ground truth, to have noise observations.&nbsp;
+And then we apply this low resolution operator&nbsp;&nbsp;
+
+00:32:05.880 --> 00:32:11.680
+C to the high resolution noise observation to&nbsp;
+generate the data that we are supplying to the&nbsp;&nbsp;
+
+00:32:11.680 --> 00:32:20.880
+observer. So this Y denotes the data, and this&nbsp;
+figure shows the process that the left figure&nbsp;&nbsp;
+
+00:32:20.880 --> 00:32:28.200
+is the ground truth velocity. And then when&nbsp;
+we add the noise, the corrupted data looks&nbsp;&nbsp;
+
+00:32:28.200 --> 00:32:33.680
+like the figure on the mirror. And then the&nbsp;
+role resolution projection of this corrupted&nbsp;&nbsp;
+
+00:32:33.680 --> 00:32:41.560
+data that is we are supplying to the super&nbsp;
+resolution model is shown on the right. So,
+
+00:32:41.560 --> 00:32:47.720
+so So this low resolution data is, of&nbsp;
+course, much less, no easy than the&nbsp;&nbsp;
+
+00:32:47.720 --> 00:32:52.720
+than this high resolution data, but it is&nbsp;
+also very different from the ground truth,&nbsp;&nbsp;
+
+00:32:52.720 --> 00:32:57.840
+because we are filtering out many of the&nbsp;
+important, many of the small scale information.&nbsp;&nbsp;
+
+00:32:58.680 --> 00:33:07.960
+So in this, in this, in this corruption process,&nbsp;
+we don't actually request this noise, noise eta to&nbsp;&nbsp;
+
+00:33:07.960 --> 00:33:15.440
+be Gaussian, but we assume that this noise, this&nbsp;
+noise has a finite variance. So that we apply,&nbsp;&nbsp;
+
+00:33:15.440 --> 00:33:21.200
+we introduce a regularity conditions.&nbsp;
+This regularity condition means that
+
+00:33:22.720 --> 00:33:27.360
+this integral inside the bracket is&nbsp;
+essentially a variance of the noise,&nbsp;&nbsp;
+
+00:33:27.360 --> 00:33:33.760
+and this variance of the noise multiplied&nbsp;
+by some constant is less than one,&nbsp;&nbsp;
+
+00:33:33.760 --> 00:33:40.960
+meaning that so we we assume that there are&nbsp;
+some positive coefficient r which can be used&nbsp;&nbsp;
+
+00:33:40.960 --> 00:33:51.120
+to bound the variance, so as long as the noise&nbsp;
+is bounded, then this condition is satisfied.
+
+00:33:51.120 --> 00:33:54.360
+Now the main results,
+
+00:33:54.880 --> 00:34:01.400
+main research of the of our study, is&nbsp;
+summarized here, but here I'm not going to
+
+00:34:02.080 --> 00:34:07.440
+explain details about these theorems, but&nbsp;
+essentially, what we try to show in this&nbsp;&nbsp;
+
+00:34:07.440 --> 00:34:16.200
+theorem is that when we have this observer system&nbsp;
+which is coupled to the ground truth by using the&nbsp;&nbsp;
+
+00:34:16.200 --> 00:34:24.120
+low resolution observation, then this observer&nbsp;
+system converges exponentially fast to the&nbsp;&nbsp;
+
+00:34:24.120 --> 00:34:31.560
+neighborhood of the ground truth. And when there&nbsp;
+is when there is no noise in the observation,&nbsp;&nbsp;
+
+00:34:31.560 --> 00:34:40.360
+what is found before was that this G will&nbsp;
+exactly converge to you. But when there is noise,&nbsp;&nbsp;
+
+00:34:40.360 --> 00:34:47.640
+then then this observer system converges to&nbsp;
+you, but each only stage in the neighborhood&nbsp;&nbsp;
+
+00:34:47.640 --> 00:34:54.560
+not exactly converging to the ground truth, so&nbsp;
+that we have the convergence zone where this&nbsp;&nbsp;
+
+00:34:54.560 --> 00:35:01.160
+perturbation part of the velocity field&nbsp;
+converges to the original ground truth.
+
+00:35:01.160 --> 00:35:03.960
+Us. And once, once this
+
+00:35:04.520 --> 00:35:10.200
+observer is inside of this error bound,&nbsp;
+then each going, each going to stay there&nbsp;&nbsp;
+
+00:35:10.200 --> 00:35:16.880
+without, without escaping, so that this&nbsp;
+convergence zone is global, attracting.
+
+00:35:17.720 --> 00:35:22.320
+So this is so here, this&nbsp;
+is the main research of the
+
+00:35:22.320 --> 00:35:27.640
+study. And let me just briefly&nbsp;
+sketch what this theorem actually
+
+00:35:28.680 --> 00:35:36.680
+derived and what what actually what it actually&nbsp;
+means. So we first start from the weak form&nbsp;&nbsp;
+
+00:35:36.680 --> 00:35:44.480
+of the nabius application. That here the first&nbsp;
+line the weak form of the ground truth system,&nbsp;&nbsp;
+
+00:35:44.480 --> 00:35:50.440
+and the bottom is the observer system. And&nbsp;
+we subtracted these two to get the evolution&nbsp;&nbsp;
+
+00:35:50.440 --> 00:36:01.000
+equation of the error. So here, in this equation,&nbsp;
+what denoted by E, is the is the error, error term&nbsp;&nbsp;
+
+00:36:01.000 --> 00:36:09.840
+that the ground truth velocity field are subjected&nbsp;
+by the observer velocity field. And then the
+
+00:36:09.840 --> 00:36:17.120
+idea of this proof is that if we can&nbsp;
+find the bound of each of these terms,&nbsp;&nbsp;
+
+00:36:17.120 --> 00:36:24.720
+then we can have we can understand how this&nbsp;
+evolutionification will behave so but I'm not&nbsp;&nbsp;
+
+00:36:24.720 --> 00:36:31.720
+going to explain details about all of the other&nbsp;
+terms does. But what we are interested in here is&nbsp;&nbsp;
+
+00:36:31.720 --> 00:36:41.400
+what happens with something happening in this&nbsp;
+term. In this term, F is the driving force of&nbsp;&nbsp;
+
+00:36:41.400 --> 00:36:50.800
+the nebucha that's known, and this is capital F,&nbsp;
+is each the feedback force, so that this capital&nbsp;&nbsp;
+
+00:36:50.800 --> 00:37:01.000
+F is essentially a combination of the driving&nbsp;
+force with this observer, low resolution input.
+
+00:37:01.000 --> 00:37:07.880
+And then if we manipulate this capital app driving&nbsp;
+force term, now we can decompose it into two&nbsp;&nbsp;
+
+00:37:07.880 --> 00:37:15.920
+terms. One is that we have the projection&nbsp;
+of the error, and another term is the low&nbsp;&nbsp;
+
+00:37:15.920 --> 00:37:25.960
+resolution projection of the noise, and so that if&nbsp;
+we look at this term now, we can actually compute&nbsp;&nbsp;
+
+00:37:25.960 --> 00:37:35.280
+the upper bound of this inner product, as shown&nbsp;
+here. And what we are again in this upper bound,&nbsp;&nbsp;
+
+00:37:35.280 --> 00:37:44.240
+what we are interested in is only what's happening&nbsp;
+with this inner product between between the noise&nbsp;&nbsp;
+
+00:37:44.240 --> 00:37:50.640
+and the error term. So here, this is actually&nbsp;
+typo. It should be eta, not psi. But anyway,&nbsp;&nbsp;
+
+00:37:50.640 --> 00:37:57.440
+what we're interested in is only this in inner&nbsp;
+product between noise and the error term and then&nbsp;&nbsp;
+
+00:37:57.960 --> 00:38:07.640
+the bound of this noise. This noise in a product&nbsp;
+is shown here. So they refer to just write out,&nbsp;&nbsp;
+
+00:38:07.640 --> 00:38:11.640
+write down the definition of the inner product,&nbsp;&nbsp;
+
+00:38:11.640 --> 00:38:19.600
+and then we use the regularity condition that we&nbsp;
+introduced it before to come to get the bound,&nbsp;&nbsp;
+
+00:38:19.600 --> 00:38:24.760
+to get the bound of the of this inner product&nbsp;
+and at the end, at the end of the day,&nbsp;&nbsp;
+
+00:38:24.760 --> 00:38:31.800
+after doing some manipulations, now, we can&nbsp;
+find the upper bound of this inner product
+
+00:38:32.400 --> 00:38:39.440
+in terms of the l2 error and the&nbsp;
+coefficient sigma is defined in&nbsp;&nbsp;
+
+00:38:39.440 --> 00:38:47.160
+here. The Sigma depends on the size of the&nbsp;
+sub domain. This H is a side of sub domain,&nbsp;&nbsp;
+
+00:38:47.160 --> 00:38:54.840
+and r is the parameter that depends&nbsp;
+on the variance of the knowledge.
+
+00:38:54.840 --> 00:38:55.640
+So
+
+00:38:56.720 --> 00:39:03.080
+after doing, again, after doing, after doing&nbsp;
+some manipulation, this is again, writing down&nbsp;&nbsp;
+
+00:39:03.080 --> 00:39:11.160
+this inner product, and we we looked at what have&nbsp;
+what's happening inside of this inner product,&nbsp;&nbsp;
+
+00:39:11.160 --> 00:39:18.680
+between knowledge and error. Then we end up&nbsp;
+with some we end up with some conditions that&nbsp;&nbsp;
+
+00:39:18.680 --> 00:39:25.600
+we can find, some corruption to Delta features&nbsp;
+between zero and one. And once you have the&nbsp;&nbsp;
+
+00:39:25.600 --> 00:39:33.480
+conditions that this delta multiplied by&nbsp;
+L to error is larger than the the sigma,&nbsp;&nbsp;
+
+00:39:33.480 --> 00:39:41.280
+sigma coefficient from the regularity conditions,&nbsp;
+then what we can? We can? We can further reduce&nbsp;&nbsp;
+
+00:39:41.280 --> 00:39:52.160
+the the temporal time evolution of error into&nbsp;
+this form. And then if we have further conditions&nbsp;&nbsp;
+
+00:39:52.160 --> 00:40:00.000
+that the that the first term is less than the&nbsp;
+second term, then we can even simplify the error.
+
+00:40:00.000 --> 00:40:08.160
+Evolution equation shown here. So what it&nbsp;
+essentially says is that the upper bound of&nbsp;&nbsp;
+
+00:40:08.160 --> 00:40:14.880
+the time evolution over l2 error, l to error means&nbsp;
+that the super resolution reconstruction and the&nbsp;&nbsp;
+
+00:40:14.880 --> 00:40:23.760
+ground truth is bounded is exponentially decaying&nbsp;
+function. So we have the relaxation process that&nbsp;&nbsp;
+
+00:40:23.760 --> 00:40:32.640
+the upper bound of l2 error is decaying, and then&nbsp;
+to up to get this term. We actually made some&nbsp;&nbsp;
+
+00:40:32.640 --> 00:40:41.680
+of the assumptions that this l2 error is bigger&nbsp;
+than this coefficient sigma. So in other words,&nbsp;&nbsp;
+
+00:40:41.680 --> 00:40:49.000
+when this add to error is bigger, bigger than&nbsp;
+this, bigger than the right hand side, then&nbsp;&nbsp;
+
+00:40:49.000 --> 00:40:56.040
+error is decaying exponentially fast. And when&nbsp;
+add to error is less than the right hand side,&nbsp;&nbsp;
+
+00:40:56.040 --> 00:41:02.920
+then we don't know, we don't know whether&nbsp;
+it's going to decrease or increase but,
+
+00:41:03.800 --> 00:41:08.760
+but that's not our interest at this&nbsp;
+time. So based on these conditions,&nbsp;&nbsp;
+
+00:41:08.760 --> 00:41:14.000
+now we can have the zone of&nbsp;
+convergence, meaning that
+
+00:41:14.680 --> 00:41:20.160
+when add to error, is bigger than&nbsp;
+this joinable convergence, denoted by,&nbsp;&nbsp;
+
+00:41:20.160 --> 00:41:26.920
+denoted by here, then it's already exponentially,&nbsp;
+exponentially fastly decreasing, so that this&nbsp;&nbsp;
+
+00:41:26.920 --> 00:41:34.040
+joint of convergence essentially provides us&nbsp;
+the upper bound of l2 error. Now let's look at&nbsp;&nbsp;
+
+00:41:34.040 --> 00:41:40.800
+this upper bound a little bit more closely, so&nbsp;
+that this is the definition of the joint error,&nbsp;&nbsp;
+
+00:41:40.800 --> 00:41:48.360
+the conversion stone, then from the regular from&nbsp;
+the regularity conditions we had before. Again,&nbsp;&nbsp;
+
+00:41:48.360 --> 00:41:53.160
+what the what's happening inside&nbsp;
+of this bracket? It is just the
+
+00:41:53.160 --> 00:41:59.600
+variance averaged over the domain. And&nbsp;
+let's say we have the computational grid,&nbsp;&nbsp;
+
+00:41:59.600 --> 00:42:06.440
+or data grid that is shown here, that is&nbsp;
+high resolution data with grid size delta x,&nbsp;&nbsp;
+
+00:42:06.440 --> 00:42:14.240
+and we have a subdomain that is shown in this red&nbsp;
+rectangles that have size h. Then we can define a&nbsp;&nbsp;
+
+00:42:14.240 --> 00:42:21.800
+compression ratio that's the ratio between the&nbsp;
+size of the subdomain and the grid space. Then,&nbsp;&nbsp;
+
+00:42:21.800 --> 00:42:32.800
+using this compression ratio, now, we can show&nbsp;
+that whatever that the every expectation of this
+
+00:42:33.320 --> 00:42:38.000
+integration inside the bracket can&nbsp;
+be written as sigma square. That's&nbsp;&nbsp;
+
+00:42:38.000 --> 00:42:43.000
+the variance of the noise divided by&nbsp;
+c square. That's the compared to this&nbsp;&nbsp;
+
+00:42:43.000 --> 00:42:50.560
+compression ratio. Larger C means&nbsp;
+that we have a coarse resolutions.
+
+00:42:50.560 --> 00:42:55.240
+So using these conditions at the using&nbsp;
+these conditions at the end of the day,&nbsp;&nbsp;
+
+00:42:55.240 --> 00:43:04.880
+we can bound all of the expressions, and we find&nbsp;
+that the zone of convergence can be expressed by&nbsp;&nbsp;
+
+00:43:04.880 --> 00:43:11.600
+this equation, so that here this omega is the&nbsp;
+size of the computational domain, and data is&nbsp;&nbsp;
+
+00:43:11.600 --> 00:43:19.440
+some parameter positive parameter we can choose.&nbsp;
+Then what this equation essentially says is that&nbsp;&nbsp;
+
+00:43:19.440 --> 00:43:26.280
+the upper bound of error is proportional to the&nbsp;
+variance, standard deviation of the noise. But&nbsp;&nbsp;
+
+00:43:26.280 --> 00:43:34.240
+what's interesting is that it's actually inversely&nbsp;
+proportional to the grid size, so as long so if we&nbsp;&nbsp;
+
+00:43:34.240 --> 00:43:39.720
+each very counter intuitive, because when you&nbsp;
+have the high larger information, the usual&nbsp;&nbsp;
+
+00:43:39.720 --> 00:43:46.640
+intuition is that we want to somehow work with&nbsp;
+this high resolution information to get a better&nbsp;&nbsp;
+
+00:43:46.640 --> 00:43:54.640
+reconstruction. But what this research actually&nbsp;
+says is that if we reduce the resolution of the
+
+00:43:55.360 --> 00:44:00.280
+of this super resolution system, then&nbsp;
+we can resolution over the input data to&nbsp;&nbsp;
+
+00:44:00.280 --> 00:44:07.680
+super resolution, we can actually have a better&nbsp;
+reconstruction so that this, this Coronavirus,&nbsp;&nbsp;
+
+00:44:07.680 --> 00:44:16.400
+actually summarizes all of the derivations all&nbsp;
+over the profile just outlined that this figure,&nbsp;&nbsp;
+
+00:44:16.400 --> 00:44:21.800
+the quantity on the left, defines over the&nbsp;
+joinable convergence, and this general conversion,&nbsp;&nbsp;
+
+00:44:21.800 --> 00:44:28.800
+that the upper bound of error is essentially&nbsp;
+decreased when you when the data resolution&nbsp;&nbsp;
+
+00:44:28.800 --> 00:44:36.120
+gets closer so that, so here, that's the&nbsp;
+theoretical results. Now we are trying to
+
+00:44:37.160 --> 00:44:45.400
+show the not now we are trying to see that if the&nbsp;
+theoretical results can be observed in the actual&nbsp;&nbsp;
+
+00:44:45.400 --> 00:44:53.640
+numerical experiment. So here we do so. So this is&nbsp;
+our line of the numerical experiment. The original&nbsp;&nbsp;
+
+00:44:53.640 --> 00:44:59.960
+system, the two dimensional negotiation, was&nbsp;
+solved by the pseudo spectral method. And we are.
+
+00:44:59.960 --> 00:45:06.640
+Using 512 flier mode for to solve this&nbsp;
+neighbor substitution. And the observer&nbsp;&nbsp;
+
+00:45:06.640 --> 00:45:12.720
+system is now solved by second order&nbsp;
+finite element method. And then again,&nbsp;&nbsp;
+
+00:45:12.720 --> 00:45:21.440
+shown on the right is the high resolution grid.&nbsp;
+And we have this sub domain denoted by this
+
+00:45:21.440 --> 00:45:23.240
+red curve,
+
+00:45:23.880 --> 00:45:27.440
+and then we this. The size of this&nbsp;&nbsp;
+
+00:45:27.440 --> 00:45:32.700
+domain is denoted by h, and we have&nbsp;
+compression ratio that's giving us
+
+00:45:32.700 --> 00:45:39.080
+the this giving us the ratio of super&nbsp;
+resolution and the noise magnitude here&nbsp;&nbsp;
+
+00:45:39.080 --> 00:45:45.760
+is that the variance of noise is proportional&nbsp;
+to the turbulent kinetic energy. Turbulent&nbsp;&nbsp;
+
+00:45:45.760 --> 00:45:53.720
+kinetic energy is defined, defined on here,&nbsp;
+and then we use it different we looked at the
+
+00:45:54.760 --> 00:46:01.040
+different primary range that the viscosity&nbsp;
+change from zero to one, five to 009,
+
+00:46:01.040 --> 00:46:05.880
+and then different noisy letters&nbsp;
+and different compression ratios.
+
+00:46:06.480 --> 00:46:13.240
+And the actual code is, is, you&nbsp;
+can find the actual code in this,
+
+00:46:13.240 --> 00:46:20.680
+in this GitHub report, the this is open source&nbsp;
+code. You can, you can download and test it.
+
+00:46:20.680 --> 00:46:21.360
+So this is
+
+00:46:21.360 --> 00:46:27.520
+the research of the bellow theory construction&nbsp;
+for the parameter range shown here. So then now we&nbsp;&nbsp;
+
+00:46:27.520 --> 00:46:35.120
+are looking at the compression ratio of 32 meaning&nbsp;
+that we are looking at 32 times super resolutions.&nbsp;&nbsp;
+
+00:46:35.120 --> 00:46:41.280
+So this is the ground truth state in the initial&nbsp;
+conditional ground truth state, and we superposed&nbsp;&nbsp;
+
+00:46:41.280 --> 00:46:50.560
+noise to the initial state. And then this is the&nbsp;
+low resolution input data that is averaged by 3232&nbsp;&nbsp;
+
+00:46:50.560 --> 00:46:57.680
+by 32 grid. And then the right figure showing here&nbsp;
+is a super resolution reconstruction, but initial&nbsp;&nbsp;
+
+00:46:57.680 --> 00:47:04.440
+condition is of Super Regional reconstruction&nbsp;
+is just like almost zero in this case.
+
+00:47:04.440 --> 00:47:12.160
+And then after some time, here we are looking at t&nbsp;
+equal to eight. Then we then figure on the left is&nbsp;&nbsp;
+
+00:47:12.160 --> 00:47:18.400
+ground truth, and we have the corrupted data. And&nbsp;
+then eventually the reconstruction shown on the&nbsp;&nbsp;
+
+00:47:18.400 --> 00:47:25.520
+right is very close to the ground truth. And the&nbsp;
+figure on the figure on the middle is the actual,&nbsp;&nbsp;
+
+00:47:25.520 --> 00:47:31.680
+actual role resolution data that was supplied to&nbsp;
+the super resolution models. So that, if you look&nbsp;&nbsp;
+
+00:47:31.680 --> 00:47:38.320
+at the figure on the bottom, then the left, this&nbsp;
+is the velocity field in the center of the domain.
+
+00:47:39.080 --> 00:47:40.400
+This is the
+
+00:47:40.960 --> 00:47:46.160
+horizontal velocity at the center of domain.&nbsp;
+And you can see that this is a ground truth and&nbsp;&nbsp;
+
+00:47:46.160 --> 00:47:50.480
+this is the low resolution data, and super&nbsp;
+resolution reconstruction, in this case,&nbsp;&nbsp;
+
+00:47:50.480 --> 00:47:56.160
+becomes very close to ground truth, even though&nbsp;
+low resolution data doesn't really have this&nbsp;&nbsp;
+
+00:47:56.160 --> 00:48:04.960
+high small scale structures. So this figure,&nbsp;
+it shows the reconstruction error at one time&nbsp;&nbsp;
+
+00:48:04.960 --> 00:48:12.160
+snap. This is a snapshot. It's the same snapshot&nbsp;
+at t equal to eight. And here we are looking at&nbsp;&nbsp;
+
+00:48:12.160 --> 00:48:19.160
+the error field at different compression ratio.&nbsp;
+Compression ratio one means that each like a data&nbsp;&nbsp;
+
+00:48:19.160 --> 00:48:25.360
+or simulation algorithm, and then we apply the&nbsp;
+super resolutions. Then, as you can see here, that&nbsp;&nbsp;
+
+00:48:25.360 --> 00:48:33.400
+as we increase the compression ratio, then the&nbsp;
+error gets smaller and smaller. And in this case,&nbsp;&nbsp;
+
+00:48:33.400 --> 00:48:40.480
+if you get the color bar, the color bar changes&nbsp;
+from point one to minus one, while the color bar,&nbsp;&nbsp;
+
+00:48:40.480 --> 00:48:45.400
+color bar of the ground truth changes from two&nbsp;
+to minus two, so that the error range here is&nbsp;&nbsp;
+
+00:48:45.400 --> 00:48:52.480
+much smaller than the actual velocity field.&nbsp;
+And this is consistent with the study that I&nbsp;&nbsp;
+
+00:48:52.480 --> 00:49:00.200
+explained in the beginning that when you had where&nbsp;
+they found that the super resolution models have
+
+00:49:01.080 --> 00:49:05.960
+very strong characteristics in the denoising&nbsp;
+cap, very strong, very strong denoising&nbsp;&nbsp;
+
+00:49:05.960 --> 00:49:11.120
+capability. And we also showed that when you&nbsp;
+use super resolution, the error becomes much&nbsp;&nbsp;
+
+00:49:11.120 --> 00:49:19.760
+less than as we increase the size of the&nbsp;
+as we increase the size of the sub domains.
+
+00:49:19.760 --> 00:49:25.200
+And now we are looking at the convergence of&nbsp;
+this super resolution, the relative error.&nbsp;&nbsp;
+
+00:49:25.200 --> 00:49:33.360
+In this case, it is defined by l2 error divided&nbsp;
+by the velocity fluctuations. And the reason is&nbsp;&nbsp;
+
+00:49:33.360 --> 00:49:40.600
+that based on the joint definition of the general&nbsp;
+convergence and the definition of this variance of&nbsp;&nbsp;
+
+00:49:40.600 --> 00:49:49.080
+the noise. Now what you can see is that this&nbsp;
+is a relative error. Should should scare as
+
+00:49:49.080 --> 00:49:54.040
+the conversion stone like it should&nbsp;
+decay at the compression ratio. So&nbsp;&nbsp;
+
+00:49:54.040 --> 00:49:59.900
+if you look at this case, so you both of&nbsp;
+them are from same knowledge level, 1.6
+
+00:49:59.900 --> 00:50:07.840
+Is at different viscosity. What you can see is&nbsp;
+that, as we so this line is the c equal to one,&nbsp;&nbsp;
+
+00:50:07.840 --> 00:50:14.400
+meaning that there is no compression.&nbsp;
+And as we increase the compression ratio,&nbsp;&nbsp;
+
+00:50:14.400 --> 00:50:21.640
+the super resolution ratio, then we see that the&nbsp;
+relative error actually decreases. And then in the&nbsp;&nbsp;
+
+00:50:21.640 --> 00:50:27.400
+beginning, we also starting from different&nbsp;
+we are starting from zero velocity field,&nbsp;&nbsp;
+
+00:50:27.400 --> 00:50:34.680
+so we have different initial velocity than the&nbsp;
+ground truth. And this the the deviation from the&nbsp;&nbsp;
+
+00:50:34.680 --> 00:50:43.960
+ground truth decays exponentially fast. So that&nbsp;
+is consistent with the geo record predictions. One&nbsp;&nbsp;
+
+00:50:43.960 --> 00:50:52.080
+other thing we observe is that as we increase the&nbsp;
+size of sub domain, the super resolution ratio,&nbsp;&nbsp;
+
+00:50:52.080 --> 00:50:59.000
+and it first decrease, but then eventually,&nbsp;
+when we when we decrease the super when you&nbsp;&nbsp;
+
+00:50:59.000 --> 00:51:04.000
+increase super resolution ratio further than the&nbsp;
+error starting to diverge, the system starting&nbsp;&nbsp;
+
+00:51:04.000 --> 00:51:09.200
+to diverge from the ground truth. So the each&nbsp;
+first decreasing and each going up to here.&nbsp;&nbsp;
+
+00:51:09.200 --> 00:51:14.920
+That's because in theoretical predictions, we have&nbsp;
+some necessary conditions for the convergence,&nbsp;&nbsp;
+
+00:51:14.920 --> 00:51:23.920
+that the size of the subdomain, the ratio of&nbsp;
+the super resolution should be bounded by some&nbsp;&nbsp;
+
+00:51:23.920 --> 00:51:30.720
+constant multiplied by the viscosity, which is&nbsp;
+inversely proportional to the Reynolds number.
+
+00:51:30.720 --> 00:51:35.960
+Now, for the interest of time, I'm going&nbsp;
+to skip this figure and just go going to&nbsp;&nbsp;
+
+00:51:35.960 --> 00:51:40.320
+explain about this last figure. So in&nbsp;
+this last figure. Now this is actually&nbsp;&nbsp;
+
+00:51:40.320 --> 00:51:47.800
+summarization of all the experiments here&nbsp;
+we are looking at three different viscosity&nbsp;&nbsp;
+
+00:51:47.800 --> 00:51:56.360
+and the vertical axis is the relative error.&nbsp;
+Horizontal axis is the super resolution ratio,&nbsp;&nbsp;
+
+00:51:56.360 --> 00:52:06.480
+and different color means the different&nbsp;
+uh. Noise, noise level, so that
+
+00:52:07.040 --> 00:52:12.840
+going from top to bottom, we have, we have&nbsp;
+noise from change, noise level change from 1.6
+
+00:52:12.840 --> 00:52:20.760
+to zero, so that the line on the bottom is&nbsp;
+actually noise free, super resolution case.&nbsp;&nbsp;
+
+00:52:20.760 --> 00:52:27.160
+So what the fourth thing we notice is that if&nbsp;
+you look at if you see the figures, the the line&nbsp;&nbsp;
+
+00:52:27.160 --> 00:52:36.520
+here is C to the minus point five. So we actually&nbsp;
+see that when we increase the compression ratio,&nbsp;&nbsp;
+
+00:52:36.520 --> 00:52:45.240
+the error is a decrease error, error decreases,&nbsp;
+but the but the ratio that error decreases is&nbsp;&nbsp;
+
+00:52:45.240 --> 00:52:49.040
+actually much slower than the theoretical&nbsp;
+predictions. In theoretical predictions,&nbsp;&nbsp;
+
+00:52:49.040 --> 00:52:57.120
+we predicted C to the minus one, but in numerical&nbsp;
+experiment, we have c to the minus point five.
+
+00:52:57.120 --> 00:53:00.840
+But one reason that we have
+
+00:53:00.840 --> 00:53:06.160
+slower convergence is because of&nbsp;
+the you, because we are using a low,&nbsp;&nbsp;
+
+00:53:06.160 --> 00:53:15.000
+low order of CFP solver for the observers. The&nbsp;
+ground truth was generated by spectral method,&nbsp;&nbsp;
+
+00:53:15.000 --> 00:53:21.160
+while the low observer was solved by&nbsp;
+second order finite element method.&nbsp;&nbsp;
+
+00:53:21.160 --> 00:53:28.000
+The reason we use a low order, low order&nbsp;
+safety solver for the observer is that
+
+00:53:28.000 --> 00:53:35.040
+we want to mimic the real life scenario where we&nbsp;
+don't really have that kind of high resolution&nbsp;&nbsp;
+
+00:53:35.040 --> 00:53:39.320
+info. We don't really have that kind of high&nbsp;
+fidelity models to reconstruct the velocity&nbsp;&nbsp;
+
+00:53:39.320 --> 00:53:48.360
+field. So if we use the if you use the highly&nbsp;
+accurate pseudo spectral method, then this
+
+00:53:48.360 --> 00:53:52.920
+error, this noise free reconstruction,&nbsp;
+should going further down here,&nbsp;&nbsp;
+
+00:53:52.920 --> 00:53:59.920
+so that each electrolys to the ground truth&nbsp;
+with the motion accuracy. But instead of,&nbsp;&nbsp;
+
+00:53:59.920 --> 00:54:04.840
+instead, since we are using low low&nbsp;
+water Solver, we have the finite error,&nbsp;&nbsp;
+
+00:54:04.840 --> 00:54:12.840
+and this finite error may contribute to&nbsp;
+this slower decay of the of the error
+
+00:54:12.840 --> 00:54:18.800
+we observe in numerical experiments. And another&nbsp;
+observation is that as we increase the compression&nbsp;&nbsp;
+
+00:54:18.800 --> 00:54:25.400
+ratio and as we reduce the viscosity, then&nbsp;
+now the relative error first decreases,&nbsp;&nbsp;
+
+00:54:25.400 --> 00:54:32.680
+but each now starting to increase as we as&nbsp;
+we increase the super resolution ratio C,&nbsp;&nbsp;
+
+00:54:32.680 --> 00:54:40.320
+so each because in smaller viscosity, we&nbsp;
+have more strict regularity conditions.&nbsp;&nbsp;
+
+00:54:40.320 --> 00:54:44.840
+And then if we use a higher compression&nbsp;
+ratio, and eventually we are going to we&nbsp;&nbsp;
+
+00:54:44.840 --> 00:54:49.520
+are by we are violating the necessary&nbsp;
+conditions for the convergence.
+
+00:54:49.520 --> 00:54:55.880
+Now we finally get to the&nbsp;
+conclusions. So in conclusions,&nbsp;&nbsp;
+
+00:54:55.880 --> 00:55:00.280
+what you have done is more like a&nbsp;
+theoretical analysis of super resolution.
+
+00:55:00.280 --> 00:55:07.080
+We try to provide some guidelines or theoretical&nbsp;
+understanding why the super resolution works,&nbsp;&nbsp;
+
+00:55:07.080 --> 00:55:15.400
+or if the super resolution of this complex system&nbsp;
+actually works so that, and what we found is the&nbsp;&nbsp;
+
+00:55:15.400 --> 00:55:21.520
+counter intuitively, this theoretical analysis&nbsp;
+indicates a decrease of estimation error. That&nbsp;&nbsp;
+
+00:55:21.520 --> 00:55:30.080
+was very interesting. But one of the so in&nbsp;
+this summary, what the most interesting part&nbsp;&nbsp;
+
+00:55:30.080 --> 00:55:37.520
+is the last item that there is a limitations over&nbsp;
+the current study, because the diorica analysis&nbsp;&nbsp;
+
+00:55:37.520 --> 00:55:44.000
+is mostly limited to isotropic flows, and the&nbsp;
+estimate we are getting is very conservative,&nbsp;&nbsp;
+
+00:55:44.000 --> 00:55:49.520
+meaning that the error bound we provide as a&nbsp;
+general convergence actually should be much&nbsp;&nbsp;
+
+00:55:49.520 --> 00:55:56.360
+larger than what it should be. So we are it's&nbsp;
+actually for the follow up study that we are&nbsp;&nbsp;
+
+00:55:56.360 --> 00:56:01.080
+looking at. Then, how can you expand the&nbsp;
+current analysis to more complex flows,&nbsp;&nbsp;
+
+00:56:01.080 --> 00:56:06.560
+such as some inhomogeneous, turbulent&nbsp;
+flows, and how can you get a more sharper&nbsp;&nbsp;
+
+00:56:06.560 --> 00:56:14.560
+arrow bound than what we currently have so&nbsp;
+far? So thank you for your attention, and
+
+00:56:16.280 --> 00:56:20.120
+thank you. Thank you so much for the&nbsp;
+wonderful talk. Very fascinating,
+
+00:56:21.120 --> 00:56:26.240
+awesome. Let's have a Q, a sessions. Okay,&nbsp;
+so there are some questions in the chat room&nbsp;&nbsp;
+
+00:56:27.280 --> 00:56:34.920
+by Sean. I think he already left, but he said,&nbsp;
+Thank you for the nice talk. Perhaps a missing&nbsp;&nbsp;
+
+00:56:34.920 --> 00:56:42.760
+reference from Tama he was sharing, so there's&nbsp;
+a link for the paper. Okay, you wanted to share&nbsp;&nbsp;
+
+00:56:42.760 --> 00:56:50.840
+with you. Okay? The next question is by Kevin.&nbsp;
+He's asking, what's an intuitive explanation for&nbsp;&nbsp;
+
+00:56:50.840 --> 00:56:57.160
+the increasing accuracy with course on Mesh,&nbsp;
+while measurement noise is smoothed out by&nbsp;&nbsp;
+
+00:56:57.160 --> 00:57:04.680
+course of mesh, high frequency flow features&nbsp;
+can be preserved by observer flow model?
+
+00:57:04.680 --> 00:57:11.480
+Yes, that, yeah, that's actually very, very good&nbsp;
+question. So that one is that we are smoothing&nbsp;&nbsp;
+
+00:57:11.480 --> 00:57:20.400
+out by using this filter. Naturally, we are&nbsp;
+smoothing out the noise. Then that's good.&nbsp;&nbsp;
+
+00:57:20.400 --> 00:57:26.200
+But also we are submitting out the small&nbsp;
+scale features together with the noise,&nbsp;&nbsp;
+
+00:57:26.200 --> 00:57:34.720
+so that the question is that there is a balance&nbsp;
+that and so that even though we are submitting out&nbsp;&nbsp;
+
+00:57:34.720 --> 00:57:41.240
+the small high like high wave number features,&nbsp;
+by using this observer in Navier solicitation,&nbsp;&nbsp;
+
+00:57:41.240 --> 00:57:47.400
+we have some kind of, there is energy&nbsp;
+cascade is happening. That is the
+
+00:57:47.400 --> 00:57:51.160
+that is energy is cascading from small,&nbsp;&nbsp;
+
+00:57:51.160 --> 00:57:56.120
+large scale to small scales. And&nbsp;
+when we have sufficient, when this
+
+00:57:57.440 --> 00:57:59.320
+have,
+
+00:57:59.320 --> 00:58:05.040
+when, when this energy cascade&nbsp;
+happens at a certain scale, less than,
+
+00:58:05.880 --> 00:58:10.520
+less than certain scales, then&nbsp;
+we can actually recover all these&nbsp;&nbsp;
+
+00:58:10.520 --> 00:58:14.720
+high scale phenomena. That's actually, that's&nbsp;
+actually what founding, that's actually what,&nbsp;&nbsp;
+
+00:58:14.720 --> 00:58:19.760
+what we found in this study, that even though&nbsp;
+we have, we don't have information at very,&nbsp;&nbsp;
+
+00:58:19.760 --> 00:58:25.720
+very small scale. Say that even though we&nbsp;
+we filter all the information about 1015,&nbsp;&nbsp;
+
+00:58:25.720 --> 00:58:31.360
+times Coronavirus scale, we can actually&nbsp;
+recover all of these missing information.
+
+00:58:33.920 --> 00:58:39.760
+We can exactly recover all of these missing&nbsp;
+informations by by through the energy cascade,&nbsp;&nbsp;
+
+00:58:39.760 --> 00:58:45.400
+so that now the what we try to looking at is&nbsp;
+actually a balance between these two. One is&nbsp;&nbsp;
+
+00:58:45.400 --> 00:58:49.840
+that we are having filtering effect. But if&nbsp;
+we filter too much, then we cannot recover&nbsp;&nbsp;
+
+00:58:49.840 --> 00:58:56.640
+the ground truth. So that we are looking at the&nbsp;
+we try to get a get a theory that what, how can&nbsp;&nbsp;
+
+00:58:56.640 --> 00:59:03.880
+you have the balance between these noise filtering&nbsp;
+effect as the reconstruction of the ground shoes.
+
+00:59:03.880 --> 00:59:10.520
+I think your error bounds analysis is kind of&nbsp;
+showing that story as well. Yes, exactly. So the&nbsp;&nbsp;
+
+00:59:10.520 --> 00:59:17.360
+coarse mesh doesn't, shouldn't exceed certain&nbsp;
+upper bounds, otherwise you cannot recover
+
+00:59:17.360 --> 00:59:23.600
+the high frequency. That's why we have&nbsp;
+this. Yeah, we have noise. We have&nbsp;&nbsp;
+
+00:59:23.600 --> 00:59:28.120
+this necessary condition and this new each&nbsp;
+viscosity, essentially the right hand side,&nbsp;&nbsp;
+
+00:59:28.120 --> 00:59:34.800
+define the dissipation rate. So they each&nbsp;
+related to the Coronavirus care in turbulence,
+
+00:59:34.800 --> 00:59:43.400
+so that he should be he the super logical&nbsp;
+ratio is a function of some Coronavirus care?
+
+00:59:43.400 --> 00:59:49.760
+Yeah, probably, but, but we&nbsp;
+actually looked at 2d so we
+
+00:59:49.760 --> 00:59:56.920
+that's also one of the limitations of the current&nbsp;
+study. I see, okay, already fascinating for the 2d
+
+00:59:57.720 --> 01:00:00.160
+next question is by Dave. Thank you for.
+
+01:00:00.160 --> 01:00:06.960
+A very interesting talk. Your examples were for&nbsp;
+2d turbulence, where the energy naturally flows&nbsp;&nbsp;
+
+01:00:06.960 --> 01:00:13.480
+from small to large scales, inverse cascade.&nbsp;
+How would your approach work for 3d turbulence,&nbsp;&nbsp;
+
+01:00:13.480 --> 01:00:19.840
+when the energy flows from large to small scale?&nbsp;
+That's a that's a good Kirsten. That's very good&nbsp;&nbsp;
+
+01:00:19.840 --> 01:00:27.160
+question. We, frankly speaking, we again, that's&nbsp;
+actually why I have the last item in the in the&nbsp;&nbsp;
+
+01:00:27.160 --> 01:00:33.160
+conclusions, that we certainly admit that there&nbsp;
+are limitations of the current story, and because&nbsp;&nbsp;
+
+01:00:33.160 --> 01:00:40.200
+of the mathematical lack of mathematical tools,&nbsp;
+we usually cannot. It's very hard to go to 3d
+
+01:00:40.920 --> 01:00:47.400
+to do actual proof of convergence in three&nbsp;
+turbulence. But what we have seen is that&nbsp;&nbsp;
+
+01:00:47.400 --> 01:00:53.720
+there is some physical explorations about&nbsp;
+what's happening in 3d flows. So in this study,&nbsp;&nbsp;
+
+01:00:53.720 --> 01:01:02.600
+they actually showed they have some theoretical&nbsp;
+derivations of the say critical length scale&nbsp;&nbsp;
+
+01:01:02.600 --> 01:01:09.440
+to recover the high resolution information.&nbsp;
+So we believe that the similar behavior can&nbsp;&nbsp;
+
+01:01:09.440 --> 01:01:16.720
+be absorbed in 3d but the actual mathematical&nbsp;
+proof of convergence is still long way to go.
+
+01:01:16.720 --> 01:01:23.360
+Okay, all right, next question is by Shima,&nbsp;
+thank you so much for such a great talk. I&nbsp;&nbsp;
+
+01:01:23.360 --> 01:01:31.560
+really enjoyed it. I'm also curious about three&nbsp;
+different flow, which is more important, okay,
+
+01:01:31.560 --> 01:01:33.000
+we are working on it, but
+
+01:01:36.000 --> 01:01:39.440
+everything takes time understand,
+
+01:01:40.080 --> 01:01:47.120
+that's awesome. Okay, so I guess I can&nbsp;
+ask questions related to the studies,&nbsp;&nbsp;
+
+01:01:47.120 --> 01:01:49.360
+questions in the beginning,
+
+01:01:49.360 --> 01:01:55.840
+you know, observing the preserving the those,&nbsp;
+conservation of law or some physical property
+
+01:01:56.480 --> 01:02:04.560
+that's still challenging. Yes, accomplish,&nbsp;
+right, right. Okay, so the deep learning models
+
+01:02:05.960 --> 01:02:10.240
+always the tricky part is that,
+
+01:02:10.240 --> 01:02:17.400
+how can you make a input, you know, incorporate&nbsp;
+hard constraint? It already tricky part so that we&nbsp;&nbsp;
+
+01:02:17.400 --> 01:02:23.000
+have got many physical solutions, and we want to&nbsp;
+reduce the space of solutions that is actually not&nbsp;&nbsp;
+
+01:02:23.000 --> 01:02:31.200
+mathematically feasible, physically feasible, but&nbsp;
+that process is still open. Kirsten, I believe.
+
+01:02:31.200 --> 01:02:35.480
+Yeah, so still. I mean, the work&nbsp;
+you have presented today is very&nbsp;&nbsp;
+
+01:02:35.480 --> 01:02:43.800
+impressive already. Thank you, yeah.&nbsp;
+Thank you. So I keep up the good work. I
+
+01:02:43.800 --> 01:02:51.360
+I think it's we can wrap up the seminar today.&nbsp;
+Let's thank our speaker for the wonderful talk and
+
+01:02:52.280 --> 01:02:57.880
+through this opportunity, and we can, you&nbsp;
+know, you know, establish some collaboration&nbsp;&nbsp;
+
+01:02:57.880 --> 01:03:04.160
+between Lawrence Livermore and your group,&nbsp;
+and sure, we can do greater things together.
+
+01:03:04.160 --> 01:03:09.960
+But thank you so much for the&nbsp;
+wonderful talk. Thank you, yeah,
+
+01:03:09.960 --> 01:03:14.896
+okay, that concludes. Today's the seminar with.
+

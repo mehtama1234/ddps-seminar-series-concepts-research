@@ -1,0 +1,1723 @@
+all right
+um welcome to the ddk
+seminar everyone before we start
+let's go over some rules and logistics
+uh first of all
+please view yourself during the talk
+unless you have questions
+if you have questions and you are
+welcome to commute and ask
+otherwise please use chat room to post
+your questions
+so that we can write them in chinese
+lesson at the end
+second today's dps seminar is
+open to external audiences no classified
+discussion is allowed so i tell
+finally the talk today will be recorded
+and uploaded in ll now youtube channel
+um that's about it now let me introduce
+our speaker today it is an honor to host
+water diaria who is a principal
+member of the technical as sandia
+national laboratories
+actually across the street from us
+where she works since 2014 she is
+of the computational science and
+analysis group
+at the california site she obtained
+her master's degree in
+engineering at polit polytechnico
+of milano under the supervision of
+professor watervonnie
+she obtained her phd in applied
+mathematics
+at emory university under the
+supervision of professor
+beneziani here she
+worked on optimal control in cfd for
+cardiovascular applications she was a
+postdoctoral fellow at florida state
+university which
+worked with who's
+guns burger on optimization for
+non-local
+and fractional models she's an associate
+editor of sisk a
+advances in continuous and discrete
+models
+and of the journal of hydrodynamics
+and non-local models our interests
+include non-local modeling and
+simulation
+optimization and optimal control and
+scientific
+machine learning today mata will talk
+about data-driven learning of non-local
+models
+reaching skills and design of new neural
+networks
+which is very very interesting topic
+please enjoy and expecting
+to talk now without further ado let me
+pass the button to the matter
+by asking one random question it's
+useful today's random question
+is what would you rather throw away
+either love or for my money
+but again what's your what
+would you rather throw away a law of
+woman oh money
+certainly of course right yes
+okay thank you
+thanks a lot um thanks a lot for having
+me
+thanks for introducing me uh it's really
+a pleasure to
+to present uh in this seminar series uh
+so as it was mentioned this talk is
+gonna be
+about data driven learning techniques
+for no local equations
+the research that you're going to see
+today is partially supported by the ldrd
+program at sandia
+and by films which is which stands for
+physics-informed learning machines
+and is the oe oscar mimics center
+pi by george karnadakis
+this is a brief outline of my talk it's
+going to be organized in two parts
+first i will introduce an operator
+learning
+algorithm for no local equations that
+we're going to use to address
+challenges in homogenization
+and in particular i will focus on
+designing
+optimal surrogates for molecular
+dynamics displacements
+then there's going to be a second part
+where some of the tools
+that were introduced in the first part
+are going to be used
+to design optimal architectures for no
+local
+for neural networks and we're going to
+refer to these as non-local kernel
+networks
+i will start by summarizing the
+properties that we're after
+and then i will show non-local kernel
+networks in action
+with pde learning tasks and image
+classification
+tasks these are the people that
+contributed to this talk
+uh stuart sealing at sandia labs new
+mexico
+stewart is the father of aerodynamics
+the no local theory for for mechanics
+hychen u and uau they're both from the i
+uh ua is the advisor of huay chen and
+wai chen
+was um until a couple of uh weeks ago
+uh a long term intern at san diego labs
+california
+all right so in the first part of my
+talk
+i'm gonna focus on complex systems where
+the small scale dynamics the small scale
+interactions
+affect the global behavior and these of
+course are ubiquitous in
+scientific and engineering applications
+in particular i'm going to focus on
+systems where the effects of
+heterogeneities
+at the small scales need to be captured
+accurately
+to have reliable predictions so of
+course we can use
+at the very small scale we can use
+classical models such as
+pdes and solve for those small scales or
+those um small-scale etherogeneities and
+get
+accurate solutions the problem is that
+these simulations are are very expensive
+computationally and
+oftentimes cannot be afforded and so
+there is the need
+for new upscale models that act at
+larger scales but can still capture the
+effects
+of small-scale behavior
+the process of coarse graining or
+upscaling
+however heights several pitfalls and
+these pitfalls may compromise the
+the reliability of um of the models
+um in particular when we have a
+terrorist we have that the homogenized
+model
+has to follow a different governing law
+uh and
+has to have a different constitutive
+property compared to the one that
+applies
+at a small scale so what i'm reporting
+here on the right is a very simple
+example where we don't even have
+a super high degree of heterogeneity
+this is a kind of homogeneous scent
+and what happens here is that um a
+simple advection diffusion equation
+is accurate at the very small scale
+level but as soon as we
+coarse grain as soon as we look at
+things at a larger scale
+a simple pde is not enough anymore
+and so we're facing a capability gap in
+some sense
+um so in the sense that homogenized
+classical models
+are in general not sufficient to fully
+reproduce coarse-grained behavior
+what we claim is that integral op and i
+will i will
+provide hopefully enough evidence to
+support this claim
+integral operators or no local operators
+can provide better descriptions than
+pdes because they
+embed all the time and length scales in
+their definition
+so what i have here is the simplest
+maybe example of an integral
+operator where the length scale is
+embedded in the domain of integration so
+we have this neighborhood
+of radius delta it doesn't have to be a
+euclidean ball it can be pretty much
+anything
+and we refer to this delta as horizon
+or interaction radius of course though
+as
+any other mathematical model integral
+operators depend on parameters
+uh and these parameters are in general
+unknown
+uh and more importantly in local
+operators
+in non-local operators we have that the
+considerative laws
+take the form of kernels or integrand
+functions
+and and the form of these integral
+functions cannot be established a priori
+and it's
+hard in some sense to make to establish
+a connection
+between material properties or media
+properties and
+and these functions so today i'm going
+to focus on
+operators mostly on operators of this
+form
+these are known as non-local diffusion
+operators or
+this is simply an or local laplacian
+so from this formula we see that
+the regularity assumptions on the
+solutions uh
+can be relaxed because there are no
+derivatives
+so this is the no local counterpart of a
+laplacian but
+once again there are no derivatives and
+so our solutions can be
+very nasty they can be irregular they
+they just have to be integrable
+in some cases these operators depend on
+kernels these kernels k
+they're application dependent and they
+determine the regularity properties of
+the solution
+and as i said already they're in general
+unknown
+and this is one of the biggest
+challenges and open problems in no local
+modeling
+now this being said the local models
+have
+been successfully used in the literature
+i mean we have many success stories
+uh the use of no local operators
+i'm gonna mention one uh that is
+particularly
+relevant in uh in this specific setting
+which is homogenization
+and it's the use of fractional operators
+and i know that
+now these operators have been mentioned
+in this seminar series already
+so fractional operators can be used to
+model
+anomalous transport in the subsurface
+and they're particularly
+effective in the presence of a very high
+degree of heterogeneity
+you can recognize here so here c is the
+concentration of a pollutant in the
+subsurface
+this is the count the fractional
+counterpart of a classical laplacian
+and you can recognize the same structure
+that i had in my previous slide and
+the kernel k in this case is this
+fractional term
+so and to show you an example of how
+effective these operators are
+this is a paper that dates back in 2000
+by benson and and this is for the
+so-called male data set it's a very uh
+it's a highly atherogenius
+uh data set and the
+solid thick line is the solution of the
+fractional
+model so it's called alpha stable and
+it almost matches the the data the
+concentration data
+and and here at the bottom uh the flat
+line
+is uh is the standard pde the
+advection division equation so the
+difference is is certainly striking in
+this
+in this case so there are examples
+of where the kernel function is known uh
+and can be used
+and it also has a some sort of physical
+interpretation i would say
+however we're interested in systems
+where
+the connection between the data that we
+have and the kernel is not
+that immediate and so this is the recipe
+that we propose of course i mean there
+is no need for me to
+advertise the combination of machine
+learning and physical laws
+we know that this is a winning strategy
+what we want to add
+into the picture is we call it unified
+calculus and it's basically
+a calculus that includes the classical
+calculus but also the integral calculus
+so that we can give some we can get some
+models that are mathematically rigorous
+so what we're after are new non-local
+models
+or optimal non-local models that are
+guaranteed to be well posed
+because of the calculus and that are
+physically consistent
+so our working assumption is that
+we can collect high-fidelity data or
+perform
+small-scale high-fidelity simulations um
+in what
+you're going to see next in the main
+topic of this first part
+the high fidelity is going to be
+molecular dynamics but it could be dns
+or we may have
+exact solvers and going back to what i
+said at the beginning
+our goal is to find an optimal non-local
+model
+that at the larger scale um
+basically reproduces the high fidelity
+model or is as close as possible to the
+high fidelity model
+so the question since we decided to
+describe
+this operator as the local laplacian
+the real goal is to find the optimal
+kernel k
+so i'm going to start from basically the
+core technique
+that i'm going to use that was
+introduced last year
+in this paper and then extended in
+into subsequent papers
+i'm going to summarize this technique in
+three simple steps
+and for now i'm going to start from a
+scalar
+unknown so from a scalar variable this
+is again
+the operator that you saw at the
+beginning
+k is our unknown and we're interested in
+the elliptic equation so in the
+local counterpart of a poisson equation
+basically this is the residual of the
+equation that we're looking at
+we collect measurements these are our
+high fidelity pairs of solution and
+forcing function
+and we build a surrogate for the kernel
+in the specific case so what we have
+here is a linear combination of basis
+functions
+in our first work we consider bernstein
+polynomials
+so this is the form of our kernel which
+is uniquely determined by
+the the coefficient cm and then we
+minimize the residual so here's where
+the physics comes into play uh subject
+to
+solvability constraints or in other
+words no local theory that guarantees
+that this operator once we learn k is
+well posed
+the outcome of course are the
+coefficients that uniquely determine the
+kernel
+this was the first work that basically
+could learn the functional form of the
+kernel previous works were
+were focused on learning parameters of
+given functional forms for the kernel
+a very important feature of this
+algorithm
+is that we allow the kernel to be sign
+changing
+so first let me say that whenever this
+kernel is positive
+it's much much easier to prove the well
+posedness of the system associated
+with this operator as soon as this
+kernel can take on negative values
+uh the proof of world posens is more
+involved however
+there are evidence there's evidence in
+the literature
+that sign changing kernels um
+are particularly effective in describing
+the
+high frequency response of materials so
+when we want to model material response
+we'd better use um a sign changing
+kernel
+and we then embedded in this algorithm
+uh some some no local theory developed
+by the
+mages and chandu that basically gave us
+some
+explicit sufficient conditions on the
+kernel to be sign changing and to induce
+a well post problem and so from now on
+we always allow
+the kernel to be sign changing but we
+have to keep in mind that specific
+conditions for what postness need to be
+embedded this is the first
+example of how we apply this operator
+learning technique
+and i'm just going to have i just have
+two slides this is a simple extension
+of what i just presented and we extend
+that
+to the vector case basically so now
+we're looking at elasticity
+in particular we're looking at
+elasticity in bodies
+whose microstructure is heterogeneous
+and is periodic
+so this is a 1d example this is a 2dx
+sample and these are different types of
+microstructure
+that we considered so the point is
+while with a pde and in our case we use
+finite elements
+we have to mash the whole thing we have
+to solve for these
+interfaces when we use a non-local model
+what we're going to do is to put one
+degree of freedom in each unit cell
+so here we're just going to have one
+degree of freedom
+and so based on some high fidelity
+measurements
+which are going to come from fine grit
+finite element simulations of the linear
+elasticity equation
+we want to learn the best kernel k
+such that this model describes well
+enough
+uh the material behavior so now
+the other example yes so sorry to
+interrupt
+there is a the firefox
+icon and camera icon and it's
+it's blocking yeah i can know it's there
+i'm not sure
+i can move it oh yes i can move it
+okay it's on my name you know who i am
+is it better
+yeah great that's better yes
+i i apologize i thought you were not
+able to see it but
+okay um so the other extension that we
+have here
+is uh the second derivative in time so
+um now we have a hyperbolic equation
+uh but the the algorithm is exactly the
+same so we still minimize the residual
+of the equation and in this case
+and this is something that we learned uh
+in uh in the subsequent papers
+um it's very important to add anything
+we know about the physics and
+in this particular case um i'm not gonna
+focus
+too much on this example uh because i
+want to focus more on the molecular
+dynamics case
+uh here we added a constraint on the
+second moment
+of the of the kernel um
+as i already said uh the high fidelity
+is given
+by a finite element simulation on a
+verifying grid
+so i just want to show one result for
+for this
+uh specific topic and what i have here
+is what you see in these graphs is the
+acceleration
+for one unit cell and i think we picked
+the central
+unit cell um here you see the
+acceleration in x
+here at the bottom the acceleration in y
+and
+the first column is without the
+constraint the second column is with the
+constraint
+it's important um to point out i want to
+point out that
+um these simulations go beyond the
+training time so we're simulating
+past the training time but also we're
+using different boundary conditions that
+the than the ones compared to the ones
+that were used for training
+because we want to make sure that the
+kernel
+only embeds material properties and is
+not
+an independent of boundary conditions
+forcing terms and any other
+input to the problem all right so
+this was an application to elasticity
+but what i really want to
+talk about is how we apply this
+technique
+uh to bridging the molecular scale and
+the continuum scale
+and we just submitted this paper
+and i'm just waiting first on the
+approval to
+upload it on archive um let me give you
+some background
+um this is part of an ongoing ldrd
+project
+where we're looking at molecular
+dynamics as a tool
+for designing new materials but in
+particular what we're interested in
+is in testing materials and the goal is
+to improve their reliability and
+performance
+um when we want to test the materials
+however
+we cannot use molecular dynamics we we
+need continuum
+models that act at larger scales
+so based on what i said at the beginning
+we need to upscale
+md to the continuum scale when we need
+to upscale and d to the continuum scale
+my local models or integral models
+really seem to be the
+the best choice three reasons
+but i in my next slide i'll make that
+clearer
+first they can treat discontinuities
+solutions
+don't have to be regular they're
+compatible with the molecular scale
+and they can capture multi-scale
+behavior because they have bad
+length scales in their definition we
+have this capability gap
+that i mentioned which is we need to
+identify the kernel
+of any local model that we want to use
+and so we use our recipe we start from
+md data
+and then we apply our recipe where we
+combine
+physics local calculus and machine
+learning or basically optimization
+so um i'll be brief here what all i want
+to say in this slide is that
+when we coarse grain or upscale or
+smooth
+let's say molecular dynamics
+displacement
+we can show that the upscaled model is
+a no-local equation so i'm going to
+start from an assembly
+of interacting particles and my goal is
+to go from the particles
+to a continue model we have forces
+acting
+between particles and forces acting on
+the particles external forces
+and what i'm going to do to get to my
+continued model is to introduce a
+smoothing function
+smoothing function that has a compact
+support
+inside inside a ball and has some
+normalization properties
+and i'm going to translate all my
+variables in smoothed
+variables like this and then
+by keeping in mind newton's law we
+combine all these ingredients
+and we end up with with an integral
+equation
+and in the paper this is this is done
+way more carefully
+um of course we end up with this
+integral equation but
+what what's what's the best f so uh our
+goal now is to identify
+the best constitute no local
+constitutive law
+i'm gonna recall the operator learning
+algorithm for and i'm gonna extend it to
+this
+specific case uh once again the goal is
+to learn
+uh the best kernel k
+since we we are looking at material
+properties
+we are going to lose we're going to look
+at operators that are
+a little bit more complex than the no
+local laplacian
+and in particular we're going to look at
+the linear peridynamic solid operator
+i'm going to say a little more about
+this operator the important thing
+here is that this operator
+has in its definition material
+properties such as
+poisson racial and young's modulus
+and it can treat um a larger a broader
+spectrum of material behavior compared
+to
+the non-local laplacian also known as
+bond-based
+model 4 for mechanics
+the procedure is the same we start from
+nd measurements
+and d displacements and we have pairs of
+displacements
+and external forces and we approximate
+once again
+the kernel with a surrogate and once
+again it's a linear combination of basis
+functions
+however uh we are gonna slightly change
+the definition of the
+of the kernel in the sense that uh we're
+gonna add
+a fractional term if you remember what i
+the the fractional operator that i
+introduced at the beginning
+we had a singularity in the kernel
+and the singularity the intensity or the
+strength of that singularity is
+determined by the fractional order alpha
+we notice that having a tunable
+singularity really
+makes the predictions more accurate
+and so alpha is going to be attunable
+parameters together with
+the sine changing coefficients meaning
+that the coefficients are allowed to
+to have different signs they don't have
+to be positive
+for the same reasons that i explained
+earlier
+and then we minimize the residual and in
+this case
+just keep in mind that this is a more
+complex operator
+uh that also depends on uh the poisson
+ratio
+and the young's modulus and we have an
+elliptic equation because
+uh even though md is in time we're just
+going to look at the last
+snapshot so what we're going to minimize
+is an elliptic equation
+so viability constraints in this case
+are definitely
+they're way more involved and the reason
+is
+that the linear peridynamic solid model
+is a much more complex model
+compared to the classica no local
+laplacian
+and there is no theory in the literature
+for weld postness of sine changing
+kernels and so what we did
+in our case was simply uh to and i'm
+just gonna describe this in words
+because the
+i don't want to get into the theorem but
+we're going to prescribe
+discrete imp subconditions for this
+system
+and those are going to be our
+solvability constraint
+for the operator regression algorithm
+and this is just a summary of what i
+just said but once again i don't think
+this
+uh this is super relevant the important
+thing is that we still have
+some solvability constraints coming from
+the local theory that are going to
+guarantee
+that even though our kernel is sign
+changing we're going to have a
+well-posed problem
+now let me describe a little bit
+the material that we are considering and
+the data set that we are considering
+we are looking at a single layer
+graphene
+graphene is a very resistant material
+characterized by
+a negative poisson ratio this is an
+example
+of a training sample that that we use
+this is generated with their tears of
+potential
+um the sewer sealing in our team uh
+took care of the md simulations uh these
+are at fixed
+temperature and we tried uh we tested
+both
+zero temperature so a perfect crystal
+and uh 300k temperature
+and the variability in the training data
+set is given by
+the the loading basically by the forcing
+term
+and they all look uh they're all
+different but they all look pretty much
+like this of course we want to make sure
+that
+the optimal kernel gives good results
+even when tested
+uh in circumstances that are different
+from the ones that were used for
+training
+and so we pick a different a different
+loading
+and we generate new samples that we're
+going to use for validation
+and i have other samples and i'm going
+to talk about them later
+this is just to give you an idea of the
+outcome of this algorithm
+the kernels very often have this
+structure
+um this is the kernel as a function
+of the distance uh so the kernel is
+radial
+so we are only reporting uh the kernel
+as a function of the distance and as you
+can see
+uh it's it's negative and this is really
+important
+i don't have the results in this
+presentation but
+uh if we don't allow the kernel to be
+sign changing
+we definitely do not get accurate
+solutions so this is really important
+these are the optimal young's modulus
+poisson
+ratio and the the good news is that it's
+consistent with
+experiments in the theory in the
+literature
+and here i just want to say a couple of
+um
+just spend a couple of words on how we
+find the optimal parameters
+so this is far from being a
+sophisticated by level optimization
+technique
+but basically what we're doing here is
+to
+have an outer optimization loop where
+we find the best horizon that determines
+the extent
+of the no local interactions and the
+best number of basis functions
+um so the number of bursting polynomials
+that we're gonna use
+um and in the inner loop we find the
+coefficients
+uh of the kernel the young's modulus
+poisson ratio
+and the fractional order the metrics of
+accuracy
+that we're going to use are either the
+evaluation of the residual of the
+equation
+and this is the one over the training
+set or the accuracy
+of the solution so this is the
+our operator with the optimal kernel and
+we compare it with the data that we have
+again over the training set same
+measures can be defined
+for the sampling set and here um i
+highlighting the the selections
+basically
+of the best m and delta uh at different
+temperatures
+so this is my last example uh
+when it comes to md and what we do here
+i'm just reporting for reference an
+example of training
+sample that we used um
+the testing sample in this case not only
+has a different forcing
+uh so here the loading so these f's are
+supposed to be these
+apologies so these are b's the forcing
+term is zero
+uh inside the domain and it's not zero
+outside the domain
+and the geometry is completely different
+which is probably the most
+striking difference between the two
+samples so
+this is a comparison uh between the
+the data process data and our solution
+which is nine percent accurate
+and and here we use the kernel that was
+uh
+generated by using this type of training
+samples and
+and i think what this example is showing
+is that uh the kernel truly embeds only
+the material properties clearly
+it wouldn't work as well if with
+something that
+is not graffiti so the kernel represents
+graphene
+in some sense so
+i can basically summarize this first
+part of the talk
+in what i just said in my last slide
+about transfer learning
+the optimal no local model embeds
+material properties
+and the optimal kernel is able to
+work well in some things that are i
+would say substantially different
+uh than the ones used in the in the
+training
+uh phase um something that i didn't show
+but it's uh that is in the preprint and
+that we are still working on
+is a hybrid technique to make sure that
+the kernel is also resolution
+independent so
+it doesn't matter whether we use the
+kernel
+on the same grid you used for training
+or on a different grid
+we're still going to get something that
+is accurate and the key
+is the fact that we're looking at a
+continuous model
+right now we're working on damage which
+is a much more complicated problem
+it requires different models different
+settings
+and certainly different constraints so
+this is probably going to take us a
+while
+to conclude this part on homogenization
+i just want to mention that
+the same technique was used for
+wave propagation through heterogeneous
+materials so here instead of using a
+wave a classical wave equation we use a
+non-local wave equation to describe
+propagation through heterogeneous
+materials and here what really made the
+difference are some physics constraint
+on the group wave velocity
+how many minutes do i have
+are you still there sorry my
+computer is no no no no
+um i mean you you have you have plenty
+of time
+right now but um yeah i mean okay okay
+yeah yeah just to have an idea just to
+have an idea
+um so this is not completely
+disconnected to
+what i i just presented and actually in
+this second part
+i want to i want to show you how we use
+these kernel learning tools
+to develop um optimal kernel optimal
+neural network architectures
+we refer to them as no local kernel
+networks because
+um because we are learning kernels in
+some sense
+and i just want to add that uh there is
+a person that
+at tian gao that i didn't uh mention at
+the beginning but that contributed to
+to this work so um
+since this is quite a jump i'm gonna
+pause for a second
+and uh let's forget for a second about
+um non-local operators and i'm going to
+give you some context
+uh we're looking at neural networks and
+in particular i want to focus on
+resnets and i'm reporting here maybe
+the simplest form of a resnet
+update uh we have the increment
+h is the value at every layer of the
+neural network
+t represents uh the layer and we have
+the usual
+um a fine transformation uh within the
+activation function that defines the
+increment
+so the reason why i have a delta t here
+is because
+uh it's um
+well known by now that we can look at
+resonance as euler discretizations and
+if we divide
+this equality by delta t we recognize an
+euler discretization and as we
+let the delta t go to zero we end up
+with
+an ordinary differential equation and
+that's why
+these networks are referred to as neural
+odes
+so what we like about neural ods is that
+they're continuous uh i mean we're
+mathematicians
+so we we like seeing equations and we
+like using
+rigorous analysis
+and establish numerical techniques
+and we can use standard optimization
+techniques developed for
+for odes so these are features that we
+like
+about this continue model and that we
+would like
+to keep in our network
+we're still going to work with resnet
+but i'm going to add
+another feature on top of continuity and
+interpretability uh
+as a as an ode another feature that we
+would like to have
+so let me mention why we want this
+feature
+so as in the previous part of the
+presentation we have material design and
+testing in mind
+and in particular we're thinking of
+image classification in the context of
+materials and
+image classification can be used for
+detecting anomalies uh detecting uh
+signatures of failure and and things and
+things like this
+so with the image classification task
+in mind we're looking at the we we would
+like to have a network that is
+resolution independent
+and also since we know that networks
+like convolutional neural networks or
+graph neural networks that
+take into account um long-range
+interactions in the feature space
+meaning
+in the node space uh we would also like
+to have that feature so long range
+interactions
+in the in the nodes in the set of nodes
+this is a cartoon of what i just said
+and
+being resolution independent is
+something that can be achieved by making
+the set of notes a continuum
+continuum set and
+and these kind of screens no local
+models in some sense
+um so what we're gonna do uh instead of
+having the
+f uh that i had in my previous slide for
+the resnet
+we're gonna use an integral operator
+um clearly we're we're not the first
+people uh
+that uh we're not the first one to look
+at
+neural networks with the presence of an
+integral operator
+um so i'm gonna recall two
+important techniques to important
+architectures in the literature
+and i'm going to start from them to
+design our own architecture
+so this is the graph kernel network
+introduced by lee
+andrew stewart at caltech gave several
+talks about
+this type of approach so here we have an
+original like a
+the resnet block and
+what we have here is that uh so this is
+an
+increment uh and this is how it's
+defined d
+is the set of nodes so it's a continuous
+set of nodes
+x is the variable that determines the
+node
+and t is the layer in some sense in this
+interpretation
+uh k is a is a kernel b
+is the input so the kernel may even
+depend on the input um
+it doesn't necessarily so in some of
+their tests it doesn't
+um and k is itself
+a network so k is a shallow neural
+network that can be learned
+while learning all the other parameters
+and in particular the parameters that
+can be learned
+are r c and the weights and biases of
+this
+of this network so these are some
+good and bad points of this network
+unless sigma is the identity
+it's hard to establish a direct
+connection between
+this network update and a pde or an ode
+another bad point is that in the limit
+of deep layers
+this network may become unstable or at
+least
+the accuracy stagnates what's nice is
+that
+it's it's very descriptive because k is
+not fixed
+k is something that we learn as we go uh
+and another important thing which is one
+of the things that we like the most
+about this network is that optimal
+parameters are resolution independent
+because we are at the continuous level
+then we have another network that is
+also
+uh no local at the discrete level in
+some sense
+so in this case this kernel this network
+is discrete so it's not
+a continuous it's not defined as a
+continuous update
+um what we have here is that
+the the increment is defined as
+once again no local interactions so here
+we have a kernel
+that connects two nodes um and what we
+have here is that this kernel is fixed
+i'm reporting the continuous counter
+part of this network
+because it's important to understand the
+connections between the two
+so in this paper they didn't look at the
+continuous network they didn't implement
+the continuous network but they
+simply looked at the discrete one so in
+this case
+uh it's harder it's you cannot really
+handle different resolutions because
+you're looking at
+a discrete network k is fixed so it's
+it's probably less descriptive than than
+the previous one
+but it's stable as the number of layers
+increases and
+what makes it stable is the presence of
+this
+uh of this extra term the h h
+j i'm sorry the h i so it's the
+difference
+that makes it stable uh and i'm gonna
+say more about this and i'm gonna say
+why
+this becomes stable and also it can be
+analyzed as
+a discrete no local equation because
+this is truly the discretization of a
+non-local laplacian
+just the an additional good property of
+the bottom one
+is that as opposed to the previous one
+we can handle different resolutions
+because it's formulated at a continuous
+level
+so now let me get to our network where
+we try to combine the good aspects of
+both
+uh and so we have so we have the network
+update here and uh this network
+network update is defined with an
+integral operator
+where we have the difference so we're
+trying to mimic
+um this network so the one that is
+stable
+um and we're adding some uh what what
+we're going to call
+reaction terms and some forcing terms
+also
+uh k is going to be a shallow neural
+network and r is going to be a neural
+network to
+increase the descriptive power of of
+this network but
+note that both the kernel and r are not
+time dependent as i said earlier
+these the set is the continuum set of
+nodes
+at times we will consider the whole set
+of nodes but sometimes we will just
+consider
+a ball surrounding a point just for
+efficiency purposes
+this is a summary uh for our network
+uh we're gonna use it on both pde
+learning tasks which is what
+graph kernel networks were developed for
+and image classification which is what
+the non-local networks were designed for
+the important feature that we want is
+being resolution independent and being
+stable in the limit of deep networks
+and this is this is possible because we
+can show that the network is stable
+together with the stability of in the
+limit of deep
+networks um i want to introduce
+uh this technique that we use uh and i'm
+gonna show you some results right away
+because i'm not gonna go over this
+specific technique we use a shallow to
+deep
+training which means that we we can
+initialize
+deeper and nip and deeper networks by
+using the result coming from
+the more shallow network and this is
+possible in our specific case because
+our uh our networks here
+our network parameters do not depend on
+time
+but the shallow to deep training can be
+done for
+any stable network just by interpolating
+the optimal parameters over
+the layers and by using them as initial
+guesses and and this is exactly what we
+did when we have two layers
+we have basically random initialization
+for both and what we do as we
+increase the number of layers is to use
+the optimal solution
+at the previous number of layers as
+initialization and as you can see
+um the training is uh as much faster we
+start from a much lower
+lost loss value this is the training
+loss
+all right um just a one word on
+stability
+um i'm going to consider the scalar case
+so that
+there's really a resemblance with what i
+presented in the previous part of my
+talk
+so what you can recognize here is a
+local laplacian
+and if we call this lk as i did in the
+previous part of my talk and we divide
+everything by delta t
+here we have an euler discretization
+and a local diffusion a reaction term
+and a force in term
+and as we let delta t go to zero
+we have a parabolic non-local equation
+so this is a diffuse and no local
+diffusion equation
+and we can use the unified or non-local
+calculus to analyze it
+and by using the no local calculus we
+can find sufficient conditions
+such that this is stable and and this is
+basically why
+uh we can guarantee stability
+all right um i don't have a lot of
+examples so i'll i'll try to
+i think i'm going over time um so
+first we consider pde learning in this
+specific case we pick
+exactly the same tests that were in the
+graph kernel network paper so we have a
+pde
+where the differential operator is
+characterized by a
+by parameter b which is the input
+and here's our pde the goal
+is given some training set b
+f and u we want to learn a map
+from the input to the output that is
+resolution independent so
+it's independent of the discretization
+side this is just a technicality on how
+we set the initial and last layer
+of the network the proof of concept
+result is poisson's equation
+where the operator is the second
+derivative uh
+and uh and b the the coefficient of
+the operator is one this is how we
+generate solutions we're basically using
+manufactured solutions
+and here's a comparison in terms of
+training error and testing error between
+graph kernel networks and
+no local kernel networks and we are
+observing exactly what was predicted by
+the theory which is the graph kernel
+network
+seem to stagnate as we increase the
+number of layers so each column
+indicates the number of layers and we
+have both the
+train and test error and as you can see
+instead the graph kernel network sorry
+the no local kernel network
+is is stable to
+further confirm the stability we also
+compute the eigenvalues of the operator
+which show the mean the minimum and
+maximum
+as a function of the layers the number
+of layers
+which confirm the coercivity of this
+operator which guarantees stability
+we tested it on darcy's flow to the
+darcy's flow uh in this case the input
+is the permeability
+uh which is a two value uh piecewise
+constant function which is generated
+uh randomly and once again we do the
+same test and this is also in the graph
+kernel network paper
+we consider uh different
+different resolutions and different
+number of layers
+and we observe the same thing while
+graph kernel networks
+stagnate our network keeps
+improving and uh and this confirms once
+again stability
+but here's another test that shows uh
+the
+fact uh that this network is resolution
+independent
+uh and what we have here is so the first
+s
+is the resolution with during training
+and the second
+as prime is the resolution for testing
+and
+while uh in the for low layers we see
+that graph kernel networks
+do i would say almost an equally good
+job they're actually
+better in the limit of the players
+we definitely do a better job with the
+same resolution and with the
+cross-resolution test
+n a by the way uh just means that we
+didn't have enough memory and
+we had to give up
+all right i'm just going to conclude
+with image classification
+i truly have two slides uh these are the
+data sets that we consider uh the first
+one was uh much
+simpler to train and what we have here
+is a comparison with the
+with cnn no local neural networks
+uh the discrete ones and our network and
+uh
+while uh so here we have
+images um we here we train on find
+images here we train on course images
+and we validate either on fine or on
+course and same here
+so while cnns are
+are always the most accurate on the same
+resolution in terms of validation
+they they definitely do not they don't
+do a good job
+in cross-resolution tasks while no local
+kernel networks
+uh do so here block just means layers
+um in in the non-local network
+community they're apparently called
+blocks and r simply means that we don't
+look at the whole set of nodes but we
+only take the integral
+over a ball of radius 3.
+and these are the results for the cipher
+data set and here we compare cnn once
+again with
+the non-local neural network and then
+the local kernel network
+uh same resolution finite resolution
+coarser resolution and
+it looks like this network always gives
+better results all right i think i i
+talked for too long
+so um i'm gonna thank you for for your
+attention for staying with me until now
+and i'm happy to to take any questions
+thank you thank you so much maka for
+interesting talk and wonderful talk
+it was very educational for me because i
+was not
+you know familiar with the local
+formulation at all but it was it was
+a good exposure for me okay let's have a
+q a sessions um
+okay let me look at the
+chat room i do see a question from
+garvin
+he's asking thanks mata can you explain
+the shallow to deep training again
+is there a reference for that procedure
+yes absolutely uh i should have put it
+actually it's a work
+by uh aldad haber and uh
+lars rototto it's about
+multi-dimensional
+no multi-scale convolutional neural
+networks
+uh i'll make sure i i send i send the
+reference for this
+so basically here sorry probably went
+too fast on this
+what we can do is learn the optimal
+parameters
+for a first number of layers
+let's say we learn the optimal
+parameters when we have four layers
+and then once we get to convergence we
+take the optimal parameters and we use
+them we use that solution
+as an initial guess for the next
+training
+with eight layers so in our case
+this technique is incredibly easy simply
+because
+our kernels our kernel and
+r do not depend on time so
+the layers represent the time so for us
+we can simply
+pick the optimal solution and stick it
+in there and
+there's no problem however when you have
+uh
+optimal parameters that depend on time
+that means that when you train on four
+layers
+you're gonna have optimal parameters for
+four layers but
+if your network is stable what you can
+do is to take
+those four layer parameter parameters
+and interpolate them and project them on
+the eight layers
+and so you have a new initial guest that
+comes from interpolating or evaluating
+your four optimal parameters on the
+eight layers
+network and you use that as an initial
+guess
+and your loss function is definitely to
+start from a much lower
+value and training is is much easier is
+much faster
+thank you thank you um so i i don't know
+i had a related question about that so
+when you increase the number of layers
+from going you know going from you know
+shallow to deep
+you reduce the number of hidden nodes
+and when you increase the
+layers how if i keep the number of nodes
+the same
+is that is that the question yes
+oh you do that but you
+um you don't have to right because it's
+all continuous
+so if you want to change it you can
+so if let's say you feel like you cannot
+afford it
+uh you cannot afford the same number
+that you had before you you could change
+it
+in principle we didn't but um
+there is nothing that that stops you
+from doing that
+yeah okay so so the other numerical
+numerical example needs to be
+done
+is it better i just removed my
+headphones oh i see
+um i'm here
+yeah i'm hearing the ankle
+is it better now sometimes hello
+yeah yeah i don't hear it anymore okay
+that's great surprise
+is there any other questions okay well i
+i have
+i have a couple of mores
+yeah this talk is recorded and yeah
+whenever it is available i will but
+everyone knows
+okay so for the first part of the talk
+um
+you know you mentioned that you are
+aiming for the application
+where conor functions are not known in
+non-local formulation right yeah and
+only the data is available
+right right so so what are those
+applications is the paradigms you have
+shown
+in the presentation yeah so we use um
+so peridynamics was was not designed
+for for molecular dynamics right so
+we are using a peridynamic model that is
+usually
+used for modeling fracture uh
+in some sense but we we found
+that this is at least in this case
+is a good model to describe
+coarse-grained
+molecular dynamics displacements um
+this model uh is not going to work with
+damage
+we have to change this model we have to
+embed
+a damage a damage tracking function
+so that's that's what we're working on
+right now um
+now i started by mentioning the
+subsurface
+example so this is an example where the
+kernel is given
+however i mean it's given people are you
+have been using this kernel for for
+years
+however fractional models are incredibly
+expensive
+and sometimes they you know
+you may not want to go with this form
+you may want to go with for example
+an exponent that depends on x and so the
+learning problem comes back
+what's the best not only what's the best
+s as a scalar but what's
+uh or as a constant but what's the best
+s
+of x so function that uh that gives you
+the
+the order uh but even
+you know even going beyond this uh we
+are now looking at
+not using fractional operators so what
+we're working on now is to find because
+they're really expensive because you're
+you have to integrate over infinite
+domains and definitely
+fractional discretization has made like
+gigantic
+steps forward but this is still
+expensive i mean you still have
+an infinite domain so what we're looking
+at is
+truncated kernels so we want to reduce
+this domain of integration
+but as soon as you do that you may lose
+something and so you have to compensate
+and so that means that you have to find
+a better kernel
+and so you have we're after an optimal
+kernel for
+for anomalous transport i see
+so even even for the application where
+the kernel is known
+um the application of funnel can be very
+expensive so
+yeah alternative might be that thankful
+okay um
+is is the you know
+all the examples seems to be uh the
+elliptic
+equations by the way it can can it be
+applied to the hype probably yeah yeah
+yeah i i didn't want to
+use too much of your time but uh so in
+the one
+in so i showed one at the beginning
+uh so this is uh time dependent
+uh it's a no local counterpart of
+elasticity
+and here we have weight propagation
+and the equation is a no local wave
+equation
+so basically you have second derivative
+in time
+and of course it's it's more expensive
+because you're
+in your loss function you have to
+consider all the
+all the time steps in particular what
+made it what made this really expensive
+was that
+minimizing the residual of the equation
+was not good enough
+we were not getting good results
+and so what we had to do here was to go
+back to
+the counterpart of pd constrained
+optimization basically where we minimize
+the difference between data
+and displacement subject to the no local
+wave equation
+um it it performs well
+it's more expensive than the one that i
+presented previously
+but the idea is the same bursting
+polynomials for the kernel
+and the loss function now has time data
+as well
+it's a time series as well a
+let's data okay so um
+my another question is for the molecular
+dynamic
+uh the problems you know uh the one of
+the advantages of
+you using the non-local method was um
+you can introduce the
+you know this continuous uh the basis
+for the
+kernel for example yeah
+but it's also that the computational
+saving you reduce the number of degrees
+of freedom
+uh by a lot because your your
+local grid is much coarser than md
+so the number of degrees of freedom
+really cut
+right right so regarding that my first
+question
+is um you know so in in some sense
+i mean you you've been using the
+bernstein basis function for the kernel
+all the time yes technically you could
+use
+other discontinuous basis function right
+absolutely
+absolutely yeah you can use the i can
+tell you why uh we use them uh
+especially in our first work uh we
+wanted to do analysis and these are
+uh compactly supported uh positive
+functions
+and dealing with improving stuff when
+you have a positive function when you
+know the sign of your function
+is much much easier so that's
+the main reason uh for which we pick
+them but
+um as long as you make sure
+uh that you prescribe uh the good
+constraints meaning well-posedness
+constraint you can even put a neural
+network there
+but while so in our very first work
+uh we had the convex problem i mean it
+was a nice with burn steam polynomials
+it was a very nice problem
+as soon as you put a neural network
+it's a mess right proving things and
+even the optimization so our i guess our
+approach is if we don't need it we don't
+use it
+um yeah i totally agree
+it's just really easy let's put it this
+way no i mean i'm joking
+it's just if you get uh results that are
+accurate enough
+there's no need to make the problem more
+complex yeah
+yeah i i i well you said
+you're joking but i'm in some sense i'm
+not joking um
+you know i'm i'm into i'm in the in the
+community of the
+i'm you know i'm actively doing the
+research on
+the surrogate modeling or we just do the
+modeling there are a lot of neural
+network
+uh you know approach tries to you know
+the building the sergey model in there
+but if
+i mean you could be representability
+because it's it's
+it's it's introducing nonlinear
+representation of the solution
+um compared to the traditional you know
+linear subspace
+solution representation but but it's a
+theory
+in theory it's not supported richly
+you know those neural network thingy and
+also
+the training of those neural net is
+exactly yeah it's a lot more expensive
+and a lot more violent
+has to be done absolutely while the
+linear soft space
+this you know the social representation
+it's
+it's theory it's it's backed by a theory
+very vigorously and and also the
+training is very
+cheap um and my philosophy also
+in alignment with universe if
+the lineage of this and the simpler
+method works well and
+yeah do not move on to the neural net
+exactly
+exactly all right
+okay so my next question is um you know
+the
+dynamics how the data how is the data
+generated it's it's generated by the
+simulation yeah it's a an md
+uh well it's um the code is is a sandia
+code
+which actually i believe is not uh like
+it's a it's a call developed developed
+initially for peridynamics so for no
+local
+uh but that was adapted to md uh
+and uh we pick a specific um potential
+for
+md the their subpotential and
+these are just plain md md simulations
+uh stewart ceiling performed them
+[Music]
+okay uh um thank you thank you so much
+mata
+for answering thank you for having me
+uh well um i don't see any more
+questions
+from the chat room so i'm assuming that
+no
+questions
+yeah don't be shy though if you do have
+a question please
+speak if not
+we will get up here thank you so much
+for the wonderful talk and thanks a lot
+for having me
+it was a pleasure yeah it was wonderful
+i mean
+it's i mean today is the day i will be
+more interested in local fantastic
+fantastic i'm really happy to hear that
+yeah yeah
+and and for everyone else i hope this
+is you know the initialization of the
+future collaboration with the matter
+and mata is doing wonderful work so
+thank you if there is a chance for the
+collaboration that that will be
+awesome yeah we're always very open
+for collaboration wonderful
+with that okay thank you again um
+thank you thank you everyone else who
+joined us
+and i believe the next ddps seminar is
+done again next week so please stay
+tuned for the
+uh announcements okay thank you thank
+you mother and thank you everyone
+bye okay all right
+you

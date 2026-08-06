@@ -1,0 +1,1588 @@
+all right uh welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rules as
+usual first of all please mute yourself
+during the talk if you have immediate
+questions you are welcome to unmute and
+ask otherwise please use the chat room
+to post your questions so that we can
+address them in the Q a session at the
+end
+second today's seminar is open to
+external audience so no classified
+discussion is allowed finally the talk
+will be record and upload to our YouTube
+channel so now let me introduce our
+speaker it is an honor to host a very
+coutinho who is a professor in civil
+engineering and the coordinator
+of the interdisciplinary area of
+computational engineering and science at
+copy the Alberto Lewis coimbra Institute
+for Graduate Studies and research in
+Engineering in the federal University of
+Rio De Janeiro in Brazil he got his
+daughter's degree in the same school in
+1987. he is a recipient of an IBM
+faculty partnership award in 2001. the
+Jay Tinsley Oden faculty fellowship at
+UT Austin in 2004 the Julio
+messerini academic award a copy in 2007
+and the International Association of
+computational mechanics fellow award in
+2012. Professor coutinho has organized
+National and international conferences
+training workshops and short courses
+surfing in scientific Committees of many
+conferences including the super
+Computing conference design conference
+on Parallel processing fella elements in
+flow problems the U.S National Congress
+on computational mechanics and the road
+Congress on computation mechanics
+he serves on Executive
+Committee of the International
+Association of the computational
+mechanics and in the Brazilian
+Association for computational methods in
+engineering
+he is a member of the editorial board of
+international Journal of numerical
+methods in engineering and computational
+methods in applied mechanics and
+engineering
+and on the advisory report of the
+international Journal of numerical
+methods influence he coordinated over 80
+industrial projects directed 33 PhD
+physics and 37 master of science
+dissertations
+he is a offer of 136 peer-reviewed
+Journal papers and over 450 conference
+papers he was the pi of the Brazil Euro
+project hpc4e high performance Computing
+for energy from
+2017-2000 to 2020 he is currently the pi
+of the informatics network of in
+artificial intelligence for renewable
+energy and climate change supported by
+the Rio degeneral States Agency for
+research
+today he will talk about enhancing data
+driven workflows for complex simulations
+please enjoy the wonderful talk now
+without further Ado let me hand it over
+to everyone
+okay thanks Tony for the long
+introduction you could be the shorten
+one because I say I still play
+volleyball okay
+well it's a pleasure to be here with you
+today and uh well you've seen my screen
+and then what and I'm glad to you know
+share with you our our review on how to
+enhance data driven workflow for complex
+simulations
+the agenda for today is uh well uh we'll
+do a quick reveal on the simulation
+workflow
+um then we're gonna talk about you'll
+see uh how instead of visualization fits
+within and how we do computational
+steering
+and then the first first question we're
+going to address in this talk is how
+snapshot based data-driven computations
+fit within this simulation workflow with
+instead of visualization
+then we're going to see a lot of case
+studies using basically a dynamic node
+decomposition
+um okay uh so uh there's a lot of
+questions uh we see first uh we're gonna
+We ask ourselves uh what would happen if
+it compress the snapshots
+what we do if the snapshots are not in
+the same space for instance coming from
+an Adaptive mesh refinement and course
+computations
+uh and then we're gonna you know discuss
+how can we mix The Institute of
+visualization workflow what is streaming
+DMD is it good for anything I mean let's
+let's discuss this
+and in the end if I have time I will
+address
+um a particular
+issue on DMD should we do it couple or
+uncouple and uh of course it will be
+open for a q a session in the end all
+right uh
+here here you see um the basically
+simulation workflow uh it starts with
+some pre-processing where you select
+parameters like an initial time step the
+time interval set tolerance pick up the
+solvers and set up in in all the setup
+for the Adaptive mesh refinement and
+coursing simulation Etc
+then stop time step in uh so while
+you're don't reach your timing maximum
+time interval your assembly and so
+nonlinear equations your adaptive mesh
+and the time step your update your
+solution and then if if it's time save
+data on disk when required update for
+time step and move on in the end
+you have a lot of data in the disk
+you're post processing you do the post
+process basically visualize the data and
+extract relevant quantities of interests
+uh well
+a
+assembly and solving in non-linear
+equations by some you know new ton-like
+method is where you will spend most of
+your computer time
+innovate step B guarantees uh accuracy
+in in space and time
+and step D is uh where you do IO to
+persistent storage on the right you see
+some solutions you know some simulations
+coming from our group let's see uh that
+built for one here on the top is a
+solution of a non-local phase field
+model with Phoenix and on the right you
+can see a Time step right for for order
+of magnitude adaptive time step right
+for you know several order of magnitude
+and below the simulation for a droplet
+impact using lip mesh with adaptive mesh
+refinement and coursing and you can see
+you know
+[Music]
+that showing yeah the mesh adaptivity
+uh well
+many years ago
+um
+this basically workflow that's still is
+still valid
+um in this paper here that's super
+computer in 2010 they realized that the
+optimal complexity of this workflow is
+order of n to the power 4 over 3 where n
+is your the total number of your
+unknowns it's easy to realize now let's
+think that you have n over 3 a cube
+let's say with n over three a nose in
+each of the Cartesian directions and you
+do a um implicit time step with the
+number time step of order of n if you
+get everything together you get this n
+to the power of 4 3. it's optimal and
+then there is only optimal if you solve
+your linearized equations uh with our
+now it is linear scale is linearly on
+time which is hardly you know to achieve
+more or less we what we see here is uh
+the only way to improve this is
+diminishing uh the the number of points
+in space and time okay but there Remains
+the i o in in persistent storage and the
+visualization I mean getting Insight
+from your computations all right so I
+this this workflow becomes put in place
+instead of visualization
+uh visualization results of running
+simulation instead of this is basically
+do the visualization without the need to
+copy data to a storage device of course
+it reduces the amount of data and adds
+to reducing traffic I O and volume and
+you can think that you can access more
+data for instance uh if you are writing
+to the disk at this interval we've been
+doing situ processing you can you can do
+more intervals
+uh
+more than that people realize you know
+that we can have we we can do in real
+time in the simulation exploration and
+the steering
+um of course it produces latency latency
+to the first result and avoid
+large-scale post-processing
+so the traditional workflow have the
+simulation code dump everything to the
+disk and do the visualization later
+with this now we write an adapter for
+this particle Catalyst which is um our
+our choice for Institute of
+visualization infrastructure is not the
+only one and you can then produce
+um using some scripts
+um visualization in runtime uh new
+applications you see in in in this
+yellow box in the bottle are two new
+applications are from the group coming
+from the Ken Johnson in Colorado Boulder
+that are so cool
+um they do um you know they uh they go
+beyond
+enabling you to change your let's say
+change your your uh your domain during
+the simulations using using this in situ
+tools and also merge
+um couple uh in this institute which are
+simulation workflow and the Machine
+learning workflow they're so cool I
+really appreciate that so much and I
+encourage you to read this
+so uh how it works basically in in more
+detail uh the same the the workflow with
+Institute of visualization and steering
+here we build that on top of lip mesh
+you set up the Adaptive mesh refinement
+of course the setup start the simulation
+setup
+and then you start looping the time Loop
+um you'll you know it's a couple mode
+physics solvers you do the flute solver
+you do the transfer equation here we are
+this was specialized for uh sediment
+transport you're gonna see the
+application in a moment and do it need
+an Adaptive mesh refinement we do the
+writer and then we move to the Catalyst
+adapter
+call their Catalyst adapter and that was
+tracked from the python script and
+generating PNG files for users Visa
+visualization in situ what we also do
+with this tool called the effronalizer
+the details are in this yellow box in
+the in below in the slide is uh that we
+also gather
+other data that allow us to interact
+with a lot of parameters in during the
+simulation at runtime we we annotate
+some data in the database and then we
+query this database if needed in
+changing everything in runtime more or
+less we can see in this box here that we
+are annotated no linear tolerances uh
+time steps and uh and some data needed
+for uh the controlling the Adaptive mesh
+refinement in course in in libmesh all
+right how it works okay this is a
+simulation statement bring up on our
+Channel this is a big Channel
+and this is um you know visualization
+generated in situ is a high determinant
+flow it's similar can see Reynolds
+remember here is 5000 and it's
+interesting that we have some
+experimental data and the black curve
+corresponding to the Adaptive mesh
+refinement and coursing simulation that
+you can see on the right for a longer
+time and see in in this detail here is
+the adapted mesh for this configuration
+so how computational steering works uh
+right
+so we are some user interacting with the
+code series which when it's running and
+then at certain point at that time step
+the user decide that uh well uh let's
+relax some tolerances here and see what
+happens and then he can do it in runtime
+and changing this tolerances and also
+adapt more adaptive mesh refinement
+tolerances and uh see if it's okay and
+the simulation progresses well
+um the air in the end what we see here
+is a huge saving in computer time and we
+can control this is runtime in essence
+everything is uh annotated in the
+database they are very frequent query
+and you can interact with many
+parameters in runtime so this is
+basically a simulation workflow with uh
+instead of visualization and steering uh
+this email image that you have seen they
+have been produced by The Institute of
+visualization capabilities
+right so now can with the data driven
+reduced order model as I said before I
+will restrain myself to talk about DMD
+but um if I'm if I succeed in my
+presentation you're gonna see that
+several of those more computational
+computer science things uh can be
+applied to other ways of building
+reduced rural models uh well the
+observation from a nonlinear problem at
+hand and this observation often comes
+from snapshots of a large parallel
+simulation with a workflow just like the
+one we have uh discussing uh snapshots
+are reading to disk
+due to the gap between Computing and iOS
+pin and a snapshot generation can become
+a bottleneck particularly for large
+simulation
+DMD as any as several other reducer
+other models builds the the reducer
+robber mode of course from a single
+value decomposition of the snapshot
+Matrix so we ask ourselves and uh you
+can see the in the yellow box here the
+paper that will be building one of the
+paper we're gonna be building uh my talk
+today we ask ourselves those two things
+in red here what happens if we compress
+the snapshots to diminish IO
+and also uh what happens when we merge
+DMD with the simulation workflow with
+Institute visualization and steering
+those are the two uh things we will
+address
+well I mean the two next things I will
+address in this talk
+okay so uh this picture here is a try to
+uh
+to give you an idea how this workflow
+will be merged we have the offline phase
+in HPC machine this is a simulation with
+a lit mesh and a finite element
+simulation and then we have a two
+branches this thunder Branch where you
+dump everything to the disk but now with
+uh maybe lossless and lost data
+compression using one I will come back
+to this one using one floating Point
+compressor and then we have a compressed
+snapshot that have to be decompressed to
+be so can DMD can work and in the other
+hand you do you have here The Institute
+of visualization
+um you know uh um a framework and are
+running together we are the simulation
+that you generate PNG files and this PNG
+files generated at the runtimes are feed
+are fed to the incremental DMD and can
+then you can do the online phase in our
+rock station or laptop
+so of course I'm in this full art
+assimilation take hours and of course
+the MD reconstruction takes seconds
+everybody knows that but most of the
+tools we're gonna be using here comes
+from the xscale Computing project from
+the doe and that particular you can find
+this in the Alpine zfp which is one of
+the projects so uh uh we're gonna have
+we basically gonna discuss uh here uh
+what gonna happen if we do data
+compression and how we merge uh The
+Institute of visualization with an
+incremental DMD with gun as we're gonna
+see with blurry uh mix it up somehow the
+offline and online phase of this uh of
+this uh of the DMD workflow okay
+just to make a point uh this is the
+vanilla dmdriver the exact dmdr
+algorithm uh you know in liberon you
+have this it's just to make a point that
+uh we're always going to be using a
+randomizer that's different SVD and
+incremental SVD okay but uh one of the
+things that we have to take care is when
+you do large scale simulation there's
+not shots comes from those parallel
+computations it they are distributed in
+the file system as you can see here this
+is a nice picture show you the meat is
+partitioned for 16 processor for uh you
+know some of the analysis we did in in
+for cfd many years ago is a Los Angeles
+class submarine mesh
+we use this mesh for many for many you
+know safety computations in the past but
+my point here is that the Special Care
+should be given to the subdomain
+interface data in order to arrange this
+not snapshots why is that so because a
+partition for computing SVD which is
+basically a um a dance Matrix is not
+exactly the same the partition that what
+when you'll do uh I mean your snapshots
+that come in as a download to disk from
+a a parallel simulation okay so we have
+to take care of this
+uh
+right uh now let's get back to uh
+spend a bit of time uh doing uh talking
+about compressing slow Point numbers
+uh well several state-of-the-art in
+lossy and lossless scientific data
+compressor have been evaluated recently
+since the designer paper here called SDR
+bench is uh bench they propose a
+benchmark for scientific data reduction
+for lossy compressors
+there's in in this paper you can find
+many and we selected zfp which is one
+that operators on a three-dimensional
+array by partitioning this array into
+blocks or 4 to the power D values
+each block this compressor decompress
+entirely independently from all other
+blocks
+well
+let me use zfp you could control the
+blocks quality and compress its size by
+modifying four parameters I will not go
+into the Tails of this parameters but at
+a high level zfp provides five
+predefined compression modes that affect
+these parameters expert fixed rate
+sticks Precision fixed secures and
+reversible uh the first four modes allow
+a high compressor razor with
+controllable loss of accuracy and while
+the last one performs Lots less
+compaction why zfv we use the FP well
+because there is a strong mathematical
+background there's a paper discussing
+error analysis for zfp that you can see
+here in this yellow box has been
+published in the Scion drummer for
+scientific Computing a few years ago and
+that's why we adopted zfp so and more
+than that we adopt the fixed accuracy
+mode that given a tolerance that we
+select set Min x per meter to this
+expression floor Vlog to the tolerance
+which means in practice that for
+uncompressible floating points death in
+a reconstructive value
+the absolute difference of f and g is at
+most two to the power Min X
+uh also what is interesting is now zfp
+is available as a for compression
+decompression floating points uh on agf5
+files format using this plugin here so
+it's easy to use
+right uh well let's see what gonna
+happen I come back to this problem that
+we analyzed in a few years ago uh is a
+particle driven graph to flow in the
+lock exchange here you have a water with
+sediment here is clean water
+is basically a couple incompressible
+navier stops equation with sediment
+transport at the grasshop 10 to the
+power 6 actually number one which means
+the floor is driven by turbulence
+at uh well you can get the details um
+for for the day for the initial
+condition and boundary conditions in our
+paper but I'm just making uh a point
+here that at the bottom you have this
+boundary condition for the sediment
+concentration which means that sediments
+are allowed to leave the domain uh we
+assume the Buffs and ask hypothesis
+valid particular particles have a heavy
+in the heavy fluid have a negative
+inertia and a much more more smaller
+than the scales Barons in just fluid
+motion we settle the setting velocity to
+point two is the trilenear hexahedron
+mesh mesh with spacing .025 we're using
+the residual base operation mode to
+scale finite element formulation for the
+fluid and the Streamliner print petroval
+Arc and finite element formulation for
+sediment transport and we record the
+Thousand snapshots
+the forwarder model is a lid mesh
+parallel simulation where they spend
+roughly 80 percent of the time on the
+solvers uh in less than 0.1 percent for
+output writing a half Point percent of
+total time for paraview catalysts and uh
+18 for the remainder of the task and we
+use measure for mapping DMD
+approximation and modes to the original
+nodes another coordinates this is a
+snapshot of the simulation but you can
+see the formation of the Kelvin you have
+helmet holds billows
+okay uh yeah so snapshot compression
+this table here show the storage
+requirement for the quantities of
+interest in the compression rate for
+these simulations you can see uh for the
+raw data for the zfp with loss less
+compression and uh ZF will the fixer
+accuracy for two tolerances uh one more
+tight and then more relaxing and and we
+are recorded we are we were storing the
+uh well the three velocity component uvw
+the pressure the sediment concentration
+and sediment deposition
+uh you see that as far as some of those
+variables we achieve a high rates of
+compression uh you know the sediment
+concentration and the deposition and
+they are all uh compatible with the
+people recorded in The Benchmark and I
+mentioned before so this is um more or
+less what people have seen uh in in in
+those data sets what remains to be seen
+now is that when we do this of course
+we're gonna save a lot of uh of uh you
+know a disk but how this will influence
+GMD and liberal constructions
+okay so we do the Reconstruction this
+plot here in your left show you the pick
+to sign noise ratio which is a measure
+of how good are your
+compressors in Blue uh this is the cfp
+lossless PS and R in decibels around
+more than 100 which is very good
+uh zfp with accuracy fixer you know
+previously tender power -6 is over 75
+with consider it excellent and uh for um
+you know keeping uh three keeping three
+or four digits is not that good but is
+acceptable
+and the right you see the influence of
+compression on the similar values uh
+well the decided line represents
+um you know uh the base of the 250
+singular values that are going to be uh
+uh we selected for the DMD
+reconstruction we see a deviation on the
+singular values for when we do uh uh you
+know uh
+when we are when we do a very aggressive
+loss of compression and but the single
+the singular values uh agree uh with its
+right you see lots less and no
+complexion are on top of each other and
+we do a less aggressive we have a very
+good match until let's say 350. so we're
+gonna do uh we're gonna see what happens
+when we do the reconstruction with uh
+um uh you know a symbol of for the with
+the bases built with 350 um nodes okay
+oops all right but before that let's see
+what happens with the DMD eigenvalue
+analysis
+for the loss compression for 10 or minus
+six you see that all the apparently all
+the eigenvalues are okay we have some
+small discrepancies and we when we do
+zoo in in this box but however for the
+more aggressive
+um compression we see a more discrepancy
+in the eigen values and of course we
+will it will affect
+the DMD reconstructions
+so uh in this table here you see the
+forbenius nor relative error between the
+approximating and original snapshot for
+this problem consider a basis of 250 you
+see the forbenders now are okay more or
+less when we do no compression or loss
+less compression or uh uh this I would
+like 10 to the minus six accuracy they
+are more or less of the same order but
+they are twice as big when we do a more
+uh more aggressive compression
+this picture on the right see you can
+see the absolute error between the DMD
+reconstruction with a basis of 250 50
+you know
+um
+when the bases are using 250 uh
+eigenvector from the lossy compressor
+data with the 10 to the power 6 minus
+six compression and the original
+snapshot for sedimented concentration at
+this time so um you see very uh is more
+absolute error but this is not enough
+let's see more
+measure other measures in the graph in
+your left you see the relative error in
+time measured as the difference between
+the reconstructed solution and DMD
+solution you see the norms and you see
+that this zero is very you know
+when you do no compression uh in in
+Orange lots less compression in green
+velocity with the tendon minus
+six dollars and a more aggressive uh
+compression we see a very good
+error and velocity in in in lossless and
+more or less on top of each other until
+that time and there's a different
+diversions afterwards and but uh
+overall the errors is still you know low
+10 below 10 to the minus two
+on the right you see the time history of
+the relative 7 Mass error for all cases
+they are very good and when you do a
+very aggressive velocity compression
+decompression you see that there's some
+oscillations but overall
+um the mess is uh very well
+reconstruction
+uh finally well I mean are people who do
+this simulations there are some
+quantities of Interest Global contents
+of interest that they always look one is
+the front position over time and uh for
+this which is basically uh how a uh you
+compute um how where is the front over
+time you can see there's a very good
+match uh no matter of what you do using
+raw data for the for the model raw data
+from the simulation and all the
+compressor compressing all the snapshots
+you see for This Global quantity of
+interest you are on top and also uh from
+the sediment mass time history that's uh
+you you see the same thing so I mean it
+appears that a compressing snapshots by
+uh using a uh you know uh
+some with keeping some accuracy good
+balance between uh you know how much
+you're gonna compress
+and decompress is um is a good idea by
+the way the decompress time for the MD
+is negligible
+okay all right so uh let's see what
+happens when we have a snapshots coming
+for an Adaptive message refinement and
+coursing
+um well uh
+when when you do adaptive measure
+refinement course simulations
+um
+the meshes we have they have of course a
+different number of nodes number in
+order coordinates
+and uh it can also lead to different
+mesh topologies and instructors
+for instance this is you see are three
+levels of refinement and then you see a
+you know I mean uh this matches of
+course they don't live in the same space
+and you can have something like this a
+hanging node which is constrained by
+their neighbors
+or you can have situations like this
+mesh one and message two that they have
+that they have the same numbers of
+degrees of freedom but different
+topologies uh we circumvents this issue
+by considering L2 projection of the
+numerical simulation results for
+different meshes
+into a reference Target mesh
+so there are some issues here okay uh
+the choice of a proper method to
+successfully project functions in
+different finite element space is not a
+trivial task and particularly because
+conservation may not be satisfied if you
+go to the literature there's there are
+several walk-in addressing this issue
+however
+we have to bear in mind here that mass
+projection for us in to build uh you
+know a a DMD snapshot they occurs as a
+post-processing phase after Computing
+the Adaptive mesh refinement course
+solution therefore it cannot lead to
+cumulative errors so projection is not
+that doesn't accumulate error
+there's another issue here is how much
+the snapshots will retain from the
+original uh the original uh accuracy of
+this uh adaptive mesh
+so
+what we found out that we need to to
+choose a reference Target meshes Target
+mesh with a characteristic length
+equivalent with the system in adaptive
+measures in order to avoid major
+accuracy losses
+so that how it works uh that Solution on
+the dollar mesh be given by the
+suspension satisfying this uh L2
+projection here in the proper space
+uh and of course L2 is defined by the
+Target mass and in Temple Run here you a
+subprot is the optimum turbulent
+interpolant in this L2 North from this
+space
+so uh we Computing the L2 projection
+this is orthogonal projectors is defined
+in the following linear system uh
+and you this isn't you cannot solve this
+for uh you prod
+where m is the standard Mass Matrix for
+any finite element code NP is a
+projection Matrix
+uh well we prove a theorem in this paper
+down here is that if every degree of
+freedom of the original mesh is also a
+degree of freedom of the resin F
+reference mesh then the Matrix B is full
+rank
+right which is a very uh tough to
+requirement of the math in practice
+but uh we find out that uh having a
+reference mesh representing defined
+scale is enough for practical purpose
+so this algorithm snapshot projection
+will work like this they have an input
+the finite and element solution
+considering adaptive metric refinement
+courses and the output data projects and
+solutions
+so for each observation time step you'll
+apply that to projection and stack the
+result in snapshot Matrix or output the
+projected solution to this compressor or
+not compressor doesn't matter on the
+right you can see um his is the you know
+I mean it's a simple exercise
+we project this solution and this is
+adapted mesh and this is an infinite
+Norm this is one and then you use this
+mesh with represented finite scale here
+the projection is very good or if we
+project in a totally unstructured mesh
+more or less keeping the same scale we
+have also a very good a uh very good uh
+error
+right so let's check out how it works in
+practice
+let's examine right now the problems of
+a 3D ryzen bubble which basically a
+couple Navia stocks equation I'm sorry
+just one second
+is a couple navigational equations with
+a convected level set where we consider
+surface tension with continuous surface
+model the details are in the paper
+in this yellow box here and this is the
+initial condition and no slip boundar
+condition applied to all boundaries the
+computational domain is this box here
+we're going to have grid size in this
+interval there will be 240 time steps uh
+this is the time step the bubble radio
+the density position the the properties
+and we consider gravity like this
+so first thing is
+um
+how this idea of looking at projected
+meshes work
+we can see here in this plots the
+Adaptive mesh solution the projection
+for this time step on a course mesh in
+intermediate mesh and a fine mesh
+projection and in the table here you can
+see how costly is the perception you see
+uh well for fine mesh is the projection
+cost is negligible and uh is uh it's a
+projection like this out to projection
+is available on this uh either uh is no
+it's part of a lib mesh it's part of
+Phoenix so projection is not an issue
+the issue here is uh how the solution
+becomes when you really do the
+take a look on the solution quality in
+this projected meshes
+so uh you see some quantities of
+interest for this problem this is the
+volume of the bubble this vericity uh
+the rise velocity and the center of mass
+uh for the you know uh forward
+assimilation with adaptive mesh and for
+Ma and the output in the with the course
+intermediate and find projection of
+course the course
+um the project the solution project and
+the course match is good for nothing but
+for the intermediate uh mesh and the
+fine one there are you know this
+quantities are all okay which it gives
+us a good indication that uh projector
+projection can give you snapshots in the
+same base in in in the same space
+uh so we proceed to do a DMD
+reconstruction by the projected meshes
+here is basically the relative error
+um
+for the reconstructions
+and we've seen relative error here
+and this is the is the training and then
+after the training you see the trainer
+is the the error increases a bit but we
+have him in uh in all this DMD are good
+and uh for the course
+mesh is not that good but you can see in
+this two slides here that the bubble
+shape at that for the sign during the
+sign reconstruction which is at the end
+here of the training and for the
+prediction within the last step is more
+or less okay and we can see some really
+oscillation for the course mesh and of
+course in this table here you see for
+several ranks DMD reconstructions and
+then they see the relative error of
+course uh if you increase the rank uh
+you know of the reconstructions the year
+or diminishes
+but and uh you have you see a you know
+uh astonishing a very very very nice
+speed UPS so it seems to be a good idea
+to uh to have all the snapshots in the
+same space by projecting the solutions
+so uh let's see how it GMD performs for
+the quantities of Interest again I see
+volume sphericity the rise velocity and
+center of mass
+and
+I believe this is uh for using the
+record I'm sorry for using the
+reconstruction with 60
+vectors and you see again uh
+reconstruct DMD reconstruction where the
+coarse mesh is good for nothing but for
+the in there for defining an
+intermediate projection there are of
+value I mean uh you can do it without
+any problem okay
+so
+let's now uh C is the if how this idea
+of mesh projection of in having all the
+snapshots in the same space
+walks when we merge this with uh with
+data compression so uh by using only the
+final projected mesh uh here is the time
+share is now on the offline file phase
+is uh 90 for the servers less than one
+percent of the time for output writing
+uh one percent for Power view catalysts
+three point three percent for the bubble
+position projection the reference mesh
+and the 80 for the reminder workflow
+components but including uh all the
+stuff you need for adaptive mat
+refinement and coursing process in
+litmesh uh for this specific problem you
+can see here you see a a view of uh the
+um for the time 2.25
+um the adapt the mesh with the velociros
+with the velocity plots and the
+corresponding
+um
+projection of the level set or the
+bubble position at the final mesh uh
+note here that we compress both the
+levels that filled on the adapter mesh
+and the levels are filled on the
+projected mesh
+the projection mesh contain more nodes
+and elements and given that there's the
+same mesh for all snapshots of course it
+enabled the use of DMD all the other
+fields are stored in their original
+adapted meshes
+so here again we see the the table we
+can see a the three velocity components
+and then compress it and the compression
+rates the pressure uh the um
+the level set of this in this in adapted
+mesh and the Lego set in the protected
+mesh that will be used for the DMD
+reconstructions you see that we achieved
+some you know less we can discuss it
+later why we achieve less
+than in the other case but still uh good
+compression rates okay and again I will
+do the same thing uh this is the pick to
+cyan noise ratio and we see that uh
+for um zfp the lossless compression and
+the same
+um you know uh accuracy lever for zfp
+compression
+here we don't see uh you know more or
+less the
+lossless and zfv requested on -6 is more
+or less on top of each other and the
+quality of uh the aggressive more
+aggressive data compression is not that
+not that uh you know uh they still have
+a you know a good quality uh
+this is somehow
+reflected when you look at the singular
+values for a basis of 20 and singular
+values uh we we have here all the
+similar values and I'm gonna do the
+reconstructions of with 20 vectors but
+they're all more or less on top of each
+other and uh if we look at the frobenius
+norm relative Norm between the
+approximate and the original snapshot
+for a basis with 20 vectors we see there
+are more or less the same order of
+magnitude
+and again uh the DMD eigenvalues if you
+look at them the raw data the loss less
+and the two uh uh you know compressed
+and decompress it uh with different
+um different tolerance there are all on
+top of each other more or less
+reflecting what we see in the singular
+singular values
+okay
+so uh this is the relative on the left
+relative error in time for the
+reconstruction with 20 vectors we see
+that that's okay it's a relative error
+on time is bounded 10 to the minus two
+and the time history of the bubble mess
+which is
+um is very very similar with the uh what
+we care what we got with the no
+compression at all
+right
+uh so so far we have been uh you know
+seeing the effects of uh data compaction
+and how to handle
+um
+uh snapshots with diff coming from when
+they live in different spaces we do it
+by compression and now we're gonna see
+what we do when we merge uh DMD with
+Institute visualization
+all right some more water
+um and I'm gonna do faster here uh we
+see uh well do we have seen the
+integration between little mesh and
+parallel Catalyst and this is provided
+by adapter which is implemented when on
+one of the Catalyst apis more or less we
+couple a live match with powerful
+catalysts and we produce PNG files that
+will feed streaming the DMD the adapter
+invokes python scripted which is
+supported for the power viewer user
+interface and the adapter involves uh
+this processes initialize go processing
+finalize which are methods to invoke
+pipelines defined in this Python scripts
+uh the data structure for from the
+simulation code is assessed in memory I
+mean in situ and they are mapping in the
+adapter using the API for Power view
+catalysts and catalysts using viticates
+data model to perform the data structure
+mapping the user is simple if we output
+PNG file every X time steps and write
+data every KX time steps with K in much
+more than one and PNG file files are
+ingested into the streaming DMD
+algorithm which is
+on the right I'm not going to details
+I'm just saying it's very similar to the
+incremental SVD or fine in liberon
+however it's tailored for receiving PNG
+images uh we use this python package
+opencv for handle image and scikit image
+for computing metrics and the images are
+converted to black and white before
+processing and pixels are header has not
+all values in the snapshot Matrix this
+is a to make things simpler all right
+so uh what we do need the streaming DMD
+on the clock is changing uh computation
+uh we use power of your Catalyst
+generating mud images for us at the mid
+plane of the all of the lock exchange
+problem
+uh PNG files have only this amount of
+pixel with accounts for 153 megabytes to
+restore all 4000 images we we we Restore
+for every time step
+and this is DMD reconstructor for a base
+will be 250 uh uh you know uh DMD modes
+okay uh usually there's no difference
+between any of this uh the the full
+order model image
+the the the the Institute visualization
+image produced a bit
+online with the
+order model data and uh the
+reconstruction with the purview uh same
+image with the DMD reconstructions
+uh however I have to bear in mind that
+assassin accuracy image needs more
+different metrics uh why we use this
+structural similarity index which is
+computed like this it is very standard I
+just would like to point out that uh if
+this is the original image and this is
+too compressed and decompressed in the
+image of the PNG maybe you have a uh you
+know the same MSE but this metric tells
+you that this the image on the right is
+much better than the middle image so
+when we handle everything as images
+there better use this metrics in order
+to assess quality uh together with our
+standard more mathematical uh
+error analysis
+so uh
+for the lock stand problem what we
+what we get when using the streaming DMD
+this Mark here is uh is the mark that we
+have at 350 uh snapshots in all the hair
+construction keeps going with this this
+snapshots or PNG files coming in and you
+see this Matrix uh as close to one is
+means that James images are very good
+and you see by the scales that this is
+true and even the DMD reconstruction
+images are very good
+and this is also reflected in forbino's
+Norm uh in time and also in the relative
+error uh they all tell us that the
+Reconstruction the with this using the
+images
+produced in by The Institute of
+visualization uh they are you know they
+are DMD reconstructions are very good
+what we got when we do the same thing on
+the 3D Rising bubble problem
+uh well now we'll generate black and
+white images at the bubble midplane PNG
+files have only this so uh we have a
+three megabytes for storing all 240
+image individual reconstruction
+with rs60 and see you see the
+um the
+Catalyst image the ddmd Reconstruction
+and so on we see here in the end
+uh after the training does when the
+prediction phase that DMD does not do a
+good job in the Reconstruction but is
+more or less we knew that when we when
+we observed the Reconstruction in the
+bubble perhaps is because of the
+boundary conditions we we apply here
+isn't is a no slit boundary condition
+and this is reflected in the
+in in in this other metrics uh this is
+the similarity similarity index for the
+Reconstruction images from the bubble
+shapes is still good and we see a
+degradation here in the end
+again this is a you know I mean the
+when you start to have a 16 started
+reconstruction different
+is not that good and but still tolerable
+and the error is growing as we saw
+before but it's still acceptable
+okay
+and uh we have five minutes uh should I
+continue to stop here and go to the Q a
+I can go very quickly on this
+uh basically uh there's a uh what do you
+think Tony
+yeah
+I think it's up to you we are pretty
+flexible in the schedule okay I mean I
+will jump to this because it's a more
+theoretical book uh suppose we have a uh
+you know a PD system that uh
+uh we have this Vector here and this is
+a kind of uh uh
+multi-compartmental system and N is an
+interoperator that defines the
+interaction between an inj compartment
+of course this is the places I prepared
+with this season in an initial condition
+for each compartment and uh depending on
+the type of the equation we can use you
+know to Lark in petrol Arc In A
+variation mode scale for spacious
+criticization
+the question here is uh what we do
+within within the Reconstruction it's
+it's the real Freedom or each
+compartment separately or
+[Music]
+um
+but stack all of them like this and do
+the DMD for the couple approach of
+course this will demand more memory
+um but of course in the Reconstruction
+followed this expression but see uh
+which one is is better uh right
+in this paper below we have a
+mathematical analysis and we have three
+we have proved three theorems uh first
+one is for a compartmental dynamic
+system such that we have this
+conservation the exact DMD
+reconstruction uh utility here also uh
+you know is conservative the second
+theorem says that for a problem with
+some subset of a compartment satisfies
+the hypothesis of theorem one
+theorem one also holds
+uh for the DMD reconstruction in this
+subset
+the third theorem says that for a
+compartmental problem which satisfy the
+hypothesis of theorem one
+if we have additionally that this is uh
+you know uh uh this
+condition here that the compartments are
+are positive or zero and the MD
+reconstructions are also this uh
+positive or or zero at all
+positions in time then we have the L1
+error is bounded for all type
+some remarks on this theorems this
+non-negativity hypothesis on utility for
+theorem trees uh it's hard to say that
+it does hold in general and this
+quantities may become negative but what
+we see in practice that this assumption
+remains satisfied for many problems at
+least
+for a moderate period of time after the
+end of the training period
+in such a regime between we may expect
+that the error bound given by Tyrone 3
+to hold preventing the blow up of the
+era
+moreover if one wishes to perform DMD on
+augmented variable space let's say we
+have one U2 these two compartment and a
+non-linear combination of those
+we would expect that this conservation
+will hold in the deep diver construction
+despite the presence of the non-linear
+variable
+the mathematical details is on the paper
+I will skip this but let's see how it
+works uh
+this is a system of reactor diffuser
+equations which basically is a special
+temporal delaying uh sustainable in
+Factor
+um it's uh recovered and this is a
+population for uh you know
+simulating spreading of disease
+as I said before as a stand for the
+susceptible compartment e for infected
+are for the covered and then D for the
+season some the sum of our compartment
+the deception of the deceased population
+is represented by the ending population
+the total number of living people the
+better at the transmission rate gamers
+are the simple symptomatic recovery
+rates deltas and mortality rates and
+here is that our diffusion tensors of
+the different population groups and the
+signal incorporation the lag effect
+presenting between the time infection
+and development symptoms and the model
+sixth you know and in sixth model the
+delay of service in practice when new
+restriction of order measures are
+introduced and then the tables of the
+model is the paper in the yellow box in
+in below in in the slide all right the
+model works
+this is the in in pink you see the
+symbol in this the number of the Season
+population against what was measured in
+the state of Georgia in the U.S and we
+observe an excellent agreement for the
+total population for Georgia for this
+model and uh this is uh the evolution of
+the impacted infected compartment eye
+for the Georgia simulation of different
+phases of the pandemic they won the one
+month uh four month and day
+150. of course the outer break is more
+was more severe around the Atlanta area
+but we have other hot spots as well
+uh well how DVD performs on this uh well
+we're gonna see that the variation of
+the you know the the mass has been
+conserved and we see that if we do DMD
+reconstruction we then couple uncoupled
+way we see a
+we don't see any conservation but
+however if we do the the request DMD
+reconstruction will be the couple way we
+see a very good conservation even beyond
+the training period
+and this is the infected compartment
+um you know five days after the end of
+the training periods and we have a very
+good agreement between uh the forward
+model and the DMD reconstruction for the
+couple using the couple way of doing
+this
+okay uh if this is your analysis and for
+the Georgia simulation this is how we
+compute the error and for the different
+compartments the susceptible infected
+recovery and this is we see that uh a
+couple named the Reconstruction failed
+for several compartment giving an
+acceptable results in contrast uh the
+couple DMD formulation you know
+reconstructed the Dynamics even after
+training and uh it provides reasonable
+circulation for three week interval
+which is a very good for the problems of
+uh you know epidemic provision and um it
+more or less confirms uh what the
+mathematic mathematical analysis have uh
+you know uh predicted for us
+so final remarks and discussion to end
+and then and finally go to the Q a uh
+some more water before I start
+my final remarks
+okay uh we have seen that elastic
+compression diminish the snapshot
+persistent storage requirements and
+contributes to decrease IO
+DMD approximations use a decompressed
+data may lose accuracy depending on the
+singular value threshold
+If lost data compression changes the
+singular values before the application
+Level and GMD eigenvalues may change too
+and they're gonna expect and not a good
+reconstruction
+we have observed that decompress and
+snapshot does not increase computational
+effort during the MD approximation one
+thing I it's I'm pretty sure data
+compression is here to stay you guys in
+the labs are planning a lot of effort on
+doing this in in compressing compressing
+uh scientific data sets so um is there
+in please use it there are other options
+in zfp that remains to be explored I'm
+not claiming that we did the best job we
+just said oh okay uh look data
+compression here is good but we have to
+you know to do more computations and
+explore more now of course there are
+other scientific data compressors work
+taking a look like sdmguard plus Etc
+and one thing that is important for you
+guys in in the liberal Community is I
+believe that any method based on
+Snapshot can benefit from data
+compression it's more or less obvious
+this thing but uh we I never see uh many
+people using you know scientific
+um floating Point compression in in in
+in in this method and uh we could expect
+more savings for outer looping
+computations
+um you see uh when you do of course if
+you do paramedic paramedic studies that
+were generated much more data well when
+you do more compression you do more and
+more savings so uh you know I mean by by
+using floating pointing compressions for
+paramedic studies can expect much more
+savings
+uh
+again I mean using image data for DMD
+approximation presents accurate results
+considering to presenting metrics with
+notable storage reduction with promoting
+a simple data transfer
+uh another thing is projections that fix
+and matches could not the best could not
+be the best way of dealing with the
+snapshots when in different spaces but
+it's simple
+why while L2 projections is embeddy in
+many existing codes
+uh open source codes like Live Match
+Phoenix and I believe in many of the
+simulation code is available the doe we
+have this projections already
+implemented
+our experience shows that the hint is if
+possible select the fixed mesh container
+approximately the smallest scales
+obtained in your adaptive mesh
+refinement and coursing solution
+uh well I mean uh
+in City visualization turns the offline
+in online phases blurry they are not
+somehow have mixed together if it's
+possible to generate in situ
+visualization image targeted to the
+promise queue you Qantas of Interest
+short time incremental DMD prediction
+can Aid steering task as runtime you see
+if you are if you are receiving a bunch
+of images and then doing a DMD or some
+run reconstruction you can somehow
+predict it at run time got gonna happen
+with your assimilation and then take
+action
+using uh you know it uses streaming
+capabilities built in in your simulation
+codes
+uh again I think that image metrics
+should complement our traditional error
+analysis look we are you you're using
+images right now so you have to take a
+look on the image metrics in the end
+for compartmental pdes we have seen that
+our Theory and have been you know uh in
+America experiments have shown that a
+couple DMD should be preferred
+yeah that's the theme myself
+um uh understand the reality our
+colleague and Martha matosa from he did
+from computer science he helped she
+helped others a lot on the steering part
+like Patrick valderez Alex vigori which
+is now at CDC Malo gravy my former
+student Chargers also my former student
+Adriana Court as my former student
+Gabriel bahus who did a lot of Works in
+DMV he's finished his PhD right now but
+uh a machine Learning Company in Brazil
+already hired a guy and Victor Sylvan
+Rena Souza also helped us a lot Victor
+silver now is at Apple and the
+Renaissance is your colleague in Oak
+Ridge you can talk to him about this
+steering stuff that he knows a lot about
+this this is our you know I would like
+to acknowledge our supporters and that's
+it thank you so much I uh to be here
+with me today and thanks for your
+attention I'm ready for Q a
+yeah thanks for the wonderful
+photographer uh yeah I'm particularly
+impressed by the comprehensive workflow
+on like different uh
+simulations different applications and
+like the interesting error analysis
+analysis on the data compression
+so uh let me see I've I don't think we
+have a question in the chat room yet so
+uh probably I can kick off
+um with one question
+so uh I'm curious about like what to do
+um what I mean what do you think about
+like incremental DMD in the parametric
+case like we have I know you you do the
+sedimental transport as an example I
+think you have one particular
+pressure of number and uh mid number
+right so yeah so if we have like
+multiple of them maybe we can do it in
+like simultaneously and we build the
+incremental activities simultaneously so
+do things like you will
+um help giving a new testing parameter
+another and it's in uh problem in the in
+terms of the pressure and the similar
+problem so how would you like do the DMD
+protection there uh
+that's a very good question
+you see I think there is a strong
+potential if you figure out the problem
+with the set of visualizations figure
+out you know this the script in order to
+produce the images right
+um if you have a parameters let's
+suppose that you do a paramedic
+exploration and we have a lot of jobs
+running in the supercomputer and for
+each one of them you are downloading uh
+you know for the same point of view more
+or less with the same mesh your download
+the images I can think
+I can
+think that you can do
+you can show that there's a database of
+images and doing incremental DMD we can
+show a new parameter and see if the
+Reconstruction is okay I think this is
+that that's worth doing you know worth
+doing because
+you're gonna check out in runtime what
+it what is going to happen in this new
+barometer and figure out if we have to
+start a new simulation I mean yes not
+good it is an indication for you okay
+let's put more let's let's feel that
+let's uh start simulation within the
+with new parameters right
+a clear application of this idea
+I see yeah our group was more more
+worried at that time in order to uh
+complement what we have been doing in
+steering in order to you know and doing
+this during the indeed to predict what's
+going to happen and then intervene
+intervene in the code but what you have
+said is really I do agree with you if
+you have if you figure out for let's say
+the same configuration and several
+parameters and you have the images you
+can you just expose your streaming DMD
+to this new parameter and see if it's
+worthwhile to increase your parameter
+space or not yeah
+yeah that's right I think you can pop
+more on this matter because the liberal
+team we uh we are also looking at like
+uh having automatic like error
+indicators for like finding
+um the parameters that we have to like
+build more snapshots for like having a
+better Universal uh estimation in the
+whole parametric domain so yeah maybe we
+will learn from your experience and
+maybe you can also talk about our work
+in the residual driven uh
+um like sampling methods there yeah Tony
+that's that's absolutely right I mean
+you could use for instance a k n or any
+other better to combine all these things
+uh or an area neural network to you know
+I mean uh to do this but it's absolutely
+correct I think you you the team is uh
+you need to do that it's about doing
+yep so uh I may ask one more question
+um so uh so it is like uh I don't have a
+clear idea about this but
+um you I mean in the hotel we mainly
+work I mean talking about these
+simulations but so I'm thinking about
+like a data I mean a decision making uh
+process or a like multi-curry problems
+so usually we want to match the
+simulation with some kind of of shelf
+data and there are some noise in there
+so do you have like any comments on some
+insights on how the noise level is
+um I mean related or affecting the like
+the zfp compression level that you
+should choose in the DMD
+um
+that's a very good question
+uh
+you've seen uh just to
+yeah those things here uh
+big sign of the noise of racism is uh it
+is a measure
+the guys who wrote this
+um this paper I I quoted here uh where
+uh
+yeah those guys
+though those guys here for the Benchmark
+they test it
+and they they uh there is a uh uh
+um
+a um let's say
+they propose a benchmark which all this
+compressor and
+um this is those guys they are one of
+the quantities that is new to our
+community at least we don't tell much
+about this is this big cyan noise ratio
+and tells you how this noise generated
+by the compression affects your your
+your snapshots in the end when you
+decompress how it is how how how your
+snapshots will be affected
+so I mean compressing and decompressing
+by something like uh you know 75 to 80
+or is considered good
+this come from from from those uh image
+guys
+you see when we're doing this uh we went
+to the the image literature uh if you
+take a look on the on on the on the
+paper where we did that we we quote a
+image book this is something new for us
+CSC guys but it's bread and butter for
+for the image guys so I'm saying that
+that's why I said in the end that uh
+there's more on data compression and and
+that's why we choose uh zfp in the
+beginning because there is a strong
+mathematical background and error
+analysis for zfp as well as for the
+other uh uh compressor
+is one
+M guard Plus
+there's a strong mathematical background
+in this mgar plus so it's War I mean I
+it's hard to say at that point which one
+is is the best one but again I I
+um
+I I repeat what I wrote here data
+compression history is here to stay
+so it's something that our community has
+to start coping with and our experiment
+says just say to us that oh okay it's a
+it's not that bad we can cope with this
+because we're gonna restart receiving
+data there that are only available in in
+the compressed form yes these are too
+big
+yeah I totally agree like espresso is
+interesting uh like the zfp they are
+actively researched in within the cost
+of area now and we'll probably we will
+certainly want to like incorporate these
+techniques in the liberal that we are
+developing to like yeah I mean they are
+for instance a cfp is part of the hdf5
+there's a plug-in for this yes and I'm
+I'm pretty sure that you guys in the
+labs don't just go for the access scale
+project guys and talk to them you'll be
+readily available yes okay yeah so uh
+let me ask once more are there any more
+questions from the audience
+um so if there are no more questions
+let's thank everyone again for sharing
+his excellent research with us
+okay

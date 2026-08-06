@@ -1,0 +1,1810 @@
+and then uh let me try to
+introduce professor cham um
+i'm so glad to um introduce uh
+professor chan here he is an assistant
+professor in the department of
+computational and applied mathematics
+at rice university after receiving
+his phd from university of texas at
+austin in 2013 he served as
+postdoc advice university from 2013 to
+and at virginia tech from 2015 and 2016
+before returning to rice as faculty in
+2016.
+his research focused on accurate and
+efficient numerical solutions of
+time-dependent partial differential
+equations which is
+very much of our interest and his recent
+work has focused on the construction
+and efficient implementation of provable
+stable
+high order methods of wave propagation
+and fluid
+flows okay today professor chan is going
+to
+talk about entropy stable schemes for
+non-linear conservation laws
+higher order discontinuous scalar key
+methods and reduce the total
+so no further due
+here you go professor chan you can still
+thank you very much i appreciate it uh
+thank you very much for the introduction
+and
+uh very much of the invitation to speak
+it's great to
+see many of uh familiar faces and names
+show up in the
+in the zoom chat window uh so
+i will broadly be talking about two
+different things in this talk so it'll
+be
+largely split into two where i tried to
+introduce what an entropy stable theme
+is
+and then try and show how i can apply
+this to higher order dg methods
+and also to reduce order modeling and
+kind of the same framework
+um so i should mention before i start
+that this is of course not work that
+i've done alone i've been very lucky to
+work a little bit with my postdoctoral
+advisor tim warburton
+on some of the results here and i have a
+wonderful team my postdoc mario and uh
+student philip wu they uh they have
+worked on some results that i'll mention
+but most of the uh results that i'll
+talk about have been done by these two
+graduate students yemen lin and
+christina taylor who like whose
+contributions i really appreciate
+okay so let me try and set the stage for
+what i am interested in broadly i do
+computational science i do simulations
+and most uh most the recent work i've
+done is spoke on aerodynamic
+applications
+so exterior aerodynamics where you want
+to resolve acoustic waves
+vortices turbulent behavior or shocks
+and what i generally want is to be able
+to achieve high ac
+levels of accuracy on very complex ish
+geometries so
+i might be interested in looking at
+unstructured meshes in order to resolve
+something like this trifoil over here
+but because of this and because all of
+my mentors have generally worked in this
+direction
+i have been using discontinuous caloric
+methods which give you geometric
+flexibility in high order for relatively
+relatively easily i've been using this
+as my primary numerical simulation
+technique
+and i'd like to describe a few reasons
+why they're nice
+why they're not so nice and how this
+recent work on trippy stability i think
+addresses some of these underlying
+issues
+so what am i actually interested in
+these simulations i
+like the fact that these distant tuesday
+methods can be made high
+order in a fairly easy way just to
+illustrate the effect of
+order of accuracy if i take a first
+order method say an upwind finite volume
+method for the advection equation
+and just try and simulate a gaussian
+kind of going
+round and round in a periodic domain
+then eventually after a few revolutions
+you get this behavior here where
+everything diffuses out
+if i increase the second order then you
+see much better behavior there's a
+you still see some some diffusion of the
+solution features
+but everything is much better resolved
+by just going up one order
+if i were to go up two more then you can
+see this dissipation further decreases
+and if i go up to eighth order then you
+can see that there's virtually no
+difference at all between
+the ejected solution and the exact
+solution
+uh and in each of these cases i don't
+know if you can tell but
+i'm decreasing the number of degrees of
+freedom i'm increasing the order but
+decreasing the mesh resolution
+as i go on from first to second to
+fourth to a so that i have the same
+number of degrees of freedom
+everywhere so this is a purely academic
+example
+it's uh something you would show in a
+class but it's not too hard to
+extrapolate this
+to some more realistic applications
+these are not my results a result from
+andrea beck and gregor gaster and
+apparel off pearson
+but i think they illustrate the power
+that high order has for exterior for
+cfd type problems so on this top row you
+have
+the taylor green vortex at uh several
+resolutions so
+again they are keeping the same number
+of degrees of freedom for each uh
+each method but here they have second
+order and
+the second picture is fourth order and
+this last picture
+is at a whopping sixteenth order and in
+each case you can see that as they bump
+the order up the red uh the vortices
+that you see are resolved more uh
+uh to with my accuracy same for this uh
+this is driven kel helmholtz and
+stability you can see
+that these features in the interface
+these fine vertical features
+those would be fairly hard to resolve
+using a low order method and
+parallel person uses an eighth order
+scheme in order to get good resolution
+in terms of discontinued scholarly
+methods versus finite volumes or finite
+elements
+i mainly use discontinuous scholarly
+because i find them very easy for
+explicit time stepping if i want to
+simulate
+if i want to simulate a system of
+equations using explicit time stepping
+then for finite element type methods i
+have to invert
+the mass matrix at every single step
+well for higher order finite elements
+this math matrix
+is globally coupled but sparse for a
+higher order dg method this math matrix
+is block diagonal trivially invertible
+it makes the implementation a little bit
+easier okay
+so that's the usual boilerplate that you
+might hear for a
+discontinuous galerkin method but i also
+want to tell you why i
+haven't been using higher order dg
+methods for a lot of my uh
+synchronic relations in cfd up until
+recently so
+if i run berger's equation then with a
+certain initial condition this initial
+condition will develop a shock
+and for the exact pollution this gives
+you a
+continuity but if i run this using a
+higher dg method i see oscillations
+if i continue to run this then these
+oscillations grow
+and eventually they blow up and your
+simulation crashes and this is what
+really plagued me for the
+first couple of years i tried to use
+higher dg methods for cfd
+that they are highly non-robust by
+themselves if you don't apply additional
+stabilization or artificial viscosity
+then they generally blow up
+whenever they encounter under-resolved
+solutions and
+things like shocks and turbulence which
+are prevalent everywhere in cfd
+are highly under-resolved solutions most
+of the time
+so this motivated me to try and look for
+something different and i feel like i
+found this a couple
+years back when i learned about entropy
+stable high order schemes
+i wanted to avoid i want to avoid the
+common
+metrics used for higher schemes which
+was to apply some sort of solution
+regularization to avoid blow up and to
+improve robustness so
+in practice this amounts to adding some
+artificial viscosity filtering the
+solution
+or applying slope limiting techniques
+from finite volumes and while these all
+generally work fairly well they can tend
+to reduce the amount of
+the accuracy that you that you achieve
+and if you want to gain that accuracy
+back by reducing the amount of solution
+regularization
+then you might lose robustness again and
+so in my mind
+it ends up being a sort of tightrope
+walking scheme where
+you have robustness on one hand higher
+accuracy on the other
+and you're basically trying to tune your
+stabilization parameters to make sure
+that you can achieve
+as much of both as possible but this is
+a problem dependent task
+discretization dependent task it ends up
+becoming a little bit of a chore
+so what i believe entropy stable schemes
+offer is
+a little bit of a little bit more
+stability independent
+of any solution regularization so if i
+don't apply anything
+then i can run an entropy stable scheme
+and get some reasonable rules for a
+for a large class of problems case in
+point
+again these are not my results these are
+results from chiweng
+shu gregor gassner's group and a group
+at uh
+at kaust but all of these are entropy
+stable simulations for the compressible
+euler equations
+for the magnetohydrodynamics equations
+and for the compressible navier-stokes
+equations where you can see
+clear examples of turbulence shocks
+vertical structures under resolved
+solution features
+all of these were run using high order
+disc entropy stable schemes
+without any artificial viscosity
+filtering or slope limiting
+so my goal has been to uh basically take
+these schemes and to expand them to see
+how general we can get with them
+okay so i wanted to first finally
+explain how these methods work
+by looking at entropy conservative and
+entropy stability method and then
+generalizing from the
+structure that arises there so
+i'm sure i don't need to say about this
+but if you're not familiar with volumes
+i'm basically given a grid
+i'm trying to approximate the solution
+average over each cell
+and i basically try to solve the
+integrated form of the conservation law
+so just integrate by parts or
+use the fundamental theorem of calculus
+and you can rewrite
+uh your constipation law as
+so so if i have the flux at the
+boundaries well i know that there's
+uh the solution is dual valued at the
+boundary so i need to find some way to
+take a unique flux and what we do is
+just replace
+this value of the flux at each bound
+cell boundary with a numerical flux
+so depending on the numerical flux
+obviously you can uh
+you can end up with a whole bunch of
+different types of schemes and the
+specific chemical flux that i'm going to
+look at are what are called entropy
+conservative numerical fluxes
+and what they aim to do is to try and
+reproduce a little bit of this entropy
+stability
+theory for nonlinear problems and
+reproduce it at the discrete level
+so i think of entropy stability if you
+if you're not familiar i think of it
+essentially as a generalization of an
+energy balance for a non-linear
+conservation law
+so if i have burgers shallow water
+equations compressible euler or
+navier-stokes equations mhd
+they're a class of nonlinear
+conservation laws which all admit an
+entropy inequality
+so essentially what we do is if we have
+some convex
+entropy function which we can think of
+as generalization of entropy
+sorry of energy then we can define the
+entropy variables
+v as the derivative of this convex
+entropy with respect to the conservative
+variables if i then
+multiply the equations by this set of
+empty variables integrate over the
+domain
+then i can do some manipulations and
+eventually get that the average rate of
+change of the entropy
+plus what essentially amounts to the
+entropy flux in and out of the boundary
+is going to be less than or equal to
+zero so if you have a closed domain or
+appropriate boundary conditions
+this term vanishes and you get that the
+average rate of change of entropy is
+always decreasing
+or always negative so average entropy is
+decreasing in time
+this is as close as you can get to an
+energy type as
+four nonlinear problems uh and what
+entropy
+conservative uh final volume methods do
+is they try to reproduce
+uh this at the discrete level in a very
+specific way
+so given our finite volume scheme i will
+take this a flux to be
+entropy conservative where it has to be
+consistent for accuracy
+has to be symmetric for conservation and
+then it also has to include this very
+strange conservation condition
+where if i take the difference between
+two entropy of entropy variables at two
+different solution states
+and oops contract that against this
+entropy considered flux
+then the result gives me the difference
+in what are called the entropy
+potentials
+so if i have this then i can show that
+my numerical scheme conserves entropy
+in that the rate of change of entropy is
+equal to zero
+so this isn't exactly the entropy
+inequality we saw before but it's not
+too difficult
+to simply
+to simply add some dissipation and if
+this dissipation
+is uh is constructed appropriately then
+we can reconstruct an entropy inequality
+at this discrete level at the final
+refinery volume scheme
+okay so uh
+sorry i'm having some trouble moving
+these slides around
+great so these entropy conservative
+fluxes are a little bit more complex
+here's an example for the compressible
+euler equations in 1d
+you have something like the average of
+the density multiplied by the average of
+the velocity but this average of the
+density is taken to be the strange
+logarithmic average you also have some
+additional strange quantities you have
+the inverse temperature beta
+you have a logarithmic average of that
+as well
+um but these are entropy conservative
+fluxes in explicit form and these are
+going to be the main ones that i've used
+throughout this uh this
+for all the numerical experiments in
+this talk
+okay so conservative and entity stable
+finite volumes are
+they date back to the 1980s and i think
+even before a little bit
+what uh i really what was interesting
+recently was that
+uh there were a couple of folks gastner
+carpenter
+uh chiwengshu and some others who showed
+that you can reformulate these
+methods using hadamard products and from
+there extend things
+to a much more general framework so i
+the hadamard product of two matrices is
+just their entry-wise product take every
+single enter the ij to entry multiply it
+by the ij's entry the other matrix
+and what i'm going to do is take my and
+take an endpoint
+finite volume scheme i'm going to assume
+it's periodic for now so that
+the first node is connected to the last
+one and i'm going to rewrite it using
+hadamard
+products so i can think of this as
+basically being the difference between
+fluxes where these fluxes whoops sorry
+are going to be evaluations of this
+entropy conservative flux at two
+different solution states
+so you can see that you have difference
+between the first flux uh the first
+and second flux uh the first nth flux
+the second and third flux the second and
+first flux
+so on and so on so
+if i write this in hadamard product form
+what i can do is i can
+combine all these fluxes into one giant
+flux matrix
+where this just involves the evaluation
+of fluxes between every single solution
+state in the boundary
+and take the hadamard product of that
+with a matrix which essentially samples
+and scales
+all these individual flux contributions
+for a periodic scheme
+it looks like this matrix which you
+might find a little bit familiar if you
+work with different type methods
+so if i go a step further i can call
+this matrix 2 times q
+i can call this flux matrix f and i can
+rewrite the right hand side of this
+entropy conservative finite volume
+scheme
+that's simply the hadamard product of q
+times f
+multiplied by the vector of ones so this
+is just going to be
+essentially summing up over the columns
+of this hadamard
+product so this is a kind of
+cute representation but why is exactly
+is it useful
+well it turns out that writing it in
+this way it's a little bit more
+generalizable
+we can take our entropy conservative
+finite volume scheme i'll treat the
+entropy
+stable the sort of entropy dissipative
+case later
+we can write it in this semi-discrete
+form
+and if i define m to be basically the
+scaled version identity matrix involving
+the
+the mesh size then i can look at m
+inverse times q and see that that's
+actually a second order differentiation
+matrix for a periodic domain
+and the key observation which i will use
+in this talk is that
+i can actually show any method of this
+form
+is entropy conservative so long as q is
+either is both skew symmetric
+and conservative in order in other words
+q times this vector of all ones
+is equal to zero so we'll use this to
+extend to high order dg methods and
+eventually to reduce order modeling
+but first i want to mention so this is
+for periodic domains if you actually
+want to treat boundary conditions it
+turns out that this is not too difficult
+you simply have to replace sku symmetry
+with what's called the summation by
+parts property in the finite difference
+world so we'll impose boundary
+conditions in the usual way by choosing
+appropriate ghost values
+and these ghost values will be
+multiplied by some boundary matrix which
+scales
+your contributions at the left and right
+end of the domain and
+our relevant q matrix in this case will
+then
+uh be this matrix which looks like a
+center difference
+except for the first and last rows which
+are first order differences
+so this q matrix satisfies what's called
+a summation by parts property it's
+related to this boundary matrix in the
+following way
+to basically mimic integration by parts
+and if you do that then
+you can show that you are still entropy
+conservative or entropy stable
+uh when you add dissipation
+okay so the main innovation behind this
+just to give you a sense for
+some of the challenges later on is that
+we can reproduce this chain rule-based
+entropy identity
+where we take this volume integral and
+turn it into essentially an entropy flux
+through the boundaries
+we can reproduce this fully at the
+algebraic and discrete level
+and the key step in this is utilizing
+this entropy conservative property of
+this flux
+so if i take the skew symmetric form of
+this contribution up here
+then i can expand it out and see that
+it's actually going to be the entries of
+this q matrix
+multiplied by oops sorry exactly
+this jump in the entry variables
+multiplied by this
+entropy conservative uh flux and that
+we can root sorry that we can reduce
+down to this quantity involving entropy
+potentials
+and the proof is relatively
+straightforward there
+okay so the first generalization that uh
+other folks
+uh figured out earlier on was that you
+can extend this to high order summation
+by part schemes
+pretty trivially so let's say you take a
+nodal
+uh discretization a spectral type
+discretization where your
+nodal points are placed at gauss loboto
+points
+well if you define a nodal
+differentiation matrix using lagrange
+polynomials
+then you can show that well this has
+zero row sum so d times one is equal to
+zero it's conservative
+and also if you multiply this matrix by
+the lumped mass matrix for gauss's
+bottom point
+then you also get the summation by parts
+property so this allows you to construct
+entropy conservative schemes
+in 1d you can extend to higher
+dimensions using a tensor product
+construction
+and this has largely been the workhorse
+of most of the practitioners who
+use entropy stable methods nowadays
+we can also extend to multiple elements
+not just a spectral element but multi
+high order dg by essentially adding and
+using this entry conservative flux as an
+interface flux
+within our formulation so we can now
+using this uh combined the previous
+slide in this slide
+uh create the higher order dg method
+which is entropy conservative for
+arbitrarily high polynomial degrees
+and if we add some pretty common
+interface dissipation like lacks
+friedrichs
+then it turns out we can show things are
+actually entropy stable as well
+okay so this has been a long review but
+i want to try to
+set the stage for essentially the work
+that i was i've been
+uh interested in looking at and my main
+contribution has been
+looking at this one word modal to try
+and generalize
+these entropy stable schemes from nodal
+and from summation parts planet
+difference type uh schemes
+to more general modal dg formulations
+and i should probably explain what i
+mean by modal so if i use the nodal
+dg formulation well i'm essentially
+assuming that i'm using a very specific
+set of nodes on a very specific basis so
+for example uh gauss lobato nodes and a
+lagrange basis collocated at those
+points
+but for a modal formulation i it
+resembles much more of the generality of
+finite elements where you take any
+choice of basis functions whether they
+be hierarchical nodal
+bernstein so on so on combine them with
+any set of quadratures
+and end up with a reasonable scheme so
+before until recently this wasn't
+it wasn't possible to actually do this
+while retaining entry stability
+so these modal schemes are testing me
+because i do a little bit of work on
+hybrid meshes
+and these modal schemes may make it easy
+to automatically apply things not just
+to hexes
+but to wedges pyramids and also tets
+they were also interested in me because
+i've done some work on under integration
+and uh for nodal formulations they often
+under integrate uh
+solution and end up with fairly large
+discrepancies in terms of uh in terms of
+error so you can see that
+this dotted line you have an under
+integrated solution you lose more and
+more accuracy as you increase the
+polynomial degree
+so i want to get rid of this and more
+recently after i saw
+some talks from the audience i actually
+got interested in
+trying to apply this to projection-based
+reduced order modeling as well and
+that'll be the second half of the talk
+so i should probably explain why some of
+the what some of the challenges for
+modal formulations
+actually were our previous uh the
+previous construction of
+high order entropy conservative schemes
+relied really on the algebraic structure
+of these collocation type methods
+and you can treat them as finite
+difference methods you can basically
+treat things point wise
+when i'm thinking about modal
+formulations you have to think in terms
+of functions
+and that poses your first challenge that
+what we want to do is to take our
+formulation and
+multiply it by the entropy variables
+however
+for higher order dg formulations this
+typically involves taking the test
+function
+to be equal to whatever you want to
+multiply the equation by
+but entropy variables aren't polynomial
+and our test functions have to be
+in uh finite element method so there's a
+little bit of a hiccup here
+it turns out that this is relatively
+easy to uh to account for
+in order to get in order to extract out
+the right the relevant entropy balance
+quantities
+so when we multiply our time derivative
+by the entropy variable so we want to
+get the average
+of the average rate of change of entropy
+over each element
+then we can simply multiply not by the
+entropy variables themselves but by
+their l2 projection
+the l2 projection preserves moments and
+so therefore we can show that
+this integral here is equal to the
+integral without projection
+and that reduces down by the chain rule
+to we have on the right hand side
+so this throws a little bit of a hiccup
+though in that because we're using the
+entrop
+projected entropy variables we also have
+to now evaluate all of our fluxes
+using these projected entropy variables
+so we'll take we'll actually take these
+projected entropy variables
+re-evaluate the conservative variables
+in terms of them
+and use that to evaluate our right hand
+side if we don't do that then we can't
+use this property of entropy
+conservative fluxes and our proof of
+entropy stability falls apart
+so just to briefly illustrate it this is
+an example
+for a relatively coarse mesh for the
+entropy variables for
+the compressible euler equations i'm
+using degree four approximations
+uh eight elements and if i take it into
+a solution and i approximate it using a
+polynomial
+then i get some mismatch near a shock
+but otherwise it looks fairly good
+so if i transform these to entry
+variables then you can see that
+over these elements this doesn't really
+look polynomial anymore
+and so we'll do is we'll project it to
+polynomials you can see that there's a
+little bit of discrepancy
+with this red dotted line those are the
+polynomial projected entry variables
+and then when we map back to the
+conservative variables
+we end up with a dotted red solution and
+dotted red here and you can see that
+there's some discrepancy but it mainly
+lies in the vicinity of a shock where we
+don't really expect to resolve the
+solution very well anyways
+okay so this entropy project solves our
+first challenge but there was an
+additional challenge which i'll try to
+describe in brief
+uh so for summation my parts type
+methods
+uh if we choose the nodes properly then
+you have nodes which lie
+on the boundary of an element and
+the design of interface fluxes for
+higher dg methods in short
+uh you design these interfaces but they
+cancel out specific boundary terms in
+the discrete entropy balance when you
+multiply your formulation
+entropy variables you end up with some
+terms should all cancel out to zero in
+order to get entropy conservation
+so because you have nodes on the
+boundary you can use
+you can use the flux to directly cancel
+out those
+contributions from those boundary nodes
+and everything basically looks like a
+regular dg method and that coupling only
+happens
+through these boundary nodes if you use
+a different set of nodes if you use that
+or contain only the interior
+it turns out that using old entropy
+conservative
+technologies that you would actually
+have to have all to all coupling for
+these ddg type fluxes and that kind of
+ruins the communication pattern
+for these higher order dg methods so i
+wanted to fix this
+and we essentially fixed this using what
+we realized much later
+was an old finite element technique of
+hybridization
+so uh technically speaking what we do is
+we take our summation by parts matrix q
+and we use it to construct an augmented
+block
+uh summation my part to operate figure
+so this can be used to approximate a
+derivative in the following fashion you
+can basically
+multiply by you can basically project
+this onto a galerkin basis
+and then multiply by a math matrix
+inverse uh
+but we've introduced here this couple
+this operator which maps between
+uh volume nodes and face nodes so this
+allows you to
+basically uh bridge the gap between your
+nodes in the interior and nodes on the
+boundary of an element it also turns out
+that it's actually a little bit more
+accurate as these uh plots appear show
+and you can also interpret this type of
+matrix as adding a correction term
+which kind of looks like the difference
+between the extrapolated flux
+and the flux and a non-linear flux of
+the extrapolated solution
+okay so long story short
+once we have these two ingredients
+constructing a modal dg method
+entropy stable dg method is actually
+fairly straightforward what we can do is
+take our old
+entropy conservative dg formulation and
+then simply
+replace this first term and this last
+term
+with uh the relevant new hybridized
+summation by part
+operators so once we do uh what's hiding
+behind the scenes is that
+this flux matrix now has to be evaluated
+using
+uh these tilde variables these entropy
+projected conservative variables
+and one other slight detail is that
+i can get entropy conservation so long
+as i status
+i can get entry stability so long as i
+satisfy conservation
+and essentially a weakened version of
+the summation my parts property which
+relates to quadrant accuracy
+i won't go into too much detail here but
+it's satisfied by pretty much
+uh standard finite element type
+quadratures
+okay so finally some numerical
+experiments um
+we tried this on higher order dg methods
+just to see if things work back in the
+day
+and we used essentially standard
+quadrature rules
+from xiaomi and standard uh gauss
+quadrature rules for all the face nodes
+plug this into the dg method and you get
+the following you can run a riemann
+problem with
+shocks without any
+artificial dissipation filtering or
+slope limiting and it remains stable
+with the only stabilization being
+applied uh basically coming from
+dg upwind type fluxes
+so since then we've tried to move on to
+a
+lot more areas we've uh could use this
+formulation to actually construct
+new collocation methods on quad and hex
+meshes
+we've gotten some new approaches for
+non-conforming meshes which
+some of our collaborators in germany are
+now picking up for their software
+we've been working on extend this
+shallow water to network and
+multi-dimensional domains a coupling of
+say 1d
+and 2d domains and most recently we've
+applied this to the compressible
+navier-stokes equation so here's an
+example of flow over cylinder
+uh at t equals 100 for it reynolds
+number 10 000
+and mach 1.5 and just to have a little
+bit of a nice
+uh break from me talking let me share a
+quick video
+still getting used to there we go
+so here's a quick video of this actual
+simulation
+you can see that uh around the shocks
+there are some oscillations so
+we don't solve issues like gibbs
+phenomena
+these are still present but the solution
+remains stable despite the fact that you
+have these oscillations in your shocks
+and
+this is run pretty much with a vanilla
+es entropy stable dg method
+uh degree uh 3 no artificial viscosity
+slope limiting
+or filtering
+okay and
+go back to the
+great so
+uh what i want to do in the remaining
+time is really talk about how we extend
+this to reduce order modeling and talk
+about some of the challenges that we're
+still facing
+uh with reduced order modeling i
+essentially
+one of the reasons i want to work on
+mobile formulations was because they
+were amenable
+to reduce order models you can interpret
+in a very very naive way reduced order
+model
+as basically being a a high order dg
+method with
+very strange uh modal bases on just one
+single element
+and it was that naive approach that i
+first started with
+so what we'll do is we'll take off for
+uh for those of you who aren't familiar
+we'll take a full order solution uh and
+essentially try to decompose it into a
+set of
+modes and these are computed using
+proper orthogonal decomposition
+or some other similar approach and the
+main
+idea is that we want to compute these
+modes in an offline phase where
+things can be really expensive but have
+the online phase of a simulation the
+actual simulation
+for different parameter values be
+relatively fast and the goal of this is
+to accelerate
+many query scenarios like uh
+like uncertainty quantification or
+design space exploration
+so uh reduced order models
+are useful in the elliptic and parabolic
+regimes or they've been
+they have been well established for
+those areas because there they
+inherit the stability of the full order
+model this is not entirely true for
+nonlinear hyperbolic problems
+and this is kind of the issue i want to
+try to look at so again i'm going to
+start from a simple method entropy
+stable five volumes same as before
+and i'm going to just add a little bit
+of viscosity so i'm going to
+basically just add a laplacian type
+viscosity over the entire domain
+turns out that this is entropy stable
+and
+and but i'm going to focus on ensuring
+that when viscosity goes to zero
+we end up with an entropy conserved
+video type scheme
+so if i want to apply uh
+reduce order modeling to this uh to this
+discretization
+then i can go through a pretty naive
+color can uh pod galerkin procedure as
+follows
+if i have an offline approach to compute
+basis functions
+uh from proper orthogonal decomposition
+given solution snapshots
+then i can basically just uh apply a
+standard galorkin projection of this
+matrix system
+so previously i had m times du dt
+plus 2 times q had more product f times
+one
+i can simply insert
+v multiplied by enforce that this
+residual is orthogonal to all
+basis functions and
+essentially if i plug in the entropy
+projection step
+by introducing this pseudo inverse here
+this projection onto the range of the
+basis functions
+uh then i end up with an entropy
+conservative orange should be stable rom
+if i have
+uh dissipation so
+uh one little note that's uh
+non-standard here
+because i am using uh this set of bases
+this set of modes to approximate
+both the entropy and the conservative
+variables i'm going to construct my pod
+basis from snapshots of both the
+conservative and entropy variables
+combined
+okay so i stopped here thinking that
+this would work and when i talked to
+someone in the new shorter model they
+said you're missing the whole point
+i essentially have to also reduce costs
+for evaluating nonlinear terms
+so the cost of evaluating non-linear
+terms uh scales with the number of grid
+points in the full order model which is
+a major challenge
+so if i want to evaluate the entropy
+projection or if i want to evaluate this
+flux
+then uh decide the cost of these
+don't they still scale with the original
+full order model and what we want to do
+is try to reduce that
+so we adopt a fairly standard approach
+hyper reduction where given a grid we
+try to pick
+relative uh relevant sample points from
+that grid either on the boundary or on
+the interior
+in order to approximate non-linear
+evaluations
+of this form with uh this following form
+here
+so what we're doing is we're taking a
+non-linear function and evaluating it
+at a bunch of grid points and instead
+we're going to approximate that
+or the nonlinear function evaluated only
+at a specific number of hyper-reduced
+grid points so
+i is going to be this index set which
+picks out certain rows
+of this basic matrix which course
+each row of this basis matrix
+corresponds to a different point
+we'll then weight these contributions
+and then multiply them
+by this sampled matrix
+transpose so this is something like a
+quadrature approximation for a reduced
+order model
+and you can see multiple examples gappy
+pod dime empirical cubature
+energy conserving sampling weighting all
+of these
+uh share a similar structure we're going
+to focus on empirical cubicter
+and ecsw in this talk though
+so the question becomes well how do we
+hyper reduce the specific nonlinear
+terms in this entropy stable formulation
+we have q hadamard product with f which
+is a non-standard way of writing
+this convective term and what we'll do
+is we'll try to hyper reduce this by
+constructing a sample matrix q sub
+s so recall that if we can
+show that this matrix is skew symmetric
+for a periodic problem
+and conservative then we get entropy
+stability or entropy conservation
+immediately so the main challenge
+starting out was that
+most of the common options for trying to
+construct a sample matrix would either
+do sub-samples
+rows and columns of a full matrix that's
+sort of a dime-like approach
+or to approximate uh this
+matrix q to construct the sample matrix
+using a weighted sum of local matrices
+which is an approach taken by peter and
+jano
+in this paper down here so the problem
+is that with both of these approaches
+uh your matrix q s your sample matrix
+loses either skew symmetry or
+conservation and therefore isn't that
+pretty stable anymore
+so what we're going to do is take a
+different approach where we actually try
+to do a two-step hyper-reduction we
+first compress the matrix
+and then we project onto the compressed
+matrix
+so our approaches are as follows we try
+to construct a modal
+differentiation matrix by doing galerkin
+projection using an
+expanded test basis so think of these
+basis functions essentially sampling the
+action
+of our original differentiation matrix q
+we obviously want to make sure that we
+differentiate our pod modes v
+properly but we also want to
+differentiate one exactly in order to
+get conservation
+it turns out for accuracy we also want
+to make sure that we can
+accurately sample q times v this is sort
+of an lspg type approach if you're
+familiar with that
+and then we'll just construct the modal
+matrix as v transpose
+times q times v where v t is this test
+basis
+okay so now we have a way to express the
+action of q
+on coefficients in this test basis all
+we need to do is find a way to transfer
+between hyper-produced points
+and these coefficients which we can do
+using a quadrature-based projection
+operator p
+sub t so essentially we use hyper-reduce
+points to project onto this test basis
+and then if we chain them together by
+simply taking the modal matrix and
+multiplying on the left and right by
+the transpose of this projection matrix
+then we get a sampled hyper-reduced
+matrix which is accurate
+skew-symmetric and conservative and thus
+gives us an entropy conservative reduced
+order model
+so just briefly about this hyper
+reduction we're constructing our
+hyper-reduced points by targeting
+functions which are used to start a mass
+matrix and as a technical point
+because we're only looking at targeting
+using high production to accurately
+approximate mass matrix
+c's constructed from the pod basis this
+expanded test basis
+might end up with a singular mass matrix
+so what we'll do
+is we'll just add some stabilizing
+points and i'll show you that these
+there's we don't add too many of these
+in practice
+so these stabilizing points will
+essentially target uh
+near null spaces of this test mass
+matrix
+okay so in summary we have this two-step
+compress and project hyper-reduction of
+this
+uh hadamard product non-linear term and
+then if we plug that
+in to our uh formulation using hyper
+reduction
+then we end up with uh with a form a
+reduced order model which is entropy
+conservative
+or entropy stable if you add an
+appropriate type of dissipation
+so this is nice but i should uh
+make a little caveat there's no free
+lunch this entropy conservative method
+uh reduced order model can actually be a
+little bit more expensive
+than a full order model under specific
+circumstances because
+we introduced more flux evaluations due
+to sparsity
+i'll go into this a little bit later
+i'm going to skip this slide for time
+but essentially we impose non-periodic
+boundary conditions in the same way that
+we did for dg methods
+using the summation like parts operators
+and all this requires when adapting it
+to a hyper reduction
+is to enforce a specific type of
+constraint in our hyper-reduction
+procedure so i do this using
+this linear programming approach of the
+tereniano
+that is found in this paper
+okay so let's show some numerical
+experiments
+uh this is just the 1d euler equation i
+have a viscosity of
+2 times 10 to the negative 4 and
+i'm just going to run a problem which
+has reflective boundary conditions at
+the wall so i can show that i can work
+with non-periodic boundary conditions
+and develops a shock after some time
+so if i use only 25 modes and everything
+is incredibly under resolved and you can
+see huge oscillations
+but nothing blows up
+are the uh the values the solution the
+hyper-reduce points and they look messy
+but they don't explode
+and in this case with the 25 modes we
+add only
+three additional stabilizing points if
+we increase 75 modes well things start
+to look much better we can resolve the
+solution
+prior to the shock really well and when
+the shock hits you can still see some
+oscillations in this area here
+but again it doesn't blow up and we've
+added more stabilizing points but
+not too many more if we run with 125
+modes then things look like they're
+nicely converging
+and we're adding only 36 stabilized
+points and if we go up to 175 modes
+uh then the number of stabilizing points
+we have to add is only 28 so
+this approach seems to be working okay
+we have a growing number of empirical
+curvature points that depend on the
+number of modes
+but the number of stabilizing points
+seems to kind of taper off after some
+certain
+time so one thing we want to test was
+robustness uh if we were to run this
+with this reduced order model with
+wrong parameters or uh incorrect data
+how does this perform so we tried to
+emulate this by running the same shock
+problem
+but completely removing viscosity so if
+you do that with 125 modes usually this
+would blow up
+because if you don't have stabilizing
+viscosity then reduce on the model can
+develop
+oscillations which eventually explode in
+this case the oscillations are
+definitely present they
+reveal all sorts of ringing artifacts in
+the solution but it doesn't blow up
+it's garbage but it is stable garbage is
+what i usually like to say
+and we can moreover verify that the
+actual contribution to the entropy
+production
+is close to machine precision which is
+this right hand side block
+okay so if we take a look at the
+evolution of entropy
+then you can also see that as we
+increase the number of modes
+the entropy the dotted red line
+converges to the
+uh the decay of entropy for the four to
+model quite nicely as well
+okay i also want to check to make sure
+this hyper-reduction approach that we
+were using that it actually works
+here we have an example of errors over
+uh this over a certain time period
+with and without hyper reduction so the
+line is without hyper reduction and the
+dots
+are with hype i'm sorry the line is with
+high production the dots
+are without high production and you can
+see that in both cases the errors appear
+to be basically
+the same so despite the fact that we're
+hyper reducing everything we don't
+have lost accuracy in our reduced order
+model
+okay so just some examples in 2d here's
+a smooth kelvin helmholtz instability
+i'm using 400 thousand points for the
+forward model
+viscosity of one over a thousand
+seventy-five modes and
+you get this you can see that there are
+some differences in the reduced order
+model like so there's some
+oscillations and striations inside here
+but it remains stable
+and we end up with a decent 1 relative
+error at time t equals 3 which is 75
+modes
+and the sampling points that we end up
+with
+we end up with 884 of them and they're
+distributed kind of uniformly
+by domain so this was a good sanity
+check for us
+uh we can also do the same thing with a
+gaussian pulse in 2d
+um we have the full order model on the
+left reduced order model on the right
+uh and with 25 modes and the
+distribution of
+hyper-reduce points that looks like this
+we end up with entropy stability and
+under one percent error so these were
+sort of easy cases
+um i was also interested in looking at
+an under-resolved riemann problem where
+you develop a shock
+and here you can clearly see that the
+reduced order model fails to capture
+the shock because well there's a shock
+it becomes difficult and uh it's well
+known that reduced order models have
+performed poorly so you can see a bunch
+of oscillations here and here
+that show up in the reduced order model
+with 50 modes the relative error is
+higher
+but despite the fact that these
+oscillations there they don't blow the
+solution up
+so we're trying to there are two issues
+i think are pretty
+uh are difficult for these problems
+which is both accuracy and stability
+we haven't yet figured out how to
+address accuracy there are techniques
+that
+uh yongsu and others have proposed which
+might be useful
+we're trying to address stability and
+incorporate these techniques for
+accuracy and later
+okay so this is all the good stuff uh i
+should pro oh
+and the distribution of points you can
+see cluster is pretty much where there's
+activity in this riemann problem i want
+to
+talk a little bit about some of the
+downsides of the formulation as well
+so with since you have entropy
+conservation for a very general set of
+reduced order models there has to be
+some sort of downside as well
+and it's about to show up in two areas
+both in terms of singular value decay
+and in terms of computational cost so
+first if we look at the
+decay of singular values uh the red is
+uh i'm plotting two sets of singular
+values here with and without entropy
+variable enrichment
+so if i don't add entropy variables to
+my snapshots
+then i get a singular value decay that
+looks like this blue line here
+but you can see that both the red line
+and blue line are pretty close
+up until about um 400 modes and that's
+far more than we need to resolve most of
+our solutions
+for the gaussian pulse you can see that
+it's a little bit uh it starts to differ
+closer to around 50 modes
+but remember that we were able to get
+under one percent error
+with only 25 modes for this gaussian
+pulse
+for the riemann problem however it's a
+little bit of a different story
+we use 50 modes and if we zoom in on
+this picture we can see that at 50 modes
+there's already a little bit of a gap
+between the decay of the singular values
+with and without entry variable
+enrichment so we are paying a little bit
+of a cost
+to better resolve the entropy variables
+in this formulation
+the more pressing problem for us is that
+for
+at least explicit time stepping it turns
+out that the reducer models that i ran
+were more expensive than all the full
+order models and this is for a simple
+reason
+when we're computing the main cost for
+explosive time stepping is the
+evaluation of this nonlinear term this
+hadamard product between q
+and f which you can write down entry
+wise as a sum
+of a weighted sum of these fluxes
+so in order to save time we usually
+compute this on the fly
+and if we know that q is far so we know
+that certain entries of q are zero you
+can skip over those entries and
+avoid evaluating this flux for those
+entries so for this full order model
+uh matrix it's incredibly sparse and
+we actually only have about uh uh i
+think in this case we have
+only about a hundred or two hundred uh
+flux of values that we have to do
+if we were to compress uh down this four
+order model matrix into
+sample matrix using pod and hyper
+reduction despite the fact that it's
+smaller it now becomes fully dense
+and so computing this hadamard product
+can involve many many more entries
+so for explicit time stepping i think
+this this puts a little bit of a damper
+in terms of the problems that i can
+solve using explicit time stepping
+and i just want to briefly mention at
+the end of my talk what we're doing to
+try to address this
+so we're looking at shifting to implicit
+time stepping where the solution of the
+linear system
+becomes a little bit more of a dominant
+bottleneck and see
+we're interested in seeing how reduced
+water modeling can uh can
+be applied to this context we found
+recently that it can be very efficient
+you can compute jacobian matrices
+for entropy stable schemes in a very
+efficient way and i'll just briefly
+mention that
+so for implicit time stepping we need
+jacobian matrices in order to
+solve a nonlinear equation at each
+iteration
+and typically these are computed using
+automatic differentiation
+if you have a sparse finite element
+method you can reduce cost in this
+automatic differentiation
+by using graph coloring techniques but
+these don't work very well for dense
+matrices
+and ad becomes very expensive as the
+size of your normal linear
+term that you're trying to differentiate
+increases
+so what we found recently uh this is
+work with christina taylor
+is that if i have a hadamard product uh
+term
+in my entropy stable discretization then
+the jacobian matrix can be written in
+explicit form as basically
+uh the hadamard product between q and
+the derivative of the flux with respect
+to the sec
+argument plus small diagonal correction
+and what this does is it basically makes
+automatic differentiation efficient
+again because
+this flux has order one inputs and
+outputs and 80 is very efficient when
+the size the input and output are
+limited
+so just to give you an example of uh
+speedups
+if i have a 50x50 matrix q and i'm
+computing this uh hadamard product
+uh for the burgers equation then i can
+see that the cost drops from
+300 mil uh 400 milliseconds to about
+3 milliseconds using this formulation
+this is a comparison between directly
+automatically differentiating
+this nonlinear term and computing this
+jacobian
+using our new formula so
+we have this in a preprint and we've
+applied it to hydrator dp methods
+i am hoping that christina will work on
+this for her phd and i hope to
+present these to you in hopefully a
+future talk
+so with this let me summarize our let me
+just say
+i'm very grateful to the nsf for funding
+this uh this work
+and if you're curious i have a couple
+references down here
+so thank you for your attention and i
+welcome any questions
+thank you so much jess for the wonderful
+talk
+i think i learned a lot personally
+but we are going to have some q a
+session um if you
+have any questions please don't hesitate
+um
+you speak out um i i check the chat chat
+room um
+i see that no no questions i was posted
+so please speak out if you have any
+questions
+oh don't forget yourself hi
+hi mike hey this is mike yeah mike
+i got a question i really did enjoy the
+talk i thought it was great actually
+um thank you i do have a question so you
+say
+you still get some of the phenomenon
+right it's still stable i understand
+because you know you
+you use the right you can show that with
+the test functions
+um but with the gibbs phenomenon
+if you have is it possible that you can
+get like negative pressures that will
+screw up your equations of state
+yes absolutely and so i i usually
+mention this in the talk and i apologize
+that i've forgotten to
+uh but yes every so all the stability
+theory here depends on
+positivity of thermodynamic variables so
+uh if those are negative then all the
+stability goes out the window
+and we're currently working on different
+approaches to fix this
+so uh for our
+you can fix so there are some existing
+positivity preserving limiters which
+aren't dissipative which uh you can
+apply at least to some discretizations
+and we'll work on trying to generalize
+this to uh it's
+basically some flux corrected transport
+type methods but
+essentially yeah you hit the nail on the
+head this is an open problem
+awesome um just add on to that um
+you know that issue of the negativity uh
+in the context of the video student
+model
+um there is a non-negative uh
+the factorization you can use um in
+order to
+you know preserve the positivity um if
+it can be issued
+more more of than issue in the biggest
+locomotor context right
+um this is of the basis
+like non-negativity of the basis
+functions of the cod
+right right and and forcing the
+coefficient in front of it to be uh
+positive or non-negative then
+you are uh you know preserving the
+there okay and any other sense
+yeah um any other questions
+well in dg yeah you said you could use
+you could use like bezier functions
+right
+you're saying you're going to get rid of
+its phenomenon
+which would make sense but not all of it
+necessarily
+i guess maybe again that's at the
+pressure the gradients are still to be
+negative
+sorry so can you see the last part again
+well that that would smooth out say the
+displacements but that wouldn't
+necessarily
+but not necessarily the gradients so
+that you still could get negative
+pressures
+the pressures so so i'm trying i'm not
+sure where the
+where the gradients show up and i mean
+so my my our strategy so
+far has been if we ensure positivity of
+say uh
+uh density and and temperature or
+density and internal energy then we try
+to recover
+positivity of uh pressure by jensen's
+inequality or some
+this is uh some some tricks that gy2
+introduced a while back
+um i
+yeah maybe so i don't know about the
+gradient
+uh issue that you're referring to can
+you okay never mind
+yeah i'll think about it sure
+sure and uh and yeah so we've explored
+bezier in another life when i did my
+propagation more i actually uh
+worked very very heavily in uh in
+bernstein's polynomial representation
+we have found that they work very well
+but it takes very very careful flux uh
+corrective transport approaches which
+i know that folks at the lab are very
+invested in and have done a lot of work
+on
+so we we found that they that they could
+be used to preserve positivity but
+that the coefficients were kind of a
+very they were
+a sufficient measure but a very rough
+like an act inaccurate sufficient
+measure at certain times
+and i haven't found a way to get around
+that really
+thank you any other uh questions i mean
+it's it's
+today's talk was actually on the high
+order uh dg
+so i i think a lot of um the folks from
+the m10 team
+uh will have um you know
+find it very interesting um
+so so jesse i have a very basic question
+all right um you
+show for at the beginning for a
+continuous problem you showed that the
+average entropy decreases in time
+and then you use that motivated
+numerical scheme
+where the average entropy is constant
+and i kind of don't like that so can you
+say something about that
+yeah certainly so right so this is uh
+um this
+is essential so this we only do because
+we're assuming that we're going to add
+some sort of
+entropy dissipation later on um
+but we want to try to ensure stability
+or at least this
+entropy conservation property and the
+absence of dissipation as well
+uh this is philosophically this i think
+is sort of
+our stress test but in all of our
+simulations i mean we always add some
+interface dissipation for dg methods
+um or some physical dissipation for the
+compressible navigation
+problems where we do get that entropy
+inequality at the very
+end does that help answer a little bit
+of the question
+it helps a little i'm not sure i really
+like it still but um
+maybe i just need to think about it some
+more well that's no that's
+understandable and
+so if i were uh i've had arguments with
+some other folks uh
+jean-luc garmand and uh for example
+where uh
+yeah there is there are some issues i
+think that are associated
+with trying to target first entropy
+conservation
+and then adding entropy dissipation
+later on so if you were to use a uh
+a more standard lax rejects type box
+then
+um i think
+yeah there are there are definitely some
+advantages um
+i don't really have a digestive the best
+justification i can give
+is that if you were to try to enforce
+entropy dissipation at the discrete
+level then i think you would lose high
+order accuracy for these dg methods
+so uh the
+because we're adding an extra
+dissipation
+this hadamard product formulation ends
+up giving you higher accuracy
+and then you add try and add dissipation
+to make sure you don't lose
+a higher accuracy at the very end that i
+think is probably a
+better defense of targeting entropy
+conservation first
+does that make a little more yeah that
+helps thanks
+okay thanks yeah it's admittedly still
+an issue though um
+we there are some trade-offs
+thank you jess um i think we are our our
+time's
+up and let's thank uh speaker uh thank
+you so much seth um
+it was really great talk i i hope that
+um
+you know you you get to connect it with
+a a lot of folks in lawrence people more
+as i said
+before and you know the you know the
+collaboration
+is continued um okay uh thanks
+so much everyone to uh for joining the
+today team
+we have another seminar next week um
+so please stay tuned and today's
+the talk is recorded so if you are
+interested
+uh please let me know um okay
+let's let's add john here thank you
+thank you again
+thank you for inviting me i really
+appreciate the opportunity
+thank you thank you jess um um i have a
+i have a usually i stay with the clicker
+after the seminar uh but unfortunately i
+have a
+like a follow-up meeting right away so i
+have to go
+don't worry but i will catch up with you
+uh
+later um but it was really great talk
+um and nice to see uh
+you know you're applying the reduced
+model for entropy
+stable uh the schemes that's
+that's awesome um yeah but but did you
+the chabel fahad recently um you know
+is it preprint or i think it's still
+preprint um
+he published a paper about the is the
+talking about lspd on a stable
+you know yeah for under under resolved
+solutions right
+yeah yeah exactly and i
+i think you guys are talking about the
+similar theme um with the different
+approach
+um so i i think you yeah
+you might be interested in checking yeah
+you already checked that out i guess
+i i saw it on archive and i saw him give
+it actually i think a virtual talk
+somewhere on on it recently um
+yeah i i i think we're both interested
+in the same approach i
+um i think lspg by itself
+it already adds a lot of uh just a lot
+of stabilization
+right yeah which which for i think for a
+lot of problems will solve things i
+i my impression is that for
+so so i was talking with some other
+folks and
+uh one of the key differences i think is
+the metropolitan formulation you have
+lspg and it's at the fully discrete
+level
+whereas this is a galerkin a regular uh
+calorical formulation
+at the semi-discrete level so there's a
+little you you make some assumptions and
+some uh
+you basically uh fix your type of reduce
+on model reduction
+uh when you're using uh farhad's type of
+approach
+that said it clearly will work very well
+especially for under-resolved turbulence
+i don't know if i saw any shock problems
+in that paper
+that i'm less clear about yeah i mean it
+it it will it will be um it will be
+difficult to
+to capture the shop uh this rock uh it's
+very
+radiant um well yeah i'm sorry i cannot
+uh stay longer
+but uh thank you so much and i will um
+let's stay in touch
+i'll show you another email soon i i
+finished reading your recent paper and
+i'd love to talk to you about it offline
+sometime
+that's awesome okay thank you thank you
+jess
+thank you take care see you

@@ -1,0 +1,1064 @@
+welcome to the ddps seminar everyone
+before we introduce our invited speaker
+let's go over some rules and Logistics
+uh first please mute yourself during the
+talk uh but if you have question you can
+unmute and ask questions uh or use chat
+room to post your questions so that we
+can address them in Q&A session at the
+end uh second today's ddps seminar is
+open to external audience uh therefore
+no classifi discussion is allowed so
+please watch out finally The Talk today
+will be recorded and uploaded in our
+YouTube channel that's about it now let
+me briefly introduce our speaker today
+it is an honor to host Dr uh Marius gin
+Hofer who received his PhD from the
+University of fryberg Germany where he
+researched multi physics models for bone
+growth under the supervision of
+Professor Patrick dond
+he then served as a post-doctoral
+research fellow at simula research
+laboratory in Oso Norway focusing on
+scientific machine learning with
+Professor Kent Andra model currently he
+is a researcher at the University uh
+Hospital fryberg specializing in AI for
+healthc care his ongoing research
+interests include error analysis and
+optimization of neural network based
+methods for solving p paral differential
+equations today Marius will talk about
+infinite dimensional optimization for
+scientific machine learning I'm sure we
+are going to hear a wonderful talk uh
+before I pass the button to Marius as a
+traditional tradition to the ddps
+seminar let me ask a somewhat informal
+question so that we can um we we know
+something something something about
+Mario um some out of the the technical
+reason so I happen to know you are very
+uh Keen to guitar playing um if you can
+share your favorite piece favorite music
+uh you would like to play that's that's
+a difficult question it
+changes yes
+um well let's just go with the classics
+which is Stairway to Heaven by let
+zeppin oh okay I'm nonar as a non-ar
+player I never heard of that but oh you
+you can it's it's a good one you can you
+can check it out okay I will definitely
+check it out well thank you Marius the
+St is yours thank you thank you for the
+nice introduction and let's get
+started so today I'll talk about um
+optimization for scientific machine
+learning and
+talk will be structured in roughly two
+parts first um that's the specialty sort
+of of our approach is the functions
+based perspective on the optimization
+for IML problem problems and um what I
+will propose to you is for these kind of
+problems to adopt an infinite
+dimensional Viewpoint or a continuous
+Viewpoint um leaving out the anset class
+and then develop optimizer or choose
+optimizers um based on the infinite um
+the properties on the on the function
+Space level and then discretize in a
+certain way that guarantees you that you
+mimic the function space Dynamic and
+with this principle in mind we'll see
+how um how we can design new
+algorithms and also understand existing
+ones um from that
+perspective and then in the next step um
+with the after designing these
+optimization methods we'll have a look
+into how you can scale them to large
+scale neuron networks we'll do that with
+um one specific
+strategy where we use the chronical
+structure of the linear layer jacobians
+in the neuron networks the talk is
+mainly based on these two papers I've
+linked um here below um one position
+paper this year's icml and then a recent
+one which is related to um the second
+part which is about The Chronic Factor
+approximation um so let's dive
+in let's start with the function space
+optimization and let's clarify um sort
+of what kind of problems I want to talk
+about I said scientific machine learning
+and for me or at least for this talk
+mainly what I have in mind is um
+operator learning
+but also um methods for Shing us
+equation the electron Shing equation
+with a network
+anets can be physics and formular
+networks formulations of partial
+differential equations or inverse
+problems could be deep rits so rational
+formulations essentially anything that
+involves pte terms in the loss function
+and real networks the methods will um be
+well suited for all of them
+and one
+observation the starting point also for
+our work in this direction is that as
+soon as you introduce pdes to objective
+functions um the neuron Network training
+gets more difficult let me give you an
+illustration of that statement that um
+optimization in siml can be quite
+hard I have two pictures here for you
+details are not so important let's look
+at the first one here
+I've taken this from um a recent paper
+the forward laion paper so in this paper
+they solve the many electron shinger
+equation um when I what I want to stress
+here is the sheer amount of GPU hours
+that I used for single solve is in the
+in the thousands almost towards 10,000
+GPU for single problem um and then the
+other paper is a very simple it's just a
+two-dimensional for
+equation and with a smooth solution you
+formulated use the pin formulation and
+you optimize green is just um full badge
+gradient descent where and red is adom
+and you see huge amount of iterations
+and you see stagnating
+errors
+so what we are going to do here is to
+abandon first order
+optimization and look into the structure
+on the infinite dimensional spaces we
+want to exploit the geometry that is
+induced by the PD operators to this to
+design smarter
+algorithms
+and I have an informal road map here for
+you how how to do that I I call it first
+optimize then
+discretize so we're given a siml problem
+and later also under Network anss and
+the first thing um we need to do is
+think about the continuous formulation
+so we need to formulate a minimization
+problem let's say it's a minimization
+problem it could be sadle points root
+finding whatever so it's a minimization
+problem in a Hilbert space H that's a
+function space here so e the energy
+that's what we want to minimize so we
+need clarity about how that should look
+like and then after we formulated our
+problem we'll have a look in what are
+the properties of e right and here it's
+left abstract there is no properties
+assumed but in a practical application
+it will have properties and based on
+these properties on function space we'll
+decide for an appropriate
+algorithm said an appropriate iterative
+algorithm in function space what I mean
+by that is you update um your current
+iterate by a Direction and you
+step until you're happy with it right
+but remember this is in function space
+this is nothing you can you can
+practically do and to get something back
+which is which you can do in practice
+which you can do on your machine then
+you need to discretize but note this
+this is the last step and discretization
+here what I propose is to project the
+update Direction this would be dek on
+the tension space of your Nur Network
+anets or on whatever your anet is if
+it's not their networks it's also
+fine um so let's let us put that uh make
+that concrete with a very very simple
+example the the example is as simple as
+it can possibly be arguably so suppose
+um we want to solve posal equation on
+some domain Omega we have some forcing
+data we have some boundary conditions
+um that's the starting
+point
+then I reformulate the equation in this
+case as a minimization problem I've
+chosen here the simplest one this would
+be physics and form networks
+formulation but of course you could
+choose a VAR a variational formulation
+or you could formulate it as a root
+finding
+problem um but let's stick with this so
+I've I've chosen here the Hilbert space
+is H2 this is how it
+looks no unid class no nothing just a
+pure
+formulation and then the next step is
+where we decide um what optimization
+algorithm is appropriate for this kind
+of of energy so let's have a look the PD
+is
+linear and we use l L2 squar around the
+residual so that makes this um energy
+quadratic so it's a quadratic function
+on function space and as we all know
+Newton's method for
+minimization builds at every at where
+you at at your current itate it builds a
+quadratic model of your objective
+function in it minimizes that quadratic
+model so Newton's method in function
+space for this energy has one step
+conversions no matter where you
+start and if I write out Newton's method
+function space this is the way it looks
+like here is the Fret derivative of our
+function space guide this lives in the
+Dual
+space here is the hen this is a bilinear
+form or alternatively it Maps um from
+the Primal to the Dual space this is the
+same thing essentially and that's how it
+that's how it looks
+like um and if your energy looks
+different you would probably choose
+something else than you we'll see in
+example soon and still no unet class
+this is coming now now it's time to
+discretize now it's time when you choose
+your
+ANS um and I left the anets um generic
+these you could think of them as neural
+networks but you could also think of
+them as finite element functions both is
+covered by by um the theory then the
+tension
+space is given by the partial
+derivatives um with respect to the
+parameters of our aess
+class and the
+objective the object that we're actually
+minimizing which is not no longer Post
+in function space but Post in parameter
+space um this L is the Lost function and
+it's just pulling back our function
+space energy or parameter space Capital
+Theta and then we discretize Newton's
+method and what do I mean by
+discretise I mean we use this linear
+space right this tangent space we use it
+to do a gurin a discretization of this
+bilinear form right this is just the
+second derivative of e at U Theta this
+would be our current
+itate um this gives us a matrix
+G and then we discretize this guy here
+too in a gurin sense right this comes
+from a dual space this is like your
+forcing in a finite element sense and
+this is nothing but the ukian gradient
+of the
+loss um and then if I then just freely
+translate from muttin and function space
+to what I just did with this galeran
+discretization um I arrive at an
+optimization algorithm in parameter
+space which is
+computable here I introduced also um a
+step size here this is sort of the
+analog of uh The hessen Matrix in
+this guy dagger denotes a pseudo inverse
+because I do not know whether these guys
+are linearly dependent or not here's the
+ukle and
+gradient so to make That explicit tying
+back to the example we had before this
+was our energy then this Matrix
+G looks like this right we have the form
+with the llusion coming from this term
+here and we have the boundary conditions
+coming from here
+and now it's time to implement and see
+how it
+does um and it performs very well so
+this um what I've just shown you is the
+is the green line here the problem is
+again um a pant problem to be consistent
+with um the explanation before um and
+the formulation right was the pin
+formulation and maybe if you've played
+around with physics and form networks is
+sometimes quite hard to optimize them
+it's certainly very hard to get
+acceptable or very high accuracies and
+here we see um a relative L2 error and
+of course on a test set of points not on
+the ones we've trained on going down to
+10 minus 7 sometimes we see 10 to the
+minus 8 and no other method that we've
+tested and can come
+close so um why why do I call that
+Energy natural gradient descent that's
+because when we first discovered this
+that you could actually optimize pins
+quite well um we had a slightly
+different perspective we came from a
+natural gradient
+perspective and we thought about the hen
+as a remanion metric and later we
+realized that you can
+derive this algorithm from this infinite
+dimensional Viewpoint that I've just
+shown you um and since this was just one
+example I we tested it on on a bunch of
+of of linear equations also we use the
+first order reformulation time dependent
+ones
+and it works really well for all of
+them we do some tricks of course I mean
+we do a stabilization lburg Market kind
+of stabilization and so on but um we can
+get um very good accuracies with small
+networks already for three-dimensional
+pdes and the training time is not
+horrible can be seconds to minutes
+depending on on your setup and your
+GPU um so now to really drive that idea
+home that you can start from the from
+the infinite dimensional Viewpoint
+I I want to show a different example
+which is a nonlinear pte and a your
+Stokes
+equation with where we will um choose a
+different algorithm on function space to
+begin with we'll choose gaus Newton's
+algorithm on function space
+and so if this is the pde and again we
+use um a residual
+formulation um and for Simplicity we we
+ignore that we should add a Divergence
+penalty and the boundary penalty here
+let's just look at this
+um then this is our
+formulation and then we can ask okay how
+should we optimize that um objective
+function in function space
+then you see it's a non it is nonlinear
+inside here so it loses the convexity in
+function space because of this
+nonlinearity but it certainly is a
+nonlinearly squares problem and if you
+want to solve nonlinearly squares
+problem a good choice is gaus Newton's
+method or lab Mar's method and we do
+that in function space so it looks like
+this you have the linearization of the
+residual after it the adjoined and
+that's what you want to in
+word um andless it's just for
+completeness the formula how this form s
+looks like
+and you choose an
+answers U Theta Pepi for velocity and
+pressure the answer is again same
+notation as
+before the tangent space is um again the
+linearization and and then you
+discretize gaus algorithm again using a
+gurin aners so you you get back a matrix
+G and this is your ukian um
+gradient this is how you get the entries
+of the Matrix so you insert your basis
+vectors from your gin space that you
+chose in the form um and again you're
+left with an optimization algorithm
+which now in this line looks exactly as
+before but of course this Matrix G comes
+from a different infinite dimensional
+optimization
+algorithm and
+again this works better than than any
+other Optimizer we could we could find
+and then we tried this is um an unsteady
+3D belami flow we could get accuracy
+close to single Precision um we couldn't
+get 10 to the minus 10 as before but
+it's still better by a margin than than
+any everything else
+so to sort of come to a conclusion here
+is that you you can use this principle
+that I've showed you and you can start
+with different uh different function
+space um algorithms and translate them
+and as a matter of fact
+um they often relate to a known
+optimization method in parameter space I
+haven't shown you this before but when I
+introduced Newton
+and if you do the computations you can
+find out what you're actually doing in
+parameter space is a generalized gaus
+Newton
+method um or if you're solving a saddle
+point problem this is the lon Newton
+method so you have a you have a
+constraint optimization problem you use
+laon
+formalism you take um you take the
+gradient of the loran use Newton's
+method to find zeros of that
+gradient that's what I mean with Lor
+Newton and if you discretize that in in
+the way I've just shown you you end up
+in certain situations with competitive
+gradient descent which is proposed in a
+and was proposed in a totally different
+community and gaus Newton and function
+space translates to gaus Newton so um I
+think there's a lot to discover
+still um and Marius there's a
+clarification question I think it's in
+slide 16 Robert is asking is that g or
+inverse G in the update oh not 16 or 15
+when here that the dagger is the pseudo
+inverse yeah so you need you need to
+invert The Matrix yes is it clear
+robot okay cool yeah I'll talk more
+about this Matrix and how how costly
+that in Inver version is later on
+because I suppose that's that's a very
+very um good question to have okay
+because of course there is some price
+that we pay but I'll talk about I'll
+talk about that
+soon
+um so I I want to because in the
+beginning I promised that um the methods
+that we derive will provably mimic
+function space um Dynamics so that's
+what we're setting out to to prove now
+or just to look at when when this is
+valid so um all the methods that I've
+shown you before are of this form right
+this guy is now we said right we add a
+direction this is this direction and I
+assume a certain structure for this
+direction of a sh derivative and then
+you take it back to Primal space with
+the linear map with the inverse of a
+linear map that might depend on your
+iterate so I assume this guy T is linear
+continuous
+bjective um everything we've seen before
+um falls into this setting we also
+assume that this map T is
+coercive um and if we assume that so the
+technicalities of what we assumed for T
+are not so critical but if we assumed
+that then we can prove the following
+which I call projection Theory and let
+me walk you through this slide so here
+is just a repetition
+of uh to clarify Den notation of our
+generic optimization
+algorithm and if with in parameter space
+we follow this algorithm right if we
+step Theta 1 Theta 2 theta 3 and so on
+then we can ask ourselves what is
+happening on the function Space level
+what what do the functions do and how do
+they relate to Stepping with the
+direction
+DK and you can see here
+that actually we are stepping exactly as
+the infinite dimensional algorithm this
+is the DK but there is this Pi guy with
+is which is a projection and this is a
+gallan projection on the tension
+space and then there is an arrow which
+corresponds to the step size and the
+length of the step so actually this is
+what I what I um mean when I refer to um
+provable
+that we follow the function space
+Dynamics and let me give you a visual
+visualization of that um of that theory
+right let's just look at the first um at
+the first four Images this is again Pon
+equation um Simple Solution you
+essentially see the solution here
+because U Theta you should can this is
+at initialization so this network is
+almost
+zero so this direction here is really
+the perfect update Direction direction
+if you add this guy onto your current
+iterate you'll be at at Crown proof
+immediately so all the other update
+directions you want to match that
+picture and this is Newton in function
+space matches perfectly whereas Newton
+and parameter space which is a different
+algorithm is clueless and gradient
+descent
+to and the same is repeated here below
+this is a kovas flow example so an a
+Stokes
+equation uh where Theta is now
+somewhere um somewhat close to the
+solution say on the order of a few
+percent of relative L2 error so again
+this is the perfect update
+Direction and if you look what gaus
+Newton and function space or Newton and
+function space tell you and what they
+propose to step or what they choose to
+step and it matches almost perfectly in
+the eyeball mod whereas Newton parameter
+space or gradient descent are not um are
+not promising or not good that we also
+see that in the the
+optimization so with that let's get to
+scalability because so far I've just
+shown you what works well and this
+algorithms work so well you get so high
+accuracy but of course there is a price
+and the price is that we need to invert
+a matrix in every
+step um and to go back to the to the
+Energy natural gradient the Newton and
+function space algorithm The Matrix you
+need to invert to assemble of course to
+invert is the following
+one this guy here but if your
+anwers is um non-local then this Matrix
+is
+dense it is typically rank deficient and
+Ill conditioned so you have a pretty a
+pretty challenging Matrix to deal with
+small scale small networks are fine you
+can do an SVD maybe maybe because this
+Matrix is positive semi-definite you
+regularize it a little bit with a ticken
+of regularization you had an identity
+you could use use a cheski solve you'll
+be fine but as soon as you scale up um
+the size of the networks this is really
+challenging so what are what are our
+options to scale it
+up you you can use a matrix fre
+formulation um that works this system
+needs to be solved you need access to a
+matrix Vector products you can get
+them um the details are for example in
+this paper how to get the um Matrix
+Vector products you just rely on that
+you can reformulate it in param meter
+space as a gaus Newton Matrix and then
+you can do that you can use CG what CG
+iterates for a long time because the
+Matrix is ill
+conditioned but at least you can scale
+up a different strategy is to derive
+cheap to invert
+approximations and this is where I'm
+going to focus on um the rest of the
+talks if you take derivatives of um
+linear Network
+layers then you can find um chronical
+structure in that Matrix and this
+chronical structure can be leveraged to
+build approximation of of
+G and of course you can also um um aim
+to to combine these two um these two
+strategies you can build a GP invert
+approximation use it as a preconditioner
+in your
+CG so let's let's get into the chronical
+Factor
+approximation so very um roughly what we
+want to do is we have the Matrix
+G and you think of your answer as a neur
+networks with layers this is what this
+one two capital L corresponds to and you
+discard cross interaction between
+layers then you're left here with with
+capital L many matrices which are still
+quite big and then you aim to
+approximate them um as chronical
+products of two smaller
+matricies you approximate d as chronicus
+of course be because you can you can um
+change the inverse with the with the
+factors and this really gives you a
+dramatic um a dramatic speed up in in
+solving so if you say my um my linear
+map my linear layer and my network maps
+from RN to RM we're ignoring biases here
+then this Matrix um then the block
+Matrix up here is of size n * m 2 but
+the chronical factors are just n * n and
+M * m so you have you have a drastic
+speed up and you can scale up um by a
+large
+margin so how how do you get that
+chronical
+structure I'll show you that with an
+with the um with an example um where the
+laian terms so which is again motivated
+from the pro was coming from the pro
+equation
+um so what you can show is that the
+Matrix G or the layer uh the block
+Matrix corresponding to a layer is of
+that form so CH this is the jobian with
+respect to the eelf weight
+Matrix um of this expression transpose
+times
+itself and where you can find chronus
+structure is if you take derivatives of
+this map Theta now is a weight Matrix
+and you map the weight Matrix to weight
+Matrix times fixed
+vector and if you take the Jacobian with
+respect to this Matrix Theta then you'll
+get chronica structure now if if you
+think about chain rule what we need to
+do to get out this um this chronical
+structure of um in our complicated
+computation graph is we need to know
+what the children in the computational
+graph of this map is so the E we Matrix
+maap to laion of U Theta at a data
+point and I'm not going to go into the
+details
+but what
+um how we could disentangle the
+structure is that we relied on forward
+mode or also called tailor mode um AO
+diff which is also what is um what was
+recently proposed in the forward llan
+paper which is from the um from The BMC
+community so let's
+just look at this graph think of a
+multi-layer
+perceptron um Theta are your trainable
+weights just just ignore biases this is
+a weight Matrix and we have L many this
+is your input so going through here just
+gives you your neural
+prediction and of course the weight
+Matrix enters as a matrix product to
+this
+Vector but of course we do not only want
+to for to to um to compute the um output
+of the neural network but we also want
+to um compute first order derivatives
+and second order derivatives possibly
+more but let's focus on them so forward
+mode as um in contrast to um to back
+propagation you just push everything
+forward right you multiply the matrices
+from the from the other end so this is
+what's happening here
+and when you do when you write out the
+recursion you see that the weight Matrix
+doesn't only enter into um in the
+forward propagation is a matrix product
+but it does also enter in the first
+derivatives do in the gradient and also
+in the
+laan so then if you factor this whole
+thing exactly as the colors indicate
+with pink and blue then you can Leverage
+The chronical
+structure and I really do not want to go
+into detail here but this Viewpoint lets
+us compute exactly how that Matrix looks
+it looks horrible three sums a lot of
+symbols chronical structure here so I
+note this is not an approximation this
+really is an
+equality and then the keg um
+approximation which is handwave which is
+hand waving admittedly but is put into
+great use in in the Deep Learning
+Community is to swap the sum and the
+chroner and we also he drop um indices
+that are different from each other so we
+really end up with an approx imation as
+exactly as I promised to you so the
+Matrix G can be approximated as a
+chronic
+b um so this was the outline it's
+technical you can find the details in
+our um in our recent paper which is
+going to be in
+NPS um and I've showed it to you for the
+pon problem but it does actually work
+for General nonlinear pdes with the pin
+formulation you can do it for very
+rational formulations the B Brits method
+we haven't looked into neural operators
+this requires more work so there we
+uncertain how it how it would play
+out and um typically once you have this
+approximation for G there is a whole
+bunch of bells and whistles you um put
+on top of um on top of your um Optimizer
+would be a trust region method for
+stepsize choice you would do exponential
+moving average for the kic matric you
+would maybe update them infrequently so
+so there are many many things you can do
+and as said you find uh you find the
+details it's not a pre-printed this
+point anymore in in this paper
+here and then I want to show you some
+experiments just to illustrate that
+um that uh we we keep the good
+performance um or we can reproduce the
+good performance in the small
+experiments but we can scale to big n
+works so to warm up here's again the
+equation the blue lines are the methods
+that do not scale right that that
+require a dense Matrix that you need to
+invert um the black lines are
+KAC the light green um line is the CG
+version of um the natural
+gradient and then we have first order
+methods in red and orange and lbfgs in
+dark green and what you see here in the
+small example this is always relative L2
+error over time um the the naive way of
+doing things is actually the best one
+where is as soon as you scale up um this
+is the dimension these are the number of
+trainable weights in unal network then
+um at some point you cannot do the naive
+approach anymore but black lines always
+are among the best performing so now we
+move up in dimension we do a heat
+equation in four spatial and one time
+Dimension and the picture is
+similar
+um and finally we've we we went up to um
+1 million parameters with a 100 De
+forong equation actually I believe this
+experiment is still running here we did
+a Bas and sech for the hyper parameters
+so there's a lot of lot of work that
+goes into these numerical experiments
+and to really fine tune these optimizers
+before before then after finding good
+hyper parameters they're really ready to
+use so this is by no means um the end of
+the of the um of the sort of Journey for
+really making the best out of this
+Optimizer um and then just put it in
+context or put this K in context this
+approximation um allows us to SK okay um
+millions of parameters that works really
+well um our I still call them
+preliminary somewhat preliminary
+numerical experience they compare
+favorably to all established optimizers
+often outperforming them
+and you can do the approximation I've
+showed you virtually to any
+pte but
+um it will be interesting to see more
+equation we we're working on that right
+now and of course maybe this is the main
+point the KAC approximation is not so
+easy to set up so you need a dedication
+to implement that and to make it
+run and with that I just want to wrap up
+and
+maybe give an Outlook I think of what
+what I what can be done next in sort of
+that
+area um and where I think future work is
+uh future efforts are well well
+placed so I think the function space
+Viewpoint is far from exploited I think
+there's still many things one can do
+there's many Concepts you can still
+translate among them for example trust
+reaching methods infin dimensional ones
+or operator preconditioning
+approaches I'm also not aware of any
+Convergence Theory that really properly
+separates the function space and the
+parameter
+space and
+I think there's still a lot to do um on
+the kayx side on just improving the
+optimizer we've built we haven't really
+tried to use it as a precondition and
+Matrix free implementations currently
+working on a high dimensional pdes like
+fuer Blanc hon chobi bang equation Shing
+equations I think there is a lot to come
+and um with that um I want to thank you
+for your attention and happy to take
+questions awesome thank you so much for
+the wonderful talk uh very nice very
+nice um so let's have yeah yeah may I
+maybe exit full screen mode so that I
+see you if somebody is asking questions
+or maybe that's not a good idea I'll
+leave it open so that we can um go back
+to slides for the questions yeah the
+people can unmute themselves and then
+ask questions directly and um yes let's
+have a qu sessions
+uh I can uh start I guess uh so for more
+General nonlinear uh problems you switch
+from the Newton to uh Galos Newton uh is
+it because you know to avoid um you know
+the Computing the full Hasan
+informations because that some I can I
+can tell you um why we do why we do that
+so when the um when the objective is
+nonconvex of course you have no
+guarantee that your um Newton Matrix is
+definite right it could be indefinite MH
+and um then you have no guarantee that
+the what you step is actually a descent
+Direction um only if you get close to um
+to the minimizer then you know that um
+Newton's Matrix will get um definite MH
+um and when we do the numeric
+experiments we we observe precisely that
+if we use Newton in function space right
+and discretize it that way and uh and
+step then it's not stable it doesn't go
+in the right direction but if we're
+close to the minimum and use Newton then
+it is very close to gaus Newton in
+function space which is also to expected
+to be expected and we found gaus Newton
+just to be the more robust um choice
+because you always because you linearize
+you always have the guarantee that
+you're taking it decent
+Direction um cool very nice uh not just
+for you know avoid the avoiding the
+implementation converson but it does
+actually yeah I mean because you compute
+the the second the Newton Matrix right
+the the infinite dimensional object is
+always something that you compute with
+pen and
+paper so there is there is maybe a
+little bit it's maybe a little bit more
+difficult to compute with on pen and
+paper the Newton Matrix than to compute
+the gaus Newton Matrix but it's
+comparable and implementation is maybe
+an epsylon more difficult for the Newton
+Matrix but you can do both but the
+performance of the gaus Newton is just
+more
+stable okay wonderful all right
+Stephanie uh do you want to unmute
+yourself and ask question yeah thanks
+for the talk um I was wondering if you
+can comment more on the connection to
+the um natural gradient and remon
+manifold you mentioned that's the angle
+you came from at the beginning did you
+divert from that or is it still the
+same so many of the methods I've shown
+you maybe I go back to a slide where I
+can easily explain that can be
+interpreted as
+um maybe that's actually a good slide
+yeah that's a good slide so many of the
+methods can be interpreted as a natural
+grade method and they can be interpreted
+as a natural gradient method precisely
+when this tmap here right this guy is um
+symmetric right if this object really
+here is an inner product on function
+space then actually you're doing um a
+natural gradient method or a ranan right
+a ranan gradient descent method but
+there is no need for t to be symmetric
+if if you look at Saddle Point problems
+and there was this example of Lon new
+and competitive gradient descent then
+this T is not um is not right and then
+the method you get is not um a natural
+gradient method is not the remanion
+metric that you're using to design um
+sort of your preconditioner for your
+gradient so we switch to functions space
+Viewpoint because it's it's more
+General but everything with the natural
+gradient descent is still valid is still
+a good viewpoint does that answer your
+question yes it does I might have some
+followup questions later on I think I
+wanted to adjust that a little bit but I
+might shoot you an email if that's okay
+yeah yeah happy to take emails of
+course awesome great any other
+questions um while someone has a
+question I have another question so if
+you go to slide 22
+yes uh the size of the Matrix uh is
+proportional to the
+size of the anets right yes exactly
+exactly the dimensionality of your
+parameter space and I'm guessing that um
+the performance of this uh gr gradient
+descent uh will um depends on the size
+of the onset as well I mean more the
+better I guess I say that one more time
+what will depend on the anets as well
+the performance like the convergence
+Behavior of this oh yeah so I mean if if
+your answer is more expressive then sort
+of you you expect right it's richer you
+can you can um you can do better it will
+always depend on on your specific
+problem right so sometimes you need a
+bigger anset sometimes a smaller is
+sufficient oh okay so so I see the the
+the balancing game here um so you need
+more anets but if you increase the anet
+then your Matrix becomes bigger and
+bigger and you're dealing with the dense
+Matrix so so it's harder to solve
+numerically and so there just there
+there must be some sweet spot between
+those two balancing game um if you can
+comment on that um from your
+experience yeah
+so I can say something I don't know if
+this will be a perfect answer but um if
+you're looking into you know simpler
+problems um
+where maybe your solution is not highly
+oscillatory um but it's okay somewhat
+smooth not to too complicated then we
+found that um you can actually use
+relatively small networks like the
+default would probably right you set up
+you set something up in jacks or pie
+torch and you just go big because the
+Frameworks will do it and your GPU can
+do it but um often it might not even be
+needed and then it's of course easier to
+to um get it to run if you if you reduce
+the size a bit and these algorithms play
+nicely with that with Adam sometimes or
+with first stochastic first order
+methods sometimes you you you have the
+feeling you need to go big with to make
+it work okay but these also work work
+quite well in a smaller Network in a
+smaller um in a smaller regime but of
+course if your if your function is
+complicated if you're solving a many
+electron sh equation there is no way you
+can use a small Network and I think then
+there is no way around um using some
+approximation of these methods I mean as
+a matter of fact this uh this KAC is I
+think the gold standard for n network
+based many electron shinger equations
+um in this community they do not use um
+PD pde operators in um in the precond
+conditioner they use sort of an L2 based
+version of that but they found this to
+be crucial to optimize wave
+[Music]
+functions okay
+um my next question is about the
+chronical um you know K Factor you call
+it um k k yes yeah yeah that's a
+approximate um of the Jacobian the way
+of computing so ex yeah exactly so
+there's two approximations that we're
+doing there's this Matrix G we do a plug
+diagonal approximation of the
+Matrix and then the diagonal blocks you
+approximate them as chronica products so
+it's it's it's a very aggressive
+approximation of G yes okay and I'm
+wondering if it can be since it is
+approximate it can be used as a
+preconditioner in I think it I think it
+can and it's relatively high on our
+to-do list to actually try that oh
+okay oh yeah any other question from
+audience you can unmute yourself and
+then ask
+questions well um if not let's thank our
+speaker uh today um thank you so much is
+in Europe right now how what time is it
+there it's late 10 to 10 to 7 oh 10 to 7
+oh okay not that bad I'm hope you no no
+not not bad at all okay but I I I I
+happens to know that mariia has a two
+kids and very young four years old and
+six month and um they need to go to bed
+now yes they they'll require my help
+they require your help but thank you so
+much for having me in this wonderful
+seminar thank you so much yeah yeah I
+well I my last question would be before
+we um head off hand um log off here um
+obviously you know the National Lab they
+deal with a very very large scale
+problems and also the complexity is is
+you multif physics and multi Fidelity
+that sort of um the problem so you know
+the it's still
+questionable your method uh is how it is
+applicable to directly to those complex
+problems uh I'm sure there's a um way to
+go I mean more research and more
+development is is required so I'm I will
+do my you know best of you know how we
+can uh collaborate or um bring this you
+know idea to the the multiphysics and
+yes if if you are interested um if you
+have high think these neuron network
+based methods for pdes are especially
+interesting for high dimensional pdes or
+maybe potentially High dimensional
+parameter spaces if it's
+a if if you have a realistic problem um
+yeah feel free to reach out we're
+currently working on a on an easy to use
+pych implementation of the of the KAC
+method that I've shown you so please let
+let me know if you're interested in
+trying something out please reach out
+okay well we'll do well thank you so
+much for the wonderful talk Marias and
+let's thank um let's Applause uh to our
+great speaker today and that was very
+nice and we learned a lot from you
+Marius so we appreciate it so much bye
+thank you bye

@@ -1,0 +1,2578 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:00.640 --> 00:00:07.000
+Welcome to the tdkr seminar everyone. Before we&nbsp;
+introduce our invited speaker, let's go over some&nbsp;&nbsp;
+
+00:00:07.000 --> 00:00:13.240
+rules as usual. First of all, please mute yourself&nbsp;
+during the talk. If you have immediate questions,&nbsp;&nbsp;
+
+00:00:13.240 --> 00:00:19.440
+you're welcome to unmute and ask, or otherwise,&nbsp;
+please use the chat room to pose your questions,&nbsp;&nbsp;
+
+00:00:19.440 --> 00:00:24.080
+so that we can address them in the&nbsp;
+q&amp;a session at the end. So again,&nbsp;&nbsp;
+
+00:00:24.080 --> 00:00:30.120
+today's seminar is open to external audience, so&nbsp;
+no classified discussion is allowed. Finally, the&nbsp;&nbsp;
+
+00:00:30.120 --> 00:00:36.160
+talk will be recorded and uploaded to our YouTube&nbsp;
+channel. Now, let me introduce our speaker. It is&nbsp;&nbsp;
+
+00:00:36.160 --> 00:00:43.920
+an honor to your host, Christopher Cass, who is&nbsp;
+the vice president of modeling and simulation at&nbsp;&nbsp;
+
+00:00:43.920 --> 00:00:52.400
+Giulia hub, the Director of Scientific Research at&nbsp;
+piomas Ai, co PI of the Giulia hub at MIT, and the&nbsp;&nbsp;
+
+00:00:52.400 --> 00:01:00.160
+lead developer of the site ml open source software&nbsp;
+organization, or his work in mechanistic machine&nbsp;&nbsp;
+
+00:01:00.160 --> 00:01:07.160
+learning. His work is credit for the 15,000 times&nbsp;
+made up of NASA Launch Services simulations and&nbsp;&nbsp;
+
+00:01:07.160 --> 00:01:15.080
+recent state demonstrate a 60 times to 570 times&nbsp;
+acceleration of a model more than occur tools in&nbsp;&nbsp;
+
+00:01:15.080 --> 00:01:23.000
+HVAC simulation, and increase the US Air Force&nbsp;
+artificial intelligence accelerator scientific&nbsp;&nbsp;
+
+00:01:23.000 --> 00:01:30.120
+excellence award. He is the lead developer of the&nbsp;
+Pumas project, and has received a top presentation&nbsp;&nbsp;
+
+00:01:30.120 --> 00:01:39.640
+award at every aclp in the last three years, for&nbsp;
+improving methods for uncertainty quantification,&nbsp;&nbsp;
+
+00:01:39.640 --> 00:01:45.640
+automated GPU acceleration of mixed nonlinear&nbsp;
+mixed effects, modeling and machine learning&nbsp;&nbsp;
+
+00:01:45.640 --> 00:01:53.160
+assist on construction of the NLM the&nbsp;
+models with all these achievements,&nbsp;&nbsp;
+
+00:01:53.160 --> 00:01:59.920
+Chris received the emerging scientist award from&nbsp;
+iSap. Today, he will talk about generalizing&nbsp;&nbsp;
+
+00:01:59.920 --> 00:02:05.280
+scientific machine learning and differentiable&nbsp;
+simulation beyond continuous models. Please enjoy&nbsp;&nbsp;
+
+00:02:05.280 --> 00:02:09.520
+the wonderful talk. Now without further&nbsp;
+ado, let me head over to Christopher.
+
+00:02:09.520 --> 00:02:13.800
+Yeah, thank you. I mean, I'll jump right into&nbsp;
+this. Thank you for the nice introduction. So what&nbsp;&nbsp;
+
+00:02:13.800 --> 00:02:18.080
+I want to talk about today is scientific machine&nbsp;
+learning. Right. And what scientific machine&nbsp;&nbsp;
+
+00:02:18.080 --> 00:02:22.720
+learning is, is, you know, I think that this this&nbsp;
+seminar, everyone's kind of familiar with it. But&nbsp;&nbsp;
+
+00:02:22.720 --> 00:02:27.560
+the core idea behind scientific machine learning&nbsp;
+is that, you know, you have this information in&nbsp;&nbsp;
+
+00:02:27.560 --> 00:02:32.080
+your scientific models that you don't necessarily&nbsp;
+have in your data. So for example, you know,&nbsp;&nbsp;
+
+00:02:32.080 --> 00:02:37.520
+with general relativity, there is no data set&nbsp;
+that, you know, kind of in Capture captures,&nbsp;&nbsp;
+
+00:02:37.520 --> 00:02:44.640
+you know, what general relativity is right. You&nbsp;
+know, there is no 3 billion line website that,&nbsp;&nbsp;
+
+00:02:44.640 --> 00:02:50.440
+you know, like what Google has for generativity,&nbsp;
+there are 1000s of experiments that have shown us&nbsp;&nbsp;
+
+00:02:50.440 --> 00:02:55.480
+that it's true, there isn't that data set, right?&nbsp;
+So if we want to build these AI systems that are,&nbsp;&nbsp;
+
+00:02:55.480 --> 00:02:59.400
+you know, correct and predictive, what we want to&nbsp;
+do is, we want to be able to use that knowledge&nbsp;&nbsp;
+
+00:02:59.400 --> 00:03:04.320
+as though we had data without having to require&nbsp;
+that we just go out there and gather that data,&nbsp;&nbsp;
+
+00:03:04.320 --> 00:03:09.560
+right. So how do we do that? How do we build&nbsp;
+a machine learning kind of system that is&nbsp;&nbsp;
+
+00:03:09.560 --> 00:03:14.440
+incorporating all of the knowledge that we know,&nbsp;
+and using that as a starting point, and then using&nbsp;&nbsp;
+
+00:03:14.440 --> 00:03:18.760
+our data to then go beyond the pieces that we&nbsp;
+know, this is what we're doing with scientific&nbsp;&nbsp;
+
+00:03:18.760 --> 00:03:23.720
+machine learning. And the core point of what I&nbsp;
+want to hit here on here is that differentiable&nbsp;&nbsp;
+
+00:03:23.720 --> 00:03:28.680
+simulation is a very, very specific way of doing&nbsp;
+scientific machine learning. And I want to talk&nbsp;&nbsp;
+
+00:03:28.680 --> 00:03:34.960
+about how differential simulation is hard. But&nbsp;
+it's worth developing more time in right. So, you&nbsp;&nbsp;
+
+00:03:34.960 --> 00:03:41.640
+know, I want to really develop what differentiable&nbsp;
+simulation is, why it's important, why it's a hard&nbsp;&nbsp;
+
+00:03:41.640 --> 00:03:47.560
+way of doing scientific machine learning, but why&nbsp;
+it has a lot of payoff. And so first of all, what&nbsp;&nbsp;
+
+00:03:47.560 --> 00:03:52.200
+is our approach the science of machine learning,&nbsp;
+a lot of what we'll be talking about today will be&nbsp;&nbsp;
+
+00:03:52.200 --> 00:03:57.760
+in this this realm of these universal approximator&nbsp;
+differential equations, also kind of short handed&nbsp;&nbsp;
+
+00:03:57.760 --> 00:04:03.040
+to universal differential equations. The core idea&nbsp;
+behind them is it's a very general object where&nbsp;&nbsp;
+
+00:04:03.040 --> 00:04:08.840
+you say, I have differential equations, which&nbsp;
+are defined in part by Universal approximator.&nbsp;&nbsp;
+
+00:04:08.840 --> 00:04:14.120
+So what's a universal approximator? A universal&nbsp;
+approximator is any kind of object that is a&nbsp;&nbsp;
+
+00:04:14.120 --> 00:04:22.480
+representative of space of functions from Rn to&nbsp;
+Rm. So a neural network is your classic example,&nbsp;&nbsp;
+
+00:04:22.480 --> 00:04:27.160
+where you there is the universal approximator&nbsp;
+theorem, which says that for sufficiently large&nbsp;&nbsp;
+
+00:04:27.160 --> 00:04:31.800
+neural network, so sufficiently large in terms&nbsp;
+of the size of the hidden layers or the number&nbsp;&nbsp;
+
+00:04:31.800 --> 00:04:37.920
+of hidden layers, then with a sufficiently large&nbsp;
+neural network, you can approximate any possible&nbsp;&nbsp;
+
+00:04:37.920 --> 00:04:45.520
+function, if you can find weights of the neural&nbsp;
+network such that its inputs go out to the output&nbsp;&nbsp;
+
+00:04:45.520 --> 00:04:52.760
+such that over the whole, you know, over a whole&nbsp;
+domain omega f of x, f of x is the neural network&nbsp;&nbsp;
+
+00:04:52.760 --> 00:05:00.000
+of x is approximately f of x for all you know, X&nbsp;
+in there with within some epsilon right? There's&nbsp;&nbsp;
+
+00:05:00.000 --> 00:05:04.960
+So there's a way to be able to formalize this&nbsp;
+this property that, you know, a sufficiently large&nbsp;&nbsp;
+
+00:05:04.960 --> 00:05:09.680
+neural network can approximate any any possible&nbsp;
+function that's sufficiently large. The reason why&nbsp;&nbsp;
+
+00:05:09.680 --> 00:05:14.320
+neural networks are used for a lot of these cases&nbsp;
+is because they overcome curse of dimensionality.&nbsp;&nbsp;
+
+00:05:14.320 --> 00:05:20.240
+So for sufficiently large dimensions, they might&nbsp;
+be a nice object to do this, but it's not the only&nbsp;&nbsp;
+
+00:05:20.240 --> 00:05:25.080
+object that we use here. There's also you can&nbsp;
+also make use of Polynomial Chaos expansions,&nbsp;&nbsp;
+
+00:05:25.080 --> 00:05:31.400
+you can make use of lasagna expansions you can&nbsp;
+use for a series, all of these things are function&nbsp;&nbsp;
+
+00:05:31.400 --> 00:05:39.160
+approximator. Now a lot of them are designed in&nbsp;
+1d. And so the, if you use a use a tensor product&nbsp;&nbsp;
+
+00:05:39.160 --> 00:05:43.960
+approach to build up these function, approximator&nbsp;
+is like a Fourier series into higher dimensions,&nbsp;&nbsp;
+
+00:05:43.960 --> 00:05:49.000
+you have exponential growth in the number of&nbsp;
+terms. This is the curse of dimensionality. And&nbsp;&nbsp;
+
+00:05:49.000 --> 00:05:54.400
+so in some cases, we use some things that overcome&nbsp;
+personal dimensionality. Other cases you don't.&nbsp;&nbsp;
+
+00:05:54.400 --> 00:05:59.200
+But the core idea here is that you have function&nbsp;
+approximator, so you have things that can stand in&nbsp;&nbsp;
+
+00:05:59.200 --> 00:06:04.480
+for functions that you don't know. And what you do&nbsp;
+is you build models that that make use of all this&nbsp;&nbsp;
+
+00:06:04.480 --> 00:06:09.960
+information, you know, so here, for example, is a&nbsp;
+version of lustful terror. So we have a version of&nbsp;&nbsp;
+
+00:06:09.960 --> 00:06:16.120
+lock Voltaire, where we say, you know, X is the&nbsp;
+number of bunnies, and if I leave bunnies alone,&nbsp;&nbsp;
+
+00:06:16.120 --> 00:06:21.480
+I get exponentially more bunnies. And if I leave&nbsp;
+wolves alone, I get exponentially well less wolves&nbsp;&nbsp;
+
+00:06:21.480 --> 00:06:26.960
+over time. And I there's something more to this&nbsp;
+model that I don't know, there is something,&nbsp;&nbsp;
+
+00:06:26.960 --> 00:06:35.160
+there's something extra and, and whatever this&nbsp;
+extra thing is, it's it's a it's who knows,&nbsp;&nbsp;
+
+00:06:35.160 --> 00:06:39.000
+it's something that happens when we put&nbsp;
+rabbits and wolves together. But you know,&nbsp;&nbsp;
+
+00:06:39.000 --> 00:06:42.800
+they never teach you that in elementary school&nbsp;
+for some reason. So what happens when we put&nbsp;&nbsp;
+
+00:06:42.800 --> 00:06:49.000
+rabbits and wolves together, that's what this&nbsp;
+model is saying. And so what we then do is we,&nbsp;&nbsp;
+
+00:06:49.000 --> 00:06:54.840
+we, we train this, this model, we write, we train&nbsp;
+this neural network, this function approximator,&nbsp;&nbsp;
+
+00:06:54.840 --> 00:06:59.760
+to capture the thing that we did not know how&nbsp;
+to model, right. And so that's, that's step one,&nbsp;&nbsp;
+
+00:06:59.760 --> 00:07:05.320
+right? So and once you do that, you didn't have&nbsp;
+a computational representation of the thing that&nbsp;&nbsp;
+
+00:07:05.320 --> 00:07:10.320
+you did not know how to model, right. So, you&nbsp;
+know, you don't necessarily know what it is,&nbsp;&nbsp;
+
+00:07:10.320 --> 00:07:17.320
+but you have a object, a computational object&nbsp;
+that is able to do input output relationships,&nbsp;&nbsp;
+
+00:07:17.320 --> 00:07:22.200
+such that the thing that you did not know how&nbsp;
+to model is correctly chosen to now match the&nbsp;&nbsp;
+
+00:07:22.200 --> 00:07:26.920
+data. So it's, it's once it's trained, it&nbsp;
+becomes a function of the product becomes&nbsp;&nbsp;
+
+00:07:26.920 --> 00:07:31.680
+an approximation to the function that you did not&nbsp;
+otherwise know how to write down, right? And now,&nbsp;&nbsp;
+
+00:07:31.680 --> 00:07:36.040
+what can you do with that? Well, you can do all&nbsp;
+sorts of analysis, right, you can say, you know,&nbsp;&nbsp;
+
+00:07:36.040 --> 00:07:39.880
+understand the sensitivities of the piece&nbsp;
+of the model that you that you did not know,&nbsp;&nbsp;
+
+00:07:39.880 --> 00:07:44.720
+you can bind this to Cobian, you can, you can&nbsp;
+do all these things that you would want to do&nbsp;&nbsp;
+
+00:07:44.720 --> 00:07:50.120
+with a model just on the thing that you previously&nbsp;
+did not know how to model. And one of the things&nbsp;&nbsp;
+
+00:07:50.120 --> 00:07:55.880
+that we then commonly do is we perform a symbolic&nbsp;
+regression, right? We, we say, well, you know, now&nbsp;&nbsp;
+
+00:07:55.880 --> 00:08:01.360
+that we've learned in such a way that we've made&nbsp;
+use of all of our prior information, let's now try&nbsp;&nbsp;
+
+00:08:01.360 --> 00:08:07.840
+to understand that that model element in terms of&nbsp;
+some more primitive pieces, some pieces that are&nbsp;&nbsp;
+
+00:08:07.840 --> 00:08:13.280
+representative of mechanistic portions, which if&nbsp;
+we were to write a model ourselves, we would use&nbsp;&nbsp;
+
+00:08:13.280 --> 00:08:18.800
+these these, these pieces, right. And so you can&nbsp;
+then do this kind of symbolic regression process,&nbsp;&nbsp;
+
+00:08:18.800 --> 00:08:23.440
+and have it spit out equations which are more more&nbsp;
+readable, and they actually tend to improve the&nbsp;&nbsp;
+
+00:08:23.440 --> 00:08:28.640
+generalizability of the approach as well. So it&nbsp;
+to really kind of understand this entire approach,&nbsp;&nbsp;
+
+00:08:28.640 --> 00:08:34.240
+I want to kind of walk through this step by step.&nbsp;
+So here, we start with just standard machine&nbsp;&nbsp;
+
+00:08:34.240 --> 00:08:39.960
+learning. Right? So the standard machine learning&nbsp;
+approach here that we're just gonna do is neural&nbsp;&nbsp;
+
+00:08:39.960 --> 00:08:45.440
+ote, right? Just pure machine learning, u prime&nbsp;
+equals a neural network, right? So we're saying,&nbsp;&nbsp;
+
+00:08:45.440 --> 00:08:50.760
+learn any possible function such that I've&nbsp;
+represented this time series, I go from zero&nbsp;&nbsp;
+
+00:08:50.760 --> 00:08:56.200
+to 21 days worth of data, right? So I just learned&nbsp;
+from zero to 21 day, just that many data points,&nbsp;&nbsp;
+
+00:08:56.200 --> 00:09:03.040
+I fit the model and extrapolate forward, then this&nbsp;
+is the first data from the first 21 days in the&nbsp;&nbsp;
+
+00:09:03.040 --> 00:09:08.480
+Wuhan region of China from the COVID 19. outbreak.&nbsp;
+And now you look at this and you go well,&nbsp;&nbsp;
+
+00:09:08.480 --> 00:09:13.760
+the lines for the estimated from the from the&nbsp;
+model are completely not fitting the data at all&nbsp;&nbsp;
+
+00:09:13.760 --> 00:09:20.600
+after the training regime. Right. And that you are&nbsp;
+right, this is what happens with machine learning,&nbsp;&nbsp;
+
+00:09:20.600 --> 00:09:29.280
+right machine learning does not necessarily act&nbsp;
+extrapolate well to outside of its dataset. So so&nbsp;&nbsp;
+
+00:09:29.280 --> 00:09:34.640
+what I'm what I'm saying here is that, you know,&nbsp;
+we have a lot of prior information, though, like&nbsp;&nbsp;
+
+00:09:34.640 --> 00:09:39.920
+I told you that this is an epidemic model. And so&nbsp;
+when you look at this, you go, Well, of course,&nbsp;&nbsp;
+
+00:09:39.920 --> 00:09:45.720
+that's the start of an exponential growth, right.&nbsp;
+But the machine learning model does not know that&nbsp;&nbsp;
+
+00:09:45.720 --> 00:09:50.040
+information, right? We just told the machine&nbsp;
+learning model, hey, here's here's a bit of data&nbsp;&nbsp;
+
+00:09:50.040 --> 00:09:54.240
+from the start of a pandemic. Go for it, right.&nbsp;
+It doesn't even know what a pandemic is. It's just&nbsp;&nbsp;
+
+00:09:54.240 --> 00:09:58.880
+it's fitting the data and it's just extrapolating&nbsp;
+forward. So what happens if we tell it a little&nbsp;&nbsp;
+
+00:09:58.880 --> 00:10:05.560
+bit about what happened? endemic is. So here now&nbsp;
+we have this form of a universal od E. So yeah,&nbsp;&nbsp;
+
+00:10:05.560 --> 00:10:11.960
+so this is a version of a one of these epidemic&nbsp;
+models, where we now have a susceptible&nbsp;&nbsp;
+
+00:10:11.960 --> 00:10:17.040
+individuals, that's s, we have the susceptible&nbsp;
+individuals become exposed, the exposed&nbsp;&nbsp;
+
+00:10:17.040 --> 00:10:23.120
+individuals become infected over time, they either&nbsp;
+recover or they die, right. So this is the SEIR D&nbsp;&nbsp;
+
+00:10:23.120 --> 00:10:28.320
+model. Now, one of the interesting things that&nbsp;
+happens when we go to this kind of mechanistic&nbsp;&nbsp;
+
+00:10:28.320 --> 00:10:35.520
+model form is that we now can use heterogeneous&nbsp;
+data and prior information inside of this process,&nbsp;&nbsp;
+
+00:10:35.520 --> 00:10:41.360
+right? So for example, we can know a lot of the&nbsp;
+details about some of the the ratios between some&nbsp;&nbsp;
+
+00:10:41.360 --> 00:10:47.200
+of the reaction rates in this model, because they&nbsp;
+can be directly estimated from what percentage of&nbsp;&nbsp;
+
+00:10:47.200 --> 00:10:52.600
+people are, what percentage of people die versus&nbsp;
+recover, right. So we don't need to actually use&nbsp;&nbsp;
+
+00:10:52.600 --> 00:10:57.120
+our time series to get a lot of these values, we&nbsp;
+can use prior information to be able to say, well,&nbsp;&nbsp;
+
+00:10:57.120 --> 00:11:03.240
+the percentage of folks who die from this disease&nbsp;
+is, you know, mu, and you know, it's so you can&nbsp;&nbsp;
+
+00:11:03.240 --> 00:11:08.320
+start to write down these values directly from&nbsp;
+other sources of information, right. So now we're&nbsp;&nbsp;
+
+00:11:08.320 --> 00:11:13.960
+bringing in other information in a scientific way&nbsp;
+where you were using all the knowledge that we&nbsp;&nbsp;
+
+00:11:13.960 --> 00:11:18.440
+have. But the piece that I want to highlight here&nbsp;
+is that when we talking about something like you&nbsp;&nbsp;
+
+00:11:18.440 --> 00:11:23.200
+know, COVID-19 exposure, that was very dependent&nbsp;
+on the region of the world that you were in,&nbsp;&nbsp;
+
+00:11:23.200 --> 00:11:28.280
+right, so for example, you know, if you're in&nbsp;
+China versus if you're in Sweden, versus if you're&nbsp;&nbsp;
+
+00:11:28.280 --> 00:11:33.480
+in Italy, versus we own which state of the United&nbsp;
+States you're in, there are completely different&nbsp;&nbsp;
+
+00:11:33.480 --> 00:11:41.640
+exposure patterns to, to the virus. And so writing&nbsp;
+down a simple equation for what how exposure to&nbsp;&nbsp;
+
+00:11:41.640 --> 00:11:48.400
+COVID-19 occurred, is not necessarily easy to do.&nbsp;
+But what we can do is we can say, well, we know a&nbsp;&nbsp;
+
+00:11:48.400 --> 00:11:53.440
+lot about this model. But the piece that we don't&nbsp;
+know how to model is the exposure term. So let's&nbsp;&nbsp;
+
+00:11:53.440 --> 00:11:57.720
+just make that one exposure term be our neural&nbsp;
+network, you know, the the function that we did&nbsp;&nbsp;
+
+00:11:57.720 --> 00:12:03.160
+not know how to model, let's put a neural network&nbsp;
+right there. And now we have all the info from all&nbsp;&nbsp;
+
+00:12:03.160 --> 00:12:09.000
+the prior information we have, we have a machine&nbsp;
+learning model, extending it, and then from that,&nbsp;&nbsp;
+
+00:12:09.000 --> 00:12:14.080
+we're able to then see that for just zero to&nbsp;
+21 days worth of data, we extrapolate forward,&nbsp;&nbsp;
+
+00:12:14.080 --> 00:12:19.720
+and we can extrapolate much better, right, we're&nbsp;
+able to get about 20 days of extrapolation, right.&nbsp;&nbsp;
+
+00:12:19.720 --> 00:12:24.560
+And so the key key here is that we're using a lot&nbsp;
+of other prior information, you know, it's like,&nbsp;&nbsp;
+
+00:12:24.560 --> 00:12:29.760
+we're not gaining something for free, we are&nbsp;
+putting more into the system and getting more&nbsp;&nbsp;
+
+00:12:29.760 --> 00:12:35.480
+out of it. But there's other more concrete ways to&nbsp;
+also be able to understand this. So if our if our&nbsp;&nbsp;
+
+00:12:35.480 --> 00:12:40.760
+neural network is always outputting, a positive&nbsp;
+value, so we just, you know, make the last layer&nbsp;&nbsp;
+
+00:12:40.760 --> 00:12:47.560
+be a square, or a square function or an absolute&nbsp;
+value, then what we know is just looking at the&nbsp;&nbsp;
+
+00:12:47.560 --> 00:12:52.720
+equations is that s prime is always negative. And&nbsp;
+so just from this information, we can actually&nbsp;&nbsp;
+
+00:12:52.720 --> 00:12:58.280
+infer a lot of things. So what we have is a model&nbsp;
+that starts with an exponential growth phase,&nbsp;&nbsp;
+
+00:12:58.280 --> 00:13:03.720
+and then E will go up, and then I'll have a peak&nbsp;
+and go down. So we'll have a single peak. And so&nbsp;&nbsp;
+
+00:13:03.720 --> 00:13:08.200
+you can think about this as now, you know, the&nbsp;
+world of machine learning was about function.&nbsp;&nbsp;
+
+00:13:08.200 --> 00:13:13.840
+approximator is right, that's where I started.&nbsp;
+But by design, what I've done now, as I said, Here&nbsp;&nbsp;
+
+00:13:13.840 --> 00:13:19.760
+is a form for universal function approximation,&nbsp;
+where it is functions which have a start with an&nbsp;&nbsp;
+
+00:13:19.760 --> 00:13:26.280
+exponential growth phase, and then have a single&nbsp;
+peak, right. So I mean, essentially encoding the&nbsp;&nbsp;
+
+00:13:26.280 --> 00:13:32.560
+types of properties that we know to be true&nbsp;
+with epidemic type models. And so, you know,&nbsp;&nbsp;
+
+00:13:32.560 --> 00:13:36.360
+that's, you know, there's different ways to think&nbsp;
+about it, you know, that, hey, I made this model&nbsp;&nbsp;
+
+00:13:36.360 --> 00:13:41.320
+as epidemic nice as possible, you know, that's&nbsp;
+more high level, but also mathematically, I've&nbsp;&nbsp;
+
+00:13:41.320 --> 00:13:46.360
+restricted the function space that I'm allowed&nbsp;
+to be fitting functions of. And so from the same&nbsp;&nbsp;
+
+00:13:46.360 --> 00:13:51.200
+amount of data, if my true function is supposed&nbsp;
+to be living in this function space, which I've&nbsp;&nbsp;
+
+00:13:51.200 --> 00:13:56.320
+which I've restricted to, then what I've done is&nbsp;
+I just made it so that way, I more easily can be&nbsp;&nbsp;
+
+00:13:56.320 --> 00:14:01.560
+finding the right function, because I'm finding&nbsp;
+as function from a subset of the larger set of&nbsp;&nbsp;
+
+00:14:01.560 --> 00:14:08.040
+all possible functions right. Now, the last stage&nbsp;
+of this universal differential equation process&nbsp;&nbsp;
+
+00:14:08.040 --> 00:14:13.480
+is to do the prior with the post analysis. So this&nbsp;
+is this is always an interesting step. So what we&nbsp;&nbsp;
+
+00:14:13.480 --> 00:14:19.000
+do here is we say, well, we've trained this neural&nbsp;
+network in such a way where it captures all of our&nbsp;&nbsp;
+
+00:14:19.000 --> 00:14:23.400
+prior knowledge, right? So we've captured all of&nbsp;
+our prior knowledge inside of the way that we've&nbsp;&nbsp;
+
+00:14:23.400 --> 00:14:28.840
+trained this, this this exposure term. So now&nbsp;
+let's actually represent it down into you know,&nbsp;&nbsp;
+
+00:14:28.840 --> 00:14:33.840
+equations right. Now, why do we not start directly&nbsp;
+with writing down all the equations? Well,&nbsp;&nbsp;
+
+00:14:33.840 --> 00:14:39.320
+because that can have curse of dimensionality you&nbsp;
+can have, there's exponentially many ways or kind&nbsp;&nbsp;
+
+00:14:39.320 --> 00:14:45.280
+of editorially be many ways. You can write down,&nbsp;
+you know, these, these high dimensional functions,&nbsp;&nbsp;
+
+00:14:45.280 --> 00:14:49.800
+right. But in this form, we can do the training&nbsp;
+process where we've taken into account everything&nbsp;&nbsp;
+
+00:14:49.800 --> 00:14:54.680
+that we know, all of our prior knowledge, we've&nbsp;
+once we once we've found this neural network,&nbsp;&nbsp;
+
+00:14:54.680 --> 00:15:00.800
+we can start to poke at it and to say, what did it&nbsp;
+actually learn? And here we go. could see is that,&nbsp;&nbsp;
+
+00:15:00.800 --> 00:15:06.040
+you know, I let this neural network be a function&nbsp;
+in this case of s of i and d. And one of the&nbsp;&nbsp;
+
+00:15:06.040 --> 00:15:11.040
+interesting things is it comes out and says, Well,&nbsp;
+the best fitting function here is a function of s&nbsp;&nbsp;
+
+00:15:11.040 --> 00:15:17.240
+and I and you leave D out, which makes sense,&nbsp;
+because for COVID-19, exposure to the disease&nbsp;&nbsp;
+
+00:15:17.240 --> 00:15:21.320
+was not dependent on the number of people who&nbsp;
+have died or people who have died, they did have&nbsp;&nbsp;
+
+00:15:21.320 --> 00:15:26.080
+the disease, but they are no longer infecting&nbsp;
+individuals are no longer exposing them, right.&nbsp;&nbsp;
+
+00:15:26.080 --> 00:15:30.480
+And so this is something they can directly read&nbsp;
+out from the sparse identification. Now, again,&nbsp;&nbsp;
+
+00:15:30.480 --> 00:15:36.440
+the interesting thing here is that, because there&nbsp;
+is so much mathematical model around the object,&nbsp;&nbsp;
+
+00:15:36.440 --> 00:15:41.560
+you can actually interpret it right, because&nbsp;
+it's now there is a lot of interpret, you know,&nbsp;&nbsp;
+
+00:15:41.560 --> 00:15:47.880
+there is model around, it's not a completely a&nbsp;
+amorphous object, it is a amorphous black box&nbsp;&nbsp;
+
+00:15:47.880 --> 00:15:53.360
+within a interpretable piece. So as you start&nbsp;
+to learn more information about that black box,&nbsp;&nbsp;
+
+00:15:53.360 --> 00:15:58.120
+you start to in how it interacts with the rest&nbsp;
+model, then you are starting to learn what you&nbsp;&nbsp;
+
+00:15:58.120 --> 00:16:02.760
+did not know how to model right. And so this&nbsp;
+piece of information, like eau de is, you know,&nbsp;&nbsp;
+
+00:16:02.760 --> 00:16:08.800
+this exposure is not a function of D, this is a&nbsp;
+this is a type of, you know, a type of scientific&nbsp;&nbsp;
+
+00:16:08.800 --> 00:16:13.120
+hypothesis right. Now, the reason why I think&nbsp;
+that this is interesting is because it allows&nbsp;&nbsp;
+
+00:16:13.120 --> 00:16:18.000
+for scientists in the loop, right, we're not just&nbsp;
+doing this in like a purely, you know, trust the&nbsp;&nbsp;
+
+00:16:18.000 --> 00:16:22.000
+machine learning has learned something, you can&nbsp;
+actually get some information out to them, people&nbsp;&nbsp;
+
+00:16:22.000 --> 00:16:27.160
+go back to the lab and say, is made a prediction&nbsp;
+about what what needs to be true for this, this&nbsp;&nbsp;
+
+00:16:27.160 --> 00:16:31.600
+exposure term to be acting the way it is, let's&nbsp;
+actually go double check this right. Now, the&nbsp;&nbsp;
+
+00:16:31.600 --> 00:16:36.920
+other thing that happens here is that you actually&nbsp;
+get have some improved your generalizability. So&nbsp;&nbsp;
+
+00:16:36.920 --> 00:16:41.800
+we kind of see across the board that when you do&nbsp;
+this versus a good faith specification process,&nbsp;&nbsp;
+
+00:16:41.800 --> 00:16:46.200
+you do tend to improve the generalizability&nbsp;
+over just having the pure neural network. And&nbsp;&nbsp;
+
+00:16:46.200 --> 00:16:51.160
+there's a lot of other a lot of reasons for that&nbsp;
+kind of comes down to some of the properties of&nbsp;&nbsp;
+
+00:16:51.160 --> 00:16:56.360
+extrapolation of polynomials. And if anyone wants&nbsp;
+to ask, it's something that we haven't been able&nbsp;&nbsp;
+
+00:16:56.360 --> 00:17:01.080
+to prove, but we have some good ideas that have&nbsp;
+the directions routed for what to do there.
+
+00:17:02.040 --> 00:17:06.560
+So yeah, so someone asked a question here. So&nbsp;
+say the neural network is convolutional with&nbsp;&nbsp;
+
+00:17:06.560 --> 00:17:13.720
+arbitrary channels and feeds how to best combine&nbsp;
+t and x in this case, I will go into to some,&nbsp;&nbsp;
+
+00:17:13.720 --> 00:17:18.680
+some uses of confidence are in convolution&nbsp;
+operators for PDS a bit later. So I'll go back&nbsp;&nbsp;
+
+00:17:18.680 --> 00:17:24.160
+to that. For the COVID prediction example, how do&nbsp;
+you determine the functional form of the internal&nbsp;&nbsp;
+
+00:17:24.160 --> 00:17:30.480
+sparse regression? Yeah, so so we have to make,&nbsp;
+we have to choose a, you know, for example, a&nbsp;&nbsp;
+
+00:17:30.480 --> 00:17:35.080
+library of functions that we want to do the sparse&nbsp;
+regression to, it could be things like, you know,&nbsp;&nbsp;
+
+00:17:35.080 --> 00:17:42.200
+every combination of polynomials, cosines, you&nbsp;
+know, trigonometric functions. exponentials. And,&nbsp;&nbsp;
+
+00:17:42.200 --> 00:17:47.680
+you know, or, like, you know, you so you do have&nbsp;
+to make make a choice there about how expansive&nbsp;&nbsp;
+
+00:17:47.680 --> 00:17:52.840
+you want the dictionary to be, and then you&nbsp;
+you simplify it down. But in general, I mean,&nbsp;&nbsp;
+
+00:17:52.840 --> 00:17:58.080
+that's, that's one of the algorithms involved&nbsp;
+here. You know, I could go into more detail,&nbsp;&nbsp;
+
+00:17:58.080 --> 00:18:04.120
+but it's really want just 111 step of the&nbsp;
+process. And, you know, it is it is a modular&nbsp;&nbsp;
+
+00:18:04.120 --> 00:18:08.800
+choice at that that aspect. Yeah. Now, one of the&nbsp;
+things I want to kind of highlight here, you know,&nbsp;&nbsp;
+
+00:18:08.800 --> 00:18:13.080
+about when I, when I start with scientific machine&nbsp;
+learning, I say, Well, you know, it's you're&nbsp;&nbsp;
+
+00:18:13.080 --> 00:18:17.600
+pouring and model you're pouring in data. And your&nbsp;
+goal is to if you have enough prior knowledge, if&nbsp;&nbsp;
+
+00:18:17.600 --> 00:18:22.440
+you have enough knowledge, right, where knowledge&nbsp;
+can come from data, or it can come from models,&nbsp;&nbsp;
+
+00:18:22.440 --> 00:18:25.760
+as long as you put enough malt knowledge in, you&nbsp;
+should be able to get a good prediction, right?&nbsp;&nbsp;
+
+00:18:25.760 --> 00:18:30.760
+You just need to be able to hit the prerequisite&nbsp;
+amount of knowledge right? Now, one of the things&nbsp;&nbsp;
+
+00:18:30.760 --> 00:18:35.400
+that we've done, why I like to start with this,&nbsp;
+this epidemic models, because we had a lot of&nbsp;&nbsp;
+
+00:18:35.400 --> 00:18:41.080
+work papers and such with, with Sandia National&nbsp;
+Labs, where we dug into that idea where we said,&nbsp;&nbsp;
+
+00:18:41.080 --> 00:18:46.400
+okay, you know, when you know, this is a choice,&nbsp;
+right, it's a choice to say there's only one term,&nbsp;&nbsp;
+
+00:18:46.400 --> 00:18:50.920
+I could have made two terms I could have made,&nbsp;
+you know, this entire part of the equation,&nbsp;&nbsp;
+
+00:18:50.920 --> 00:18:56.080
+neural network, you know, there's a continuum of&nbsp;
+how much model you have and how much data you're&nbsp;&nbsp;
+
+00:18:56.080 --> 00:19:01.640
+relying on, right. And so one of the questions&nbsp;
+that we asked is, you know, as you go through&nbsp;&nbsp;
+
+00:19:01.640 --> 00:19:06.400
+this continuum of more or less model, does it&nbsp;
+actually work? As we expect, right? Does it&nbsp;&nbsp;
+
+00:19:06.400 --> 00:19:11.520
+actually work like that, like this big, big pay&nbsp;
+figure, right? Where the more model you dump in,&nbsp;&nbsp;
+
+00:19:11.520 --> 00:19:18.480
+the less data you need? Or another way to put&nbsp;
+that, then is? If you have more prior model,&nbsp;&nbsp;
+
+00:19:18.480 --> 00:19:22.840
+and that prior model is correct, you know, will&nbsp;
+the universal differential equation be able to&nbsp;&nbsp;
+
+00:19:22.840 --> 00:19:27.720
+give you better predictions from the same amount&nbsp;
+of data? Right, that's another way of stating that&nbsp;&nbsp;
+
+00:19:27.720 --> 00:19:32.760
+same sentence. And we have some work with with&nbsp;
+Sandia, which, you know, kind of goes over a&nbsp;&nbsp;
+
+00:19:32.760 --> 00:19:38.320
+whole load of cases in different epidemic models&nbsp;
+with new with simulated data and all these cases,&nbsp;&nbsp;
+
+00:19:38.320 --> 00:19:42.840
+to really show that that property tends to hold,&nbsp;
+right. So you can kind of think that, you know,&nbsp;&nbsp;
+
+00:19:42.840 --> 00:19:48.280
+this is something across the board where, you&nbsp;
+know, with these universal differential equations,&nbsp;&nbsp;
+
+00:19:48.280 --> 00:19:51.720
+you know, it's not a question of like, how many&nbsp;
+data points you need, right? You know, a lot of&nbsp;&nbsp;
+
+00:19:51.720 --> 00:19:57.080
+these things, we're doing it with 20 data points&nbsp;
+or 40 data points, right. So it is a lot less&nbsp;&nbsp;
+
+00:19:57.080 --> 00:20:03.520
+data than something like a standard deep learning&nbsp;
+for Homework. But the real question the the real&nbsp;&nbsp;
+
+00:20:03.520 --> 00:20:08.760
+answer at the end of the day is, the more prior&nbsp;
+model that you have. And the more correct that is,&nbsp;&nbsp;
+
+00:20:08.760 --> 00:20:15.480
+the less data that you need. And so it is really,&nbsp;
+you know, it is really not an you cannot say you&nbsp;&nbsp;
+
+00:20:15.480 --> 00:20:20.200
+need 30 data points, because whether you need 30&nbsp;
+data points is dependent on how much other model&nbsp;&nbsp;
+
+00:20:20.200 --> 00:20:25.200
+you've put in there, right. So, so, you know, I&nbsp;
+would say go go go check out some of this work.&nbsp;&nbsp;
+
+00:20:25.200 --> 00:20:30.280
+And what I forgot to put in here that they work&nbsp;
+with Sandia that really highlights that this&nbsp;&nbsp;
+
+00:20:30.280 --> 00:20:35.040
+aspect that really just shows the whole continuum&nbsp;
+of models, and just shows how adding different&nbsp;&nbsp;
+
+00:20:35.040 --> 00:20:40.920
+parts of the model into it then incrementally&nbsp;
+improves that that that extrapolation performance,&nbsp;&nbsp;
+
+00:20:40.920 --> 00:20:45.240
+so, but I mean, that's, that's the general idea&nbsp;
+here, right, the more prior and mountain model&nbsp;&nbsp;
+
+00:20:45.240 --> 00:20:50.720
+that you have, the more prior knowledge that you&nbsp;
+have, the better we'll end up predicting. Now,&nbsp;&nbsp;
+
+00:20:50.720 --> 00:20:53.960
+one of the things that we've seen with the&nbsp;
+universal differential equation stuff is it's&nbsp;&nbsp;
+
+00:20:53.960 --> 00:20:58.600
+kind of exploded in terms of have the number of&nbsp;
+people really using it in practice. So I'd like&nbsp;&nbsp;
+
+00:20:58.600 --> 00:21:04.360
+to highlight this work of some folks that, you&nbsp;
+know, we actually have this now inside of our&nbsp;&nbsp;
+
+00:21:04.360 --> 00:21:12.280
+inside of our siamo documentation. And it's one&nbsp;
+of our tutorial examples where what they did was&nbsp;&nbsp;
+
+00:21:12.280 --> 00:21:20.240
+they took these readings of gravitational waves.&nbsp;
+This is the LIGO gravitational wave data from the,&nbsp;&nbsp;
+
+00:21:20.240 --> 00:21:25.520
+from the binary black hole experiment that&nbsp;
+first found the gravitational waves, right?&nbsp;&nbsp;
+
+00:21:25.520 --> 00:21:30.720
+And what they say is gonna go on, well, you know,&nbsp;
+gravitational waves, they come from black holes,&nbsp;&nbsp;
+
+00:21:30.720 --> 00:21:36.560
+black holes are big. And so they, they're not well&nbsp;
+defined by Newtonian physics, right? But what if&nbsp;&nbsp;
+
+00:21:36.560 --> 00:21:41.080
+we assume that we only know Newtonian physics,&nbsp;
+right, which is, which is the equations that&nbsp;&nbsp;
+
+00:21:41.080 --> 00:21:46.280
+they have here, and we augment the Newtonian&nbsp;
+physics with, with these neural networks. To&nbsp;&nbsp;
+
+00:21:46.280 --> 00:21:51.240
+learn what the relativistic corrections would&nbsp;
+be, can we learn with relativistic corrections&nbsp;&nbsp;
+
+00:21:51.240 --> 00:21:59.240
+to meet the motion of two body, large objects&nbsp;
+directly from data, right, and what they show is&nbsp;&nbsp;
+
+00:21:59.240 --> 00:22:03.640
+just that from a small amount of data, right, so&nbsp;
+just this small amount from the time series here,&nbsp;&nbsp;
+
+00:22:03.640 --> 00:22:08.760
+they're able to learn how to augment the Newtonian&nbsp;
+mechanics with a correction. And that correction&nbsp;&nbsp;
+
+00:22:08.760 --> 00:22:15.360
+then adequately extrapolates for being able to&nbsp;
+predict the the motion the two body problem,&nbsp;&nbsp;
+
+00:22:15.360 --> 00:22:20.480
+it changes that from being ellipsoid, which is,&nbsp;
+you know, the the Newtonian solution to Alyssa G&nbsp;&nbsp;
+
+00:22:20.480 --> 00:22:25.960
+pattern. And so if you're interested, I can pull&nbsp;
+up the documentation example of doing this, you&nbsp;&nbsp;
+
+00:22:25.960 --> 00:22:30.760
+know, it's kind of at this point, it's just like&nbsp;
+a nice reproducible example that we use to teach&nbsp;&nbsp;
+
+00:22:30.760 --> 00:22:36.480
+students about how to do this, this this process,&nbsp;
+but, you know, it really shows the science of&nbsp;&nbsp;
+
+00:22:36.480 --> 00:22:40.880
+Machine Learning in Action. But I mean, there's&nbsp;
+a lot of examples that do this. So for example,&nbsp;&nbsp;
+
+00:22:40.880 --> 00:22:45.320
+here's a case with earthquake safe buildings, were&nbsp;
+the original model, if you look closely at your&nbsp;&nbsp;
+
+00:22:45.320 --> 00:22:51.240
+screen, you'll see these dotted lines, where you&nbsp;
+know, the original physical model, it could fit,&nbsp;&nbsp;
+
+00:22:51.240 --> 00:22:56.200
+but it wouldn't necessarily extrapolate well, but&nbsp;
+after doing the training, after doing the fitting,&nbsp;&nbsp;
+
+00:22:56.200 --> 00:22:59.600
+again, you know, the Extrude improves&nbsp;
+extrapolation performance. And then the&nbsp;&nbsp;
+
+00:22:59.600 --> 00:23:04.800
+interesting thing from that, though, is that not&nbsp;
+that is improving the extrapolation performance,&nbsp;&nbsp;
+
+00:23:04.800 --> 00:23:12.040
+but that the but what you can gain from this&nbsp;
+process is that it's told you how your original&nbsp;&nbsp;
+
+00:23:12.040 --> 00:23:18.200
+model is incorrect, which tells you the things&nbsp;
+that you did not know before that would be useful&nbsp;&nbsp;
+
+00:23:18.200 --> 00:23:22.280
+to know about in order to do better engineering.&nbsp;
+In this case, they wanted to engineer earthquake&nbsp;&nbsp;
+
+00:23:22.280 --> 00:23:27.200
+safe buildings. And so this told them what&nbsp;
+correction needs to be done to the model&nbsp;&nbsp;
+
+00:23:27.200 --> 00:23:33.160
+in order to then understand how to build a more&nbsp;
+earthquake safe building. Right? Again, you know,&nbsp;&nbsp;
+
+00:23:33.160 --> 00:23:37.680
+there's two things to this, there's, there's the&nbsp;
+extrapolation accuracy aspect, but also the fact&nbsp;&nbsp;
+
+00:23:37.680 --> 00:23:41.600
+that it's improving what you know, about the&nbsp;
+model that you're trying to build. And I think&nbsp;&nbsp;
+
+00:23:41.600 --> 00:23:45.560
+that that that second aspect is probably even&nbsp;
+more important, everyone likes to think about,&nbsp;&nbsp;
+
+00:23:45.560 --> 00:23:51.400
+you know, lying goes, you know, low low, low cost&nbsp;
+with the, with machine learning, but I think that,&nbsp;&nbsp;
+
+00:23:51.400 --> 00:23:55.160
+you know, improving the way that people build&nbsp;
+models, improving the speed at which people&nbsp;&nbsp;
+
+00:23:55.160 --> 00:24:01.080
+get accurate models, that is probably the more&nbsp;
+important aspect here. Now, I can go through&nbsp;&nbsp;
+
+00:24:01.080 --> 00:24:07.200
+like 50 billion more examples of where people have&nbsp;
+used UDS. But I've already done a talk directly on&nbsp;&nbsp;
+
+00:24:07.200 --> 00:24:12.880
+that. So if you want more more proof points on&nbsp;
+it, I'd say go check out this talk. On YouTube,&nbsp;&nbsp;
+
+00:24:12.880 --> 00:24:16.880
+it goes into a lot of interesting examples&nbsp;
+as well, I'm going to cut it here and say,&nbsp;&nbsp;
+
+00:24:16.880 --> 00:24:23.200
+you know, there's a lot of other examples that&nbsp;
+we can that we can show, but now going go so so&nbsp;&nbsp;
+
+00:24:23.200 --> 00:24:28.880
+knowing that that, you know what the general idea&nbsp;
+is, and how and the fact that you know, scientists&nbsp;&nbsp;
+
+00:24:28.880 --> 00:24:33.440
+and engineers are using this in practice, what&nbsp;
+I want to kind of go into more detail here in&nbsp;&nbsp;
+
+00:24:33.440 --> 00:24:38.720
+a mathematical way is, you know, what, what are&nbsp;
+the other things that you can do beyond the basics&nbsp;&nbsp;
+
+00:24:38.720 --> 00:24:44.960
+of it? Right, so I really was just showing the&nbsp;
+showing the basics, what are some things you know,&nbsp;&nbsp;
+
+00:24:44.960 --> 00:24:50.040
+that you can do to get creative with the UD&nbsp;
+formalism? Right? And I think that, you know,&nbsp;&nbsp;
+
+00:24:50.040 --> 00:24:55.960
+I really want to kind of show is that, you know,&nbsp;
+the formalism really allows for generally imposing&nbsp;&nbsp;
+
+00:24:55.960 --> 00:25:02.080
+prior known structure. So what do I mean by that?&nbsp;
+So it's So here's a case that comes from that same&nbsp;&nbsp;
+
+00:25:02.080 --> 00:25:06.400
+epidemic line of work that we were talking about&nbsp;
+where I said, you know, we have this continuum&nbsp;&nbsp;
+
+00:25:06.400 --> 00:25:11.480
+of models, right? So here's something that lives&nbsp;
+in this continuum of models where you might not&nbsp;&nbsp;
+
+00:25:11.480 --> 00:25:18.040
+know that much prior information. But you you, you&nbsp;
+know, but you can impose a lot of detail. So here,&nbsp;&nbsp;
+
+00:25:18.040 --> 00:25:23.080
+for example, let's say we wanted to model&nbsp;
+something like the SAR D case, right? So&nbsp;&nbsp;
+
+00:25:23.080 --> 00:25:27.680
+susceptible becomes infected, infected,&nbsp;
+because either recovers or dies, right?
+
+00:25:29.120 --> 00:25:35.040
+So so what you can do in this case is, you know,&nbsp;
+you can walk into a new situation as a modeler,&nbsp;&nbsp;
+
+00:25:35.040 --> 00:25:38.160
+you can very easily know, like, oh,&nbsp;
+people who are susceptible become&nbsp;&nbsp;
+
+00:25:38.160 --> 00:25:43.280
+infected, and infected with people who&nbsp;
+recover or they die. That's not a very&nbsp;&nbsp;
+
+00:25:43.280 --> 00:25:48.200
+strong assumption, right. But but it is it&nbsp;
+is, I mean, it's a graphical relationship,&nbsp;&nbsp;
+
+00:25:48.200 --> 00:25:53.640
+right? It's basically saying susceptible people&nbsp;
+do not recover without getting infected first,&nbsp;&nbsp;
+
+00:25:53.640 --> 00:26:00.480
+right? So can you encode that, that that graphical&nbsp;
+information into a machine learning structure,&nbsp;&nbsp;
+
+00:26:00.480 --> 00:26:05.800
+so that way that is prior known information,&nbsp;
+right? The UV formalism is very flexible,&nbsp;&nbsp;
+
+00:26:05.800 --> 00:26:11.560
+right? It's just you put universal function&nbsp;
+approximator is in differential equations in&nbsp;&nbsp;
+
+00:26:11.560 --> 00:26:16.880
+smart ways. So here, for example, is a way to do&nbsp;
+this, right? So you can have a neural network Si,&nbsp;&nbsp;
+
+00:26:16.880 --> 00:26:21.160
+right, you know, so we have three neural networks.&nbsp;
+So here's one function approximator. So we say&nbsp;&nbsp;
+
+00:26:21.160 --> 00:26:24.960
+there's some function, I don't know, where&nbsp;
+you subtract it here, and you add it here,&nbsp;&nbsp;
+
+00:26:24.960 --> 00:26:29.400
+there's another function, I don't know, which is&nbsp;
+you subtract it here, and you add it back here,&nbsp;&nbsp;
+
+00:26:29.400 --> 00:26:34.000
+then there's a third one, right? So there's three&nbsp;
+functions, I don't know. But these are the places&nbsp;&nbsp;
+
+00:26:34.000 --> 00:26:39.880
+where these three functions go. And by design,&nbsp;
+what happened, what needs to be true about this,&nbsp;&nbsp;
+
+00:26:39.880 --> 00:26:44.000
+then is, you know, well, again, there's a lot&nbsp;
+of properties that I've just imposed. Here,&nbsp;&nbsp;
+
+00:26:44.000 --> 00:26:48.720
+for example, the number of individuals who&nbsp;
+the certain number of susceptible individuals&nbsp;&nbsp;
+
+00:26:48.720 --> 00:26:54.400
+is always decreasing, you're going to have a peak&nbsp;
+and I right, there's a lot of properties about an&nbsp;&nbsp;
+
+00:26:54.400 --> 00:26:59.920
+epidemic that I've already imposed directly only&nbsp;
+from this information, there's, there's no prior&nbsp;&nbsp;
+
+00:26:59.920 --> 00:27:06.120
+equations really written down, just structure&nbsp;
+written down, right. And so what we're able to&nbsp;&nbsp;
+
+00:27:06.120 --> 00:27:10.800
+show from this is that you can then, you know,&nbsp;
+do this do the training of the neural networks,&nbsp;&nbsp;
+
+00:27:10.800 --> 00:27:16.000
+in this case, where you train the neural networks,&nbsp;
+and then you do the sparse identification of the&nbsp;&nbsp;
+
+00:27:16.000 --> 00:27:20.960
+dynamics, and you're able to then recover what the&nbsp;
+what the exact equations were right, so we can,&nbsp;&nbsp;
+
+00:27:20.960 --> 00:27:25.600
+you know, simulate data, we generate the data,&nbsp;
+we then fit back to it, and then we see that we&nbsp;&nbsp;
+
+00:27:25.600 --> 00:27:32.080
+can directly predict what these equations are.&nbsp;
+But importantly, what we can show is that you&nbsp;&nbsp;
+
+00:27:32.080 --> 00:27:39.320
+can do this data, you can accurately recover&nbsp;
+the equations using this form, with less data&nbsp;&nbsp;
+
+00:27:39.320 --> 00:27:45.000
+points and with less and with less data points&nbsp;
+than what would be required and directly doing&nbsp;&nbsp;
+
+00:27:45.000 --> 00:27:50.720
+something like you know, the direct Cindy like the&nbsp;
+the Steven Brunton sparse identification approach,&nbsp;&nbsp;
+
+00:27:50.720 --> 00:27:55.480
+right. So because, you know, why, why is that&nbsp;
+the case? Well, because we've imposed prior&nbsp;&nbsp;
+
+00:27:55.480 --> 00:28:01.280
+information here. And so we've really brought down&nbsp;
+the the structure that we've need to learn. And so&nbsp;&nbsp;
+
+00:28:01.280 --> 00:28:06.360
+from the same amount of data, or from less data,&nbsp;
+we're then able to recover the same equations,&nbsp;&nbsp;
+
+00:28:06.360 --> 00:28:11.480
+right. And so this starts to show you that you&nbsp;
+can start to get very crafty with the types of&nbsp;&nbsp;
+
+00:28:11.480 --> 00:28:15.920
+ways that the that you're putting together&nbsp;
+function, approximate errs, and using,&nbsp;&nbsp;
+
+00:28:15.920 --> 00:28:22.640
+you know, any, any drop of prior information&nbsp;
+that you have. So another example that came up,&nbsp;&nbsp;
+
+00:28:22.640 --> 00:28:27.440
+which recently was actually published into Journal&nbsp;
+of Chemical Engineering, if I remember correctly,&nbsp;&nbsp;
+
+00:28:28.800 --> 00:28:34.800
+is a case where we have the this chemical reactor,&nbsp;
+and we're running a chemical component over it. So&nbsp;&nbsp;
+
+00:28:34.800 --> 00:28:39.320
+there is one chemical that is flowing with a with&nbsp;
+an advection diffusion process. And then there's&nbsp;&nbsp;
+
+00:28:39.320 --> 00:28:45.040
+another chemical which is nonspatial. So it's just&nbsp;
+a, just an odd process, and they're interacting,&nbsp;&nbsp;
+
+00:28:45.040 --> 00:28:49.560
+right? We don't know what this interaction is.&nbsp;
+So what we do is we model that interaction within&nbsp;&nbsp;
+
+00:28:49.560 --> 00:28:54.240
+within with a neural network. But we know a lot&nbsp;
+about the rest of the process. It's a reaction&nbsp;&nbsp;
+
+00:28:54.240 --> 00:28:59.880
+diffusion, partial differential equation coupling,&nbsp;
+an OD E with with a PDE term, right. And now,&nbsp;&nbsp;
+
+00:28:59.880 --> 00:29:06.520
+one of the interesting things about this formalism&nbsp;
+is but by design now, right, I only have to learn&nbsp;&nbsp;
+
+00:29:06.520 --> 00:29:11.560
+an R two to r two function in order to actually&nbsp;
+learn everything I did not know about this model,&nbsp;&nbsp;
+
+00:29:11.560 --> 00:29:16.000
+right? So I have spatial temporal data, like, you&nbsp;
+know, if you think about it, in the sense, I have&nbsp;&nbsp;
+
+00:29:16.000 --> 00:29:23.560
+spatial temporal data, and from spatial temporal&nbsp;
+data, you know, you know, you have n by n times&nbsp;&nbsp;
+
+00:29:23.560 --> 00:29:29.400
+t time points, but at every single time point,&nbsp;
+the same exact chemical reaction equation should&nbsp;&nbsp;
+
+00:29:29.400 --> 00:29:33.840
+be occurring. And so what I want to learn is I&nbsp;
+just want to learn with a chemical reaction is,&nbsp;&nbsp;
+
+00:29:33.840 --> 00:29:38.480
+and so even with a small amount of data,&nbsp;
+so even with a small amount of time series,&nbsp;&nbsp;
+
+00:29:38.480 --> 00:29:42.920
+that is still enough information to be able to&nbsp;
+recover what the chemical reaction term is. And&nbsp;&nbsp;
+
+00:29:42.920 --> 00:29:47.360
+once I've learned what the chemical reaction&nbsp;
+term is, I can extrapolate into the future&nbsp;&nbsp;
+
+00:29:47.360 --> 00:29:52.920
+and get things correct, because the important&nbsp;
+property was whether I had learned the rest of&nbsp;&nbsp;
+
+00:29:52.920 --> 00:29:57.440
+the equation in order to accurately model the&nbsp;
+whole the whole process, right? So you know,&nbsp;&nbsp;
+
+00:29:57.440 --> 00:30:02.600
+thinking about it like this. If you think about&nbsp;
+as well as a time series problem, right? If you&nbsp;&nbsp;
+
+00:30:02.600 --> 00:30:06.800
+just say, learn from this time series, How to&nbsp;
+predict in the future, machine learning is never&nbsp;&nbsp;
+
+00:30:06.800 --> 00:30:11.360
+going to learn what you know how to how to make&nbsp;
+that the, the red dots go through the red line,&nbsp;&nbsp;
+
+00:30:11.360 --> 00:30:15.920
+right, you know, or the red line go through the&nbsp;
+red dots, it's just doesn't the blue, you know,&nbsp;&nbsp;
+
+00:30:15.920 --> 00:30:20.800
+the training data that we give it is insufficient&nbsp;
+for being able to do that, right. And it's, it's&nbsp;&nbsp;
+
+00:30:20.800 --> 00:30:24.680
+just not going to, you know, you could look at the&nbsp;
+picture, and you can say, okay, you know, machine&nbsp;&nbsp;
+
+00:30:24.680 --> 00:30:29.440
+learning cannot learn things that it's never seen&nbsp;
+before, right. But there is something that hasn't&nbsp;&nbsp;
+
+00:30:29.440 --> 00:30:35.680
+been seen before, is this prior information of&nbsp;
+well, we have all this, this reaction diffusion&nbsp;&nbsp;
+
+00:30:35.680 --> 00:30:41.520
+equations, and everything written down. And so by,&nbsp;
+by virtue of writing down the partial differential&nbsp;&nbsp;
+
+00:30:41.520 --> 00:30:48.040
+equation form, we've actually transformed a&nbsp;
+problem of learning a spatial temporal process,&nbsp;&nbsp;
+
+00:30:48.040 --> 00:30:51.800
+right? Something that is, you know, learnings,&nbsp;
+learning how to output things that are, you know,&nbsp;&nbsp;
+
+00:30:51.800 --> 00:30:58.440
+N by N, to learning just an R two to r two&nbsp;
+function that is a part of a spatial temporal&nbsp;&nbsp;
+
+00:30:58.440 --> 00:31:03.200
+process. And we can then, you know, under the&nbsp;
+assumption under many assumptions about, you know,&nbsp;&nbsp;
+
+00:31:03.200 --> 00:31:07.920
+the fact that this reaction is independent, you&nbsp;
+know, the reaction constants are independent of&nbsp;&nbsp;
+
+00:31:07.920 --> 00:31:13.360
+the time and location where it takes place, right,&nbsp;
+that is, quote, encoded by writing it down as a&nbsp;&nbsp;
+
+00:31:13.360 --> 00:31:18.080
+semi linear partial differential equation. So by&nbsp;
+writing it into this form, we've encoded a lot&nbsp;&nbsp;
+
+00:31:18.080 --> 00:31:23.000
+of prior knowledge. And it has made it a fairly&nbsp;
+easy learning problem that then makes it so that&nbsp;&nbsp;
+
+00:31:23.000 --> 00:31:28.960
+way from small amounts of data we can extrapolate.&nbsp;
+And so, you know, you might ask the question over,&nbsp;&nbsp;
+
+00:31:28.960 --> 00:31:33.840
+you know, well, what happens in this case of&nbsp;
+when we do the sparse identification, this one&nbsp;&nbsp;
+
+00:31:33.840 --> 00:31:38.120
+was actually a fairly interesting one for doing&nbsp;
+this identification. Because, you know, after&nbsp;&nbsp;
+
+00:31:38.120 --> 00:31:43.320
+we do this process, we we fit the neural networks,&nbsp;
+the student went in and did the the identification&nbsp;&nbsp;
+
+00:31:43.320 --> 00:31:47.840
+process, and saw that there are some very large&nbsp;
+cases where the equations were not exactly the&nbsp;&nbsp;
+
+00:31:47.840 --> 00:31:53.480
+same. As you know, in a will when you do this, in&nbsp;
+the case of generated data, you generate the data&nbsp;&nbsp;
+
+00:31:53.480 --> 00:31:58.520
+with with a known equation for these reaction&nbsp;
+terms. And then you go and you say, I'm going&nbsp;&nbsp;
+
+00:31:58.520 --> 00:32:02.720
+to run this process, I'm going to find out what&nbsp;
+equations I get. And you see that the equations&nbsp;&nbsp;
+
+00:32:02.720 --> 00:32:08.520
+are different, and student was not happy that it&nbsp;
+turned out like that. But then we dug into it,&nbsp;&nbsp;
+
+00:32:08.520 --> 00:32:13.840
+right, we dug into a bit, what we noticed was that&nbsp;
+if you actually do a second order Taylor series&nbsp;&nbsp;
+
+00:32:13.840 --> 00:32:19.360
+expansion of the of the different terms, what you&nbsp;
+what you see is that these equations are lining&nbsp;&nbsp;
+
+00:32:19.360 --> 00:32:24.960
+up, right? They equate, so it's what this really&nbsp;
+means, then, is that the sparse identification&nbsp;&nbsp;
+
+00:32:24.960 --> 00:32:30.800
+is not necessarily able to tell you exactly the&nbsp;
+equations that generated your data, right? Because&nbsp;&nbsp;
+
+00:32:30.800 --> 00:32:36.520
+it's kind of ill posed, right? It's not that&nbsp;
+you need infinite data to be able to really,&nbsp;&nbsp;
+
+00:32:36.520 --> 00:32:43.240
+fully identify the function. But what it can show&nbsp;
+you is, it can show you a simple function, which&nbsp;&nbsp;
+
+00:32:43.240 --> 00:32:48.880
+is locally able to match the right properties of&nbsp;
+the true function. Right? So here, when we do the&nbsp;&nbsp;
+
+00:32:48.880 --> 00:32:54.680
+second order Taylor series expansion, you know&nbsp;
+that the two functions are pretty much lined up&nbsp;&nbsp;
+
+00:32:54.680 --> 00:33:00.000
+directly with each other, right? And so there's&nbsp;
+a lot of properties you can get them, right. So&nbsp;&nbsp;
+
+00:33:00.000 --> 00:33:05.320
+from the Learn kinetics, you know, for someone&nbsp;
+who's who's looking at reaction equations, right,&nbsp;&nbsp;
+
+00:33:05.320 --> 00:33:11.120
+you know, you can say, well, if I have a Q, if I&nbsp;
+have a Q squared term, this is a self interaction&nbsp;&nbsp;
+
+00:33:11.120 --> 00:33:16.720
+kind of reaction kind of term. Whereas a QQ star&nbsp;
+term, well, this is this is a interaction between&nbsp;&nbsp;
+
+00:33:16.720 --> 00:33:21.960
+them. In some of these cases, the chemicals were&nbsp;
+non interacting, right. And so so there's, you&nbsp;&nbsp;
+
+00:33:21.960 --> 00:33:27.240
+know, there's a lot of different input information&nbsp;
+that you can pull between these these pieces, just&nbsp;&nbsp;
+
+00:33:27.240 --> 00:33:33.240
+by learning the equations, even if they're not&nbsp;
+exactly the same form that you started with, it is&nbsp;&nbsp;
+
+00:33:33.240 --> 00:33:39.800
+a form that is representable, interpretable, and&nbsp;
+usable for doing the scientific process. Right.
+
+00:33:40.800 --> 00:33:46.720
+And so, I do like to highlight that this was a,&nbsp;
+this is a kind of nice case where we were using&nbsp;&nbsp;
+
+00:33:46.720 --> 00:33:51.720
+scientific machine learning in an industrial&nbsp;
+setting. So we were working with a Formula One&nbsp;&nbsp;
+
+00:33:51.720 --> 00:33:57.800
+team, this was the Williams Formula One team,&nbsp;
+were originally they used a Gaussian process&nbsp;&nbsp;
+
+00:33:57.800 --> 00:34:02.960
+model that you know, so this is the original&nbsp;
+Gaussian process model for being able to model&nbsp;&nbsp;
+
+00:34:02.960 --> 00:34:08.520
+their speed over ground sensors. So the speed over&nbsp;
+ground sensors as they drove around a test track,&nbsp;&nbsp;
+
+00:34:08.520 --> 00:34:13.080
+they would get this this data that would basically&nbsp;
+tell you the orientation of the car, but that&nbsp;&nbsp;
+
+00:34:13.080 --> 00:34:19.040
+needs to be calibrated using the GPS data from the&nbsp;
+from the from the test track, right. And so we can&nbsp;&nbsp;
+
+00:34:19.040 --> 00:34:25.680
+see here is the calibrated prediction of the car's&nbsp;
+orientation from that speed over ground sensor.&nbsp;&nbsp;
+
+00:34:25.680 --> 00:34:29.960
+And the original model did not take into account a&nbsp;
+lot of the physics of the car, right? It basically&nbsp;&nbsp;
+
+00:34:29.960 --> 00:34:35.680
+just say, Here's my sensor data and here then is&nbsp;
+the prediction of what their orientation would be.&nbsp;&nbsp;
+
+00:34:35.680 --> 00:34:41.520
+And you can see has a lot of these effects which&nbsp;
+is the similar to the hallucinations that chatty&nbsp;&nbsp;
+
+00:34:41.520 --> 00:34:46.840
+PT does, which is effectively you know, it's&nbsp;
+giving you things that are non physical right, the&nbsp;&nbsp;
+
+00:34:46.840 --> 00:34:52.520
+car cannot is not actually moving like this, right&nbsp;
+like cars true orientation is a color underneath.&nbsp;&nbsp;
+
+00:34:52.520 --> 00:34:57.040
+And you can see that a lot of you know, a standard&nbsp;
+machine learning model does not necessarily need&nbsp;&nbsp;
+
+00:34:57.040 --> 00:35:02.560
+to satisfy physics, right? It does not necessarily&nbsp;
+You need to satisfy the fact that your car cannot&nbsp;&nbsp;
+
+00:35:02.560 --> 00:35:07.680
+just bounce around infinitely fast, right? But&nbsp;
+what we were able to do is we were able to put a&nbsp;&nbsp;
+
+00:35:07.680 --> 00:35:13.200
+very simple model of the car's vehicle dynamics,&nbsp;
+and say, Well, you know, what we don't actually&nbsp;&nbsp;
+
+00:35:13.200 --> 00:35:19.080
+know in this in this process is the relationship&nbsp;
+between the sensor to the vehicle dynamics. And&nbsp;&nbsp;
+
+00:35:19.080 --> 00:35:24.640
+so by putting it into that form, a form in terms&nbsp;
+of differential equations, which naturally would&nbsp;&nbsp;
+
+00:35:24.640 --> 00:35:29.920
+be integrated, that naturally then smooth the&nbsp;
+process and incorporated prior knowledge about,&nbsp;&nbsp;
+
+00:35:29.920 --> 00:35:35.080
+you know, the relationship between angular&nbsp;
+momentum and velocity and these, these features,&nbsp;&nbsp;
+
+00:35:35.080 --> 00:35:38.960
+and that made it fairly easy to be able to get a&nbsp;
+much more accurate prediction from the same amount&nbsp;&nbsp;
+
+00:35:38.960 --> 00:35:46.640
+of data. So so I you know, one other thing that&nbsp;
+kind of been highlight here is that, you know,&nbsp;&nbsp;
+
+00:35:46.640 --> 00:35:52.400
+so what is this ut formalism? Well, this ut&nbsp;
+formalism, another nice piece about is that&nbsp;&nbsp;
+
+00:35:52.400 --> 00:35:58.320
+you can rephrase a lot of other Simon methods&nbsp;
+as UD ease, which makes it a very nice form a&nbsp;&nbsp;
+
+00:35:58.320 --> 00:36:04.080
+as someone who writes computational software, to&nbsp;
+kind of formalize a round. So here, for example,&nbsp;&nbsp;
+
+00:36:04.080 --> 00:36:12.400
+is a nice example this, so there is work done by&nbsp;
+Han Jensen, and one in a which is methods for very&nbsp;&nbsp;
+
+00:36:12.400 --> 00:36:18.080
+high dimensional, semi linear parabolic partial&nbsp;
+differential equations. And they had this method&nbsp;&nbsp;
+
+00:36:18.080 --> 00:36:23.680
+where they talked about how you can, you know,&nbsp;
+solve these PDE is by using neural networks,&nbsp;&nbsp;
+
+00:36:23.680 --> 00:36:30.400
+embedded within backwards stochastic differential&nbsp;
+equations. I'll skip over the exact details of&nbsp;&nbsp;
+
+00:36:30.400 --> 00:36:34.520
+of this whole process. But essentially, it's&nbsp;
+this is one of the scientific machine learning&nbsp;&nbsp;
+
+00:36:34.520 --> 00:36:39.920
+methods for solving a PDE using neural networks&nbsp;
+in a specific way. And they came up with this,&nbsp;&nbsp;
+
+00:36:39.920 --> 00:36:43.840
+this formalism where they'd say, you know,&nbsp;
+you build this, this recurrent neural network,&nbsp;&nbsp;
+
+00:36:43.840 --> 00:36:49.440
+you train it with respect to a given with respect&nbsp;
+to a given cost function, and then you'll have&nbsp;&nbsp;
+
+00:36:49.440 --> 00:36:56.960
+something that will be predicting your, your,&nbsp;
+your PDE solution, right. Now, the reason why&nbsp;&nbsp;
+
+00:36:56.960 --> 00:37:02.000
+I wanted to skip over it is because if we start&nbsp;
+to talk about things and work with things in this&nbsp;&nbsp;
+
+00:37:02.000 --> 00:37:07.520
+Ed formalism, it there is actually a fairly nice&nbsp;
+way of writing down what their algorithm is their,&nbsp;&nbsp;
+
+00:37:07.520 --> 00:37:14.360
+their algorithm is a universal differential&nbsp;
+equation, which is written as this Ste where&nbsp;&nbsp;
+
+00:37:14.360 --> 00:37:19.200
+there is this function that it goes right here&nbsp;
+that is unknown. And when you learn this neural&nbsp;&nbsp;
+
+00:37:19.200 --> 00:37:24.840
+network and a neural network that predicts the&nbsp;
+initial condition, you satisfy a loss function&nbsp;&nbsp;
+
+00:37:24.840 --> 00:37:29.480
+on the initial condition. So you solve this&nbsp;
+stochastic differential equation in reverse,&nbsp;&nbsp;
+
+00:37:29.480 --> 00:37:34.920
+and you learn how to predict the that initial&nbsp;
+point, then you have the neural networks that give&nbsp;&nbsp;
+
+00:37:34.920 --> 00:37:40.120
+you the solution to the PDE. Right. So you can you&nbsp;
+can go and you can show them and not learn a lot&nbsp;&nbsp;
+
+00:37:40.120 --> 00:37:44.640
+of different cases that a lot of ways that people&nbsp;
+have been looking at, you know, using neural&nbsp;&nbsp;
+
+00:37:44.640 --> 00:37:52.640
+networks and mixing it with scientific practice,&nbsp;
+the general formalism of it is, is as a universal&nbsp;&nbsp;
+
+00:37:52.640 --> 00:37:57.960
+differential equation, right? So this version of&nbsp;
+saying, Oh, I have this recurrent neural network,&nbsp;&nbsp;
+
+00:37:57.960 --> 00:38:03.600
+this recurrent neural network that was written&nbsp;
+down is simply the Euler Marijana discretization&nbsp;&nbsp;
+
+00:38:03.600 --> 00:38:08.400
+of this stochastic differential equation,&nbsp;
+right? And so if you want to then, you know,&nbsp;&nbsp;
+
+00:38:08.400 --> 00:38:12.920
+generalize their work. Well, one of the ways you&nbsp;
+can generalize the work is just discretize, this&nbsp;&nbsp;
+
+00:38:12.920 --> 00:38:17.960
+Ste using, you know, adaptive methods or higher&nbsp;
+order methods, or, you know, all these different&nbsp;&nbsp;
+
+00:38:17.960 --> 00:38:23.960
+types of approaches, right, so, understanding what&nbsp;
+the continuous object that is giving us, you know,&nbsp;&nbsp;
+
+00:38:23.960 --> 00:38:29.120
+the, when you do this in the UD formalism, you&nbsp;
+can write down the continuous object for which&nbsp;&nbsp;
+
+00:38:29.120 --> 00:38:35.040
+the discretizations give you these Rez nets and&nbsp;
+RNNs and things that are then used in a lot of&nbsp;&nbsp;
+
+00:38:35.040 --> 00:38:41.440
+scientific cases. But you can then start to see&nbsp;
+that those are special cases of a more general&nbsp;&nbsp;
+
+00:38:41.440 --> 00:38:46.320
+object that you can then you know, do a lot with&nbsp;
+a lot of nice mathematics more and more simply&nbsp;&nbsp;
+
+00:38:46.320 --> 00:38:51.160
+on. And so we've been building up packages&nbsp;
+for doing a lot of these different types of&nbsp;&nbsp;
+
+00:38:51.160 --> 00:38:55.160
+scientific and machine learning techniques,&nbsp;
+which really did then just uses everything,&nbsp;&nbsp;
+
+00:38:55.160 --> 00:39:01.320
+you know, everything in the UD formalism. And so,&nbsp;
+you know, the core of the software is do UTS well,&nbsp;&nbsp;
+
+00:39:01.320 --> 00:39:07.280
+and then all these other cases are just well,&nbsp;
+this is the, you know, this is this od E with&nbsp;&nbsp;
+
+00:39:07.280 --> 00:39:12.640
+this discretization, etc. And so it makes it&nbsp;
+very easy for us to be able to repurpose the same&nbsp;&nbsp;
+
+00:39:12.640 --> 00:39:17.840
+underlying training architecture to many different&nbsp;
+problems. I think that that's just one thing to&nbsp;&nbsp;
+
+00:39:17.840 --> 00:39:22.560
+highlight as to you know, we think about this Ed&nbsp;
+formalism, one as a way to impose prior knowledge,&nbsp;&nbsp;
+
+00:39:22.560 --> 00:39:27.840
+but secondly, as a computational tool,&nbsp;
+similar to like an OD e solver or a,&nbsp;&nbsp;
+
+00:39:27.840 --> 00:39:32.000
+you know, Newton's method, right? It's, it's a&nbsp;
+way it's a way to be able to turn the scientific&nbsp;&nbsp;
+
+00:39:32.000 --> 00:39:37.560
+machine learning into a computational tool that&nbsp;
+is then repeatable to a lot of other applications.
+
+00:39:38.400 --> 00:39:42.000
+Now, I want to get back to the&nbsp;
+story of differentiable simulation,&nbsp;&nbsp;
+
+00:39:42.000 --> 00:39:46.360
+right? That's where I started with and, and so&nbsp;
+I haven't talked about different differentiating&nbsp;&nbsp;
+
+00:39:46.360 --> 00:39:51.680
+simulations at all yet. And so why does this&nbsp;
+require differentiating simulator? And? Well,&nbsp;&nbsp;
+
+00:39:51.680 --> 00:39:55.560
+the thing is, I haven't told you anything about&nbsp;
+how I train these neural networks yet, right. So&nbsp;&nbsp;
+
+00:39:55.560 --> 00:39:59.440
+how do we actually train a neural network in&nbsp;
+one of these cases? Let me let me show you an&nbsp;&nbsp;
+
+00:39:59.440 --> 00:40:05.360
+example of This is an example. So here is a case&nbsp;
+we're looking at surrogates of climate models,&nbsp;&nbsp;
+
+00:40:05.360 --> 00:40:10.560
+right? So this is a three dimensional Boston&nbsp;
+s approximated NaVi stokes equation. And what&nbsp;&nbsp;
+
+00:40:10.560 --> 00:40:16.080
+we want to do is we want to learn from the three&nbsp;
+dimensional PDE, how to approximate its dynamics&nbsp;&nbsp;
+
+00:40:16.080 --> 00:40:21.880
+in the z direction, right, just this just the&nbsp;
+height column, we just want to turn you know,&nbsp;&nbsp;
+
+00:40:21.880 --> 00:40:28.040
+blocks of ocean into just one dimensional PDS.&nbsp;
+Now, you cannot do that exactly, because well,&nbsp;&nbsp;
+
+00:40:28.040 --> 00:40:32.280
+you know, now obvious Stokes has curl involved,&nbsp;
+you cannot represent curl in one dimension.&nbsp;&nbsp;
+
+00:40:32.280 --> 00:40:37.160
+But what you can do is you can, you know,&nbsp;
+approximate it by, you can take the average,&nbsp;&nbsp;
+
+00:40:37.800 --> 00:40:44.120
+if you take the original Boston SC equations, you&nbsp;
+take an integral average along the slices here,&nbsp;&nbsp;
+
+00:40:44.120 --> 00:40:48.680
+you can get an approximating PDE. But&nbsp;
+that approximately PDE is missing a term,&nbsp;&nbsp;
+
+00:40:48.680 --> 00:40:53.360
+which then requires you have another PDE, which&nbsp;
+has another PDE, etc. So, this is one of these&nbsp;&nbsp;
+
+00:40:53.360 --> 00:40:58.760
+closer relationships that I'm sure a lot of people&nbsp;
+are well aware of. And, but instead of saying,&nbsp;&nbsp;
+
+00:40:58.760 --> 00:41:03.640
+you know, oh, here's a term that I need to compute&nbsp;
+from another PDE, which is missing a term that's&nbsp;&nbsp;
+
+00:41:03.640 --> 00:41:08.360
+computed from another PDE, what I do is I just&nbsp;
+scrap all the extra terms, and I just say, here's&nbsp;&nbsp;
+
+00:41:08.360 --> 00:41:13.840
+a term that would be computed somewhere else.&nbsp;
+But let me learn what that what that term is,&nbsp;&nbsp;
+
+00:41:13.840 --> 00:41:17.920
+right? So if I did not have the neural network,&nbsp;
+this is called the standard conductive adjustment&nbsp;&nbsp;
+
+00:41:17.920 --> 00:41:24.400
+parameterization to the ocean model. But now what&nbsp;
+I'm doing is I'm saying, well, the convective&nbsp;&nbsp;
+
+00:41:24.400 --> 00:41:29.600
+adjustment equation is missing extra terms,&nbsp;
+let me capture that with with a neural network,&nbsp;&nbsp;
+
+00:41:29.600 --> 00:41:34.480
+let me capture the closure terms with a neural&nbsp;
+network, right? So this is just the setup for&nbsp;&nbsp;
+
+00:41:34.480 --> 00:41:40.000
+for my test case here. And now how do you actually&nbsp;
+train this neural network? Right? Well, you can go&nbsp;&nbsp;
+
+00:41:40.000 --> 00:41:45.560
+back to your data and you can say, well, here&nbsp;
+I have data that you know, I get the you know,&nbsp;&nbsp;
+
+00:41:45.560 --> 00:41:49.960
+average temperatures, I can take the slice, you&nbsp;
+know, the the the green slice, the red slice,&nbsp;&nbsp;
+
+00:41:49.960 --> 00:41:55.880
+I can take slices on the z axis, to be able to&nbsp;
+know what this average temperature capital T is, I&nbsp;&nbsp;
+
+00:41:55.880 --> 00:42:03.040
+can do DD D, T, d t, by taking finite differences&nbsp;
+between my data points, right? I can dz,&nbsp;&nbsp;
+
+00:42:03.040 --> 00:42:09.600
+dy dz, I can calculate this operator by finding&nbsp;
+differences. So, you can you can go to your data,&nbsp;&nbsp;
+
+00:42:09.600 --> 00:42:13.960
+and you can do all this differencing. And if&nbsp;
+you do all that difference, and you calculate,&nbsp;&nbsp;
+
+00:42:13.960 --> 00:42:20.320
+you know, what is delta t delta t, and&nbsp;
+what is the right hand side actually,&nbsp;&nbsp;
+
+00:42:20.320 --> 00:42:25.280
+and then the neural network needs to be the&nbsp;
+residual between what the data is giving you,&nbsp;&nbsp;
+
+00:42:25.280 --> 00:42:28.960
+and what the rest of this calculation would have&nbsp;
+would have given you without the neural network,&nbsp;&nbsp;
+
+00:42:28.960 --> 00:42:34.360
+right. So, so, you know, what I'm what I'm saying&nbsp;
+here is that, you know, you can directly go to&nbsp;&nbsp;
+
+00:42:34.360 --> 00:42:39.960
+your data, apply all the derivative operators,&nbsp;
+and then learn and build a data set that is then&nbsp;&nbsp;
+
+00:42:39.960 --> 00:42:44.560
+you know, the neural network should take in this&nbsp;
+value in it should spit up this value as as the&nbsp;&nbsp;
+
+00:42:44.560 --> 00:42:49.320
+residual right, you build up that data set you put&nbsp;
+into pytorch, or TensorFlow, you just train your&nbsp;&nbsp;
+
+00:42:49.320 --> 00:42:54.080
+neural network. And then after you've trained the&nbsp;
+neural network, you stick it into your simulation&nbsp;&nbsp;
+
+00:42:54.080 --> 00:42:59.080
+to correct your simulation. And then you run it,&nbsp;
+right. And so what we did, we did this process,&nbsp;&nbsp;
+
+00:42:59.080 --> 00:43:04.640
+and we see that this, this did not give us good&nbsp;
+results as any of the other things that we've done&nbsp;&nbsp;
+
+00:43:04.640 --> 00:43:10.480
+with scientific machine learning so far, right? In&nbsp;
+fact, it has a very specific behavior to it. So as&nbsp;&nbsp;
+
+00:43:10.480 --> 00:43:16.040
+you run the simulation, more and more, you tend to&nbsp;
+get a drift that is accruing more and more air as&nbsp;&nbsp;
+
+00:43:16.040 --> 00:43:21.720
+the time goes on. So why would this be the case?&nbsp;
+Well, one way to understand what's going on here&nbsp;&nbsp;
+
+00:43:21.720 --> 00:43:26.920
+is that what we've done is we've came up with a&nbsp;
+process for this neural network must be, you know,&nbsp;&nbsp;
+
+00:43:26.920 --> 00:43:31.760
+my derivative is incorrect. So this neural&nbsp;
+network must correct my derivative or control&nbsp;&nbsp;
+
+00:43:31.760 --> 00:43:37.000
+my derivative. Now, if you're a controls engineer,&nbsp;
+if you hear that term, that, you know, we're only&nbsp;&nbsp;
+
+00:43:37.000 --> 00:43:41.440
+applying control to a neural network control&nbsp;
+to our derivative, and then we are getting a&nbsp;&nbsp;
+
+00:43:41.440 --> 00:43:46.480
+drift term, it should be immediately apparent that&nbsp;
+one of the things that we're missing is something&nbsp;&nbsp;
+
+00:43:46.480 --> 00:43:51.800
+like an integral term that pulls us that makes&nbsp;
+sure that we don't have this drift right. Now&nbsp;&nbsp;
+
+00:43:51.800 --> 00:43:57.120
+another way of thinking about this is the process&nbsp;
+of managing your data set to be able to get a data&nbsp;&nbsp;
+
+00:43:57.120 --> 00:44:02.480
+set to train the neural network has nothing to do&nbsp;
+with the simulation process. Yet, the simulation&nbsp;&nbsp;
+
+00:44:02.480 --> 00:44:08.640
+process itself is imposing errors on the process.&nbsp;
+And so if you build your loss function and train&nbsp;&nbsp;
+
+00:44:08.640 --> 00:44:13.480
+your neural neural network, and then stick into&nbsp;
+your simulator, you're not accounting for all of&nbsp;&nbsp;
+
+00:44:13.480 --> 00:44:19.440
+the properties that your simulation process will&nbsp;
+also impose. And so therefore, you're you know,&nbsp;&nbsp;
+
+00:44:19.440 --> 00:44:23.960
+you're training your neural network without all of&nbsp;
+the information that it needed to be the correct&nbsp;&nbsp;
+
+00:44:23.960 --> 00:44:29.640
+the correct correction, right. Either way you&nbsp;
+think about it, you end up in the same point,&nbsp;&nbsp;
+
+00:44:29.640 --> 00:44:35.480
+where the right thing to do is instead of training&nbsp;
+on the derivative data directly, what you want to&nbsp;&nbsp;
+
+00:44:35.480 --> 00:44:40.600
+do is you want to, what you want to do is you want&nbsp;
+to directly use the temperature data, right, this&nbsp;&nbsp;
+
+00:44:40.600 --> 00:44:46.040
+average temperature data, write a loss function&nbsp;
+down, where you solve your model with the neural&nbsp;&nbsp;
+
+00:44:46.040 --> 00:44:51.240
+network embedded with it, and you check whether&nbsp;
+it's hitting the right temperature values, if not&nbsp;&nbsp;
+
+00:44:51.240 --> 00:44:56.240
+you gradient descent and you change your neural&nbsp;
+network until it is right. So instead of training&nbsp;&nbsp;
+
+00:44:56.240 --> 00:45:01.120
+on the derivative terms, you're training on the&nbsp;
+integral of the neural network in inside of your&nbsp;&nbsp;
+
+00:45:01.120 --> 00:45:06.120
+inside of your model, and what happens when you&nbsp;
+do this difference is you get about two to three&nbsp;&nbsp;
+
+00:45:06.120 --> 00:45:12.160
+orders of magnitude better performance and better&nbsp;
+fits. Right. And so you know why, you know, the&nbsp;&nbsp;
+
+00:45:12.160 --> 00:45:16.840
+other way to understand this, of course, is that,&nbsp;
+you know, your your simulation process is imposing&nbsp;&nbsp;
+
+00:45:16.840 --> 00:45:21.680
+its own errors is discretization errors and all&nbsp;
+this properties. And this training process is&nbsp;&nbsp;
+
+00:45:21.680 --> 00:45:27.120
+actually using the simulator as part of the&nbsp;
+loss function definition, and making sure&nbsp;&nbsp;
+
+00:45:27.120 --> 00:45:30.880
+that it's correcting for that. So that way, when&nbsp;
+you actually do the fit, you know, you're you're&nbsp;&nbsp;
+
+00:45:30.880 --> 00:45:36.560
+getting something that is correcting for for any&nbsp;
+of these other errors that you've imposed in that&nbsp;&nbsp;
+
+00:45:36.560 --> 00:45:42.720
+simulation process, right. Now. Either way, we've&nbsp;
+we've now ended up in this formalism, where we&nbsp;&nbsp;
+
+00:45:42.720 --> 00:45:47.400
+say, well, you know, fitting neural networks on&nbsp;
+data outside of simulators, and then sticking them&nbsp;&nbsp;
+
+00:45:47.400 --> 00:45:52.640
+into your simulators, right does not give us good&nbsp;
+results as fitting neural networks as part of the&nbsp;&nbsp;
+
+00:45:52.640 --> 00:45:57.600
+simulation process. But how do you fit things&nbsp;
+as part of the simulation process? Well, then&nbsp;&nbsp;
+
+00:45:57.600 --> 00:46:03.080
+that means you have to have your loss function, be&nbsp;
+something that solves it solves the PDE defined by&nbsp;&nbsp;
+
+00:46:03.080 --> 00:46:07.240
+the neural network as part of it. And we have&nbsp;
+to do the news, you have to take the whenever&nbsp;&nbsp;
+
+00:46:07.240 --> 00:46:12.400
+you want to take the gradient descent step, you&nbsp;
+have to take the derivative of the solution of the&nbsp;&nbsp;
+
+00:46:12.400 --> 00:46:18.280
+PDE with respect to the neural network parameters,&nbsp;
+and this is that differentiable simulation aspect.
+
+00:46:19.680 --> 00:46:24.160
+And so how do you actually do that process? Well,&nbsp;
+you know, we say, the agitate method, but the&nbsp;&nbsp;
+
+00:46:24.160 --> 00:46:30.440
+agitate method is actually a, there is a lot more&nbsp;
+than just one agitate method. And it's you know,&nbsp;&nbsp;
+
+00:46:30.440 --> 00:46:35.800
+so let me let me describe this in one way. So the&nbsp;
+best way to describe that there's more than one&nbsp;&nbsp;
+
+00:46:35.800 --> 00:46:41.240
+Agile method is to show you that you cannot just&nbsp;
+use one choice, you know, one popular choice for&nbsp;&nbsp;
+
+00:46:41.240 --> 00:46:45.960
+all problems, right. So here for example, the&nbsp;
+neural ordinary differential equations paper&nbsp;&nbsp;
+
+00:46:45.960 --> 00:46:52.520
+describes one Agilent method, which is if you&nbsp;
+have an OD e u prime equals f of u t, sorry that z&nbsp;&nbsp;
+
+00:46:52.520 --> 00:46:58.680
+should be you, you solve this od e going forwards.&nbsp;
+And it says if you solve this od E, then you can&nbsp;&nbsp;
+
+00:46:58.680 --> 00:47:04.000
+solve this od in reverse and and magically,&nbsp;
+it will give this this last term, or this term&nbsp;&nbsp;
+
+00:47:04.000 --> 00:47:08.280
+right here, it gives you the derivative of your&nbsp;
+neural network with respect to parameters, right.&nbsp;&nbsp;
+
+00:47:08.280 --> 00:47:13.640
+And it all it does is it relies on this numerical,&nbsp;
+or this mathematical property that if you solve an&nbsp;&nbsp;
+
+00:47:13.640 --> 00:47:19.160
+OD e going forwards, you know, u prime equals&nbsp;
+f going forwards, then solving u prime equals&nbsp;&nbsp;
+
+00:47:19.160 --> 00:47:25.840
+minus F in reverse should get puts you right back&nbsp;
+on in the same place, right. So that's a property&nbsp;&nbsp;
+
+00:47:25.840 --> 00:47:31.600
+that is true mathematically. But if you actually&nbsp;
+look at real equations, that doesn't necessarily&nbsp;&nbsp;
+
+00:47:31.600 --> 00:47:36.240
+numerically work out. So for example, here,&nbsp;
+here, if we look at the advection equation,&nbsp;&nbsp;
+
+00:47:36.240 --> 00:47:40.960
+if you discretize, the advection equation,&nbsp;
+remember, you have to choose a way to discretize,&nbsp;&nbsp;
+
+00:47:40.960 --> 00:47:46.400
+either using the forward point or the reverse&nbsp;
+point, you know, up winning or downloading. And&nbsp;&nbsp;
+
+00:47:46.400 --> 00:47:51.640
+so if you're, if your wave, you know, if this PDE&nbsp;
+is describing a wave that's moving to the right,&nbsp;&nbsp;
+
+00:47:51.640 --> 00:47:56.880
+you're either choosing you know that your next&nbsp;
+value to the right is using your information&nbsp;&nbsp;
+
+00:47:56.880 --> 00:48:01.760
+from the right or information from the left, it&nbsp;
+should be obvious that if you don't ever use the&nbsp;&nbsp;
+
+00:48:01.760 --> 00:48:06.440
+point from the left to update the point to the&nbsp;
+right, it cannot act, it does not actually have&nbsp;&nbsp;
+
+00:48:06.440 --> 00:48:13.760
+the actual resolution for it for this motion. And&nbsp;
+so one of these is unconditionally unstable. Now,&nbsp;&nbsp;
+
+00:48:13.760 --> 00:48:18.480
+the issue with using an adjunct method as&nbsp;
+described like this is it says, Well, if you&nbsp;&nbsp;
+
+00:48:18.480 --> 00:48:23.280
+solve the OD going forwards, now we're going to&nbsp;
+use as part of our agile and approach that if you&nbsp;&nbsp;
+
+00:48:23.280 --> 00:48:28.600
+solve the OD going backwards with u prime equals&nbsp;
+minus F, you will, you know, you use that as part&nbsp;&nbsp;
+
+00:48:28.600 --> 00:48:34.880
+of this this agile derivation. The issue with that&nbsp;
+when you apply it to something like this partial&nbsp;&nbsp;
+
+00:48:34.880 --> 00:48:41.320
+differential equation is that that is not true&nbsp;
+for this PDE right. So, if you solve this PDE,&nbsp;&nbsp;
+
+00:48:41.320 --> 00:48:46.920
+right, so we discretize this PDE into a set of&nbsp;
+ODS, say the up winning equation, you solve it&nbsp;&nbsp;
+
+00:48:46.920 --> 00:48:53.160
+going forwards, right? If you reverse the process,&nbsp;
+you know u prime equals minus F when you when you&nbsp;&nbsp;
+
+00:48:53.160 --> 00:48:58.600
+reverse this process, the reverse solve will&nbsp;
+be down lending and therefore, you know, you&nbsp;&nbsp;
+
+00:48:58.600 --> 00:49:03.640
+will have chosen the wrong in the wrong direction&nbsp;
+and get in unconditional instability. Right. And&nbsp;&nbsp;
+
+00:49:03.640 --> 00:49:07.920
+so what this really highlights then is that, you&nbsp;
+know, there isn't really just one Agile method,&nbsp;&nbsp;
+
+00:49:07.920 --> 00:49:13.200
+right? So this paper talks about, you know,&nbsp;
+here's a way to differentiate odd solutions,&nbsp;&nbsp;
+
+00:49:13.200 --> 00:49:18.120
+which has over one memory, it turns out&nbsp;
+that it has over one memory, but the downs,&nbsp;&nbsp;
+
+00:49:18.120 --> 00:49:23.360
+it has the downside that is it's not stiffly&nbsp;
+accurate. So it's not accurate on stiff equations,&nbsp;&nbsp;
+
+00:49:23.360 --> 00:49:28.040
+and it is you know, and it's not able to handle&nbsp;
+cases like the advection equation right. So,&nbsp;&nbsp;
+
+00:49:28.040 --> 00:49:33.000
+instead what you need to think about with this&nbsp;
+with with differentiating, you know, the these&nbsp;&nbsp;
+
+00:49:33.000 --> 00:49:38.320
+these different differential equation solvers and&nbsp;
+other equation solvers is that the Agilent methods&nbsp;&nbsp;
+
+00:49:38.320 --> 00:49:42.960
+in the way of calculating derivatives, they&nbsp;
+are approximating equations themselves and so,&nbsp;&nbsp;
+
+00:49:42.960 --> 00:49:48.040
+they have numerical properties and so, similar&nbsp;
+to how with an OD e solver, you have to choose,&nbsp;&nbsp;
+
+00:49:48.040 --> 00:49:53.120
+you know, do I have a non stiff or a stiff ote and&nbsp;
+yet these these methods have different properties,&nbsp;&nbsp;
+
+00:49:53.120 --> 00:49:58.800
+they have different scaling properties and&nbsp;
+different stability. Similarly, you have in when&nbsp;&nbsp;
+
+00:49:58.800 --> 00:50:03.480
+you start looking at the direct approaches, you&nbsp;
+count the ways to calculate derivatives of these&nbsp;&nbsp;
+
+00:50:03.480 --> 00:50:09.040
+differential equations, you also have changes&nbsp;
+in the in the properties where, you know, there&nbsp;&nbsp;
+
+00:50:09.040 --> 00:50:14.200
+are some methods which are stable, but require&nbsp;
+more memory, there's some methods are stable and&nbsp;&nbsp;
+
+00:50:14.200 --> 00:50:19.200
+require more compute. And there are methods that&nbsp;
+are unstable, but use less memory in less compute.&nbsp;&nbsp;
+
+00:50:19.200 --> 00:50:23.560
+And so you have this engineering trade off between&nbsp;
+the different ways and the different methods for&nbsp;&nbsp;
+
+00:50:23.560 --> 00:50:29.920
+for differentiating systems. And you don't just&nbsp;
+have a trade off in terms of stability, you also&nbsp;&nbsp;
+
+00:50:29.920 --> 00:50:34.040
+can show that some of these methods have scaling,&nbsp;
+which is cubic with respect to parameters,&nbsp;&nbsp;
+
+00:50:34.040 --> 00:50:38.840
+which can be fixed by doing all sorts of different&nbsp;
+tricks. So this is the paper stiff neural ordinary&nbsp;&nbsp;
+
+00:50:38.840 --> 00:50:43.280
+differential equations, that goes into a lot of&nbsp;
+detail on the differentiation process. But the&nbsp;&nbsp;
+
+00:50:43.280 --> 00:50:47.760
+key that I want to highlight there is that, you&nbsp;
+know, when you just say use the agitate method,&nbsp;&nbsp;
+
+00:50:47.760 --> 00:50:52.960
+you know, that's that's like saying, eat an&nbsp;
+apple, right? It's like, okay, a gala, or a,&nbsp;&nbsp;
+
+00:50:52.960 --> 00:50:58.040
+you know, Granny Smith or pink, pink lady Apple,&nbsp;
+right? It's, you know, there are many there,&nbsp;&nbsp;
+
+00:50:58.040 --> 00:51:02.120
+it's, it's, it's like saying, solve an OD&nbsp;
+E with an OD solver. There's a whole world&nbsp;&nbsp;
+
+00:51:02.120 --> 00:51:07.000
+of different methods there. And actually, each&nbsp;
+of these ways of doing the derivative process,&nbsp;&nbsp;
+
+00:51:07.000 --> 00:51:11.240
+it really imparts different numerical properties&nbsp;
+in different in different stability properties,&nbsp;&nbsp;
+
+00:51:11.240 --> 00:51:16.680
+and all these different things that come into&nbsp;
+play. So when actually doing the UD e formalism,&nbsp;&nbsp;
+
+00:51:16.680 --> 00:51:22.520
+the difficulty, and the interesting part is all in&nbsp;
+the part that I leave out of the talks, which is,&nbsp;&nbsp;
+
+00:51:22.520 --> 00:51:28.120
+you know, the, how do you do it stably, it's all&nbsp;
+in the mathematics of the derivative calculations.&nbsp;&nbsp;
+
+00:51:28.640 --> 00:51:34.800
+But the key then is that you can, you can do that&nbsp;
+UD approach on any kind of simulation process that&nbsp;&nbsp;
+
+00:51:34.800 --> 00:51:39.840
+you can differentiate. So this is what we've&nbsp;
+been building out as the Julius IML ecosystem,&nbsp;&nbsp;
+
+00:51:39.840 --> 00:51:43.840
+which is, you know, doing things like linear&nbsp;
+solve nonlinear solvers, right, if you can,&nbsp;&nbsp;
+
+00:51:43.840 --> 00:51:49.640
+you know, you can, if your model is to write an&nbsp;
+actual integral, well, you can mix that integral&nbsp;&nbsp;
+
+00:51:49.640 --> 00:51:54.360
+function with neural networks, or you can write&nbsp;
+down an optimization with neural networks that PDE&nbsp;&nbsp;
+
+00:51:54.360 --> 00:51:58.480
+with neural networks write in all of the different&nbsp;
+cases where you can write down a mathematical&nbsp;&nbsp;
+
+00:51:58.480 --> 00:52:02.960
+object where you knew the function, you can extend&nbsp;
+this to the case where you have a neural network&nbsp;&nbsp;
+
+00:52:02.960 --> 00:52:07.720
+as long as you can differentiate adequately&nbsp;
+with respect to that process. And so what we've&nbsp;&nbsp;
+
+00:52:07.720 --> 00:52:12.720
+done with the Giulia ecosystem is we made it so&nbsp;
+that with a whole ecosystem of equation solvers,&nbsp;&nbsp;
+
+00:52:12.720 --> 00:52:17.360
+all connect with machine learning tools, so&nbsp;
+that way, you can do this this universal,&nbsp;&nbsp;
+
+00:52:18.080 --> 00:52:23.120
+universal approximator, mixed in modeling&nbsp;
+approach to be able to generalize any type&nbsp;&nbsp;
+
+00:52:23.120 --> 00:52:29.920
+of scientific modeling to a scientific modeling&nbsp;
+that is augmented with neural networks. You know,&nbsp;&nbsp;
+
+00:52:29.920 --> 00:52:35.640
+and I want to, I want to skip ahead here to&nbsp;
+just 111 beat on so for example, we've been&nbsp;&nbsp;
+
+00:52:35.640 --> 00:52:40.960
+using this a lot with Maderna. But I'll skip over&nbsp;
+with that. And the story would with with chaos,&nbsp;&nbsp;
+
+00:52:40.960 --> 00:52:45.400
+I want to kind of get it to this, this&nbsp;
+last story of, you know, very quickly,&nbsp;&nbsp;
+
+00:52:45.400 --> 00:52:50.800
+can we generalize beyond OTs and PTs. Right, so&nbsp;
+everyone talks about OTs and PTs. What can we do&nbsp;&nbsp;
+
+00:52:50.800 --> 00:52:55.840
+beyond that? Well, it turns out that that the way&nbsp;
+to start understanding things beyond just od ES&nbsp;&nbsp;
+
+00:52:55.840 --> 00:53:00.800
+is to look at chaotic systems, chaotic systems&nbsp;
+actually, don't differentiate correctly with&nbsp;&nbsp;
+
+00:53:00.800 --> 00:53:05.400
+automatic differentiation. Be happy to elaborate&nbsp;
+on that in detail. But it turns out that what you&nbsp;&nbsp;
+
+00:53:05.400 --> 00:53:09.520
+can do though is you get to find new forms of&nbsp;
+derivatives and new forms of adjuvants, which&nbsp;&nbsp;
+
+00:53:09.520 --> 00:53:15.600
+are wild the derivative with of the solution is&nbsp;
+not really well defined of a chaotic system, the&nbsp;&nbsp;
+
+00:53:15.600 --> 00:53:20.440
+derivative of air gotic properties with respect to&nbsp;
+parameters is well defined. And you can start to&nbsp;&nbsp;
+
+00:53:20.440 --> 00:53:27.400
+do things like fit neural different fit od ease on&nbsp;
+value, time point values that are more than ileap&nbsp;&nbsp;
+
+00:53:27.400 --> 00:53:34.240
+Enough coefficient away using, you know, average&nbsp;
+properties of the system. And so you know, and so&nbsp;&nbsp;
+
+00:53:34.240 --> 00:53:40.000
+this then kind of gives you a generalization of&nbsp;
+the UD formalism to this case where, you know,&nbsp;&nbsp;
+
+00:53:40.000 --> 00:53:45.840
+you have a lot of randomness, pseudo randomness&nbsp;
+due to due to the chaotic nature of some of these&nbsp;&nbsp;
+
+00:53:45.840 --> 00:53:51.760
+processes and the error imparted by them. Now, one&nbsp;
+of the other interesting cases then is can you do&nbsp;&nbsp;
+
+00:53:51.760 --> 00:53:57.520
+this in cases like discrete shot models, right,&nbsp;
+where derivatives are not normally defined. So&nbsp;&nbsp;
+
+00:53:57.520 --> 00:54:03.360
+what we what we've done is in this, something&nbsp;
+that was recently shown at neurips, was that
+
+00:54:04.400 --> 00:54:09.400
+in traditional differentiation, you take, what you&nbsp;
+do is you take your equation, and you try to find&nbsp;&nbsp;
+
+00:54:09.400 --> 00:54:14.560
+a derivative. But in the generalized sense,&nbsp;
+where you can do is if you have any kind of&nbsp;&nbsp;
+
+00:54:14.560 --> 00:54:20.080
+random variable, you can try to find a new random&nbsp;
+variable whose expected value is the derivative of&nbsp;&nbsp;
+
+00:54:20.080 --> 00:54:24.240
+the expected value of your original right. So what&nbsp;
+you could do is you could say I have I have some&nbsp;&nbsp;
+
+00:54:24.240 --> 00:54:30.320
+series that does some stochastic process. And what&nbsp;
+I want to do is I want to find a new stochastic&nbsp;&nbsp;
+
+00:54:30.320 --> 00:54:37.680
+process whose expectation acts like the derivative&nbsp;
+of my original process. And if you can do that,&nbsp;&nbsp;
+
+00:54:37.680 --> 00:54:41.880
+which you know, I am running out of time here,&nbsp;
+so I'm not going to go over the whole thing. But&nbsp;&nbsp;
+
+00:54:41.880 --> 00:54:47.160
+the idea behind it is instead of looking at small&nbsp;
+perturbations, like small perturbations, what you&nbsp;&nbsp;
+
+00:54:47.160 --> 00:54:53.920
+do is you look at, you know, small probabilities&nbsp;
+of having an O of one change. And when you do that&nbsp;&nbsp;
+
+00:54:53.920 --> 00:54:58.400
+kind of approach, you can start to build out these&nbsp;
+systems where if you were to have say, an agent&nbsp;&nbsp;
+
+00:54:58.400 --> 00:55:04.080
+based model, you can do directly run automatic&nbsp;
+differentiation on that and get the derivative&nbsp;&nbsp;
+
+00:55:04.080 --> 00:55:09.760
+of the expectation of your agent based model, you.&nbsp;
+So if you have an agent based model, you can run&nbsp;&nbsp;
+
+00:55:09.760 --> 00:55:14.920
+a process that generates a new agent based model&nbsp;
+for you, where when you solve this new agent based&nbsp;&nbsp;
+
+00:55:14.920 --> 00:55:21.680
+model, the expectation of that agent based model&nbsp;
+is the derivative of the expectation with respect&nbsp;&nbsp;
+
+00:55:21.680 --> 00:55:26.720
+to parameters of your original model, right. So&nbsp;
+it's like some new model, it's a pseudo model.&nbsp;&nbsp;
+
+00:55:26.720 --> 00:55:31.160
+But when you run this pseudo model, it gives you&nbsp;
+the derivative with respect to expectations of&nbsp;&nbsp;
+
+00:55:31.160 --> 00:55:36.120
+your original model. And so therefore, you can&nbsp;
+use it to be able to say, train neural networks.&nbsp;&nbsp;
+
+00:55:36.120 --> 00:55:41.080
+So that way your original agent based model is&nbsp;
+learning the functions that would define the rate&nbsp;&nbsp;
+
+00:55:41.080 --> 00:55:48.440
+parameters of your model. And we're able to show&nbsp;
+this then in cases like extending, for example,&nbsp;&nbsp;
+
+00:55:48.440 --> 00:55:53.120
+Conway's Game, a stochastic version of Conway's&nbsp;
+Game, or game of life to something, we're then&nbsp;&nbsp;
+
+00:55:53.120 --> 00:55:57.200
+able to fit the parameters inside of there and be&nbsp;
+able to start mixing that with neural networks,&nbsp;&nbsp;
+
+00:55:57.200 --> 00:56:02.000
+right. So instead of just looking at this world of&nbsp;
+you know, we have od ease and PDS, you can start&nbsp;&nbsp;
+
+00:56:02.000 --> 00:56:06.120
+to say, well, we have all sorts of different&nbsp;
+scientific models, we have agent based models,&nbsp;&nbsp;
+
+00:56:06.120 --> 00:56:12.040
+we have jump processes, Glasby processes, and all&nbsp;
+these things. And in any case, where we don't know&nbsp;&nbsp;
+
+00:56:12.040 --> 00:56:17.240
+functions, we can replace functions that we don't&nbsp;
+know with neural networks, as long as we can find&nbsp;&nbsp;
+
+00:56:17.240 --> 00:56:21.160
+adequate ways to be able to differentiate with&nbsp;
+respect to the weights of those neural networks,&nbsp;&nbsp;
+
+00:56:21.160 --> 00:56:26.400
+we can then learn what these functions are inside&nbsp;
+of this process, and then use that to be able to&nbsp;&nbsp;
+
+00:56:26.400 --> 00:56:30.880
+identify the pieces of the model that we didn't&nbsp;
+know. And it gives us a direct generalization of&nbsp;&nbsp;
+
+00:56:30.880 --> 00:56:36.280
+scientific machine learning to that domain. And&nbsp;
+I think I'm about a time there, so I'll skip it.&nbsp;&nbsp;
+
+00:56:36.280 --> 00:56:43.320
+Skip right there to two questions. I see that I&nbsp;
+do have a one one question here. So in the Navi&nbsp;&nbsp;
+
+00:56:43.320 --> 00:56:49.120
+Stokes 1d model, what what what's the input&nbsp;
+for the neural network term doesn't only take&nbsp;&nbsp;
+
+00:56:49.120 --> 00:56:56.360
+one crit point local. Yeah, so for for that. For&nbsp;
+this case, we actually looked at a bit at doing&nbsp;&nbsp;
+
+00:56:56.360 --> 00:57:01.640
+this in a way that is local and non local. It&nbsp;
+turns out that there is some mathematics behind&nbsp;&nbsp;
+
+00:57:01.640 --> 00:57:06.800
+this process where it says that the operator&nbsp;
+in general here should actually be non local&nbsp;&nbsp;
+
+00:57:06.800 --> 00:57:11.480
+in order to be correct. So we made this so that&nbsp;
+with a neural network actually takes in the full&nbsp;&nbsp;
+
+00:57:11.480 --> 00:57:18.320
+vector of the average temperatures. And we had&nbsp;
+another case where it was only local. So making&nbsp;&nbsp;
+
+00:57:18.320 --> 00:57:23.720
+it local is actually equivalent to making this&nbsp;
+be acting as a convolution network. And that&nbsp;&nbsp;
+
+00:57:23.720 --> 00:57:28.480
+did not actually prefer to perform as well, which&nbsp;
+matches up with a lot of the theory then about it&nbsp;&nbsp;
+
+00:57:28.480 --> 00:57:36.480
+being about the the closure chair and being&nbsp;
+a non local operator. Yeah, good question.
+
+00:57:36.480 --> 00:57:38.465
+Yeah, thanks, Chris, for talking
+
+00:57:38.465 --> 00:57:38.965
+Transcribed by https://otter.ai
+

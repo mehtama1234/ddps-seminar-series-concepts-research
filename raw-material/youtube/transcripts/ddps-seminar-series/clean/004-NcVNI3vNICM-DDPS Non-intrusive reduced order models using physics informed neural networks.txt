@@ -1,0 +1,1547 @@
+okay
+today's speaker is professor jan
+esteban from epfl he
+joined epfl as
+chair of computational mathematics and
+simulation science in 2013
+and since 2017 as dean of the school of
+basic sciences
+his research interests focus on the
+development
+analysis and application of high order
+accurate methods for the solution of
+complex
+time dependent problems often requiring
+hyper computing a particular focus of
+his research has been on the development
+of
+computational methods for problems of
+linear and non-linear wave problems
+and the development of reduced basis
+methods
+recently we've done emphasis on
+combining
+traditional methods with machine
+learning and neural networks with broad
+applications
+including structural health monitoring
+he has received several awards for both
+his research and his teaching and has
+published
+four monographs and more than 160
+research papers he is on the editorial
+board
+of eight journals and serves as editor
+in chief of science scientific computing
+no further
+due here is
+our speaker professor hastavan he is
+going to talk about
+non-intrusive reduced auto model using
+physics-informed neural neural networks
+today okay
+please enjoy thank you thank you thank
+you thank you for the
+for the kind invitation and the
+opportunity
+um as i mentioned this is a an after
+dinner speech at least in this in this
+part of the world but i know it's not
+for you so i will
+i will not make it more sort of relaxed
+after dinner speech but uh
+but a regular scientific presentation um
+so i'll talk about uh using reduced
+order models and some of you may know
+them and some of you perhaps
+have only heard about them um
+focusing on nonlinear problems in
+particular
+um and and trying to
+to discuss how one can use
+neural network of various types
+uh to solve some of the bottlenecks that
+are associated with developing reduced
+order models for time-dependent problems
+non-linear problems in particular so
+that's sort of the
+this philosophy that i've taken in the
+last few years
+that when trying to do to look at neural
+nets or machine learning technology
+it's not to replace what many of us have
+spent many years learning and
+and 75 years of numerical analysis but
+rather
+to try and understand whether we can use
+this technology
+to to solve some of the bottlenecks that
+we are traditionally
+facing when we when we try to solve more
+complex problems
+so so what is the reduced order model
+i'm sure that many of you familiar with
+it
+it is basically an attempt to create a
+map
+between a set of parameters mu
+only conditions initial conditions
+material parameters
+geometries what have you
+then there's a pde or system of pdes in
+there that describes
+the relationship between the parameters
+and an output of interest
+solution and of course you can solve
+when you're sharing your standard
+methods and and
+you being at launch livermore knows uh
+better than anyone
+that some of these problems are
+extremely time consuming to solve and
+and the idea of having to solve them ten
+thousand times
+is sort of completely out of the
+question so the question is can you come
+up with a with a way of creating this
+map
+so that when you if you are willing to
+to
+simplify your your view or
+focus your view on a particular class of
+problems that you can accelerate
+the solver so basically you're you're
+you're trading generality
+for speed as we so often do uh
+so just to give you an example of what
+the basic idea is let's say you have
+poisson's problem here with the
+right hand side f that depends on some
+parameters mu it can also be the
+boundary conditions
+and the point is you wish to solve this
+many many times
+of course you can use your favorite
+method find element finite difference
+perhaps
+perhaps a spectral method whatever you
+prefer
+but if the problem is a complicated
+problem you need many degrees of freedom
+curly end and therefore even with the
+modern technology
+if a is big enough it becomes expensive
+and so the question is if this is the
+problem you're interested can you do
+better than that
+and the idea of a reduced order model is
+that you are saying well
+let me assume that i can represent my
+solution
+as it changes over parameter space
+as a linear combination of some
+vectors which is the matrix v
+which is tall and skinny so it has curly
+n
+number of rows but roman n
+number of columns and therefore the size
+of the vector a
+is roman n and we simply assume that
+roman n
+is much much smaller than uh
+the number of degrees of freedom you
+have in the in the big problem
+another way of looking at it is is on
+the right hand side the little figure
+is you're basically saying that as
+you're changing the solution
+over the over the uh parameter space you
+have a solution manifold
+and you're making an assumption that you
+can represent this manifold here in 2d
+with uh with a linear space okay
+of course this may not be the case and
+then you have other problems
+but let's assume that you can and in
+many cases you can but if that's the
+case you simply do a projection
+you represent the solution in this new
+basis you project the residual
+in a colloquial projection and you get a
+little system of equations now
+which is uh in this particular case
+the main characteristic is that
+that you have a problem it's a dense
+problem but it's only roman n by roman
+n so if you think of the number of
+degrees of freedom in this
+big problem being 10 000 but you only
+need 10 vectors to span the linear space
+you now have a 10 by 10 dense problem
+you have to solve every time you change
+the parameter mu
+this is the basic idea reduce basis
+methods
+as you as you can see them in in many in
+many different places
+why would you want to do that well any
+problem where you need to solve the
+parameterized pde
+optimization control problems databases
+uncertainty quantification
+it's also been used for as subscale
+models in multi-scale modeling
+and and many other situations in
+particular if you want to solve
+uh something on a deployed platform uh
+your graphics for instance then um
+there's clearly benefits in in being
+able to do that
+because you have only a limited amount
+of computational resources
+so that's the basic idea of a reduced
+order model uh
+it's very successful it works very very
+well for for
+linear problems if you're interested in
+this and i put it up there because the
+book is free
+so you can download this book it goes
+through
+all the basic theory for the
+basically mostly for the linear problem
+and there's a nice
+error theory and there's a lot of things
+you can do with these methods that work
+very well
+you can also do it for some non-linear
+problems navier stokes in particular has
+been done
+uh quite a bit but once you get into non
+to sort of more general nonlinear
+problems
+you face the issue that uh it is more
+complic
+it is more complicated to to achieve the
+acceleration that you hope for
+and i'll show you a second why this is
+and the second one which is which is
+obvious already in the in the previous
+example is that when you do this this
+projection
+of the operator a you have to actually
+know the operator you have to have
+access to the operator which means you
+have to access
+the code um and therefore
+creating the reduced model becomes
+intrusive
+and and this for certain types of codes
+uh either because the legacy here
+because they're classified or because
+their commercial codes
+this is simply not possible so the
+question is can we build methods
+that have many of the same
+characteristics but are non-intrusive
+and and and what is the problem here
+with the non-linearity where again
+here's the generic problem now it's the
+linear problem again
+l dependent l operator depends on on
+u you express the solution u as a linear
+combination
+of the vectors v put it in you do the
+glucagon projection
+and you get a small system that you can
+solve and
+and the key point is you have a method
+which is independent of the number of
+degrees of freedom
+in uh in the original problem and
+therefore you have
+acceleration now if the problem is
+non-linear it's of course
+much less obvious how to do it because
+when you form the projected operator
+the projected operator depends on you
+and therefore in order to evaluate the
+operator l
+you're going to have to recover u and
+therefore you now get a scheme
+which depends on the number of degrees
+of freedom
+in the vector u and that's exactly what
+you wish to try and avoid
+because now the cost of
+forming and solving the reduced order
+model becomes comparable to that or
+solving the original problem
+and and you sort of lost the benefits of
+of the
+of the reduced order model at least many
+in many cases so the question is can we
+can we
+can we try and and see if there's a way
+around that
+now i'll i'll go through a number of
+examples
+uh individuals here below have been
+involved at various
+uh stages of the process
+[Music]
+where we sort of first do a
+non-intrusive method
+which is entirely data-driven and i'll
+explain to you
+how we do that then in the next level we
+will include the equation
+into the training and see that there can
+be some benefits to that
+and then for the time dependent problem
+which is the last piece
+the question is if i'm going to build a
+reduced model and i'm going to run it
+in time then what do i know
+if i go beyond the time that i have
+trained the model
+so then you get into prediction and
+and of course if if a reduced order
+model for a time dependent problem
+doesn't have any predictive value
+then um it's it's usefulness is
+less obvious so we'll discuss this a
+little bit
+so uh first one so what does it mean by
+non-intrusive
+well as i hinted to the idea is that you
+want to have them
+have the ability to build to build
+reduced order models
+where all you have is a piece of code
+that
+can provide you input output i give it a
+parameter
+i get back the solution i don't need to
+actually look inside the code
+and as soon as you go down that's that
+step
+you realize that you cannot form the the
+reduced
+order problem by projection because you
+don't have access to the operators
+and therefore the key problem becomes
+how to go
+from finding from choosing a parameter
+to actually getting the expansion
+coefficients if you will
+that you then use to multiply onto the
+weights and get the
+produce to get the solution okay so
+that's exactly
+the point then of course what can you
+say about accuracy so
+um so how would one do that the simplest
+way
+is that you do some sort of function
+approximation
+you say here on the left the solution u
+is a linear combination of the vectors v
+the alpha depends on the parameters mu
+i don't know how they uh vary
+if you do intrusive you have an equation
+for how to find the alphas
+of course another way is to do you could
+attempt to do interpolation
+simply finding uh alpha for a particular
+choice of the parameters
+and then use radial basis functions so
+some sort of unstructured
+interpolation and and and do that and
+of course people have tried that
+especially with radial basis functions
+and it has all the challenges that
+radius basis functions
+has especially when you go up in high
+dimensions uh
+it gets quite poorly conditioned uh and
+it's expensive it leads to large dense
+matrices that you have to solve
+so that's not necessarily the the best
+way
+and and so what we are proposing here in
+this one as well so let's use a dual net
+for this exercise so neural nets are
+known to be
+good for dealing with uh with the
+high dimensional input output basically
+creating
+input output maps
+with the high dimensional uh inputs and
+outputs
+so in this case the input would be the
+parameter values
+it can be two or three can also be 100
+if you're not depending on the problem
+and then on the right outside these will
+be the weights
+what i call the alphas and and then
+you will you will we will try to learn
+um
+and you will net a simple feed forward
+neural net that connects directly the
+parameters to the expansion coefficients
+okay now and we would use we'll use
+super supervised learning for that
+okay so the ideas is quite simple if you
+don't know what renewal that is which
+i'm sure is it's not the case here
+well it's it's basically uh layers of
+what is called neurons here which are
+which are
+non-linear functions of fine
+combinations of the solutions
+in the previous layer if there's more
+than one hidden layer it's a deep neural
+net
+so there's a number of choices you have
+to make
+in how you go from the inputs to the
+outputs those are the weights then
+there's a bias
+that you have to to compute and then
+there's an activation function it's the
+activation function that makes the
+neural net non-linear and
+so so when you talk about training what
+does it mean well it means i have some
+input data and have some output data
+and i have to try and find out what are
+the weights and what are the biases
+so that this function uh
+approximates the input output map as
+well as i can
+okay and this is a non-linear uh
+non-convex optimization pole
+that that needs to be solved so
+so the first thing you have to ask
+yourself is okay so neural nets are used
+to all kinds of things
+why would you think that it would work
+in this context
+well the thing is as we just discussed
+the neural net is really just a highly
+non-linear approximation
+and and
+and the function we're trying to
+approximate is a function that
+maps the parameter space to the
+expansion coefficients
+now if that's a very very complicated
+function it means that as i change the
+parameters a little bit the expansion
+coefficients would change a lot
+that would be a very sensitive and
+unpleasant problem and it's it's very
+unlikely
+that there would be a good reduced basis
+for something like that
+so it's entirely reasonable to assume
+that if there is a good reduced order
+model
+that then this map is actually a
+relatively smooth map and a simple map
+and therefore we should in fact be able
+to create newer nets that are quite
+small
+that would allow you to do that
+and the forward problem we can solve as
+many as
+as much as we need we can just so we can
+generate the data from the forward
+solver
+we don't need to know the code we just
+need to say i give you the parameters
+you give me the solution i project the
+solution onto the linear space
+i have the expansion coefficients and i
+can generate as much
+data as i think i need now of course
+every data set is a computation for the
+full solver
+so we want to reduce that and i'll get
+to that a little bit later
+but in principle you can generate the
+the
+the data that you need and then once you
+have
+uh trained you can go so let's see if it
+works so this is the idea
+we built the the reduced order model
+exactly as we will do
+with the standard way by taking
+snapshots or using a greedy approach
+doing svd
+this gives you the vector the vector
+space v
+and then sample parameter space to
+generate another set of snapshots this
+is the training data
+use this for training the neural net and
+then in the online phase
+there's no projected problem you simply
+evaluate the neural net
+to evaluate the non-linear problem
+so here's a couple of things so this is
+a relatively simple problem it's 1d but
+it has some characteristics that i want
+to share with you because you will see
+it later on
+so it's a it's a 1d problem or some
+problem but it's a non-linear problem
+as you can see there are two parameters
+in the problem
+on the boundary conditions and uh
+on the right are some are some examples
+of solutions that's not so important
+on the left is sort of what we what we
+need to look at here so i'll spend a
+minute of that because we'll see the
+behavior
+so the horizontal lines
+is the error that we make by taking
+a particular solution and projecting it
+on
+to um as to the linear space
+of size either 8 or 15 in other words
+this is the best accuracy we can get
+this is the best accuracy you can get
+with the linear space of size 8 or 15.
+cannot do better than that
+now let's say the light blue
+so that's the that's the results that i
+get
+with uh 50 training points
+and the horizontal axis signifies that i
+have two layers in the neural net
+and then it is the number of neurons
+these are very small neural nets
+okay and this is on purpose because i
+want to be fast
+um so there's small neural nets 10 20 30
+neural nets
+neurons two layers and what you see is
+that
+uh in fact as you increase the number of
+of
+of neurons with only 30 but only 50
+trading points in fact the error goes up
+now if you increase the number of
+trading points and do the same exercise
+you see that the arrow sort of stays
+flat and then it goes up
+and as you increase as you as you add
+more and more
+training you see that the solution
+eventually comes down
+even which you have uh a large neural
+net
+so this as i'm sure many of you have
+have seen this is what is called over
+parameterization and it's uh
+it's in this particular case what you're
+seeing is uh is overfitting
+so when you don't have enough data for
+the richness of the
+of the of the new net uh you're
+overfitting you're basically
+interpolating but it's a
+it's a random grid if you will so you
+get
+very severe rumor type phenomena
+behavior
+and then this is why the error goes up
+when you look at over a
+test set in this case now why is this
+useful
+well because we can use this to actually
+design the the
+the net the architecture of the net so
+if you look at the arrow
+you can see that what we're interested
+in is the difference between the
+solution the exact solution
+and the predictive solution using the
+dual net
+and we can split it into three with the
+with the triangle inequality so it's the
+first piece
+so the first piece is the difference
+between the exact solution
+and the solution i will be computing if
+i'm using
+my big expensive solver so this is just
+a this is an approximation final element
+approximation theory
+there's a lot of that the next one is
+the error that i make by taking the
+computed solution
+and projecting it onto the space v okay
+this is an error component and i have a
+third component which is the arrow
+between
+the projected solution and the one
+predicting being predicted by the by the
+neural net
+okay so the first two pieces are well
+quite well understood how you can
+represent those understand those the
+third one is basically comes down to
+error analysis
+of the dual net this is still uh
+not something that is terribly well
+understood especially when then when
+that is deep
+so we have an estimator like that
+however we're going to use overfitting
+now to try and control that error so we
+do it in the following way
+so it's exactly the same problem as
+before i have 100 training points
+now i increase the size of the network
+uh
+from 10 to 15 neurons the year goes down
+that's good
+stagnates and eventually here with 25
+nodes
+you see the sign of overfitting now you
+can decide whether you think that
+6 times 10 to the minus 4 is good enough
+for what you're looking at
+if it is then you're done then you
+should be using a neural net with the
+two layers and 20 neurons if not
+the only way of improving matters is by
+increasing the number of training points
+so we go to 200 training points you see
+exactly the same
+trend it goes down now we get down to
+the black line
+which is the best we can hope for uh in
+this particular test and eventually
+also here it goes up so
+so with this you can you can at least in
+in in this approach
+you can basically define or help on
+overfitting helps you understand what is
+the what is the appropriate size
+of the network now of course if you have
+100 layers and a billion neurons
+i appreciate that this is a more
+difficult exercise but i'm
+deliberately not looking at that limit
+i'm looking in the limit of very small
+networks because i need to be fast
+to do things on the fly so here's a more
+complicated or slightly more complicated
+problem that is stokes 2d
+uh but with a non-fine mapping of the of
+the
+of the domain doing this with a standard
+found
+that it's quite complicated and it's not
+at all obvious how
+to do um how to get this accelerated
+um now if you look at the solution so
+here sort of eyeball
+solutions you can see that they look
+fine the top ones are the final elements
+the bottom ones
+are they are the reduced order model
+with the dual net
+if you look at the arrows exactly the
+same way as we talked about them
+with having enough
+having enough of training data
+depending on the size you can certainly
+reach the accuracy that you
+that you want and if you look at the
+actual arrows
+rather than than than the generalization
+error which
+is the the top one so here what we do is
+you
+you compute the the actual arrow of the
+solution
+as you increase the basis so it's now
+the basis
+now the red one is the projection of the
+x of the
+of the high fidelity solution so this is
+the let's say this is the best you can
+get
+um the blue the blue balls
+the blue round balls this is the this is
+the very expensive
+one where you go through the full
+galerkin projection so fully intrusive
+and you see that the air goes down
+at least in the velocity which is the
+left the pressure is on the right
+but the nature of the non-linear system
+that you have to solve is not very
+pleasant
+it's extremely poorly conditioned and
+therefore you see
+a fairly large error in this particular
+case
+whereas the the whereas the neural net
+works very well it doesn't get quite as
+good as the as the projection of the
+high fidelity but it gets very close and
+and you basically see almost exponential
+convergence
+in the individual spaces which is what
+you would
+what you would expect and of course the
+issue here is the cost which is the
+important one
+uh if you do it fully intrusive
+with um can
+uh compare to doing it with the with the
+training the neural net and using that
+in order to predict the errors
+or to the solution there's an
+acceleration here of a factor of a
+thousand at least
+and and the training that goes into
+training the network because it's a
+relatively small network
+is marginal if indeed you need to solve
+the problem
+many many times
+so so the message here is that there's
+certainly something to be done by using
+the neutral net
+to create directly the map between the
+parameters and the expansion
+coefficients
+in this case it was a purely data driven
+approach and you can
+the beauty of it is you can do it for
+any problem non-linear
+and all you need is a black box solver
+fully non-intrusive
+now the problem with the approach i've
+just described
+is that it's difficult to get good
+accuracy so if you need
+you know 10 to the if you need if 10
+error is good or
+maybe if you work hard you can get down
+to one percent error
+then then what i just described is
+probably
+if you need more than that it becomes
+very difficult to do it you have to be
+very careful when you train and when you
+parameterize the network
+and the second thing is and we have
+already seen that is that you need quite
+a bit of training data
+you know 200 300 400
+solutions for basically 2d navier stokes
+that's a that's a lot uh so the question
+is can we do something about that
+and of course the issue here is that
+there's something that we haven't used
+and i'm focusing on steady state but you
+can also do it for time dependent
+there's something here that we haven't
+used which is we haven't used the
+equation we have only used data
+um and we do have an equation of course
+uh but in the first approach we just
+used it to to generate the data so this
+gets very much into the spirit
+of of what my former colleague george
+kanedakis has been working on on on what
+he what he calls physics-informed neural
+nets
+where where you use the equation in the
+in the um in the training of the network
+and so what i just described and now
+there are basically three different
+models here so what i just described is
+one
+where you you define the loss function
+as a loss function on the error that you
+make
+in predicting the expansion coefficients
+over parameter space
+okay so o here is the newer net
+alpha is your training data and you try
+to train
+o so that you minimize this loss
+it's a purely data-driven approach um
+now of course the other way of trying to
+do things is is what one could call what
+is called
+physics and fault neural nets where
+you don't use the data but you only use
+the residuals so you train
+to minimize uh the
+the prediction of the neural net such
+that
+uh the residual is minimized
+so you use the equation but you actually
+never use the solution
+and of course it's natural to then think
+about well maybe you should
+do some sort of linear combination of
+the two where you both have a data
+driven part
+and and a uh physics informed part um
+and and so this is the approach that we
+take
+and then and we'll see quickly that in
+fact that seems to have some benefits
+uh addressing the two problems that we
+talked about so here's the
+lid driven cavity again parameters
+arrayless numbers as well as the angle
+and this so this one is a little
+complicated so let me spend a minute on
+this one
+so um so again the black line
+are the projection of the exact solution
+as you increase the size of the bases
+okay so think of the black lines as this
+is the best you can get
+the the yellow lines on top
+are three different this number of uh
+of amount of training
+data they vary but but they but the
+point is this you can see that that
+here we have errors which are 10 to the
+minus 2 maybe a little bit
+worse than that and this is for the
+approach
+that i just described so this is the
+purely data-driven approach
+and here we see that it's difficult to
+get better than 10 to the minus two
+accuracy even if you pour in a lot of
+training data
+the red lines here in the middle of the
+of the
+of the graph this is the accuracy
+of the full deloikan approach so the
+fully
+intrusive calorical approach so this
+of course behaves quite reasonably
+but is is very very expensive
+okay the dashed lines
+the dashed line is the residual
+is the residual base so this is the pin
+it's the residual based
+only and then the green line
+is the combination of the data and the
+residual
+now why would that work better well we
+all know that the residual is not the
+arrow and if
+all the information that you give is
+only
+the residual you can drift quite far
+away from the solution
+so adding some solution some actual
+solutions
+a few data points to the um
+to the training actually can gain in
+this case
+an order of magnitude and accuracy with
+a relatively
+minimal uh effort because those are the
+only snapshots
+that you need these are the full
+solutions everything else is just
+residual
+here are some visuals and you again you
+can see that the neural nets are small
+five layers 30 neurons
+um so they are not big nets
+um natural convection sort of a similar
+idea but now we have three parameters in
+this case
+the the cavity can tilt and then there's
+the rayleigh and the prandtl number
+and and again you see the same picture
+you can see the colors and so on the
+details are not so important
+the point is that the yellow ones is the
+purely data driven
+the blue the green dashed line is purely
+residual based
+and the green lines is the one where you
+combine them
+in a reasonable way in order to to
+with the goal of reducing the need for
+many solutions
+uh while doing better than simply using
+the residual
+so and again you can you can visually
+the solutions are
+all fine so
+so this sort of gives you a gives
+provides a path for using
+a combination of reduced order models
+and neural nets relatively simple feed
+forward neural nets
+that can be trained in various ways in
+particular in the cost function
+in order to take advantage of that and
+of course when you're training in the
+cost function you're using also
+to shoot the reduced order model to
+evaluate the
+the residual so you see the acceleration
+of that also
+in training the reduced order model it's
+turning the renewable net sorry
+now the last thing i wanted to talk
+about uh
+is what to do about errors so here's a
+so now we're looking at time dependent
+problems
+uh again so here's a
+pde on od let's say it's a pde that you
+discretize
+we have found the linear space v you do
+the projection you get an equation
+for the expansion coefficients they
+depend on time as well as the parameters
+here they're called omega and you have a
+right hand side that you need to
+evaluate
+now if you look at the little graph
+there's sort of a few things
+to keep in mind here the black line
+u is the exact solution okay we have no
+way of finding that we don't know it
+and in fact we are representing we're
+trying to look for the solution
+uh it's sort of a linear space
+uh spanned by v
+now the the
+the blue solution is the
+is the projection of the exact solution
+onto
+that linear space
+oh hi hi jen hi
+hi then
+hello yeah did we lose his audio yeah i
+think i
+we lost his audio but i don't think he
+can hear us
+either um i'm
+not sure maybe send a chat directly to
+him
+um why
+okay why is it happening
+hey hey dan i'm sorry
+um hey dan
+um hello
+don't know i i have no idea how to
+inform him
+um about it he likes stop his screen
+share
+he's noticed that at least oh okay
+you can hear me oh okay we lost you
+like yeah i know i don't know what
+happened why did you lose me
+uh okay we we were with you with this
+slide
+um here no next slide we were with you
+yeah with you yeah okay very good yeah
+my headset is getting tired but uh but
+uh
+fine so so if you look at this model
+here which is a well-known model
+and you say okay so why one are the
+solutions you care about y2 with the
+unresolved solutions
+then of course you can integrate the
+second equation uh
+get an exact expression you can plug
+that into the first equation and you get
+an equation
+just for the result scale or for the
+part of the solution that you care about
+and and and it's illustrative to sort of
+look at what the components are so
+there is an equation which is just for
+the equations of this resolved scales
+and usually when we were solving if you
+were solving the first
+system and you couldn't afford to solve
+both for y1 and y2
+you would just solve for y1 and that
+would give you the solution of y1
+but of course you would you would you
+would you would not get the interactions
+with y2
+if you on the other hand look at the
+equation down here you have two
+additional terms there's an exact
+expression
+the one to the very right is the effect
+of uh of
+initial conditions that are in y2
+okay so if you don't if you have things
+that are expressed only in y2 but not in
+y1
+then that error will accumulate in time
+let's take that error to be
+zero in other words the initial
+conditions are expressed only in the
+in y1 then there's still a term which is
+a memory term
+and this term basically accounts for the
+accumulation
+of the impact of y1
+or of y2 on y1 okay and
+fine so it's not a surprise it basically
+means this is the term that accumulates
+the errors
+this is an extract this is that this is
+an exact solution an exact expression
+but of course it's not a very
+interesting expression because
+evaluating the memory term the way it's
+written
+is is very very expensive so it's not
+for it's for insight only
+and troy and alexander turin uh 20 years
+ago sort of worked through this and
+generalized it
+uh to general systems of of uh
+differential equations uh i introduced
+the projection
+operator but it gives you exactly the
+same
+sort of structure where you have uh
+let's say y hat are the result scales
+um and until there are the on result
+scales
+and then you have an equation which
+depends only on the result
+scales then you have something that
+depends on the initial conditions
+of the components that are not expressed
+in y hat and then you have the memory
+term okay so again we take
+big f to be zero and in this whole
+exercise enter something called
+called a projector so at the at the
+bottom left
+you have two uh operators p and q
+p is the projector and q is is its
+complement
+now in the context of a reduced order
+model you naturally have a projector
+because it is it is the projector that
+projects it onto the space that you have
+and then there's the orthogonal
+complement
+so you have a very natural way of
+thinking of what the projector should be
+which is otherwise always a
+headache but we still have the memory
+term now what does the memory term do
+well it accounts for the effect of all
+the scales that you have not taken into
+account
+over time and understanding this is sort
+of the key
+uh and and uh fine but and i just want
+to show you just to give you an insight
+because it gives a little bit of
+intuition what does this kernel do
+well if you look at this kernel k how it
+behaves
+for something say like the i think this
+is the this is the viscous burgers
+equation
+you see that that uh
+it's a kernel which decays very rapidly
+in time or
+in in time separation it basically tells
+you that
+that there's a finite time memory if you
+make it
+if you make an arrow in the viscous
+burglars after a certain amount of time
+you are no longer impacted by that arrow
+it has washed out
+because of the viscosity
+and then here we see that that if you
+think of the projector as the
+as the one that separates the scales
+then
+as the projector gets gets more and more
+modes
+and therefore the projection gets more
+accurate
+the leftover uh decays faster and faster
+okay
+so this is this is what it shows um
+but it has this sort of rapid decay if
+there's a if there's viscosity
+if it's a pure weight problem then
+there's no decay
+and it's a much more complicated problem
+um
+now you can you can play around with
+this you can try to estimate these terms
+and so on
+uh it's very problem dependent and the
+terms the
+the the bounds you can get in order to
+estimate the memory term are often very
+conservative
+so we're going to look at in a slightly
+different way because we have a reduced
+order model
+and this means that we already have two
+pieces of information
+we have the full solver
+that we have to run in order to create
+the snapshots
+that allows us to build the reduced
+order model and then we have the reduced
+order model
+and that one we can run at very low cost
+which means
+we can compare and we can generate
+data that says if the solution behaves
+like this
+then the error between the high fidelity
+solution
+and the reduced order model is like that
+and this is the correction that i need
+so i can i can create a map
+between a history term which is here
+alpha n and sum what's backs in time
+and the error that i make between the
+reduced order model
+and the full and the full model okay
+and so this is where we use uh now
+a different kind of neural net which is
+an lstm long short term memory
+network to train such that if i give the
+network a sequence of solutions
+backwards in time it tells me about the
+what they
+what this memory term should be and this
+can then be
+used to correct the solution okay so
+it's a relatively simple idea once you
+go through the different steps so here's
+i'll show you two examples
+and then we're at the end so here's a
+here's a linear
+so now it's a 3d problem it's a linear
+problem uh it's an artery
+human artery and the
+forcing on the inflow is you can think
+of it as a heartbeat
+and fine here we go and and the the
+solution
+uh that we're generating we're learning
+solutions
+for the periods 0 to 4.
+now a couple of things that we have to
+understand but first of all we have to
+understand how many modes do we need in
+our reduced order model
+you can do two standard ways of doing
+that
+we use 16 okay so for 16 we should have
+an error of the order
+10 to the minus 3 something like this
+which is probably enough
+and the second question that you have to
+to ask yourself is well
+these lstms they have a number of cells
+and they're somehow related to the
+length of the time history but how many
+cells do you need
+now it turns out that using the the
+moisture on thick formulation
+you can actually estimate how much
+memory you need
+um and and this is actually what the
+what the what the black
+line here is and the two different uh
+paragraphs is all you need to know
+all you need to observe is that you can
+see that these
+horizontal lines these lines which are
+which are for increasing of for
+different numbers of neurons
+in the in the lstm you can see that
+there's sort of a dip
+or sort of a plateau in terms of the of
+the minimum accuracy
+and it aligns very well in this
+particular case it looks like we need
+four
+cells so we can actually estimate the
+number of cells
+in order to to do what we what we would
+like to do
+and so here are some results so here
+we're just looking at the
+at the energy and not the point-wise
+solution just the energy
+in the expansion coefficients and um
+[Music]
+uh okay so let's look so zero to four
+again this is the time that we have
+trained
+four to seven or four to eight is beyond
+the training period
+so now we're getting into phenomena that
+actually uh
+the reduced order model has never seen
+nevertheless the solution here is
+is almost periodic and you can see that
+the the red line which is what we
+predict and the dashed line which is
+the full order solution basically
+overlapped so you cannot see here
+visually
+a big difference but if instead look at
+the arrow
+you can see a big difference so the blue
+line
+is the arrow in the solution uh
+for different parameters uh in the in
+the columns
+and you can see that in the on the left
+which is
+which is for the time periods where we
+have actually trained so
+we know we have used the information
+you can see that by adding this memory
+term you gain
+four orders of magnitude sometimes six
+orders of magnitude
+in accuracy over time so this little
+memory term actually makes a big
+difference
+uh even for a problem which is as simple
+as this one which is
+sort of quasi-periodic and and you can
+see that this this goes deep into the
+to the prediction where you actually
+predict twice
+beyond the training and still with an
+accuracy of maybe 10 to the minus 3
+on average compared to the solution
+with no correction where basically you
+have lost the solution
+very quickly so that little correction
+actually matters it's not snap snaps are
+the solutions
+it's not so important but let's look at
+the act let's look at the
+the at the speed because at the end of
+the day that's that's what's going to
+matter now this is a linear problem
+so the the the light blue is the
+accuracy
+it's the time that it takes to solve
+to do to do one time step
+as you increase the number of modes
+compared to the accuracy
+of the overall solution and you see that
+let's say you take
+28 modes in
+in the full pod you don't do any
+correction
+then uh you get an error of maybe 10
+now with the with the correction you get
+the same accuracy with only 16 modes
+which is nice but it is more than twice
+as expensive it cost
+and the reason for that is that the cost
+of the non-linear problem
+because of the linear problem and the
+pud of the linear problem
+is very low so for the linear problem
+this is probably not a particularly
+interesting idea so let's look at the
+non-linear problem instead so again
+here's the two day
+2d rayleigh banner problem
+three layers again and so on we go
+through exactly the same exercise i will
+look at the solutions again
+this is the energy exchange on the left
+is the training now we train from 0 to
+on the right is the prediction
+and you can see on the left everything
+looks to be fine as you would hope for
+on the right the lstm
+does reasonably well although of course
+eventually the solutions drift apart
+but very very slowly
+if you instead say well what what
+happens if i just don't do the
+correction
+now if i don't do the correction again
+here there's
+there are
+different parameters and then there's
+the prediction
+there's the training and then there's
+the prediction the red curve
+is the solution that you get if you
+don't correct
+so you get a solution in the reduced
+order model which is
+nicely periodic as you would expect for
+the rayleigh barnard convection
+but the phase and the amplitude is
+completely wrong
+so this is the worst kind of solution
+that you can do computationally because
+it looks right
+but it's wrong
+and whereas if you do the correction um
+you get the the uh the dashed line and
+the blue line is the high fidelity so
+you can see that that small correction
+actually
+throws it right back even into the
+prediction uh twice as far out as
+as as you want and if you look at the
+solution here at the end
+then okay so now you will have four
+pictures so on the
+upper left is the full order solution so
+this is the full
+this is the expensive solver the one
+next to it
+is the projection of the expensive
+solver so again this is the best you can
+hope for
+if you want to compare the lower left is
+the result using the pod golokin
+so the expensive solver with the full
+projection
+and on the lower right is the one
+where you do lstm
+in order to correct for the for the
+error or the for the memory term
+so t equals 10 so you have just started
+and you can see already here the purity
+golurkin and the projection of the full
+solution
+uh are different whereas for the lstm
+there
+the differences are minimal 25 we're
+still in the middle of the training
+so so some sense the reduced model
+should know what's going on but it
+doesn't
+70 we're now into the prediction domain
+and you can see that the pure d golokin
+is completely overwhelmed by the errors
+that has been made
+because of the truncation and here 85
+the picture is the same again the
+projection and the lstm
+the one with the modified with the lstm
+is
+basically indistinguishable
+to the full order so last thing is then
+cost
+well now you can start seeing benefits
+because here
+if we say we have 24 this is the red
+bullet let's look at the on the left
+this is the red bullet
+m equals 24 mode with the correction
+with the memory term correction and the
+time takes
+you know 0.4 times 10 to the minus 2
+for for a time step of an accuracy of of
+let's say 10 to the minus 3 little less
+than that you get the same thing
+if you do 90 modes in the pd so in the
+fully intrusive
+approach but it is three times as
+expensive
+so when the problem is non-linear you
+can see the clear benefit
+of using a reduced order model which is
+smaller
+but accounting accurately for the error
+that you're making
+by learning what the memory term should
+be
+and applying it through the lstm when
+you run the code
+so a few final words here um
+the idea that i've been proposing here
+is sort of a mix of things but the idea
+is
+i don't like to think of of neural nets
+taking over
+how we solve pdes but i do think it's
+important to ask ourselves if some of
+the bottlenecks that we fight with
+perhaps can be overcome and and that's
+what i've tried to demonstrate
+the perhaps most attractive feature is
+that everything is non-intrusive you can
+do
+these approaches for basically any
+problem
+you can reduce the number of training by
+using the equation if you have an
+equation
+and with the most function you can
+correct for errors that you make in time
+especially if you want to go beyond the
+period of time where you have
+trained so you get into the prediction
+domain which is obviously
+of interest so with that thank you very
+much for your attention i don't know
+what the time is but
+i'm sure i'm at the end of it and also
+right so
+thank you thank you thank you so much
+for the quick talk uh we have uh minutes
+left for the q a session so i'm sorry
+it's okay it's okay but um
+so if you have any questions please um
+please speak up because i don't see any
+questions on the chat room
+so unmute yourself and then uh try to
+you know speak out here yeah
+please while we are waiting um
+i have one question for dan um
+you know if your solution representation
+itself is
+it's not good like with the linear
+subspace
+you know you know basis um
+then there's no you know hope that
+with that non-intrusive method you can
+get
+you can improve accuracy right there's
+no magic here
+there's no magic right yeah so if you so
+so so you could do all of this
+everything that i have described you can
+do uh
+with a really bad solver right i mean
+the whole machine will work you can
+build the reduced basis you can build
+the model
+you can learn the memory term you can do
+all these sorts of things
+but if the solver itself gives you
+generates a bad linear space
+uh well then you're converting to a bad
+solution
+right right do have you think
+have you thought about uh to improve
+that
+um the solution representation
+well so yeah so so they they
+the last part of the talk sort of
+suggests that oh but you know maybe you
+could use the same idea to get rid of
+you know approximation errors somehow
+right but but it's
+very difficult to see how to do this
+because you you will you will need
+a way of estimating the arrow that
+you're making but this you don't know
+right so you need you need a so so what
+what allows you to do this approach here
+is that you have
+you have a solver that hopefully does a
+good job
+and then you play the reduced order
+model that hopefully is faster
+and then you you learn the difference
+between the two so you can do it fast
+and accurate at the same time
+but if you don't have these sort of two
+solvers where one is fast and one is
+accurate
+then you can't really play this game and
+of course if if all you have is a very
+large and extremely complicated code
+then you know it's not easy to see how
+to get that other piece of information
+well this is jerome i was thinking about
+that what if you did it in a little bit
+of a three level
+you know you can think of running your
+uh your black box code
+you know with different levels of mesh
+refinement yeah you could probably do
+something like that yes i agree you
+could do something like that but you
+sort of think of it as an extrapolation
+type
+uh approach and then you yes i agree you
+could you could attempt something like
+this
+and then in some instances the black box
+code also
+has error estimates not always yes yes
+yes yes so if you of course if you have
+air estimates you can you can you can
+play with that
+and you can but but but yes you could
+you could
+perhaps do some of this i've never tried
+but you could perhaps do some of the
+same things
+if you had uh you know you ran your code
+at different levels of resolution
+and then you learn the error that you
+make and then at the end of the day
+you can run your your fast code but with
+the correction
+right which is what you're suggesting
+and and yeah that's that's what i was
+thinking about yeah
+yeah no i think that's worthwhile trying
+i haven't i haven't tried
+also because i mean i i have to say also
+because i'm
+you know i'm i primarily work in in wave
+problems
+wave dominated problems and this this
+game of of uh
+of uh you know running at a course grid
+this doesn't work for wave problems
+right
+okay thank you dan uh time's up and it's
+it's 11.
+um so let's thank our speaker jen today
+and thank you thank you very much for
+your attention and for
+for the opportunity and
+thank you thank you okay thank you so
+much for

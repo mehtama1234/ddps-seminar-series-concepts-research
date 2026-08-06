@@ -1,0 +1,4022 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:02.790 --> 00:00:07.350
+Okay, okay, welcome everyone to the DDPS seminar. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk. Unless you have questions. If you have questions, you are welcome to unmute and ask otherwise, please use the chat room to post your questions so that you can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences. Therefore no classified discussion is allowed. So please watch help. Finally, the talk today will be recorded and uploaded in our YouTube channel. That's about it. Now let me introduce our speaker today. It is an honor to host RJ Harish who is an Assistant Professor of Engineering, simulation and data science in the Department of Mechanical, aerospace and Civil Engineering at the University of Manchester prior to arrival in at Manchester as a was awarded a bachelor's in mechanical engineering from nitk surathkal In India, a master's degree in aeronautics from Caltech in us and a doctorate in mechanical engineering from Leibniz University, Hannover in Germany, and he was back in California for the postdoc at the NH e ri sim Center at UC Berkeley. His research group at Manchester develops numerical methods for uncertainty quantification, or application in modeling waterborne Harders problems like storm surges and tsunamis. Today, they will talk more about the uncertainty uncertainty quantification and deep learning for water hazard prediction. He will be very interesting topics so please enjoy and expect a wonderful talk. Now, without further ado, let me pass the baton to Jose by asking one random question as usual. Today's man the question, it's not a random question. The same questions we've been asking, what is your favorite thing to do other than research? Especially in weekend? What do you do in weekend? Currently, I'm spending weekends writing grants, but I think I wouldn't say that the most favorite thing to do. I played a violin. So that's kind of let's say something that I would enjoy doing. Oh, that's lovely. If I get a little more time outside, so that's lovely. That's lovely. Okay, stage is yours. Thank Thanks, Jim. So thank you so much for the introduction and for the invite for the NDPs seminar. Today, as you said, I'll be talking about some ideas about uncertainty quantification, particularly related to water hazards and waterborne hazards like tsunamis and storm surges. And anybody in California is probably not new to these events like so they especially salami somebody on the school definitely has heard of storm surges. Especially there's a recent Ida hurricane there, which created quite a bit of devastation away. So I'll try to focus a little bit on the physics of the problem as well, just to highlight because not everybody might be aware of how these events are modeled, and how are we looking at it? And what are the different scales and things like that. But before I go ahead, I would just like to just give a brief general introduction about some of the work that I've done in my laptop. This is the overview of today's talk. So what is the oh, just overview of what we are doing in our lab here in Manchester. There's about nearly SimCenter, a lot of work that I'm talking today was done at UC Berkeley, and I'm continuing on that. And so this is one of the directions we recently submitted a grant to look at debris loading of structures and so on. And so what are these waterborne hazards? And why are they important, probably don't have to stress on the why. What are the modeling techniques? And the answer to and how do we do uncertainty quantification in them. So it's a very high dimensional problem, which makes it really difficult to do anything in here in a way. So I actually go ahead and you will see what's, what's the what are the difficulties involved? And I would certainly welcome more ideas and I'm open to for discussions in a way. So just to give an idea of what we do in our lab, there are two things one is the application side of things, looking at different applications like storm surges, tsunamis waterborne hazards, fluid structure interaction problem. At the moment, I'm also looking at biomedical problem related to neurovascular blood flows. And on the other side, we developed methods that can be used in there are a lot of methods already there. And how do we improve these methods? How do we make them better? How do we especially look at code coupling in a way, how do we come A couple different methods to look at their advantages. For example, we are trying to couple at the moment material point method with finite volume method. Material point does very good with regard to large deformations in structures. But then it has lot of integration issues, when you're looking at flow problems for finite volume does very well can be coupled these methods to, let's say, do more robustly. And of course, a big part of it is uncertainty quantification and machine learning as well to accelerate some of these simulations with surrogate models and so on. So once our application, the one thing that we are looking at as tribological applications, the lot of emission standards out there for exhaust emissions, are they when they say exhaust emission is it coming out of a tailpipe, and especially with the with the push for electric vehicles, I think this is something that's going to go down. But what has not been classified, like kind of characterized well, is non exhaust emissions. So this is something related to tire wear, and brake wear. I mean, it doesn't appear like a very, very, very, let's say, appealing problem to look at him now, who cares about the tires in a way, right? I will, that's kind of like somewhat the attitude if there was a lot of industry as well, as long as the tires lasts for a while, we don't care. But a big problem is all the two and pm 2.5 particles and pm 10 particles, that's a significant contributor to it. But then there are no emission standards that really regulate these kinds of particle sizes coming out of it. So that's kind of something where we are looking at also we do some bit of traditional mechanics related to contact mechanics, for example, a simple result, just example of what we what is called as the Flying Spaghetti problems, I feel spaghetti and just drop it down. How is it going to like, you know, fold around, and it's only in a 2d problem in a way are looking at contact mechanics between very flexible bodies and slender structures, or even 3d contact, which kind of has applications in tribology and so on. I will tell you about it, if you look at it, there's a lot of uncertain parameters in there right from the Roadster face to the material model, but it's extremely high dimensional uncertainty quantification problem that could look at. And one of the recent applications of ours have been to look at data driven modeling in, in looking at carotid and stroke related issues, how do we quantify the risk of a patient for example, when a patient comes in, they either come in they have they look at it, they say, okay, probably the patient needs a surgical intervention, or they go back and probably they come back again, for surgical intervention of the it's pretty much late. So how do we kind of say that, okay, this patient has a higher risk for stroke or somebody who does not have a high risk for a stroke. So there we are combining fluid mechanics simulation with deep learning techniques and Bayesian neural networks. In order to quantify the stroke width between different patients and predict some form of rescue, a new thing that we started out was to look at the cerebral flows, especially regarding neurodegenerative disorders. And to look at the oxygen level in one thing that we can easily image is the larger capillaries. But we cannot make a larger arteries, but you cannot evade the smaller capillaries and veins. And one of the difficulties that many of the, let's say, very hard to do automatically with a neural network is to be able to decipher between what's artery what's a capillary and what's a way away. So can we automatically do use neural networks to build these Wasco or structure in our brain and look at oxygen levels and eventually, look at how the how these lack of oxygen degrades the brain tissue and so on. So there's been a newly start work that the new work that we started, it's just just starting to work in progress. But just to give you an idea of it, apart from the natural hazards, and one of the other areas that I'm looking at is biomedical problems where there's a lot of uncertainty quantification to think about. Anyway, so just to start with a lot of this work that I'm talking today was done with an area and Skill Center at UC Berkeley. So just to give an idea about them, because without talking about them, this would be I'll just do the contributions that come from the area from the sim center into this work that we have done. So there is a network of natural hazards engineering research infrastructure. So it has several experimental facilities for example, like there's a wall of wind in University of Florida, the large wave flume facility in Oregon State University and so on. There's an earthquake in UC UC San Diego. These are anything at least the ones that I had interactions with, and there are several others are also experimental facilities that contribute into different natural hazards. And SimCenter is what the police station modeling and simulation center where we were developing or we are continue, we're continuing to develop a lot of computation infrastructure that goes into these soft So as to simulate natural hazards, and so on. So the goal of the SIM Center has been to build a very modular open source framework. So you can go to the GitHub, all of this is available on GitHub, all the work that we do. We have built it in a very modular fashion, for example, acid, how do you characterize the assets? For example, the building infrastructure? How do you get the information about that? How to characterize the hazards like tsunamis and storm surges, earthquake, and we'll hazards and so on? And how do you eventually come out to the response of it? You know, how do we build a more resilient infrastructure? You know, of course, a lot of a lot of this started with looking at earthquake. Center is currently in the second phase of the funding from NSF. In the first phase, a lot of focus was on the initial focus was on the US quake engineering. So that's where a lot of uncertainty quantification also started with. And eventually, this has been adapted also for the waterborne hazards and Windborne hazards and so on. So what we see here is essentially a pointer. Okay, so what we're seeing here there in the red box here is what we call confirm. And confirm essentially, is the couple's uncertainty quantification with finite element. And eventually all of your decisions on a cloud, which is attack supercomputer in Texas, and hydro UQ essentially uses D. Also users along with it brings in tsunamis and storm surge, inundation, and cod as well into the fog. So the whole idea is to combine earthquake, which is the UQ, we use a wind, hydro, you use the water and give a probabilistic assessment through PB n or today, so where people can use that to build more resilience based decision making and so on. But today, we'll focus on this one thing called hydro UQ. And look at how these waterborne hazards are firstly, modeled. And second thing is, what are the uncertainties that come into these modeling these events? And how do we account for them in a way? Okay. So I think several of most of you will be familiar with tsunamis, a big one that happened was in 2004. When there was severe damage to poles and coastline, a lot of these damage happened because of the debris. For example, here on the bottom, we can see the Indonesia coastline before and after the tsunami on the left side is before with a lot of recovery, and so on. On the right side is right after the tsunami where everything has been washed out. A lot of these debris have to less than 10 meters per second speed. But then they can be very, very damaging when they kind of crash into these into the building infrastructure and so on. So the tsunami basically killed about 250 1000 people. And so magnitude of 9.2, we understand the largest way was about 30 meters or about 100 feet when the tsunami said and so that eventually kind of washing away literally anything on the track. So one of the things that's very important in these kinds of events is to build vertical evacuation structures that can resist these kinds of floors, with a horizontal evacuation in these events is almost impossible to think about. So people try to do a horizontal evacuation. And that doesn't happen that kind of that eventually leads to loss of life and property. But then if we can build large evacuation structures that are vertical in nature, that could probably save a lot of lives. I mean, same thing happened, for example, these are ladies are 2010 Chile tsunami, where there's again, a lot of damage to the port, where these shipping containers and ships, as you can see, moved into the Polish ships have very, very small velocity at this point. But eventually they have a large mass. So they're bringing in large amount of momentum that can really destroy these infrastructure. So it will really, we want to make sure that these infrastructures can withstand the loads that are there and they don't get damaged in a way. That is one very interesting event that we're not interested in. But then very important event that was missed quite a bit during the 2011 Tohoku tsunami, where there was supposedly two submarines inside this port. And these two submarines, when the when the water the internet, through the for the submarines were basically rotating around there as the water left through it, so there is not there's not much damage. So they did not come up into the news. But there that would be a very significant important thing to account for on where these ships and submarines can be parked and how to account for these kind of hazard events and so on. of the similar things happens during the storm surges, for example, this oil rig that happened in 2005, during Katrina storm surge. And so you can see the oil rig before and after the significant amount of damage. And this was a category five hurricane, this was very similar events happened with a hurricane either recently in Mississippi, where the river started flowing backward for about two hours from the Atlantic Ocean. So instead of flowing into the Atlantic, it was flowing out back into the land for about two hours. And then the flow was restored. This was in the Samsung, it's not just the water waves, but also wind, that adds an additional damage that can create a lot of wind debris that can really damage these infrastructure and so on. So essentially, we need to we got, let's say, stop these events from happening happening, but then we need to build our infrastructure that has that are resilient. And that can account for these kinds of events and automatically saves that we need to account for different range of events, you know, it can be a small event, it can be a large event, but it can be once in 100 year event, but how do we account for these things? And that's where YouTube comes into the picture, as you'd already guessed, in a way. So just to give an idea for what what, what's the storm surge and how does it happen? One can think about that there's a center of low pressure around with all the waters being drawn. And as this low pressure area moves towards the land, this water is kind of pushed towards land. So people can expect about 15 to 20 meters, to 20 feet of storm tide very easily. And again, this depends on the magnitude of the event, and the low pressure area and so on. But you will during storms are one of the biggest thing and also the wind driven surge, and also the wind driven debris. And I made that kind of comment along with the storm surge, as well. So there's two kinds of tsunamis as well, I'm going back and forth between storm surge and Salamis, because, though the they are different kinds of events, eventually at the end of the day, when it comes to modeling, very similar approaches are taken for both of these events. And so as we'll see later on, if we look at what colors are tsunami, one or the other, like you have a six week event, which is an earthquake, so the motion of the fall. So if roughly crudely to think about you have something of OSHA in Florida suddenly moved up, which means a whole block of water has moved out. And now you suddenly this this block of water has to go somewhere, and it kind of moves to work. And second thing is landslide, which means they will think of the that to be creating a large magnitude tsunami. But these are highly localized tsunami and one of the largest tsunamis where the or 400 meter way was in Alaska, in 1958. So these are very localized events. But then this can create a lot of damage in that particular region, where there's a huge landslide that's happening just to just to look at some of the modeling approaches. YouTube, please tell please let me know when, when I'm running out of time, I will. Yeah, thank you. So let's look at some of the modeling approaches. Because that kind of makes it important to understand how do we put you into the problem? What's the problem in there before we can put you to interpret right? So just to most of you would have done a video mechanic's course and so I don't have to talk about this wavelength, what's the crest what's the trough or the wave height and wavelength, so right so, but then just to get us all on the same page, right. So, we have to crush and distance between them is the wavelength and distance between the trough and the crust is basically the wave height, right. So, one of the things is essentially what happens with these kinds of events like salami is a very long wave that So, in the ocean, you in the deep ocean, you will never recognize that a tsunami is coming in, because the wavelengths are very long compared to the compared to the depth of the ocean floor. So, but then only what what what would happen is as these things very crude image of what would happen, as the wave moves towards the shore, the depth of the ocean floor is starting to reduce, which means that this energy that is coming in has to go somewhere and height of the way we went to Lincoln and that is what what leads to a lot of devastation in a way because as soon as it starts to meet ocean floor, the wheel starts to slow down. And once it starts to slow down, the faster moving wave starts to crash starts breaking away. Right. So crudely, to think about this kind of leads to a lot more devastation because the wheel braking effects and so on, that it says a lot of interest to the community. So the modeling assumption that are often made and one is the floor is incomprehensible and reset. The amplitude of the wave is much larger, much smaller than the wavelength and the depth of the ocean. The flow moves or complex documentary or topography so the ocean floor is pretty complex. And one of the things that evolves over over multiple scales, right, so in ocean, you know, open ocean when you have kilometer resolution, but then when they come to the near the coast, you need to look at a meter resolution, as we'll see some of the results later on, you will see that we need adaptive mesh refinement in order to account for different sets of grids that are there, both in ocean flow to deep ocean and in near the coast, you know, like, okay, so this is what we did, we developed this tool called hydro UQ that combines the ideas of all the brings to the, let's say, 3d finite element 3d competition fluid dynamics, where we use open source tool, open foam. And we brought in shallow water solutions, as you will see later on how all of these things are combined. So but just to give you an idea, so most of our infrastructure is coastal infrastructure, which is at risk, for example, can be looked at as these buildings that are highlighted in this yellow colored boxes. And so these are our buildings of interest, either it could be an offshore structure, or it could be a structure right on the coast. And there could be either a fault or a low pressure zone that is driving the water. And that will be our domain of interest for our two day shallow water solution. So if you want to do a lot, if you want to do CFD simulation or a large domain, then you really need a huge computation results. I, I don't even know if it's possible. I've never tried it personally. But maybe people do it for meteorology. People from meteorology, do these kinds of simulations. But in the most of the communities, these waves are more shallow water waves, the shallow waters to the shallow water solver is used in the deep ocean. But as they come into the coastline, you need a much more high fidelity solution. Although the shallow waters can capture the inundation heights reasonably well, they're not so good at capturing the forces on the structures, which is kind of what you're looking at the building response eventually. And so there we combine this with open foam on any kind of 3d software. And the building itself is looked at with a 3d finite element and some uncertainty quantification looking at the building response. At this point of time, you are not interested in looking at what is the let's say, like uncertainty in the event itself. But more like what will be answered in it in a structural response for a particular event, eventually, so eventually, that the idea will be also to become combined to like looking at uncertainty between different sets of events in a way. And that kind of that makes it harder because the looking at 3d CFD with uncertainty quantification makes it very time consuming. And that's kind of where 3d FPGAs really fast. So essentially, coupling uncertainty quantification with that as much more easier and more computationally efficient than doing it with 3d CFD, fidelity, CFD in a way. But just to give an idea of depth right now, we are slow. So we have basically, Now historically equation, which is our momentum conservation and mass conservation. And what we start by doing is looking at, let's say, if we start to think like, why are our components in nature? Why is it that we start to neglect that and when do we start to look at it as a truly problem, let's say on the clock, No, we just start to look at it as a warranty problem, that is our depth from us exceeded our walls direction in with the waves propagating, then we can reduce our lobbyists, dogs and our mass conservation to do one less equation there. And now what we want to do is we want to couple everything with with our boundary conditions. So we have a free surface, which we call theta, and bottom surfaces B. And we can say that, we can kind of come couple our velocities, we can say that our velocities at the bottom surfaces maybe is zero, and the pressure on the top surface is zero, essentially. So we use our boundary conditions. And we, we can, we can always generalize this into Tuesday, we started the week, and what we need to do is we need to integrate all right. So I've just chosen one day One day in a way, but we can always have the y component to it, which will give you an additional equation in there dou u by dou x is nothing but in the x direction and y direction would be on the other side of the direction of the surface perpendicular to that and that is our depth that we are looking at. Primarily what we want to do is we want to integrate all the depth right. So, we are integrating brings our bottom surface or the ocean floor to eat which is nothing but our free surface. So once we are able to integrate over from bottom surface to the top surface take on all of these reducers into a much simpler form, which is looking at how is there variation of the height with regard to time and what is the variation of the say height is essentially our bathymetry they say the height of the water column at that particular Time is a particular point. And you bar is nothing but the depth average velocity at that particular point at a particular time. So both are a function of x comma y and time. And he is nothing but the word water column, which is try changing, as you'd expect, right. So, all of these leads to a very nice assumptions that that leaves us with a 2d equation to solve on the shallow waterfront in a way. So again, we can always increase that and we can write it in a very nice form for our steady state, where we can say our steady state ocean is represented by the hatches the water column height, and B is the location for bathymetry. So we define a mean surface and with regard to that, we can say that is equal to zero. So zero is our mean surface when the ocean floor is your steady state. So that kind that accounts for let's say, any kind of variation that will occur that is that is there for the water. Right. So I'll skip a couple of equations here, but probably can come back to that as we as we progress through the seminar and come back and have a look at these equations in a way. So, what what happens during a tsunami initiation is that we are just saying that our freezer phase has changed by some amount. So we say that it was which is our freezer phase is no longer at zero, we will no longer at a steady state, but the height of the eater which is a freezer face has changed to some amount and automatically this DT r by dt progresses or the entire set of equations okay. So, all of this leads to a very nice set of hyperbolic equations on shallow water that we need to solve. One of the things that has to be done as we need to discretize will be when we take a 2d domain and we need to discretize it, we have to divide them as a COVID cell and our DryCell. So that is what makes it a little more complicated. When cell is we have some water or height or water column is nonzero. And a dry cell is where the height of the water column is zero. So because we are taking the bathymetry of the ocean floor, but we also are taking the topography of the land overall. And now as the water progresses, it can move from one side to the other in a discretized state, where the where our mesh can change from wet state to a dry state and dry state to which state so there can be a state which are always wet, which which are always dry. This is the land and the word ocean button, the coastal region would always chain between the wet state and the tri state and that needs to be accounted for when we're looking at the ocean. So just to give you some examples of the zone here, this hypothetical magnitude seven earthquake. So I wouldn't say that squeak that happened or something that would happen, but this hypothetical case, so I just want to be careful on that on Alaska fault. So, where we are looking at two points of interest, one is the consent city in California. And the second one is Honolulu in Hawaii and adaptive mesh refinement it has been used from level one to level six. So, this is what I was saying that when we are looking at a particular region, let's say on the ocean, then we are looking at a level one grid which is very unrefined. And on a when we are looking at some kind of coastal region that you need to refine this area, so that you can get a much cleaner and better resolution results on the course where we are trying to look at these events. So this grid size, just to give you an idea, one degree is about 110 kilometers, that is about the grid size on the ocean in the deep ocean that we are looking at. And about the island we are looking at near the coastal region, we are looking at what about half a second, where the grid resolution is about 15 meters. So this will give you an idea of the different grids that are being used. And this order case was run in collaboration with Professor Patrick Linnet at USC. So this was done when we are well known UC Berkeley. And the two regions of interest. One is that place in Honolulu, and one is a coastal region in Crescent City in California. And so this visualization of the video progresses, what we are looking at the red and blue is essentially the trough and crest of the tsunami wave that is propagating in a way. So this has been as we'll see later, even though the scale is between point two to minus point two two plus point two meters. That is because that's the let's say the wave amplitude at Regis Honolulu in Hawaii. But in in Crescent City that's more than six meters and we'll see in a couple of minutes from now. So as you'll see, I don't know if fully observed but probably something that we can go back and again look at it is if you look at this, this 110 kilometer grid as you'll see that so the grid elects extremely Oh, there are further more cells in there. But then there's just the outline so that it doesn't look very bad. The grid is extremely limited is sparse in a way, it's not dense. But as we, as the simulation progresses, there's adaptive mesh refinement, that that is there in geo club. So most of the simulations were done in geo cloud, you can see here, the Crescent City and again, near Honolulu, in Hawaii, these smaller groups are there. So there's not exactly a level six grid that you have seen, the levels in sixth grade would be much more dense in there. So these have like the much more smaller grids that are used near the coastal region in order to get a much more refined solution and much higher accuracy with regard to inundation depths, and so on. So again, just just to look at the level one grid for the entire base, this is what we were looking at. But that is something that was imposed on Google Maps. Again, we can see that the different levels of grids come into picture, and then when the wave propagates in there, so these cells are essentially like a wet or dry that I was showing in that earlier, as a wet or dry kind of changes. These are additional grids that are there habitat by geo Cloud automatically. So this is a level six grid in the Crescent City in there. Okay, so usually, when you start this level six grid is just one big cell, it's not been there. But now as the water flows in, you can see that it really adapts and to give a much better solutions on all this is much higher level grid, and you can see all the different coastal structures that are out there. So as the water progresses in these additional grids, or take over it in order to give a much better defined solution for the problem. Yeah, so there's again, like Crescent City, where we can see, there's basically a cross sectional area of the Crescent City that is there, where we are looking at the water progression. And we can see that the there's one wave coming in, so there's a second wave that goes up to six meters. And the third wave, it's about a little more than two meters. But if we go back to see that, so we can see, looking at the water level series, we saw that there was a small wave coming in, and then there's a wave that went up to about six meters, and there was a third wave that came in. So it's not just one single wave that comes in during the event, but then there were multiple views that could come in at different levels. Again, if we go back again to Honolulu to look at it, we can see the same kind of event in a way. But then here the we saw the wave amplitude was much smaller. And that was a reason why the origin video the wave amplitude was capped at 0.2 meters. So you can see everything is really red. But there is so much of an event here. I mean, like if you look at the water level, there's between about point two two plus two point minus point two, two plus point two meters in a way, in Honolulu in about six meters in the same city, California. So, so these are the kinds of modeling techniques that are used during these simulations. So we are looking at primarily like shallow water simulations in order to be able to get these inundation depths. So first thing is we get the inundation depth. But second thing is what do you do next with this inundation? Absolutely. Right. So we need to take these inundation maps and somehow feed it into CFD software. So what happens here we have a 2d grid, which is essentially a nice square grid on our between a certain latitude and longitude. But now in a 3d simulation, you have essentially like a face that goes through the entire ocean bottoms, ocean bathymetry, in order to account for it. So there needs to be somehow conversion which, in some solid mechanics sense, it's basically like somebody's coming from a solid mechanics background, one can think of connecting a beam or a plate to a shell or a beam or a plate to like a solid in a way. So you have a 3d object to which you have 1d or 2d object disconnected. So this is essentially the same kind of physics that needs to be accounted for when we are interpolating between a shallow water solver into CFD. So in a way, we have depth knowledge velocity information, that needs to be converted into full 3d velocity to input into a CFD. So Gary, hydro UQ does these things. It takes the input from the 2d or to shallow shallow water solution that we were discussing, and inputs it into as a boundary condition into 3d Open foam in order to run 3d CFD simulations. So once these leads 3d CFD simulations have run, so that gives us some forces and borrow forces on our structures. And that's where we want to we had at that point of time, we are focused to look at the uncertainty quantification in these structures. So a lot of work also has to have to create the summary and Akash was we did a lot of work on the UQ methods that have been developed. And then they're still currently at the same center where we're working on the UQ methods. as well. So where was what? What did you want to look at? So first thing is we wanted to look at what is the propagation of these uncertainties from inputs to outputs, right? A simple thing to think about is, let's say we have some kind of origin and design, but then there needs to be an alternative design because of the different displacement that these designs would lead to innovate, right. So which design should we select? So that's where uncertainty quantification comes in? And what are these buildings structure? What are the responses from these building structures, looking at these kinds of fluid loads that are coming in? And particularly looking at some of these debris loads that are coming in as well? Right. So, so two big things as, as I was discussing with you, so right at the start was one of the biggest things, is this damage to infrastructure? What is the repair cost? And what is the downtime? And that's one thing that has been seen is the sludge events significantly affect more marginalized communities in a way? And how do we make the impact a little lesser? So we want to understand the overall uncertainties in our inputs? And how do they are quality? How do they lecture propagate through the system in a way as outputs and kind of looking at what will be the repair cost or downtime? Overall, in a way, right? So we want to do all of these things. And the simplest thing to start out with is to say, Okay, what, what would be the x modulus of this structure to start with, let's assume that this structure is made of a steel structure, what will be the NX modulus of the structure. And if there's a variation in its modulus, you run a finite element simulation, get the response of it. And so to do some kind of forward sampling, or to reliability analysis to look at what would be the significant damage and, or even global sensitivity analysis to look at the importance of different parameters that are there in these structures, and so on. So these are the kinds of things that we wanted to eventually do. And let's eventually be able to make some kind of engineering judgment. So most of the times, it's, I would say, structural engineers don't want to run a CFD simulation that would take 15 days, or a week or so. And but then if I talk to engineers from the fluid mechanics side, they're very happy now for 50. A week is a normal CFD simulation for many of them. But then for a structural engineer designing a structure, who wants they would want quicker response. And so kind of they want more, faster problem faster solutions in that kind of that kind of makes it much harder to kind of bridge both worlds in a way. But then we want to somehow bring in these things, and won't understand this thing. And a very straightforward approach for us would have been to do forward propagation. So we built in the forward propagation model, where somebody puts in a different tank modelers run the same, takes the same fluid load, but is able to run the CFD similar ran, the CFD solution has a set of forces over time, or time series of forces, and is able to run the structural simulation in order to get some form of response. But then again, a simple thing would be to run off simple Monte Carlo. But then we have, we also made it a load things for them to run Latin Hypercube, whether or even surrogate models might difficulty modeling in there to make it more numerically less expensive. And so again, second thing that we wanted to do was to look at reliability analysis. So one of the things that is of interest to a lot of natural hazards engineer is to look at reliability errors, and what would happen if when would a model, let's say, cross a particular threshold. So I don't care about you know, what, what would be the loads on the structure, what only I care about if it went across a particular threshold? If it crosses a threshold, that's when my structure would probably be at risk to damage or to break or to fail. And most of the engineers structural engineers won't understand that. I want to reduce the number of simulations in a way. For example, let's say a 10%, would essentially mean 1000 simulations. The point 00 1%, would mean 10 parsecs simulation in order to get that kind that percentage of, let's say, accuracy in a way. And that that's where we are looking at important sampling and subset simulations. And so even surrogate modeling and a combination of both these kinds of methods have been incorporated into hydro UQ that would allow the user to in order to run their simulations, put a structural model in there and be able to do the reliability analysis and make a decision process have to look at different graphs in particular. The last couple of things that are there in hydro refused one is to look at global sensitivity analysis. For example, if there's Ulus, let's say or all of these parameters equally impacting response, for example, there could be the models of the beam that could be forces acting on the structure, and it can be variability in the structural geometry itself in a way and how do each of these different variables in backbend which is which has a high sensitivity and which has a low sensitivity. Look at so Sabol indexes and so on. So hydro UQ makes it very easy for a user. In order to put these things in there and run, they run their structural simulations on the CFD channel water and the structural simulation to do a global sensitivity analysis and very, very straightforward manner. And the last thing that is there is looking at surrogate models again, like here we have neural neural networks and Gaussian process that has been incorporated into hydro UQ. And something that we are working on is to look at looking at design of experiment to make it more easily accessible to the user, they can run these simulations, and do some form of design of experiments, including the CFD as well. So that's kind of our bottleneck in a way to see how we can do faster CFD simulations. Shallow water runs very fast, but then the CFD is the bottleneck to that high fidelity in forces over time series of forces in a very high fidelity manner. So since people have been able to easily build surrogate models, and we are able to use that, particularly on the structural side, one parameter system, two parameters system or even a neural network in question process, and so on. So one of the last thing that we recently have is looking at inverse UQ, are by ation calibration. Were looking at the students simulation and looking at the force time series forces on the building's go back. And let's upgrade the distribution after the observing the data in a way. So start with x modulus, but based on your simulation data, be able to update the models, distribution, so that you're able to calibrate for the kind of structure kind of forces that are that are there on the structures and observe based on observations and based on whatever your simulation model is gearing because there's a lot of uncertainty in there, which we don't know about structural response itself. So again, like this, this has been used to calibrate material model, reduced order model post even damage diagnosis, especially because there's a lot of image that is available post event to post disaster that can be used. And can this be used to create you can we will do by action calibration in order to get the structural response and how the structure would behave if you get such an event with the the structures. So just did to date. Hopefully, I'm still on time. And now there's some time for questions. All of these things is available on the ad SimCenter hydro UQ. So I will put the link to the master one, where you have the latest working version, I would say. So there are other beta versions that we are working on. But so you can on the near the same center on the link, you can find it or you can have software that will allow you to do all of these uncertainty quantification, but not just use UQ. but also be able to couple that with shallow water and CFD and finite element together. So that believe it I'll leave this link with you. And I will be happy to answer any questions. Wonderful. Thank you so much for the wonderful talk. So let's have a q&amp;a sessions. So I don't see any questions in the chat. Yeah. But while you guys are thinking about this questions, I can ask some of the questions you said, we use the neural net model for the reduce reduce student, whatever. So again, what sort of the neural net model? Can you elaborate a bit more on that? Yeah. So so the hydro up has both convolution neural networks and RNNs in a way, because there's a lot of time series forecasting. So origins and LSDM have, they're available. But also, all of this is kind of open source. So if a user wants to bring in a different neural network architecture, they can add in when they can always push in. So the idea is to make it more common, more community contribution in there. So one of the recent things that is still not available on Youtube is the graph neural networks that we use. So where we were trying to build a surrogate model, not just for the structural part of it, but also for the shallow water and CFD part of it, where we use the graph neural network in order to run some of these CFD simulations and be able to train that. And that's where we will use also working with Latin Hypercube method in order to say, Okay, what should be our next Tod simulation that we do that would offer us record of spend most of our space that we would want to innovate? So we combined Latin Hypercube method to choose in the next set of pod simulations. And all of these was trained with the graph neural network to create a surrogate model. So there were two outcomes coming out of this one was basically a compression in a way. So were wanting, I mean, this was a side a side effect of it, I would say. So all of these simulations What likely if you think of each simulation like a Blu ray Disc, and you put everything into a pendrive? Right? So that's that's essentially the idea that we wanted to put in, can our graph neural network, be trained on lots of DCM CFD simulations in order to be able to replicate? Essentially, there's a surrogate model. And that was something that we were able to do very successfully, you know, woods for cod or for the shallow water solutions. And second thing that we were able to do was, is not just you not just train it as a surrogate. But then now, can you, for example, one of the biggest things for a lot of users on high HPC systems, when you are working with hundreds of processors, it will download this data. I mean, a very, very crude mesh here gave about a 300 gigabytes of data. That's a very crude, but a bad simulation, I would say. So we were talking about terabytes of data in a simulation. And nobody wants to really download that to do the post processing and things like that. Especially for to create visualization. So what we did was to train the graph neural network with our simulations. And then you could download your graph neural network, still the network and just download that. And you could train it a different accuracy. For example, let's say for visualizing, I don't need to have 100% accuracy, I don't need a six decimal digit, a second decimal digit is sufficient for my visualization. So we were able to almost get 1000 times compression, because you know, so you say, Okay, I need a 90% accuracy, which doesn't give me a six decimal digit, but just a fraction, decimal digit. And that pretty much gave you almost 1000 times, let's say compression in a way. And you could just download that and use it for visualization purposes. So this was, this is not yet put into IOU, but this is the next thing that will hopefully go in in the next couple of months. Just curious, I mean, the graph neural network training of the Google graph, neural network can be very demanding. And you said that Ada is probably training itself, it will be pretty computationally demanding. But you put all the efforts, you know, I had and then, you know, make it available to the public. So what we did was to create a sub process. So as a CFD simulation is running every once it finishes every step, it there's also sub process that is running parallel process that is running with it, which is running the graph neural networks, that sends a message to the graph neural network and saying that there's a new result available, and use that to kind of do the batch training with it. So each, each measure itself is quite big. So each time step is broken into much smaller batches to do the training in a way. And there's also a bit of domain decomposition in there, to not just claim it as one single domain, but as multiple domains. So that when you can, before a CFD simulation runs, complete, your your training your graph neural network, but then you're done quite a bit of it already. And you don't have to train every single time step. Sometimes. We kind of try to adaptively, see if it can extrapolate and check for the error with the solution. And based on the error, it doesn't have to train that particular time step but can skip the time step and go ahead. So that way, you can save some time as ice. So basically, you guys do this some storage apps for us, and then the users can take the data from the graph neural network. Right? Yeah, yeah, exactly. Exactly. So yeah. So basically, the idea is essentially to make it make HPC systems easily usable for users. So they don't have to download all the data. Because Because this tool runs on the Texas Advanced Computing Center. And so somebody who's never used the HPC system can still use it, because there's a nice interface use it. So they just give somebody a button and everything job submits there through an API. But then like when the ones they say download, and now this is starting to download everything that could be contained for the user to use it. Right? So then they don't want to really use that. So it tries to download minimum amount of data because everything what happens is all the simulation data is now transferred to design says they can go to this design safe portal and from there, access their account and get all the data from the simulation. So it's a bit old's way of doing things I would say but without criticizing that. So this the whole design save works is basically transport one file at a time from the tax system. I don't know why didn't build it, but somebody else had built it. So which kind of really slows down when you have a lot of files in a way. So you want to download everything as one single punch, you know, and that kind of downloading a single neural network and repackaging it makes it much more easier. Okay, sounds good. Okay, so during during the, you mentioned the lighting and procure for the sampling to fire out to sample next time, Latin Hypercube is the predefined the design of the choice methods, so, but there are there is a physics space, it's based sampling, which can tell you where the maximum error is in terms of the physics and then you can use information to determine the where the next sample would be. So that might give you a better better way of sampling than simply using a predefined. hypercube. Okay, so any other feedback? Yeah. Any other questions? Sergey, and Sergey has his hand raised, I think. Oh, yeah. Okay. Yeah. Please unmute yourself. And then Sergey, you're welcome to unmute yourself. Thank you for very interesting presentation. I have kind of a strange question. Like information reducer seems to be very important. What you're doing so just wanted to give this to city planners. Lawyers, which are like making decisions, like financing stuff by building this vertical? Line, Excel is I don't know how to say about predictions of Escalade. It can be stimulated the use cetera. But not I find striking, nice light about notions from cars and jets. correctly, pollutions exhaust the fact that this is an island, she was kind of striking. So Jeff, I'm asking what you're doing. So both your eyes to data. I also see is that like, using this kind of simulation or not? Making people to think again, what factors are involved. And in many cases, before, there was no clear models to take the stock first and take off. Now you can do it even, like reserve goods, physical model. And as is quite important to you analyze all existing models and factors. That's fine meeting factors. What you're doing about like to popularize this idea for this question. Now, I broke up a little bit in the middle. You also were able to catch all the questions, and you have a lot of interesting data important data for people that are lawyers, or city planners, etc. Because you're going to prefer to make them known to public twice public. Okay, yeah. So I think she'll Center has its own way of publicizing things. Now, I'm not officially with the sim center. So one thing that I'm doing also in the UK at the moment is trying to work with some of the city council here in Manchester in the UK. And also there's a consortium called CCP WSI plus. So it's called the computational center for wave structure interaction. So where we also looking at the tsunamis and storm surges and these events, and we are trying to work with, let's say, so one of the industries that we are looking at is to look at if this would be interesting to insurance industries, especially those who are doing like reinsurance and looking at insurance in hazard areas, particularly that could help them really make a better assessment of what what are the events that could happen in here? What is the real risk that is there, that could really reduce some of the premiums that are being charged in a way so we are trying to work with some of the insurance companies and also with City Council's and city planners to see how we can bring these tools into their design process and to into their decision making process. But the difficulty is that it it's a it's quite hard because eventually there's a lot of there's a lot of uncertainties in the system. So that kind of makes it really harder for them to reset take a decision based on these tools. But there's a very concerted effort trying to get it to them in a way and trying to get them to do it. So one of the recent things that I myself started was to look at debris. For example, UK recently released the report that said that we don't really have any kind of database of what could be the debris that happens during comes during these flooding events. So most of the damage that happens is not just because of the water, but we sample there's, let's assume there's a car that is floating in, and that blocks a building. Now the water that has flowed is not able to flow past the car, so kind of the water level builds up a little bit around there, and now that are both loading onto the structures in a way. So we don't really have a lecture database that says, This is the kind of event that happens, these are the kinds of debriefs that are coming in, and so on, so forth. So we're trying to build, let's use YouTube videos and post hassled videos to do object detection to map out what are the kinds of events? And what are the kinds of debris that would come in because of these events? And how do we use that in our physical simulation, to not just look at this way, but also to look at the breeze. So that would give us a much more or less a more robust, let's say, evaluation of the structural response in way more, in a way, so that there's not a concerted effort going to get this into the hands of the city planners and structural engineers. And also, particularly with regard to also insurance companies and so on. But the progress is, I would say reasonably slower than what we would like. We would of course, like them to immediately integrate into their design philosophies. But I think that takes more time. I think that we need a more concerted effort there. Yeah. Yes, thank you. Thank you very much. I understand what you're doing. is interesting, for example, tell companies scientists were doing the old climate prediction model. Right, is to be quite accurate. And, nevertheless, company was doing what they were doing. They were doing the same stuff. And as you're making the product, which insurance company you can make, and I can rephrase my question, Are you considering to, like brains, this information to actually click with activities? Not only to companies? Yeah, they can affect government and companies. Yeah. Because Because the problem is extremely multifaceted, multidisciplinary. Also, we try to reach out to the geophysicist and climate scientists and people who are in the, let's say, Geo, geological area, you know, a kind of niche, I would say, who are looking at more like the things like sedimentation, erosion, and all of these things as well and climate change what sea level rise as well, to see how this can also be incorporated incorporated into their workflow. Biggest problem is some of these simulations that we do are very local innovate, right? So even though we can do a large scale simulation, they were more focused on building your like Alexei 10s of buildings, or, for example, a critical infrastructure, maybe a nuclear or chemical plant or something like that, which is around the corner. So it's more local, than looking at the global infrastructure itself. So so this skill we're doing reaching out to them, but then I think they are looking at a different scales. So there's still a bit of a mismatch in discussion. So So one of the biggest things that we are trying to do is firstly, to reach out to, let's say, academics and faculty, even in the humanities area, because they look at the post disaster event how, how do communities, let's say, How is the damage changing? After after the damage happened? How do communities come back to normalcy? I would say, I'm not getting that word. But let's say that they have a disaster. They're all displaced. Now they have to come back to their homes. And how much time does it take for these things. So even this is, this would be our very first step to see if we can make the change there. So that this, this amount of time that people need in order to come back to their homes can be reduced. So if you can really say take a community and prevent the kinds of damage that could happen, depending on the events, can you improve the resilience of the community? Can we make it better, so that they are less affected over time because of these events and so on. But then yes, this is an effort to reach out to climate scientists and those who are modeling sea level change. But I think then we need to start communicating in the same language. I think the border communities need to start Talking in the same language. I think that's there's a bit of a mismatch at the moment. All right, that sounds good. Okay. If if, Sergei, if you have a more questions, thank you very much. I guess you can ask to, you know, send an email and then the Ozzy will be happy to answer. Yeah. Yeah, there's a another question by Jeremy. And he asked, you mentioned the building a digital twin for adding aiding in making decision is your twin comprised of the surrogate or the for the model. That is, is the intent of the twin to be used in real time is the twin and the decision making with a twin aware of the uncertainty you are quantifying? Those other questions? So the idea of building these digital twin is essentially comprised of both the surrogate model and also based on the actual, full, full full fidelity simulations. We essentially, I forgot where I put that, but then we essentially don't want to just limited to the surrogate model, but then we also want to have fulfilling. On the structural side, we don't have much of a problem with running a full fidelity because most of the structural models are made of beams and plates and structural elements, which run reasonably fast. For example, you can learn how to collect each simulation probably takes a few seconds, maybe at most, a very complex building simulation might might take a little longer. But we can run a full fidelity simulation, we don't necessarily need a surrogate model. But having a surrogate model allows us to span a whole bunch of space and makes it much easier to look at it in a way so the you can you can run either both a surrogate model or full fidelity model. Okay, sounds good. Okay. Next question is by oven. Oh, well, no, it was not a question. It was this. It was thanking you for the great. Okay. Is there any other questions? From audience? No. Okay. Let's Well, then let's thank our speaker as a today for the wonderful talk. And if you have a, you know, the additional questions, please email as a directly, I think he will be happy to answer you. And also if there is any collaboration opportunity. Yeah, please reach out to it. Yeah. So, as a you're looking for collaboration, right? Definitely, definitely. You served out very happy if anybody has any questions or would be interested in collaborating, then there's a lot of opportunities in this area. There's a lot of open problems, and I would be very, very interested. You can also look, the My Lab website at Idi lab.co.uk. And you can also find my email there. Also, I think this email is maybe there on the invite, and I will be very happy to work with you as well and if you're interested. Wonderful. Well, thank you. Thank you so much for the opportunity. Thank you. So thank you so much. Bye bye
+
+
+00:00:07.350 --> 00:00:10.680
+ 
+
+
+00:00:10.680 --> 00:00:14.160
+ 
+
+
+00:00:14.700 --> 00:00:18.690
+ 
+
+
+00:00:18.690 --> 00:00:21.990
+ 
+
+
+00:00:21.990 --> 00:00:25.860
+ 
+
+
+00:00:25.860 --> 00:00:29.640
+ 
+
+
+00:00:29.640 --> 00:00:33.300
+ 
+
+
+00:00:33.300 --> 00:00:37.380
+ 
+
+
+00:00:37.380 --> 00:00:41.040
+ 
+
+
+00:00:41.040 --> 00:00:46.260
+ 
+
+
+00:00:46.650 --> 00:00:50.460
+ 
+
+
+00:00:50.460 --> 00:00:53.880
+ 
+
+
+00:00:53.880 --> 00:00:57.750
+ 
+
+
+00:00:57.750 --> 00:01:04.530
+ 
+
+
+00:01:05.010 --> 00:01:11.280
+ 
+
+
+00:01:11.460 --> 00:01:17.520
+ 
+
+
+00:01:17.520 --> 00:01:22.650
+ 
+
+
+00:01:22.650 --> 00:01:28.050
+ 
+
+
+00:01:28.080 --> 00:01:35.370
+ 
+
+
+00:01:35.370 --> 00:01:38.730
+ 
+
+
+00:01:38.730 --> 00:01:42.540
+ 
+
+
+00:01:42.570 --> 00:01:47.370
+ 
+
+
+00:01:48.000 --> 00:01:52.110
+ 
+
+
+00:01:52.110 --> 00:01:57.480
+ 
+
+
+00:01:57.510 --> 00:02:00.840
+ 
+
+
+00:02:00.840 --> 00:02:03.960
+ 
+
+
+00:02:03.960 --> 00:02:07.080
+ 
+
+
+00:02:07.080 --> 00:02:11.190
+ 
+
+
+00:02:11.190 --> 00:02:14.910
+ 
+
+
+00:02:14.910 --> 00:02:18.900
+ 
+
+
+00:02:18.900 --> 00:02:19.650
+
+
+00:02:21.960 --> 00:02:22.980
+
+
+00:02:23.070 --> 00:02:28.410
+ 
+
+
+00:02:28.410 --> 00:02:31.650
+ 
+
+
+00:02:31.650 --> 00:02:33.960
+ 
+
+
+00:02:33.960 --> 00:02:37.500
+ 
+
+
+00:02:37.500 --> 00:02:37.830
+
+
+00:02:38.279 --> 00:02:41.309
+ 
+
+
+00:02:42.300 --> 00:02:45.000
+ 
+
+
+00:02:45.000 --> 00:02:49.920
+ 
+
+
+00:02:49.920 --> 00:02:53.160
+ 
+
+
+00:02:53.160 --> 00:02:57.330
+ 
+
+
+00:02:57.330 --> 00:03:01.770
+ 
+
+
+00:03:01.770 --> 00:03:05.250
+ 
+
+
+00:03:05.250 --> 00:03:07.770
+ 
+
+
+00:03:07.770 --> 00:03:11.700
+ 
+
+
+00:03:11.700 --> 00:03:19.140
+ 
+
+
+00:03:19.140 --> 00:03:21.900
+ 
+
+
+00:03:22.290 --> 00:03:26.730
+ 
+
+
+00:03:26.730 --> 00:03:30.690
+ 
+
+
+00:03:30.720 --> 00:03:33.720
+ 
+
+
+00:03:33.720 --> 00:03:36.360
+ 
+
+
+00:03:36.360 --> 00:03:39.600
+ 
+
+
+00:03:39.600 --> 00:03:42.990
+ 
+
+
+00:03:43.020 --> 00:03:45.960
+ 
+
+
+00:03:45.960 --> 00:03:49.200
+ 
+
+
+00:03:49.200 --> 00:03:54.030
+ 
+
+
+00:03:54.030 --> 00:03:57.330
+ 
+
+
+00:03:57.330 --> 00:04:00.060
+ 
+
+
+00:04:00.720 --> 00:04:04.320
+ 
+
+
+00:04:04.320 --> 00:04:08.640
+ 
+
+
+00:04:08.640 --> 00:04:11.010
+ 
+
+
+00:04:11.040 --> 00:04:13.710
+ 
+
+
+00:04:13.710 --> 00:04:17.520
+ 
+
+
+00:04:17.520 --> 00:04:21.270
+ 
+
+
+00:04:21.270 --> 00:04:24.600
+ 
+
+
+00:04:24.600 --> 00:04:28.230
+ 
+
+
+00:04:28.230 --> 00:04:32.220
+ 
+
+
+00:04:32.220 --> 00:04:35.850
+ 
+
+
+00:04:35.850 --> 00:04:39.240
+ 
+
+
+00:04:39.240 --> 00:04:42.300
+ 
+
+
+00:04:42.300 --> 00:04:45.570
+ 
+
+
+00:04:45.570 --> 00:04:50.010
+ 
+
+
+00:04:50.010 --> 00:04:52.860
+ 
+
+
+00:04:52.860 --> 00:04:55.740
+ 
+
+
+00:04:55.740 --> 00:04:58.500
+ 
+
+
+00:04:58.500 --> 00:05:01.110
+ 
+
+
+00:05:01.170 --> 00:05:04.320
+ 
+
+
+00:05:04.650 --> 00:05:07.110
+ 
+
+
+00:05:07.110 --> 00:05:10.020
+ 
+
+
+00:05:10.020 --> 00:05:13.830
+ 
+
+
+00:05:13.830 --> 00:05:16.800
+ 
+
+
+00:05:16.800 --> 00:05:20.340
+ 
+
+
+00:05:20.340 --> 00:05:23.790
+ 
+
+
+00:05:23.790 --> 00:05:26.850
+ 
+
+
+00:05:26.850 --> 00:05:30.270
+ 
+
+
+00:05:30.270 --> 00:05:33.120
+ 
+
+
+00:05:33.180 --> 00:05:36.870
+ 
+
+
+00:05:36.870 --> 00:05:39.840
+ 
+
+
+00:05:39.840 --> 00:05:42.960
+ 
+
+
+00:05:42.960 --> 00:05:46.080
+ 
+
+
+00:05:46.080 --> 00:05:49.110
+ 
+
+
+00:05:49.110 --> 00:05:52.290
+ 
+
+
+00:05:52.290 --> 00:05:55.740
+ 
+
+
+00:05:55.740 --> 00:05:58.740
+ 
+
+
+00:05:58.950 --> 00:06:02.910
+ 
+
+
+00:06:02.910 --> 00:06:05.310
+ 
+
+
+00:06:05.310 --> 00:06:08.460
+ 
+
+
+00:06:08.460 --> 00:06:11.040
+ 
+
+
+00:06:11.370 --> 00:06:16.260
+ 
+
+
+00:06:16.260 --> 00:06:19.620
+ 
+
+
+00:06:19.620 --> 00:06:22.350
+ 
+
+
+00:06:22.350 --> 00:06:25.320
+ 
+
+
+00:06:25.320 --> 00:06:28.710
+ 
+
+
+00:06:28.950 --> 00:06:31.800
+ 
+
+
+00:06:32.070 --> 00:06:36.120
+ 
+
+
+00:06:36.120 --> 00:06:39.030
+ 
+
+
+00:06:39.360 --> 00:06:42.930
+ 
+
+
+00:06:42.930 --> 00:06:45.780
+ 
+
+
+00:06:45.780 --> 00:06:50.460
+ 
+
+
+00:06:50.460 --> 00:06:53.310
+ 
+
+
+00:06:53.310 --> 00:06:55.740
+ 
+
+
+00:06:55.740 --> 00:06:58.440
+ 
+
+
+00:06:58.440 --> 00:07:01.230
+ 
+
+
+00:07:01.230 --> 00:07:05.760
+ 
+
+
+00:07:05.760 --> 00:07:09.030
+ 
+
+
+00:07:09.060 --> 00:07:15.420
+ 
+
+
+00:07:15.420 --> 00:07:20.640
+ 
+
+
+00:07:20.640 --> 00:07:23.340
+ 
+
+
+00:07:23.340 --> 00:07:26.310
+ 
+
+
+00:07:26.310 --> 00:07:29.100
+ 
+
+
+00:07:29.100 --> 00:07:31.170
+ 
+
+
+00:07:31.170 --> 00:07:34.170
+ 
+
+
+00:07:34.170 --> 00:07:37.560
+ 
+
+
+00:07:37.560 --> 00:07:41.130
+ 
+
+
+00:07:41.130 --> 00:07:43.830
+ 
+
+
+00:07:43.830 --> 00:07:47.220
+ 
+
+
+00:07:47.250 --> 00:07:50.580
+ 
+
+
+00:07:51.360 --> 00:07:54.750
+ 
+
+
+00:07:54.750 --> 00:07:59.880
+ 
+
+
+00:07:59.880 --> 00:08:03.810
+ 
+
+
+00:08:04.080 --> 00:08:08.340
+ 
+
+
+00:08:08.340 --> 00:08:10.830
+ 
+
+
+00:08:10.830 --> 00:08:14.040
+ 
+
+
+00:08:14.400 --> 00:08:17.100
+ 
+
+
+00:08:17.100 --> 00:08:20.280
+ 
+
+
+00:08:20.280 --> 00:08:23.310
+ 
+
+
+00:08:23.310 --> 00:08:27.750
+ 
+
+
+00:08:27.750 --> 00:08:32.220
+ 
+
+
+00:08:32.940 --> 00:08:37.590
+ 
+
+
+00:08:37.620 --> 00:08:41.940
+ 
+
+
+00:08:41.940 --> 00:08:45.330
+ 
+
+
+00:08:45.330 --> 00:08:48.120
+ 
+
+
+00:08:48.150 --> 00:08:51.360
+ 
+
+
+00:08:51.360 --> 00:08:54.840
+ 
+
+
+00:08:54.840 --> 00:09:00.240
+ 
+
+
+00:09:00.240 --> 00:09:02.910
+ 
+
+
+00:09:02.910 --> 00:09:06.360
+ 
+
+
+00:09:06.360 --> 00:09:09.000
+ 
+
+
+00:09:09.000 --> 00:09:12.300
+ 
+
+
+00:09:12.300 --> 00:09:15.540
+ 
+
+
+00:09:15.540 --> 00:09:18.450
+ 
+
+
+00:09:18.450 --> 00:09:22.380
+ 
+
+
+00:09:22.380 --> 00:09:25.290
+ 
+
+
+00:09:25.290 --> 00:09:30.060
+ 
+
+
+00:09:30.060 --> 00:09:33.990
+ 
+
+
+00:09:34.500 --> 00:09:37.230
+ 
+
+
+00:09:37.230 --> 00:09:41.340
+ 
+
+
+00:09:41.340 --> 00:09:45.360
+ 
+
+
+00:09:45.360 --> 00:09:50.370
+ 
+
+
+00:09:50.370 --> 00:09:53.340
+ 
+
+
+00:09:53.340 --> 00:09:57.450
+ 
+
+
+00:09:57.450 --> 00:10:02.040
+ 
+
+
+00:10:02.040 --> 00:10:06.720
+ 
+
+
+00:10:06.720 --> 00:10:09.960
+ 
+
+
+00:10:09.960 --> 00:10:14.550
+ 
+
+
+00:10:14.820 --> 00:10:17.940
+ 
+
+
+00:10:17.940 --> 00:10:20.280
+ 
+
+
+00:10:20.280 --> 00:10:22.920
+ 
+
+
+00:10:22.920 --> 00:10:25.830
+ 
+
+
+00:10:25.860 --> 00:10:30.150
+ 
+
+
+00:10:30.150 --> 00:10:32.850
+ 
+
+
+00:10:32.850 --> 00:10:34.860
+ 
+
+
+00:10:34.889 --> 00:10:37.169
+
+
+00:10:37.170 --> 00:10:40.140
+ 
+
+
+00:10:43.590 --> 00:10:47.490
+ 
+
+
+00:10:47.490 --> 00:10:52.170
+ 
+
+
+00:10:52.170 --> 00:10:55.440
+ 
+
+
+00:10:55.470 --> 00:10:58.020
+ 
+
+
+00:10:58.020 --> 00:11:00.930
+ 
+
+
+00:11:00.930 --> 00:11:06.150
+ 
+
+
+00:11:06.150 --> 00:11:07.410
+
+
+00:11:08.820 --> 00:11:15.000
+
+
+00:11:15.090 --> 00:11:18.150
+ 
+
+
+00:11:18.480 --> 00:11:23.340
+ 
+
+
+00:11:23.370 --> 00:11:26.700
+ 
+
+
+00:11:26.700 --> 00:11:28.590
+ 
+
+
+00:11:28.590 --> 00:11:32.760
+ 
+
+
+00:11:32.940 --> 00:11:36.090
+ 
+
+
+00:11:36.120 --> 00:11:40.860
+ 
+
+
+00:11:41.100 --> 00:11:45.150
+ 
+
+
+00:11:45.180 --> 00:11:48.330
+ 
+
+
+00:11:48.360 --> 00:11:52.200
+ 
+
+
+00:11:52.200 --> 00:11:56.550
+ 
+
+
+00:11:56.550 --> 00:12:01.470
+ 
+
+
+00:12:01.740 --> 00:12:06.300
+ 
+
+
+00:12:06.330 --> 00:12:09.150
+ 
+
+
+00:12:09.480 --> 00:12:11.670
+ 
+
+
+00:12:14.130 --> 00:12:17.670
+
+
+00:12:18.720 --> 00:12:21.900
+ 
+
+
+00:12:21.900 --> 00:12:27.780
+ 
+
+
+00:12:27.810 --> 00:12:31.920
+ 
+
+
+00:12:31.920 --> 00:12:34.590
+ 
+
+
+00:12:34.590 --> 00:12:38.190
+ 
+
+
+00:12:38.190 --> 00:12:41.370
+ 
+
+
+00:12:41.370 --> 00:12:43.710
+ 
+
+
+00:12:43.710 --> 00:12:48.390
+ 
+
+
+00:12:48.390 --> 00:12:51.810
+ 
+
+
+00:12:51.840 --> 00:12:56.040
+ 
+
+
+00:12:56.040 --> 00:12:59.880
+ 
+
+
+00:13:00.720 --> 00:13:06.420
+ 
+
+
+00:13:06.450 --> 00:13:12.480
+ 
+
+
+00:13:12.480 --> 00:13:15.060
+ 
+
+
+00:13:15.060 --> 00:13:17.970
+ 
+
+
+00:13:17.970 --> 00:13:21.120
+ 
+
+
+00:13:21.120 --> 00:13:24.000
+ 
+
+
+00:13:24.450 --> 00:13:28.710
+ 
+
+
+00:13:28.710 --> 00:13:32.400
+ 
+
+
+00:13:32.400 --> 00:13:34.830
+ 
+
+
+00:13:35.280 --> 00:13:39.120
+ 
+
+
+00:13:39.120 --> 00:13:41.460
+ 
+
+
+00:13:41.460 --> 00:13:45.420
+ 
+
+
+00:13:45.420 --> 00:13:48.870
+ 
+
+
+00:13:48.870 --> 00:13:52.950
+ 
+
+
+00:13:52.950 --> 00:13:56.220
+ 
+
+
+00:13:56.220 --> 00:13:59.040
+ 
+
+
+00:13:59.040 --> 00:14:01.740
+ 
+
+
+00:14:01.770 --> 00:14:04.980
+ 
+
+
+00:14:04.980 --> 00:14:08.910
+ 
+
+
+00:14:08.910 --> 00:14:12.930
+ 
+
+
+00:14:12.930 --> 00:14:19.050
+ 
+
+
+00:14:19.950 --> 00:14:22.710
+ 
+
+
+00:14:23.490 --> 00:14:27.750
+ 
+
+
+00:14:27.750 --> 00:14:32.700
+ 
+
+
+00:14:32.700 --> 00:14:36.240
+ 
+
+
+00:14:36.240 --> 00:14:38.880
+ 
+
+
+00:14:38.880 --> 00:14:43.830
+ 
+
+
+00:14:43.860 --> 00:14:46.950
+ 
+
+
+00:14:46.950 --> 00:14:49.950
+ 
+
+
+00:14:49.950 --> 00:14:53.820
+ 
+
+
+00:14:53.820 --> 00:14:57.600
+ 
+
+
+00:14:57.750 --> 00:15:03.570
+ 
+
+
+00:15:03.570 --> 00:15:06.210
+ 
+
+
+00:15:06.570 --> 00:15:10.380
+ 
+
+
+00:15:11.310 --> 00:15:15.000
+ 
+
+
+00:15:15.000 --> 00:15:18.750
+ 
+
+
+00:15:18.750 --> 00:15:22.740
+ 
+
+
+00:15:23.040 --> 00:15:25.830
+ 
+
+
+00:15:25.830 --> 00:15:29.010
+ 
+
+
+00:15:29.010 --> 00:15:32.400
+ 
+
+
+00:15:32.400 --> 00:15:36.720
+ 
+
+
+00:15:36.720 --> 00:15:40.500
+ 
+
+
+00:15:40.500 --> 00:15:43.710
+ 
+
+
+00:15:43.710 --> 00:15:48.120
+ 
+
+
+00:15:48.180 --> 00:15:53.040
+ 
+
+
+00:15:53.040 --> 00:15:55.440
+ 
+
+
+00:15:55.440 --> 00:15:59.130
+ 
+
+
+00:15:59.130 --> 00:16:02.310
+ 
+
+
+00:16:02.310 --> 00:16:05.040
+ 
+
+
+00:16:05.040 --> 00:16:08.400
+ 
+
+
+00:16:08.400 --> 00:16:10.740
+ 
+
+
+00:16:10.740 --> 00:16:13.710
+ 
+
+
+00:16:13.710 --> 00:16:19.320
+ 
+
+
+00:16:19.350 --> 00:16:22.470
+ 
+
+
+00:16:22.470 --> 00:16:26.280
+ 
+
+
+00:16:26.280 --> 00:16:29.670
+ 
+
+
+00:16:29.670 --> 00:16:32.850
+ 
+
+
+00:16:32.850 --> 00:16:37.530
+ 
+
+
+00:16:37.770 --> 00:16:40.140
+ 
+
+
+00:16:40.140 --> 00:16:44.640
+ 
+
+
+00:16:44.640 --> 00:16:47.220
+ 
+
+
+00:16:47.670 --> 00:16:50.850
+ 
+
+
+00:16:50.850 --> 00:16:54.360
+ 
+
+
+00:16:54.360 --> 00:16:57.210
+ 
+
+
+00:16:57.210 --> 00:17:01.680
+ 
+
+
+00:17:01.680 --> 00:17:03.930
+ 
+
+
+00:17:03.930 --> 00:17:07.920
+ 
+
+
+00:17:07.950 --> 00:17:13.650
+ 
+
+
+00:17:13.650 --> 00:17:15.960
+ 
+
+
+00:17:15.990 --> 00:17:19.320
+ 
+
+
+00:17:19.320 --> 00:17:23.790
+ 
+
+
+00:17:23.790 --> 00:17:27.210
+ 
+
+
+00:17:27.210 --> 00:17:30.420
+ 
+
+
+00:17:30.540 --> 00:17:33.900
+ 
+
+
+00:17:33.900 --> 00:17:37.530
+ 
+
+
+00:17:37.530 --> 00:17:43.020
+ 
+
+
+00:17:43.020 --> 00:17:45.660
+ 
+
+
+00:17:45.660 --> 00:17:52.650
+ 
+
+
+00:17:52.650 --> 00:17:55.890
+ 
+
+
+00:17:55.890 --> 00:17:59.640
+ 
+
+
+00:17:59.640 --> 00:18:04.140
+ 
+
+
+00:18:04.140 --> 00:18:08.970
+ 
+
+
+00:18:08.970 --> 00:18:14.370
+ 
+
+
+00:18:14.490 --> 00:18:17.370
+ 
+
+
+00:18:17.370 --> 00:18:21.030
+ 
+
+
+00:18:21.030 --> 00:18:23.280
+ 
+
+
+00:18:23.280 --> 00:18:27.900
+ 
+
+
+00:18:27.900 --> 00:18:30.150
+ 
+
+
+00:18:30.150 --> 00:18:33.150
+ 
+
+
+00:18:33.150 --> 00:18:36.570
+ 
+
+
+00:18:36.570 --> 00:18:39.210
+ 
+
+
+00:18:39.210 --> 00:18:41.730
+ 
+
+
+00:18:41.730 --> 00:18:43.950
+ 
+
+
+00:18:44.070 --> 00:18:47.490
+ 
+
+
+00:18:48.240 --> 00:18:51.870
+ 
+
+
+00:18:52.230 --> 00:18:54.360
+ 
+
+
+00:18:54.360 --> 00:18:57.120
+ 
+
+
+00:18:57.120 --> 00:19:00.000
+ 
+
+
+00:19:00.000 --> 00:19:03.600
+ 
+
+
+00:19:03.600 --> 00:19:06.480
+ 
+
+
+00:19:06.480 --> 00:19:10.890
+ 
+
+
+00:19:10.890 --> 00:19:13.650
+ 
+
+
+00:19:13.650 --> 00:19:16.860
+ 
+
+
+00:19:16.860 --> 00:19:20.640
+ 
+
+
+00:19:20.640 --> 00:19:24.030
+ 
+
+
+00:19:24.030 --> 00:19:28.350
+ 
+
+
+00:19:28.350 --> 00:19:32.430
+ 
+
+
+00:19:32.430 --> 00:19:36.300
+ 
+
+
+00:19:36.300 --> 00:19:38.940
+ 
+
+
+00:19:38.940 --> 00:19:42.720
+ 
+
+
+00:19:42.720 --> 00:19:47.280
+ 
+
+
+00:19:47.280 --> 00:19:50.490
+ 
+
+
+00:19:50.490 --> 00:19:53.100
+ 
+
+
+00:19:53.100 --> 00:19:57.240
+ 
+
+
+00:19:57.240 --> 00:20:00.510
+ 
+
+
+00:20:01.710 --> 00:20:04.710
+ 
+
+
+00:20:04.920 --> 00:20:08.220
+ 
+
+
+00:20:08.220 --> 00:20:10.980
+ 
+
+
+00:20:10.980 --> 00:20:13.770
+ 
+
+
+00:20:13.770 --> 00:20:16.380
+ 
+
+
+00:20:16.410 --> 00:20:19.410
+ 
+
+
+00:20:19.980 --> 00:20:23.940
+ 
+
+
+00:20:23.940 --> 00:20:26.040
+ 
+
+
+00:20:27.630 --> 00:20:28.530
+
+
+00:20:28.890 --> 00:20:33.150
+ 
+
+
+00:20:33.150 --> 00:20:38.550
+ 
+
+
+00:20:38.550 --> 00:20:43.020
+ 
+
+
+00:20:43.020 --> 00:20:47.190
+ 
+
+
+00:20:47.190 --> 00:20:50.340
+ 
+
+
+00:20:50.340 --> 00:20:53.550
+ 
+
+
+00:20:53.550 --> 00:20:55.830
+ 
+
+
+00:20:55.830 --> 00:20:58.680
+ 
+
+
+00:20:58.680 --> 00:21:02.160
+ 
+
+
+00:21:02.160 --> 00:21:04.170
+ 
+
+
+00:21:04.170 --> 00:21:06.360
+ 
+
+
+00:21:07.020 --> 00:21:09.780
+ 
+
+
+00:21:09.780 --> 00:21:12.990
+ 
+
+
+00:21:12.990 --> 00:21:15.540
+ 
+
+
+00:21:15.540 --> 00:21:18.510
+ 
+
+
+00:21:18.510 --> 00:21:21.660
+ 
+
+
+00:21:21.660 --> 00:21:24.420
+ 
+
+
+00:21:24.420 --> 00:21:28.560
+ 
+
+
+00:21:28.560 --> 00:21:32.790
+ 
+
+
+00:21:32.790 --> 00:21:36.420
+ 
+
+
+00:21:36.420 --> 00:21:39.060
+ 
+
+
+00:21:39.060 --> 00:21:42.660
+ 
+
+
+00:21:42.660 --> 00:21:46.530
+ 
+
+
+00:21:46.530 --> 00:21:50.100
+ 
+
+
+00:21:50.100 --> 00:21:52.920
+ 
+
+
+00:21:52.920 --> 00:21:55.200
+ 
+
+
+00:21:56.220 --> 00:22:00.870
+ 
+
+
+00:22:00.870 --> 00:22:04.380
+ 
+
+
+00:22:04.380 --> 00:22:06.810
+ 
+
+
+00:22:06.810 --> 00:22:10.110
+ 
+
+
+00:22:10.110 --> 00:22:15.270
+ 
+
+
+00:22:15.270 --> 00:22:18.990
+ 
+
+
+00:22:18.990 --> 00:22:21.180
+ 
+
+
+00:22:21.180 --> 00:22:24.780
+ 
+
+
+00:22:24.780 --> 00:22:27.600
+ 
+
+
+00:22:27.600 --> 00:22:30.990
+ 
+
+
+00:22:30.990 --> 00:22:34.920
+ 
+
+
+00:22:34.920 --> 00:22:38.520
+ 
+
+
+00:22:38.520 --> 00:22:41.910
+ 
+
+
+00:22:41.970 --> 00:22:44.970
+ 
+
+
+00:22:44.970 --> 00:22:47.850
+ 
+
+
+00:22:47.850 --> 00:22:52.860
+ 
+
+
+00:22:52.860 --> 00:22:55.920
+ 
+
+
+00:22:56.040 --> 00:22:59.820
+ 
+
+
+00:22:59.820 --> 00:23:04.470
+ 
+
+
+00:23:04.500 --> 00:23:07.770
+ 
+
+
+00:23:07.770 --> 00:23:10.470
+ 
+
+
+00:23:10.470 --> 00:23:14.430
+ 
+
+
+00:23:14.430 --> 00:23:17.460
+ 
+
+
+00:23:17.460 --> 00:23:20.640
+ 
+
+
+00:23:20.640 --> 00:23:23.910
+ 
+
+
+00:23:23.910 --> 00:23:30.660
+ 
+
+
+00:23:30.660 --> 00:23:34.440
+ 
+
+
+00:23:34.440 --> 00:23:36.930
+ 
+
+
+00:23:36.930 --> 00:23:42.720
+ 
+
+
+00:23:42.720 --> 00:23:45.690
+ 
+
+
+00:23:45.690 --> 00:23:51.030
+ 
+
+
+00:23:51.030 --> 00:23:53.850
+ 
+
+
+00:23:53.850 --> 00:23:58.110
+ 
+
+
+00:23:58.110 --> 00:24:02.130
+ 
+
+
+00:24:02.130 --> 00:24:07.140
+ 
+
+
+00:24:07.140 --> 00:24:10.410
+ 
+
+
+00:24:10.410 --> 00:24:13.050
+ 
+
+
+00:24:13.050 --> 00:24:16.710
+ 
+
+
+00:24:16.710 --> 00:24:19.500
+ 
+
+
+00:24:19.500 --> 00:24:22.530
+ 
+
+
+00:24:22.530 --> 00:24:26.670
+ 
+
+
+00:24:26.670 --> 00:24:28.950
+ 
+
+
+00:24:28.950 --> 00:24:32.790
+ 
+
+
+00:24:33.990 --> 00:24:37.170
+ 
+
+
+00:24:37.440 --> 00:24:41.220
+ 
+
+
+00:24:41.220 --> 00:24:47.070
+ 
+
+
+00:24:47.070 --> 00:24:50.940
+ 
+
+
+00:24:50.940 --> 00:24:55.440
+ 
+
+
+00:24:56.100 --> 00:25:00.510
+ 
+
+
+00:25:00.690 --> 00:25:04.320
+ 
+
+
+00:25:04.320 --> 00:25:07.230
+ 
+
+
+00:25:07.230 --> 00:25:12.240
+ 
+
+
+00:25:12.240 --> 00:25:14.910
+ 
+
+
+00:25:15.060 --> 00:25:20.100
+ 
+
+
+00:25:20.280 --> 00:25:25.200
+ 
+
+
+00:25:25.200 --> 00:25:28.920
+ 
+
+
+00:25:28.920 --> 00:25:32.100
+ 
+
+
+00:25:32.100 --> 00:25:34.620
+ 
+
+
+00:25:34.620 --> 00:25:38.370
+ 
+
+
+00:25:38.370 --> 00:25:42.840
+ 
+
+
+00:25:42.870 --> 00:25:46.320
+ 
+
+
+00:25:46.320 --> 00:25:49.230
+ 
+
+
+00:25:49.230 --> 00:25:52.500
+ 
+
+
+00:25:52.500 --> 00:25:54.990
+ 
+
+
+00:25:54.990 --> 00:26:01.290
+ 
+
+
+00:26:03.000 --> 00:26:06.540
+ 
+
+
+00:26:06.570 --> 00:26:09.270
+ 
+
+
+00:26:09.270 --> 00:26:12.960
+ 
+
+
+00:26:12.960 --> 00:26:16.260
+ 
+
+
+00:26:16.260 --> 00:26:20.010
+ 
+
+
+00:26:20.250 --> 00:26:23.340
+ 
+
+
+00:26:23.340 --> 00:26:26.490
+ 
+
+
+00:26:26.490 --> 00:26:30.900
+ 
+
+
+00:26:30.900 --> 00:26:36.810
+ 
+
+
+00:26:36.810 --> 00:26:40.050
+ 
+
+
+00:26:40.050 --> 00:26:42.840
+ 
+
+
+00:26:42.840 --> 00:26:46.320
+ 
+
+
+00:26:46.320 --> 00:26:50.280
+ 
+
+
+00:26:50.280 --> 00:26:53.430
+ 
+
+
+00:26:53.430 --> 00:26:57.870
+ 
+
+
+00:26:58.140 --> 00:27:02.520
+ 
+
+
+00:27:02.520 --> 00:27:04.860
+ 
+
+
+00:27:04.860 --> 00:27:07.380
+ 
+
+
+00:27:07.380 --> 00:27:11.370
+ 
+
+
+00:27:11.520 --> 00:27:14.670
+ 
+
+
+00:27:15.000 --> 00:27:19.140
+ 
+
+
+00:27:19.140 --> 00:27:22.830
+ 
+
+
+00:27:22.830 --> 00:27:25.590
+ 
+
+
+00:27:25.590 --> 00:27:28.950
+ 
+
+
+00:27:28.950 --> 00:27:32.010
+ 
+
+
+00:27:32.010 --> 00:27:35.940
+ 
+
+
+00:27:35.940 --> 00:27:39.240
+ 
+
+
+00:27:39.810 --> 00:27:43.110
+ 
+
+
+00:27:43.110 --> 00:27:46.170
+ 
+
+
+00:27:46.170 --> 00:27:48.660
+ 
+
+
+00:27:49.470 --> 00:27:53.490
+ 
+
+
+00:27:53.490 --> 00:27:57.210
+ 
+
+
+00:27:57.210 --> 00:28:01.980
+ 
+
+
+00:28:01.980 --> 00:28:04.500
+ 
+
+
+00:28:04.500 --> 00:28:07.620
+ 
+
+
+00:28:07.620 --> 00:28:10.590
+ 
+
+
+00:28:10.590 --> 00:28:14.670
+ 
+
+
+00:28:14.700 --> 00:28:18.000
+ 
+
+
+00:28:18.000 --> 00:28:25.140
+ 
+
+
+00:28:25.140 --> 00:28:28.290
+ 
+
+
+00:28:28.290 --> 00:28:32.370
+ 
+
+
+00:28:32.370 --> 00:28:35.700
+ 
+
+
+00:28:35.700 --> 00:28:40.650
+ 
+
+
+00:28:40.650 --> 00:28:44.220
+ 
+
+
+00:28:44.220 --> 00:28:48.150
+ 
+
+
+00:28:48.150 --> 00:28:52.380
+ 
+
+
+00:28:52.380 --> 00:28:55.740
+ 
+
+
+00:28:55.740 --> 00:28:58.950
+ 
+
+
+00:28:58.950 --> 00:29:03.690
+ 
+
+
+00:29:03.690 --> 00:29:07.170
+ 
+
+
+00:29:07.170 --> 00:29:13.170
+ 
+
+
+00:29:13.380 --> 00:29:16.860
+ 
+
+
+00:29:16.860 --> 00:29:21.120
+ 
+
+
+00:29:21.120 --> 00:29:26.580
+ 
+
+
+00:29:26.580 --> 00:29:30.630
+ 
+
+
+00:29:30.630 --> 00:29:34.470
+ 
+
+
+00:29:35.580 --> 00:29:39.600
+ 
+
+
+00:29:39.600 --> 00:29:42.930
+ 
+
+
+00:29:42.930 --> 00:29:43.350
+
+
+00:29:43.439 --> 00:29:47.879
+
+
+00:29:48.150 --> 00:29:51.120
+ 
+
+
+00:29:51.120 --> 00:29:56.310
+ 
+
+
+00:29:56.310 --> 00:29:58.980
+ 
+
+
+00:29:58.980 --> 00:30:03.510
+ 
+
+
+00:30:03.510 --> 00:30:06.870
+ 
+
+
+00:30:06.870 --> 00:30:12.750
+ 
+
+
+00:30:12.990 --> 00:30:18.150
+ 
+
+
+00:30:18.150 --> 00:30:21.300
+ 
+
+
+00:30:21.300 --> 00:30:23.580
+ 
+
+
+00:30:23.580 --> 00:30:27.270
+ 
+
+
+00:30:27.270 --> 00:30:29.760
+ 
+
+
+00:30:29.760 --> 00:30:32.280
+ 
+
+
+00:30:32.280 --> 00:30:35.100
+ 
+
+
+00:30:35.100 --> 00:30:38.610
+ 
+
+
+00:30:38.940 --> 00:30:42.390
+ 
+
+
+00:30:42.390 --> 00:30:47.700
+ 
+
+
+00:30:47.700 --> 00:30:51.630
+ 
+
+
+00:30:51.630 --> 00:30:54.900
+ 
+
+
+00:30:54.900 --> 00:30:58.140
+ 
+
+
+00:30:58.140 --> 00:31:01.230
+ 
+
+
+00:31:01.230 --> 00:31:04.230
+ 
+
+
+00:31:04.230 --> 00:31:07.320
+ 
+
+
+00:31:07.320 --> 00:31:10.500
+ 
+
+
+00:31:10.500 --> 00:31:14.160
+ 
+
+
+00:31:14.160 --> 00:31:21.750
+ 
+
+
+00:31:21.750 --> 00:31:24.990
+ 
+
+
+00:31:24.990 --> 00:31:28.410
+ 
+
+
+00:31:28.410 --> 00:31:33.570
+ 
+
+
+00:31:33.570 --> 00:31:36.570
+ 
+
+
+00:31:36.570 --> 00:31:40.350
+ 
+
+
+00:31:40.620 --> 00:31:43.890
+ 
+
+
+00:31:43.890 --> 00:31:45.720
+
+
+00:31:45.810 --> 00:31:46.650
+
+
+00:31:51.030 --> 00:31:56.280
+ 
+
+
+00:31:56.550 --> 00:31:59.280
+ 
+
+
+00:31:59.280 --> 00:32:03.270
+ 
+
+
+00:32:03.270 --> 00:32:07.380
+ 
+
+
+00:32:07.380 --> 00:32:10.530
+ 
+
+
+00:32:10.530 --> 00:32:13.800
+ 
+
+
+00:32:13.800 --> 00:32:17.550
+ 
+
+
+00:32:17.550 --> 00:32:21.540
+ 
+
+
+00:32:21.540 --> 00:32:24.720
+ 
+
+
+00:32:24.720 --> 00:32:27.750
+ 
+
+
+00:32:27.750 --> 00:32:30.210
+ 
+
+
+00:32:30.210 --> 00:32:33.450
+ 
+
+
+00:32:33.450 --> 00:32:36.960
+ 
+
+
+00:32:36.960 --> 00:32:40.920
+ 
+
+
+00:32:40.920 --> 00:32:44.820
+ 
+
+
+00:32:45.060 --> 00:32:48.570
+ 
+
+
+00:32:48.570 --> 00:32:52.020
+ 
+
+
+00:32:52.020 --> 00:32:55.740
+ 
+
+
+00:32:55.740 --> 00:32:59.010
+ 
+
+
+00:32:59.010 --> 00:33:02.820
+ 
+
+
+00:33:02.820 --> 00:33:06.780
+ 
+
+
+00:33:06.810 --> 00:33:10.980
+ 
+
+
+00:33:10.980 --> 00:33:13.350
+ 
+
+
+00:33:13.680 --> 00:33:17.010
+ 
+
+
+00:33:17.010 --> 00:33:20.220
+ 
+
+
+00:33:20.220 --> 00:33:23.070
+ 
+
+
+00:33:23.340 --> 00:33:25.920
+ 
+
+
+00:33:25.920 --> 00:33:29.730
+ 
+
+
+00:33:29.730 --> 00:33:34.050
+ 
+
+
+00:33:34.050 --> 00:33:37.560
+ 
+
+
+00:33:37.560 --> 00:33:40.470
+ 
+
+
+00:33:40.680 --> 00:33:44.130
+ 
+
+
+00:33:44.130 --> 00:33:47.340
+ 
+
+
+00:33:47.340 --> 00:33:49.440
+ 
+
+
+00:33:49.440 --> 00:33:53.040
+ 
+
+
+00:33:53.040 --> 00:33:56.610
+ 
+
+
+00:33:56.610 --> 00:33:59.880
+ 
+
+
+00:33:59.880 --> 00:34:02.700
+ 
+
+
+00:34:03.180 --> 00:34:05.400
+ 
+
+
+00:34:06.030 --> 00:34:09.450
+ 
+
+
+00:34:09.450 --> 00:34:12.480
+ 
+
+
+00:34:12.480 --> 00:34:18.960
+ 
+
+
+00:34:18.960 --> 00:34:22.560
+ 
+
+
+00:34:22.560 --> 00:34:24.990
+ 
+
+
+00:34:24.990 --> 00:34:28.590
+ 
+
+
+00:34:28.920 --> 00:34:34.590
+ 
+
+
+00:34:34.590 --> 00:34:38.640
+ 
+
+
+00:34:38.640 --> 00:34:43.410
+ 
+
+
+00:34:43.410 --> 00:34:46.320
+ 
+
+
+00:34:46.530 --> 00:34:49.950
+ 
+
+
+00:34:49.950 --> 00:34:53.730
+ 
+
+
+00:34:53.730 --> 00:34:56.820
+ 
+
+
+00:34:56.820 --> 00:34:58.830
+ 
+
+
+00:34:58.830 --> 00:35:03.420
+ 
+
+
+00:35:03.420 --> 00:35:05.790
+ 
+
+
+00:35:05.790 --> 00:35:09.240
+ 
+
+
+00:35:09.240 --> 00:35:12.780
+ 
+
+
+00:35:12.780 --> 00:35:15.120
+ 
+
+
+00:35:15.120 --> 00:35:18.120
+ 
+
+
+00:35:18.750 --> 00:35:21.570
+ 
+
+
+00:35:21.870 --> 00:35:23.670
+ 
+
+
+00:35:23.670 --> 00:35:27.660
+ 
+
+
+00:35:27.660 --> 00:35:29.970
+ 
+
+
+00:35:29.970 --> 00:35:32.700
+ 
+
+
+00:35:32.700 --> 00:35:35.280
+ 
+
+
+00:35:35.280 --> 00:35:37.080
+ 
+
+
+00:35:42.450 --> 00:35:43.350
+
+
+00:35:43.770 --> 00:35:47.070
+ 
+
+
+00:35:47.070 --> 00:35:50.910
+ 
+
+
+00:35:50.910 --> 00:35:53.670
+ 
+
+
+00:35:53.670 --> 00:35:59.010
+ 
+
+
+00:35:59.010 --> 00:36:02.910
+ 
+
+
+00:36:02.910 --> 00:36:06.000
+ 
+
+
+00:36:06.000 --> 00:36:10.290
+ 
+
+
+00:36:10.290 --> 00:36:15.180
+ 
+
+
+00:36:15.180 --> 00:36:18.150
+ 
+
+
+00:36:18.150 --> 00:36:21.900
+ 
+
+
+00:36:21.900 --> 00:36:25.110
+ 
+
+
+00:36:25.110 --> 00:36:28.740
+ 
+
+
+00:36:28.740 --> 00:36:31.140
+ 
+
+
+00:36:31.140 --> 00:36:33.780
+ 
+
+
+00:36:33.780 --> 00:36:37.260
+ 
+
+
+00:36:37.260 --> 00:36:40.620
+ 
+
+
+00:36:40.890 --> 00:36:43.860
+ 
+
+
+00:36:43.860 --> 00:36:46.620
+ 
+
+
+00:36:46.980 --> 00:36:49.740
+ 
+
+
+00:36:49.740 --> 00:36:51.960
+ 
+
+
+00:36:51.960 --> 00:36:56.970
+ 
+
+
+00:36:56.970 --> 00:37:00.780
+ 
+
+
+00:37:00.780 --> 00:37:05.280
+ 
+
+
+00:37:05.310 --> 00:37:08.040
+ 
+
+
+00:37:08.040 --> 00:37:12.090
+ 
+
+
+00:37:12.090 --> 00:37:15.270
+ 
+
+
+00:37:15.270 --> 00:37:18.690
+ 
+
+
+00:37:18.690 --> 00:37:21.660
+ 
+
+
+00:37:21.660 --> 00:37:24.870
+ 
+
+
+00:37:24.870 --> 00:37:28.950
+ 
+
+
+00:37:28.980 --> 00:37:32.340
+ 
+
+
+00:37:32.340 --> 00:37:35.580
+ 
+
+
+00:37:35.580 --> 00:37:38.970
+ 
+
+
+00:37:38.970 --> 00:37:41.220
+ 
+
+
+00:37:41.220 --> 00:37:44.040
+ 
+
+
+00:37:44.040 --> 00:37:47.430
+ 
+
+
+00:37:47.430 --> 00:37:50.430
+ 
+
+
+00:37:50.430 --> 00:37:53.970
+ 
+
+
+00:37:54.180 --> 00:37:58.020
+ 
+
+
+00:37:58.020 --> 00:38:01.500
+ 
+
+
+00:38:01.500 --> 00:38:04.230
+ 
+
+
+00:38:04.470 --> 00:38:09.060
+ 
+
+
+00:38:09.060 --> 00:38:12.030
+ 
+
+
+00:38:12.030 --> 00:38:16.320
+ 
+
+
+00:38:16.320 --> 00:38:16.800
+
+
+00:38:18.420 --> 00:38:19.740
+
+
+00:38:24.120 --> 00:38:26.760
+ 
+
+
+00:38:26.760 --> 00:38:30.540
+ 
+
+
+00:38:30.540 --> 00:38:34.470
+ 
+
+
+00:38:34.470 --> 00:38:37.140
+ 
+
+
+00:38:37.140 --> 00:38:42.300
+ 
+
+
+00:38:42.300 --> 00:38:44.430
+ 
+
+
+00:38:44.430 --> 00:38:47.370
+ 
+
+
+00:38:47.370 --> 00:38:50.460
+ 
+
+
+00:38:50.460 --> 00:38:54.000
+ 
+
+
+00:38:54.000 --> 00:38:58.050
+ 
+
+
+00:38:58.050 --> 00:39:01.050
+ 
+
+
+00:39:01.050 --> 00:39:03.960
+ 
+
+
+00:39:03.960 --> 00:39:07.830
+ 
+
+
+00:39:08.220 --> 00:39:11.700
+ 
+
+
+00:39:11.700 --> 00:39:16.350
+ 
+
+
+00:39:16.590 --> 00:39:19.500
+ 
+
+
+00:39:19.500 --> 00:39:22.140
+ 
+
+
+00:39:22.140 --> 00:39:25.110
+ 
+
+
+00:39:25.110 --> 00:39:28.650
+ 
+
+
+00:39:28.650 --> 00:39:31.740
+ 
+
+
+00:39:31.740 --> 00:39:35.280
+ 
+
+
+00:39:35.280 --> 00:39:39.120
+ 
+
+
+00:39:39.120 --> 00:39:42.120
+ 
+
+
+00:39:42.120 --> 00:39:47.070
+ 
+
+
+00:39:47.070 --> 00:39:50.010
+ 
+
+
+00:39:50.010 --> 00:39:52.620
+ 
+
+
+00:39:52.620 --> 00:39:55.560
+ 
+
+
+00:39:55.800 --> 00:39:59.310
+ 
+
+
+00:39:59.310 --> 00:40:02.580
+ 
+
+
+00:40:02.580 --> 00:40:06.000
+ 
+
+
+00:40:06.000 --> 00:40:10.410
+ 
+
+
+00:40:10.410 --> 00:40:13.380
+ 
+
+
+00:40:13.380 --> 00:40:15.960
+ 
+
+
+00:40:15.960 --> 00:40:19.080
+ 
+
+
+00:40:19.080 --> 00:40:22.800
+ 
+
+
+00:40:22.800 --> 00:40:25.590
+ 
+
+
+00:40:25.590 --> 00:40:28.080
+ 
+
+
+00:40:28.080 --> 00:40:33.720
+ 
+
+
+00:40:33.720 --> 00:40:36.690
+ 
+
+
+00:40:36.690 --> 00:40:39.660
+ 
+
+
+00:40:39.990 --> 00:40:44.160
+ 
+
+
+00:40:44.160 --> 00:40:47.970
+ 
+
+
+00:40:48.000 --> 00:40:51.030
+ 
+
+
+00:40:51.030 --> 00:40:53.910
+ 
+
+
+00:40:53.910 --> 00:40:57.870
+ 
+
+
+00:40:57.870 --> 00:40:58.410
+
+
+00:40:59.010 --> 00:41:01.020
+
+
+00:41:01.170 --> 00:41:03.600
+ 
+
+
+00:41:03.600 --> 00:41:06.240
+ 
+
+
+00:41:06.240 --> 00:41:09.930
+ 
+
+
+00:41:09.930 --> 00:41:13.020
+ 
+
+
+00:41:13.020 --> 00:41:17.040
+ 
+
+
+00:41:17.040 --> 00:41:20.400
+ 
+
+
+00:41:20.430 --> 00:41:23.310
+ 
+
+
+00:41:23.310 --> 00:41:27.120
+ 
+
+
+00:41:27.120 --> 00:41:31.260
+ 
+
+
+00:41:31.440 --> 00:41:35.130
+ 
+
+
+00:41:35.520 --> 00:41:39.360
+ 
+
+
+00:41:39.360 --> 00:41:42.540
+ 
+
+
+00:41:42.540 --> 00:41:45.330
+ 
+
+
+00:41:45.840 --> 00:41:48.960
+ 
+
+
+00:41:48.960 --> 00:41:51.450
+ 
+
+
+00:41:51.450 --> 00:41:57.390
+ 
+
+
+00:41:57.390 --> 00:42:00.960
+ 
+
+
+00:42:00.960 --> 00:42:05.250
+ 
+
+
+00:42:05.250 --> 00:42:09.960
+ 
+
+
+00:42:10.290 --> 00:42:14.820
+ 
+
+
+00:42:14.820 --> 00:42:18.600
+ 
+
+
+00:42:18.600 --> 00:42:22.110
+ 
+
+
+00:42:22.110 --> 00:42:27.690
+ 
+
+
+00:42:27.690 --> 00:42:31.170
+ 
+
+
+00:42:31.170 --> 00:42:36.120
+ 
+
+
+00:42:36.120 --> 00:42:41.220
+ 
+
+
+00:42:41.220 --> 00:42:43.530
+ 
+
+
+00:42:43.530 --> 00:42:47.100
+ 
+
+
+00:42:47.100 --> 00:42:50.070
+ 
+
+
+00:42:50.070 --> 00:42:52.890
+ 
+
+
+00:42:52.920 --> 00:42:56.610
+ 
+
+
+00:42:56.610 --> 00:43:00.780
+ 
+
+
+00:43:00.780 --> 00:43:03.900
+ 
+
+
+00:43:03.900 --> 00:43:06.300
+
+
+00:43:06.300 --> 00:43:11.670
+ 
+
+
+00:43:11.670 --> 00:43:18.870
+ 
+
+
+00:43:19.200 --> 00:43:22.380
+ 
+
+
+00:43:22.500 --> 00:43:27.720
+ 
+
+
+00:43:27.720 --> 00:43:31.980
+ 
+
+
+00:43:31.980 --> 00:43:37.290
+ 
+
+
+00:43:37.590 --> 00:43:43.290
+ 
+
+
+00:43:43.290 --> 00:43:46.860
+ 
+
+
+00:43:46.860 --> 00:43:51.360
+ 
+
+
+00:43:51.360 --> 00:43:54.930
+ 
+
+
+00:43:54.930 --> 00:43:57.330
+ 
+
+
+00:43:57.330 --> 00:44:00.300
+ 
+
+
+00:44:00.300 --> 00:44:03.480
+ 
+
+
+00:44:03.480 --> 00:44:06.570
+ 
+
+
+00:44:06.570 --> 00:44:11.190
+ 
+
+
+00:44:11.190 --> 00:44:14.850
+ 
+
+
+00:44:14.850 --> 00:44:19.200
+ 
+
+
+00:44:19.200 --> 00:44:24.210
+ 
+
+
+00:44:24.210 --> 00:44:27.570
+ 
+
+
+00:44:27.570 --> 00:44:30.420
+ 
+
+
+00:44:30.420 --> 00:44:33.240
+ 
+
+
+00:44:33.570 --> 00:44:37.020
+ 
+
+
+00:44:37.020 --> 00:44:40.110
+ 
+
+
+00:44:40.140 --> 00:44:43.650
+ 
+
+
+00:44:43.650 --> 00:44:46.200
+ 
+
+
+00:44:46.200 --> 00:44:49.710
+ 
+
+
+00:44:50.010 --> 00:44:55.710
+ 
+
+
+00:44:55.710 --> 00:44:59.070
+ 
+
+
+00:44:59.070 --> 00:45:01.290
+ 
+
+
+00:45:01.290 --> 00:45:04.080
+ 
+
+
+00:45:04.080 --> 00:45:06.870
+ 
+
+
+00:45:06.870 --> 00:45:10.320
+ 
+
+
+00:45:10.320 --> 00:45:13.050
+ 
+
+
+00:45:13.050 --> 00:45:16.530
+ 
+
+
+00:45:16.530 --> 00:45:19.290
+ 
+
+
+00:45:19.320 --> 00:45:25.170
+ 
+
+
+00:45:25.170 --> 00:45:28.920
+ 
+
+
+00:45:28.920 --> 00:45:32.760
+ 
+
+
+00:45:32.760 --> 00:45:36.090
+ 
+
+
+00:45:36.090 --> 00:45:39.660
+ 
+
+
+00:45:39.660 --> 00:45:43.140
+ 
+
+
+00:45:43.140 --> 00:45:47.040
+ 
+
+
+00:45:47.040 --> 00:45:49.980
+ 
+
+
+00:45:49.980 --> 00:45:54.270
+ 
+
+
+00:45:54.270 --> 00:45:58.500
+ 
+
+
+00:45:58.500 --> 00:46:01.980
+ 
+
+
+00:46:01.980 --> 00:46:05.400
+ 
+
+
+00:46:05.400 --> 00:46:08.160
+ 
+
+
+00:46:08.160 --> 00:46:11.640
+ 
+
+
+00:46:11.640 --> 00:46:14.820
+ 
+
+
+00:46:14.820 --> 00:46:17.850
+ 
+
+
+00:46:17.850 --> 00:46:21.480
+ 
+
+
+00:46:21.480 --> 00:46:25.920
+ 
+
+
+00:46:25.920 --> 00:46:28.890
+ 
+
+
+00:46:28.890 --> 00:46:32.700
+ 
+
+
+00:46:32.700 --> 00:46:35.970
+ 
+
+
+00:46:36.000 --> 00:46:39.210
+ 
+
+
+00:46:39.210 --> 00:46:43.650
+ 
+
+
+00:46:43.650 --> 00:46:46.470
+ 
+
+
+00:46:46.470 --> 00:46:47.580
+
+
+00:46:48.150 --> 00:46:51.330
+ 
+
+
+00:46:51.330 --> 00:46:55.590
+ 
+
+
+00:46:55.590 --> 00:47:01.710
+ 
+
+
+00:47:02.460 --> 00:47:08.070
+ 
+
+
+00:47:08.070 --> 00:47:11.580
+ 
+
+
+00:47:12.270 --> 00:47:12.630
+
+
+00:47:14.010 --> 00:47:18.750
+ 
+
+
+00:47:18.750 --> 00:47:21.750
+ 
+
+
+00:47:21.750 --> 00:47:25.350
+ 
+
+
+00:47:25.350 --> 00:47:28.950
+ 
+
+
+00:47:29.820 --> 00:47:32.190
+ 
+
+
+00:47:32.190 --> 00:47:35.880
+ 
+
+
+00:47:35.880 --> 00:47:39.180
+ 
+
+
+00:47:39.180 --> 00:47:42.750
+ 
+
+
+00:47:42.750 --> 00:47:45.360
+ 
+
+
+00:47:45.360 --> 00:47:48.600
+ 
+
+
+00:47:48.600 --> 00:47:52.980
+ 
+
+
+00:47:52.980 --> 00:47:54.150
+
+
+00:47:54.780 --> 00:47:55.560
+
+
+00:47:57.000 --> 00:48:00.390
+ 
+
+
+00:48:00.390 --> 00:48:03.360
+ 
+
+
+00:48:03.360 --> 00:48:07.320
+ 
+
+
+00:48:07.320 --> 00:48:10.620
+ 
+
+
+00:48:10.620 --> 00:48:14.010
+ 
+
+
+00:48:14.010 --> 00:48:16.740
+ 
+
+
+00:48:16.770 --> 00:48:19.380
+ 
+
+
+00:48:20.160 --> 00:48:24.870
+ 
+
+
+00:48:24.870 --> 00:48:28.620
+ 
+
+
+00:48:28.620 --> 00:48:28.980
+
+
+00:48:29.850 --> 00:48:33.480
+ 
+
+
+00:48:33.480 --> 00:48:36.690
+ 
+
+
+00:48:36.690 --> 00:48:40.290
+ 
+
+
+00:48:40.500 --> 00:48:44.520
+ 
+
+
+00:48:44.520 --> 00:48:48.570
+ 
+
+
+00:48:48.570 --> 00:48:51.450
+ 
+
+
+00:48:51.450 --> 00:48:53.820
+ 
+
+
+00:48:53.820 --> 00:48:58.500
+ 
+
+
+00:48:58.500 --> 00:49:02.730
+ 
+
+
+00:49:02.730 --> 00:49:05.910
+ 
+
+
+00:49:05.910 --> 00:49:09.960
+ 
+
+
+00:49:09.960 --> 00:49:12.810
+ 
+
+
+00:49:12.810 --> 00:49:16.560
+ 
+
+
+00:49:16.560 --> 00:49:19.170
+ 
+
+
+00:49:19.170 --> 00:49:25.200
+ 
+
+
+00:49:25.230 --> 00:49:29.400
+ 
+
+
+00:49:30.210 --> 00:49:34.140
+ 
+
+
+00:49:34.140 --> 00:49:36.990
+ 
+
+
+00:49:36.990 --> 00:49:40.290
+ 
+
+
+00:49:40.290 --> 00:49:43.110
+ 
+
+
+00:49:43.110 --> 00:49:45.480
+ 
+
+
+00:49:45.540 --> 00:49:49.830
+ 
+
+
+00:49:49.830 --> 00:49:51.090
+
+
+00:49:51.390 --> 00:49:57.300
+ 
+
+
+00:49:57.300 --> 00:50:01.650
+ 
+
+
+00:50:01.680 --> 00:50:08.220
+ 
+
+
+00:50:08.220 --> 00:50:12.900
+ 
+
+
+00:50:12.900 --> 00:50:18.900
+ 
+
+
+00:50:18.900 --> 00:50:24.030
+ 
+
+
+00:50:24.180 --> 00:50:27.960
+ 
+
+
+00:50:27.960 --> 00:50:33.690
+ 
+
+
+00:50:33.720 --> 00:50:40.080
+ 
+
+
+00:50:41.850 --> 00:50:45.930
+ 
+
+
+00:50:45.930 --> 00:50:46.320
+
+
+00:50:46.740 --> 00:50:49.950
+ 
+
+
+00:50:51.120 --> 00:50:57.270
+ 
+
+
+00:50:57.270 --> 00:51:06.810
+ 
+
+
+00:51:06.810 --> 00:51:14.700
+ 
+
+
+00:51:14.700 --> 00:51:19.800
+ 
+
+
+00:51:21.210 --> 00:51:27.630
+ 
+
+
+00:51:27.630 --> 00:51:30.120
+
+
+00:51:31.860 --> 00:51:38.850
+ 
+
+
+00:51:38.880 --> 00:51:48.600
+ 
+
+
+00:51:48.600 --> 00:51:58.860
+ 
+
+
+00:51:59.730 --> 00:52:07.320
+ 
+
+
+00:52:08.250 --> 00:52:12.450
+ 
+
+
+00:52:12.450 --> 00:52:14.910
+ 
+
+
+00:52:16.740 --> 00:52:24.840
+ 
+
+
+00:52:28.080 --> 00:52:33.060
+ 
+
+
+00:52:33.060 --> 00:52:37.650
+ 
+
+
+00:52:37.650 --> 00:52:43.350
+ 
+
+
+00:52:43.380 --> 00:52:51.540
+ 
+
+
+00:52:51.570 --> 00:52:56.340
+ 
+
+
+00:52:56.790 --> 00:53:02.430
+ 
+
+
+00:53:04.050 --> 00:53:04.710
+
+
+00:53:06.240 --> 00:53:11.940
+ 
+
+
+00:53:11.940 --> 00:53:13.740
+
+
+00:53:16.290 --> 00:53:20.370
+ 
+
+
+00:53:20.370 --> 00:53:24.690
+ 
+
+
+00:53:24.690 --> 00:53:30.660
+ 
+
+
+00:53:32.370 --> 00:53:33.510
+
+
+00:53:34.530 --> 00:53:38.490
+ 
+
+
+00:53:39.390 --> 00:53:42.450
+ 
+
+
+00:53:42.450 --> 00:53:46.650
+ 
+
+
+00:53:46.650 --> 00:53:51.120
+ 
+
+
+00:53:51.120 --> 00:53:55.260
+ 
+
+
+00:53:55.260 --> 00:53:59.010
+ 
+
+
+00:53:59.010 --> 00:54:01.920
+ 
+
+
+00:54:01.920 --> 00:54:07.230
+ 
+
+
+00:54:07.230 --> 00:54:09.810
+ 
+
+
+00:54:09.810 --> 00:54:13.950
+ 
+
+
+00:54:13.950 --> 00:54:16.200
+ 
+
+
+00:54:16.200 --> 00:54:19.530
+ 
+
+
+00:54:19.530 --> 00:54:24.240
+ 
+
+
+00:54:24.240 --> 00:54:26.940
+ 
+
+
+00:54:26.940 --> 00:54:29.970
+ 
+
+
+00:54:29.970 --> 00:54:32.580
+ 
+
+
+00:54:32.580 --> 00:54:36.210
+ 
+
+
+00:54:36.210 --> 00:54:42.900
+ 
+
+
+00:54:42.900 --> 00:54:47.130
+ 
+
+
+00:54:47.130 --> 00:54:52.110
+ 
+
+
+00:54:52.830 --> 00:54:57.960
+ 
+
+
+00:54:57.960 --> 00:55:00.870
+ 
+
+
+00:55:00.870 --> 00:55:04.950
+ 
+
+
+00:55:05.670 --> 00:55:08.430
+ 
+
+
+00:55:08.760 --> 00:55:12.030
+ 
+
+
+00:55:12.030 --> 00:55:15.870
+ 
+
+
+00:55:15.870 --> 00:55:20.370
+ 
+
+
+00:55:20.370 --> 00:55:23.220
+ 
+
+
+00:55:23.250 --> 00:55:26.160
+ 
+
+
+00:55:26.160 --> 00:55:29.250
+ 
+
+
+00:55:29.370 --> 00:55:31.950
+ 
+
+
+00:55:31.950 --> 00:55:36.210
+ 
+
+
+00:55:36.210 --> 00:55:38.790
+ 
+
+
+00:55:38.790 --> 00:55:41.760
+ 
+
+
+00:55:41.790 --> 00:55:45.120
+ 
+
+
+00:55:45.150 --> 00:55:48.360
+ 
+
+
+00:55:48.360 --> 00:55:50.880
+ 
+
+
+00:55:50.880 --> 00:55:55.320
+ 
+
+
+00:55:55.320 --> 00:55:59.610
+ 
+
+
+00:55:59.610 --> 00:56:01.620
+ 
+
+
+00:56:01.620 --> 00:56:04.560
+ 
+
+
+00:56:04.560 --> 00:56:08.280
+ 
+
+
+00:56:08.280 --> 00:56:11.970
+ 
+
+
+00:56:11.970 --> 00:56:19.050
+ 
+
+
+00:56:19.050 --> 00:56:23.610
+ 
+
+
+00:56:23.610 --> 00:56:27.240
+ 
+
+
+00:56:27.240 --> 00:56:30.060
+ 
+
+
+00:56:30.420 --> 00:56:34.200
+ 
+
+
+00:56:34.770 --> 00:56:38.220
+ 
+
+
+00:56:38.220 --> 00:56:41.490
+ 
+
+
+00:56:41.490 --> 00:56:44.430
+ 
+
+
+00:56:44.430 --> 00:56:48.240
+ 
+
+
+00:56:48.240 --> 00:56:48.480
+
+
+00:56:48.810 --> 00:56:52.770
+ 
+
+
+00:56:52.770 --> 00:56:59.520
+ 
+
+
+00:56:59.520 --> 00:57:04.740
+ 
+
+
+00:57:04.800 --> 00:57:10.920
+ 
+
+
+00:57:10.950 --> 00:57:15.750
+ 
+
+
+00:57:15.780 --> 00:57:21.330
+ 
+
+
+00:57:21.810 --> 00:57:28.080
+ 
+
+
+00:57:28.080 --> 00:57:31.350
+ 
+
+
+00:57:32.070 --> 00:57:36.600
+ 
+
+
+00:57:36.600 --> 00:57:39.540
+
+
+00:57:40.890 --> 00:57:43.380
+ 
+
+
+00:57:43.380 --> 00:57:48.480
+ 
+
+
+00:57:48.480 --> 00:57:52.500
+ 
+
+
+00:57:52.500 --> 00:57:55.920
+ 
+
+
+00:57:55.920 --> 00:57:59.340
+ 
+
+
+00:57:59.340 --> 00:58:02.580
+ 
+
+
+00:58:02.580 --> 00:58:05.610
+ 
+
+
+00:58:05.610 --> 00:58:08.580
+ 
+
+
+00:58:08.580 --> 00:58:12.960
+ 
+
+
+00:58:12.960 --> 00:58:16.290
+ 
+
+
+00:58:16.290 --> 00:58:20.520
+ 
+
+
+00:58:20.520 --> 00:58:23.130
+ 
+
+
+00:58:23.130 --> 00:58:26.070
+ 
+
+
+00:58:26.070 --> 00:58:28.800
+ 
+
+
+00:58:28.800 --> 00:58:33.750
+ 
+
+
+00:58:34.680 --> 00:58:40.350
+ 
+
+
+00:58:40.350 --> 00:58:43.590
+ 
+
+
+00:58:43.590 --> 00:58:48.120
+ 
+
+
+00:58:48.120 --> 00:58:50.310
+ 
+
+
+00:58:50.310 --> 00:58:53.850
+ 
+
+
+00:58:53.850 --> 00:58:57.510
+ 
+
+
+00:58:57.510 --> 00:59:03.120
+ 
+
+
+00:59:03.120 --> 00:59:05.550
+ 
+
+
+00:59:06.810 --> 00:59:10.320
+ 
+
+
+00:59:10.320 --> 00:59:13.260
+ 
+
+
+00:59:13.260 --> 00:59:16.710
+ 
+
+
+00:59:16.710 --> 00:59:20.550
+ 
+
+
+00:59:20.550 --> 00:59:24.240
+ 
+
+
+00:59:24.240 --> 00:59:28.500
+ 
+
+
+00:59:28.500 --> 00:59:32.160
+ 
+
+
+00:59:32.160 --> 00:59:34.770
+ 
+
+
+00:59:34.770 --> 00:59:37.650
+ 
+
+
+00:59:37.650 --> 00:59:41.460
+ 
+
+
+00:59:41.460 --> 00:59:46.140
+ 
+
+
+00:59:46.140 --> 00:59:50.160
+ 
+
+
+00:59:50.400 --> 00:59:55.860
+ 
+
+
+00:59:55.860 --> 00:59:58.050
+ 
+
+
+00:59:58.050 --> 01:00:01.320
+ 
+
+
+01:00:01.320 --> 01:00:03.960
+ 
+
+
+01:00:04.230 --> 01:00:08.550
+ 
+
+
+01:00:08.550 --> 01:00:10.020
+
+
+01:00:10.980 --> 01:00:11.880
+
+
+01:00:13.170 --> 01:00:18.630
+ 
+
+
+01:00:18.630 --> 01:00:24.240
+ 
+
+
+01:00:24.240 --> 01:00:28.080
+ 
+
+
+01:00:28.080 --> 01:00:32.670
+ 
+
+
+01:00:32.730 --> 01:00:36.000
+ 
+
+
+01:00:36.660 --> 01:00:41.580
+ 
+
+
+01:00:41.580 --> 01:00:44.820
+ 
+
+
+01:00:44.820 --> 01:00:48.960
+ 
+
+
+01:00:50.880 --> 01:00:54.150
+ 
+
+
+01:00:54.510 --> 01:00:57.570
+ 
+
+
+01:00:57.570 --> 01:01:03.420
+ 
+
+
+01:01:03.420 --> 01:01:07.110
+ 
+
+
+01:01:07.110 --> 01:01:10.200
+ 
+
+
+01:01:10.200 --> 01:01:12.570
+ 
+
+
+01:01:12.600 --> 01:01:15.720
+ 
+
+
+01:01:15.720 --> 01:01:18.210
+ 
+
+
+01:01:18.210 --> 01:01:21.180
+ 
+
+
+01:01:21.480 --> 01:01:23.850
+ 
+
+
+01:01:23.880 --> 01:01:27.450
+ 
+
+
+01:01:27.450 --> 01:01:31.230
+ 
+
+
+01:01:31.230 --> 01:01:33.780
+ 
+
+
+01:01:33.780 --> 01:01:37.110
+ 
+
+
+01:01:37.110 --> 01:01:42.540
+ 
+
+
+01:01:42.780 --> 01:01:46.080
+ 
+
+
+01:01:46.080 --> 01:01:47.010
+
+
+01:01:49.980 --> 01:01:51.240
+
+
+01:01:51.270 --> 01:01:56.160
+ 
+
+
+01:01:56.160 --> 01:02:01.320
+ 
+
+
+01:02:01.320 --> 01:02:09.810
+ 
+
+
+01:02:09.810 --> 01:02:13.890
+ 
+
+
+01:02:13.890 --> 01:02:18.450
+ 
+
+
+01:02:18.480 --> 01:02:23.970
+ 
+
+
+01:02:23.970 --> 01:02:28.590
+ 
+
+
+01:02:28.620 --> 01:02:33.300
+ 
+
+
+01:02:33.300 --> 01:02:34.260
+
+
+01:02:34.920 --> 01:02:37.710
+ 
+
+
+01:02:37.710 --> 01:02:40.140
+ 
+
+
+01:02:40.650 --> 01:02:42.660
+ 
+
+
+01:02:42.660 --> 01:02:44.790
+ 
+
+
+01:02:44.790 --> 01:02:48.570
+ 
+
+
+01:02:48.570 --> 01:02:52.470
+ 
+
+
+01:02:52.470 --> 01:02:55.680
+ 
+
+
+01:02:55.680 --> 01:02:58.950
+ 
+
+
+01:02:59.550 --> 01:03:02.370
+ 
+
+
+01:03:03.480 --> 01:03:05.430
+
+
+01:03:05.430 --> 01:03:08.490
+
+

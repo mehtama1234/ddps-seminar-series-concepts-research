@@ -1,0 +1,1636 @@
+so i'm going to speak about a model
+reduction
+and for instance we'll introduce a new
+paradigm that
+goes beyond the classical offline online
+splitting which we call adaptive
+enrichment
+and this is a particular technique uh in
+context of
+large scale optimization or uncertainty
+quantification problems
+uh in this talk i will uh concentrate on
+large scale pde constraint
+optimization so let's go in i will first
+shortly motivate uh by uh
+posing you one of the mathematical
+challenges that we dealt with
+why we need more order reduction and why
+we need a
+particular those methods that i will
+present you today
+i will then shortly give a recap of the
+basic introduction into to reduce basis
+approaches one of the
+projection based model order reduction
+approaches that we have very well
+developed
+in some areas of pde approximation
+i will then go to a particular
+application where
+i can demonstrate the efficiency of this
+approach this is
+which is modeling and simulation of
+degradation processes
+of lithium-ion batteries and from that
+we will also see
+that the classical approach has
+limitations because
+in the offline stage we use usually need
+to solve
+very large scale problems and this is
+already prohibitive in a lot of
+applications
+i will then come to this new paradigm
+for pde constraint optimization
+and this is particular to introduce to
+you the reduced basis trust region
+approach for model order reduction of
+this kind of optimization problems
+and in the last step i will give an
+outlook
+how we can combine these techniques with
+localized model order reduction which is
+a
+technique which is quite helpful for
+large scale and
+for instance multiscale problems so
+let's look at one of the
+mathematical challenges and this
+already serves as an example that i will
+later on
+uh discuss the simulation of lithium-ion
+batteries so if you do a simulation and
+you want to look into degradation
+processes then these
+degradation processes they depend
+actually on the local currents within
+these porous
+electrodes and as these local currents
+change a lot depending on the geometry
+this is an issue of regularity depending
+on the
+on the geometry of the solution you
+really need
+to solve these these systems in this
+poor scale
+geometry because homogenized
+models will never be able uh to really
+give you an
+insight into for instance
+local uh local currents
+and the distribution of local currents
+that are
+responsible for degradation processes so
+this
+just as an advertisement and we want to
+do model order reduction for this
+because
+these simulations in complex geometries
+they are
+quite complex and if you want to really
+investigate degradation processes and
+do some parameter dependent studies
+then of course you need to solve a lot
+of these uh
+large scale problems and this is very
+time consuming and we want to reduce
+this
+so let's come to the basic approach of
+model order reduction and
+this is a tool that can be used in a lot
+of
+different contexts like optimization
+optimal control
+or uncertainty quantification or
+in the situation where you really want
+to do real-time simulation
+for parameter dependent scenario and
+i just uh advertise to this
+book on model reduction and
+approximation where you find an overview
+on
+the recent developments of these tools
+not only reduce basis methods but also
+balance truncation
+pod methods and others and the idea is
+always that you look at a parameterized
+problem
+and if you fix a parameter then you can
+compute a solution and this can be done
+in the context
+of pdes with any kind of
+high dimensional schemes like finite
+element finite volumes discontinuous
+collecting whatever you have
+in your lab and the task is
+to approximate not only one of these
+solutions but a lot of them
+depending on the parameter and if you
+change the parameter
+and then you get such a solution
+manifold of your problem
+lying in an infinite dimensional or very
+high dimensional space
+depending whether you look at the
+continuous problem or on your
+highly resolved finite element model
+and you want to construct a very low
+dimensional space and then project
+into this low dimensional space and this
+is
+what the reduced basis method is doing
+it constructs such a low dimension space
+and low dimensional means really low
+this means that if your high dimension 5
+element method has
+1 million degrees of freedom you hope to
+project in a
+space that has about 100 dimensions
+and then you can do very fast source in
+this low-dimensional space
+so there are other books recent books
+that you can have a look at for the
+reduced basis method and i
+just to present you the major idea for
+time dependent problem so we now focus
+on
+such a time dependent pde where
+mu is a parameter dependent differential
+operator
+this can be hyperbolic or parabolic
+problems
+plus suitable initial and boundary
+conditions and you always assume
+that you already know how to solve these
+problems
+with either a finite element finite
+volume or dg approximation
+which gives you the possibility to
+evaluate for a given parameter a high
+dimensional solution
+the answers for the reduced basis is now
+the construction of this low dimensional
+space
+and then the projection of a high
+dimensional scheme into this low
+dimensional space
+this gives you then this low dimensional
+approximation
+which is very fast to compute and in
+order to really be to be able to do this
+we need some
+ingredients requirements first of all we
+need
+reliable and efficient error control for
+the error between
+the reduced solution and the high
+dimensional one
+and this is not only necessary to
+certify
+the reduced model but it's also needed
+as you will see later
+in order to construct this low
+dimensional space because this is done
+uh in our context in a greedy manner and
+this greedy algorithm needs a fast
+evaluation of errors
+and in the time dependent context the
+optimal or gold standard that we have
+established
+is the pod greedy i will come to this in
+a minute the next step is the so-called
+offline online decomposition
+such that you are really able in the
+online phase
+to solve only small systems that have a
+complexity
+which is equal to the dimension of this
+low dimensional space and has no
+ingredients of the high dimension and
+then in addition if your operator is
+for instance non-linear or does not
+fulfill certain
+fine decomposition criteria then you
+need a hyper reduction
+and i will introduce shortly just one
+concept which is the empirical operator
+interpolation to treat
+non-linearities but all this is quite
+well established
+so look at any finite volume these key
+or discontinuities connecting scheme for
+these equations then you will also
+always end up into a linear system or
+non-linear system to solve you have
+some implicit operator some explicit
+operator
+some right hand side so all these uh
+high dimensional schemes on the linear
+algebra side
+are at the end in such a format
+and the reduced basis methods that's the
+following so whenever
+this low dimension space is constructed
+and we come to this point in a minute
+then this is represented by a
+small basis with n basis functions
+and when we assume
+that the operators have a suitable
+form then we can do a projection
+efficiently
+but first of all we just project this
+high dimensional equation to this low
+dimensional space and the following
+way so we we spend long dimensional
+solution
+in this basis and then for the
+coefficients
+in this uh in in this uh
+form we get a dis reduced
+system to solve with an implicit part an
+explicit part
+and a right hand side and this is now
+for the linear case
+where you see that these these uh
+projected operators are just coming
+from the high dimensional operators by
+projecting them
+uh to the basis uh in the scalar product
+that that comes with these spaces
+and this can be done for the implicit
+matrices for the explicit ones
+and this is for the initial data and
+this is for the right hand side
+what you see already at that point
+uh you have these small matrices here
+but if you want to compute them then you
+have to
+solve these integrals and within the
+integral you have still a parameter
+dependence
+this would mean that the assembly step
+for these matrices has to be done
+anew whenever a new parameter is picked
+and this is something that we want to
+avoid and this is called
+offline online decomposition uh
+and this offline online decomposition
+can be done whenever your
+operator has such a form that you can
+write it as a sum
+on some operator that only depends on x
+and some function that only depends on
+the parameter
+whenever this is the case then in the
+offline phase you can pre-compute
+or assemble these low-dimensional
+matrices
+by projecting just these x-dependent
+operators to your reduced space
+and the new dependent part which is
+summing up
+these small matrices and multiply them
+with these parameter dependent functions
+that is a very fast step with low
+complexity that you can do in the online
+phase
+so this is the case whenever you have a
+disaffine parameter dependence
+and if you don't have this dependence or
+if your problem is non-linear which
+forces you that
+you you are not in the situation that
+you can do this
+then you need an additional hyper
+reduction step and this is
+the empirical interpolation but uh come
+let's come to the
+choice of the low dimensional spaces
+first
+with the so-called pod greedy algorithm
+that i introduced together with better
+hearthstone in 2008
+the general idea here is that we want to
+construct
+from snapshots so we compute with a high
+dimensional scheme
+for given parameter trajectories of our
+time dependent problems
+and when this parameter is chosen well
+which we do with a greedy algorithm
+which means that
+we need to have an efficient apostrophe
+apostro-error estimator that we can
+evaluate quickly such that we can search
+in a parameter in a parameter domain
+for the parameter that has worst error
+with respect to the basis or the space
+that we
+have already constructed okay then we
+compute this
+time trajectory and this time trajectory
+is then
+reduced using a principal ordinal
+decomposition p o d
+so this is a very nice
+scheme and the question is how good does
+it perform
+for instance do we have really fast
+conversions like
+exponential convergence with respect to
+the low dimension because if you have
+such a convergence this would mean that
+really such a complex high dimensional
+system can be reduced
+to a small one with 10 to 100 parameters
+so and there is a result in a
+publication of my co-author
+banner hearthstone in 2013 that actually
+gives you a theoretical
+backup for this and this theorem says
+that
+whenever the so-called kolmogorov
+animates
+which is defined here for a compact
+set which is the set of solutions
+depending on the parameter in our case
+whenever this has an algebraic or
+exponential decay
+then this pod greedy algorithm will give
+you an approximation with the same
+decay either algebraically or
+exponentially and with the same
+constants
+and this extends prior results in the
+elliptic case
+of of uh benefit island so we are in a
+very
+well uh position we have established a
+gold standard method here for
+time-dependent problems that we can
+apply and with this i want to come
+to this application for degradation
+processes of lithium-ion batteries where
+we
+ex exactly take this message so this was
+done within a
+research project in germany where a lot
+of
+different partners were involved from
+other universities and also from the
+german
+uh dlr center and fraunhofer institutes
+and and
+the goal was here to gain better
+understanding of degradation processes
+in dsmi batteries through mathematical
+modeling
+in particular using model order
+reduction to speed up
+simulation so what is uh the
+model the underlying model for
+distinction iron batteries
+so this is very abstract but the major
+model
+that we look at in these resolved
+electrodes
+is such a system where we have a time
+dependent convection diffusion equation
+with those terms
+for the lithium ions coupled
+to an elliptic potential equation for a
+potential
+phi so i don't want to go into details
+the only thing that you should
+know from battery modeling is that
+at the grain boundaries of the
+electrodes
+we have this electrochemical reaction
+and this is modeled by butler folma
+kinetics and you see here
+the form of these source terms which has
+exponentials inside
+depending on the solution which are
+strong
+non-linearities that you have to resolve
+and this is
+why we need in addition to this pod
+greedy
+uh this hyper-reduction step in order to
+be able to do
+a fast offline online splitting for
+these reduced models
+so as i told you before you can write
+this system
+in such a form for any kind of favorite
+discretization
+schemes in our case we take a finite
+volume
+discretization with implicit time
+stepping
+this leads to a system of this type with
+a nonlinear operator
+amu now and then we apply pod greedy to
+this
+together with this concept of empirical
+operator interpolation for this
+non-linear operator a mu
+that is then replaced by the
+interpolated
+operator that has it is a fine
+decomposition
+format so if we do that we can apply it
+to the simulation in such complex uh
+anode and cutout electrode geometries
+and this is just to give you the speed
+ups that we can gain with
+this technology so the high dimensional
+calculation here if you do charging this
+charging sweep of the battery with
+this resolved geometry that has about
+1.7 million degrees of freedom in the
+finite volume approximation
+this needs something like six and a half
+hours even using a
+very nice algebraic multi-grid
+pre-conditioner so most standard
+technology
+to solve the systems so
+six and a half hours means that you come
+into your office in the morning the
+morning
+you press the button to start a
+simulation and you get the result
+when your day is over if you apply this
+reduced
+technology then you see that depending
+on the system size you get
+an error in the order 10 to minus three
+in the
+relative array both components uh the
+concentration of the ions and
+and uh potential um and this is the
+times in seconds that you get now so
+which means that at most 1.5
+seconds and your simulation is done
+um this is a speed up in this order of
+290 or
+280 but it's most important that now you
+can press the button for your simulation
+and you get the response in 1.5 seconds
+instead of six and a half hours
+so this is the nice story about reduced
+order modeling
+what it does not tell you is that in
+order to construct this low dimensional
+model
+you have to do these complex
+computations with the
+high dimension finite volume method for
+several parameters
+and this is time consuming so it takes a
+lot of time to prepare this model
+and it's also memory demanding because
+you have to store these trajectories in
+order to be able to do the pod
+so also there there are technologies how
+to deal with this
+these problems using for instance
+hierarchical approximate pod
+instead of pod but nevertheless um
+it's not just done uh to say that we
+have this
+very fast online methods we also need to
+take care about this
+high complexity and these demands in the
+offline phase
+so let me uh come to some insights
+where we really look at these
+degradation processes and one thing that
+we looked at is
+lithium plating so you see in this harsh
+cell
+geometry in this green particles uh
+the currents are so large that uh
+that the lithium goes to a metallic
+phase and starts to grow
+which is called lithium plating and we
+also wanted to simulate
+these things with our reduced models
+uh this is a more complex model that i
+then
+than that what i showed you before and
+in particular we needed an apostrophe
+error estimate
+estimation for these complex models
+which is not right away
+available and there i just wanted to hit
+you
+towards the possibility to
+do hierarchical error estimation instead
+of residual error estimation this was
+presented in a paper with heinrich and
+urban in 2019
+which relies on the fact that you look
+at reduced spaces
+that are embedded into a larger space
+and you compute now the difference
+between the reduced simulation for
+a given accuracy with a better one
+so with which a lot with a larger space
+um and if this if this is done
+then you get really um error estimates
+that you can use
+without further theory just relying on
+the fact
+that we have this kind of exponential
+convergence
+um which then allows you that this uh
+to to say that this saturation
+assumption that we have here is really
+uh
+satisfied so with this uh kind of
+hierarchical apostrophe error estimation
+we look at this uh
+complex problem with lead simulating and
+we compare here
+um the error and the real relative error
+with the
+approximated relative error with this
+hierarchical indicator so the
+uh the dots are the approximated errors
+and
+the the lines are the exact arrows and
+you see that you get a quite
+a very nice fit of this error estimate
+with the real error
+and if you look at the solutions and
+this is a comparison
+of such a plating problem for
+a high dimensional model with the
+reduced model the high dimensional model
+is the underlying line
+and the reduced one is the the crosses
+that you see on top of these lines
+and you see that in this uh physically
+irrelevant regime
+where you have the plating you get to
+this behavior here in this uh
+plot where we plot the transfer charge
+against the cell voltage
+and also this quite interesting physical
+phenomena
+phenomena is very well captured by
+the reduced model so this is for one of
+the outputs the other one is the
+transferred
+charge against the average lithium
+concentration
+and also there you see that all the
+features are really kept
+by this reduced model so so
+so much to the classical reduced basis
+let me advocate a little bit uh our
+software framework that we use for model
+order reduction this is a python package
+which is called
+plymouth it's an open source uh package
+that is
+available on this by more web page and
+the main
+maintainers are very milk stuff and
+felix schindler from my group and
+this model reduction is on top of any
+high dimensional server package that you
+use so there is an interface concept
+that you can use this this package
+together with your favorite
+server package and there are already
+implemented interfaces
+for the dual package for d2 for phoenix
+for engisolf
+and others can be implemented following
+these
+python bindings that are already there
+so just this is the framework that we
+use for model order reduction we split
+the implementation work between the high
+dimensional one
+and the reduced algorithms so let me
+come
+to the new part which is this pde
+constraint optimization
+using new ideas of adaptive enrichment
+so this is a work where we have
+already uh two preprints one
+appeared in june last year the other one
+in december last year
+i will concentrate in the presentation
+here um on the first work
+from from june uh in the second one we
+added uh
+as a sub solver for the optimization
+problems
+a newton scheme so we compute also
+hashing information as i will point out
+later
+so let's go into the context of pde
+constraint optimization that we are
+looking at
+so we look at objective functionals
+depending on
+a state and a parameter and here we have
+a particular form we take
+so linear functions and also such
+bi-linear functionals and parts that
+only depend on parameter
+that we want to minimize subject to a
+state equation which means that the
+state u
+is satisfied satisfies a variational
+problem um
+and we uh for simplicity first
+concentrate here on the stationary case
+where we just look at such a coercive
+variational problem
+let's say an elliptic problem like
+porous media equation or something like
+that
+so if we come into this context and
+usually if you want to solve this
+optimization problem
+during the optimization solve you need
+to
+calculate a lot of state problems
+forward problems
+and in order to calculate derivative
+information for this
+objective function which means gradient
+with respect to the parameter
+or the hessian information you even have
+to
+either compute sensitivity
+sensitivities which means
+derivatives of the solution with respect
+to the parameter
+or you can do the concept of first
+optimize then discretize and you get
+the gradient usually from solving the
+dual
+equation and using this for the
+computation of the
+of the gradient and this is what we will
+do in the following
+and we want to use optimized model order
+reduction
+to speed up this optimization process so
+if you
+so this is just just a list of
+references
+of other works that dealt with which is
+basis methods and model order reduction
+i will come later for instance to this
+article of
+kian kappel veroy and wilcox where they
+first introduced a method that is quite
+similar to what we do here and we come
+to the differences in a moment
+so if you look at the classical reduced
+basis approach
+like i told you before with online
+offline splitting
+and you compare this approach with the
+full order
+approximation in the context of
+optimization problems
+then you see the following behavior so
+let's
+look first at the blue line this is a
+newton full order model
+which means that you have a newton
+iteration
+and in each of these newton iterations
+you solve
+your pde with a high dimensional finite
+element model
+and then of course you iterate and
+iterate until you really reach a point
+where the newton method reaches
+its high conversion speed and then you
+get a very fast
+decay towards the optimum so if you now
+compute the same
+method just by replacing the full order
+model by this reduced orders surrogate
+model
+then you see that you have starting here
+a very fast convergence
+so it it takes a little really like
+nothing
+but there is a huge time cpu time
+that you need in order to construct this
+reduced model in the offline phase with
+the greedy or
+pod greedy algorithm and this means that
+you prepare this reduced model not just
+for solving this optimization problem
+but you prepare it to be
+be good for the whole parameter range
+and then you can use it very fast online
+but you have to pay
+first a lot in order to get this model
+and this is something that we want to
+avoid in the following and this is the
+idea
+how we want to do that so let's suppose
+for simplicity
+that we just have a two-dimensional
+parameter domain in the
+parameter direction x and y
+and you want to solve this optimization
+problem and
+the optimum is some parameter mu bar and
+you start
+with some arbitrary chosen initial
+parameter mu0
+and you want to go somehow with your
+iterative optimization solver
+from this initial point in the parameter
+space
+to this optimum and you see already here
+depending on the way you have to go
+either straight or taking uh
+some different way you do you do not
+need
+the underlying model in the full
+parameter domain you just
+need it around this path that the
+optimizer takes
+to go from mu0 to mu bar you
+only need it in this area and this is
+the major idea
+and this is what's what the trust region
+method does
+so trust region means that you replace
+your global problem by the solution
+iterative solution of local sub-problems
+and these local sub problems are to be
+solved within
+a trusted region around the parameter
+point
+that you have currently selected with
+your optimization server so if you start
+at the beginning
+then we define with some suitable
+apostrophe error estimates
+a trust region which is such a ball with
+a radius
+delta zero and this means that the
+reduced model that we created here
+has a certain accuracy just in this
+region
+around mu zero so we can solve a sub
+problem
+optimization sub problem within this
+thrusted region until we hit the
+boundary
+and this is the new parameter and again
+we have to check whether our local model
+is accurate enough in such a trusted
+region and we can do the next
+optimization step
+if you follow this principle then in
+each of these optimization
+steps you do just an enrichment of the
+local
+reduced model such that it is
+certified in this small region within
+the large parameter domain
+and it's not a model that is good enough
+for carrying the whole parameter range
+okay so the idea is that we choose
+in this address region optimization as a
+local
+model function the reduced objective
+functional
+which is then just the objective
+functional
+for our reduced basis approach
+and this was already done in this work
+of
+kian krebs wilcox that i announced you
+before so you
+take as a model function uh just a
+reduced functional using a
+a suitable reduced basis base and this
+reduced basis base is then enriched from
+step to step
+and this means that this model function
+changes with this iteration index k
+from step to step due to the change the
+changing
+reduced model which is below as a sub
+problem solver for these local
+optimization problems
+we take a pfgs method which
+needs the evaluation of the gradient
+information
+information of the function but not the
+exact question that the hessian is
+approximated there
+so what we are now doing new is
+first of all i will show you that the
+result presented here was not
+optimal and we have to give an
+alternative
+and there we come to a so-called
+non-conforming dual
+corrected approach we correct
+with respect to the evaluation of the
+objective functional
+and the derivative of the objective
+function
+and then i will show you that this gives
+really a better
+speed up also for the resulting scheme
+so what we have to do in order to apply
+this whole procedure we have to look at
+the full optimality system
+of this optimization problem which means
+we have the primal state equation and we
+formulate a residual of the primal state
+we have sensitivities
+which are the derivatives of the
+solution with respect to the parameters
+by solving such problems
+with respect to the residuals we have a
+dual state equation
+we have the residuals for the dual
+states we have dual
+dual sensitivities that we compute and
+finally
+with all these contributions we can
+compute
+a reduced gradient of the objective
+function
+so this is all the problems that we need
+to solve
+and we actually then also need a
+rigorous apostrophe error estimate for
+each of these equations
+if we now come to the projection on the
+low dimensional space
+then we construct in general
+different reduced spaces for the primal
+problem
+for the dual problem for the primal
+sensitivities and the dual sensitivities
+and as you see here this leads to the
+case that
+the dual solution pmu
+which lies in this dual space is not
+a test function that you can use in the
+primal equation
+and this problem this is a
+non-conformity that comes from
+adjusting the spaces to the problems
+here
+which is usually not visible if you just
+use a uniform a high dimensional
+discretization which is the same for the
+prime lender tool
+but you need to take care of this
+non-conformity
+that comes with this approach and this
+uh
+makes it necessary to look carefully at
+the
+evaluation of the reduced objective
+functional that i define here which is
+the lacrosse functional
+with respect to the reduced model and if
+you evaluate this
+then it has these two contributions and
+in this work of
+gun couple and
+wilcox there was only this component and
+this residual was neglected and if you
+look at this residual
+then you see exactly that we use as a
+test function the solution of the dual
+problem here
+and if they were from the same space
+then this residual would be zero
+and it would be gone but this is not the
+case here so we need
+to do this correction in order to have
+the right like call functional here and
+this has some
+advantages as we will see because this
+corrected functional here
+has a faster convergence rate than the
+original one
+that you just take by a naive approach
+so what we do now is that we really want
+to solve this
+reduced minimization problems with
+respect to this corrected
+functional here and then
+we compute error estimates rigorous
+apostrophe error estimates for all these
+quantities
+so the error in the primal in the dual
+in the functional
+in the gradient of the function and in
+this insensitivities and we can give
+rigorous apostrophe our estimates for
+all of them
+but i want to focus just on the
+approximation of the
+functional and the gradient here because
+this is new
+because of this correction step so and
+what you see
+here is that for the error in the
+objective functional
+with respect to this ncd corrected
+functional
+we really get contributions in the
+apostrophe error estimate
+which are which has the contributions
+this is the error estimate for the
+primal this again
+and you see this appears quadratic here
+with a constant
+and in the first part this is a replaced
+with some dual residual that you compute
+which is also such a quadratic
+part here so whenever you have
+convergence of the primal and the dual
+then you then you get here with this
+correction step
+that the objective functional um
+converges
+in a quadratic manner with respect to
+the primal and lingual problem
+and also if you look at the gradient
+information
+then we get an apostrophe error estimate
+which is now a little bit more involved
+but also shows
+this very nice convergence properties
+you will see this in the numerics later
+so again we are now back um and i told
+you about this
+algorithm and in each step we enrich the
+spaces
+and there are now different choices for
+the primal dual
+spaces and also the sensitivity spaces
+you can take
+all of them separately and adjust it to
+the particular equations
+but you can also look at so-called
+tailored
+tailored are b spaces where the spaces
+for the primal problem and their
+derivatives
+are accumulated in one space
+which is similar to not taking just a
+lagrangian approach but hermit
+approach for the spaces so this is also
+something that we tried
+or you can accumulate all these spaces
+and use the same space for everything
+and then of course
+you don't need this correction in the
+residual
+in the objective function anymore so but
+you will see as we we showed this is a
+bad choice because the approximation
+properties are
+then not so nice so
+um we also can show a convergence
+of the trust region optimization method
+with this nct
+corrected approach so this is again now
+this local transcreation optimization
+problem
+where you solve in each step your primal
+state equation
+with respect to the given reduced space
+and you have a stopping criteria for
+this iteration to solve this
+optimization problem which is giving
+a given here so you prescribe a
+tolerance
+for for solving the optimization problem
+and this is the error in the parameter
+of this optimization problem
+and in addition you check that the
+relative
+error in your objective functional um
+is within the given radius
+of the trusted region so this is this
+means that the
+method that you you use here is really
+within the trust region
+and then you can show that this method
+convergence
+converges uh towards the optimum
+one of the optimum local accumulation
+points
+so whenever you have uniqueness of the
+overall global problem then
+then you get convergence against the
+unique optimum with an error which is
+just a given tolerance that you
+impose in the scheme so let me
+demonstrate this
+for a very simple model problem which
+comes
+from the common room that you see here
+of our cluster of excellence
+administer so whenever you visit us here
+you will get a coffee here
+and we look at a model problem that we
+derive
+from that looking at such an objective
+function
+um with respect to let's say a
+stationary heat
+transport given by this elliptic pte
+and what we solve here is seen in the
+second slide
+so we take the
+construction from this cluster building
+with
+the common room that you see here and as
+an optimization
+problem we want to have a defined
+temperature in one of the rooms which is
+indicated in green here
+and we have a lot of heaters they are
+marked with with these
+points here and windows and all the
+parameters
+for for heat
+convection enter into this model as
+parameters mu i
+so which means you can optimize heaters
+and windows and walls
+in order to get optimal temperature
+temperature distribution inside
+and you see for a particular choice of
+parameters
+the heat conductivities are given like
+this and so you see
+that there are windows and there are
+walls and
+um you have the source term which is one
+of the heaters for instance and then you
+get
+a certain primal and dual solution so
+this is the setup of the problem
+and then you want to solve this
+optimization problem that gives you a
+defined
+temperature in one of the rooms so
+we compare now um our new method with
+the
+non-conforming corrected functional
+with the original one which was given
+in this paper of gyan and krebel and you
+see
+that here in yellow
+you have the convergence of both the
+objective functional
+and of the
+of the error estimator um for the
+original functional so this is this line
+you see that the real error and the
+error estimator for this
+function lie on top of each other but
+they have the wrong conversions rate
+because you did not
+consider this correction that you need
+to consider and if you need
+if you take this correction into a count
+and this is this
+real error and the error estimator here
+then you see that
+you get really desire convergence which
+means that you have really
+an order of magnitude difference between
+this reduced functional here and the
+other one and the same is
+true if you look at the gradient
+information and also here
+the red ones are the gradient
+information from
+uh real error and an error estimate from
+the original
+approach and the other ones are those
+that we get
+with our new approach and if you look at
+the overall
+convergence of the scheme and this comes
+back
+to the slide that i had before where i
+showed you
+the comparison with the classical
+offline online splitting
+reduce basis method in this approach
+here
+you go with the trust region with the
+enrichment and very fast
+you have already a good model and you
+don't need
+enrichment anymore and you see a very
+fast convergence
+and this means that by comparing here
+the cpu time
+against the error you have no offline
+phase you immediately start with this
+method
+that combines the full order method
+and the reduced order method and thus an
+enrichment of the space
+in each optimization step and you get a
+very fast convergence and
+if i uh plot this uh
+convergence from the offline splitting
+then we would be
+at this point and the red curve is just
+solving the optimization problem with
+the high order full order model
+so you see that we really get very very
+fast convergence and if you use the
+non-corrected approach
+from this work of john kepler-verroy
+then this is the blue curve
+this is already a quite nice
+approximation but you get
+even higher speed up by using this
+correction step
+so this was uh online enrichment for
+optimization problems
+in the next step we want to combine this
+with localized model order reduction
+which means that we do not want to
+construct reduced models for the overall
+computational domain
+but just for sub domains like in a
+domain decomposition
+approach and this has already been done
+and introduced
+for instance in this paper with the
+felix schindler 2015
+in the context of discontinued skeleton
+schemes but there are a lot of
+additional contributions and there is a
+recent review
+paper in a handbook done by
+andreas um smetana where you have an
+overview
+on this technology of localized model
+order reduction
+for this localized model order reduction
+you need
+localized error control and one
+instance of such an error estimate from
+this article
+is shown here where you see that in this
+error estimate
+you have local contributions on the sub
+domain so capital t
+are now the sub domains that you can
+compute
+and this allows that you
+compute local spaces for instance for
+such a
+test problem and
+then by just computing local sub
+problems you can
+construct a space and then you have a
+reduced model you can solve it you can
+check with this localized
+error estimate whether the model is good
+enough and if it's not
+then you can use local sub problem
+enrichment steps in order to improve the
+model
+and you come to a certain quality of
+your simulation without
+ever touching a full order approximation
+for the global
+problem at all so for this simple
+example with a compliant cost functional
+we already did this approach of
+combining localized model reduction with
+optimization
+and this is what you see in the
+comparison here
+so on the left hand side this would be a
+classical approach with offline online
+splitting
+where in the offline phase the greedy
+algorithm
+algorithm searches for certain
+parameters in this two-dimensional
+parameter space
+and at at this points it computes the
+snapshot
+and adds it to the bases and if you do
+this
+um by a certain quality control then you
+get
+this in a purple
+shaded form of the objective functional
+and you see
+the optimum is somewhere here but you
+also see
+that if you start in a certain point
+with your optimization tool
+um this tool will follow a certain path
+towards the optimum
+and you will actually not need to have
+good quality
+of the space everywhere but just along
+this
+trajectory and this is what we then do
+is
+in this enrichment approach with the
+local enrichment
+we detect in the with the greedy
+algorithm uh first
+starting parameter of the optimization
+loop and we do this local enrichment in
+in a lot of steps until we reach a
+certain quality
+then we do one step in the optimization
+we reach a different parameter
+we check whether the space is already
+good enough
+here it's not we do an additional
+enrichment step we can go to the next
+one
+we can do an additional enrichment step
+and these enrichments are now
+just solving local problems in some of
+the sub domains not in all of them
+and we converge and if you look at this
+procedure so this is now the
+partitioning
+these are the subdomains that we used
+and you see
+the distribution of the size of basis
+functions that were constructed in this
+in this overall optimization loop you
+see
+you have a maximum of 22 basis functions
+in some areas and you have
+very few basis functions in other areas
+in the overall optimization problem for
+for this process
+for this problem here we did a 709
+local enrichment which means in order to
+solve the global problem
+we had to solve 709 such local sub
+problems in order to come
+up with a solution of the overall
+optimization problem
+without ever touching the full order
+model on the global domain
+in average this means on each local
+domain for the overall optimization we
+just solve
+something like 11 problems on subdomains
+of course we now develop this for the
+full trust region approach which means
+that we have to go through all these
+upholstery error estimates uh with this
+localization strategy that's what we are
+currently doing
+and with this um i'm at the end
+i think for your attention and of course
+i thank my co-authors
+and if you're interested also in using
+our software
+the high dimension simulations are
+always done in the
+june the distributed unified numerics
+environment framework
+and the model order reduction within our
+polymorph package
+thanks a lot thank you so much for the
+great talk professor oberger
+i really enjoyed it we do have
+one questions from chat room
+um let me read it to you
+it's from john ragusa from texas a
+m when generating the full order
+snapshots one
+may have to use locally refined meshes
+for example phase field simulations
+these locally refined
+grids will be different for each
+parameters
+and when how uh so for that um
+for that context how can you apply this
+reduce spaces method when snapshot
+vector is uh
+so the question the classical technology
+here uh
+deals with the same spaces for all
+parameters the same number of degrees of
+freedom
+but this is clearly true that if you
+want to have a
+fair comparison then also your full
+order model should
+include adaptive mesh refinement and
+then with this adaptive mesh refinement
+of course you have a different spaces
+from one parameter to the next one and
+if you want
+then to come up with an overall reduced
+model
+then you have to embed these spaces into
+let's say a larger common space which is
+usually the finest union
+of all these uh measures and then
+with this technology of course you can
+then also do this reduced basis and
+there are contributions where this has
+been done
+uh for instance the work of masayuko
+yanov for instance uh
+did this where he uses uh adaptive
+meshing together with model order
+reduction i did not present this
+uh technology is there from the
+mathematical point
+this is no great deal but from
+implementation point of view this is a
+deal
+so this is clear thank you
+another question is coming from srida um
+has uh the two questions first question
+is could you tell more about
+how you define the trust region radius
+it seems that choice would limit the
+step sizes you would
+choose for your optimization part let's
+let's go answer the first question first
+um so
+let's come to this point so for instance
+also in the paper that
+we presented we give the possibility
+that this radius this delta
+is not o it can also uh grow it can get
+larger because i mean if you go on this
+way and you enrich then it might be that
+your model becomes
+better and better and you can really
+enlarge this radius and this was not in
+in this paper of jana and keppel they
+only had the possibility to shrink the
+radius
+but we showed that it's really necessary
+to also enlarge these radius
+in order to get a real good performance
+and the major criteria that we use
+for defining this radius is
+this size which is the relative error
+of the approximation of the objective
+functional
+that we can evaluate very fast using the
+apostrophe error estimate
+so this is the one one thing that we use
+to define the radius
+and the other part is that we actually
+look
+during the optimization solve
+for the increment from um from one step
+to the next um
+how large is the increment that we that
+we
+that we have in in the solution of this
+optimization problem and this
+information is also used
+so if you look um in uh
+into the the article that i cited then
+you find
+let me just give this reference so there
+you find a detailed algorithm that
+includes the definition of the radius
+and also the possibility to to enlarge
+it
+in this process of optimizing okay
+thank you and the second question from
+srider is if you can go to page 40
+slide 40 okay
+okay all right there you go um okay the
+the convergence rates for the adders are
+curious
+in the figure in the left it seems that
+ncd
+corrected approach stops earlier
+whereas the other approach leads to
+smaller errors
+and also in and also in the right side
+figure
+why does the method of kian result in
+much smaller error
+or was it the objective function on the
+y-axis
+no actually we give to the optimization
+solver
+this stopping criteria which is here on
+top
+this is the result for a stopping
+criteria 10 to the minus 4
+and this for 10 to the minus 6
+this is this tau that we had in the
+convergence algorithm
+and what you see is that if you use um
+the original method from the paper of
+kian krebel
+then actually this error estimate
+has for the objective function has not
+the right convergence order and this
+means that
+uh in such cases it might even stagnate
+and stop and and and not converge
+uh further because you end with the
+stopping condition just because
+the overestimation of the error is too
+large and this problem is not there with
+the methods that
+that we introduce with this correction
+and the difference that this stops here
+earlier
+and the other go deeper this is because
+we have
+this this finer tolerance 10 to the
+minus 6 here
+and you see with this finer tolerance
+also the other algorithm
+finally converges but it continues to
+iterate here
+because the error estimator does not
+tell you that you already reach this
+tolerance
+okay well thank you that's all i have
+from the chat room but that doesn't mean
+that
+you can unmute yourself and ask
+questions if you
+if you have a question please please
+admit yourself and
+ask questions directly
+okay well i do have a
+questions okay so for for the uh
+enrichment um
+uh the profs process how expensive is
+that
+um i'm assuming some computational
+quality is involved with uh
+yes so but whenever you do a one of
+these iterations
+um you check whether your model is
+already good enough
+and if not you compute one full order
+approximation and you add this to the
+primal
+state uh to the primal space and to the
+dual space which means uh that
+that's what you see here at the
+beginning from one step to the next step
+the cost is about the same as for the
+full order model because in each of
+these
+initial steps you always have to solve
+solve the full order model
+this is why at the beginning this is
+more or less following the full order
+convergence
+but then you come into a situation where
+due to this enrichment this space was
+already good enough
+and you do not have to do this
+enrichment in every optimization step
+and this is where you now really profit
+from this method and you get
+this fast convergence and if you look at
+the
+computational cost then the cost for the
+solution of the full order model this is
+the high
+cost that you have if you add this to
+the low dimensional space
+then this means that for the local model
+you really
+just need to compute additional
+components of the localized operators
+and this is very fast
+so the major work that you have to do is
+the full order model source this is what
+what has the computational cost nice
+nice okay um i guess another question
+from me
+is um so another like active research
+area
+in reduced automobile community is uh
+something
+to do with a slow decay in chromograph
+with and
+i'm i'm assuming um the all the examples
+you have shown
+has as fast decay in komodo with
+and yeah right so these problems they
+have
+a fast decay it's just that if you
+look at this complex problems um
+like uh it is complex geometry these
+multiscale problems
+um then it might be that the solution
+manifold is already quite rich
+but you are still in the situation that
+you have the fast decay
+but of course it's uh of quite some
+importance to look
+uh at an improvement of these methods
+for like hyperbolic problems with uh
+with shock forms where you do not have
+these fast convergence of kolmogorov
+with
+and i think it's clear that their
+additional ingredients
+need to be included because then
+you will never beat the kolmogorov dk
+with a linear method and this means
+that you have to go to nonlinear
+approaches
+and this can either be uh done by
+introducing a deformation of snapshots
+and there are a lot of contributions
+that go into this direction
+or recent approaches like lee and
+karlberg
+using the neural networks with outer
+encoders
+where auto encoders can be seen as a
+non-linear version
+of a singular value decomposition so
+it's a nonlinear generalization of the
+pod
+in the end so there are a lot of these
+approaches currently a lot of teams
+working on that
+but up to now there is none of them with
+a real serious
+mathematical justification so this is
+something that is still
+missing okay i just wanted to add that
+uh
+from in our group uh we have improved
+the
+lian covers uh the non-linear map
+reduced model
+achieving the speed up by applying the
+hyper reduction
+i just wanted to mention that okay
+um any other um questions
+from audience
+i noticed that under maxwell i was
+may want to ask some questions and i
+heard some noise from him
+no i don't uh have any questions
+okay thanks for asking yeah
+okay that's good um
+any other questions from audience
+uh if not then we can thank our today
+speaker
+uh the professor berger thank you so
+much for the great
+talk it was very interesting i'm sure
+that um
+i hope that there will be some follow-up
+questions and
+you don't mind you know getting the
+questions from
+us and answering those yeah
+feel free to contact me and i'm happy to
+answer all the questions
+okay awesome awesome thank you so much
+um
+the protestor burger okay fine so have a
+nice day
+okay with that we will conclude our uh
+today's
+gdpr seminar okay thank you so much for
+joining us today
+okay bye bye thanks

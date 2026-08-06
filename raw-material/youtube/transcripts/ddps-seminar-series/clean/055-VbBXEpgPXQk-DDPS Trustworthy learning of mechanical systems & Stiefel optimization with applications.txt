@@ -1,0 +1,1704 @@
+okay
+all right let's start um
+welcome welcome to the uh tdk seminar
+everyone before we introduce our invited
+speaker let's go over some rules and
+logistics first of all please mute
+yourself during the talk unless
+you have questions if you have questions
+you are welcome to a mute and ask
+otherwise please use chat room to post
+your questions so that we can address
+them in q a session at the end
+second today's ddps seminar is open to
+external audiences therefore no
+classified discussion is allowed so
+please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host mole tao who is
+an associate professor in georgia tech
+he received the bachelor's degree in
+mathematics and physics in 2006 from
+xinhua university
+in china and phd in control and
+dynamical systems
+with a minor in physics in 2011 from
+caltech
+afterwards he worked as a postdoctoral
+researcher in computing and mathematical
+science at caltech from 2011 to 2012
+and then as a current instructor at the
+new york university from 2012 to 2014
+from 2014 on
+he has been working as an assistant and
+an associate professor in school of
+mathematics at georgia tech
+he is a recipient of the wp
+carey phd prize in applied mathematics
+in 2011
+american control conference best student
+paper finalist finalist in 2013 the nsf
+courier award in 2019
+and um
+a stats
+past paper award in 2020 i triple e best
+student paper finalist in 2021 and
+coolant pack scholar award in 2021 22.
+today molly will talk about trustworthy
+learning of mechanical systems and
+stifle optimizations with application to
+transformer and optimal transport
+which is a very interesting topic so
+please
+enjoy it and now without further ado let
+me pass the button to molly by asking
+one random question as usual today's
+random question is
+what is your favorite things to do other
+than research mole you can answer that
+and then continue your talk
+thank you very much for the for the very
+generous introduction um
+so um
+so i recently started uh twittering
+because i was told that if you work on
+machine learning you have to twitter
+otherwise nobody knows your research oh
+really and uh
+i said well that's a joke uh but uh i
+never i mean i'm not a very social
+person so um i never used these and i
+only have like you know
+under 100 followers on twitter so i
+guess you know it doesn't really matter
+uh but i write on my twitter
+that i'm actually a former um
+uh semi a professional gamer
+uh so i wish i still could have time to
+to play games
+that sounds fun okay thank you molly
+is yours
+yeah but anyway yeah thank you so much
+again uh it's it's a great opportunity
+for me uh it's i'm really happy to be
+here and give this talk
+uh so uh i thank uh the organizer uh dr
+three uh for his kind imitation
+so uh so my talk has a very long title
+uh it doesn't really matter as i uh
+explain um
+so
+the uh the key message that i want to
+convey is that uh there are a lot of
+interesting interactions between machine
+learning and dynamics
+that can be explored
+so for example so if you go from the
+left to the right direction
+you can use machine learning to solve
+dynamical problems in science and
+engineering
+if you go in the other direction
+you can actually use dynamics to design
+and analyze optimization sampling deep
+learning algorithms
+for example
+for machine learning so of course you
+know all these are very vague and broad
+uh so
+what i'll focus on is actually
+geometrically structured dynamics in
+this talk
+and in particular in part one
+i'll try to learn structured dynamics
+from data
+and
+you and use what is learned to make
+predictions to make predictions of the
+of the system uh and i want to want to
+do actually very long time prediction
+and as you will see
+the insurance of the structure is very
+important as it allows us to to actually
+have accuracy in a long time prediction
+uh for the second part i'll focus on
+optimization i'll optimize actually
+functions that are defined on manifolds
+uh using actually acceleration from
+momentum
+and uh and uh the work as you will see
+will be actually um via structure
+preserving dynamics in both continuous
+and discrete time
+i know that i mentioned other buzzwords
+such as sampling or deep learning i will
+not talk about them today
+but but these are some of the things
+that were actually very interested in
+for example uh something is something
+that we interpret in abrupt sense uh
+including optimal transport generative
+modeling
+etc so uh so if any of you um
+are willing to talk to me uh
+after the talk i'll be very excited uh
+similarly for deep learning so uh we
+believe that dynamics can actually help
+us gain a lot of good quali
+quantitative understandings of deep
+learning and even help improve deep
+learning so uh so
+i would be very excited to chat more uh
+but uh but let me directly jump into uh
+my first part which is uh
+well so this sounds very scary but
+really i'm i'm just going to be focusing
+on special instances uh in which you use
+machine learning to to actually
+understand dynamics uh in sciences and
+computing so uh in particular uh it'll
+be based on a joint work with my my
+former student jenny chen
+which is on learning mechanical dynamics
+from data
+and
+you can find this work published in a
+machine learning conference icml is
+available online
+but but let me first explain why do i
+want to predict the dynamics of
+mechanical systems
+it's because our world is actually
+mechanical for example here is a planet
+that is actually precessing around a
+star
+and imagine you are kepler or newton so
+at your time
+uh you didn't really know the underlying
+governing equation that generates the
+continuous trajectory all you have are
+actually you know those those red dots
+which correspond to observations of the
+system at discrete time points and what
+you want to do is you want to understand
+the underlying governing equation they
+underline governing physical law and
+also make predictions such as the ones
+given by the green dots
+okay so this is this is really a long
+time prediction um it sounds very
+difficult and it is but but it's not
+impossible because uh even though you
+don't know like uh the the underlying uh
+dynamics uh you know you have some
+knowledge you know this is a mechanical
+system it has structures
+for instance oftentimes uh you have
+conservation of energy of linear
+momentum angular momentum etc and if you
+dig deeper there is actually an
+underlying geometric notion called
+symplecticity
+that is preserved by the dynamics
+so what we want to do
+is we actually want to build um we want
+to hardwire this this conservation of
+syntheticity in our learning model and
+as a consequence as i will show we can
+actually obtain superior prediction
+accuracy because of that
+so uh so the setup is is the standard
+one so we have we have training data
+which are multiple time series
+i is is the index for discrete time j
+indicates which sequence it is and uh
+what we assume is that uh there is there
+is a latent dynamics generated by uh by
+a map phi so this file is like an
+evolution map
+it evolves uh the state at time time i
+to time i plus one
+and the goal therefore is very simple we
+just want to learn the evolution map
+from uh from the data and then the task
+of forecast is trivial you just you just
+have to iterate this map many times and
+i want to emphasize that sometimes you
+want to actually iterate really a lot of
+times
+and that's what i meant by long time
+prediction
+um
+that sounds very natural but in fact
+that's not what people uh do the most um
+in the literature so traditional
+approaches are more based on
+differential equations
+so uh so what is often assumed is that
+there is an underlying latent dynamics
+that evolves in continuous time that
+generates a continuous trajectory
+capital x and then what you see the data
+is is really snapshot uh well the data
+are snapshots of of the continuous
+trajectory at discrete time points and
+the goal there is to learn the vector
+field f
+but if you think about it f is different
+from phi okay unless you know the the
+the time interval between your data
+points is infinitesimal but of course
+you know in reality this is rarely the
+case
+if you if you
+if you try to analyze this this
+vector field based approach there are
+several sources of inaccuracies
+number one okay you are given really the
+discrete time data so you have to use
+them to approximate the time derivative
+that's a numerical differentiation error
+and then you have function approximation
+error because you you want to
+uh actually um
+find the f that matches the time
+derivative so you have function
+approximation error
+and then once you have found the
+differential equation you have to
+integrate it numerically to get the
+future prediction so you have a
+numerical integration error
+if you use the map-based approach you
+only have function approximation error
+so so you you still have error in
+approximating phi but that's it
+in addition you can hardwire physics
+into the learning model
+uh and what do i mean by physics
+so uh in this particular case i mean
+symplecticity so i require uh this map
+by the way this is syntheticity in
+coordinates so i require this map to
+have a jacobian
+that satisfies this quadratic equation
+for all spatial points
+okay why do i want this art condition
+uh it's actually a very intrinsic
+uh it's it's basically like a signature
+of mechanical systems for example if
+there is a latent dynamics that is
+hamiltonian then no matter what the
+hamiltonian is uh the solution flow phi
+is always going to be a sympathetic map
+okay so that's why we actually want this
+badly uh we want this to be a hard
+constraint we want it to be satisfied
+exactly we don't want any approximation
+in this
+so things like regularizers etc etc are
+not considered
+um so so therefore our goal is to find
+the map phi that matches the training
+data while satisfying this constraint
+exactly
+that's actually pretty challenging uh so
+that's why we actually use fuzzy
+mathematical tool to do it so um
+so there is actually a deep theory
+that says roughly speaking
+there is a one-to-one correspondence
+between a sympathetic map and something
+called a generating function so uh
+what do i mean by that okay so a simple
+map evolves the current position and and
+momentum to the future position and
+momentum
+authentic function on the other hand is
+different it actually depends on a
+mixture of present and future for
+instance here is example an example
+where s depends on the current position
+and the future momentum
+and then
+you have to have equations that link the
+the correct all four variables together
+so in fact there is a system of of pdes
+that this generating function has to
+satisfy so basically uh you know all the
+all the current position q and p
+and and the future position q and
+momentum p are matched through this pde
+um so i don't think i have time to go
+into the profound theory of huntington
+jacobi which is behind this but uh but
+at least you know in terms of what we
+can do it's it's very clear
+now uh we can just find a neural network
+to parametrize this this function s
+instead of this this evolution map phi
+in order to match the training data
+and therefore we call our resulting
+method to be generating function neural
+network to be a little more precise
+you can use your favorite neural network
+uh
+yes so um
+so syntheticity uh has good effects uh
+that i'll actually explain in a moment
+so i'm answering a question that was
+typed in the chat basically by gaining
+syntheticity uh by ensuring exact
+syntacticity i can get uh
+superior long time performance superior
+long time accuracy of
+of my prediction so that's a great
+question thank you so much uh you will
+see a quantitative version very soon
+um
+so uh so coming back to to to the
+formulation so um
+so you can use any of your favorite
+neural network you know feed forward
+resnet or anything fancier uh to
+parameterize uh this as function so you
+know there's an underlying ad function
+you don't know what it is so you're
+looking for an approximation to it you
+use a neural network to do it and then
+you require your neural network to uh to
+nearly satisfy these pdes so you can
+therefore you know come up with an
+objective function which is the the
+residual of the of the equations and
+then minimize the parametrization of the
+neural network
+okay so that's that's what you do for
+the training
+and then you never have to worry about
+syntheticity depending on the neural
+network you know your s may be
+your sd card may be a very good
+approximation of class it could be a
+very bad approximation if you use a very
+small neural network but architecture
+you don't train it
+um
+yes yes the idea is not limited to
+neural network at all uh so uh so
+anything that can give you good function
+approximation will work um
+but the the
+but my point is that you don't have to
+worry about syntacticity at all so you
+can get a very lousy approximation of s
+but you still get it get an exactly
+synthetic map
+okay so because we are using a map based
+approach and also we have exact
+syntacticity uh we can actually use some
+of the fancy tools from dynamical system
+uh called km theory uh we can we can
+actually construct some theoretical uh
+framework uh which enables us to prove
+under reasonable conditions
+uh that you have a bound of the
+prediction error so uh so in this bound
+you know these two are the predictions
+uh so n is a number of steps of
+prediction and uh these two are actually
+the truth so you don't really know them
+but you know they exist they exist
+because there's an underlying latent
+dynamics what is this this this apps you
+know in the error bound so uh it's
+something that can be made arbitrarily
+small it's basically the function the
+approximation error of your neural
+network so neural networks are
+universal function approximators so so
+theoretically you can make this
+arbitrarily small if you try hard enough
+the arguably most important part of this
+result is is this one
+so n is a number of predictions but
+prediction steps h is the time step so n
+times h is actually the physical time of
+prediction
+and n here can actually go very big
+and uh and you see that the prediction
+time actually appears as a linear term
+uh on the inside the bound so this is
+saying that the long time prediction
+error is actually linearly growing with
+the prediction time this is a pretty
+long trivia because if you compare it to
+traditional approaches
+um
+the lifetime prediction error can be
+actually exponentially growing and this
+is not because you have a bad bound uh
+this this exponential error can actually
+be attained
+and this is really the consequence of
+having exact simplexity
+so
+i i don't i don't um have the capability
+of of talking about the
+the km part of the which is uh
+theoretical uh theoretically um
+non-trivial uh but you need exact
+syntheticity in order to have linear
+growth
+um and that's why when we try the method
+for example the prediction of planet
+orbits
+our method has era
+that are
+at the very bottom when compared to some
+of the other popular approaches
+available
+here is another example uh where
+i try to learn something called the
+standard map uh which is actually a
+mechanical system that is chaotic
+uh
+if if you haven't heard of it before uh
+it doesn't matter the the key point is
+that it's a chaotic system and uh it can
+be visualized by something called called
+pancake pancake map uh which is the one
+shown here
+uh i don't know if my cursor can be seen
+but
+so basically here
+you have those white regions which are
+called stable islands and they are
+separated by chaotic seas and you want
+to capture
+you know the structures of those stable
+islands and our method namely gfn is the
+only one that can capture the the major
+uh stable islands um but of course you
+know it's it's it's it's not perfect
+either so there are still a lot of
+things that can be done in the in the
+future uh but but still you know uh it
+has better performance uh than other
+approaches
+so uh so that's why uh our method uh
+possibly has good applicabilities um
+even to to chaotic systems as well
+so let me quickly summarize by using a
+map based approach
+um
+we can actually uh evolve the the tool
+of generative function and develop a
+generating function neural network that
+gives you exact syntheticity of the
+prediction
+and because we have a map based approach
+exact syntacticity and also generating
+function
+we actually managed to uh to revamp the
+classical km theory uh to develop a
+theory of km type for generating
+function and this theory allows us to
+actually prove
+superior long-time performance uh
+superior long-time prediction accuracy
+of our method and uh and that's why we
+say the method is trustworthy because we
+know we have actually an error about
+which is pretty good
+okay so uh so i
+like i'd like to pause for a second
+because this finishes my first apart uh
+if there's anything that i can clarify
+please please don't hesitate
+um there is a question
+question in chat room uh from thailand
+oh actually i had the same questions uh
+she asked the previous slides is the
+simplicity uh
+sympathetic uh simplicity minimization
+exactly and symplecticity uh the
+minimization exactly and first if the
+minimization does not reach the minimum
+for example it's not zero then it will
+not be exactly synthetic
+right i mean the previous one not this
+one previous oh you mean the the other
+work
+uh
+the there is a the minimization um yes
+slide yeah that one the
+bottom
+right so uh so it doesn't it doesn't
+matter what the value
+uh of of this objective function is
+so even if you don't train uh as long as
+you use generating function
+uh you know you give me any s there is a
+corresponding sympathetic map
+and this map uh you know gives the
+evolution uh
+so so you you always have symplecticity
+yeah but the thing is ass should satisfy
+that right inside you know that ode or
+pde
+if that would that pde is not exactly
+satisfied if this minimization does not
+reach zero right
+ah okay i see so yeah so for example if
+you if if you think your data comes from
+a mechanical system but it doesn't uh
+then yes this this will not reach zero
+um
+but uh but but i would
+there's
+uh there is not much i can do i think
+it's it's more like like a modeling
+issue rather than a methodology issue
+so
+yeah so if it does not reach zero then s
+is not exactly satisfying that pde or od
+therefore the sympathetic math
+no no that doesn't matter
+thanks for the great question uh
+but uh uh but as doesn't
+s doesn't satisfy the pde for the data
+but as actually generates something else
+so so s
+uh has a corresponding phi and and and
+the trajectory generated by five will be
+exactly satisfying uh the pde
+so so so as we give a different
+prediction
+uh from the data uh so that that that's
+for sure but uh but that still
+corresponds to uh the evolution of a
+sympathetic map um
+it's it's just that you know um if
+you're not if you're not trying very
+hard to match the data
+you will not match the data
+okay so there's another question from
+pat he asked what is
+kam again just a highlighter oh yeah
+yeah thank you thank you uh sorry sorry
+i was trying to rush rush through things
+uh uh kms is the the the initial of
+three great mathematicians uh comograph
+arnold and and moser uh so it's
+basically a theory that says that okay
+so if you have some mechanical system
+that is good
+uh if you perturb the system a little
+bit um
+uh
+what will happen to your evolution after
+a very long time
+roughly speaking that's that's what km
+theory is about so so in this case you
+can see why it is being used because um
+you know you have some underlying
+mechanical system and then you
+as you predict it you you make errors at
+each step and and and you want to know
+you know your prediction which is
+another mechanical system due to
+synchronicity um
+uh you want to know how this new system
+uh actually evolves how far it will
+deviate from the original the the latent
+mechanical system so that's that's why
+km theory uh is is a major key uh in
+doing the error proof
+another question
+from they are
+are there similar long-term stability
+guarantees for first order systems
+ah okay thank you uh yeah i'm so glad to
+hear from so many experts so um so it
+depends on what kind of first order
+assistance um one can have uh so um
+so um there is something called
+reversible system
+that has a similar long-time error
+analysis
+as
+um
+so i think it really depends on the
+structure um
+but but of course you know there are
+also systems uh in which you you you
+know uh
+things will you know linear growth of
+era
+will not happen for example you know um
+you you can write fluid um as first
+order systems but you know you can even
+develop shock in finite time uh
+so if you perturb the system a little
+bit you know you get very different
+behavior you can have um also chaotic
+dynamics in which uh you know uh one
+perturbation will get uh exponentially
+amplified along with time um
+so
+um
+it's complicated but there you don't
+you may not necessarily look at uh
+accuracy of a single trajectory but the
+statistics of of a lot of trajectories
+so uh
+so then you know you have to do
+something else
+um i i hope i'm answering all those
+questions but which which i i found to
+be all very great ones
+i think it's good enough for now i i
+guess you can move on
+okay thank you
+thank you oh okay so let me go to the
+second part so in the second part i want
+to do the other direction which is to
+use structured dynamics to do to design
+machine learning algorithms and in
+particular i'll talk about a joint work
+with my student link hi cone itching
+wang
+and and the work was very recent um it's
+basically on how to optimize a function
+um
+uh defined on a manifold called stiffer
+manifold uh in a very fast fashion so
+that's that's what this this word
+momentum is about
+you will see momentum basically uh helps
+accelerating the optimization
+if you have
+by any chance heard me talking about
+lead group optimization in the past
+it's actually going to be different
+because stifle manifold in general has
+no group structure so um
+so in some sense it's a generalization
+of the of the prior work
+so what is a stiffer manifold
+it's it's a collection of matrices
+importantly not necessarily square okay
+so it's n by m
+n is always greater or equal to m so
+think about tall matrices
+and the the those matrices have to
+satisfy an orthogonality constraint to
+be on this default manifold
+more precisely you know you have n by m
+matrix uh as an element of of of
+of this set and in order to to qualify
+uh you have to basically have also
+normal columns okay so each column has
+to be orthogonal to all the other
+columns and also each one has to
+normalize to
+each one has to have a a two norm of one
+that that's what really at this
+orthogonal orthotic constraint is about
+and of course there's a special case
+when m is equal to n uh you do have a a
+group structure so this this uh this
+case degenerates two to what is known as
+the orthogonal group
+but in general you don't have any group
+structure
+why do you care about optimization on
+stifle manifold for example okay let's
+do a warm up exercise very simple but
+but actually very important in data
+sciences and even in traditional
+sciences and engineering so
+it's called the leading eigenvalue
+problem so given an n-by-n matrix a you
+want to find the largest m eigenvalues
+of the matrix
+and this is a non-trivial problem if n
+is very big say a billion
+and m is very small say 10.
+um
+one way to do it is to actually cast it
+as an optimization problem okay so you
+look for basically a collection of
+orthonormal bases in n dimension but you
+only look for m of them okay so so they
+actually form a member of this default
+manifold and then you you look or you
+project this matrix a onto this subspace
+spanned by those bases
+and then you uh you you maximize
+well you compute the sum of eigenvalues
+of the projection and of course you know
+that's given one subspace but because
+you look for the largest and eigenvalues
+you maximize the sum you look for the
+subspace that maximizes the sum
+okay so that's why this can be
+formulated as an optimization problem
+which is nice if m is small because you
+know you you're basically not touching
+the other irrelevant eigenvectors which
+which are abundant
+but of course you know you see also you
+have to do this default optimization
+problem uh and you need to do it exactly
+on the manifold because you don't want
+to mess up with the orthonormal basis
+okay so uh so that's one motivating
+example and of course some people may
+say okay this is nice it seems pretty
+general but it seems also pretty simple
+because the objective function
+is a quadratic function of x well
+one thing that i want to say is that
+quadratic doesn't being easy because of
+the geometric constraint this is
+actually a non-complex problem uh but if
+you want harder problem uh here you go
+so um so a second example uh it's called
+projection velocity projection that
+washes that distance
+so what is trying to what is the thing
+that we try to do here so we are trying
+to to compute the similarity between two
+probability measures so suppose you have
+two probability measures
+mu and mu
+and they are actually probability
+measures on a very high dimensional
+space
+you want to compute the distance between
+the two measures of course a lot of
+existing notions
+are already very powerful for example
+washer stem distance
+washer stain distance is defined as
+follows
+as the following so you consider
+basically all possible couplings between
+the probability measures what does a
+coupling mean a coupling is basically a
+joint distribution uh such that its x
+marginal is mu and its y marginal is new
+okay so you
+you optimize over all the possible
+couplings you you look for the best
+coupling such that you minimize
+some cost
+what is what is this cost uh it's called
+earth mover distance roughly speaking
+okay so you're trying to move
+probability mass of x of mu
+given by x to probability
+mass of mu given at location y you try
+to move those those earth
+and of course you don't want to to move
+too far you want to minimize the
+distance of travel so so that's the
+meaning roughly speaking the meaning of
+of of this cost function
+and then you get washes that distance
+it's extremely powerful uh but uh but
+it's also very costly to compute
+especially if you have a high
+dimensional situation
+a lot of efforts have been made um to to
+do some approximation of this
+computation and uh and in particular you
+know a collection of experts proposed uh
+one solution is which is called
+projection robust washington distance so
+the idea is the following so maybe your
+probability measure or data that
+represents the probability measures
+actually have low dimensional structure
+and suppose you already know the low
+dimensional structure say you have a low
+dimensional subspace represented by some
+orthonormal basis u
+and then what you can do is you can
+compute a vertical stand distance
+between
+projected m dimensional distributions
+okay so you project the original n
+dimension uh to m dimension
+and if m is very small this is more
+manageable but of course you don't
+really know what this subspace is so you
+have to actually look for it so you have
+to do an altered maximization
+that looks for the best uh best subspace
+so this is computationally more
+manageable like i said if m is much
+smaller and also uh they have shown that
+this is this is very robust for example
+okay so if your data really have a low
+dimensional structures and then it also
+has some outliers after you do this this
+projection and look for the projection
+the outliers don't matter okay so this
+allows you to focus on the essential
+component of the of the data which which
+has arguably a low dimensional structure
+but you see okay this is also a stifle
+optimization problem
+and you again need to do this exactly on
+the manifold you don't want regularizers
+uh you want to you want to be exact
+otherwise uh you mess up the the basis
+uh the last example is something that we
+are very excited about uh because you
+know we sort of invented
+so it's about making transformer which
+is a very cool machine learning
+architecture uh
+even more
+even better uh so in a nutshell
+transformer is a recent but extremely
+powerful machine learning uh deep
+learning architecture and
+it was first invented for for natural
+language processing because it basically
+handles uh sequences but for now uh it
+percolates into other downstream
+applications such as computer visions
+and uh it basically has an infinite
+reference window and that's why it's
+it's powerful it's better than recurrent
+neural network which has a short
+reference window uh things like lstn for
+example
+were invented
+to increase the reference window
+but it's still not infinite but
+attention the mechanism which
+transformer uses actually has an
+infinite type window
+and by the way i got those nice
+illustrations from michael fine uh
+well his blog so so i'm very thankful
+it's very clear um
+and uh transformer actually does uh does
+this infinite reference window by
+something called attention layer
+or more precisely multi-headed attention
+layer uh and attention layer basically
+um
+tries to characterize
+interactions between words
+uh in a sentence and the interactions
+can be actually long range
+okay so so it's just just like this
+and uh mathematically uh what happens is
+it uh you know this attention layer has
+things called attention heads
+uh each attention head has trainable
+parameters which are weight matrices
+like this
+and even though people are still trying
+to understand transformer roughly
+speaking those weight matrices
+characterize interactions between words
+and of course there's no unique way
+english words actually interact with
+each other
+so that's why they actually use the
+multiple attention hats to incorporate
+different ways in which words actually
+interact
+and of course you don't know these
+interactions apra so you have you have
+to learn them that's why you have to
+train you you have to train the model
+you have to find uh those w's from the
+training data
+um
+but then we ask ourselves okay so if
+those w's actually characterize
+correlations between words
+uh why don't we make it orthogonal you
+know this way maybe we can make the the
+attain we're not wasting attention maybe
+we can make the attention mechanism more
+efficient more effective
+okay so we tried this
+and and if you think about it there is
+actually um no unique way in which we
+can we we can impose our functionality
+way one
+you take each head each hand has this w
+i q and w i k
+you can require each one of the two
+matrices to be orthogonal so so you
+require it to be to be on a stiffer
+manifold and when you train you require
+you know those those trainable variables
+to stay on on the stifle manifold
+uh way too you can require a
+functionality across all heads
+which means mathematically you have to
+concatenate all those weight matrices
+across all heads and then you have a
+bigger matrix and you require it to stay
+on a bigger stiffer manifold
+we tried both we tried both on something
+very popular called vision transformer
+which applies transformer to to computer
+vision to uh to basically image
+classifications and more uh we train the
+model from scratch and we test it on
+standard um test data sets uh such as c5
+10 and 100.
+and we found
+if you require a functionality within
+each hat namely way one you get better
+performance than orthogonality of
+crosshairs
+but that's still much better performance
+than if you just do the vanilla version
+so so training in euclidean space
+requiring no functionality
+in fact you know if you just impose a
+simple orthogonality constraint to the
+original vanilla version of visual
+transformer you can get much better
+performance than the euclidean version
+and you can even beat
+later improvements fancier models
+simply just by doing nothing but
+orthogonality
+but there's a catch the catches
+only if you train these models by our
+optimizers there are existing optimizers
+for example you know you can you can do
+it very well if you don't incorporate
+momentum but you actually get results
+that may be even worse than the original
+uh vision transformer
+so our optimizer is actually doing
+something
+but anyway so that's a very long
+motivation so hopefully you are
+convinced uh why we want to do this
+abstract uh non-trivial problem of
+optimization on steeple manifold
+the rest is how do we do it
+so we actually use a variational
+approach uh because it's going to be now
+friendly to know euclidean spaces and it
+naturally introduces a
+very important notion of momentum
+what is momentum uh it really originates
+from mechanics and of course
+you cannot avoid newton if you want to
+talk about mechanics so newton said
+uh the rate of change in momentum is
+given by the force
+uh it's very simple but it's
+it's it's almost you know
+half of the explanations of how our
+world actually um
+operates
+um
+so momentum therefore is given by
+basically you know velocity uh so the
+time derivative of position q times uh
+mass
+sorry i
+i missed uh
+the message and i
+i don't know how to use webex um
+um yeah yeah okay okay so if you want to
+answer that the shouting and uh asked
+how much better is the orthogonal uh
+transformer better than vanilla
+transformer yeah so okay so great
+question so um
+so we can
+improve uh their prediction era by about
+1.5 percent
+and uh uh the fancy model improves
+vanilla transformer uh vanilla vision
+transformer by about about 0.3 percent
+okay so uh so point three versus point
+one uh we think it's a it's a
+significant improvement but but there
+are a lot of technicalities uh so i'll
+i'll try to talk about these um
+momentarily but that's that's of course
+a very very very important question
+thank you
+um
+okay so um
+so yeah so okay so so so therefore this
+is just a
+system of odes that models newton's
+newton's secret newton's law um
+but then lagrange came along now graphs
+oh i forgot to mention sorry
+so here uh
+p dot is of course given by the force
+and we are considering a conservative
+situation where f the objective function
+is going to be the potential so uh so
+that's that's why you know i have the
+force being given by the negative
+gradient of the of the potential
+uh i'll come back to this
+um and then lagrange came along lagrange
+said okay there is an equivalent
+variation of principle in which you
+actually first define an action
+functional uh s uh it's a functional
+because it's a function of functions so
+it's it's mouthful but uh but s is a
+function of actually trajectory
+uh so q is a trajectory
+uh in position space
+and this action functional is defined as
+the integral
+of lagrangian evaluated along the
+trajectory and if you define the
+lagrangian to be kinetic energy minus
+the potential energy and then you you do
+the first variation meaning you look for
+the critical point of this functional
+and then you see the corresponding euler
+lagrange equation is exactly the same as
+newton's equation
+okay so this is the equivalent but
+deeper formulation of newton mechanics
+how is it relevant to optimization so
+far there's no relevance because the
+lagrangian is actually independent of
+time explicitly so there is a time
+translation symmetry and therefore
+there's a conservation law uh the total
+energy of the system namely kinetic
+energy plus the potential energy is a
+constant it's independent of time so if
+you let the dynamics go you will see a
+constant exchange between the kinetic
+energy and the potential energy f is
+never going to be minimized
+but that is really because you have time
+translation symmetry
+so
+if you break the symmetry if you make l
+to be time dependent explicitly then you
+no longer have conservation of energy
+so
+in a beautiful paper by bibi sono wilson
+and jordan uh they introduced an
+explicit way um
+which is to multiply the origin
+lagrangian by a time dependent explicit
+function and then you can write down the
+corresponding order lagrange equation uh
+if you like you can rewrite it as a
+first order system and p again changes
+according to a net force but it's no
+longer just this conservative force
+there's an additional frictional force
+due to this time
+due to this time dependence
+and this frictional force basically
+removes the energy from the system and
+you can actually prove that as t goes to
+infinity the q the position variable
+actually converges to a local minimizer
+for sure so that's why this dynamics is
+actually an optimization dynamics now
+and it's closely related to optimization
+algorithms in fact and that's why you
+know this this paper is it's a uh
+it's a foundational seminar work um
+uh oh well i mean it
+it also has the it's based on previous
+work as well uh but
+let me let me skip all the details uh so
+if you choose r uh such that gamma is
+three over t
+you have some ode if you if you choose a
+particular discretization of the ode you
+actually recover a classical
+optimization method called nesterof
+accelerated gradient for convex
+functions
+if you choose gamma to be to be a
+constant
+one discretization gives you another
+optimization method called nesterof
+accelerated gradient for strongly
+complex functions
+and if you discretize things in a
+different way you can recover something
+called heavy ball which is also very
+popular and all these should be
+contrasted with gradient descent which
+is a forward euler discretization of
+gradient flow dynamics
+and there no momentum is being used and
+that makes a difference
+in fact you know let's take an agc
+for the example where c stands for
+convex okay so if f is convex you can
+prove that agc converges like 1 over k
+squared where k is the number of
+iterations whereas gradient descent only
+converges like one over k so that's you
+see you know this is a faster much
+faster convergence and that's why people
+say well that's one of the reasons that
+people say momentum gives you
+acceleration so that's why we want
+momentum we actually want everything uh
+for re for optimization of remaining
+manifold
+and uh this is actually pretty hard this
+is very non-trivial and that's why we
+act well especially if you if you want
+to directly work with the ode or the
+discrete algorithm that's very hard
+that's why we actually dig deeper we
+start with the variational principle but
+before i describe how to do it
+let me
+let me first comment um you know give
+give you a very quick illustration of
+why remaining optimization is not review
+so let's say um suppose you also want to
+do something similar to before namely
+you want to use gradient to do the
+optimization so if you if you are if you
+know uh optimization this is called
+first order method um
+first order information
+f um
+and then you should ask yourself what do
+you mean by a gradient
+for example so if g is a two by two
+orthogonal matrix so this is a manifold
+and uh let's take a tour example where
+the objective function is the
+determinant
+and then you may say oh then well i'm
+pretty sure you won't say but some
+careless person will say okay the
+determinant is easy to compute and then
+you collect all the partial derivatives
+and there you go you form the gradient
+that's going to be wrong because um
+orthogonal matrices actually have
+constant determinant okay so the
+determinant is either plus one or or
+minus one and it's actually a constant
+of each
+connected component of the manifold so
+the gradient is actually zero
+so what's what's wrong the reason is
+because the manifold is actually
+one-dimensional in this case it's not
+four-dimensional abcds are not
+independent you cannot just just do
+partial
+derivatives okay so hopefully this shows
+just the tip of the iceberg of why
+manifold optimization is is uh is a deep
+field
+uh i'm always very nervous because i'm
+afraid that i that i miss important
+contributions um so let me know if i do
+but but it's relatively safe to say that
+if you don't care about momentum if you
+just want to do gradient descent
+manifold
+this is very well studied
+um what's new here is we have an
+intrinsic way of adding momentum and as
+a consequence we get an algorithm that
+is very fast and very accurate
+uh
+so like i said the variational principle
+is a rescue uh so
+euclidean space uses this variational
+principle uh
+what about manifold so a pure
+mathematician would say oh that's
+trivial because you know uh so you still
+have trajectory it's just a trajectory
+it's moving on the manifold and for that
+reason by the way i replace q by g it's
+still a function of time but it's moving
+on the manifold
+and then g dot is in the tangent space
+and uh and if you have a romanian
+manifold uh you have an inner product
+structure in the tension space so you
+can just replace the previous kinetic
+energy by a an inner product in the
+tangent space and then you have your
+lagrangian you can do the uh the
+variational principle yes so in theory
+this will work
+you will get euler lagrange equation
+that are still otes which correspond to
+optimization dynamics
+in practice the odes are pretty terrible
+they are not very explicit and uh if you
+want to further discretize the ode in
+order to get an algorithm that's going
+to be a nightmare
+so you have to do something smart
+in
+one of our work uh we had a solution
+when g is is a group
+uh so when g is a group you can do
+something like you know you you don't
+want to deal with g dot because it's in
+a tangent space which is changing as g
+moves so you can pull everything back to
+something called li algebra and this is
+done by some fancy you know abstract
+nonsense called reduction while
+trivialization
+uh very few people care i will not talk
+about it it's not applicable here uh
+because
+now we care about stifle manifold as
+default manifold is not a group
+so what do we do we we do something else
+so we have to we we revised the original
+variation principle we use something new
+called a constrained variation principle
+so what is the original variation
+principle so you have this lagrangian
+you want the first variation of its
+integral to be zero so that seems to be
+very innocent but in fact a lot of
+details are under the block the the
+details uh the what matters is that okay
+so when you do the first variation you
+have to vary basically x in a function
+space and this function space looks
+complicated okay x is a function of time
+and each time x is actually on this
+default manifold and x dot is actually
+on the tangent space so this function
+space is highly nonlinear it's it's very
+very hard to do the first variation
+so we do something else
+we introduce a function the ground
+multiplier this this lambda is a
+function of t and then the at each time
+t it basically tries to enforce this
+this constraint of of steeple
+we add this functional ground multiplier
+to the original lagrangian and we do
+first the variation very importantly in
+unconstraint flat function space okay so
+x now is no longer constrained uh it's
+still a function of time but at each
+time it's just n by m n by n matrix
+and lambda is n by n matrix uh it's a
+lagrange multiplier so you can do this
+without worrying too much about the
+geometry uh let's do a non-trivial
+because of you know this addition
+additional variable lambda
+but uh we have actually technology to
+actually compute it out
+so this is funny because this technology
+was
+was developed by us for for completely
+different application uh in astronomy
+but anyway uh we can actually get this
+lambda and by the end of the day we can
+get explicit ode in euclidean space
+without
+worrying about this lambda at all so i
+need to be more concrete by this and in
+fact this euclidean space is very
+important so let me be more concrete
+so
+we can really get explicit ode for all
+possible remaining
+metrics but for concreteness let's
+choose a metric tensor and then the
+lagrangian becomes something like this
+so you don't really have to worry about
+the geometry anymore uh you know you
+just have nonlinearity if you like and
+and the magic tensor has a parameter a
+and it can be anything in our setup so
+you may think this is restricted anyway
+because i specified the magic tensor but
+in fact the literature only considered
+that
+a equals to zero or a equals to a half
+so the literature is even more
+restricted than us
+and if you use this metric tensor you
+can you can obtain optimization ode
+which looks like this it's very
+complicated you don't have to stare at
+it i'll explain the key details so x is
+the variable that you want to optimize
+it changes in time as time progresses x
+will become better and better
+q is the the momentum the associated
+momentum variable q changes according to
+something very complicated
+but
+what matters is number one here what you
+use is actually the euclidean derivative
+it's basically the bad derivative that i
+mentioned earlier uh but you can no you
+don't have to worry about the geometry
+you just take all the partial
+derivatives and plug it in here and and
+also here and here
+the dynamics will take care of the of
+the geometry for you um and in fact you
+don't have to even think about stiffer
+manifold anymore for now because
+everything is actually done in euclidean
+space x is just an n by n matrix and so
+is q
+uh but if you evolve this dynamics it
+automatically does the geometry for you
+because x and q will stay exactly on the
+manifold
+what that means concretely is x has to
+satisfy this orthogonal constraint for
+all time
+q has to satisfy this equation which is
+basically requiring q
+to be in the tangent space
+and this dynamics is automatically
+guaranteed to converge to a local
+minimum of f
+okay so uh so depending on your taste
+you may think this is great or this is
+nothing because you know this is so far
+just the imagination of a pure
+mathematician uh it's not an algorithm
+so we have to discretize the time of
+this dynamics to get an optimization
+algorithm
+um
+what we want is number one
+after the time discrimination we have to
+stay exactly on the manifold meaning
+that i have to satisfy the previously
+two constraints which is non-trivial for
+example if you use euler or yoga kuta or
+anything that is off the shelf it's not
+going to be be working
+but moreover we want the methods to be
+explicit um
+and in fact as efficient as possible for
+example x is n by m n is big m is small
+so we want iteration complexity uh that
+you know computational complexity that
+depends on m as much as possible but as
+little on n as possible okay we don't
+want n
+and also you know if you if you know
+remaining optimization you know people
+oftentimes have to do exponential map
+okay so you take the derivative you do
+this exponential map so that you can
+stay on the manifold and in our case the
+exponential map is just the matrix
+exponential we don't want to do it
+either people sometimes use something
+called kelly transform as an
+approximation we don't want to do it
+either because these things are great
+but they are computationally very
+expensive we don't want to do this
+either
+this is a highly non-trivial problem
+for the sake of time
+let me
+let me skip all the details but
+basically
+we have methods that can satisfy all
+those requirements um
+and uh um
+you can read the paper for details we
+can talk also offline uh and the method
+can be extended to adaptive learning
+rate so we have an add-on a stifle
+stifle version for adam as well okay so
+that's that's our method and we tried it
+on a transformer
+so if we
+so i guess um
+people are leaving so how much time
+um i have left yeah yeah well i'm just
+please don't worry about the time
+constraints i mean it's recording so
+they can come back and then oh okay so i
+mean take your time because i want to
+have more discussions rather than just
+just me be
+speaking talking and talking so
+let me be brief um so okay so uh so
+there are a lot clearly a lot of
+information in this table but basically
+remember we have two types of
+constraints that we proposed either we
+can have orthogonality across all heads
+or all heads of the attention
+or we can have authority only within
+each head so we have two big classes and
+in each big class we have two smaller
+classes uh either you can do stochastic
+gradient descent or you can do add-on
+which is adaptive learning rate version
+so
+blue indicates the best within each each
+one of the four subclasses
+and the underscore means the best
+across all classes
+this green
+uh class is the baseline it's the
+vanilla vision transformer um
+and also the last class is improved
+model a fancier model um that improves
+the palm vision transformer
+and um
+and you see number one okay so if you
+have orthogonality uh within each head
+you get an
+error which is like 8.3 percent
+which is better than eight point eight
+percent if you have optimality across
+all heads
+uh but even that is still much better
+than nine point seven percent error um
+if you if you don't do any authority
+constraint
+and uh you see okay so you have about
+one point four percent improvement over
+the trip the the the vanilla version
+and that so that's that's a significant
+improvement because you know we have to
+to be in the context so if you use the
+later fancier model for example uh you
+know this one you can get nine point
+about nine point five percent uh era so
+that's already better than the the
+original one uh that's better than um
+than the original one by about uh three
+point three percent but we actually get
+more than one percent
+so uh so we don't have to do anything
+just impose a functionality uh and then
+we can get further improvement
+and uh and also important to note is
+that you get those improvements only if
+you train by our optimizers
+for example you know here is a very good
+method um but it doesn't have momentum
+okay so if you use this momentum list
+method you only get
+uh you know 12.9 error so it's even
+worse than the original version so so
+optimizers do matter a lot
+uh let me skip the robust projection
+robust versus the distance example
+as well as the simple leading eigenvalue
+problem
+maybe okay let me still say something
+about this so remember this problem is
+that given an n by n matrix a you want
+to find its top and eigen values and
+it's non trivial if n is very big and m
+is small
+and that's why we formulate it as an
+optimization problem so
+this is a problem simple enough that we
+can do a lot of tests so
+convergence for example our method is
+the one at the very bottom it converges
+the fastest uh manifold preservation we
+get you know manifold preservation up to
+machine precision uh what is interesting
+are um also these two plots uh what are
+they they are basically uh you know
+validating our theoretical claim about
+the per iteration computational
+complexity
+so our computational complexity per
+iteration is n times n squared
+and this is better than many existing
+methods with momentum which is n squared
+times m okay so so n is much larger than
+m so therefore you know the above one is
+much better um
+the right plot is is something that
+fixes in and
+sorry fixes m that only changes and and
+you can see you know uh uh existing
+methods has this quadratic growth of
+computational complexity computational
+time within but always has has you know
+linear growth within which is you know
+the best you can hope for um and on the
+left if you fix the ratio of n over m
+and you increase either one of them you
+see you know all methods increase
+cubically
+so that's the the sum remark about the
+computational complexity but let me
+summarize okay so we uh we do momentum
+accelerated optimization or manifold
+using variational principle uh the
+original one is too complicated so we
+have actually some revision which is
+constrained variation of principle and
+with that we can obtain
+actually optimization dynamics in
+continuous time uh
+uh actually euclidean space so so you
+don't really have to worry about
+manifold at this stage even though the
+dynamics actually stays exactly on the
+manifold
+and then
+we have to discretize and this is where
+you have to be very very careful because
+you want to exactly preserve the
+manifold and we managed to do so and as
+a consequence we get very accurate and
+efficient gradient descent method
+accelerated by momentum for for stiffer
+manifold
+some applications include you know uh
+you can actually make a tension
+mechanism to be suitably orthogonal and
+you can get significant improvement of
+vision transformer uh you can also make
+the notion of a very powerful notion of
+projecting robust washes that distance
+uh even better
+so uh so i think i should stop here
+thank you so much for your attention and
+feedback thank you thank you molly for
+the wonderful talk there's a
+one question you haven't answered it was
+from the harsh he asked how is adding
+time dependent in lagrangian different
+from adding a
+dissipation time via lagrangian
+the lambert principle
+yeah yeah thank you great great question
+so
+um
+so you can you can actually um
+do delam bell uh principle um
+as well you can add a delam term
+to introduce external forcing
+but but that roughly speaking that's
+that's not easy to to generalize to
+manifold uh so if you um
+if you introduce a time dependence
+that's somehow more intrinsic it's
+independent of the coordinate so uh so
+that's that's why it can be used for
+those many fun generalizations
+that's a great question thank you
+all right um any other question
+[Music]
+i i was impressed by you know how you
+use the the the dynamics uh to come up
+with the um the the up you know the
+improving the optimization of the neural
+network
+algorithm that was that is
+very nice in some sense it was analysis
+called where the monte carlo um and
+there is a hamiltonian multicolored and
+you know the hamiltonian monte carlo is
+kind of thought of as a physics based uh
+uh inspired the monte carlo sampling
+method so i guess your
+uh your approach is have the similar
+uh yeah innovation
+yeah
+yeah i'm so glad you mentioned this um
+um because in fact you know some of some
+of the things that i didn't mention is
+is something and uh you can have you
+know naive monte carlo approaches like
+metropolis hasting you can also have a
+hamiltonian version which is in some
+sense you know adding momentum uh to
+accelerate the sampling algorithm and
+this is something that uh that we do a
+lot so so we love this kind of stuff so
+so i couldn't agree more with you so so
+in fact you know there there is
+something called uh you know there's
+there's also something called over
+dental laundromat which is a stochastic
+generalization uh of uh of gradient flow
+or gradient descent if you will um
+and uh and one can add momentum one can
+one can actually have something called
+kinetic energy one which is like a
+momentum version uh
+that that is closely related to
+stochastic gradient distance with
+momentum etc uh and uh that does
+accelerated uh uh sampling which is
+sort of like a probabilistic
+generalization of optimization so
+so these are some of the things that we
+are very fascinated about
+very nice very nice
+all right
+go ahead go ahead they can they can they
+they they still very high dimensional uh
+statistical inference problems very well
+because the momentum
+can improve the dimension dependence etc
+very nice very nice very nice
+all right sounds good is there any other
+questions from audience
+i don't see any uh well if that's the
+case then let's thank our speaker i'm
+sure um you know the the the people who
+left ali they can you know come back and
+watch and then um
+probably they can um you know contact
+you personally
+and you guys
+that'll be pleasant for the discussion
+and
+hopefully that will lead to the future
+collaboration as well because that's the
+ultimate goal of this episode so
+thank you thank you let's thank our
+speaker today
+thank you
+yeah
+all right
+all right see you
+okay let me stop

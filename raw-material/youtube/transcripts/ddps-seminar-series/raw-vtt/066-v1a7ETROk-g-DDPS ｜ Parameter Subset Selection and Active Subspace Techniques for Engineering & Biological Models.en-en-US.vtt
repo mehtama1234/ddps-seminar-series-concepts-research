@@ -1,0 +1,3823 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.079 --> 00:00:04.289
+Okay, welcome to the DDPS seminar everyone. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk unless you have questions. If you have questions, you're welcome to unmute and ask. Otherwise, please use chatroom to post your questions so that we can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences therefore no classified discussion is allowed for please watch out. Finally, the talk today will be recorded and uploaded in our YouTube channel. That's about it. Now let me introduce our speaker today. It is a great honor to host Ralph Smith, who is a distinguished university professor of Mathematics at North Carolina State University. He is co author of the research monograph the smart material structures modeling, estimation and control and author of the books, smart material systems model development and uncertainty quantification theory, implementation and applications. He is on the editorial boards of the Journal of intelligent material systems and structures and the Siam journal on uncertainty uncertainty quantification. He is the recipient of the 2016 ASME adaptive structures and material systems prize and SPI e 2017. Smart structures and materials lifetime achievement, and he was named a Siam fellow in 2018. His research areas include mathematical modeling of smart material systems, numerical analysis and methods for physical systems Bayesian model collaboration, sensitivity analysis, control and uncertainty quantification are physical and biological systems. Today, Ralph will talk about parameter self selection and active self space techniques for engineering and biological models, which is a very interesting topic. So please enjoy it. Now without further ado, let me pass the baton to Ralph by asking one random question. As usual. Today's random question is What is your favorite things to do other than research? You can answer this question and then start the presentation. Oh, my gosh, I didn't see that one coming. Well, first of all, thank you so much for the invitation to speak here. I had to check back I was there in 2018. I had a fantastic visit, I met several people. And it's just such an honor to be back with with this group. favorite things to do? Well, I have to warn you up front. And Katie will maybe smile about this. My students sometimes told me I need to get a life. There. Correct. But I played the piano since I was five, and still do some volunteer work there. And I love to hike. And so one of my favorite destinations is Colorado getting onto the fourteeners the peaks that are over 14,000 feet. Oh, wow. You must be pretty good at piano then. I mean, since you oh, gosh, it's it's something I really like. It's just where I disappear from the science and and go to the music. So great question. And thank you. And, again, thank you for the invitation. So what I'm going to do is, gosh, it's the Friday before break, I'm going to kind of keep this a little bit low key in cases. I'll probably stop at various points to ask questions. But what I'm going to talk about are some parameters, subset selection, active subspace techniques for large scale models. And some of this came out of what was called the DOE Consortium for Advanced Simulation of light water reactors, which was Castle Consortium for Non Proliferation enabling capability C neck, Katie Schmidt is very familiar with that, as well as some more recent initiatives. I've got to be right up front here. I'm going to say we a whole lot of times, and we very often it's not me, it's students, it's postdocs, it's colleagues. So I think you can see my cursor, there's Katie, I'm going to mention some of what she did on one slide. But I just really want to make sure that I conveyed that we very often was was other people, not me. Alright, so I'm going to look at three applications. The first one is work that came out of Castle. This was an 11 year initiative on large scale models, and it was focused on developing next generation model environments. So here is a nook of pressurized water reactor. If you fly into Raleigh from the south, you'll see Sharon Harris Lake. That's the secondary source. That's the lake water. And then you've got the source that is up against the the physics and they're separated. That's for a reason, just in case something breaches. So in the region. In the reactor, you've got thermal hydraulics, you've got neutronics, you've got chemistry, you've got fuels. So it's very, very large scale, multi physics multiscale coupled problem. One of the things cuz we have to worry about as this has to be incorporated into surrogates. And we're worrying about out of data surrogates time, time dependent predict the future. So that's a big deal. And one of the things that we did in this was developed what was called vero, which was a virtual environment for reactor applications. So we don't we we, as in the community, I warned you about this, this royal we, the community is focusing heavily on things like digital twins, I'll talk about this at the end, but simulation based environments to guide experiments to guide design to guide some of the reactors physics, but we're not replacing experiments. Okay, so one of the motivations for this analysis is the 3d neutron transport equation. So we just finished a modeling class that I teach, we know conservation of stuff, stuff here at neutron transport. So changing stuff is transport in. And then all of these reactions, I've got the segments are cross sections. So I've got sources, we've got various cross sections. And these can be extremely high dimensional 100,000 inputs, when discretized. And not all of those are influential. This is going to motivate some of the active subspace. So when I wait, say we hear this was former students, Ally, Kayla will point more to that. We then build the the surrogate model on the active subspace, I'll talk about that. And I point out that some of the Oak Ridge National Lab codes take minutes to hours to run. So when we do things like Bayesian inference and say, oh, we need a million simulations, we have to build a surrogate. And occasionally, we have that choice. All right, so that's one application. The second one, excuse me is very, very simple. My modeling class knows this really well. They just saw it on their final edits a disease model. And the reason I'm pointing to this is a it's been all over the news for the last three years modifications of this were developed for COVID. Little bit more complex, but not too much. And it illustrates some of what we worry about when we do uncertainty analysis, sensitivity, analysis, etc. So we have a population we have susceptible, infectious and recovered, that's the SAR, you start with susceptibles. In the blue, you have a few infected here, I started with 100, this susceptible population decreases the infected increases. And here's a model for it. Alright, so in the model, we have these two parameters, gamma and K. One of them is the infection coefficient, K is the interaction coefficient. All right, and the appears a product. So if we're doing parameter estimation, these always appear as a product, I cannot uniquely define the two of them. But the reason they appear in the model is the interaction coefficient. Unfortunately, we all know really well about that. That's one that we can control, social distancing, quarantine, etc. That's one that that we as the population can control, the infection coefficient gamma, not so much. That's a property of the disease. And so very often these models will split the two, because we're very interested in policies, how do we specify interactions? And the goal of sensitivity identifiability analysis is to say, how do we isolate a subset of parameters that we can determine from data now here, it's trivial, I look at the model and say, well, these two appears a product. In general, we cannot do that. That's the motivation for what we're doing. And the third model, I'm going to point to is a minimal pbpk model. That's always hard to say when you're giving a talk, but it's a physiologically based pharmacokinetic model of the brain. Minimal because the original model had 100, ordinary differential equations and a lot of parameters. This one has 16, ordinary differential equations, everything coupled at 36 parameters. And you've got four basic compartments, plasma, brain, lymph and tissue. But in here, we have a lot of sub compartments, vascular, various brain compartments. And the idea here is to understand headed by the exposure to proper dosage regimes. And one of the big goals in this community is to take digital twins, which is everywhere in the engineering community, and build what they call virtual populations, or V pumps. And the idea of a virtual virtual population is to determine parameters so that the model accurately reflects your population. And that may be different in different areas, and then use the model for virtual testing virtual simulations. It's safer, it's cheaper, and then once you have a prototype or a possibility, then use that for experimental testing. Okay, so that's the third one. The fourth example is one that I'll carry along that we've looked at again, I've worked in smart materials forever. This yours comes from density functional theory. And it's a really simple equation. It's the Landau energy, it determines where you have a complex structure. So here is lit circulate titanate, it is the drive mechanism and every atomic force microscope because it's extremely precise, however, it also has led. And so you cannot use it in the bile in the body, it's toxic. So there's a lot of work to say, are the cliche, can we get the lead out? Can we replace this with other materials that are nearly as good? And what's the Lando energy does is it says here is our lead atoms here, oxygen, and where does this codium Titanium go and it's stable. At that point, it's stable at this point. And it's unstable in between, we model that with this sixth order differential equation where I have a quadratic with coefficient this negative so I have a concave down quadratic, a quartic gets positive, so concave up quartic and a positive safestore. And the question comes up, is this sort of term necessary? Can we get along without it? I've seen papers that go up through 12th order terms, and I always ask that question, do I review them? Are these significant? So the objective is, can we insert use uncertainty quantification, sensitivity analysis, analysis to bridge the scales? And we'd love to go from quantum to system? I'm not sure we'll see it in the next several years. But one of the kind of holy grail inverse problems is then to say, alright, given a system application, what molecular structure do I need, and in this case, it would be can I replace lead with something that is less toxic, but performs nearly as well. And here's some of the applications atomic force microscopy, this appears in most new automotive carburetors, and it's a sensor and an airbag. These are both sensing and actuating. Okay, so there's some of the applications now, where we often go, and this is really Elementary, we're at the end of the year. So very elementary, when I teach modeling, the first place, we start when we develop a spring equation is a linear constituent relation. Stress, which is sigma is proportional the strain, lowercase E, with a proportionality constant often goes by the Young's modulus, it depends on the units, but capital E. And then we also have velocity dependent damping. And that makes sense if you ride a bike, the force of the wind is going to be more if you're riding faster, I ride pretty slow now. So that's not such an issue. But you've got damping is proportional to velocity d EDT with a coefficient C. And I'm going to take nominal values, my modulus I'm going to take to be 100. I'm not worrying about the unit's damping coefficient point one, a typical strain is point 1%. So point 001. And I'm going to take the strain rate of point one. And the question would be, to which parameter modulus, or damping is the stress most sensitive. And the place we would often start is to say, Okay, let's just look at the derivative of my response with respect to the two parameters. So derivative with respect to capital E, well, that's just the strain is point 001. Derivative with respect to damping. That's point one. easy conclusion, more data more sensitive to damping. There's a number of limitations to this. It does not accommodate uncertainty. It's just derivative. There's no just but its derivatives doesn't accommodate potential correlation. And it's really sensitive to units. And that's a big deal, we often will switch units or magnitudes. So the next step on that would be say, All right, let's take a slightly more global perspective. And, again, this is just repeating my problem, I've got this linear model in values, and I'm going to vary my parameters 10%, about the nominal values, I'm going to choose a uniform distribution. And my nominal for the modulus was 100. So I'm going to vary between 90 and 110. Similarly, vary the damping. And let's just plot what we get for our distribution. So sigma, would I do that as a function of V varies from point 1.12. And it's got a really well defined mean value here. On the other hand, sigma is a function of damping varies from it's hard to tell here, but one Oh, something up very much. There's a lot of spread, but the mean does not vary much. And so we would say, oh, from this global perspective, where I'm sampling on the distributions, the response is not very sensitive to damping, but that directly conflicts with what we saw for local. So this, I hope, illustrates one of the issues. All right. So how does one do this and this is we as in the community, this often goes by Sobel analysis, or variance based analysis. It's frightening how many times we as in the community has thought, Oh, we're going to develop this new rule. ation, and then you look into literature. And so we'll publish it with a comment of this follows kind of obviously, he was just a, a true leader in this field. So what we would do there is take our parameters, uniform, I'm going to assume independence. So I'm just going to say, All right, let's just take my space to be 01 to whatever number of parameters I have, and we expand it in a series. So I have my response is a mean value, and first order interactions, and so on. So we look at a series, the analogy on this would be tailor or more more fit for you. And with foria, we know we have to have some kind of constraint, the constraint is we take orthogonal bases sines and cosines. And we have to have constraints here. But what we do when we do do that is I have my mean is the average. So that's pretty easy to see, if I go 01, I integrate over 01. And there's the average, that's easy to calculate the problem is a p dimensional. And for example, with the pharmacokinetic, model p was on the order of 16. I'm integrating over r 16. And suddenly, we start to see one of the extremely big challenges of this type of sensitive analysis is high dimensional integration. The first order interactions are integrate over everything except that variable. So there's tilde it says, integrate over everything except that variable, subtract the mean. And the reason people do that is you can then form the partial variance. And when you square this, you've got basically the mean squared minus the average of the entire thing squared, and the total variance, and you form what are called sub lunacy, which is the ratio. So with this expansion, I immediately get the partial variance, total variance. And the way you would interpret that is to say, Okay, back to this example that I just looked at, I'm looking at the variance of the mean, it goes from point one up to point one, two, it varies more for this example. And that isn't intuitive, I hope explanation of why people would look at this method. Now, independent parameters, kind of keep that one in the back your mind. All right, this is a kind of a more technical side, I'm not going to belabor it. But you can do this more generally using multi index notation, integrate up through all of your variables and say, Okay, this, what looks like an absolute value is just the magnitude going from one up to p, integrate over all of these. If they're independent, I should have put that part in red too, then I can write down the variance in terms of these partial variances and write Sobel indices. So it's a really elegant way to write this for p variables. Again, I showed it for two. This slide, this takes it up for P. I bought don't want to belabor the notation, but there we go. Okay. Um, to quote one of my very good friends, Allison Wilson has statistics here. What could possibly go wrong? Okay, and that doesn't even laugh. I didn't even read that on that level. So let's go back to our model for quantum informed continuum model. It was this quadratic, or quadratic with a negative coefficient, CORDIC, and six order. There's the plot. And we do this sensitivity analysis, aka three parameters, alpha one, double one and triple one. And the Sobel indices, for the first two are an order of magnitude bigger than for the third one. And they add up to one that's kind of a big deal. Because that says, we've, we've accumulated everything. Here's the total, the add up to one. I didn't say anything about Morris indices, this is an average of the derivative. The difference there not so much. Point? Oh, 7.03. Not sure I'd want to make a decision based on that. But based on Soble, point three, nine versus point 01. We'd say that alpha 111 is insignificant, we fix it for future analysis. And off we go. Except what would Ellison say What could possibly go wrong? So here's what happens. So we perform a Bayesian inference with different distributions. And when we vary all of them, I get this blue. That's what I vary all the parameters. And then I fixed alpha 111, which I said, Oh, the analysis says it's not influential, that means that it doesn't really impact our response. And I get very different results. And what that says is something went wrong, it's not really non influential. What went wrong? Well, remember, I kept kind of saying, with the assumption of independent, kept kind of going back to that these parameters are dependent to correlated. Here's the pairwise plots and I've got a very strong negative correlation between alpha one and alpha one one, positive blue between alpha one and alpha triple one. And we just totally ignored that. And I love pointing this example out to my students of if you ignore your hypotheses, things can go badly. And here's where it went badly. Okay, so how do we Get dressed this well, there are extensions to this general formulation. And again, this is with this multi index notation that accommodate the covariance structure. That's really cool. The problem is you can get negative indices because covariances, that one's gonna be negative. And so you can get negative indices from this. And it's really hard to interpret negative indices, because we were just going on the fact that they add to one, but negative just really makes it hard to interpret. It's often difficult to find the underlying distribution. And you have to do Monte Carlo approximation, which is often extremely expensive. Okay, so there's some issues there. What do we do alternative parameter subset selection, I'll talk about that. Active subspace techniques. And both of these accommodate parameter correlation. So that's where we're headed. So what I'll do is I'll talk about parameter subset selection, and then stop for questions. So the motivation on parameter subset selection is back to our model to the very simple disease model where I had this interaction coefficient and infection coefficient. The four parameters are not uniquely determined to database by data because they appears this product. And I look at an observation model, we always come back to the observation model, it's the same place you'd go for Bayesian inference. And I'm taking the infected, which I just planted here. That's my infected cool thing. I assume that I've got measurement errors. All right. So I've got data, which is plotted as the blue dots, the solid line is the model. And then I've got observation errors. And there's a lot of sources for this, especially with the D disease bottles. Did people actually correct did they do their COVID Test accurately.dot.so, we start with this observation model. And then we make the statement or observation, not the statement, the observation that non identifiable or non influential parameters and those that have minimal influence on my model. And again, in a previous case, that was the infected individuals. So pictorially, if I am doing this around the nominal value, theta star, and at the turbot, I see very little difference in the slope. Well, that was what we just looked at for local sensitivity analysis, so that that's intuitive. If I'm looking at two parameters, the level curves are about the same. So the motivation on this is to say, alright, let's consider a Taylor expansion, it always comes back to this for nonlinear models about this nominal value theta star, I could get that either from optimization, or I can do this with simulated data. And I've got the perturbations. This is the gradient and perturbations. And then we look at the functional bits, the difference between the data y i and a model, that's just the least squares. And again, we can do this with optimization, but we often use we often use synthetic data. So there's the the motivation, do a parameter subset, or do a Taylor expansion. Okay, this slide is busy, but a lot of it's repeating, I did my Taylor expansion, I've got this least squares functional. Now, what we just said is, if this is a nominal value, and I'm minimizing this functional, Wi Fi is pretty close to the model at the nominal value. Either I generated synthetic data that way, or I optimized. So if I look at my gradient here, this value right here is very close to why I left with the gradient times of perturbation. So my perturbation in in J, which is the functional is approximately the gradient times the perturbations, quantity squared. All right. And what we can do is rewrite that in terms of the sensitivity matrix S. Okay, so what is that going to be s is the derivatives of my model with respect to theta one, theta P, at different time values. I'm going to come back to how we calculate that but there's a sensitivity matrix. And its sensitivity matrix transpose sensitivity matrix that is this product. All right, here's another bit of the intuition. We'd say, Okay, this is my penalty functional. Remember over here, we're looking at cases where the values are pretty close level curves are derivatives. So I say alright, let's express J in terms of Eigen vectors and Eigen values of S transpose S, which is the scale Fisher information matrix incorporates parameter correlation. So remember, if that's the case, I've got S transpose S, take that to be an eigen vectors, lambda times the value and that just says it my penalty is eigenvalues times the square. Okay. So if our Eigen values were approximately zero, perturbations were approximately zero It's not identifiable. That's the intuition. That's the picture I just drew right here. Cool. All right, so we're looking at an eigenvalue problem. Now a little bit of history on this computing eigen values of S transpose S, if you talked about linear algebra colleagues a sort of standups. Drake, because you get small Eigen values, it's more numerically efficient to instead look at the singular value or QR of s, rather than S transpose S. that have history. There's this beautiful paper by Reed in 1990 77, he was in the control community, reset o parameters, data are sensitivity identifiable, if S is one to one, or the null space of S transpose S is S, it goes back to 1977. All right, getting to point to Katie and some of her work from 2016. She looked at parameter subset selection for mixed effects models. There's a beautiful paper that she wrote in the International Journal of uncertainty quantification. This is mixed effects I won't be able to talk about but it's really important talk to her about this, it's when you have individual effects in a population. So there's a bit of the background. And back to our SR model, we do this, we look at the rank, it's three. And that makes sense, because of these four parameters. Gamma and k are not totally identifiable. Okay. However, there's no free lunch, it requires gradient approximations. Because I've got this sensitivity matrix. And it's local. Alright, so let's talk about the gradient approximations. And this is perhaps the coolest, next two slides of the talk. We're going to use complex step derivative approximations. And this goes way back then it's discussed in a paper by Lanessa molar, I always have to point out to my, my students, that molar was the person who basically invented MATLAB in 1967, where they looked at analytic functions. And basically what it says is, if you have a smooth F doesn't have to be analytically smooth, and you do a complex perturbation, rather than a real perturbation. Look at the Taylor series on this, you get the following Taylor series, and then you approximate the derivative f prime by the imaginary part of this perturbation divided by h. And when you do that, you've got an order h squared error. All right, so there's two things to notice about this. There's no subtractive cancellation, if I did a Taylor expansion, I've got f of x plus the perturbation minus f of x limits its accuracy. The Taylor expansion is also order h. So a really classical example is to say, alright, if I do a finite difference, I'm order h, it's this black line, until the square root of machine epsilon, and then I come back out, and it's inaccurate. This approximation is order h squared, until you get to basically machine epsilon, and then it stays there. There's no subtractive cancellation. It's incredibly robust. We use step size at 10 to minus 14, which you could never ever do with a finite difference. And I have to believe so this is a 1967 reference, I have to believe this is something that someone like Fourier looked at and thought, yeah, that's really cool. And then didn't even write it out. But it's really, really impressive when it works. Okay, so I'm going to illustrate this on the MPB PK. This is work by camaleon data, Shoba 16, ODS, 36 parameters. And one way to verify this is compare complex step for your sensitivities and sensitivity equations. Sensitivity equation, you differentiate your model with respect to the parameters. It took her several days to code, the sensitivity equations, it took her about 15 minutes to do the complex stuff. And the match the very, very close. And it requires two lines of MATLAB code, you take a complex perturbation, and you keep the imaginary part. The accuracy is dictated by this od solver. It doesn't always work. And if you're using things like the PDE toolbox, they have analytic function capabilities, but when it works, it's really really really cool. Okay. Back to her problem, this is the parameter subset selection for this minimal model. She considered five dose regimes. It turned out from the 36 parameters non were nine were non identifiable. So then the verification on this was randomly sampled the remaining ones fixed the non identifiable and this is a visual comparison. So all of them randomly sampled, fixed the random and you get a very close match. Hey, that's parameter subset selection still local, but It is a very, very powerful way to look at these types of problems. Okay, so I'm going to spend the remainder of the time talking about active subspaces. They look similar. But it might be good at this point just to see if there's questions. And then of course, we'll entertain questions at the end. But this is kind of the end of part one. But let's, let's see if there's questions at this point. Okay, and let's see, it's a little hard for me. Let me see if I can do my chat on the other side. I can, I can press it. Okay, so the ROB as about okay, Ralph, it's just uh, oh, she's very brilliant. And that said, can you expand upon the methodology limitations? Yeah. Seems to have a general applicability. Yeah, no, no, that's a great question. And great to see you, Rob. Yeah, it doesn't, it's not a panacea for everything. So the original formulation required analytic, the Taylor expansion, you still require smoothness, but it doesn't have to be analytic. It, people have pushed it up to disk continuities, and it does well, up to this continuity, you have to be a little bit careful about some coats. So for example, the absolute value in some languages is the modulus. And the modulus may be interpreted slightly differently be a little bit careful there. In MATLAB, we have found it to be really robust, but places where one has to be pretty careful our PDE toolbox, it will have trouble because there's analytic function capabilities. The neural net toolbox also has some complex algebra in it. So one has to be a little bit careful about places where you have those types of limitations. But as long as the complex algebra is robust, it's been pretty hard to break. The thing that we always always advocate is verification, verification, verification, all of my students are hurt postdocs have heard this, compared to another method. But it is pretty hard to break. And it is starting to gain more traction. A little bit more of the history. So this one was the first place I've seen a reference. The aerospace community picked it up in Gosh, around 1990s and used it pretty heavily there. Tom banks used it pretty heavily in math biology, about 12 years ago, it is gaining traction, but verify. That's that's some of the limitations and ideas on it. But a great, great question. Ralph, we have one more question. Do you have time to absolutely yeah. Could you read it? Yeah. Is there another question from Mark? How does a complex perturbation affect things like adaptive step size in od e integration? Operating? Oh, gosh, yeah. Great question. Yeah. So I made the comment that the accuracy is dictated by the, the accuracy ote solver, it doesn't really affect it. So if you set a say absolute error in your od solver of 10 to the minus five, you're going to get the results you're looking for. And I think that was okay. camallo is usually about 10 to the minus 10. Here, it does not affect that at all. And again, we typically use a step size on the order of say 10 to the minus 14, we go small, try some others, but it does not affect the ote solvers. They seem to be very, very robust with respect to it. So well, let me gosh, great questions. And I just, again, I sort of preface this may be this is really cool. It's, there's an old adage, if it sounds too good to be true, that may be the case. This one is pretty good. All right, let me talk a bit about action subspaces. And then we can talk in general equation. So this looks similar, but it gives you subspaces rather than subsets. So here's an example from Paul Constantine's book. It says linear combination point seven q1 point three q2, exponential. And obviously, they're linearly related. So here is the linear subspace, there's no variation in the orthogonal direction. And so what we would do is look for these subspaces, and put all of the heavy lifting onto the linear algebra techniques. Alright, I always like pointing out history because this is very often incorrectly attributed to Rusi. And around 2010. Paul Constantine did an amazing job of conveying this to the community in a way that just I think showed its strengths in addition to what Ruthie did remember that paper by Reed, I quoted it right before I quoted Katie stuff. This is the same as an identifiable subspace locally. That's a big difference, but locally for nonlinear problems, and if it's a linear problem, like that one's hard because it's SVD and QR and I had to do some searching. There's this beautiful review paper in 1993 by Stewart the talks about SVD QR, but I hope this gives a hint that finding these subspaces puts all of the heavy lifting onto the linear algebra and these are these are amazing techniques. SVD QR R incredibly robust. Okay, so this one's a little bit mathy. We'll get to some examples in a few minutes. So I've got a nonlinearly parameterised problem. I've got gradients, we just talked about that. Paul has a beautiful Siam frontiers book in 2015. Bureau and clean Webster, International Journal of uncertainty qualification, same journal I mentioned for KT earlier paper, and you construct an outer product, gradient gradient and a distribution that's kind of a big deal. Let me go to the next one. How tip sensitive are the results of this distribution? Not very, but tested. And this gradient gradient, Oh, this looks a lot like parameters subset selection, except for averaging it. Okay, I'm going to describe this in terms of Eigen values, because I just motivated parameter subset selection that way, but we typically do it in terms of the singular values for the reasons I mentioned. But for the Eigen values, I look for a break, talk a little about that breaking the eigenvalues, split the eigenvectors at that same dimension. And that gives me a subspace of active variables and the complement of the inactive variables. So small Eigen values are inactive, small singular values inactive. Okay, so the algorithm on this and then we're going to get to a bit more of the examples are, we have to discretize this, and this is kind of a big deal. This is. This is where the Monte Carlo sampling comes in, we would typically only form the sensitivity matrix, we talked about that for parameter subset selection, cake, the SVD. And look at the first n dimensions. Right? It's tempting to find a differences. It's not effective. It just it's not accurate enough at high D strategy is employed complex step ingredient free algorithms. Here's where I'm going to point to we being Ali and Kayla. And the example that they looked at was back to the nuclear example, I promised those can come back to that this is the nuclear example we're looking at at dimension 7700. It's not 100,000. But it's pretty high dimension. And we look at k effective, and k effective determines whether reactions go forward, or they don't k effective greater than 1k, effective less than one forward, if it's there. When you discretize, your reactions, these are all again, cross section, fishing cross sections, etc, etc. And materials, you've got 7700. And I just point out that these cross section libraries are binary, and you have to do a conversion. And that was something that on the math side, we had to be really careful about that. Again, we being Ellie and Kayla here. So the results on this, were to say, all right, 7700 skill evaluations, this was the code we're using gradient based required 1000. The algorithm that they used required 18,000. And projected Finite Difference projected finite difference was 7 million, we couldn't do it because you just don't have the computational budgets for that. All right. And this one's a nice test problem, because you have analytic eigen values of one and 01 is the reaction proceeds zero is it does it the black or the gradient based, the red are the initialized the new algorithm. And you have one eigenvalue one, and then you see it drops to zero. And it turns out that this new algorithm was more accurate. And the reason for that is computing converge, that joint solutions was often not achieved. It's one of these things where the code that people will say, Yes, we have an adequate code. But getting them to converge is hard. All right, so what was it imagine that started at 7700, we would use gradient based which gave a dimension one active subspace, we went from 7700 to one principal component analysis was either two or one depending on the cut off. And for surrogate sampled off for a tolerance of 10 to the minus three, it's a one dimensional subspace to if you go higher, that is a big deal. We go from 77 to one and building a circular one D is really, really easy. So that's a very large scale example. Now, the last five minutes I just want to talk about Bayesian inference here and where we might use that so back to Paul's example. This linear combination points seven times first parameter points three times a second, they're not jointly identifiable. So what we did this being we was Ally was took uniform distributions in black. And the reason you take uniform is when you rotate a uniform, it's uniforms. I'm sorry, the reason we use normal distributions. I said uniform I meant normal is when you rotate a normal you stay normal. Okay, so the normal wasn't black. And we just did it using different see how it works. And when you find is the full space looks like it's informing the first parameter, not so much the second. And when you look at the pairwise you get exactly this non identifiable subspace. Here's the pairwise plot, it's single value that indicates four points on this line. They give the same likelihoods. They're not identifiable. And that makes sense. There it is. Okay, so what we want to do is say, can we use active subspaces? To understand and do Bayesian inference? And you can. So here's the example from the gradient matrix. We've talked a couple of times about that. Take the SVD. Here's my singular values, corresponding singular vectors. And either the Eigen value or a singular value indicates a one deactive subspace, and here would be the basis for it. Point nine. All right. So if you do inference on the active subspace, what you would do is say, Okay, I've got a 1d active subspace, I sample values on here, and fit a response. Okay, so there it is, I've got training points in red, I fit my model to it. It's an exponential. I have test points in blue. So I construct and validate, verify, perform Bayesian inference on this one D subspace? Gosh, it's Bayesian inference on 1d. That's easy. Because it's invariant, we can just randomly draw to fill out the 2d space from normal 01. And then we transform back because when we work with the nuclear engineers, they don't care about Transform Variables. They want physical variables. Okay. Final step did we look at on here? Is they okay, we did the inference? How do we understand this a little better? Well, here was the prior in black, the first patient to reduce space, restrict what we get for the first parameter, not so much for the second. And to get a sensitivity measure on that we go back to work that Paul Constantine did and said, Well, what you can form are these activity scores, which are either either eigen or singular values, and vectors, and look at the squares of the components. So I just said, Oh, on the previous slide, I got the point nine, one for the first point three, nine for the second, I square these, the first one is going to be influential is going to be informed during inference, the second is not, and the results show that. Okay, let's look at a real example. And finish with questions. So a little bit more mathy. It's a family of elliptic equations, this could be acoustics, it could be groundwater flow, whatever your favorite thing is, you can think about groundwater flow, and on a rectangular domain, and various heights. So I have elliptic differential equations. Again, this is steady state. So groundwater flow acoustics, you can look at electromagnetics. And I have n different heights, I have a random field a. So I represent it in terms of a cartoon and law of expansion. Think for a if you haven't seen that, but I just represented, and my quantity of interest is going to be the strain at the n different levels. So I integrate and get the strain at these n different levels. There's the model. When you do your expansion, in terms of the cartoon on low F, my dimension is 91, it's pretty high dimensional. The active subspace dimension is three because I constructed that way. And this is a fun element discretization on it. Alright, so we look at our singular values. And remember, we constructed it with three, if I look at the singular values, I've got three that are almost two orders of magnitude larger than the others. And that we this was a verification, we knew that by construction, we then construct the activity scores, and there's three of them that are again, gosh, two orders of magnitude larger than the others. And they correspond to parameters 138 and 66. So what this says is those parameters will be informed during Bayesian inference, the others, not so much. So 138 and 66. Okay, we being ally, and, and Brian on this. So again, the prior is the black Gaussian priors in all cases, here is not sure why switch order but 3866 and one, in all cases, the posterior is much narrower than the prior. So and the reduced space, this is the we get on the active subspace. Here's my posterior, much more narrow than the prior. We've been doing a good job on this. Just to test this. Le then said let's take parameters 4068 and six n three. And here what we find is doing inference on the reduced space. You do not inform your priority All that means that you're just getting no identifiability. Here. In any of these cases other than the space, the full space looks like it is. And that's erroneous. And we asked, why is that? And just to point out the full space computations took 18 hours to reduce space to 20 seconds. It's a big time difference. And here's the full space 18 hours. The chains are sort of converging, but not really. You've got the stagnating regions. Here's a stagnating region. Here's a stagnating region here. It's not terrible, but the full space inferences is not reliable. Yet of subspace, I've got a colleague here named Brian rich, and every student in my class and his nose. You look for chains that look like fuzzy caterpillars. And the ears, your fuzzy caterpillars. These chains look great. Yeah, can subspace is doing what it's supposed to. We're informing three of the parameters. The remainder are not we go back to the nuclear engineers and save. That's what you can do with this model. Okay, let's, let's get some concluding remarks answer questions discuss. So premiere sub slash selection, really, really nice to identify to isolate identifiable influential parameters. And it accommodates parameter dependencies. I didn't really emphasize this, but it focuses on if you do the Eigen values, it's a Fisher information matrix. If you can invert that. It's proportional to the covariance matrix. So it accommodates dependencies. At can subspace, this is a subset subspace builds a subspace of these. And you can go very high dimensional, complex step, gosh, give it a try. send me email, I'll send you references. When it works. It's really, really good. We live by surrogate models, that that's sort of just a given, we often use that our computational budget to construct and verify. And then we work with that. Um, I want to kind of just get on my control background, soapbox and say, well, the synergy between what I talked about uncertainty quantification, sensitivity analysis and control design. And so that's one of my big pushes right now is to keep bringing some of these two areas together. I've mentioned virtual twins and virtual populations and so on. Gosh, this goes back to probably that will not probably NASA with Apollo 13 was the first place that a virtual a digital twin was used, where they took data, they updated their models, they provided a set of instructions to bring back Apollo 13. It's huge right now. For everyone who's been following Artemis, they're doing digital digital twins hear. It's pretty much everywhere in engineering. My colleague Nam did a nuclear engineering has built a beautiful scenario for building a digital twin of a nuclear power plant. For parts that are hard to test. One of the places we're looking at is the Marksman turned Russian. And probably a good place to stop here is prediction is very difficult, especially if it's about the future. Because you're extrapolating. I'm old. I first heard Yogi Berra say this. And he did. But Niels Bohr said at the same time, it's a Danish proverb. But here's what we're going is out of we're doing extrapolate story predictions out of data predictions. These are the types of predictions we're looking at. Okay, so there's an overview of these topics. I'd love to entertain questions. Again, thank you so much for the chance to being able to visit with you all and let's just open up for general questions now. Thank you. Thank you so much for the wonderful talk. Yeah, let's, let's do the q&amp;a session. Yeah, if you can read the chat. It's, I've got it over on my laptop, but it's kind of weird. But if you can read that, and then just unmute yourself and say, hi, and let me know questions that way as well. Exactly, exactly. Yeah, please feel free to unmute yourself. And, you know, speak for yourself. Yeah. I don't have any questions in the in the chat room. Okay. Let's unmute. And let's just open up to general discussion. And one of the ones I wanted to the virtual, the digital twins that I actually usually goes by digital twins and virtual populations, I should probably correct that. But are people that are working on that? Because again, it just seems like a special issue of every engineering journal right now is focused on this. Yeah. As a matter of fact, emphasis a couple of, you know, the internal funding projects at Lawrence Livermore National Lab, it's, it's all about digital twins. So there are folks who are working on the digital twins and and many, many folks who work on the digital model, including me, it's that's the, you know, that's aiming for the digital twins as well. Right. It is and, and one of the things that I often point out and again, you guys are working on this and more ground zero But I've had colleagues say, well, it's just model calibration. I've been doing digital twins my whole career. But the place where I look at is somewhat different is, it really is you're really building unique models for a specific entity. And it's also some beautiful kind of incorporations of machine learning to say, Where do I collect the data, and collect new data that I need in order to update that. So for those who may not be familiar with it, it it really goes beyond model calibration to this incredibly complete picture of how do we build a numerical representation for a specific entity, and updated as entities as it's like progressives? But yeah, I'm talking too much. I want to hear hear from you guys. All right. Sounds good. Okay. I can ask questions. So one of the topics you cover was active subspace methods. And you successfully apply that for, you know, the examples with a parameter space of, you know, 7700, as you indicated in this in this slide. It's a, it depends on the successful application of active self space is dependent, depending on that activation, you know, the factor how much you can truncate and still get the good representations using the gradient? And if that is not the case, then active subspace will not work, right. Yeah, no, you're absolutely right. I mean, it's, it's based on linearization. And gosh, so many of these methods for nonlinear problems are based on linearization. So you really want to try and get the linearization as accurate as you can. And for a lot of the codes we've looked at, they do have ADD joints. And that would be the immediate place we'd start with would be an edge joint. That's where I wanted to point for to complex step and some of these other approximation methods. But no, you're absolutely right. It, all of these methods for nonlinear problems depend on the linearization. And you want to get that as accurate as you can. Right. Right. Yeah. And another extension would be is, is there, you know, nonlinear version of active active space? Yeah. Okay. I'm gonna take that question and pose it as a future question for the community. So a sort of a nonlinear version is parameter subset selection. And again, we're still calculating gradients. But we're not doing a subspace, parameter subset selection is local. Right now, it's at a point, the obvious thing to try is averaging it. And we did. And sometimes that works, but you can also write down counter examples. But But no, I think there's a lot of work to be done on extending this to parameter subset selection techniques. Again, it's a linearization. But it's a different philosophy looking for subsets rather than subspaces. As far as going with the nonlinear itself, I, in specific cases, you can deal with the nonlinearities. But so often, the techniques I know about are linearizing, somehow. And that's where I took it back to the first one was, when you linearize inactive subspaces you're averaging over some some space? How can you do that for parameter subset selection. And the reason one of the reasons after talking with you, I've wanted to show those math biology examples. But this is really important here. Because the nonlinearities, in some of these, these math, biology models are tremendously. They're very nonlinear, there's delays, etc. And commonly is nonlinearities is a big deal. And so I think there's a lot of work to be done for working with the truly nonlinear models when we have to keep track of the nonlinear narratives. I mean, that's just always the case when you linearize is, gosh, what are you losing in the process? Nicely? Thank you, Rob. There's a question in the chat room. By Boyer. He's asking, Can the active subspace approach be applied to general regression problem to do variable selection or variable importance ranking? Yeah, no, broadly, it can. And one of the things that let me see if I can go back really, really quickly is active subspaces does give you these activity scores. And thank you, I love these kinds of do give you a measure of global sensitivity. And so you can't get a measure of global sensitivity. There's relations and bounced between these and Sobel indices. So you can get global sensitivity rankings and use that for parameter selection. And still go into original space, but but the answer is yes. And work in the original nonlinear space. I showed what happens when we find a subspace of values, but you can use this to just rank parameters. So great question. Probably didn't emphasize that enough. But that's where we looked at the activity scores. Thank you. Thank you, Rob. Is there any other question from audiences? Have a question. Hi, Ralph. This is Mark transfrom. Here. Yeah. How are you, Mark? I'm doing great. It's very nice talk. Thank you very much. Oh, my gosh, it's so good to get back with with this group. Thank you. So I was kind of struck by the plot, you showed that had the the eigenvalues of the the C matrix that comes out of the active subspace analysis, where you have the very large gap that you can clearly see, these are the things that matter. And there's a clear distinction between the active and the inactive, the important to the unimportant. And so much of my other work in looking at eigenvalues, the Fisher information matrices, where we talked about sloppy analysis, we see plots that sort of look like this, but we often see eigenvalue spread over many orders of magnitude without a gap anywhere. Oh, my gosh, yes, we always have this problem. There's obviously things that are unimportant. But there's no clear distinction between the important and the unimportant. And so that's the question that we the dilemma that we're always grappling with. And I'm just curious if you have any experience similar experiences with that, or insights into how you would handle such a scenario? Oh, my gosh, yeah, Mark, I love questions like that. Because, yes, we have exactly the same experience. This one was obvious. There it is both. And we also this one, where we did this one was pretty obvious. However, when we do these types of examples for the math biology, it's exactly what you see, you see a decay in singular values. And then you start saying, is that a gap? Or is that really not? And so the best thing I so yes, we've seen it, it comes up on these math biology examples a lot. The best thing I know to do on that, and this is we, as in Kamal has been doing a lot of this as saying, Okay, let's start fixing, there's obvious parameters to fix, we fix those. And then we do some kind of a verification stuff where we randomly perturb parameters, all of the parameters and those that are fixed. And we see if we get the same distributions, or you can quantify this using energy statistics. And please send me email if you'd like more information on the energies to see. But yeah, we definitely seen the scenarios that you're pointing out. And the best that I know to do on that is, say, Okay, we've got to go in, and then let's start working our way down into those less clear parameters, fix them, vary our response, see what we get. And that kind of a verification step, either qualitative or quantitative? is the only way I know to answer that at this point. But you're right, it comes up at it. It's something we see a lot on these. And perhaps this kind of goes back to your question. Earlier, very nonlinear models. Yes, it does come up. And the best I know is to try and do that kind of a verification. Thank you. Thank you. Thank you for pointing that out. Because, yeah, I made it look so obvious. And those were best cases, on these problems, you really have to get into this sort of gray regime. And you then have to go through parameter by parameter in some cases, and just test it. Great, thanks. Thank you, Ron. There's one more question. Do you have a time, I've got plenty of time on my next meeting is not for an hour, I made sure to leave a polite time slot here. This is i This is the kind of the highlight of the day is talking with you guys. Let's go with questions. All right. Sounds good. Okay, another question from Marco. He says, Great talk, do you have some experience in using slides the inverse regression SAR for this kind of problems? To identify subspaces? I don't. And my request Marko is please send me a reference on that. I'd love to see more about it. And this kind of goes for everybody. Please, if you've got questions, things that I'm the only Smith in mathematics at NCSU. I'm easy to find. I know several of you. But I'd love to see references in it. I'm afraid I'm not familiar with it. And I'd love to see references. So please send me email and let's communicate. I'd love to see what you're more about that. Sounds good. One of the motivations of this, this talk is to, you know, the facilitate more collaboration with you and the folks in Lawrence Livermore National Lab. So actually, I saw the you know, you know, in the beginning slides there you have the collaboration with the Sandia National Lab and Los Alamos but you're missing Lawrence live on us and you got to do a better job. I did one of the reasons I was thrilled when you contacted me to speak for many, many reasons that are just thrilled and so honored, but one of them is I'd love to keep building those collaborations. And the reason for the Sandia, Lawrence Livermore, or I'm sorry, Sandia, and go back to the beginning was Los Alamos was these DoD initiatives. And so a lot of that was that came out of the DoD initiatives, but no I, Lawrence Livermore a again, I've I've got some some very well, former students and very close colleagues there. I'd love to keep building these collaborations. That was one of the reasons I was so grateful when you you contacted me to speak. So thank you. Yeah, that's great. That's great. All right. Any other questions? From audience? I think we were folks out well, gosh, again, thank you so much for the chance to visit and speak with you and please, please, let's use this to step one to let's start communicating via email, zoom, etc. And let's, let's see what we might be able to build on collaborations. Yeah, let's do that. Okay. Thank you so much. Let's, you know, give a applause to our speaker of it was a great honor to host you. And, yeah, thank you very much. Let's keep in touch. That sounds perfect. Well, that sounds wonderful. Let's keep in touch and then meanwhile, have a wonderful holiday season, everyone. Likewise, likewise. Yeah, care. Thanks, all. Thank you. Bye
+
+
+00:00:04.289 --> 00:00:07.439
+ 
+
+
+00:00:07.439 --> 00:00:11.009
+ 
+
+
+00:00:11.039 --> 00:00:14.309
+ 
+
+
+00:00:14.309 --> 00:00:17.969
+ 
+
+
+00:00:18.419 --> 00:00:21.149
+ 
+
+
+00:00:21.149 --> 00:00:25.469
+ 
+
+
+00:00:25.469 --> 00:00:29.039
+ 
+
+
+00:00:29.399 --> 00:00:33.509
+ 
+
+
+00:00:34.019 --> 00:00:37.709
+ 
+
+
+00:00:37.709 --> 00:00:42.239
+ 
+
+
+00:00:42.239 --> 00:00:45.539
+ 
+
+
+00:00:45.539 --> 00:00:49.859
+ 
+
+
+00:00:50.399 --> 00:00:54.719
+ 
+
+
+00:00:54.869 --> 00:00:58.799
+ 
+
+
+00:00:58.799 --> 00:01:02.849
+ 
+
+
+00:01:02.849 --> 00:01:05.549
+ 
+
+
+00:01:05.549 --> 00:01:10.259
+ 
+
+
+00:01:10.259 --> 00:01:14.159
+ 
+
+
+00:01:14.219 --> 00:01:18.809
+ 
+
+
+00:01:18.809 --> 00:01:23.879
+ 
+
+
+00:01:23.879 --> 00:01:30.569
+ 
+
+
+00:01:30.569 --> 00:01:35.309
+ 
+
+
+00:01:35.309 --> 00:01:40.019
+ 
+
+
+00:01:40.019 --> 00:01:43.739
+ 
+
+
+00:01:43.739 --> 00:01:47.399
+ 
+
+
+00:01:47.399 --> 00:01:50.699
+ 
+
+
+00:01:50.699 --> 00:01:55.439
+ 
+
+
+00:01:55.919 --> 00:01:59.489
+ 
+
+
+00:01:59.489 --> 00:02:02.249
+ 
+
+
+00:02:02.249 --> 00:02:05.699
+ 
+
+
+00:02:05.699 --> 00:02:08.789
+ 
+
+
+00:02:08.789 --> 00:02:12.809
+ 
+
+
+00:02:12.809 --> 00:02:16.979
+ 
+
+
+00:02:16.979 --> 00:02:18.719
+ 
+
+
+00:02:19.140 --> 00:02:21.330
+ 
+
+
+00:02:21.330 --> 00:02:24.960
+ 
+
+
+00:02:24.960 --> 00:02:28.380
+ 
+
+
+00:02:28.380 --> 00:02:31.140
+ 
+
+
+00:02:31.140 --> 00:02:34.620
+ 
+
+
+00:02:34.620 --> 00:02:37.200
+ 
+
+
+00:02:37.200 --> 00:02:40.350
+ 
+
+
+00:02:40.350 --> 00:02:47.130
+ 
+
+
+00:02:47.130 --> 00:02:51.330
+ 
+
+
+00:02:51.330 --> 00:02:53.730
+ 
+
+
+00:02:53.730 --> 00:02:56.850
+ 
+
+
+00:02:57.120 --> 00:03:01.830
+ 
+
+
+00:03:02.010 --> 00:03:05.610
+ 
+
+
+00:03:05.610 --> 00:03:09.180
+ 
+
+
+00:03:09.180 --> 00:03:11.880
+ 
+
+
+00:03:11.880 --> 00:03:15.750
+ 
+
+
+00:03:15.750 --> 00:03:18.450
+ 
+
+
+00:03:18.450 --> 00:03:21.510
+ 
+
+
+00:03:21.510 --> 00:03:25.380
+ 
+
+
+00:03:25.380 --> 00:03:28.110
+ 
+
+
+00:03:28.110 --> 00:03:31.230
+ 
+
+
+00:03:31.320 --> 00:03:33.690
+ 
+
+
+00:03:33.690 --> 00:03:37.470
+ 
+
+
+00:03:37.470 --> 00:03:40.620
+ 
+
+
+00:03:40.620 --> 00:03:46.050
+ 
+
+
+00:03:46.050 --> 00:03:48.300
+ 
+
+
+00:03:48.300 --> 00:03:51.690
+ 
+
+
+00:03:51.690 --> 00:03:54.960
+ 
+
+
+00:03:54.990 --> 00:03:58.170
+ 
+
+
+00:03:58.170 --> 00:04:02.190
+ 
+
+
+00:04:02.340 --> 00:04:06.690
+ 
+
+
+00:04:07.650 --> 00:04:11.670
+ 
+
+
+00:04:11.670 --> 00:04:15.600
+ 
+
+
+00:04:15.600 --> 00:04:19.560
+ 
+
+
+00:04:19.560 --> 00:04:25.710
+ 
+
+
+00:04:25.710 --> 00:04:29.340
+ 
+
+
+00:04:29.340 --> 00:04:33.240
+ 
+
+
+00:04:33.240 --> 00:04:36.480
+ 
+
+
+00:04:36.480 --> 00:04:41.460
+ 
+
+
+00:04:41.490 --> 00:04:45.420
+ 
+
+
+00:04:45.420 --> 00:04:49.440
+ 
+
+
+00:04:49.470 --> 00:04:52.410
+ 
+
+
+00:04:52.620 --> 00:04:57.510
+ 
+
+
+00:04:57.510 --> 00:05:01.170
+ 
+
+
+00:05:01.170 --> 00:05:05.280
+ 
+
+
+00:05:05.280 --> 00:05:08.340
+ 
+
+
+00:05:08.340 --> 00:05:11.490
+ 
+
+
+00:05:11.490 --> 00:05:14.010
+ 
+
+
+00:05:14.010 --> 00:05:18.540
+ 
+
+
+00:05:18.540 --> 00:05:21.090
+ 
+
+
+00:05:21.450 --> 00:05:27.390
+ 
+
+
+00:05:27.390 --> 00:05:30.600
+ 
+
+
+00:05:30.600 --> 00:05:33.990
+ 
+
+
+00:05:34.320 --> 00:05:39.330
+ 
+
+
+00:05:39.330 --> 00:05:45.270
+ 
+
+
+00:05:45.270 --> 00:05:48.600
+ 
+
+
+00:05:48.630 --> 00:05:51.510
+ 
+
+
+00:05:51.720 --> 00:05:55.920
+ 
+
+
+00:05:55.920 --> 00:06:01.050
+ 
+
+
+00:06:01.080 --> 00:06:04.650
+ 
+
+
+00:06:04.650 --> 00:06:07.980
+ 
+
+
+00:06:08.490 --> 00:06:13.140
+ 
+
+
+00:06:13.140 --> 00:06:15.780
+ 
+
+
+00:06:15.780 --> 00:06:19.680
+ 
+
+
+00:06:19.680 --> 00:06:24.810
+ 
+
+
+00:06:25.050 --> 00:06:27.360
+ 
+
+
+00:06:27.360 --> 00:06:30.930
+ 
+
+
+00:06:30.930 --> 00:06:34.920
+ 
+
+
+00:06:34.920 --> 00:06:37.680
+ 
+
+
+00:06:37.860 --> 00:06:40.590
+ 
+
+
+00:06:40.590 --> 00:06:45.630
+ 
+
+
+00:06:46.050 --> 00:06:49.620
+ 
+
+
+00:06:49.620 --> 00:06:52.920
+ 
+
+
+00:06:52.920 --> 00:06:57.060
+ 
+
+
+00:06:57.060 --> 00:06:59.970
+ 
+
+
+00:06:59.970 --> 00:07:04.410
+ 
+
+
+00:07:04.410 --> 00:07:07.890
+ 
+
+
+00:07:07.890 --> 00:07:11.550
+ 
+
+
+00:07:11.790 --> 00:07:14.280
+ 
+
+
+00:07:14.280 --> 00:07:18.330
+ 
+
+
+00:07:18.330 --> 00:07:23.220
+ 
+
+
+00:07:23.220 --> 00:07:26.550
+ 
+
+
+00:07:26.550 --> 00:07:30.060
+ 
+
+
+00:07:30.060 --> 00:07:33.480
+ 
+
+
+00:07:33.480 --> 00:07:37.050
+ 
+
+
+00:07:37.050 --> 00:07:39.990
+ 
+
+
+00:07:39.990 --> 00:07:43.560
+ 
+
+
+00:07:43.560 --> 00:07:46.620
+ 
+
+
+00:07:46.620 --> 00:07:49.950
+ 
+
+
+00:07:49.980 --> 00:07:52.890
+ 
+
+
+00:07:52.890 --> 00:07:58.050
+ 
+
+
+00:07:58.110 --> 00:08:02.220
+ 
+
+
+00:08:02.220 --> 00:08:05.580
+ 
+
+
+00:08:05.580 --> 00:08:09.600
+ 
+
+
+00:08:09.960 --> 00:08:14.610
+ 
+
+
+00:08:14.610 --> 00:08:18.750
+ 
+
+
+00:08:18.750 --> 00:08:22.140
+ 
+
+
+00:08:22.140 --> 00:08:25.260
+ 
+
+
+00:08:25.260 --> 00:08:28.110
+ 
+
+
+00:08:28.110 --> 00:08:30.660
+ 
+
+
+00:08:30.660 --> 00:08:35.070
+ 
+
+
+00:08:35.580 --> 00:08:38.790
+ 
+
+
+00:08:38.790 --> 00:08:41.250
+ 
+
+
+00:08:41.250 --> 00:08:43.380
+ 
+
+
+00:08:45.150 --> 00:08:48.210
+ 
+
+
+00:08:48.210 --> 00:08:53.550
+ 
+
+
+00:08:53.700 --> 00:08:57.030
+ 
+
+
+00:08:57.030 --> 00:09:01.650
+ 
+
+
+00:09:01.680 --> 00:09:05.400
+ 
+
+
+00:09:05.400 --> 00:09:09.570
+ 
+
+
+00:09:09.570 --> 00:09:14.310
+ 
+
+
+00:09:14.310 --> 00:09:17.970
+ 
+
+
+00:09:17.970 --> 00:09:21.510
+ 
+
+
+00:09:21.780 --> 00:09:25.380
+ 
+
+
+00:09:25.380 --> 00:09:28.770
+ 
+
+
+00:09:28.770 --> 00:09:33.420
+ 
+
+
+00:09:33.420 --> 00:09:36.000
+ 
+
+
+00:09:36.450 --> 00:09:40.800
+ 
+
+
+00:09:40.800 --> 00:09:45.780
+ 
+
+
+00:09:45.810 --> 00:09:50.280
+ 
+
+
+00:09:50.280 --> 00:09:55.710
+ 
+
+
+00:09:55.740 --> 00:09:58.350
+ 
+
+
+00:09:58.350 --> 00:10:01.650
+ 
+
+
+00:10:01.650 --> 00:10:04.860
+ 
+
+
+00:10:04.860 --> 00:10:08.850
+ 
+
+
+00:10:08.850 --> 00:10:12.810
+ 
+
+
+00:10:12.810 --> 00:10:15.750
+ 
+
+
+00:10:15.750 --> 00:10:21.540
+ 
+
+
+00:10:21.540 --> 00:10:26.430
+ 
+
+
+00:10:26.430 --> 00:10:29.730
+ 
+
+
+00:10:29.730 --> 00:10:33.420
+ 
+
+
+00:10:33.420 --> 00:10:37.890
+ 
+
+
+00:10:37.920 --> 00:10:42.990
+ 
+
+
+00:10:42.990 --> 00:10:46.110
+ 
+
+
+00:10:46.110 --> 00:10:50.040
+ 
+
+
+00:10:50.070 --> 00:10:52.260
+ 
+
+
+00:10:52.260 --> 00:10:56.070
+ 
+
+
+00:10:56.070 --> 00:11:01.620
+ 
+
+
+00:11:01.920 --> 00:11:05.430
+ 
+
+
+00:11:05.430 --> 00:11:09.300
+ 
+
+
+00:11:09.300 --> 00:11:12.450
+ 
+
+
+00:11:12.450 --> 00:11:16.680
+ 
+
+
+00:11:16.710 --> 00:11:19.560
+ 
+
+
+00:11:19.770 --> 00:11:24.900
+ 
+
+
+00:11:24.900 --> 00:11:28.140
+ 
+
+
+00:11:28.140 --> 00:11:33.030
+ 
+
+
+00:11:33.030 --> 00:11:36.900
+ 
+
+
+00:11:36.900 --> 00:11:40.860
+ 
+
+
+00:11:40.860 --> 00:11:45.030
+ 
+
+
+00:11:45.060 --> 00:11:48.450
+ 
+
+
+00:11:48.450 --> 00:11:51.660
+ 
+
+
+00:11:51.660 --> 00:11:54.930
+ 
+
+
+00:11:54.960 --> 00:12:00.300
+ 
+
+
+00:12:00.300 --> 00:12:03.630
+ 
+
+
+00:12:03.630 --> 00:12:07.260
+ 
+
+
+00:12:07.500 --> 00:12:09.930
+ 
+
+
+00:12:09.930 --> 00:12:13.410
+ 
+
+
+00:12:13.410 --> 00:12:17.430
+ 
+
+
+00:12:17.430 --> 00:12:20.370
+ 
+
+
+00:12:20.370 --> 00:12:24.150
+ 
+
+
+00:12:24.840 --> 00:12:27.960
+ 
+
+
+00:12:27.960 --> 00:12:32.580
+ 
+
+
+00:12:32.580 --> 00:12:35.490
+ 
+
+
+00:12:35.490 --> 00:12:39.480
+ 
+
+
+00:12:39.510 --> 00:12:43.350
+ 
+
+
+00:12:43.350 --> 00:12:45.720
+ 
+
+
+00:12:45.720 --> 00:12:50.490
+ 
+
+
+00:12:50.490 --> 00:12:54.600
+ 
+
+
+00:12:54.600 --> 00:13:00.000
+ 
+
+
+00:13:00.000 --> 00:13:03.750
+ 
+
+
+00:13:03.750 --> 00:13:06.900
+ 
+
+
+00:13:06.930 --> 00:13:10.080
+ 
+
+
+00:13:10.080 --> 00:13:12.780
+ 
+
+
+00:13:12.780 --> 00:13:17.040
+ 
+
+
+00:13:17.040 --> 00:13:21.240
+ 
+
+
+00:13:22.860 --> 00:13:25.770
+ 
+
+
+00:13:25.770 --> 00:13:29.490
+ 
+
+
+00:13:29.490 --> 00:13:32.100
+ 
+
+
+00:13:32.100 --> 00:13:35.670
+ 
+
+
+00:13:35.670 --> 00:13:39.990
+ 
+
+
+00:13:39.990 --> 00:13:43.080
+ 
+
+
+00:13:43.080 --> 00:13:47.130
+ 
+
+
+00:13:47.130 --> 00:13:50.460
+ 
+
+
+00:13:50.460 --> 00:13:55.110
+ 
+
+
+00:13:55.110 --> 00:14:00.150
+ 
+
+
+00:14:00.150 --> 00:14:03.360
+ 
+
+
+00:14:03.360 --> 00:14:07.440
+ 
+
+
+00:14:07.440 --> 00:14:11.310
+ 
+
+
+00:14:11.310 --> 00:14:15.840
+ 
+
+
+00:14:15.840 --> 00:14:20.790
+ 
+
+
+00:14:20.790 --> 00:14:26.190
+ 
+
+
+00:14:26.190 --> 00:14:29.010
+ 
+
+
+00:14:29.010 --> 00:14:32.850
+ 
+
+
+00:14:32.850 --> 00:14:36.180
+ 
+
+
+00:14:36.210 --> 00:14:39.690
+ 
+
+
+00:14:39.690 --> 00:14:42.630
+ 
+
+
+00:14:42.630 --> 00:14:46.110
+ 
+
+
+00:14:46.110 --> 00:14:49.830
+ 
+
+
+00:14:49.830 --> 00:14:55.110
+ 
+
+
+00:14:55.110 --> 00:14:58.410
+ 
+
+
+00:14:58.410 --> 00:15:01.110
+ 
+
+
+00:15:01.110 --> 00:15:03.750
+ 
+
+
+00:15:03.750 --> 00:15:08.400
+ 
+
+
+00:15:08.400 --> 00:15:11.760
+ 
+
+
+00:15:12.240 --> 00:15:15.360
+ 
+
+
+00:15:15.360 --> 00:15:19.200
+ 
+
+
+00:15:19.200 --> 00:15:22.350
+ 
+
+
+00:15:22.350 --> 00:15:27.000
+ 
+
+
+00:15:27.000 --> 00:15:32.010
+ 
+
+
+00:15:32.010 --> 00:15:36.360
+ 
+
+
+00:15:36.360 --> 00:15:38.550
+ 
+
+
+00:15:38.550 --> 00:15:42.540
+ 
+
+
+00:15:42.540 --> 00:15:45.960
+ 
+
+
+00:15:45.960 --> 00:15:49.290
+ 
+
+
+00:15:49.290 --> 00:15:54.330
+ 
+
+
+00:15:54.330 --> 00:15:57.840
+ 
+
+
+00:15:57.840 --> 00:16:01.620
+ 
+
+
+00:16:01.620 --> 00:16:06.270
+ 
+
+
+00:16:06.270 --> 00:16:09.840
+ 
+
+
+00:16:09.840 --> 00:16:13.200
+ 
+
+
+00:16:13.980 --> 00:16:17.550
+ 
+
+
+00:16:17.550 --> 00:16:20.460
+ 
+
+
+00:16:20.460 --> 00:16:23.400
+ 
+
+
+00:16:23.400 --> 00:16:27.570
+ 
+
+
+00:16:27.960 --> 00:16:30.990
+ 
+
+
+00:16:30.990 --> 00:16:34.770
+ 
+
+
+00:16:34.770 --> 00:16:37.950
+ 
+
+
+00:16:37.950 --> 00:16:41.700
+ 
+
+
+00:16:41.700 --> 00:16:45.600
+ 
+
+
+00:16:45.600 --> 00:16:49.200
+ 
+
+
+00:16:49.860 --> 00:16:53.490
+ 
+
+
+00:16:53.580 --> 00:16:57.660
+ 
+
+
+00:16:58.080 --> 00:17:01.650
+ 
+
+
+00:17:01.650 --> 00:17:05.400
+ 
+
+
+00:17:05.400 --> 00:17:09.000
+ 
+
+
+00:17:09.000 --> 00:17:11.130
+ 
+
+
+00:17:11.130 --> 00:17:16.050
+ 
+
+
+00:17:16.050 --> 00:17:20.070
+ 
+
+
+00:17:20.070 --> 00:17:23.340
+ 
+
+
+00:17:23.340 --> 00:17:27.570
+ 
+
+
+00:17:27.570 --> 00:17:31.170
+ 
+
+
+00:17:31.170 --> 00:17:34.170
+ 
+
+
+00:17:34.170 --> 00:17:38.970
+ 
+
+
+00:17:38.970 --> 00:17:45.480
+ 
+
+
+00:17:45.480 --> 00:17:49.470
+ 
+
+
+00:17:49.470 --> 00:17:55.230
+ 
+
+
+00:17:55.230 --> 00:17:58.500
+ 
+
+
+00:17:58.500 --> 00:18:02.520
+ 
+
+
+00:18:02.520 --> 00:18:05.070
+ 
+
+
+00:18:05.070 --> 00:18:07.740
+ 
+
+
+00:18:09.180 --> 00:18:12.930
+ 
+
+
+00:18:12.960 --> 00:18:17.520
+ 
+
+
+00:18:17.520 --> 00:18:20.280
+ 
+
+
+00:18:20.280 --> 00:18:24.720
+ 
+
+
+00:18:24.720 --> 00:18:27.990
+ 
+
+
+00:18:27.990 --> 00:18:31.260
+ 
+
+
+00:18:31.380 --> 00:18:34.890
+ 
+
+
+00:18:34.890 --> 00:18:37.710
+ 
+
+
+00:18:37.710 --> 00:18:41.940
+ 
+
+
+00:18:41.940 --> 00:18:44.880
+ 
+
+
+00:18:44.910 --> 00:18:50.850
+ 
+
+
+00:18:50.850 --> 00:18:54.630
+ 
+
+
+00:18:54.660 --> 00:18:58.800
+ 
+
+
+00:18:58.800 --> 00:19:03.330
+ 
+
+
+00:19:03.480 --> 00:19:06.960
+ 
+
+
+00:19:06.990 --> 00:19:10.770
+ 
+
+
+00:19:10.770 --> 00:19:14.760
+ 
+
+
+00:19:14.790 --> 00:19:17.760
+ 
+
+
+00:19:17.760 --> 00:19:21.420
+ 
+
+
+00:19:21.420 --> 00:19:26.100
+ 
+
+
+00:19:26.160 --> 00:19:31.110
+ 
+
+
+00:19:31.110 --> 00:19:35.040
+ 
+
+
+00:19:35.040 --> 00:19:37.950
+ 
+
+
+00:19:37.950 --> 00:19:42.060
+ 
+
+
+00:19:42.060 --> 00:19:44.610
+ 
+
+
+00:19:44.910 --> 00:19:48.180
+ 
+
+
+00:19:48.180 --> 00:19:50.700
+ 
+
+
+00:19:50.700 --> 00:19:55.860
+ 
+
+
+00:19:55.860 --> 00:20:00.090
+ 
+
+
+00:20:00.090 --> 00:20:03.270
+ 
+
+
+00:20:03.270 --> 00:20:06.180
+ 
+
+
+00:20:06.630 --> 00:20:11.730
+ 
+
+
+00:20:12.660 --> 00:20:15.270
+ 
+
+
+00:20:15.270 --> 00:20:20.100
+ 
+
+
+00:20:20.100 --> 00:20:23.700
+ 
+
+
+00:20:23.730 --> 00:20:26.100
+ 
+
+
+00:20:26.100 --> 00:20:28.440
+ 
+
+
+00:20:28.920 --> 00:20:32.100
+ 
+
+
+00:20:32.100 --> 00:20:36.060
+ 
+
+
+00:20:36.060 --> 00:20:39.690
+ 
+
+
+00:20:39.690 --> 00:20:44.280
+ 
+
+
+00:20:44.280 --> 00:20:49.230
+ 
+
+
+00:20:49.260 --> 00:20:52.830
+ 
+
+
+00:20:52.830 --> 00:20:55.890
+ 
+
+
+00:20:55.890 --> 00:21:01.080
+ 
+
+
+00:21:01.080 --> 00:21:05.010
+ 
+
+
+00:21:05.010 --> 00:21:09.090
+ 
+
+
+00:21:09.360 --> 00:21:12.990
+ 
+
+
+00:21:12.990 --> 00:21:15.180
+ 
+
+
+00:21:15.180 --> 00:21:18.210
+ 
+
+
+00:21:18.210 --> 00:21:20.250
+ 
+
+
+00:21:20.250 --> 00:21:24.420
+ 
+
+
+00:21:24.420 --> 00:21:28.680
+ 
+
+
+00:21:28.680 --> 00:21:32.520
+ 
+
+
+00:21:32.610 --> 00:21:37.380
+ 
+
+
+00:21:37.380 --> 00:21:40.380
+ 
+
+
+00:21:40.380 --> 00:21:42.870
+ 
+
+
+00:21:42.870 --> 00:21:46.260
+ 
+
+
+00:21:46.260 --> 00:21:52.260
+ 
+
+
+00:21:52.740 --> 00:21:56.400
+ 
+
+
+00:21:56.400 --> 00:21:59.610
+ 
+
+
+00:21:59.610 --> 00:22:03.720
+ 
+
+
+00:22:04.020 --> 00:22:06.390
+ 
+
+
+00:22:06.390 --> 00:22:10.920
+ 
+
+
+00:22:10.920 --> 00:22:14.520
+ 
+
+
+00:22:14.520 --> 00:22:18.570
+ 
+
+
+00:22:18.570 --> 00:22:23.010
+ 
+
+
+00:22:23.010 --> 00:22:25.860
+ 
+
+
+00:22:26.670 --> 00:22:32.220
+ 
+
+
+00:22:32.220 --> 00:22:34.830
+ 
+
+
+00:22:34.830 --> 00:22:38.400
+ 
+
+
+00:22:38.400 --> 00:22:41.850
+ 
+
+
+00:22:42.330 --> 00:22:45.840
+ 
+
+
+00:22:45.840 --> 00:22:49.200
+ 
+
+
+00:22:49.200 --> 00:22:53.130
+ 
+
+
+00:22:53.130 --> 00:22:55.920
+ 
+
+
+00:22:55.920 --> 00:23:01.830
+ 
+
+
+00:23:01.860 --> 00:23:05.130
+ 
+
+
+00:23:05.130 --> 00:23:08.130
+ 
+
+
+00:23:08.130 --> 00:23:11.160
+ 
+
+
+00:23:11.160 --> 00:23:16.290
+ 
+
+
+00:23:16.290 --> 00:23:20.640
+ 
+
+
+00:23:20.640 --> 00:23:25.350
+ 
+
+
+00:23:25.350 --> 00:23:29.370
+ 
+
+
+00:23:29.370 --> 00:23:35.430
+ 
+
+
+00:23:35.430 --> 00:23:39.390
+ 
+
+
+00:23:39.390 --> 00:23:44.160
+ 
+
+
+00:23:44.160 --> 00:23:48.360
+ 
+
+
+00:23:48.990 --> 00:23:52.620
+ 
+
+
+00:23:52.620 --> 00:23:58.110
+ 
+
+
+00:23:58.110 --> 00:24:03.150
+ 
+
+
+00:24:03.600 --> 00:24:06.750
+ 
+
+
+00:24:06.750 --> 00:24:10.620
+ 
+
+
+00:24:10.620 --> 00:24:14.010
+ 
+
+
+00:24:14.010 --> 00:24:18.240
+ 
+
+
+00:24:18.660 --> 00:24:21.210
+ 
+
+
+00:24:21.210 --> 00:24:24.660
+ 
+
+
+00:24:24.660 --> 00:24:29.430
+ 
+
+
+00:24:29.760 --> 00:24:34.500
+ 
+
+
+00:24:34.560 --> 00:24:38.370
+ 
+
+
+00:24:38.400 --> 00:24:41.730
+ 
+
+
+00:24:41.730 --> 00:24:44.970
+ 
+
+
+00:24:44.970 --> 00:24:50.010
+ 
+
+
+00:24:50.010 --> 00:24:56.100
+ 
+
+
+00:24:56.100 --> 00:24:59.220
+ 
+
+
+00:24:59.220 --> 00:25:03.810
+ 
+
+
+00:25:03.810 --> 00:25:09.870
+ 
+
+
+00:25:09.870 --> 00:25:12.990
+ 
+
+
+00:25:12.990 --> 00:25:17.190
+ 
+
+
+00:25:17.190 --> 00:25:20.040
+ 
+
+
+00:25:20.040 --> 00:25:23.130
+ 
+
+
+00:25:23.160 --> 00:25:27.900
+ 
+
+
+00:25:27.900 --> 00:25:32.760
+ 
+
+
+00:25:32.760 --> 00:25:36.570
+ 
+
+
+00:25:36.570 --> 00:25:39.960
+ 
+
+
+00:25:39.960 --> 00:25:45.720
+ 
+
+
+00:25:45.720 --> 00:25:50.880
+ 
+
+
+00:25:50.880 --> 00:25:54.030
+ 
+
+
+00:25:54.030 --> 00:25:56.880
+ 
+
+
+00:25:56.880 --> 00:25:59.190
+ 
+
+
+00:25:59.190 --> 00:26:02.790
+ 
+
+
+00:26:02.790 --> 00:26:05.520
+ 
+
+
+00:26:05.520 --> 00:26:08.820
+ 
+
+
+00:26:08.820 --> 00:26:13.770
+ 
+
+
+00:26:13.860 --> 00:26:18.750
+ 
+
+
+00:26:18.750 --> 00:26:22.860
+ 
+
+
+00:26:22.860 --> 00:26:28.560
+ 
+
+
+00:26:28.620 --> 00:26:32.430
+ 
+
+
+00:26:32.460 --> 00:26:39.300
+ 
+
+
+00:26:39.300 --> 00:26:41.220
+ 
+
+
+00:26:41.220 --> 00:26:47.940
+ 
+
+
+00:26:47.940 --> 00:26:51.810
+ 
+
+
+00:26:51.810 --> 00:26:55.980
+ 
+
+
+00:26:55.980 --> 00:26:59.460
+ 
+
+
+00:26:59.490 --> 00:27:04.110
+ 
+
+
+00:27:04.110 --> 00:27:08.040
+ 
+
+
+00:27:08.070 --> 00:27:11.160
+ 
+
+
+00:27:11.550 --> 00:27:14.940
+ 
+
+
+00:27:14.940 --> 00:27:19.440
+ 
+
+
+00:27:19.440 --> 00:27:22.620
+ 
+
+
+00:27:22.620 --> 00:27:25.680
+ 
+
+
+00:27:25.680 --> 00:27:29.700
+ 
+
+
+00:27:29.700 --> 00:27:33.750
+ 
+
+
+00:27:33.750 --> 00:27:34.650
+
+
+00:27:36.030 --> 00:27:38.610
+ 
+
+
+00:27:38.610 --> 00:27:42.360
+ 
+
+
+00:27:42.450 --> 00:27:46.860
+ 
+
+
+00:27:46.860 --> 00:27:51.510
+ 
+
+
+00:27:51.510 --> 00:27:54.960
+ 
+
+
+00:27:54.960 --> 00:27:59.130
+ 
+
+
+00:27:59.130 --> 00:28:03.060
+ 
+
+
+00:28:03.060 --> 00:28:07.380
+ 
+
+
+00:28:07.380 --> 00:28:11.940
+ 
+
+
+00:28:11.970 --> 00:28:15.570
+ 
+
+
+00:28:15.570 --> 00:28:19.470
+ 
+
+
+00:28:19.470 --> 00:28:22.770
+ 
+
+
+00:28:22.770 --> 00:28:24.570
+ 
+
+
+00:28:24.570 --> 00:28:26.640
+ 
+
+
+00:28:26.640 --> 00:28:31.380
+ 
+
+
+00:28:31.380 --> 00:28:35.250
+ 
+
+
+00:28:35.250 --> 00:28:41.430
+ 
+
+
+00:28:41.460 --> 00:28:44.670
+ 
+
+
+00:28:44.670 --> 00:28:47.280
+ 
+
+
+00:28:47.280 --> 00:28:51.180
+ 
+
+
+00:28:51.180 --> 00:28:54.270
+ 
+
+
+00:28:54.270 --> 00:28:59.910
+ 
+
+
+00:29:00.300 --> 00:29:04.920
+ 
+
+
+00:29:04.920 --> 00:29:08.310
+ 
+
+
+00:29:08.310 --> 00:29:14.070
+ 
+
+
+00:29:14.070 --> 00:29:17.520
+ 
+
+
+00:29:17.520 --> 00:29:20.460
+ 
+
+
+00:29:20.460 --> 00:29:27.540
+ 
+
+
+00:29:27.540 --> 00:29:29.670
+ 
+
+
+00:29:29.670 --> 00:29:34.740
+ 
+
+
+00:29:34.740 --> 00:29:39.270
+ 
+
+
+00:29:39.270 --> 00:29:42.420
+ 
+
+
+00:29:42.420 --> 00:29:47.730
+ 
+
+
+00:29:47.730 --> 00:29:52.350
+ 
+
+
+00:29:52.350 --> 00:29:56.850
+ 
+
+
+00:29:56.850 --> 00:30:02.160
+ 
+
+
+00:30:02.160 --> 00:30:05.730
+ 
+
+
+00:30:05.730 --> 00:30:08.310
+ 
+
+
+00:30:08.310 --> 00:30:11.880
+ 
+
+
+00:30:11.880 --> 00:30:13.800
+ 
+
+
+00:30:13.800 --> 00:30:16.620
+ 
+
+
+00:30:16.890 --> 00:30:21.030
+ 
+
+
+00:30:21.480 --> 00:30:24.720
+ 
+
+
+00:30:24.720 --> 00:30:26.310
+
+
+00:30:26.490 --> 00:30:32.520
+ 
+
+
+00:30:32.520 --> 00:30:37.200
+ 
+
+
+00:30:37.200 --> 00:30:42.180
+ 
+
+
+00:30:42.180 --> 00:30:43.470
+
+
+00:30:43.500 --> 00:30:46.470
+ 
+
+
+00:30:46.470 --> 00:30:51.840
+ 
+
+
+00:30:51.840 --> 00:30:55.980
+ 
+
+
+00:30:55.980 --> 00:30:59.310
+ 
+
+
+00:30:59.310 --> 00:31:04.680
+ 
+
+
+00:31:04.680 --> 00:31:08.010
+ 
+
+
+00:31:08.010 --> 00:31:11.850
+ 
+
+
+00:31:11.850 --> 00:31:16.920
+ 
+
+
+00:31:16.920 --> 00:31:18.840
+ 
+
+
+00:31:18.840 --> 00:31:22.290
+ 
+
+
+00:31:22.290 --> 00:31:26.310
+ 
+
+
+00:31:26.310 --> 00:31:29.760
+ 
+
+
+00:31:29.760 --> 00:31:33.660
+ 
+
+
+00:31:33.660 --> 00:31:37.530
+ 
+
+
+00:31:37.590 --> 00:31:41.670
+ 
+
+
+00:31:41.670 --> 00:31:46.740
+ 
+
+
+00:31:46.740 --> 00:31:52.170
+ 
+
+
+00:31:52.290 --> 00:31:55.050
+ 
+
+
+00:31:55.050 --> 00:31:57.270
+ 
+
+
+00:31:57.270 --> 00:32:01.830
+ 
+
+
+00:32:01.830 --> 00:32:06.810
+ 
+
+
+00:32:06.930 --> 00:32:10.290
+ 
+
+
+00:32:10.290 --> 00:32:15.060
+ 
+
+
+00:32:15.060 --> 00:32:18.870
+ 
+
+
+00:32:18.930 --> 00:32:23.040
+ 
+
+
+00:32:23.220 --> 00:32:26.430
+ 
+
+
+00:32:26.430 --> 00:32:27.600
+
+
+00:32:28.259 --> 00:32:30.599
+ 
+
+
+00:32:30.629 --> 00:32:34.229
+ 
+
+
+00:32:34.229 --> 00:32:37.619
+ 
+
+
+00:32:37.619 --> 00:32:41.429
+ 
+
+
+00:32:41.429 --> 00:32:41.609
+
+
+00:32:41.610 --> 00:32:44.700
+ 
+
+
+00:32:44.700 --> 00:32:49.680
+ 
+
+
+00:32:49.680 --> 00:32:53.550
+ 
+
+
+00:32:53.550 --> 00:32:57.570
+ 
+
+
+00:32:57.810 --> 00:33:01.560
+ 
+
+
+00:33:01.920 --> 00:33:04.470
+ 
+
+
+00:33:04.470 --> 00:33:10.320
+ 
+
+
+00:33:10.320 --> 00:33:13.800
+ 
+
+
+00:33:13.800 --> 00:33:17.370
+ 
+
+
+00:33:17.370 --> 00:33:22.350
+ 
+
+
+00:33:22.350 --> 00:33:25.500
+ 
+
+
+00:33:25.500 --> 00:33:28.950
+ 
+
+
+00:33:28.950 --> 00:33:31.650
+ 
+
+
+00:33:31.650 --> 00:33:34.650
+ 
+
+
+00:33:34.650 --> 00:33:38.250
+ 
+
+
+00:33:38.310 --> 00:33:43.560
+ 
+
+
+00:33:43.920 --> 00:33:47.850
+ 
+
+
+00:33:47.850 --> 00:33:51.900
+ 
+
+
+00:33:52.500 --> 00:33:57.810
+ 
+
+
+00:33:57.840 --> 00:34:02.310
+ 
+
+
+00:34:02.310 --> 00:34:05.850
+ 
+
+
+00:34:05.850 --> 00:34:08.580
+ 
+
+
+00:34:09.570 --> 00:34:13.560
+ 
+
+
+00:34:13.560 --> 00:34:17.460
+ 
+
+
+00:34:17.460 --> 00:34:21.600
+ 
+
+
+00:34:21.600 --> 00:34:24.900
+ 
+
+
+00:34:24.900 --> 00:34:29.730
+ 
+
+
+00:34:29.730 --> 00:34:33.720
+ 
+
+
+00:34:33.720 --> 00:34:36.660
+ 
+
+
+00:34:36.660 --> 00:34:39.810
+ 
+
+
+00:34:39.810 --> 00:34:43.650
+ 
+
+
+00:34:43.650 --> 00:34:45.960
+ 
+
+
+00:34:45.960 --> 00:34:49.560
+ 
+
+
+00:34:49.560 --> 00:34:53.910
+ 
+
+
+00:34:53.910 --> 00:34:56.730
+ 
+
+
+00:34:56.730 --> 00:35:00.660
+ 
+
+
+00:35:00.660 --> 00:35:05.130
+ 
+
+
+00:35:05.130 --> 00:35:07.920
+ 
+
+
+00:35:07.920 --> 00:35:10.650
+ 
+
+
+00:35:10.650 --> 00:35:16.440
+ 
+
+
+00:35:16.440 --> 00:35:19.230
+ 
+
+
+00:35:19.230 --> 00:35:22.950
+ 
+
+
+00:35:23.220 --> 00:35:26.550
+ 
+
+
+00:35:26.550 --> 00:35:29.310
+ 
+
+
+00:35:29.310 --> 00:35:32.790
+ 
+
+
+00:35:33.210 --> 00:35:38.010
+ 
+
+
+00:35:38.010 --> 00:35:42.030
+ 
+
+
+00:35:42.030 --> 00:35:45.720
+ 
+
+
+00:35:45.720 --> 00:35:48.450
+ 
+
+
+00:35:48.450 --> 00:35:51.390
+ 
+
+
+00:35:51.390 --> 00:35:54.240
+ 
+
+
+00:35:54.240 --> 00:35:58.440
+ 
+
+
+00:35:58.440 --> 00:36:02.790
+ 
+
+
+00:36:02.790 --> 00:36:06.810
+ 
+
+
+00:36:06.810 --> 00:36:12.870
+ 
+
+
+00:36:12.870 --> 00:36:17.340
+ 
+
+
+00:36:17.340 --> 00:36:20.190
+ 
+
+
+00:36:20.190 --> 00:36:22.620
+ 
+
+
+00:36:23.370 --> 00:36:27.390
+ 
+
+
+00:36:27.390 --> 00:36:31.380
+ 
+
+
+00:36:31.380 --> 00:36:35.250
+ 
+
+
+00:36:35.250 --> 00:36:40.140
+ 
+
+
+00:36:40.140 --> 00:36:44.220
+ 
+
+
+00:36:44.220 --> 00:36:47.430
+ 
+
+
+00:36:47.430 --> 00:36:50.790
+ 
+
+
+00:36:50.850 --> 00:36:57.060
+ 
+
+
+00:36:57.060 --> 00:36:59.640
+ 
+
+
+00:36:59.640 --> 00:37:03.990
+ 
+
+
+00:37:04.440 --> 00:37:07.800
+ 
+
+
+00:37:07.800 --> 00:37:10.380
+ 
+
+
+00:37:10.380 --> 00:37:14.400
+ 
+
+
+00:37:14.400 --> 00:37:18.570
+ 
+
+
+00:37:18.570 --> 00:37:20.970
+ 
+
+
+00:37:20.970 --> 00:37:26.010
+ 
+
+
+00:37:26.010 --> 00:37:29.760
+ 
+
+
+00:37:29.760 --> 00:37:33.840
+ 
+
+
+00:37:33.840 --> 00:37:36.330
+ 
+
+
+00:37:36.330 --> 00:37:40.860
+ 
+
+
+00:37:40.860 --> 00:37:47.100
+ 
+
+
+00:37:47.100 --> 00:37:49.440
+ 
+
+
+00:37:49.440 --> 00:37:55.020
+ 
+
+
+00:37:55.710 --> 00:37:58.710
+ 
+
+
+00:37:58.710 --> 00:38:02.550
+ 
+
+
+00:38:02.550 --> 00:38:07.350
+ 
+
+
+00:38:07.350 --> 00:38:10.320
+ 
+
+
+00:38:10.320 --> 00:38:15.840
+ 
+
+
+00:38:15.840 --> 00:38:20.130
+ 
+
+
+00:38:21.810 --> 00:38:25.200
+ 
+
+
+00:38:25.200 --> 00:38:31.050
+ 
+
+
+00:38:31.380 --> 00:38:34.050
+ 
+
+
+00:38:34.050 --> 00:38:37.020
+ 
+
+
+00:38:37.020 --> 00:38:39.510
+ 
+
+
+00:38:39.510 --> 00:38:43.800
+ 
+
+
+00:38:43.830 --> 00:38:48.180
+ 
+
+
+00:38:48.180 --> 00:38:52.290
+ 
+
+
+00:38:52.560 --> 00:38:57.270
+ 
+
+
+00:38:57.270 --> 00:39:01.170
+ 
+
+
+00:39:01.170 --> 00:39:04.230
+ 
+
+
+00:39:04.230 --> 00:39:09.600
+ 
+
+
+00:39:09.630 --> 00:39:15.450
+ 
+
+
+00:39:15.450 --> 00:39:19.110
+ 
+
+
+00:39:19.590 --> 00:39:22.050
+ 
+
+
+00:39:22.050 --> 00:39:25.320
+ 
+
+
+00:39:25.320 --> 00:39:29.130
+ 
+
+
+00:39:29.130 --> 00:39:31.890
+ 
+
+
+00:39:31.890 --> 00:39:37.680
+ 
+
+
+00:39:37.710 --> 00:39:43.020
+ 
+
+
+00:39:43.050 --> 00:39:46.530
+ 
+
+
+00:39:46.530 --> 00:39:50.040
+ 
+
+
+00:39:50.040 --> 00:39:54.810
+ 
+
+
+00:39:54.810 --> 00:39:58.980
+ 
+
+
+00:39:58.980 --> 00:40:05.160
+ 
+
+
+00:40:05.160 --> 00:40:08.130
+ 
+
+
+00:40:08.130 --> 00:40:13.320
+ 
+
+
+00:40:13.320 --> 00:40:16.410
+ 
+
+
+00:40:16.410 --> 00:40:21.570
+ 
+
+
+00:40:21.570 --> 00:40:25.110
+ 
+
+
+00:40:25.110 --> 00:40:28.650
+ 
+
+
+00:40:28.650 --> 00:40:32.610
+ 
+
+
+00:40:32.610 --> 00:40:38.010
+ 
+
+
+00:40:38.010 --> 00:40:41.040
+ 
+
+
+00:40:41.040 --> 00:40:44.940
+ 
+
+
+00:40:44.940 --> 00:40:49.860
+ 
+
+
+00:40:49.860 --> 00:40:52.500
+ 
+
+
+00:40:52.500 --> 00:40:59.730
+ 
+
+
+00:40:59.730 --> 00:41:02.520
+ 
+
+
+00:41:02.520 --> 00:41:08.040
+ 
+
+
+00:41:08.040 --> 00:41:12.090
+ 
+
+
+00:41:12.690 --> 00:41:16.890
+ 
+
+
+00:41:16.890 --> 00:41:22.890
+ 
+
+
+00:41:22.890 --> 00:41:26.910
+ 
+
+
+00:41:26.910 --> 00:41:30.450
+ 
+
+
+00:41:30.450 --> 00:41:35.220
+ 
+
+
+00:41:35.220 --> 00:41:37.950
+ 
+
+
+00:41:37.950 --> 00:41:41.190
+ 
+
+
+00:41:41.250 --> 00:41:48.300
+ 
+
+
+00:41:48.300 --> 00:41:50.820
+ 
+
+
+00:41:50.820 --> 00:41:54.750
+ 
+
+
+00:41:54.750 --> 00:41:58.260
+ 
+
+
+00:41:58.260 --> 00:42:02.130
+ 
+
+
+00:42:02.130 --> 00:42:04.500
+ 
+
+
+00:42:04.500 --> 00:42:07.320
+ 
+
+
+00:42:07.320 --> 00:42:10.530
+ 
+
+
+00:42:10.530 --> 00:42:15.570
+ 
+
+
+00:42:15.840 --> 00:42:19.710
+ 
+
+
+00:42:19.710 --> 00:42:22.320
+ 
+
+
+00:42:22.320 --> 00:42:25.980
+ 
+
+
+00:42:25.980 --> 00:42:29.040
+ 
+
+
+00:42:29.040 --> 00:42:33.630
+ 
+
+
+00:42:33.630 --> 00:42:35.850
+
+
+00:42:37.650 --> 00:42:40.440
+ 
+
+
+00:42:40.470 --> 00:42:44.520
+ 
+
+
+00:42:44.610 --> 00:42:47.010
+ 
+
+
+00:42:47.010 --> 00:42:51.960
+ 
+
+
+00:42:51.960 --> 00:42:54.480
+ 
+
+
+00:42:54.480 --> 00:42:58.260
+ 
+
+
+00:42:58.260 --> 00:43:03.450
+ 
+
+
+00:43:03.450 --> 00:43:07.890
+ 
+
+
+00:43:07.890 --> 00:43:10.140
+ 
+
+
+00:43:10.140 --> 00:43:13.230
+ 
+
+
+00:43:13.230 --> 00:43:17.220
+ 
+
+
+00:43:17.220 --> 00:43:22.140
+ 
+
+
+00:43:22.140 --> 00:43:25.710
+ 
+
+
+00:43:25.710 --> 00:43:29.430
+ 
+
+
+00:43:29.430 --> 00:43:33.030
+ 
+
+
+00:43:33.480 --> 00:43:38.460
+ 
+
+
+00:43:39.060 --> 00:43:41.430
+ 
+
+
+00:43:41.430 --> 00:43:43.500
+ 
+
+
+00:43:43.500 --> 00:43:47.220
+ 
+
+
+00:43:47.220 --> 00:43:50.730
+ 
+
+
+00:43:50.730 --> 00:43:54.360
+ 
+
+
+00:43:54.360 --> 00:43:57.600
+ 
+
+
+00:43:57.600 --> 00:44:00.480
+ 
+
+
+00:44:00.480 --> 00:44:05.280
+ 
+
+
+00:44:05.280 --> 00:44:08.940
+ 
+
+
+00:44:08.940 --> 00:44:18.480
+ 
+
+
+00:44:18.480 --> 00:44:24.510
+ 
+
+
+00:44:24.510 --> 00:44:30.600
+ 
+
+
+00:44:30.810 --> 00:44:38.430
+ 
+
+
+00:44:38.610 --> 00:44:40.830
+ 
+
+
+00:44:40.830 --> 00:44:45.390
+ 
+
+
+00:44:45.810 --> 00:44:50.220
+ 
+
+
+00:44:50.220 --> 00:44:55.350
+ 
+
+
+00:44:55.350 --> 00:44:59.160
+ 
+
+
+00:44:59.160 --> 00:45:01.440
+ 
+
+
+00:45:01.440 --> 00:45:04.560
+ 
+
+
+00:45:04.560 --> 00:45:08.610
+ 
+
+
+00:45:08.610 --> 00:45:10.920
+ 
+
+
+00:45:10.920 --> 00:45:14.850
+ 
+
+
+00:45:14.850 --> 00:45:19.560
+ 
+
+
+00:45:20.010 --> 00:45:23.580
+ 
+
+
+00:45:23.580 --> 00:45:26.160
+ 
+
+
+00:45:26.160 --> 00:45:31.050
+ 
+
+
+00:45:31.080 --> 00:45:35.670
+ 
+
+
+00:45:35.670 --> 00:45:38.730
+ 
+
+
+00:45:38.730 --> 00:45:42.240
+ 
+
+
+00:45:42.240 --> 00:45:46.680
+ 
+
+
+00:45:46.680 --> 00:45:49.410
+ 
+
+
+00:45:50.100 --> 00:45:52.800
+ 
+
+
+00:45:52.800 --> 00:45:56.010
+ 
+
+
+00:45:56.010 --> 00:45:59.970
+ 
+
+
+00:46:00.000 --> 00:46:03.330
+ 
+
+
+00:46:03.330 --> 00:46:07.410
+ 
+
+
+00:46:07.410 --> 00:46:11.280
+ 
+
+
+00:46:11.280 --> 00:46:14.130
+ 
+
+
+00:46:14.160 --> 00:46:17.820
+ 
+
+
+00:46:17.820 --> 00:46:21.600
+ 
+
+
+00:46:21.600 --> 00:46:25.890
+ 
+
+
+00:46:25.890 --> 00:46:31.620
+ 
+
+
+00:46:31.620 --> 00:46:37.020
+ 
+
+
+00:46:37.500 --> 00:46:40.890
+ 
+
+
+00:46:40.890 --> 00:46:44.340
+ 
+
+
+00:46:44.340 --> 00:46:48.480
+ 
+
+
+00:46:48.480 --> 00:46:53.160
+ 
+
+
+00:46:53.160 --> 00:46:57.990
+ 
+
+
+00:46:57.990 --> 00:47:01.680
+ 
+
+
+00:47:01.680 --> 00:47:03.450
+ 
+
+
+00:47:03.450 --> 00:47:07.560
+ 
+
+
+00:47:07.560 --> 00:47:10.710
+ 
+
+
+00:47:10.710 --> 00:47:15.630
+ 
+
+
+00:47:15.630 --> 00:47:19.860
+ 
+
+
+00:47:19.860 --> 00:47:25.440
+ 
+
+
+00:47:25.860 --> 00:47:29.610
+ 
+
+
+00:47:29.610 --> 00:47:33.960
+ 
+
+
+00:47:33.960 --> 00:47:39.720
+ 
+
+
+00:47:39.720 --> 00:47:45.510
+ 
+
+
+00:47:46.020 --> 00:47:49.650
+ 
+
+
+00:47:49.650 --> 00:47:54.510
+ 
+
+
+00:47:54.510 --> 00:47:57.840
+ 
+
+
+00:47:57.840 --> 00:48:00.390
+ 
+
+
+00:48:00.390 --> 00:48:03.180
+ 
+
+
+00:48:03.180 --> 00:48:06.930
+ 
+
+
+00:48:06.930 --> 00:48:12.960
+ 
+
+
+00:48:12.960 --> 00:48:17.730
+ 
+
+
+00:48:17.730 --> 00:48:20.670
+ 
+
+
+00:48:20.670 --> 00:48:23.460
+ 
+
+
+00:48:23.460 --> 00:48:26.100
+ 
+
+
+00:48:26.100 --> 00:48:29.190
+ 
+
+
+00:48:29.190 --> 00:48:32.520
+ 
+
+
+00:48:32.520 --> 00:48:34.800
+ 
+
+
+00:48:34.950 --> 00:48:36.900
+ 
+
+
+00:48:37.290 --> 00:48:40.260
+ 
+
+
+00:48:40.470 --> 00:48:42.000
+
+
+00:48:42.840 --> 00:48:45.270
+ 
+
+
+00:48:45.270 --> 00:48:47.490
+ 
+
+
+00:48:47.490 --> 00:48:50.580
+ 
+
+
+00:48:50.580 --> 00:48:51.630
+
+
+00:48:51.659 --> 00:48:55.049
+ 
+
+
+00:48:55.049 --> 00:49:01.379
+ 
+
+
+00:49:01.379 --> 00:49:03.089
+ 
+
+
+00:49:03.239 --> 00:49:08.009
+ 
+
+
+00:49:08.009 --> 00:49:12.389
+ 
+
+
+00:49:12.389 --> 00:49:15.149
+ 
+
+
+00:49:15.149 --> 00:49:17.069
+ 
+
+
+00:49:17.069 --> 00:49:20.459
+ 
+
+
+00:49:20.459 --> 00:49:23.399
+ 
+
+
+00:49:23.399 --> 00:49:25.979
+
+
+00:49:26.429 --> 00:49:31.199
+ 
+
+
+00:49:31.199 --> 00:49:34.889
+ 
+
+
+00:49:34.919 --> 00:49:41.729
+ 
+
+
+00:49:41.729 --> 00:49:45.989
+ 
+
+
+00:49:46.019 --> 00:49:49.859
+ 
+
+
+00:49:50.129 --> 00:49:53.699
+ 
+
+
+00:49:54.360 --> 00:49:57.900
+ 
+
+
+00:49:57.900 --> 00:50:00.210
+ 
+
+
+00:50:00.570 --> 00:50:04.860
+ 
+
+
+00:50:04.860 --> 00:50:07.200
+ 
+
+
+00:50:07.200 --> 00:50:10.800
+ 
+
+
+00:50:11.550 --> 00:50:14.610
+ 
+
+
+00:50:14.970 --> 00:50:18.240
+ 
+
+
+00:50:18.240 --> 00:50:21.270
+ 
+
+
+00:50:21.270 --> 00:50:24.810
+ 
+
+
+00:50:24.810 --> 00:50:29.550
+ 
+
+
+00:50:29.550 --> 00:50:33.660
+ 
+
+
+00:50:33.660 --> 00:50:38.880
+ 
+
+
+00:50:38.880 --> 00:50:44.640
+ 
+
+
+00:50:44.670 --> 00:50:47.400
+ 
+
+
+00:50:48.360 --> 00:50:48.720
+
+
+00:50:48.719 --> 00:50:54.269
+ 
+
+
+00:50:54.269 --> 00:50:59.579
+ 
+
+
+00:50:59.579 --> 00:51:04.379
+ 
+
+
+00:51:04.409 --> 00:51:10.049
+ 
+
+
+00:51:11.879 --> 00:51:15.419
+ 
+
+
+00:51:15.419 --> 00:51:18.749
+ 
+
+
+00:51:19.469 --> 00:51:25.169
+ 
+
+
+00:51:25.169 --> 00:51:28.859
+ 
+
+
+00:51:28.859 --> 00:51:34.289
+ 
+
+
+00:51:34.530 --> 00:51:37.380
+ 
+
+
+00:51:37.380 --> 00:51:40.290
+ 
+
+
+00:51:40.290 --> 00:51:43.470
+ 
+
+
+00:51:43.470 --> 00:51:46.050
+ 
+
+
+00:51:46.050 --> 00:51:50.490
+ 
+
+
+00:51:50.490 --> 00:51:53.190
+ 
+
+
+00:51:53.190 --> 00:51:55.890
+ 
+
+
+00:51:55.890 --> 00:51:58.350
+ 
+
+
+00:51:58.350 --> 00:52:01.740
+ 
+
+
+00:52:01.740 --> 00:52:03.750
+ 
+
+
+00:52:03.750 --> 00:52:06.480
+ 
+
+
+00:52:06.869 --> 00:52:13.589
+ 
+
+
+00:52:13.709 --> 00:52:16.589
+ 
+
+
+00:52:18.030 --> 00:52:22.170
+ 
+
+
+00:52:22.170 --> 00:52:27.600
+ 
+
+
+00:52:27.600 --> 00:52:31.350
+ 
+
+
+00:52:31.350 --> 00:52:36.210
+ 
+
+
+00:52:36.210 --> 00:52:39.120
+ 
+
+
+00:52:39.120 --> 00:52:42.570
+ 
+
+
+00:52:42.570 --> 00:52:46.140
+ 
+
+
+00:52:46.140 --> 00:52:49.620
+ 
+
+
+00:52:49.620 --> 00:52:52.620
+ 
+
+
+00:52:52.620 --> 00:52:55.740
+ 
+
+
+00:52:55.740 --> 00:53:00.060
+ 
+
+
+00:53:00.060 --> 00:53:04.830
+ 
+
+
+00:53:04.830 --> 00:53:07.950
+ 
+
+
+00:53:07.950 --> 00:53:12.180
+ 
+
+
+00:53:12.180 --> 00:53:16.230
+ 
+
+
+00:53:16.230 --> 00:53:21.240
+ 
+
+
+00:53:21.240 --> 00:53:24.870
+ 
+
+
+00:53:24.870 --> 00:53:26.730
+ 
+
+
+00:53:26.730 --> 00:53:29.370
+ 
+
+
+00:53:29.370 --> 00:53:32.130
+ 
+
+
+00:53:32.130 --> 00:53:35.790
+ 
+
+
+00:53:35.790 --> 00:53:39.330
+ 
+
+
+00:53:39.540 --> 00:53:43.560
+ 
+
+
+00:53:43.560 --> 00:53:46.470
+ 
+
+
+00:53:46.470 --> 00:53:51.990
+ 
+
+
+00:53:51.990 --> 00:53:55.170
+ 
+
+
+00:53:56.340 --> 00:54:00.900
+ 
+
+
+00:54:00.900 --> 00:54:05.010
+ 
+
+
+00:54:05.010 --> 00:54:09.240
+ 
+
+
+00:54:09.240 --> 00:54:11.850
+
+
+00:54:12.929 --> 00:54:18.239
+ 
+
+
+00:54:18.239 --> 00:54:21.269
+ 
+
+
+00:54:21.269 --> 00:54:25.799
+ 
+
+
+00:54:25.799 --> 00:54:27.869
+ 
+
+
+00:54:27.869 --> 00:54:31.829
+ 
+
+
+00:54:31.829 --> 00:54:36.089
+ 
+
+
+00:54:36.089 --> 00:54:42.029
+ 
+
+
+00:54:42.029 --> 00:54:46.769
+ 
+
+
+00:54:46.769 --> 00:54:50.279
+ 
+
+
+00:54:50.279 --> 00:54:54.959
+ 
+
+
+00:54:54.959 --> 00:54:58.049
+ 
+
+
+00:54:58.049 --> 00:55:00.989
+ 
+
+
+00:55:00.989 --> 00:55:03.689
+ 
+
+
+00:55:05.609 --> 00:55:06.839
+
+
+00:55:08.790 --> 00:55:10.950
+ 
+
+
+00:55:14.250 --> 00:55:17.220
+ 
+
+
+00:55:17.220 --> 00:55:17.400
+
+
+00:55:17.399 --> 00:55:17.939
+
+
+00:55:18.389 --> 00:55:21.239
+ 
+
+
+00:55:21.239 --> 00:55:21.779
+
+
+00:55:21.780 --> 00:55:24.120
+ 
+
+
+00:55:24.780 --> 00:55:30.810
+ 
+
+
+00:55:30.810 --> 00:55:34.020
+ 
+
+
+00:55:34.020 --> 00:55:37.890
+ 
+
+
+00:55:37.890 --> 00:55:40.290
+ 
+
+
+00:55:40.290 --> 00:55:42.930
+ 
+
+
+00:55:42.990 --> 00:55:46.230
+ 
+
+
+00:55:46.230 --> 00:55:49.710
+ 
+
+
+00:55:49.710 --> 00:55:52.920
+ 
+
+
+00:55:52.920 --> 00:55:57.090
+ 
+
+
+00:55:57.120 --> 00:55:59.910
+ 
+
+
+00:55:59.910 --> 00:56:04.050
+ 
+
+
+00:56:04.050 --> 00:56:07.560
+ 
+
+
+00:56:07.560 --> 00:56:10.770
+ 
+
+
+00:56:11.670 --> 00:56:15.960
+ 
+
+
+00:56:16.230 --> 00:56:19.650
+ 
+
+
+00:56:20.010 --> 00:56:23.490
+ 
+
+
+00:56:23.490 --> 00:56:25.500
+ 
+
+
+00:56:25.740 --> 00:56:28.560
+ 
+
+
+00:56:28.590 --> 00:56:32.730
+ 
+
+
+00:56:32.730 --> 00:56:38.760
+ 
+
+
+00:56:38.910 --> 00:56:42.480
+ 
+
+
+00:56:42.480 --> 00:56:48.210
+ 
+
+
+00:56:48.210 --> 00:56:52.440
+ 
+
+
+00:56:52.440 --> 00:56:56.730
+ 
+
+
+00:56:56.730 --> 00:56:59.700
+ 
+
+
+00:56:59.700 --> 00:57:04.530
+ 
+
+
+00:57:04.530 --> 00:57:07.260
+ 
+
+
+00:57:07.740 --> 00:57:11.460
+ 
+
+
+00:57:11.460 --> 00:57:14.700
+ 
+
+
+00:57:14.700 --> 00:57:18.540
+ 
+
+
+00:57:18.540 --> 00:57:21.840
+ 
+
+
+00:57:21.840 --> 00:57:25.410
+ 
+
+
+00:57:25.410 --> 00:57:28.260
+ 
+
+
+00:57:28.260 --> 00:57:31.740
+ 
+
+
+00:57:31.740 --> 00:57:34.500
+ 
+
+
+00:57:34.500 --> 00:57:38.430
+ 
+
+
+00:57:38.430 --> 00:57:42.780
+ 
+
+
+00:57:42.780 --> 00:57:49.350
+ 
+
+
+00:57:49.860 --> 00:57:52.410
+ 
+
+
+00:57:52.410 --> 00:57:55.290
+ 
+
+
+00:57:55.290 --> 00:57:58.800
+ 
+
+
+00:57:58.800 --> 00:58:01.800
+ 
+
+
+00:58:01.800 --> 00:58:05.970
+ 
+
+
+00:58:05.970 --> 00:58:09.120
+ 
+
+
+00:58:09.120 --> 00:58:15.060
+ 
+
+
+00:58:15.060 --> 00:58:18.060
+ 
+
+
+00:58:18.060 --> 00:58:21.660
+ 
+
+
+00:58:21.660 --> 00:58:24.240
+ 
+
+
+00:58:24.240 --> 00:58:29.070
+ 
+
+
+00:58:29.070 --> 00:58:29.550
+
+
+00:58:30.300 --> 00:58:33.120
+ 
+
+
+00:58:33.509 --> 00:58:36.149
+ 
+
+
+00:58:36.149 --> 00:58:39.959
+ 
+
+
+00:58:39.959 --> 00:58:42.059
+ 
+
+
+00:58:42.059 --> 00:58:43.529
+
+
+00:58:44.040 --> 00:58:47.580
+ 
+
+
+00:58:47.580 --> 00:58:52.830
+ 
+
+
+00:58:52.830 --> 00:58:57.420
+ 
+
+
+00:58:57.420 --> 00:58:59.280
+
+
+00:59:00.690 --> 00:59:04.680
+ 
+
+
+00:59:04.680 --> 00:59:09.150
+ 
+
+
+00:59:09.150 --> 00:59:13.530
+ 
+
+
+00:59:13.530 --> 00:59:18.510
+ 
+
+
+00:59:18.510 --> 00:59:21.270
+ 
+
+
+00:59:21.270 --> 00:59:23.250
+ 
+
+
+00:59:23.250 --> 00:59:25.620
+ 
+
+
+00:59:25.620 --> 00:59:26.850
+
+
+00:59:28.860 --> 00:59:32.040
+ 
+
+
+00:59:32.040 --> 00:59:37.770
+ 
+
+
+00:59:37.950 --> 00:59:41.760
+ 
+
+
+00:59:41.760 --> 00:59:47.550
+ 
+
+
+00:59:47.550 --> 00:59:49.980
+ 
+
+
+00:59:49.980 --> 00:59:54.030
+ 
+
+
+00:59:54.030 --> 00:59:54.900
+
+
+00:59:56.400 --> 00:59:59.970
+ 
+
+
+01:00:00.000 --> 01:00:03.300
+ 
+
+
+01:00:03.300 --> 01:00:05.520
+ 
+
+
+01:00:05.520 --> 01:00:08.940
+ 
+
+
+01:00:08.940 --> 01:00:13.020
+ 
+
+
+01:00:13.170 --> 01:00:17.460
+ 
+
+
+01:00:17.460 --> 01:00:21.870
+ 
+
+
+01:00:22.320 --> 01:00:26.160
+ 
+
+
+01:00:26.160 --> 01:00:29.910
+ 
+
+
+01:00:29.910 --> 01:00:32.430
+ 
+
+
+01:00:32.430 --> 01:00:34.950
+ 
+
+
+01:00:34.950 --> 01:00:35.910
+
+
+01:00:36.659 --> 01:00:39.929
+ 
+
+
+01:00:39.929 --> 01:00:42.599
+
+
+01:00:49.770 --> 01:00:53.280
+ 
+
+
+01:00:53.280 --> 01:00:57.240
+ 
+
+
+01:00:57.240 --> 01:01:01.260
+ 
+
+
+01:01:01.260 --> 01:01:04.740
+ 
+
+
+01:01:04.740 --> 01:01:05.940
+
+
+01:01:06.000 --> 01:01:09.540
+ 
+
+
+01:01:09.660 --> 01:01:15.300
+ 
+
+
+01:01:15.300 --> 01:01:19.950
+ 
+
+
+01:01:20.219 --> 01:01:23.399
+ 
+
+
+01:01:23.399 --> 01:01:26.519
+ 
+
+
+01:01:26.579 --> 01:01:27.149
+
+
+01:01:27.570 --> 01:01:31.260
+ 
+
+
+01:01:32.280 --> 01:01:33.270
+
+

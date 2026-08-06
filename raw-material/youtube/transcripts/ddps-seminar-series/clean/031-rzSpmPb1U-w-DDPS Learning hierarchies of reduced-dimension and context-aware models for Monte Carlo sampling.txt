@@ -1,0 +1,1669 @@
+all right welcome to the ddps seminar
+everyone let's go over logistics first
+please mute yourself during the talk
+unless you have questions
+if you have questions you're welcome to
+a mute and ask
+otherwise please use chat room to post
+your questions so that we can address
+them in q a session again
+second today's gdpr seminar is open to
+external audiences therefore no
+classified discussion is allowed
+finally the talk today will be recorded
+and up
+loaded in our youtube channel that's
+about it
+now let me introduce our speaker today
+it is an honor to host
+yonut uh
+gabriel fakas who is a postdoctoral
+fellow
+at the oden institute for computational
+engineering and sciences the university
+of texas at austin
+where he is currently mentored by dr
+caron wilcox and dr frank jinko
+prior to joining the odin institute he
+did phd in
+in the chair of scientific computing in
+the computer science at the technical
+university of munich at germany
+under the supervision of professor hans
+bongotz
+graduating in 2020
+his research interests are diverse and
+are mainly concerned with the
+computational methods for large-scale
+real-world simulations non-intrusive
+model reduction hold and inverse
+uncertainty quantification
+sparse media approximations multi um
+fidelity methods and high performance
+computing
+and as application scenarios he's mainly
+focused on combustion in rocket engines
+and turbulence in future
+it was quite a lot and his list of
+awards include
+being a two-time winner of a best post
+poster
+award at the siam conference on
+computational science and engineering
+being the romanian student of the year
+at the post-graduate level in europe in
+2019 and being the recipient of the
+heinz
+schwarzo advice for his phd thesis which
+is awarded to the best phd thesis
+in fundamentals of computer science that
+was submitted to any university in
+munich
+previous two years
+okay today
+units
+will present an interesting topic which
+is learning
+hierarchies of reduced dimension and
+context aware
+low fidelity models for multi-fidelity
+monte carlo sampling please enjoy and
+expect a wonderful talk
+now without further ado let me pass the
+button by asking one random question as
+usual today's random question is
+you know do you have any superpower that
+others do not have
+that's a very good question i can say
+that maybe not maybe my uh sort of power
+is that i don't easily give up so
+that's something that i think is useful
+for a researcher but otherwise uh not
+really know
+all right good uh it's all yours
+okay thank you so much and thank you so
+much for inviting me to give a
+presentation today is a big honor to
+speak in this seminar
+and it was already mentioned
+today i will talk about some of my
+research in the realm of uncertainty
+quantification
+and mainly i will focus on the use of
+low fidelity or reduced models something
+that is typically discussed in the
+context of this seminar
+but in the context of multifidelity
+methods for assertive quantification
+and this work started towards the latter
+stages of my phd in munich
+and i want to acknowledge my
+collaborators
+and mainly ben peresdorfer from the
+grant institute in new york and also one
+of my students from munich julia
+and some of my current and best mentors
+frank jenko the who's a physicist from
+the monk hacks institute
+and tobias nickel and my phd supervisor
+husband guards
+all right so i have divided my
+presentation into four parts so first i
+will start with a brief motivation of
+this work
+and then i will discuss about the first
+algorithm the first idea that is
+mentioned in the title
+meaning multifidelity sampling methods
+with reduced dimension of iterative
+models
+then i will present the sec uh the third
+uh section which is the second idea the
+second part of the title
+which is multi-fidelity methods with
+context aware low fidelity models and
+then i will draw some conclusions at the
+end
+and this application scenarios for these
+algorithms i
+i chose some interesting plasma physics
+test cases
+but i want to stress from the beginning
+that even though i apply them in some
+specific problems in plasma physics
+these algorithms are
+generally applicable to a wide range of
+problems
+so if you are interested to to test
+these algorithms into your applications
+then i would be more than happy to
+discuss further with you this
+so let us begin
+so the motivation for this work and the
+motivation in general for my research
+is to deal with higher dimensional uh
+real world problems and in this case we
+deal with the
+with the problem of assertive
+propagation
+so what do i mean by that
+well by briefly speaking by uncertainty
+propagation i mean the problem in which
+we are given a high fidelity model
+typically standing for for example from
+digitization of a pde
+this model is deterministic
+but it depends on uncertain inputs and
+these inputs can be for example initial
+boundary conditions or scalars that
+characterize the system so if you think
+for example of a cfd simulation then the
+reynolds number could be the uncertain
+parameter
+and these are certain parameters
+parameterize the high fidelity model and
+the task of assertive propagation
+is to propagate the uncertainty in the
+inputs through the model and compute
+quantities of interest so for example in
+a cfd simulation the pressure at a
+certain location in space or the
+velocity
+and then
+the the task the final task is to
+estimate for example statistics of this
+uh
+this quantity of interest
+and in this presentation i will think
+about uncertainty propagation as an
+outer loop application meaning that i
+treat the given model as a black box in
+the sense that i do not modify it
+but rather i only query it by giving
+inputs and i expect to get a well post
+output at the end
+and because we deal with parameters that
+are uncertain and therefore leaving a
+let's say probabilistic domain
+then what happens is that instead of
+doing one simulation as we do in
+deterministic problems we have to do an
+ensemble of simulations
+and once we do this ensemble of
+simulations then we collect an ensemble
+of outputs which we post-process to
+compute quantities of interest
+and of course when we deal with
+large-scale applications
+then the larger the ensemble is the more
+challenging the assertive propagation
+test will be because this will be
+computationally very expensive
+and as i mentioned
+the application of interest for this
+work is plasma physics and here you have
+to keep in mind that if we do a
+realistic nonlinear simulation
+this can take days and even weeks just
+for one run
+so
+doing a certainty propagation in such
+applications can be very very
+challenging
+and how do we deal with these challenges
+well
+of course we have the field of model
+reduction which is specifically designed
+for this type of
+to address this challenge
+and instead of using the high fidelity
+model in our simulations which
+can be computationally very expensive
+we aim to use the reduce model
+we invest invest a bit of effort into
+finding a reduced model and then we use
+the reduced model for the task of
+austerity propagation
+so we know about reduced models that
+generally are less secure than the high
+fidelity model and then generally we
+have a trade-off between their accuracy
+and cost
+and in the context of multi-fidelity
+methods
+we think about reduced models or low
+fidelity models that i will use the
+in this presentation of stroke models
+broadly
+so we can think of for example data feed
+models and now we have the field of
+machine learning
+that provides such models
+or
+classical interpolation or regression
+we can have course with approximations
+or we can have projection based reduced
+models such as reduced basis or proper
+orthogonal decomposition
+or we can even have simplified models or
+linearized realized models and if you
+think for example in turbulence we
+typically have available several models
+for such a process
+so we can think of all these generically
+as low fidelity models
+so how do we do this in
+classical in a certainty propagation
+well if we have a low fidelity or
+reduced model then the classical
+approach is to
+replace the high fidelity model with a
+low fidelity model where the keyword
+here is replaced
+which means that if i replace my
+high-fidelity model with a low fidelity
+model then the accuracy of the low
+fidelity model will drive
+the accuracy of the uncertainty
+propagation
+test
+now as we know when we have a linear
+problem this is rather
+we know how to do it we know how to find
+accurate
+low fidelity models
+but when we go to non-linear problems
+for example then of course the test
+becomes more challenging
+and really what what's important to to
+have here is a low fidelity model that
+is somehow certified so we know the
+error that we make
+because again the error of this model
+then determines the error of the
+uh
+the accuracy of the the assertive
+propagation procedure
+however
+as the
+title suggests in this work we do not
+focus on the classical model reduction
+approach but rather we take the
+multi-fidelity perspective
+in which instead of replacing the high
+fidelity model with a low fidelity model
+we combine high and low fidelity models
+having a model hierarchy
+so basically we do the same task but not
+using just one model but actually using
+multiple models at the same time
+and what is interesting about this and
+then i will show you at length in the
+rest of the presentation is that
+in multifidelity methods even wrong
+models can be useful and of course by
+wrong i don't mean complete nonsense but
+rather models that on their own would
+not necessarily be very accurate
+and in the uh the multi-feed sampling
+algorithm that i will talk about
+basically it guarantees the high
+fidelity accuracy
+because it keeps the high fidelity model
+in the loop
+however the general idea is that we put
+the least effort into the high fidelity
+model and then we put the most effort
+into the profitability models which are
+cheap to evaluate
+and for an overview of multi-therapy
+methods i recommend looking at
+the survey that appeared in sam review a
+few years ago
+okay now setting the background i will
+talk about the first
+idea uh in this presentation which is
+enhancing multi-federating monte carlo
+sampling with what i call reduce
+dimension of iterative models
+so basically the research questions that
+we try to answer here are the following
+the first one is rather generic and is
+very specific to multifederating methods
+in general
+and it is if we are given a hierarchy of
+low fidelity models how can we use them
+to speed up computations for example in
+uncertainty propagation
+and more specific to this algorithm is
+that how can we use information about
+federative models to further speed up
+computations
+and if we draw a picture of this then we
+have an out an outer loop
+in which we have the hierarchy of higher
+no fidelity models
+and then our
+our questions here is how do we use this
+hierarchy to speed up computations
+so to set up some notation
+so we are given a high fidelity model f
+that depends on the random inputs and it
+has an evaluation cost w0
+and for large-scale computations then we
+know that this w0 is typically very
+large
+and let's say we are given a budget p
+in seconds which is the budget that we
+have for performing custody propagation
+and then the task at hand is to estimate
+the linear functional which is the
+expectation of the output of the system
+now if we were to use a standard monte
+carlo estimator that we know we know
+that we will draw random samples from
+the distribution of the inputs we'd
+evaluate the given model at the chem
+sample and then we'll take an average of
+these evaluations
+and we know that this estimator is an
+unbiased estimator with the mean squared
+there or that is actually its variance
+and this depends on the variance of the
+model
+the budget and the
+evaluation cost
+now the good thing about this mean
+squared error estimator is that
+it doesn't depend on the number of
+random inputs so it's it it's
+independent of the dimension
+however
+this decays very slowly
+and if you think of f as being the high
+fidelity model and let's say one
+evaluation takes a few hours or a day or
+a week
+then we kind of afford only a half of
+such simulations
+and if we deal with the high dimensional
+parameter space then this test becomes
+prohibitive
+and then the question arises that how
+can we improve
+the
+mean squared there of the standard
+multi-card estimator
+and basically we have two options so one
+is to increase b which of course we
+don't want to do because this means that
+we need to do more hypothetical
+evaluations
+and the second one which we take in the
+the remain remainder of this
+presentation
+is to decrease the variance of the
+estimator
+and this leads to so-called variance
+reduction techniques
+and the multifidelity algorithm that i
+will present in in here is essentially a
+various reduction technique
+so in contrast to the standard monte
+carlo estimator in multifidelity
+estimators basically we combine the high
+fidelity model and the low fidelity
+model models
+we compute st multicolor estimators for
+each of these
+and then we find a multi-federated monte
+carlo estimator which is a linear
+combination of these estimators
+so this is where all models come into
+play
+and basically we start with an estimator
+of the high fidelity model and then we
+add weighted corrections
+of estimators depending on the low
+fidelity models
+and basically in this algorithm
+the accuracy of the low fidelity models
+is ascertained using the correlation
+coefficient
+between these models and the high
+fidelity model
+and also what's important in addition to
+the
+to the metric for
+accuracy is their evaluation cost so not
+only we care about accuracy but also we
+care about the evaluation cost
+so let's say for simplicity that we
+normalize these evaluation costs so they
+are relative to the high-fidelity model
+and if we are
+to fast forward and compute the mean
+squared error of this estimator
+we get again that this is a number as
+estimator
+so it's mean square there it's equal to
+its variance
+and we get an expression that basically
+is a product between the mean squared
+error of what we get when we use only
+the high fidelity model
+and an expression that depends on the
+correlation coefficients and the
+normalized costs of the models
+and basically this expression here is
+the one that gives us the variance
+reduction so basically if this
+expression is smaller than one then we
+get various reduction and the more the
+smaller this expression is then the more
+various reduction we get
+so we see that in the multifidelity
+algorithm
+we have two important ingredients
+which is the correlation coefficient of
+the low fidelity models with respect to
+the hospitality model and their
+evaluation cost
+so now in the standard formulation of
+this algorithm it is assumed that all
+low fidelity models
+are given so we have them available
+and also they have the same number of
+parameters as the high fidelity model
+which of course is not an unreasonable
+assumption because
+in general when we construct
+parametrized reduced models
+which only have the same number of
+parameters as the high fidelity model
+but the question that we try to answer
+here is can we still
+improve on this and speed up
+computations by using information about
+the parameters
+and of course the the answer is yes
+and as i will show you in a numerical
+example
+we consider here so-called reduced
+dimension of iterative models
+so let's start with the application
+itself so not spend too much time
+explaining this application because this
+would require a separate presentation
+but now this to give you an idea so here
+we focused on an application in plasma
+physics which is of great interest for
+the community at the moment
+in which we dealt with
+suppressing turbulence diffusion
+reactors with energetic particles
+and to this end we use this simulation
+called gene which is developed in the
+group of frank jenko in uh in gachin
+and we consider the realistic parameter
+set
+based on a publication that considered
+the fast particle stabilization in um
+in a jet discharge which is a reactor in
+uh in the uk
+we consider five particle species here
+uh
+deuterium ions electrons and also two
+fast particles and to be realistic we
+also consider carbon impurities
+and our high fidelity model here has
+about 250 000 degrees of freedom
+and we consider simulations for budgets
+from 50 000 to 1 million
+and the slow fidelity models uh in this
+problem
+we considered sparse with approximations
+and basically we considered
+an interpolation space with low fidelity
+model that is constructed adaptively
+using sensitivity information about the
+uncertain inputs
+basically the the the main idea here is
+that this type of low fidelity mode is
+very efficient because it's constructed
+adaptively and the adaptivity is
+performed with respect to stochastic
+information which is what we want in
+uncertainty propagation settings
+and what we observe is that we are given
+14 inputs by the physicists with certain
+bounds that represent their uncertainty
+and what we notice is that once we find
+this low fidelity model and we compute
+the sensitivity indices of all
+parameters we observe that
+only a handful of these parameters
+actually important
+which by the way is in par with what the
+physicist expected so this kind of plot
+is exactly what's what they expect in
+this type of application
+but still we see that we have 14
+parameters given but only a handful are
+important and then the question is can
+we use this information to further speed
+up computations
+and then of course the answer is yes and
+how we do it
+is that
+after we compute the 14 dimensional low
+fidelity model we also
+calculate low fidelity models using the
+same password algorithm but decreasing
+the input size
+so in our experiments we consider the
+high fidelity model which is the given
+by the gene numerical simulation code
+we started with what the first law
+fidelity model which has all 14
+parameters and then we slowly decreased
+the number of certain parameters based
+on the sensitivity that i just showed
+you
+so we consider a low fidelity model with
+only the most nine important parameters
+and then
+the third one which has only six
+of the important parameters
+and the remaining parameters were
+essentially kept fixed to their mean
+value
+and
+what we observed in our numerical
+experiments
+is that
+if we compute the mean squared error of
+these estimators then we get a
+tremendous speed up with respect to the
+standard monte carlo estimator
+so if you look in the left panel in this
+figure
+there we showed
+the analytical mean squared error
+which is computed directly from the
+formulas without performing the
+numerical experiments to get an idea
+about what we expect in this problem and
+then in the right panel i show you the
+results that we're computing numerically
+and what we observe is that if we go
+from the standard monte carlo estimator
+which uses only the high fidelity model
+to the multifederated estimator that
+uses the high fidelity model and the 14
+dimensional spots with low fidelity
+model
+we get almost a factor of two reduction
+in the mean squared error
+even further which is very interesting
+is that if we add into the mix also the
+reduced dimension low fidelity models we
+decrease the mean square there even
+further
+and
+we get essentially a speed up almost for
+free by considering this reduced
+dimension of fidelity models
+and if we were to translate this
+reduction uh in
+in mean square there or from them a
+standard monte carlo sampling
+to the our multifidelity uh
+monte carlo center algorithm
+if we were to do
+each simulation on 240 cores which is
+what we need for the high fidelity
+simulation
+the runtime will be and if we were to
+obtain the most accurate result which in
+this case is for budget one million
+if we were to use the multi the standard
+multi uh sorry the standard monte carlo
+estimator this would take about eight
+days
+but if we were to use our
+multi federation monte carlo estimator
+this would take about one hour
+so we see that we can get tremendous
+speed ups
+and these speed ups will become even
+more uh
+important when we go to even more
+complex applications such as non-linear
+applications
+in which as i said one simulation can
+take hours or even days
+and also another interesting aspect here
+is that
+the multifidelity algorithm separates
+you know the estimation between using
+the high and the low fidelity models
+and usually the high fidelity model is
+simulated not a super computer or on the
+cluster whereas the low fidelity models
+can be simulated on a smaller machine or
+even a laptop computer
+so that's even
+an added advantage of this approach
+and you can find more details about this
+in the
+the paper that is
+uh
+pointed out at the end of the slide
+which we
+have it on archive
+okay so before moving to the second part
+of the talk i want to pause and ask
+whether there are some questions
+regarding the first part
+i guess you can move on
+all right
+so in the first part of the presentation
+i showed you um
+the multifuturity algorithm that was
+enhanced
+with reduced dimension low fidelity
+models
+and in the second part of the
+presentation i want to talk about our
+context aware formulation of the
+multi-federating monte carlo algorithm
+so basically what is our goal here what
+we what are our research questions
+with this algorithm we we aim to answer
+the following research questions so the
+first one which is very important and
+very relevant
+especially in the context of data driven
+lofty data models
+is how do we construct low fidelity
+models to be used in modification
+settings
+because the underlying assumption
+is that we have the low fidelity models
+available and the multi-utility
+algorithm just uses them in an efficient
+way
+and even more how accurate do for
+example data driven low fidelity models
+need to be in multiplicative methods
+because we know that in standard single
+fidelity settings
+if we employ a reduced model then that
+reduced model needs to be accurate
+and
+we want to see whether this conclusion
+is also valid in multifide methods
+surprisingly i mean you see
+in a few slides
+the answer is that actually we don't
+need very accurate profitability models
+in
+multiple data settings
+and if you were to paint a picture of
+this we do the same outer loop problem
+in which we have a hierarchy of high
+load fidelity models to do a certainty
+propagation but the difference to what
+we did in the the other
+in the first approach
+is that the low fidelity models are no
+longer statically given but rather we
+construct them in a context-aware
+fashion so again uh to revisit the the
+setup for in the
+in the first approach we are given a
+high fidelity model that we assume is
+computation expensive
+and
+this model is parameterized by by the
+random inputs
+we are given a computational budget and
+then the task is to estimate the mean of
+the high-fidelity model
+now
+if we revisit the multi-fiduci estimator
+which again is the linear combination of
+estimators stemming from the high and
+low fidelity models
+and we look again at the
+mean squared error of this estimator
+we see again
+that
+this expression depends
+on the correlation coefficients and the
+evaluation costs of low fidelity models
+and this will be key into the
+formulation of the of the context of our
+algorithm
+and even more we observe that this means
+squared error term
+because the estimator is unbiased
+contains only the variance so we don't
+have any bias
+with respect to the high-fidelity model
+which is great because this gives us an
+increased flexibility for
+low fidelity model
+construction so we know that even though
+low fidelity models have an error
+this zero doesn't enter into the mean
+squared error
+formula which is great
+okay so to summarize uh the difference
+between the first and the second
+approach before going to the
+mathematical details
+we were to uh
+to visualize this
+so in the static uh multi-federation
+algorithm
+which is what i presented in the the
+first part of the talk we have a model
+hierarchy in which low fiderity models
+are assumed to be available so we cannot
+further improve them
+we have the model hierarchy and then the
+test is to do a certainty propagation
+in the second version of the algorithm
+which is the context of error version
+that i will present next
+we have
+the same task of doing assertive
+propagation we have a hierarchy of
+models but the difference is that the
+low fidelity models are contextual
+and basically
+as a general idea what we do
+is that we the given computational
+budget is split
+between constructing the low fidelity
+models
+similar to an offline phase in standard
+model reduction
+and then the remaining budget is used
+for sampling in the online phase
+as
+similar to the
+to the standard model reduction
+whereas in the static version
+the entire budget is just only for
+sampling because the models are assumed
+to be available
+okay so how do we construct the context
+overload fidelity models
+basically the question is what do we
+need to know about them in order to
+construct them
+so we need to know essentially there are
+accuracy and cost rates
+and by that i mean that we need to know
+their accuracy rate as measured by the
+decay of one minus the correlation
+coefficient squared
+which is essentially very similar to
+what
+what we know from
+approximation theory this is very
+similar to the
+to the error that we have
+when using these reduced models
+as as examples of accuracy rates we can
+have for example algebraic or
+if we are lucky and we have
+a nicely behaved problem we have
+exponential or geometric
+and besides the accuracy rate we also
+assume that we have available the cost
+rate
+and by that i mean the evaluation cost
+rate of the models
+so keep in mind that in multifidelity
+methods
+low fidelity models are characterized by
+two ingredients so one is their accuracy
+but also their evaluation cost is very
+important
+so we assume we have this available
+and uh examples include algebraic but of
+course depending on the algorithm that
+we use to implement
+the the evaluation of the lofty data
+model we can have different types of
+rates
+and then having
+the accuracy and cost rates available we
+will construct the context overloaded
+models and for simplicity i will show
+you how this happens in the case when we
+have one of id380 model and then i will
+show you how this idea can be
+transferred to the setting in which we
+have multiple of 30 models
+so let's assume we have a lofid model
+that has a given accuracy and cost rate
+so what we do in the context of our
+algorithm is that we split the
+computational budget between
+constructing the low fidelity model
+using n1 high fidelity model evaluations
+and then
+after we have it constructed we use the
+remaining budget for sampling so that's
+b minus n1
+how to find n1 will uh will be discussed
+next
+so basically if we were to uh to write
+down the mean squared error of the
+estimator that depends on this low
+fidelity model only
+we have the same expression as before
+but instead of dividing by p we divide
+by p minus n1
+then the question will be how we
+construct this n1
+so you can think of ld101 for example
+the training size for your neural
+network
+and the trick here and really the the
+the the heart of this algorithm is to
+relate the mean squared error of this
+the the multiplicity estimator with the
+rates with the accuracy and cost rates
+that we have available
+and if we apply standard algebraic
+inequalities
+we essentially obtain
+straightforwardly
+an upper bound of the mean squared error
+that depends on the rates
+and we see that the this upper bound
+depends on both the accuracy and cost
+trade so you're not only interested in
+accurate lofty dating models but we also
+take the evaluation cost into account
+and basically having this upper bound
+available then the task is
+we'll treat this as an objective
+function
+and we'll perform minimization to find
+n1
+which would be the number of
+high-fidelity model evaluations used to
+construct the low fidelity model
+so basically the task is to minimize
+this objective
+and we were in this setting with one low
+fidelity model we were able to show the
+following results so first
+we're able to show that under very mild
+assumptions this objective is convex
+which means that we have
+a minimum existence is unique
+which tells us basically that there is a
+quasi-optimal and here i mean
+quasi-optimal because this objective is
+an upper bound of the miscreate error
+and nothing squadron itself
+was the optimal trade-off between
+exploring meaning constructing the low
+fidelity model and exploiting it in the
+multi-fidelity
+sampling strategy
+and even more which is uh the the most
+interesting and somewhat
+counterintuitive result
+we're able to show that this minimizer
+is actually independent of the budget
+so this gross inequality of the budget
+and beyond a certain budget this doesn't
+grow any further
+which tells us
+essentially that in contrast to standard
+model reduction in which profitability
+models need to be very accurate
+in
+setting slow fidelity models can be too
+accurate so there is
+uh
+a point beyond which there is
+we don't get anything more by further
+refining the low fidelity model and i
+will show you a concrete numerical
+example of what we mean by this but this
+is a very interesting and very
+surprising result because
+as i said in standard model reduction we
+are used to thinking that
+the more accurate the low variety model
+is the better but in multivitality
+settings actually this is not the case
+which is great because
+that means that
+we can have also
+uh
+models that are not necessarily very
+accurate in single fidelity settings but
+they can be very useful in modification
+settings
+so if we were to transfer these ideas to
+settings with two or more of identity
+models
+basically we can approach this in two in
+two ways so one is the so-called global
+approach
+in which we are given
+k
+low fidelity models each with an
+accuracy and cost rate
+we use these traces to find an upper
+bound of the mean squared error and then
+we solve a global k dimension
+optimization problem
+to find these
+number of high fidelity model
+evaluations to construct them
+or we could also do a sequential
+approach
+in which basically we introduced one low
+fidelity model at a time in the mix
+so introduce the first law fidelity
+model find the number of hypothetical
+evaluations to construct it then we
+introduce the second and so forth
+which basically means that we can solve
+k one-dimensional optimization problems
+and this sequential approach also has
+the additional advantage that it allows
+us to reuse the theory from the case
+with one of italy model
+that being said i will show you the
+performance
+and the
+advantages of the contextual algorithm
+into numerical examples
+and first i will begin with a
+sort of model problem which is a heat
+conduction in a two-dimensional spatial
+domain
+which basically
+this is an elliptic
+partial differential equation
+which is a setup inspired by
+a paper of patera and rosa
+in which we have
+a
+two-dimensional square which is styled
+into a three by three block
+and
+the diffusivity uh coefficient is
+uncertain and is parameterized
+as a
+[Music]
+piecewise constant
+diffusivity field
+and this depends on essentially a
+certain parameter in each tile so we
+have nine uncertain parameters
+i have a problem with uh which is nine
+dimensional
+and the typical output of interest in
+such a problem is the
+average heat flux over the
+bottom neuron boundary
+so one of the reasons for which we chose
+this test case is that it allows us to
+easily construct heterogeneous low
+fidelity models
+which can give us
+an impression about
+the behavior of the context of our
+algorithm so we started with a
+reduced basis low fidelity model
+and why because we know that for such a
+problem or reduced spaces low fidelity
+models is exponentially accurate
+so basically we used
+an off-the-shelf implementation of radio
+spaces for such a problem in which we do
+an offline online decomposition and we
+use the gritty basic generation
+and we know that the accuracy and cost
+rates so the accuracy rate we know that
+uh it's exponential and the algebraic
+one sorry the the cost rate is algebraic
+and to estimate the constants in the
+rate functions we did some um
+a few a few numerical runs
+and what we know in the context of this
+problem is that this reduced basis a
+surrogate is very accurate
+but we know that as the number of
+reduced basis increases then the cost of
+solving the
+reduced system increases
+as well
+so basically we can think of this
+in the the context of this model problem
+as
+uh an accurate but relatively expensive
+data model
+we also considered a regression-based
+law fidelity model
+and for this we used the excellent
+support vector regression uh technique
+in which we trained on and random
+realizations of the input
+and then we estimated the accuracy and
+cost rates which for this problem we
+know an algebraic
+and this low fidelity model actually
+needs a large number of samples to be
+accurate because remember we are dealing
+with a nine-dimensional parameter space
+but it is cheap to evaluate so we can
+think of this low fidelity model as a
+less accurate low fidelity model but
+rather rather cheap to evaluate
+and if we start by looking at the
+context aware algorithm with a reduced
+basis low fidelity model only
+we first look at
+the number
+that the context-aware number of
+high-fidelity evaluations to construct
+this model meaning the number of reduced
+spaces
+for increasing budgets
+and as the second proposition that i
+showed you states
+this number is independent of the budget
+and we see here that as the budget
+increases this number doesn't increase
+beyond 20.
+so we see that we in our context or
+algorithm basically we don't need more
+than 20 reduced spaces to construct
+the reduced basis of identity model
+and to short to sort of emphasize
+the the conclusion that in motivated
+settings low fidelity models can be too
+accurate let's look at the following
+plot
+so in this plot i depict the mean
+squared error
+of monte carlo estimators for budgets
+from 1 to 1 000 seconds
+in which we compare the standard monte
+carlo sampling
+estimator with the multifederati
+estimators
+and what i did is that i used the same
+reduced basis low fidelity model
+but in which first
+i constructed it using a priority chosen
+number of uh overdue spaces so as we do
+in the static version of the modified
+algorithm
+so i chose 2 8 and 50
+reduced spaces and i also
+employ the context-aware multifiduci
+algorithm in which starting from the
+rates
+i constructed the reduced species low
+fidelity model which we know that
+requires at most 20 reduced spaces
+so interestingly what we see
+first of all is that the multivariate
+algorithms are more accurate than the
+standard
+monte carlo sampling algorithm
+but interestingly
+if i use two eight or 50 reduced spaces
+this doesn't matter because the
+contextual algorithm is actually more
+efficient here
+so with using at most 20 reduced spaces
+actually i get more accurate results
+than if i use 50 reduced spaces
+which is a consequence of the fact that
+if i use 50 reduce bases
+which is great this gives me a very
+accurate low fidelity model but its
+evaluation cost
+outweighs the accuracy
+so we see that indeed low fidelity
+models can be too accurate
+and of course if i if i would have
+guessed that i need 20 uh reduced basis
+then i would have gotten the same
+results as in the contextual algorithm
+if we go further and we add also the uh
+the regression based profitability model
+to the mix
+and we compute the number of high
+fidelity evaluations using uh either the
+the
+sequential or the global approach
+we see again that the number of
+high-fidelity evaluations to compute
+these models is bounded
+as the theory predicts so again uh we
+have the same conclusion that
+beyond let's see budget 10 000 there is
+no point to refine further the the
+regression-based model
+and interestingly if we plug this into
+our framework we see that we get even
+more variance reduction
+which is interesting again because the
+the regression model here which is
+constructed with you at the most uh ten
+thousand samples
+is actually quite inaccurate on its own
+so it's probably a model that you would
+not use on its own in a single feederity
+setting because in order to get an
+accurate approximation you'll need a
+large training size
+but here we see that with the
+10 000 a training site of 10 000 we get
+actually one more variance reduction
+let's go a bit further to the more
+realistic problem in which we consider
+again plasma microturbulence simulation
+and here we took a test case that is
+based on a discharge from the aztec
+subrate experiment
+which is a device in gachin in germany
+and to keep the story simple we consider
+12 uncertain parameters
+and we had a high fidelity model that is
+again based on the gene numerical
+simulator with
+276 000 degrees of freedom
+and basically here to get a
+better overview about our context our
+algorithm we considered first in the mix
+a static low fidelity model which is
+given by a cost width approximation
+so we went from 276 000 to 48 000
+degrees of freedom
+because
+we see that in this case the the
+accuracy is actually retained very well
+and we got the cost reduction of about
+six
+and we also considered two data driven
+fidelity models
+so the first one is the spot suite based
+lofidati model as in the previous
+algorithm
+but in this case we measure its
+accuracy and cost rates and we see that
+for this problem
+these behave so these are algebraic
+and we also considered a deep neural
+network
+and this deep neural network is actually
+very basic so we consider a fully
+connected feed forwarding network
+with 12 hidden layers
+and to ensure that as the size of the
+the training set increases the
+evaluation cost of the network also
+increases
+what i did i employed the heuristic and
+i took
+the training size over 20
+neurons per hidden layer
+and once after i did the
+the simulations i plotted the
+accuracy and cost rate evaluations
+i saw that actually they fit very well
+on the
+an algebraic line
+so we have two low fidelity models with
+algebraic accuracy and crosstraits
+and now if we plug this into our context
+over algorithm by first looking at the
+sparse with low fidelity model
+with or without considering the crossfit
+model as well we see again that as the
+theory predicted
+the number of high-fidelity model
+evaluations to construct this reduced
+model is bounded and it's actually very
+small
+and even more interesting which i think
+is one of the most interesting results
+of this work is the fact that
+if i consider the crossfit model
+i consider the adaptive spa suite model
+and the deep neural
+network the algorithm predicts that the
+the last two so the data driven models
+require only a handful of high-fidelity
+model evaluations to be constructed
+so basically the splashville model
+requires only 405 high 30 evaluations
+and the deep neural network model only
+hypothetical evaluations
+so basically if you want to use a neural
+network for a certainty propagation if
+you use our context aware multivariate
+algorithm it is likely it's not
+guaranteed of course but it is likely
+that you can get away with only a
+handful with the training size of our
+baseball size which is
+which is great
+and if we were to look at the sample
+distribution which is generally valid
+for uh multi-federated algorithms
+we see that going from the standard
+multical algorithm which uses only the
+high fidelity
+model so basically all evaluations go to
+the high fidelity model
+motif data algorithms generally put very
+very small effort into the hybridity
+model
+so you see for example in this problem
+if you look at the right most bar
+we see that in the context-aware
+algorithm in which we use the
+high-fidelity model and the three low
+fidelity models
+only a very small percentage of the
+total number of samples is
+invested in the
+the high fidelity model which is again
+is great because in these types of
+problems
+i do the simulations for the high thirty
+model on the super computer but the
+lofidei simulations i can do them on my
+laptop which
+is very convenient
+and
+this is uh still working progress is not
+finished but if you look at the squared
+error
+we see that
+for the same budget which in this case
+is five million seconds
+if we go from the standard monte carlo
+estimator to the
+further to the multifide static
+multiplicity estimator with
+the cross width model and then going to
+the context aware algorithm we see that
+we get up to a factor of two improvement
+which of course is great
+so to summarize
+in this presentation we first looked at
+low fidelity models in a certain
+quantification in single fidelity
+settings and we see that in such a
+setting the accuracy of the locality
+model determines the accuracy of the
+outer work result
+then we discussed about low fidelity
+models in static multifidulity settings
+which are
+generally leveraged for speed up
+whereas the high 3d model is kept into
+the loop to guarantee accuracy
+and we looked at an application in which
+we considered reduced dimensional
+fidelity models
+however in these standard settings it is
+assumed that the low fidelity models are
+available and given to us so we cannot
+improve them further
+and then we answer the question of how
+to compute to construct low fidelity
+models in multi-united settings in the
+context of algorithm
+in which we split the budget between
+constructing the models
+similar to an offline phase and then
+using the remaining budget for sampling
+similar to an online phase
+and then we showed
+surprisingly that in this setting slow
+fidelity models can in fact be too
+accurate
+and with that these are all references
+so for the context aware part we have a
+work we have a paper under preparation
+now
+we'll submit soon
+for the first part of the talk we have a
+preprint available
+and then also i laid out some of the
+foundational ideas in my dissertation
+and with this i want to thank you for
+your attention and i'm happy to take
+questions
+thank you
+so much for uh the great talk uh it was
+very wonderful and interesting
+thank you thank you
+let's have a q and a session um i do not
+see any
+question from the chat room but if you
+have questions please
+please uh please post your questions
+chat room or you can unmute yourself and
+then ask questions okay while you're um
+preparing your own questions i
+i have
+i have questions about you know overall
+um overall algorithm um
+for this
+know low fidelity adults you you know
+depending on the which model you choose
+to
+use
+there must be some training training
+costs right and yes yes
+and
+i think the context aware of the
+algorithm the the one you presented at
+the at the end
+that is
+you're separating the budget for the
+training and also the online evaluation
+with that exactly
+yeah so starting from the accuracy and
+cost rates of the low fidelity models
+you spend part of your budget to
+construct them
+and then you spend the remaining budget
+in doing the sampling part
+right right and and then on
+when you when you you know set those
+budgets um
+you
+you do the the training in adaptive
+oh i mean
+so the training it depends on the low
+fidelity model itself
+for example in the case of the spa sweet
+model
+that is done adaptively because that's
+the nature of the low fidelity model
+but in case of the deep neural network
+for example i just selected random
+samples in the parameter domain
+so the way you do the training depends
+on the low fidelity model itself
+okay um well then quality of the for
+example that neural network based uh you
+know the move
+that they will depend on the
+the quality of the the sampling yes
+yes so the experimental design
+is not taken into account explicitly
+but rather this will be reflected in the
+constants that you get
+and that's a very good point so if you
+change the experimental design you'll
+also influence the way the algorithm
+behaves
+but this is not
+directly
+incorporated into
+the into the training procedure but
+rather it is reflected in the constants
+that you get in on your rates
+but it is a very valid point so you can
+if for example you do the
+neural network training differently then
+you might get actually better rates
+but this is up to you so this is not uh
+prescribed by the algorithm the
+algorithm just tells you if you give me
+these rates then i give you this number
+of sam the sam the training size
+you train your model and then you do the
+sampling part
+okay um
+well okay so i'm just curious um
+how bad
+you know the the low fidelity model
+could be i mean in terms of
+so i don't think there is a sort of
+measure of how inaccurate it can be but
+rather this in accuracy will be
+reflected in the way the algorithm
+behaves
+for example if you have a very very
+inaccurate low fidelity model
+you'll see that if you plug it into your
+multi-federation algorithm the algorithm
+decides that because this model is very
+inaccurate it will invest most of the
+effort into the high fidelity model
+but in our experience we actually worked
+with uh low fidelity models that are of
+course not complete garbage
+but rather low fidelity models that you
+will not use on their own
+so they give you something but not
+something very accurate
+now what it means this of course is
+application dependent
+right but it is
+very unlikely that you need a very
+accurate law fidelity models i mean
+that's the beauty because you keep all
+models into the loop
+the algorithm will compensate for the
+bad predictions of the love 30 models by
+using the high vitality model from time
+to time
+well i understand that that's depends on
+the application but you if you can give
+some you know some definite number uh
+with a maybe uh one of the one of the
+numerical results you have shown
+um
+do you have any
+you know
+idea how
+the fidelity so from my experience so
+far if you if i had a love dating model
+with a correlation coefficient of let's
+say 0.80 something 0.9
+that was that was good enough
+for for the the
+the multiplicity algorithm
+but also on a different aspect that you
+need to take into account is the fact
+that
+if you have an inaccurate low fidelity
+model if that low fidelity model is
+cheap to evaluate that actually it's a
+plus
+so this you know bring something
+to your
+uh to your algorithm but very concrete
+numbers i cannot really give you uh but
+i can only tell you that you can use uh
+let's say inaccurate profitability
+so if you have a non-linear
+high-fidelity model and use a linear low
+fidelity model that that is
+should be perfectly fine
+all right um
+let me pause my
+my question here and
+how about um
+is there any any questions from
+audiences i don't see any
+question in the chat room
+you can unmute yourself and ask
+questions
+it's rather a comment by statement
+this one
+[Music]
+grossing talk
+thank you
+bye
+simon okay thank you
+um
+thank you
+and of course if you are interested in
+these things in more detail you can
+always shoot me an email and we can
+discuss further
+i mean i mean we we do a lot of
+quantification in the lab so uh
+they they must be really interested in
+your work
+uh let me ask one other question then um
+you know the
+i don't know how you did for the reduced
+basis uh the low fidelity model did you
+do that uh in adaptively or
+yeah yes i use the review spaces matlab
+implementation
+yeah and i used essentially an out of
+the shelf
+so they use it with the algorithm there
+read the algorithm okay so you could you
+could apply that in adaptive fashion
+yeah actually also in most of my work i
+use this adaptive password uh
+interpolation which
+um i mean that's an additive algorithm
+as well
+and basically the the context of our
+algorithm then answers the question of
+what tolerance should i use for the
+multiplicity setting
+and that usually is not not as slow as
+you would think
+which
+that's really the main point but yes i
+mean adaptive algorithms are of course
+much better suited for this type of
+problem because it means that generally
+we need a smaller training size than for
+a non-addictive algorithm
+all right
+one last question from me um
+is is there
+some sort of software available i mean
+um not really but uh you can ask me
+about that i mean i have a
+i have software available so i can give
+this to you and also i think then best
+offer has a a small uh github
+so if you go on his web page at the
+grant institute he has a
+matlab code that implements the static
+uh algorithm
+but to my knowledge there is no package
+out there but uh i can if you if you're
+interested i can give you my my code
+okay sounds good all right
+okay
+the jeremy stated the george box
+statement all models are wrong but some
+are used
+almost long
+so yes
+or most of the fps and even models that
+are not necessarily useful actually can
+be useful
+which yeah
+which is which is very good
+all right sounds good all right i guess
+i don't know if there's no other
+questions we can end here um
+oh okay hong you ask how about
+scalability to cvd uh okay that's
+3d meaning 3d in uh
+state space yeah
+yeah so actually we uh
+are currently
+in the process of starting applying this
+into a 5d gyro kinetic problem so it
+shouldn't be a problem to be scaled
+there
+it's it's just a matter of how many
+resources are you
+willing to invest
+and of course the more expensive the
+high value model is then the more
+expensive rating will be
+but
+the scalability problem really
+translates into
+the low fidelity models that you have
+so this should be applicable to any type
+of problem
+so it's not there's no limitation there
+it's just a limitation on how many
+resources you need
+because if you have an application that
+takes one week per run
+then that can become problematic but
+this type of application can make your
+life easier because if you need to
+invest only 10 high-fidelity runs and 1
+million of identity runs then you can do
+it because
+you know you can do 10 super computer
+simulations and then 1 million
+simulations on your laptop which costs
+nothing
+yeah yeah
+yeah um i mean some of some of the
+applications we are running it it may
+take a week um
+yeah yes i i recently finished um a
+non-linear plasma study in which for the
+moment is only single fidelity and
+that took 56 simulations but those
+simulations were very costly so
+but it will be relatively
+straightforward to transfer that
+setting so we can go you know
+even more accurate
+so you can you can do it it's just a
+matter of how many resources you're
+going to invest
+sure all right
+all right um
+thank you i i don't see any question
+from chad so maybe with that we can end
+the
+same yeah today thank you so much thank
+you so much for the great talk
+thank you for having me
+yeah and we may
+um
+i may invite you again for the second
+to give another talk on a different
+topic this time
+yeah but but until then
+please
+take care okay thank you thank you so
+much for having me again
+great keep in touch
+okay

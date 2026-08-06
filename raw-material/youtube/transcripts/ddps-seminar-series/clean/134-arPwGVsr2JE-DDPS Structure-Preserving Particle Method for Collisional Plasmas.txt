@@ -1,0 +1,1446 @@
+Welcome to the DDPS seminar everyone.
+Before we introduce our invited speaker,
+let's go over some rules and logistics.
+Uh first of all, please mute yourself
+during the talk. But if you have
+question, you can unmute and ask
+questions or use chat room to post your
+questions so that we can address them in
+Q&A uh session at the end. Second,
+today's uh DDPS seminar is open to
+external audiences. Uh therefore, no
+classified discussion is allowed. So,
+please watch out. Uh finally, the talk
+today will be recorded and uploaded in
+our YouTube channel. All right, that's
+about it. Now, let me briefly introduce
+our speaker today. It is an honor to
+host Singu who is a professor in the
+department of applied mathematics at the
+University of Washington. She also holds
+an adjunct professorship in the William
+Boeing Department of Aeronautics and
+Astronautics. Dr. who earned her PhD
+from the University of Wisconsin
+Medicine in 2011 and was a post-doal
+fellow at the University of Texas Austin
+from 2011 to 2014.
+Prior to joining uh University of
+Washington in 2021, she held positions
+as a assistant and later as an associate
+professor at Purdue University. Our
+research primarily focuses on developing
+efficient structure preserving numerical
+methods for multiscale kinetic equations
+applied to various science and
+engineering fields. Today Ching which
+will um talk about very exciting topic
+structure preserving particle method for
+collisional plasma.
+Well, um before I pass the button to
+her, let me ask a somewhat informal
+question if it is okay with you,
+Jingway.
+>> Yep.
+>> Um okay, cool. Um nothing special. Um
+how did you get into this applied math
+computational science field? What what
+draws you into this field?
+>> What brought you know I my bachelor
+degree is in computational mathematics.
+So it's already kind of along that line
+right and uh and then I decided to to
+come to the US for PhD and since then I
+have been working on the kinetic theory
+uh and uh numerical simulation of
+kinetic problems. So and now this plasma
+uh is is a really exciting uh
+application field of kinetic theory. So
+um
+>> so
+>> and and
+>> so when you are young you you were
+already math oriented science oriented I
+guess
+>> uh I would say math
+>> math okay
+all right
+>> but now it's more yeah it's I guess it's
+more science oriented right it's science
+driven
+>> science driven
+>> using using mathematical tools
+>> yeah well um yeah engineering and
+science you know
+>> yeah engineering and science I mean the
+real problem that's bring us to Yeah.
+Well, thank you. Well, uh the stage is
+yours.
+>> Okay. Thank you, Yansu, for the kindly
+invitation and the introduction. Uh
+thanks everyone for coming. So, I don't
+really see the participants list and
+also the chat box. Uh so, if you have
+any questions during my talk, just uh
+feel free to interrupt me. So, um I
+realize this is a data driven seminar.
+So my topic here is not really data
+right uh but uh it it is very important
+uh uh uh to uh uh physical simulations
+and in fact I believe the method
+developed here has a great potential to
+be used in uh many datadriven
+applications. Um so uh my goal here is
+to uh develop a particle method for the
+plasma dynamics uh especially to include
+the collisional uh effects and in
+designing these methods we strive to
+stra uh to preserve the structure uh in
+the system. All right. So here's the
+agenda of my talk. Um so I will start by
+describing uh the governing equation uh
+for the plasma system the so-called vest
+of Maxwell Landal uh uh equation and
+then uh discuss the numerical challenge
+and then the goal of this work. So in
+fact the uh designing a structure
+preserving particle method for this
+whole big system is not easy. So it uh
+takes several steps. So uh so uh because
+of that I'll break uh uh my talk into
+three parts. So I start from the
+relatively simple specially homogeneous
+case which means we only focus on the
+collisional part of this system and then
+we'll uh combine that generalize that to
+the full specially inhomogeneous uh uh
+case to get a particle method. Uh but
+with that it's not uh the end of the
+story right once we have the particle
+system uh we need still need to do time
+matching. So time discretization turns
+out to be super important also uh to
+preserve the overall structure. So the
+third part will concern the time uh
+discretization and then I'll show uh
+some numerical results and give some uh
+uh conclusions.
+All right. I believe in this audience
+perhaps this I don't need really need
+this introduction slide but uh let me
+just uh uh quickly uh uh uh uh describe
+what is plasma right. So plasma is the
+false state of matter. Uh you can view
+it like uh like a a system of many
+particle uh uh sorry system of uh large
+number of particles. Uh but these
+particles are charged particles such as
+ions and electrons. You can find plasmas
+in nature. They are abandoned. Um but
+you can also create them uh artificially
+uh by heating neutral gas right uh and
+all subjecting it to a strong
+electromagnetic field. uh uh um study of
+plasma uh is very important uh these
+days and because uh they they have the
+huge potential uh to uh for the design
+of energy generation devices uh such as
+fusion reactors.
+Okay. So we are interested in describing
+the kinetic uh description of uh of
+plasmas. So here uh a model that is
+often regarded as the first principle
+physics uh is this so-called valass of
+Maxwell uh Landal equation. So the basic
+unknown here uh is f which is the uh I
+I'm showing here only the single species
+model. Of course the full model can be
+mat species. So here f is uh describes
+electron uh distribution um and depends
+on time t uh position x and the velocity
+uh v. So f lives in the sixdimensional
+phase space. So the left hand side of
+this equation uh we have the transport
+term and we have the forcing term which
+is Lawrence force and here this E and
+the B uh are electric and the magnetic
+fields uh these can be given externally
+all determined uh self-consistently via
+the Maxwell equations. uh once I say
+self-consistently because the max
+equations and uh the kinetic equation
+actually coupled because we have this J
+and row uh in the Maxwell equations
+these are the current density and charge
+density which are the moments of F right
+which is uh obtained from the uh
+velocity equation and finally the right
+hand side of this equation describe uh
+the collision uh effects in the system
+um um and Q is a so-called Landal uh
+collision operator. Uh as we will see in
+more detail in next slide, this is a
+nonlinear uh integral differential
+operator uh that models uh the column
+collisions between charged particles and
+you can derive this uh this operator
+from the Boseman collision operator. So
+Boseman operator describe the neutral
+gas uh collations. But here for plasma
+since particles are charged. So uh one
+need to consider this uh disgracing
+limit when all the collations uh the
+scattering angle uh uh uh uh becomes
+zero.
+Okay. Um
+so since my talk the major part of of
+this work concerns about the collision
+so I need to dive into a bit detail on
+this operator. So as we see on the
+screen so this Q the Localation operator
+is the integral uh differential operator
+and it's nonlinear because we see 2 F
+here so it's actually quadratic operator
+and a here is a matrix uh the kernel uh
+is a semi-possitive definite matrix
+given by this form uh where this gamma
+is a parameter that ranges from -3 to 1
+and in particular gamma equal to -3 uh
+describes a cool collisions. Um right so
+as we as it's written you see uh uh this
+operator in fact only uh acts in the
+velocity space uh which means the time
+variable and the spatial variable x just
+act like parameters. Um if this
+formulation looks too complicated in
+fact another way to view it is to break
+it into a clear gun part. So here if we
+focus on the gain term and we see the
+integral is with respect to v star. So
+it can pull out this gradient f and then
+define the rest by this uh a subf which
+is a matrix. Then you see this gain term
+is nothing but a variable coefficient
+diffusion uh term. And similarly for the
+last term if we factor out this f which
+is independent of the integral and call
+the rest this little f which uh little a
+subf which is actually a vector. Uh then
+you see this last term is a drift term
+right convection term. Uh so due to this
+structure a lambda operator is often
+also called the focal plank operator
+because you see it's just a diffusion uh
+uh uh convection diffusion operator
+and um another uh uh equivalent way of
+uh writing this lambda operator in fact
+uh which is also super important for our
+later uh uh method development is this
+so-called log form. Um so this one uh on
+the bottom of screen is exactly
+equivalent to the top one. As we see if
+we take the gradient of log f we get
+grad f divided by f that cancel with one
+f here which gives me the gain term
+here. And you can do the same thing for
+the loss. Uh this way this log form uh
+is most symmetric and in fact uh based
+on that one can easily derive a weak
+form from which all the nice properties
+of this uh this operator follows. Um so
+the weak form is the following.
+Basically you take a test function phi
+uh multiply it uh to your calculation
+operator and uh integrate in v and do
+some integration by parts and
+symmetriization technique you can get
+this long integral but from here you see
+uh if we pick the test the function phi
+to be a proper rate functions for
+example if fi if we pick uh phi to be
+constant then taking gradient certainly
+this term is zero then we get a
+conservation of mass and If we take phi
+to be v uh a linear function right and
+then taking the gradient uh this gives
+me the same constant right here and
+here. So again you get zero. So that's
+uh use uh momentum consolation. Finally
+if you take phi to be v squared uh then
+taking the gradient this becomes v minus
+v star. So one important property
+perhaps it's not immediately uh clear
+but I can tell you this uh V minus V
+star actually lies in the kernel of this
+matrix A. So which means again when it
+hits by this kernel A uh you have zero.
+So this way uh we can show the
+conservation of mass momentum and energy
+and one can also take the test function
+phi to be the log f then we have another
+same term here and since the matrix a is
+semi-positive definite then we know the
+entire thing is always less than equal
+to zero and with a bit more work you can
+show that uh this max uh this equality
+sign is obtained if and only if uh the
+distribution function f itself becomes
+gian or boseman maxual boseman
+distribution. So these are all about
+local properties of the collision of the
+lambda operator and in fact based on
+this one can easily derive the global
+conservation. So for the full veloas of
+lal system uh you can derive the global
+conservation of mass momentum energy and
+also the entropy decay.
+Okay, that's a brief description of the
+underlying uh uh uh equation and we see
+uh this is a huge system right very high
+dimensional so six dimension plus time
+um so due to that uh in fact to solve
+the uh uh the plasma uh uh kinetics the
+most popular method is the particle in
+cell uh method. So in a nutshell uh this
+method uh looks to approximate your
+distribution function f as a sum of
+directs right this n is a total number
+of particles wp is a particle weight xp
+is a particle position and vp is a
+particle velocity and in fact uh if we
+don't uh uh care about the collation if
+we just look at the left hand side this
+veloc equation uh in fact it's a
+hamiltonian system uh uh so it's
+conservative so so it's easy to see that
+uh uh you can solve that equation u by
+tracing uh the characteristics then uh
+uh this naturally lead uh to uh a
+coupled od system um so basically
+Newton's second law right the derivative
+of position gives you velocity and uh
+the acceleration is given by this
+laurren pausing term where this e and b
+uh this uh electric uh magnetic fields
+uh are determined by solving uh the
+Maxwell equations on a mesh. So you have
+to uh uh constantly uh uh swap between
+particle uh particle locations and and
+also uh the mesh uh values. Um so this
+is quite natural if we just want to
+solve the velocity equation without
+collisions and in fact it's a gold
+standard I would say in today's large
+scale uh plasma simulations and uh and
+then the whole thing just becomes
+solving this uh this OD system coupled
+with field equations. Uh one can do that
+carefully to preserve the conservation
+properties.
+Um but now the question is what if we
+want to include the collisions right
+coolum collisions this is a integral and
+important aspect of plasma dynamics
+especially when the plasma is a dense
+and also if you are close to the uh the
+the fusion device the collision becomes
+important um but they are often
+neglected due to their high complexity.
+uh nevertheless there are some uh widely
+used collisional algorithms in the
+field. Uh mostly so both of them uh I I
+characterize them into two uh classes
+but both of them are statistic nature
+Monte Carlo method. Uh so typically the
+way to add collisions to uh this uh p
+simulation is to add them as a second uh
+or separate step via time splitting.
+Basically you solve uh uh your your uh
+uh classical P right so you use uh
+advance that by say time some time stack
+and then you uh only add the collation
+uh effect and then you alternate um so
+there are several issues with this right
+uh first of all uh both of these methods
+are statistic nature so inevitably
+introduce stat uh statistical noise uh
+also uh the nice property is that you
+tried hard to preserve right in this
+collisionless PE uh is not necessarily
+guaranteed right to hold uh if you add
+the collisions. So that motivates us to
+uh to to think about okay if we can have
+a particle method we like p right um so
+can we still based on the p um but
+incorporate the colum collations uh uh
+into this classical p method and uh and
+hopefully to have a a structure
+preserving uh particle method for the
+full system.
+All right. Uh uh with that so let me
+first get to the relatively simple
+problem. So forget about all the veloc
+part right transport and the field term
+just look at the lal collation operator.
+How can we treat that? Uh for that I
+want to uh uh digress a bit. uh just to
+start uh with uh simplest possible uh
+particle method that people use uh to
+solve the linear transport equation and
+hopefully we can uh uh uh that can
+inspire some ideas. So um we so if we
+want to solve say this linear transport
+equation with a given velocity field U
+right um just as the classical P does.
+So what you do is you seek a weak
+solution of this form right sum of dx
+and xp is a particle location and since
+this capital u is given uh so uh uh uh
+it suffices to just trace the
+characteristics right so dx uh pdt is
+would just be given um by this velocity
+field evaluated at xp simple enough
+right in fact this is a decoupled od
+system so you just trace each particle
+individually
+that's how it works uh in the first
+place. Um but now if we want to extend
+this kind of idea to treat uh the the
+coolum collation or the lambda operator
+realize that the lambda operator itself
+is kind of diffusive type right is this
+like a drifted diffusion operator. So
+the first question, so before we get to
+that, the first question we ask ourself
+is okay, can we use this similar
+particle idea to treat the heat
+equation, right? Which is just simple
+laplashian operator. So if we can treat
+that, maybe there's a hope uh uh to
+treat the L down. Um but this is kind of
+counterintuitive, right? Because uh a
+particle method is good uh for
+hyperbolic problem but not for parabolic
+problem, right? for diffusive type. Um
+but okay, we'll see a way to get out of
+this is to try to interpret this
+diffusion operator right into a
+transport form. Then we can still sort
+of trace the characteristics
+and in fact uh early in ' 90s uh people
+already uh proposed idea of doing this.
+Um so the way to achieve that is just
+one critical uh uh uh reformulation of
+the laplashian operator. So the great
+laplash and u in fact can be
+equivalently written in this way right
+using the log uh u right you can easily
+verify they are equivalent but formally
+you see once we write it in this way uh
+this is a transport equation it's just
+your velocity field is nonlinear it
+depends on your solution right it's
+given by negative grad log u so this can
+already give us some sort of idea of how
+to use particles but one more thing we
+need to resolve is since u the solution
+itself is approximated by a sum of dx so
+log of u is not well defined right so
+you have to smooth it or regularize it
+uh so a natural way to do it is just to
+pick some kernel uh generally uh you can
+you can for example you can pick gian
+kernel and to modify uh uh your uh your
+data function right and then this u
+subron is well defined then you can take
+the log and you can take the gradient
+And that gives you a well definfined
+velocity field. The previously described
+the particle method can just apply. So
+uh this is certainly uh one way to do
+it. And then recently popularized I
+guess by this optimal uh transport
+business people realized okay in fact
+you perhaps you can do better uh to to
+maybe also preserve some kind of entropy
+structure or variational structure in
+this equation. So that's just need one
+more step. So based on this uh uh
+formulation of the heat equation if we
+further so what is log u log u is
+nothing but the first variation of the
+boseman entropy. So Boseman entropy is
+this hu defined here. So the integral of
+u log u uh if you take the the
+variational derivative of that uh you
+get log u uh plus some constant. Since
+you take the gradient anyway the
+constant doesn't matter right? So these
+two are equivalent and this motivates uh
+us doing okay we can regularize
+everything at the level of this logu but
+we can also regularize things at the
+level of the entropy right that
+hopefully presumably can lead to a
+better structure preserving method. Um
+so if we regularize this h namely we uh
+get into this log u in the definition of
+the entropy then we have h uh regularize
+the entropy and taking the uh variation
+of that and then the gradient that also
+defines uh velocity field and why this
+is possibly a better approach right
+because uh you regularize things at the
+level of entropy. Now if you take the
+time derivative of this regularized uh
+entropy and this is a simple uh uh uh
+algebra and uh then you plug in so
+partial tu is given by your equation now
+is a regularized uh hier.
+Now if I do integration part um I have
+this nice uh quantity which is always
+less than equal to zero. So in fact this
+suggests that uh that if we regularize
+things at this level at entropy level we
+may uh uh preserve the entropy
+structure.
+Okay. Now we know how to uh deal the uh
+uh the heat equation. And if we go back
+to the lambda operator luckily we are
+not so uh off right so far away from it.
+Uh remember the lambda operator has this
+log formulation. Um and uh and that has
+two f here but one f does not depend on
+the integral. So you can put it out that
+exactly gives me this nice transport
+formulation of this operator. And for
+the velocity field it also has this log
+f same as the heat equation. Right? So
+now why not we do the same thing. So if
+we regularize uh the again here in this
+context is the same entropy uh is the is
+both my entropy. So if we regularize
+this h uh uh and then taking the first
+variation and taking the uh uh the
+derivative the gradient that gives me a
+regularized uh velocity field. Right? So
+this is the basis of how to uh treat uh
+this this lambda operator uh in a in a
+particle formulation. And now if you're
+curious about how this works. So
+basically we go back to this uh uh um uh
+particle approximation of f then you
+substitute this f into your velocity
+field regularize the velocity field. we
+can easily get this nice uh particle uh
+uh uh uh form for the velocity uh uh uh
+field.
+Okay. So that is how we do uh the
+spatially homogeneous uh um uh landal uh
+uh equation.
+If we get back to the food system, let's
+see if we can use that method directly
+or there are any new uh additional uh uh
+difficulties. So this is again uh uh the
+same equation we saw at the beginning
+right the blast of equation on the left
+and uh with the l operator on the right
+and in the full uh system now we have
+both velocity particle velocity and the
+position
+and we want to trace the characteristics
+right inspired by the what we did in the
+homogeneous case uh we know okay this
+langal operator serves kind of like a
+opposing term right to update your
+velocity. So it should be uh something
+added here. However, once we get to this
+specially inhomogeneous case um we we we
+we don't see immediate generalization of
+that because now uh everything depends
+on the uh the physical variable and uh
+the XP and VP they are a pair right
+associated to one particle. So it's not
+clear how to regularize this specially
+dependent LO operator um uh um in this
+uh in this setup. So it took us some
+time uh to realize okay in order to
+adopt that idea to this food system
+especially in homogeneous case we have
+to do some uh further work. So basically
+based on our original trul operator we
+need to introduce some uh uh
+regularization uh in the physical space
+as well. So here this sh is a kernel uh
+I use uh in the in the physical space
+and then since uh the original lambda
+operator is specially uh how to say so x
+is like a variable right everywhere is
+evaluated at the same x but that is not
+compatible with this particle
+formulation so we have to assign a new
+particle location here so basically uh
+here I we insert xstar and then do
+additional integral in XAR and the
+corresponding entropy functional in this
+case uh with the presence of the uh the
+physical variable is actually a double
+integral of the Boseman uh entropy uh
+where you regularize this uh uh
+distribution function with both one
+kernel in the velocity space and one
+kernel in the physical space. So this is
+like a double convolution and basically
+the idea here is okay we cannot allow so
+it's it's it's impossible to find two
+particles with the same physical
+location right same position so we have
+to first at a spatial point x we have to
+first localize particles to a
+neighborhood of this x and then within
+this neighborhood deoize the physical
+space right uh to allow all the
+particles to to collide uh to uh
+influence each other and regarding the
+type of the kernels since later on we
+want to use this in conjunction of the
+classical pick it's natural to pick the
+kernel in the physical space to be the
+bspllan which is a commonly used the
+kernel there um uh for one thing yeah
+just be consistent with that and also
+since bllan is locally compactly uh
+supported which can presumably save some
+computational cost later on when we
+compute the velocity field and uh and
+and for this velocity space kernel you
+can either use bplan or gshian kernel.
+Okay. Now uh everything is set uh I want
+to final uh like put up this slide right
+to write down the formula in case you
+are interested. So with this new
+regularized velocity field basically it
+serves like effective force right either
+the trial velocity update and this
+velocity field big velocity field it's
+not cheap right it's involves several
+sums uh is given by this uh uh this
+summation and where uh inside uh this
+bracket we have uh this uh uh gradient
+of the variation of entropy which is
+explicitly uh computable. So it's given
+this formula.
+>> All right. Um but why this new particle
+method can't preserve the pos uh uh
+properties of the operator, right? So I
+haven't really question.
+>> Sure, please.
+>> Yeah, on the previous slide um you wrote
+FN is this mified thing and so I assume
+the dynam particle dynamics are in this
+modified these modified kernels. So this
+f_sub_2 yes it's used when you define
+this entropy part
+>> right
+>> but in fact yeah when you when you uh uh
+approximate this velocity field for this
+f you still use sum of dx so that you
+can uh get this summation
+>> I see because otherwise you would lose
+some sort of geran property when you
+move from what right
+>> the okay good thank you
+>> yeah it's only used to make sense of
+this entropy part yeah Um yes. Now
+moving a bit further uh to just to make
+it um uh uh clearer right why this uh
+this uh regularized particle methor
+preserve the property in fact it all
+lies in this discrete sort of discrete
+weak form of the collision operator. So
+for our proposed velocity field if you
+take a test function fi uh and then uh
+do a summation right in particles and
+you can do this similar trick like
+symmetriization and to get this weak
+form. It's similar to the integral the
+continuous formulation I presented
+earlier but this is the basis to allow
+you to achieve all the properties. Uh so
+if you pick five so remember we already
+take out one uh derivative uh by doing
+the integration parts. So this here the
+test function is really the derivative
+of the collision invariance 1 b and v
+square. which is 01 and VP which
+corresponds to mass, momentum and energy
+and due to this structure uh uh uh we
+can easily see this is zero and for the
+entropy uh you just pick five to be
+consistent to what's appearing here then
+you get the right sign. So the entropy
+uh also um uh uh always uh less than
+equal to zero. Okay. So that concerns uh
+the the collision part right it's
+actually uh we we interpret the
+collision as kind of bossing term so
+that they can be treated in the same
+ground as the way you treat the Laurens
+force. So we have this semidiscript
+particle method now for this full velo
+of uh Maxwell Landal system. So provided
+you solve the malro equations properly I
+mean this is standard in pic community
+uh say if you do e lattice uh this
+scheme can conserve the total energy uh
+of the system
+um but now we want to move a bit further
+right because obtaining this partic
+semidiscrete particle method is not
+everything we still need to advance in
+time in fact in our early experiments we
+just do forward all stacking just
+because this collision part is so
+expensive we don't But we cannot afford
+any implicit uh discretization. So we
+just do simple explicit time stepping
+and the conservation property is is very
+bad. So that lead us to uh to think okay
+can we design a time discretization
+uh uh scheme right for this whole system
+so that the entire uh uh uh scheme is
+energy conserving. Um before I move
+further I would say we we do have a
+solution. Uh if you want to do go
+implicit right uh you can for example
+implicit may point or trapezoidal rule
+um even with the collation uh one can
+argue uh easily the energy conservation
+however this is not a feasible method at
+least for the moment for us um uh uh
+just because collisions is just very
+expensive and uh we want to treat it
+explicitly.
+So with that uh we want to think about
+uh a proper uh structure preserving time
+discretization
+and we are actually motivated by this uh
+simple uh olaren energy conserving
+olaren type scheme. Uh it looks a bit
+busy but basically you just do a forward
+ola step for half time step to get a
+prediction and then it's basically like
+explicit midpoint rule and use the
+predicted value FAR to get the uh uh the
+chart current density jar and discretise
+your field equations by midpoint rule
+and finally using this FAR uh uh as like
+a midpoint prediction um to do a full uh
+uh like uh like uh midpoint explicit
+midpoint. So um the the the scheme is
+implicit but the impliciteness only
+appears in the field equations and in
+fact uh uh the scheme is fully explicit
+if you don't have magnetic field. uh and
+you can easily show this scheme
+conserves the energy um which cons
+consider uh contains this consists of
+this kinetic energy and also the
+electrical and magnetic energy.
+So the first question we ask ourself is
+okay in the alarm framework you have
+this nice energy conserving uh time
+discretization scheme can we translate
+that to the particle framework to get
+energy conservation right so that lead
+to our first attempt uh for simplicity
+let me for the moment I neglect this uh
+B uh uh magnetic field for simplicity
+but our scheme can be generalized to the
+electromagnetic field uh electromagnetic
+So basically we do also a half time step
+just forward Ola right uh for this uh
+system to get the prediction XAR and V
+star and use that we can define uh uh um
+the the the predicted right uh current
+charge current density and then uh we
+discretize the ampere equation yeah
+using this midpoint rule and finally we
+do a full uh uh like explicit in my
+point right uh particle push to get x
+and plus one and uh wn plus one but
+however life is not that good right so
+it's not that easy uh once we do this
+simple uh uh uh uh translation we
+realize we don't really get energy
+conservation but we are not too far off
+so uh this slide is a bit busy but let
+me work with you so basically you take
+your the last line of your scheme
+and do the difference of VN plus one and
+VN and dot product that with VP star
+which is a predicted value at half time
+step and then use your scheme. Plug
+everything here and here comes the
+important step because the way we treat
+our collisions is uh structure
+preserving is I mean conserves energy
+right remember the previous weak form we
+satisfied. So once you dot product this
+v with your velocity field with your
+collision term you get zero. So this
+term does not give you any trouble. And
+then uh for the rest it's a standard uh
+calculation. So you plug in uh the
+formula for this electric field using
+this kernel on the on the mesh and uh
+it's a simple algebra. And finally this
+lead you to this uh nice form right you
+see this is just a difference of the
+electric energy over two time step.
+However if you look at where we start
+with so this one is not quite what we
+like. If this this can be equal to the
+difference of the kinetic energy then
+combining everything we just get energy
+total energy conservation
+right and this motivates us uh to do a
+further prediction right so we still
+based on this scheme but however we do a
+further prediction on this uh uh v plus
+one as little as possible such that we
+can satisfy this equality
+so that gives us this proposed scheme.
+Uh I skipped some detail but basically
+you solve optimization problem with the
+constraint uh like this. Uh so you find
+this VP N plus1 as close as possible in
+L2 norm uh to this VP dagger. So WP
+dagger is what we obtained by the
+previous uh uh simple uh translation of
+the aren and then we do we correct that
+with this factor gamma and you can
+verify uh the such obtained uh uh vm
+plus one satisfy this uh this local I
+mean uh equality that we need on the
+particle level.
+But of course whenever we do some
+correction even though here you see the
+nice thing about it is we correct uh
+this at the particle level we don't
+correct it at a global level. So that is
+uh in fact an important property. But
+you may also ask when you correct this
+in a brute force way can you still
+guarantee the accuracy right? Because
+without this correction um we know this
+is second order time discretization and
+what's with with the correction can you
+make sure this correction uh does not uh
+affect overall accuracy that's an
+important question we need to address
+otherwise this is not a viable approach
+right so in fact uh we can show um so we
+can argue
+uh uh the the magnitude the the of of
+this correction um to the following. So
+we want to show because the overall
+scheme is second order in time. So we
+want to argue this correction is just
+not too far away from one right up to
+order uh data tq. And looking at this
+correction formula clearly vp dagger uh
+difference between uh between vp dagger
+and vpn since this is just simple
+onestep uh uh uh advancement. So their
+difference is dirty. We don't do
+anything sophisticated on that. But if
+we look at this second this term in the
+numerator and uh do some algebra using
+the scheme in fact in the end you can
+write it into the sum of two parts and
+remember this en so is basically your
+electric field at uh uh tn and this en
+uh uh plus one is is is a prediction at
+half time step. So their difference is
+order data t right and similarly for the
+velocity field you see uh the difference
+between vpn and vp star is also order
+data t together this gives you order
+data t squared and then uh uh combined
+with order data t uh you see the overall
+uh uh correction is only order data t
+cube perturbation to one and I should
+mention um yeah so this correction is
+certainly done at the individual
+particle level and in practice uh we
+found that this value gamma can become
+imaginary for some particles. So for
+those particles no correction is made.
+So we just set this gamma to be one. So
+in order to not break the overall uh uh
+accuracy of the scheme
+um so this is already a good step. In
+fact, we are not quite satisfied with
+this order 30T cq uh perturbation. We
+wonder uh if we can do better, if we can
+make that even smaller and uh and in
+fact uh we were able to do it and uh the
+detail is not that important. All we
+need to do is to insert some additional
+lines to this scheme to do a further
+correction on the electric field. The
+key is the following. with those extra
+steps um you can still do the same uh
+correction uh formula is the same. Okay.
+Um but now if you get into uh this first
+term in the numerator you see it becomes
+the following where this right part
+right this e star star is in fact a
+predictive value at half time step uh of
+the electric field then basically this
+gives you a better uh accuracy it's all
+data t squared and similarly um uh we
+can boost uh the the accuracy uh for the
+uh uh um for the collision part also to
+a delta t squared together we boost uh
+this uh um correction term to order
+delta t to the power 4 and due to the
+time constraint I don't want to uh
+discuss the electromagnetic field but in
+our paper uh we do have uh this scheme
+written down and the full scheme is
+almost explicit so the particle push
+part is explicit except the the the uh
+the field sal is implicit similar as the
+alarm scheme.
+All right. Um so
+>> are you going to show that which paper
+you're talking about?
+>> Yes. Yes. I'm going to show some
+references in the end.
+>> Yes.
+>> So uh let me jump to the numerical
+results. I want to start with just some
+uh uh qualitative results because uh I
+guess searching the literature not much
+uh uh results really about uh what
+happens if you add collision to your
+system. Um so the first one I want to
+show is this so-called wable
+instability. So we initialize the plasma
+uh in the following way. uh so the uh
+magnet so the electric field is set to
+zero and the magnetic field is uh is
+very small has a very small perturation
+and um we uh the physical domain we
+choose 32 gray points and in the
+velocity domain I should mention we
+don't need the mesh we only need this
+mesh to determine the modification
+parameter so the actual uh code does not
+need mesh um and then we use uh this
+many particles per cell and uh uh to do
+the random sampling for initialization
+and time step.1 simulated to uh uh 125
+final time. So um first of all I'm going
+to show the result. This is a a plot in
+the velocity domain because it's 1D2V u
+without collision. So sorry C is a
+collision strength. It should really be
+mu. Uh so without collation you start
+off with two gausians and you kind of
+reach this like how to say meta stable
+stability and now uh let's see what
+happens if you add a tiny amount of
+collision. So in fact you need this
+non-dimensionalized
+uh uh framework the collision strength
+is just like 10 to the uh to the power
+negative 4. So it's very small but for
+that we already see sort of a kind of
+different uh behavior right. So the
+collision try to drive things in
+velocity space to a uh to a gausian
+distribution.
+And what if now we see if we we further
+increase the collision still very small.
+Now you see uh in the end the the the
+distribution function in uh just becomes
+a single gausian due to this uh h
+theorem right entropy.
+All right. Um finally uh I want to show
+another example to showcase the the
+effectiveness of this uh global I mean
+this time discretization for global
+energy conservation. So I take here this
+two stream instability test uh it's 1D
+value and here I should say the
+collision part we're not just just to
+save the computational cost we are not
+really solving the lal we are solving a
+focal plank version of it um but it
+still preserves this conservation uh
+property um so this is the parameters
+how it's set and the time step.1 and the
+final time 50
+uh so you see there are two beams in
+velocity domain as a standard and a
+little perturbation uh in the physical
+space and here we compare with the Boris
+uh val without the magnetic field is
+just Boris scheme so we compare with
+Boris scheme and version one is our
+first version of the particle scheme
+where the correction perturbation is all
+dq version two is the improved version
+which is supposed to give better
+conservation property right the
+perturbation is on the order of delta t
+to the^ 4 and and this one is the same
+it's just a face space plot perhaps
+eyeball you don't see any uh differences
+right between all the versions but I do
+want to highlight the collision effect
+in these tests you see the first column
+is the standard one the collision list
+you probably seen that in many
+literature
+um but uh the first the uh the second
+and to the last uh column gives you the
+face base plot uh with different
+collision strengths. Still very small
+but you see that destroys that vortex
+structure uh gradually. And if we uh for
+the same uh uh test case we run it to a
+longer time say time uh 50 you already
+see. So this is a collision list case.
+We still have this vortex uh structure
+but for this 0.004 collision strength we
+almost see nothing right it's it's
+becomes close to a gion in the velocity
+domain
+um and if you check the evolution of the
+electric energy uh this is how they
+looks like. So blue line is uh the
+collisionless case and when you add the
+collision actually you see how uh this
+electric energy uh behaves but again at
+this level all three meers perform
+almost the same.
+Now if we really examine uh the total
+energy growth or behavior of your system
+we see a difference. So the first row is
+a result uh of Boris uh corresponding to
+different collision strengths. So Boris
+is already considered to be very good
+but we know it does not exactly conserve
+energy as we see here the total energy
+is uh is behaves like around 10 to the
+order minus five or 10 to the minus 4.
+And now if you look at our scheme uh
+version one you see the energy can be
+kept like to the 10 to the uh negative 9
+order very small already and if you use
+the improved version it's further uh
+decreased to 10 to the minus 12 or 10 to
+the minus 11 basically close to machine
+precision
+and we also check the number of
+problematic particles which means this
+gamma correction becomes imaginary
+generate and see how uh how they uh
+behave. Uh version one is this top row
+and version two is the second row. Uh
+it's the number of problematic particles
+recorded over time. Uh it's hard to see
+but you can see the average problematic
+uh particle numbers in version two is
+certainly much uh uh uh fewer right than
+version one which is what we expected
+right. We designed this improvement to
+uh reduce uh chance that gamma becoming
+uh uh imaginary.
+All right, I think uh that uh uh lead me
+to the conclusion. So we introduce uh a
+particle method for the veloas of
+Maxwell Landal. It can be also be worked
+for the focal plank case system. And the
+key thing here is to regularize your
+velocity field sorry your collision term
+in a way that you can treat it as
+effective false right to be added to the
+velocity update of your uh uh pick
+method. So this way uh it offers a
+unified approach to handle the transport
+field effects and collisions and it can
+preserve the conservation and entropy
+decay structure of the coolum
+collisions. And furthermore we have this
+uh explicit time discretization that
+designed carefully uh and to preserve
+the total energy of the system.
+And just to echo what I said at the
+beginning, I know this is a datadriven
+uh uh uh seminar yet in my talk. I don't
+really have much data I guess but I do
+want to say um this particle method
+right uh is quite simple and flexible
+and they are deterministic in nature
+right everything is deterministic apart
+from your initialization which could be
+random. Um so basically you just have
+this big OD system that allow you to
+model the full plasma dynamics. So I
+think in this regard this can be a very
+good like a baseline method that can be
+used uh in uh uh in the multi uh query
+tasks such as optimal control uh
+infusion problems and that will be uh
+something to be considered uh something
+interesting to be considered uh in the
+near future. So uh with that I want to
+thank you for your attention and uh
+finally uh I show some references on
+this slide. Uh so they are listed in
+this anti- chronological order. So
+basically a couple years ago we first
+come up with this idea for this
+homogeneous landal and it took us really
+some time to figure out how to do it in
+the spatially nonhomogeneous case which
+is turns out to be non-trivial and uh
+and then very recently uh uh we uh have
+this uh time uh uh uh uh discretization
+scheme in this first one we did not
+include a collision and recently we
+realized the scheme is can be uh adapted
+to also include the collision uh so that
+you you also treat the collision part
+fully explicitly and then to achieve the
+overall uh uh energy conservation. So
+that'll be all for my talk. Thank you
+for attention.
+>> Thank you. Thank you so much for the
+nice talk.
+Very nice. Very nice. um although it's
+not data driven it's
+you at the end um you indeed show that
+you know how it can be you know you know
+beneficial to use the datadri method uh
+to show
+>> I I think it's uh it's quite simple
+right in the end it's just like OD
+system and having all all the effects uh
+embedded in the system right so you can
+I think based on that it should be
+flexible enough yeah to allow you to do
+some uh some further tasks, right?
+>> I I totally agree with you. Although I
+have to say the derivation was that
+simple.
+So um I'm just um happy that we, you
+know, happen to record this one and then
+uh we can always go back to the the
+YouTube and then um you know look into
+the details. Of course, we can get the
+details from your paper as well. All
+right. Well, thank you so much for the
+nice talk. Let's have a Q&A sessions. If
+you have questions, please unmute
+yourself uh and ask questions
+if I Yeah, go ahead.
+>> Uh this is Eric Seia. I guess
+>> Hi, Rick.
+>> Hi. Um I have a couple questions. Um was
+this going to um does this modification
+for the collisions, does that impact
+Gaus's law in any way? like is it still
+satisfied through the ye grids or or is
+there errors in Gaus's law? Um so the
+collision itself I think it it it the
+way we we modify the collision does not
+affect the go law but when you
+discretize the system since we want to
+achieve energy conservation we actually
+solve the impure uh use this impure
+formulation so we don't strictly uh
+preserve G law
+>> so oh I see so like um one thing that
+people have told me in pick is that like
+when you don't satisfy Gaus's law it's
+like leaving little particles behind
+Um, and so then you have these things
+and there's within a year there's no way
+to clean that out. And so do you have a
+sense for if that can be addressed?
+>> Uh,
+yeah. I don't know exactly what you are
+referring to. So, so I I
+but I I I I think maybe just based on my
+basic understanding I think the
+collision part is separate uh from that
+issue. So um
+>> okay
+um and then I guess I wanted to ask is
+there what is the sensitivity to the
+mullification parameter?
+>> Um
+yeah it's tricky. It's tricky.
+I have to admit that. Uh um but now what
+we do is yeah we basically pick a sort
+of mesh although we never need a mesh in
+the actual simulation but we pick a mesh
+and that determine uh the great size in
+velocity uh domain and which uh gives us
+this right to be used in the
+modification but how to choose that and
+how to choose the number of particles
+per cell I don't have a good uh um way
+but for the specially homogeneous
+problem because it's relatively simple
+only so you only treat the collision and
+if you do deterministic initialization
+there I have a better idea of how to
+pick the the the modification parameter
+>> right thank you nice talk
+>> thank you
+>> okay Andreas you want to unmute yourself
+and ask question
+>> hi very nice talk I I have a a naive
+question maybe I misunderstood but are
+you uh what your scheme does is are you
+effectively sacrificing momentum
+conservation for energy conservation or
+are you conserving both momentum and
+energy?
+So there are several things right. So
+concerning the ve uh the collision part
+we are not stat sacrificing anything for
+the collision part the way we treat the
+collision indeed conserves mass momentum
+and energy. It's only for this full
+system when we want to uh add time
+discretization uh we don't have a way to
+preserve simultaneously momentum and
+energy. So we choose to preserve the
+energy.
+>> Thank you.
+Thank you Andreas. Uh Zena do you want
+to unmute and ask question?
+>> Hi Jing. Thank you very much for the
+nice talk. Um so I was wondering if when
+you use the log form for the collision
+operator. Is that something that can
+also give you a benefit if you were to
+use a continuum kinetic method not just
+a particle and cell or is it primarily
+useful for particle and cell?
+>> That's a good question. So I think
+people are exploring well perhaps not
+for the l but for focal plank say dert
+uh uh operator you can also write it
+with this log formulation. Um so I think
+formulating it that way offers uh uh
+alternative of viewing this operator as
+a transport type uh operator right so
+then if you are using olar type method
+you can use hyperbolic type uh solver to
+treat that problem uh while if you uh
+view it like really like diffusion type
+operator then what you use is I guess
+more parabolic type equations. So but in
+the end the the behavior of focal plank
+or langa operator is really like a
+combination of diffusion and advction
+right so it's a competition so you have
+a diffusion you also have uh uh uh uh uh
+convection so it's hard to say which
+formulation so either hyperbolic solver
+or parabolic solver so which one is
+better so I guess it's really really
+depends on your specific uh uh setup
+>> I see and and also I guess a related
+question if you were to look at the bolt
+man operator does the log form can you
+put it into any sort of log form that
+would give you an advantage or is that
+just too complicated to deal with?
+>> Sorry, you mean Boseman?
+>> Yeah.
+>> Yeah. So, in fact that's a that's a
+that's a great question in my mind if I
+for some time I don't know how to adapt
+this idea to the Boseman case because
+Lan operator naturally has this
+transport and discreant which allows you
+to formulate in that way. However, the
+Boseman operator is only integral
+operator, right? There's no gradient.
+Although recently in mathematical
+community, people try to interpret
+Boseman as a gradient flow. So, I guess
+it's possible uh technically speaking,
+but that gradient that metric is very
+strange. Uh I I don't I don't see a way
+to use it for numerical computation. So,
+so I don't know.
+>> Okay.
+>> It would be nice to have a deterministic
+particle, right? analog of this for the
+Boseman. Um, but I at this point I don't
+know how to do it.
+>> Okay. All right. Thank you.
+>> Thank you. Uh, Zena. Um, Ichan, do you
+want to unmute and ask your question?
+I I see you're unmuted, but we don't
+hear you somehow.
+Um,
+>> I don't hear. Um,
+Ching, do you hear?
+>> No.
+>> Okay. Well, hopefully each can fix the
+problem. Uh, let's move on to Janice.
+You're on mute and ask your question.
+>> Thank you for very nice talk. I was
+wondering uh if all these uh properties
+uh also hold very well if you have
+varying macroparticle weights or if
+you've done any tests uh with strongly
+varying macroparticle weights.
+>> No, right now we are doing a uniform
+weight just like random sampling uh for
+all particles. Um but for the uh for the
+specially homogeneous case we we indeed
+tried the for the determinist
+deterministic sampling uh uh we we put
+different weight uh on particles and
+that work well but I I uh for the for
+this full uh uh full uh inhomogeneous
+problem we haven't tried that.
+>> Thank you. Mhm.
+>> All right. Well, it um hopefully you fix
+your
+sound problem.
+Um I guess not yet. Okay, Gina, you you
+raised your hand again. So,
+>> yeah. Yeah. Sorry, I have another
+question. So, it's related to um you
+know, energy conservation. So the idea
+behind getting you know mass momentum
+energy conservation is you know you get
+better physical fidelity right but I
+guess what I'm wondering is you know you
+still have a second order method uh
+typically in pick for example so your
+error is still somewhere and so do you
+know exactly where it is because when
+you don't conserve those quantities you
+can sort of you know have a measure of
+you know where's my air physically
+speaking how much can I rely on
+Whereas uh if you are perfectly
+conserving these things, you know, do
+you know where the error is?
+>> Yeah, that's a great question that
+relate to the choice of parameters,
+right? So so like I said to be honest
+now uh in this uh full p simulation we
+we we are not quite sure how to set
+choose the mesh size right in velocity
+and physical domain right. Um but we we
+indeed carry out some convergence test
+right just to quantify the error but uh
+but these tests uh uh uh are restricted
+to the specially homogeneous case. So if
+you have any good test cases right for
+the for the full inhomogeneous problem
+I'll be happy to learn.
+>> All right thank you. Mhm.
+>> Um, okay. Let's go back to um again is
+trying.
+>> Hi.
+>> Oh, awesome. Yeah, we can hear you.
+>> Okay, that's great. Thanks, Jimmy.
+That's a very nice talk. Sorry, my
+laptop just crashed the moment I turn on
+my video. So, I guess I'll try
+video this time.
+>> So, a very interesting talk. I worked on
+the lambda operator before but uh the
+way we are using is using stocastic
+differential equation so slightly
+different point of view but uh anyway I
+have two questions to uh about the
+collision so first have you tried to
+work on uh the collision for different
+species especially when you have a very
+large mass ratio
+>> so for that case the collision is very
+difficult so how's
+>> uh how does your algorithm work on that
+case
+>> yes that's a great question so in fact
+We had paper on this multis species land
+uh uh uh uh equation but although I have
+to say it's only for the specially
+homogeneous case but there we already
+see the benefit of particle method. So
+in the past I also have experience of
+using grid based method to for this
+multis species collection model where
+like like you as you mentioned uh when
+you have this large mass ratio the grid
+based method really suffers unless you
+do some kind of adaptive mesh right um
+but particle method naturally can treat
+that. So you you just pick a different
+modification or regularization
+parameters for different species. You
+choose the them in a a proper way
+because you don't need a mesh, right? So
+that that issue uh can be can be treated
+well. So um yeah, we have we have paper
+uh uh exactly.
+>> Could you talk a little bit on how you
+choose your regularization parameter
+when you have large mass ratio?
+Yes, it's it maybe I I need to I will
+get to a bit technical detail but it's
+there in my paper. It's related to the
+mass ratio.
+>> I see. I see. Thanks.
+>> I I can I can send you to the reference
+if you're interested. Yes, actually it's
+actually related to that. It's related
+to the mass ratio.
+>> I see. I see. That's very interesting.
+>> It cannot be it cannot be chosen
+arbitrarily.
+>> Uhhuh. I see. Uh another question is
+although you didn't show it in the um
+presentation but I'm wondering have you
+tried to compare your algorithm with
+those analytical solution you know you
+have two species with two temperatures
+when the temperature react to the same
+one you have analytical solution
+available have you compared the
+algorithm to that
+>> it's it's it's there in our paper
+>> this particle yeah
+>> thanks thanks very nice talk
+>> all right awesome well I guess that's it
+uh for today unless you know someone
+else has a you know extra questions.
+One, two, three, I guess. No.
+Well, thank you, Jingu, for the nice
+talk.
+>> Thank you, Yansu. Thank you everyone for
+coming.
+>> Yeah. Well, thank you. Thank you. Uh do
+you mind you share the the slide with
+me?
+>> Uh no, I can send it to you.
+>> Okay. Cool. Awesome. Well,
+>> okay. That's it for today.

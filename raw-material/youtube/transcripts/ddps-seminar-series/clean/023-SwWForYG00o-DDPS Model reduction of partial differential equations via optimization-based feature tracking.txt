@@ -1,0 +1,2286 @@
+okay wonderful
+all right um welcome everyone to ddps
+uh seminar um people introduce our
+invited speakers let's go over uh some
+rules and logistics as usual
+first of all please mute yourself during
+the talk unless you have questions
+if you have questions you are welcome to
+mute yourself and ask those questions
+otherwise please use chat room to post
+your questions so that we
+can address them in q a session at the
+end
+second today's ddps seminar is open to
+external audiences
+therefore no classified discussion is
+allowed
+so please watch out finally the talk
+today will be recorded and uploaded
+in our youtube channel okay that's about
+it
+now let me introduce our speaker today
+it is an
+honor to host jara who
+is an assistant professor in the
+department of aerospace and mechanical
+engineering
+at the university of notre dame
+he received his phd in computational and
+mathematical engineering from stanford
+university in 2016
+i happened to be at the same phd program
+and there was your overlap with matt and
+when i was
+you know with matt at stanford
+he was really really smart student
+student and
+and also he was really really hard
+working person
+i mean i i know that from from my
+experience with him
+and obviously naturally
+he accomplished a lot
+and he was a lewis w
+alvarez postdoctoral fellow in the
+department of
+of mathematics at the lawrence berkeley
+national lab from 2016 to 2018
+and um you mad you got
+the only courier overlord from samia
+right like
+air force yeah yeah and he's the
+recipient of the early career
+uh award from air force and his research
+interests include high order methods for
+computational physics
+pde constraint optimization model
+reduction computational methods
+for resolving shocks and discontinuities
+and multi-scale
+methods okay today matt will present
+model reduction of convection dominated
+partial differential equations
+via optimum optimization based implicit
+feature tracking
+which is a great interest to us so
+please
+enjoy and expect a wonderful
+talk from matt now without further ado
+let me uh pass the button to
+matt by asking one random questions as
+usual
+um okay today's random question is
+what is your favorite tv show
+my favorite tv show um
+do i have to answer that now or answer
+at the end
+you answer right now and then and then
+well you you need a time to think about
+it
+uh i don't know yeah i i was a big game
+of thrones fan when it was uh
+especially during the earlier season so
+i guess i'll i'll say game of thrones
+it's hbo so i don't know if that counts
+as tv or not but i'll go with that one
+so
+okay that's that's less to meet answer
+thank you matt
+it's all yours all right sounds good
+thank you very much for the introduction
+young two and the invitation to uh to
+talk here so
+i'm gonna be talking about model
+reduction of convection dominated flow
+specifically
+and the obviously the the interesting
+conv and convection dominant flows is
+that they arise everywhere in
+engineering analysis and design
+specifically especially when you have uh
+you know fluids and fluid flows
+i'm in an aerospace department i spend
+most of my time thinking about aerospace
+applications
+so these problems are obviously
+everywhere in these in these fields
+and um these really constitute some of
+the most
+challenging simulations that we do as
+computational physicists because
+they have you know very strong shock
+waves they have they can potentially
+have turbulence associated with them
+if you're in very high speed regimes you
+can have to account for
+chemical interactions and ionization
+they can lead to very complex and very
+computationally
+demanding simulations so that's where if
+we want to use these for
+to drive optimization or uncertainty
+quantification it just becomes
+impractical and that's where kind of
+model reduction comes in
+and unfortunately when you try to apply
+up model reduction to these kinds of
+problems
+they face serious limitations so i have
+a little
+you know kind of probably many people
+have seen a little demos like this and
+because this is a fairly hot topic now
+but i'm going to do it again just to
+demonstrate
+the point here is that you have we can
+boil this down to a very simple 1d
+problem
+so we we take a um a we solve our cfd
+problem and get one snapshot
+we solve it we change the parameter in
+some way that that discontinuity moves
+and now we would like to approximate
+something that's in between them
+now this is something that we would hope
+that we can do we you know sample our
+very expensive high fidelity model
+on on the end points of some parameter
+configuration
+and you would like to get it in between
+and unfortunately if you're just going
+to be doing linear combinations of these
+black curves
+the the best that you can do is this you
+know jagged staircase
+approximation which i think regardless
+of whether you're an engineer a
+mathematician or anyone i think we can
+all agree that this is a pretty crappy
+approximation that we're not going to be
+happy with
+so this essentially is the issue and
+this comes up as the slowly decaying
+coleman roth in with
+you add enough samples in here um
+between these two
+black curves and you're going to
+eventually get a decent approximation
+but you need a bunch of them
+um so that's that's the fundamental
+problem and this is what i'm going to
+be introducing methods to address in
+this talk
+but before i do that i'm actually going
+to spend for the first half of the talk
+talking about
+a problem that is essentially the exact
+same problem in a different context
+and one of my solutions to that and then
+ported over to the model reduction
+setting
+so if we look at this exact same problem
+arises when we look at just standard
+finite element based discretizations of
+the same kinds of problems these
+convection-dominated problems
+so i'm going to do the same thing we
+have a mesh a 1d mesh that consists of
+two elements
+and here's our basis now before our
+basis was these nice global basis
+functions but in the final setting we
+have these
+local potentially high order polynomial
+basis functions you want to
+approximate a discontinuity now and
+everything is fine in the first element
+but then you get these oscillations in
+the second element
+it's a terrible approximation first off
+and the oscillations can actually cause
+the
+codes to crash so this is a problem
+that's been around forever in cfd
+so this the way that people deal with
+this is there's there's a number of
+different ways
+one is that you do something called
+limiting where you say i don't want to
+allow all those high order oscillations
+so i'm just going to
+crush them and reduce this to a first
+order approximation here
+and that's fine it addresses the kind of
+the overshoot undershoot issue but it's
+obviously a pretty crappy approximation
+still
+so you have to add in some mesh
+refinement near the discontinuity
+and you can get a decent approximation
+the downside of this is that we just
+went the opposite direction of model
+reduction instead of trying to make
+things cheaper we made it more expensive
+to have to refine
+um in these regions so another proc
+another approach is artificial viscosity
+say i don't want to deal with
+discontinuities
+i would much rather deal with with steep
+features so we're going to replace the
+red
+with this steep feature magenta curve
+and try to approximate that
+your oscillations are reduced still not
+a great approximation so you still have
+to um
+enrich with the refinements of your of
+your mesh again kind of going the
+opposite problem from reduction
+so another class of methods that i've
+been working a lot on is called shock
+track
+and the really the fundamental idea
+behind shock tracking is that
+we have a feature in the solution that
+feature right here is a discontinuity
+that same feature exists on our basis
+that's that we have a discontinuity that
+we can support between these two
+elements
+the problem is the features in the wrong
+spot it's the exact same problem that we
+had
+in the model reduction setting our basis
+actually had that shock that we needed
+in it but it was in the wrong spot and
+when we tried to use it as in our basis
+it you know didn't give us a good
+approximation same
+issue happens here so the idea behind
+shock tracking is that if i can deform
+my mesh
+such that the interface between the
+elements lies at that discontinuity
+now the discontinuity in my basis is
+aligned with the discontinuity of my
+solution
+and you can just nail this nail the um
+the pretty much the exact solution in
+this case
+now if we have if it's not piecewise
+constant you won't necessarily get the
+exact solution but you get
+approximations on really coarse meshes
+so
+to kind of take the motivation for this
+kind of tracking method further because
+that's the idea that we're going to be
+employing in the model reduction setting
+is that one of the benefits of this is
+that you can actually recover
+optimal convergence rates of your
+underlying scheme everyone
+probably is familiar with it if you do a
+finite element method you're going to
+get these order h to the p
+plus one um optimal convergence rates
+but that only is for smooth solutions
+but if you actually track the
+discontinuity the finite element basis
+does not see
+the the discontinuity at all you're just
+using those higher order basis functions
+to approximate
+away from the discontinuity and you can
+recover recover optimal convergence
+rates
+another kind of taking this a step
+further is that why we actually care
+about doing this in the high order
+setting
+and i really think about modern
+reduction as kind of like the ultimate
+high order method because with higher
+order methods we try to make
+try to make coarser meshes that have
+inside
+each of these elements these larger
+elements higher order basis functions so
+we hopefully can reduce the overall
+number of degrees of freedom
+roms take that to the extreme where you
+really have just one element that has
+all these global basis functions in it
+so it's it's kind of in the same spirit
+here
+anyway but the the point is that when
+you do shock tracking
+with higher order methods there's an
+exaggerated benefit so what i did is i
+ran two
+two studies here first one was i just
+used the standard kind of shock
+capturing method
+with very aggressive aggressive uh a
+mesh adaptation in the vicinity of the
+shock
+and that's what these red curves are the
+dash curves are the solid curves are
+when we do shock tracking and these are
+for diff the different colors mean
+different polynomial degrees
+so if you look at the difference between
+the dash and the solid black line
+there's there's an improvement for
+for doing a tracking approach but it's i
+mean it's not ridiculous
+but if you start to look for p2 or p3
+you're talking about five
+six orders of magnitude improvement so
+this this this idea of tracking
+really helps you a ton in the high order
+setting
+whereas it helps in the low order
+setting but it the benefits are
+exaggerated and higher percent
+and to take this kind of a step further
+is that if you just look at the
+solutions you get by tracking
+the um discontinuities i mean this is
+supersonic flow over a cylinder
+and if we use a p2 mesh which we have
+right here i mean you can get
+basically the exact solution um with
+with less than 50 elements
+whereas if you're going to be doing this
+with shock capturing you would have tons
+of refinements
+around the um the shock here and you
+would have thousands or maybe even tens
+of thousands of elements
+for a um for a um disc
+this kind of problem so that's that's my
+kind of pitch for
+why shock tracking is kind of a relevant
+thing to do but the the
+the next question should be well why do
+people not really use it in most of
+modern cfd and the the answer is that
+it's
+pretty hard to do when you have complex
+problems so you have this little
+scramjet here
+you have some some usually hypersonic
+flow would come in here or some high
+mass flow would come in here
+and you get all these shocks that bounce
+around and you'd have to somehow align
+your mesh with
+all this these these shocks and you
+don't know them by the way you don't
+know where the shocks are they're a
+function the solution
+you know the boundaries but you don't
+know the internal boundaries like that
+so this is so problems like this have
+been kind of where shock
+tracking has kind of not been able to
+make a big impact
+and this has really been where i've been
+putting a lot of my research effort in
+the last few years is developing methods
+that can specifically overcome this
+difficulty associated with
+explicitly trying to match these unknown
+discontinuity services
+okay so that's that's my overall pitch
+for shock tracking so what i'm going to
+do for the rest of my talks i'm going to
+spend about
+about 15 ish minutes talking about our
+approaches
+for actually doing shock tracking
+without even talking about romps
+and then we're going to uh i'm going to
+bring that into the model reduction
+setting and connect it to
+to what we're doing so that's that's the
+kind of the outline
+of of the rest of the talk here so so
+looking at this the shock tracking
+method that we've been developing
+as i mentioned the goal really is to
+align your
+uh mesh the phases of your mesh with
+your discontinuities
+and so we can see another example here
+of if you don't do any alignment and you
+want to represent this piecewise
+constant function
+you don't do such a good job but once
+you once you align it it's you can nail
+it with a really coarse mesh
+so the the method that we've been
+developing is based on a dg
+discoverization
+because for two reasons the first is
+that we have these intra element jumps
+so if we get those faces aligned
+the jumps capture the discontinuity and
+then um they're high order so i tried to
+make the case for high order um at a few
+minutes ago
+now the innovation of the approach here
+and this is exactly the same thing that
+we're going to be putting into the model
+reduction setting
+is that we don't treat this as a mesh
+generation problem
+even though it technically is because
+you need a mesh that conforms to all
+these interior
+shock boundaries we don't treat it that
+way what we do is we create a mesh
+that we you know doesn't know anything
+about the shock just comes out of
+unstructured mesh generation
+and then we set up an optimization
+problem that
+drives the the mesh toward one that
+aligns with shocks
+that's that's the difference here so we
+don't think about this as mesh
+generation we think about it as
+optimization
+and then we we come up with solvers to
+solve these optimization points
+so to see what that looks like we're
+going to start with just the kind of
+formulation
+we have some sort of a conservation line
+i write it as steady state if you want
+time dependent you can write it in a
+space-time
+setting and use slabs we then discretize
+with dg
+in this in this case and we get this
+kind of standard gg form with your
+numerical flux function in here if we
+write this in algebraic setting we get
+this this
+fully discrete residual which is going
+to depend on your fully discrete
+coefficient vector of of your flip the
+container flow field
+as well as the nodes of your mesh
+because we need that
+to explicitly show up on a residual
+because we're going to start moving
+these around
+we also introduce this thing i call
+capital r which is where we actually
+enrich our test functions so so p prime
+is the polynomial degree of your test
+functions we take p
+prime to be p plus one in the definition
+of r so we
+are we're bumping up the number of test
+functions
+that we have per element and we're going
+to use this to define our objective
+function
+that is in our optimization problem
+so here is the the formulation we have
+very standard
+um pde constrained optimization look to
+it something that means who worked on
+way back in
+in grad school a bunch of different
+applications and um so here's
+here's what it looks like so our
+constraint is is the dg equations the
+the standard
+galerkin dg equations um with with p
+the the test and trial space equal
+degrees um and the reason we put that
+there is because we want this method to
+inherit the properties that we like
+about dg
+it's higher order accuracy it's
+consistency conservation all those
+beautiful properties
+we want so by putting them as our
+constraint here we're going to to get
+them
+then our objective function is going to
+be composed of two terms the first one
+or the second one is going to be this r
+mesh term
+which is just kind of the obvious
+requirement that we don't want our
+mesh to degrade we want to retain a
+fairly high quality mesh
+and then this other one is this enriched
+residual where we've added on these test
+functions
+the idea is that they will penalize
+non-physical oscillations that would
+arise
+from solving on a non-aligned mesh and
+then drive the mesh toward one that is
+aligned
+so that's that's what the the
+optimization problem is now we can't
+actually going back we can't
+solve this using what people would call
+a reduced space approach that's kind of
+the go-to
+in pde constraint optimization you would
+want to like at least what i would want
+to given my background pd constraint
+optimization would be to
+update the mesh solve the dg equations
+and then plug that in here and you can
+have an unconstrained optimization
+problem
+which are easy to work with you can get
+gradients and stuff using adjoint
+methods
+but that won't work in the setting
+because we cannot solve
+this dg equation for any mesh if the
+mesh is not aligned we can get these
+oscillations that cause it to crash
+so we can't use reduced space approaches
+so we do a full space approach
+which means we lump u and x into a um
+a combined vector that i call z and we
+update that whole thing
+together until we converge to a solution
+of the optimization problem
+and to do this we use sequential
+quadratic programming so we said
+every iteration delta z is computed as
+the solution of a quadratic
+approximation to our original pde
+constraint optimization problem
+and then um the so there's a lot of
+details that go in here we need some
+approximation to
+the hessian of the lagrangian and we
+choose the search direction using a line
+search technique
+i'm not going to go into the details of
+that in this talk but this is this is
+essentially how we do that
+so to look at a few of how this works we
+start with a very simple application
+which is just advection in a oh he's not
+going to work you can hear me
+wait a second accept
+okay there we go so we have a very
+simple application where we have just
+advection in a um 2d
+domain it's a step function over here
+and the vection field is pointing to the
+upper left
+and you can see i just showed the the
+shock tracking iterations we start from
+just a solution that is
+a mesh that knows really nothing about
+the discontinuity
+first order finite volume approximation
+to start and then here's
+where um how the shock tracking approach
+works
+so we can um see that we get really
+rapid convergence to the
+optimal solution newton-like convergence
+less than about 10 iterations
+and we get to essentially machine
+tolerance and the thing to note here is
+that this is where you can see the full
+space
+a method in action because the residual
+the little r the dg residual
+is only zero i mean it's technically
+zero at the beginning because we started
+with the the first
+the finite volume solution but um we
+it's only it's not
+zero any until the very end that's all
+you're guaranteed with the with full
+space matches
+methods if you were going to be doing a
+reduced space method
+you would be having this this little r
+zero the whole time
+right so that's that's the kind of how
+these approaches work but again for this
+problem
+the reduced space approach would work
+because it's a linear direction it's not
+going to go
+unstable and blow up on you but um it
+won't work for more complicated problems
+like
+that involve the oil equations same kind
+of problem but now we have a spatially
+varying invection field
+um pretty pretty um rapid convergence to
+the solution here
+can do it in 3d um to uh to to get these
+kind of uh
+tracked fields even with if you have you
+know these curved tetrahedra elements
+so um to look at a more interesting
+example it's one d now but it's it's the
+euler equations
+um where we have flow through a nozzle
+um
+and this is the density distribution
+that you get first thing we do is we
+solve this with shock capturing we put
+down a mesh that has 50 elements
+and we um refine uh and and we get this
+um solution that's pretty much perfect
+everywhere except for the shock region
+your approximate discontinuity with this
+steep um steep gradient we're going to
+do shock tracking now
+we're going to put down a much coarser
+mesh and we're going to solve the shock
+tracking equation and you're going to
+eventually get these
+as your inter-element boundaries and you
+can see you've got one that perfectly
+aligns
+with the jump here and the yellow is
+which lies right on top of the black is
+the approximation and then looking at
+convergence rates of this you can see
+that we actually recover again these
+optimal
+convergence rates up to p5 whereas
+if you do shock capturing that the error
+is going to be dominated right at the
+shock
+and it's going to be limited to
+essentially first order convergence
+so that's that's again the benefit of
+doing the shock tracking approach
+now um one thing that i haven't
+mentioned yet and this is going to be
+important not just in this setting but
+really important also in the rom setting
+is that i can't optimize the nodes like
+i said
+so so far if you optimize the nodes
+directly all the nodal coordinates
+you're going to have nodes on boundaries
+they're going to fly off boundaries as
+the optimizer
+starts to try to figure things out
+things out and now you've just changed
+your problem
+and it's essentially meaningless so we
+have to essentially enforce the
+boundaries
+remain boundary the same boundaries that
+they started as
+dirt throughout the whole mesh motion
+process so to do this what we do is we
+introduce this mapping fee
+which is going to guarantee that the
+boundaries are preserved so instead of
+optimizing
+directly over the nodal coordinates
+we're going to introduce a collection of
+unconstrained degrees of freedom
+that i can freely change and tweak and
+however i want to
+and then plug that into my mapping and
+my mapping is going to output me
+something that
+will conform to my original boundaries
+so then it the modification of the
+tracking problem becomes very simple
+i just everywhere that i had x i replace
+it with v of y
+and i optimize over y so to see what
+this looks like i mean if
+if we go down to this very simple mesh
+down here all of these blue nodes are
+interior i can move those in x and y
+however i want to
+and you can see that like they can move
+freely in x and y
+but for example on this bottom boundary
+you can only move an x if you move it
+all in y you're changing that bottom
+boundary
+so that's where your unconstrained
+figure of freedom would be your x
+coordinate
+and the then the you would use this
+mapping to determine what the y
+coordinate has to be
+similarly here you you can't this is not
+just move x or y you have to move let's
+say pick one of them
+and then the for example the y
+coordinate then would be given in
+terms of the x coordinates and then for
+example at
+intersections of boundaries those notes
+can't move at all so
+this can all be all of these cases can
+very easily be worked out from just
+looking at the normals
+of the boundaries in the case where all
+of your boundaries are planar
+when your boundaries are curved you have
+to actually know the curvature the
+expression for the
+analytical expression for the boundaries
+so for here again we can
+still move all these nodes it's not like
+they have to remain frozen but they need
+to slide along
+their appropriate boundary anyway this
+is something you can do we have an
+archive paper on this um that we just
+put out a month or so ago
+that can be used to do this
+so just to show how this method works on
+a few um a few examples
+i'll show mach 2 flow over a cylinder
+and we already kind of saw this one in a
+half domain earlier
+we can do mach 3 flow over the cylinder
+using the same starting mesh
+kind of shows this is kind of robust to
+meshes whereas if you're doing this with
+shock
+capturing you would need to have
+different refinement regions about these
+two different areas to be able to um
+really be able to change your mock
+number like this we can do mock four
+flow over this um
+curved cylinder thing sorry over this
+curved square thing we can do some uh
+transonic
+cases this one you have to actually be
+able to slide along this curved boundary
+of the noc airfoil
+and then kind of exact same mesh we went
+from mach 0.8 to mach point uh mach 2
+um we do uh uh supersonic flow to to
+align with the
+shocks there so um i'm gonna skip over a
+few
+of the details we have to be able to
+allow elements to collapse out of the
+mesh
+because it's if when you have really
+complicated problems it's hard to
+actually just move nodes around and get
+things to align
+so that we have to be able to to remove
+elements we do very simple
+operations called element collapse where
+we essentially say we have a an element
+that's
+an edge that's too short so we collapse
+that edge and
+and remove it from the mesh that's the
+only mesh operation that's
+that's topological in nature that we
+have to do um
+so let me skip over a few of these
+things just because i don't want to
+spend too much time on this
+the other practical consideration i have
+to do is that when you have high order
+approximations you can have oscillations
+that arise so this is just an example of
+an oscillation that can kind of that can
+arise when you're doing this tracking
+if you just leave it alone it's going to
+lead to terrible sqp
+search directions and this is one of the
+this if you have this
+um as the state of your mesh and your
+solution
+this will be your next iteration even
+after doing a fancy
+line search on an l1 merit function so
+it really the oscillations spread to
+neighboring elements
+screws up your mesh it's just not good
+so you just have to sit around hope that
+those elements kind of get collapsed out
+so what we do instead is we just say i
+don't want to deal with these things so
+we go through and find the elements that
+are oscillating
+using a very standard indicator and we
+reinitialize them to their
+an average value and then we continue
+the sqp iterations from there
+and it has a pretty big impact if we
+don't do us
+uh reinitialization we get stuck here
+with these oscillations
+and inside these elements that don't go
+away and then you don't get things
+tracked
+at the the wherever they arise
+but if we do the reinitialization like i
+just mentioned those just get
+pushed out of the solution in it and it
+does not impede tracking
+so um then to just last thing i want to
+say on this before i show a couple more
+examples is that
+how do we actually get an initial guess
+right we're doing
+non-convex opt pde constraint
+optimization
+so the initial guesses are important so
+what we do is we
+um the mesh we don't really have we
+don't know where the internal boundaries
+are so really the best we can do is
+whatever
+the mesh that comes out of the mesh
+generator whether that's a structured
+mesh
+because it's a really really simple
+domain or it's an unstructured mesh
+whatever that is
+that's what we use as an initial guess
+for the mesh our solution
+there's we tried a bunch of fancy things
+here the one that
+turned out to be the best was just use a
+p0dg solution or a first order finite
+volume solution
+so that's why for that burgers equation
+i just showed this is where
+we start and one of the things these
+robustness measures the element
+collapses and the initializations i've
+done
+is that we do not need to use homotopy
+in the polynomial degree
+before we had these we had to start at
+p1 and then go to p2 and
+slowly ramp up but now we just whatever
+polynomial degree we want
+we go straight there from this
+approximation so whether it's p1 where
+we have these faceted approximations
+for p4 we we don't do any sort of
+homotopic
+okay so just to show last couple last
+examples so here's the um
+here's just a standard sod shock tube we
+start with just a jump in the solution
+and it when you have these waves a shock
+a contact and a rare faction
+that emanate from that point so this is
+what's just what the solution looks like
+but um if we we solve this with shock
+tracking we're going to use a space time
+formulation as i mentioned before
+and here's what our solution looks like
+the tracking iterations look like
+you see that initially the shock was
+tracked pretty quickly
+then you get the contact next and then
+you even get the head and the tail of
+the rarefaction
+that tracks so it's not only
+discontinuities
+that get tracked it's also steep
+features all right sorry
+it's also um non-smooth features
+including jumps and derivatives
+even when the solution is continuous
+and then there's the solution without
+the without the mesh um and then you can
+see slices um from the tracking align
+pretty well with the the exact solution
+so a more interesting example and
+actually one of my favorite ones that
+we've done so far is 2d steady euler
+equations flow over a diamond
+and we'll run this one and you see
+what's going to happen here is that we
+have a
+shock that's going to come up it's going
+to reflect and it's going to
+intersect with the shock down here which
+is going to intersect again
+and by doing this full space
+approach where we just iterate both mesh
+and the solution together
+we can get you know fairly complex shock
+interactions
+um out of this and we can get them
+tracked
+and then without the mesh you have this
+uh this approximation
+so taking that same example a little bit
+more um extreme higher mach number more
+complex geometry
+we kind of see similar behavior we can
+get the internet the intersections and
+the reflections and the curve
+um the curve shocks um out of this takes
+a few more iterations requires a bit
+finer mesh in this case
+um but but uh kind of eventually
+converges to uh
+uh a reasonable reasonable line
+reasonably aligned mesh
+okay last example um before i get back
+into uh the rom stuff
+is we're gonna look at a 3d problem um
+this is the steady euler equations flow
+over a cylinder here's our mesh that's
+only 500 tetrahedral elements
+we're using polynomial degree 2 for the
+solution and 2 for the mesh
+and this is where we start i mean you
+can tell that this is almost a comically
+bad
+solution on this course of a mesh when
+you use first order finite volumes
+and then after about 30 tracking
+iterations um we get
+this uh this this bow shock track pretty
+well and i'm
+now going to just look at the shock
+layer removing all of the constant flow
+outside of it
+and you can see that you know we've got
+hybrid approximation the boundary of
+course but that's just from mesh
+generation
+but we have the high order curved
+approximations of the actual bow shock
+that comes from the optimization
+approach okay so that was
+it on my on my kind of my first part on
+implicit shock tracking we formulated as
+an optimization problem over
+the dg solution and mesh coordinates we
+get these accurate solutions on course
+meshes and optimal convergence rates
+and then the high order methods benefit
+uh they exaggerate the benefits of
+tracking discontinuities
+and that's the these kind of takeaways
+are what we're going to pour it into the
+modern reduction
+setting so if we go back to our example
+um i can
+play the first couple things again or so
+this is this is where we're at when we
+we started is that we're trying to
+approximate the blue with just the
+the black snapshots and we got the red
+so what we're going to do now is we're
+going to now apply some of these same
+ideas we want to
+deform the domain i've been talking
+about as a mesh but it's really an
+underlying
+domain deformation to align the snapshot
+the shock and the snapshots
+with the discontinuity okay
+now the idea is that within the dg
+setting all of our elements are in some
+sense created equal and they go to piece
+them together to
+cover to cover the full mesh but in this
+setting each one of our snapshots
+is covering the full mesh and we kind of
+want them to work together so
+you know which one should i push i pull
+this one over here should i pull this
+one over here
+if you do that approach you're only
+going to be able to use one of them and
+it takes away kind of the point of the
+training
+so what we do instead is we map all of
+these
+to a common reference domain
+it's going to be a different mapping
+applied to each one but they're going to
+and then we're going to do it such that
+all of these shocks discontinuities
+whatever
+align with each other in a
+fixed reference domain using the same
+ideas of an underlying mesh staff
+a domain deformation in this
+domain there is no convection-dominated
+nature of the solution we've removed
+that
+so now we're going to approximate the um
+the the shock using these basis
+functions and
+it's not moving now so everything's kind
+of in the right spot and then we just
+push it back to
+where it was in the physical domain so
+that's that's the
+the idea behind the approach and that's
+really how it's gonna con that's how it
+connects to what we did with the
+implicit shock tracking
+for dg so so to take this idea a little
+bit farther what i have done is i've
+just plotted one single
+basis function that's going to be
+sitting in the in a reference domain
+here just some cut off gaussian thing
+and then i have some smooth mapping and
+by composing these things
+together you can move this shock
+anywhere you want to
+that's kind of what i've already
+demonstrated in some of the previous
+examples
+but you can that's that's what this
+bottom example here is by just different
+values of tau
+you can put this shock anywhere you want
+it in the domain
+with everything being smooth
+this works in higher dimensions too i
+just i have some sort of a solution here
+that's got it's it's kind of centered
+in the in the middle of this domain um
+and then i'm showing
+some sort of underlying mesh we apply
+some smooth domain deformation to it and
+we can move the peak
+over to the right right so that's kind
+of where we can we can do this
+these domain deformations can can move
+features around
+all right so now to actually start
+formulating this at a you know more
+detailed level
+we're going to now write down our
+physical domain omega
+as the results of a mapping applied to a
+fixed reference domain
+so the idea is that my conservation law
+is going to be posed
+in my physical domain omega whatever the
+domain is that you care about
+but we don't want to solve it there
+i want to solve it on a fixed reference
+domain because in the in the setting
+that i talked about where i'm going to
+be applying a different
+mapping to each of the snapshots that
+means i'm solving
+you know on different domains it's going
+to be still the same boundary but the
+interior is going to be
+morphed in different ways um so i don't
+i don't want to deal with that
+so instead of this what we're going to
+do is we're going to introduce a fixed
+reference domain and we're going to
+recast the conservation laws
+on that reference domain that's that's
+the the fundamental approach here
+this is the exact same thing that we do
+in the in the shock tracking setting
+i just didn't really introduce it at
+that level because it was not really a
+necessary detail
+here it's more of a necessary detail
+okay so now here's the
+the outline of the approach so that
+we're gonna say that we're gonna have
+we're to start with our discretization
+um which is going to depend exactly the
+same way it's going to be on our
+high dimensional model solution u it's
+going to depend on the coordinates of
+our mesh and now we've added in some
+sort of parameter
+and um we're now going to but this is
+all going to be
+imposed in the reference domain so this
+u
+means the the state vector in the
+reference domain x is the
+the the mapping to the um the the
+coordinates of the physical mesh etc
+so our offline pin is it's going to fall
+it's going to go as follows given some
+collection of training parameters
+we are going to determine our solution
+and our reference domain as well as our
+mapping
+these are going to be tied to the the
+current
+parameter that we're looking at such
+that the dominant features
+align in the reference domain exactly
+the way that my little schematic in the
+beginning
+we want them all to that feature to be
+in the same spot
+so we can apply we can compress the
+snapshots and then we can do the
+approximation of that domain and then
+just push it back to the physical
+so then the next thing is going to
+compress the snapshots the the
+compression is a lot more effective
+when the there's there's not
+discontinuities moving around
+and then finally we're going to actually
+reduce the mesh degrees of freedom
+because in a rom setting
+we don't want to have to move all of the
+nodes of the mesh independently because
+there's potentially a lot of them so we
+want to um
+reduce that and then last thing we're
+going to do that's offline then online
+we're going to give it a new parameter
+we're going to determine the reduced
+order state
+and the reduced order mesh and then we
+can just reconstruct our
+our full mesh and state
+um okay all right so here's what the
+offline procedure looks like
+so we're going to start by just um so
+we're going to be given
+the first whatever our first parameter
+is we're going to just solve the dg
+equations on that mesh
+and we're going to to take our first
+mesh
+as our whatever our reference mesh was
+so we don't need to do any kind of
+anything fancy for the first parameter
+it's just what we're using to
+seed our iterations and then after that
+we're going to solve something that
+looks exactly like the shock tracking
+problem
+that i introduced 10 or 15 minutes ago
+but it's going to still have your high
+dimensional model
+as a constraint here and you're going to
+still have a mesh term out here
+the one difference is that we're not
+going to be minimizing this enriched
+residual
+which would it doesn't really have any
+sensitivity to which
+elements align with the shock we want to
+make sure that all of these different
+snapshots align in a reference
+configuration
+so what we're going to do is we're going
+to use the the projection error
+of the um the the projection error
+essentially
+onto this onto this basis because the
+idea behind that would be that
+um when the snapshots have their feature
+aligned
+the projection error will be smallest
+and that's what that's what the
+the kind of the idea behind behind using
+this
+and then we're just going to add on the
+new solution to our basis
+and then just keep going until we're
+done and that's essentially the offline
+procedure
+so the reason again that we do this is
+that i'm just going to do an example
+before and after alignment before
+alignment we have this is just a
+different example now is that we have
+some sort of diffusion there's some
+steepening
+and uh it's kind of waning shock that
+forms here
+if we use these snapshots and we look at
+the first pod modes
+here's what you get but then if you look
+at the singular value decay
+it's very slow this is the whole
+chromograph in with
+barrier that we we hear so much about
+and if we look at the the number
+of snapshots that are required to reduce
+this to ten to the minus three ten to
+the minus six or ten to minus nine
+i mean it's it's a ton if you instead
+you align these all into one spot
+and then you do the the look at the
+first pd mode you have that
+dominant shock captured in your first
+mode and your snapshots decay extremely
+quickly
+you get 10 to the minus 3 10 to the
+minus 6 10 to the minus 9
+and like 10 10 vectors here
+so this is just more more motivation for
+why we actually go through the pain to
+do
+the offline alignment in the first place
+okay so then online the the problem is
+going to look pretty
+similar but now what we're going to be
+doing is we're going to essentially just
+we're given a new parameter and this
+should be a mu star in here sorry
+we're going to be minimizing our hdm
+residual over
+our reduced coordinates for
+our solution as well as over our reduced
+mesh
+so people are familiar with model
+reduction are used to seeing these kind
+of minimization problems
+but usually you're only over minim
+you're usually only minimizing over the
+rom state
+we are simultaneously in the same spirit
+as we did with shock tracking minimize
+over the
+state and the mesh and then we can of
+course reconstruct
+this we haven't we are working on this
+now we don't have i don't have any
+results in this paper about how to
+extend this with high production
+techniques
+particularly fits well within the the
+empirical quadrature type procedures
+like ucsw and eqp um so
+i want to just do one last quick example
+on
+what this approach kind of looks like in
+a kind of very a very simplified setting
+so to do that i'm going to introduce
+a one-dimensional domain mapping so
+here's my undeformed
+here's my deformed and i'm going to take
+everything just as linear combinations
+between these two so this would be
+my my mesh parameter s equals zero this
+would be s equals one and then
+everything would be in
+you know s between zero and one would
+give you intermediate deformation so
+this would be s one half
+now what i'm gonna do is i'm gonna
+here's my high dimensional solution
+snapshot on the left
+this is gonna be just comes from some
+solution of some advection diffusion
+configuration and then this is my
+training one
+single training point and what i want to
+predict is this one where i've changed
+some of the
+um the flow directions uh parameters and
+now the peak is concentrated here at the
+right and i want to use this
+one basis function to approximate
+this configuration obviously with
+standard model reduction it's not going
+to be a great job because the peaks
+aren't aligned but that's that's kind of
+the point is to demonstrate what you get
+by also optimizing over the mesh
+so again if we do standard residual
+minimization this is what you get
+i'm showing the mesh here to show that
+it's not deformed at all now if we also
+do this implicit feature tracking where
+we simultaneously optimize over the mesh
+and the state you move the mesh to the
+right and you move that peak over you
+pull that peak over
+now the more interesting thing is is
+here is on these contours
+so right here what i've done is i've
+done the con i've drawn the contours
+of the error with respect to the high
+dimensional model
+versus the reduced basis coefficient
+because there's one of them right so 1d
+with 1d basis as well as the domain
+mapping because there's one that's why i
+did i was insisting on 1d in both so i
+could plot these
+with contour plots and then over here i
+did the exact same x and y coordinates
+but here i'm applying the residual norm
+so if we look at the right to start with
+when you do standard
+residual minimization over just the
+states what you're doing is you're
+freezing the domain mapping to be zero
+and optimizing along only this line
+and that minimum falls right here if you
+expand your space and allow it to
+optimize over the mesh you actually find
+that the real minimum or the true
+minimum in this expanded space lies way
+over here
+so now if we see what this looks like on
+the error plot
+you can see that you're by restricting
+to this s equals zero line
+you're stuck in a pretty high error
+region
+but by you know now residuals and errors
+don't necessarily
+they're not the same thing obviously so
+we're not getting to a minimum of the
+error
+but it's falling in the low error region
+of this um diagram which is really the
+point of enriching
+of expanding the space and optimizing
+over both
+okay so now we're gonna um look at two
+examples the first one is a beautiful
+example that
+tommaso introduced in his 2020 paper
+that's just a very nice parameterized
+advection
+um uh reaction equation where it's got
+three parameters but the main parameter
+is
+in your flow direction it's what changes
+the kind of the direction
+of of your your primary steep
+feature that you've got here so just
+showed a few different um a few
+different snapshots
+and we're going to apply the implicit
+tracking procedure to this
+problem so the first thing that we're
+going to look at is the snapshots that
+we generate
+so we generated a few um different
+snapshots here this is just the
+the one that we start with right that
+reference configuration that we start
+with
+and then we have two different ones
+based on whatever our primary
+configurations
+um were and you can see that if we're in
+the physical domain you have your mesh
+that's kind of moving around um this is
+just kind of plotted to view the um
+the so you can see what the domain
+deformation looks like
+but you have um here and then here you
+can see how the the elements that were
+originally aligned
+now dip down to a line there or they dip
+up to a line there
+and then but but the key thing here is
+that if we look at this in the reference
+domain
+that's what we have down here for each
+of these snapshots and the primary
+discontinuity
+is always in the same spot or you know
+roughly in the same spot
+which is going to improve the
+compressibility of the um
+the snapshots now if we look at the pod
+modes
+the top is if you don't bother to do any
+sort of alignment
+and what you see is that these are the
+first three pod modes all of the energy
+of these modes is focused on trying to
+advect that um that that feature
+across the domain and that's where but
+you don't get any of the really detail
+elsewhere i mean it's some i guess but
+it's not really the
+it's it's much less dominant feature in
+these basis functions
+whereas if everything if that um feature
+is not moving
+all of the the higher order uh
+the the higher order modes uh the higher
+modes are going to
+you know be focusing on these kind of
+auxiliary uh features
+and not having to worry about that main
+uh discontinuity or its steep feature in
+this case
+so that's kind of the visual
+representation of what we're trying to
+do here now if we look at just a quick
+little study so what i did here is i
+just looked at a 1d parameter space by
+freezing the second
+third parameters and only varying this
+more difficult parameter that that moves
+the discontinuity around
+my test set that i'm going to be
+training i'm going to be testing both a
+standard rom
+and a rom with inflative feature
+tracking on contains 100
+samples in this one deep space and we
+the error metric that i use is the
+maximum error
+out of all of those hundred test points
+and what i'm going to do is i'm going to
+grow
+my training set because the whole point
+of trying to do this
+is trying to use limited training
+because i mean
+to be honest if you wanted to do if you
+didn't care about what the training cost
+was
+you don't really need to do any of this
+because enough of taking enough
+snapshots and you're eventually going to
+get something that's okay
+right so the whole point here is being
+able to do this for limited training
+sets
+okay so if we so that's what we're doing
+we're growing our training set from
+containing one to two to three all the
+way up to like 40 points
+and what we see is that if the black is
+the rom and the blue is the the implicit
+feature tracking
+that for you know really small training
+sets like less than size 10 here
+you know on the size one two three four
+range and there's a big difference
+or almost an organ of magnitude between
+of reduction and error between the rom
+and the rom with implicit feature
+tracking and that you have diminishing
+returns when you have large basis
+functions as you'd expect because the
+rom is starting if you're getting
+you know a decent sampling of that
+discontinuity now how it's moving around
+and getting a pretty good approximation
+so that's the
+the first study that we ran here to see
+the the kind of benefits of this
+particularly in the limited training
+regime
+now if we look at another study where
+we're actually opening up and
+considering the whole 3d parameter space
+now
+and we're considering a five by five by
+five sampling of that as our test set
+and taking again the maximum error over
+that if we do
+a training set that only contains one
+snapshot literally once one
+point sampled from the very center of
+that parameter domain you know
+not going to expect too much out of this
+because of how limited the training is
+with just the standard rom your maximum
+error is 59 but with the feature
+tracking it's still
+i would say unacceptably large at 26
+percent but it's still a pretty dramatic
+reduction down
+now we do the next one where we just do
+a two by two by two to give us eight
+snapshots
+then the rom is still at about 24 which
+is
+roughly what the implicit feature
+tracking was at with only one snapshot
+but the wrong with implicit feature
+tracking for for the eight snapshots
+goes down to
+you know five-ish percent and you can
+just see this was a kind of
+representative
+example we took this is the hdm solution
+this is the rom where you see kind of
+you don't get the discontinuity
+it's kind of smeared over the the kind
+of the range where it's varying
+and then um the implicit feature
+tracking removes that but it's not
+perfect i mean you can see these
+features down here certainly are not
+being captured that well
+even with the wrong with implicit future
+tracking when you have you know limited
+training
+but you get the you get the primary the
+dominant features out
+all right so i'm just about out of time
+so one last quick example which is just
+transonic flow over a noc airfoil
+so we're going to be this is where we're
+actually going to combine implicit
+feature tracking and implicit shock
+tracking
+um so that's where we're going to start
+our our reference cfd solver is going to
+be
+implicit shock tracking so actually the
+meshes that i'm going to be using here
+are really course i only have actually
+127 element mesh
+but we'll see we'll look at the first
+two these are going to be the snapshots
+that we're going to get
+with um with using this implicit feature
+tracking
+we have mach 0.8 here we have mach .87
+here
+and then we have a training
+configuration which is mach .85
+and um this is this is so this is our
+online approximation and you know you
+get a reasonably good approximation i
+haven't compared to hdmi i'll do that in
+a couple sites
+um now if we look at without the the
+mesh you can see what these um
+these features look like the the shocks
+are of you know varying position along
+the airfoil and they extend a different
+amount into the domain
+before they become smooth um now if we
+look in the reference domain kind of go
+back and forth between those again so
+this is in the physical domain if we
+look in the reference domain
+all of those shocks are kind of in the
+same spot and you can see that better if
+we look at slices of the solution
+so in the physical domain we have this
+shock as we you know change our mach
+number is changing kind of all
+all through here but if we then look at
+these things in
+in the reference domain boom all the
+shocks line at this one spot
+which is exactly what we wanted to
+improve the compressibility
+and approximation of these features and
+just to completely avoid
+any sort of staircase a staircase type
+um
+discontinuity approximation and then now
+if we compare the implicit feature
+tracking out the two training
+configurations
+as well as at the um the the online
+configuration
+you can see you know pretty pretty good
+um agreement between
+between the two the blue is the the hdm
+which comes from implicit shock tracking
+and the the yellow is the wrong with
+implicit feature tracking
+okay so that is um pretty much
+everything i wanted to say so just to
+summarize
+we introduced this uh implicit feature
+tracking um which is really
+i think of as implicit shock tracking
+move imported into the model reduction
+setting
+um we it leads to we align features in
+snapshots to improve
+their compressibility we do residual
+minimization over
+simultaneously same way that we do with
+shock tracking simultaneously over the
+state the reduced
+basis state as well as the domain
+mapping and then this can lead to
+accurate solutions for shock dominated
+problems
+with limited training with that i'll
+just
+i just want to acknowledge my funding as
+well as my students
+here at notre dame tens has done a lot
+of great work on shock tracking and mars
+has done a lot of great work on the rom
+implicit feature tracking so with that
+um thank you very much for your
+attention and be happy to take any
+questions
+thank you thank you so much it was a
+wonderful talk i
+i loved it um okay thank you so much for
+great talk matt let's have a q a session
+yes yes there's a club from grace
+all right um okay
+uh the questions are coming in in
+chat room okay first question from henry
+thanks for the talk do you know if this
+technique has been applied to modeling
+dislocation dynamic in solids where in
+the dislocation points you have
+diverging strain fields or in your
+opinion when looking at the problems
+such as
+uh such high resolution one might as
+well just do
+automatic molecular dynamics
+optimistic optimistic yeah yeah um
+so i haven't really done much on
+applying these kind of techniques to
+anything in
+solids yet um it's something i'm
+interested in doing
+um but i haven't i haven't really i
+haven't done anything there yet so i
+really don't know what to expect out of
+it
+um but it would be um it would be
+interesting and i do think that it
+especially the implicit shock tracking
+approach as a
+if you start with implicit shock
+tracking it's very natural to build on
+this implicit feature tracking rom
+approach on top of it that's kind of why
+i did that for the
+the airfoil the this this naka airflow
+case
+um so yes and as far as um you know when
+looking at such high relation resolution
+should you do atomistic molecular
+dynamics
+that that's a little bit beyond what i
+can kind of i guess give a
+recommendation on because i don't really
+do any work and atomistic so
+i'm probably i'm just going to probably
+skip over that because i i just don't
+really know
+okay thank you uh next question is from
+rahul i suppose this method uh
+be expected to extend it to
+be any problem where there might be a
+sort of discontinuity in the
+computational domain
+please correct rahu if it's wrong
+yeah no so that i i agree with you
+actually i think that
+because this idea is very pde agnostic
+in some sense
+where um we i mean i wrote this down
+really
+the kind of the point of departure was
+the optimization formation minimize f
+subject to you know r of u comma x
+equals zero
+so if you can kind of write your pde in
+that form
+um it it can be you know essentially you
+would think you could
+use this kind of an approach now of
+course the details of of
+and these objective functions should
+should scale or should should extend is
+at least in
+i mean that ours are a little bit
+tailored to find element settings but if
+you're using a find element setting to
+to do
+you know these these types of
+simulations it it should extend
+i i haven't done them so i don't exactly
+know what the
+the issues would be that would arise but
+um
+you know at a high level the formulation
+is not
+really tied to um to to conservation
+loss in particular
+they are tied to a few things you need
+to have the ability to move your mesh
+around obviously
+but you also need to be able to have
+inter-element jumps
+so it means you wouldn't be able to kind
+of combine this with the the continuous
+galerkin method you'd have to have
+like a dg method or a finite volume type
+method that supports
+those inter-element jumps but with those
+two things i i think there's
+are other applications that involve
+discontinuities that could be
+explored okay uh next question is from
+pearson uh great talk matt do you have
+any
+opinions on using cuboid versus
+simplicial meshes for this kind of
+method
+yeah that's a that's a great question so
+i've used
+only simplex meshes so far and the main
+reason
+is it's something that i glossed over a
+little bit i mentioned it but i glossed
+over it was um
+when so to do any of the more
+complicated
+shock structures like those triple
+points and things like that
+and even the 3d problems that have the
+simple stock shock structure you
+can't fix the topology of your mesh it's
+something that i fought with i wanted to
+fix topology of the mesh because i don't
+like doing meshing type operations
+i wanted to fix the topology of the mesh
+for like a year and then eventually just
+had to give up on it because you just
+can't
+really track things if you um if you if
+you do that
+um at least not complicated things so so
+the
+the element collapses are critical to be
+able to make this work
+and the reason that i brought this up is
+because element collapses are true i
+don't want to say trivial but they're
+very
+they're easy they're straightforward you
+can do them for any polynomial degree
+you can do them for any
+um dimension like in our code we have a
+dimension independent simplex collapse
+where it would work in 8d
+because of the the the you know known
+structure of the of simplex elements
+so it's different with hyper cuboids in
+general
+because if you collapse an edge you're
+not guaranteed that the volume goes to
+zero so you kind of have to decide what
+to do at that point you continue to
+collapse edges
+until the volume does go to zero do you
+try to work with degenerate elements
+it's just not obvious exactly how you
+would want to handle that
+it's something that i'm interested in
+doing because a lot of people when i'm
+working hypersonics they really like to
+use
+hexahedral meshes because of um just
+they get to give better
+approximations to surface heating and
+things like that so it's it's something
+i definitely
+do want to look into but it's more of a
+difficult meshing problem
+to to remove hypercubes out of your your
+cuboids out of your mesh awesome awesome
+let me
+let me inject my question by the way
+there are two more questions but
+regarding the element collapse uh in the
+context of reduce
+your reduced standard of formulation uh
+with the shock tracking
+yeah probably you don't allow element
+collapse there
+because right so okay so that's a good
+question so
+i do allow element collapses to get
+our reference mesh right so talk about
+how we need a reference domain
+so we do implicit shock tracking with
+its kind of full
+form to get that initial reference mesh
+um and then once we do that then you're
+right then we don't allow element
+collapses to
+move to align all of the the different
+snapshots
+together because then you'd be
+collapsing elements and you'd have state
+vectors that don't kind of match up
+and things so yeah so you you can't
+allow it but in but it's a different
+problem in that case we're not trying to
+align a kind of general unstructured
+method with a very specific
+discontinuity
+we're trying to take that discontinuity
+and and push it
+right so it's that's why we're kind of
+okay freezing the mesh for that step
+okay that makes sense okay let's move on
+to next question
+next question is uh by kevin is there a
+way to tie this into time-dependent
+problem
+yeah um so yes there is and so there's
+two different ways to do it
+um so the first way that we have a paper
+that's on archive right now for the
+shock tracking um
+version is just using standard method of
+lines and where you do that you
+replace your you basically just
+you pose a shock tracking problem at
+each time step
+and um and and and you use an ale
+formulation to be able to handle the
+mesh deformation
+and that's that's exactly and you could
+you could extend that approach to romps
+and so instead of having you know r of u
+comma x equals zero
+you would have a mass matrix with a u
+dot term that you've been you
+discretized let's say with
+backward euler or wrong cutter or
+whatever it happens to be
+and then um you use it in that setting
+it is inherently built really for
+implicit methods though because this
+optimization
+formulation kind of makes it so you have
+to do solves anyway so
+it would be hard to justify this with an
+explicit
+method um i haven't really thought too
+much about it other than i i just
+don't quite see a way forward with that
+but certainly if you're doing an
+implicit
+method you could do that the way that
+but the problem with that though is that
+if you have a shock that moves
+a large portion of the domain you really
+have to have if whatever you
+track let's say whatever elements track
+the shock at time zero
+you kind of have to pull those elements
+along the whole way
+or you have to do some more complicated
+solution transfer
+between you know meshes as you as you
+kind of pass it off
+past the shock off between elements so
+what we've done so far is you you would
+just track at time
+zero or whenever at whatever time the
+shock emerges you would do you you do
+tracking and then it's the same
+edges of the elements the same elements
+that track the shock all the time
+now of course if the shock moves a lot
+then you can really screw up your mesh
+so we don't really do the method of
+lines approach that much what we
+do is we do space time where we just you
+know
+no matter what you know even if you have
+a time term on there you still lump it
+inside your
+um you just think about the problem in
+one higher dimension
+and now the time derivative is just one
+more dimension in your
+your um divergence term and um you you
+solve it in space time
+and we don't have to do the whole space
+time at once the problem that i showed
+the sod problem we did we did all of
+space time together
+but we we're working on approaches we
+just do slab by slab by slab
+so it kind of looks a lot like time
+stepping but you are solving a problem
+in one higher dimension
+um to do it all albeit over a small
+little slab
+so those are the two ways that we do
+time dependent problems um they both
+have their
+like if the the method of lines approach
+would work meaning your shocks aren't
+like doing crazy things bouncing all
+over the domain
+then that would be the easiest and
+probably go-to option
+if you have really complicated things
+where you have a shock that forms and
+then bounces off something and
+intersects and goes all the way across
+your domain then
+i just don't see it really a solid path
+forward with the method of lines
+so that's why we're we're investing in
+in the the slab-based space-time
+approach for that
+okay sounds good we're related to that
+question so how about
+how how do you envision you know
+extending your method to
+turbulent flow or like mixing problems
+due to the instability
+like yeah so turbulence i haven't
+thought too much about turbulent sets um
+i it's certainly going to be an issue i
+mean the main issue with it is going to
+be
+um i mean the turbulence is going to
+kick up some unresolved features
+obviously because of of the the scales
+that are involved
+so how will the sensor there the
+objective function that we have respond
+to that
+versus discontinuities is not obvious
+because it could just
+cause the mesh to just freak out during
+all these um where all these turbulent
+um features are so i'm not sure um
+i guess overall but um what i've seen it
+i guess it depends on the regime you're
+in but shocks are usually significantly
+stronger features than
+the turbulent vortices and eddies and
+things like that
+so i still think that we could probably
+you know you know
+somehow cut off the residual under a
+certain when it gets under a certain
+point so it kind of ignores the
+turbulence
+and then still salvage it but yeah
+that's something that is a certainly an
+area to
+to look toward that's a good idea okay
+next question is by harshit uh
+thanks for the nice talk how how time
+consuming is the optimization step
+and how do you guide the choice of
+regularization parameter gamma
+yeah okay so that's a great question so
+the optimization step
+is more expensive than doing the um
+just a standard i mean if you were to
+compare it side by side to
+you know one step of our sqp thing and
+by the way it's the same optimizer that
+we use for the rom
+settings as the exact same structure we
+use the exact same
+solver for it one step of that
+would be more expensive than one step of
+a just a standard you know pseudo
+transient continuation or newton solver
+without moving the mesh
+because you have more degrees of freedom
+um so
+so yes it's more expensive but where
+where it doesn't really affect us that
+much
+is that um we are using much coarser
+meshes
+um than you would use if you had to do
+this without moving the mesh
+so that's kind of where i mean our
+meshes depending on how many dimensions
+you're in they can be
+you know one two or three orders of
+magnitude coarser than what you would
+need
+um and actually it's something that i'm
+always i'm not sure if i'm proud of or
+embarrassed of that all of the the
+results that i showed in
+in all of this talk but especially in
+the shock tracking section
+that was all done with matlab i mean we
+were able to do 3d supersonic flow and
+over that cylinder in matlab we're able
+to do that flow through that scramjet
+and matlab and we just use direct
+solvers and things so
+it's not like they're they're cheap to
+do but it's you know because of
+how dramatically you can reduce the
+number of degrees of freedom needed when
+you track shocks
+that you you can do these more
+complicated problems on
+you know not traditionally high
+performance computing platforms
+um and we are but we are extending it to
+you know domain decomposition and and
+fully you know full
+implicit solvers and things to be able
+to push to harder problems
+and more complex ones but so so yeah so
+the i guess the the summary is
+yes they are more expensive but we we
+use coarser meshes so it doesn't really
+really affect us and then the second
+part of the question i guess is how to
+regular
+choose that regularization parameter
+there's a little bit of tuning that goes
+involved with that
+um but what we we do is we adapt it
+actually we have a few different
+parameters in here
+and and they adapt as they go so for
+example this this one is is how we wait
+between the mesh
+um regularization term and not um and
+and we start it
+by um not treating the mesh uh what we
+we
+basically do is we adapt the lambda
+parameter such that those two
+contributions
+are roughly balanced throughout the
+optimization
+we don't want to let it adapt every
+single iteration otherwise it would you
+would not be converging you would not be
+converging we only allow it to adapt
+every you know
+at some frequency and then once the
+residual drops below a certain value
+meaning you're kind of in the convergent
+regime
+we we disallow the the adaptation of the
+parameter
+so it's it's it's really it's adapted to
+to balance those two terms
+and eventually just cut off because we
+don't um we don't want it to impede
+convergence
+okay great thank you matt another
+question from
+paradip great talk at a high level by
+moving the match with solution
+in a way a spatial context is provided
+in the training for neural network to be
+able to better capture the feature of
+or dynamic modes despite convection some
+works presented at ddps
+use the graph techniques to uh provide
+spatial
+this discretization context for training
+can similar graph techniques can be
+alternately yeah yeah um
+so yeah in one second let me read that
+again yeah
+provided in the training for neural
+network to be
+able to better capture the feature or
+dynamic modes
+despite convection yeah so those i i
+didn't do
+uh much of a literature review here but
+yeah that certainly is a
+um a way to do this i mean basically the
+main takeaway point here
+is that you can't just use
+the kind of the standard old linear
+basis
+approximation if you really want to be
+able to
+to use limited training and be able to
+and and approximate these convection
+dominated problems
+so ins and somewhat you need to make
+your basis non-linear somehow
+the way that i chose to make it
+non-linear is i composed it
+with this domain deformation and that
+essentially made for a non-linear
+basis there's other ways to do it the
+the you know neural network approaches
+you know young shoes worked on some
+kevin carl brooks worked on some there's
+lots of others that have worked on
+on these kinds of approaches and that
+certainly is an alternative to doing
+this that's um you know the this
+approach i would say preserves a little
+bit of the kind of standard structure
+model reduction and we do actually once
+we're in the reference domain
+we do use a standard linear
+approximation
+because that's that's the domain where
+everything's aligned so that's where we
+are using our linear approximation there
+so it does preserve a bit of the the
+kind of standard model reduction
+structure
+where you can apply standard hyper
+reduction techniques for example
+that that you would um you know that
+would have to be able to significantly
+modify it to fit into the
+neural network framework but no you're
+you're absolutely right there's there's
+this is not
+in any means the only way to do this and
+there have been other people that have
+done so
+you know these kind of approaches
+tommaso has done those similar
+approaches
+on has done similar approaches i mean
+there's there's there's lots of variants
+on these kind of techniques and these
+ideas to be able to do convection
+dominated
+uh problems something in common being
+either you know doing some sort of
+additivity or somehow making the basis
+nominee
+right right um all right let me add some
+comments
+to that i mean um yeah yes i personally
+have a research experience of developing
+a neural network
+solution representation for video
+without context
+but i do think that uh the maths
+you know you know the method he
+presented today is
+very um advantageous in a sense that the
+neural net
+you know if you have any experience of
+training the neural net it's it's a
+a lot of trial and error um procedure
+and the training itself can be very
+computationally
+expensive but on the other hand pod
+is very simple like i mean a lot of svd
+algorithms
+are out there available right for you
+and then just
+simply you apply this svd and then
+getting
+you know taking advantage of this the
+linear subspace
+uh solution representation with
+very cheap relatively cheap training
+cost
+that and then take still use that in the
+context of the convex convection
+dominated problem
+this is this is really really good work
+but as as matt mentioned that there are
+other
+methodology available
+okay with that i
+don't have any questions from the q and
+a's uh
+chat i mean chat room but
+okay i mean please go ahead and you know
+post your question if
+at the last minute if you have one but i
+just want to
+comment one more thing about the maths
+that's presentation
+you know you mentioned that you know the
+model of the reduction can be considered
+as a
+extreme case of the higher order model i
+i really like that comment
+actually i yeah i try to
+you know advertise that concept of the
+modal order reduction within the
+lawrence livermore national lab but i i
+you know i i was not that successful you
+know you know selling
+that idea yet but you know external uh
+the scholar coming here and then you
+know
+saying those kind of comments will
+definitely help
+thank you so much yeah of course okay of
+course
+all right uh i don't still see the any
+questions in the chat room i guess we
+can add so on
+well matt thank you so much it was very
+talk and
+i learned a lot and i hope
+you will continue to go distraction and
+advance you know much more for
+for more complicated problem and more
+practical and engineering problems
+and uh please keep us posted
+with uh thanks so much for the
+information
+i appreciate it yeah no problem and also
+i
+hope that audiences um this you know
+take
+advantage of as a like first exposure to
+math if you
+if you haven't seen matt before uh
+please
+contact him and then ask question and
+email him
+i'm sure he's gonna reply to you uh with
+a
+with a detailed explanation and reply
+and
+that may that may uh bring up the
+collaboration
+right right so that's another motivation
+for this seminar series
+so okay with that let's that's john
+and thank you everyone thank you matt
+thank you very much all right
+okay bye everyone bye

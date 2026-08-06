@@ -1,0 +1,1038 @@
+okay
+i think um it's time for us to start
+um we have enough number of participants
+okay i'm so honored to um
+have gyeongsu today here as a speaker
+of today's data driven physical
+simulation
+seminar and pyongsu
+is a doctoral student joint structural
+student
+at computer graphics lab at utah stuart
+and disney research studios i
+i didn't i i didn't know uh the disney
+research studio was taking a student
+maybe can say some something about it
+but his research is focusing on
+data driven approach in graphic
+applications but i think his methodology
+is closely related to many projects
+in lawrence livermore so i think it will
+be
+a great interest to many of you
+so no further dues uh here is
+so can i start yes
+so hi everyone and thanks for the
+introduction yongsu and uh thanks
+also thanks for coming to this talk
+today everyone
+so i'm yongsu uh as i said uh as young
+said i'm a joint phd student at computer
+graphics live at etheric and a digital
+research studio
+my research mainly focuses on deep
+learning methods for
+art directable fluid simulations and i'd
+like to introduce some of our
+recent works in in this talk
+so physically based animation techniques
+progressed to a mature state
+over the last 25 years like water smoke
+fracture or quality with qualifications
+even pizza have been successfully
+simulated
+which are impressive realistic
+simulations that have been widely used
+in
+digital content creation
+so i'd like to highlight the traditional
+challenges in physics-based simulation
+in computer graphics area
+so for visual effect artists it is
+necessary to have a physically plausible
+but computational efficient and also
+artractable simulation tool
+at the same time so in graphics we
+usually focus on its feature
+appearance so it's allowed to sacrifice
+accuracy to some
+extent for performance and
+controllability
+so as we believe that deep learning
+methods can provide faster
+realistic and more controllable
+simulations
+so i'd like to show some notable related
+works first
+so back in 2015 louvre and soyun
+proposed the first
+machine learning approach to replace
+particle-based fluid solver
+building uh impressive speedups
+so it can handle more than millions of
+particles in real time
+for simulating different types of
+materials i can
+viscous fluid here
+and sand for example
+so they just say this in our workstation
+with the decent gpu but yeah it's pretty
+fast
+and then this project project was a
+collaboration of our group and
+computer vision group at eta trig and
+the authors created a startup for
+developing this idea further
+and similarly thompson error employed
+convolution neural networks for speeding
+up the pressure server solution on
+grid-based
+fluid simulations and my colleague
+stefan proposed the latent space flit
+servers with auto encoders and
+lstm architectures for time integration
+in low dimensional latent space
+on the other hand other approaches try
+to enhance final visual quality of given
+simulations
+that are computed on course resolutions
+true and theory introduced the
+patch-based data-driven method for
+turbulence synthesis and ammeter
+proposed a neural net architecture for
+augmenting liquid splash models
+and theater introduced the super
+resolution method for flow data
+they used a generative adversary
+networks to get highly detailed and
+temporally coherent flow structures
+and recently we proposed a new paradigm
+called
+fluid stylization so basically we adopt
+the neurostyle transfer method to
+transfer
+style of to the images to 3d fluids
+afterwards it allows to stylize
+smoke with intricate motifs
+and colorization as well
+and look at stylization
+another trend in this field is a
+differential physics simulators
+so by holding differentiability on every
+part of the simulation
+it is able to optimize its motion
+controller or
+initial parameter settings to achieve a
+target state after certain time frames
+so it can be coupled with deep learning
+architectures and
+provide a natural interface for
+image-based applications
+some works focus on parametrized base of
+fluid simulations
+resulting from a generative model this
+generative model allows us to get a
+spontaneous response in a reduced space
+for
+prediction or controlling certain
+quantities
+for instance metanator proposed a data
+driven method for
+predicting flows around parametrized 3d
+shapes
+and parental error introduced an
+approach for blending and synthesis of
+deformation fuel
+for real-time liquid drop simulations
+so i'd like to introduce our work again
+so our work is classified as a
+generative model
+since we generate affiliate data from a
+set of radius dominating parameters like
+source position
+equal speed up smoke and time
+the title of this work is the fluids a
+generative
+network for parametrized fluid
+simulations and this work uh
+was the result of collaboration between
+ethereum technical university of munich
+and pixar and presented at the
+eurographics 2019.
+so in this paper we proposed the first
+generative neural network that fully
+constructs
+dynamic eulerian fluid simulation
+velocities from a set of
+reduced parameters once our network is
+trained
+we are able able to achieve up to 700
+times
+performance speedups compared with
+underlying cpu servers
+and our approach enables interpolation
+between
+different samples across widely
+different parameters
+while still keeping a reduced memory
+footprint
+our method provides a powerful
+compression algorithm for fluid velocity
+fields
+lastly we describe a novel
+latent space integrator for complex
+parameterization
+to illustrate the capability of our
+approach
+we show a reconstruction example
+compared against the ground truth
+simulation
+our cnn reconstructed simulation shows
+possible flow reconstruction
+even though our generative network is
+trained on discrete number of examples
+it can produce physically plausible
+interpolations which is not present
+in the training data set the simulation
+shown in the middle
+example is not on the original data set
+but we can still interpolate for an
+intermediate buoyancy value which will
+the smoke plume line between
+two discrete samples here you can see
+the
+bloom line and this is possible since
+cnns can naturally learn a non-linear
+interpolations
+between the sets of input parameters
+so now i'm going to detail how our
+general tip model works
+firstly i would like to highlight that
+the image data set and velocity fields
+are inherently
+different setup a phase dataset
+possesses eigenshifts
+while a spatially and temporally varying
+velocity data doesn't on the right side
+histogram plots of each dataset shows
+the difference in statistical features
+more clearly
+and we can see that velocity datasets
+have more complex distributions in mean
+max mean and standard deviations
+therefore we cannot train velocity-based
+generative architectures with
+off-the-shelf image-based metrics and
+i'm going to explain the modifications
+that we needed to
+doing in order to implement our fluid
+generative cnn
+so these modifications can be separated
+into three parts
+data set generation cnn architecture and
+employed loss functions
+and firstly i'm going to explain how we
+generate our data sets
+so the incompressible naviestos
+equations consist of momentum and mass
+conservation laws
+and we had several options between
+output data fields such as density
+velocity pressure and stream function in
+which we can see
+on the videos from left to right
+because of efficiency and physical
+physical constraint
+we chose velocity fields as our training
+data set
+so here we show videos of several
+examples since
+using our one of our training data sets
+so in this example we vary the inflow
+velocity
+and the buoyancy of a smoke source
+traveling horizontally
+on an open container so there are five
+inflow velocities three buoyancy values
+and
+250 time frames yielding 3750
+unique velocity frames as training data
+sets
+due to the inherent nonlinear nature of
+the navistos equations
+these three priorities already created a
+collection of widely different
+simulations
+so going back to the overview of our
+approach
+i'm gonna detail next our architecture
+so in our first attempts we tried
+several unsupervised
+architectures to reconstruct fluid
+velocities
+from a laden space representation
+for instance bcgan acgaem
+introspective gan and and so on
+but you know they all failed in my
+attempts
+it's because of our field attempts and
+since we are implementing the first
+generative method for fluid simulations
+we decided to keep it very simple
+thus our architecture is similar to the
+generator of begin method
+we notice that skip connections and wiki
+value activation functions
+help us to produce sharper results
+additionally we can add linear
+transformation layers
+to intrinsically work with string
+functions which i'm going to detail
+later
+so lastly i'm going to show how we
+modify the loss functions
+in order to fit fluid data
+so as we train on velocity data from
+fluid simulation
+it is important to satisfy each curve
+constraints
+so one of those constraints is that
+values are incompressible in this case
+which means that the velocity fields are
+divergence-free for simulation's
+constant density
+by taking curve on the output of the
+metric
+we can force a network to learn
+corresponding stream function
+of desired velocity output even without
+crunch or stream function data
+this guarantees divergence-free velocity
+fields
+however in case of liquid simulation
+the velocity profile at the at the
+interface is partially divergent because
+the
+air phase is obtained by velocity
+extrapolation
+so in that case we train the network
+without divergence reconstructing
+we show the difference between the
+output train without and with divergence
+reconstraint
+in the closer views we can see that
+accumulated divergence reduce the
+amount of smoke density while attraction
+so
+left is just purely velocity base
+middle is divergence free version and
+the right is ground truth
+the l1 loss function doesn't pin down
+the derivatives
+if the data is too smooth this can be
+seen on the
+the reconstruction plot
+both left and right approximate the same
+l1 loss compared to a base
+the black which is represented in the
+black line signal
+first we increment the loss functions
+to also match the jacobians of the of
+the original simulation data
+this is especially important for string
+function fields
+since we use the derivatives of those
+to reconstruct velocities here
+on the top part we see the
+reconstruction without jacobian loss
+which produces
+noisy artifacts from gradients and on
+the bottom image
+with the jacobian laws
+so here are results for parametrizable
+scenes
+so in this smoking scene our generative
+model interpolates
+inflow velocity the not presented in the
+original data set
+on the left we see direct crest policies
+while on the right
+issues cnn interpolation
+interestingly we could see how our model
+interplays on off-cycle position
+notice that even though the middle scene
+is not shown
+during training it successfully
+generates interpolations
+so we compare it to the ground truth in
+different time frames
+and we can see that it still shows
+plausible results
+even compared to the ground truth
+all method also can handle liquid
+simulations which have discontinuous
+boundaries across the
+liquid air interface so on the left is
+ground truth while on the right we show
+our genitive approach
+we demonstrate the work of liquid
+dynamics are well preserved
+here we interplace on the distance and
+angle of
+two liquid spheres and our model
+reconstructs the new
+in-between parameter point
+we would like to highlight that the
+interpolation quality depends on the
+sampling density in training data set
+from left to right there are 10 12
+14 samples in liquid ball positions
+notice that 10 positions the initial
+leakage drop is not reconstructed so
+well
+however as we advance further in the
+simulation to the time
+that the liquid hits the beizing we
+found out that
+interestingly the matrix is more complex
+structures and can
+still recover the crown splash
+accurately
+our press is also able to interpolate
+between non-trivial parameters such as
+viscosity
+the green liquids show correspondence to
+the ground truth viscosities while
+pink liquids show the sort of visuals of
+interpolated
+viscosities by our network
+this is another interesting example as
+we can interpolate on time
+we can create a slow motion effect by
+sampling
+more or more velocity fields in time
+axis
+so what if we want to extend our
+approach to
+a more difficult sense to parameterize
+our example of a scene with the
+difficult parametrization is this moving
+smoke scenario
+we could parametrize the simulations by
+the history of its source positions in
+time
+but this creates a large parametric
+parametrization space that makes
+the training unfeasible
+so if you have no feasible
+parameterization
+one way we can do is to build a reduced
+uh parameterization by
+manual reduction for manifold learning
+so one could employ linear dimensional
+schemes like pca svd
+however many subspace representation can
+learn more about representative features
+of the data manifold
+therefore we chose an auto encoder
+subspace representation this is common
+option on the context of
+machine learning algorithms
+so in our setting the decoder is just
+identical to our previous generative
+model and the encoder
+is just a decoder mirrored architecture
+and below we show some examples of
+consecutive latent codes
+in time the issue now is that
+the time information is diffused in
+latent space
+so for the given latent cause the time
+denoted by the highlighted red voxels
+first we need to know how to advance
+time in the laden space
+therefore we designed the novel latency
+based integrator which helps
+navigate how to go from the current
+latent code
+to the next one and then we construct
+the corresponding velocity field and
+which consists of
+a fully connected neural network that
+maps uh subsequently then cause
+and yeah here it works like this again
+so as your as a visual extended
+parameterization
+we could successfully handle new uh
+source motion
+that the network hasn't seen before
+during the training
+so here is our performance table
+and as i mentioned earlier we could
+achieve
+up to 700 times speed ups compared to
+the underlying
+cpu surface and in terms of compression
+ratio we could achieve like
+more than 1000 uh
+and when we compare to the famous
+compression algorithm in a scientific
+visualization called
+floating point chip we also could much
+better measures in terms of compression
+ratio
+and also in the errors
+so of course there are some limitations
+of our method
+so the reconstructed data is too famous
+so one remedy could be in
+gaen so train with the discriminator but
+it usually hallucinated high frequency
+details so it's not physically plausible
+and ghosting may happen if the data is
+not sampled with
+enough density and boundary conditions
+introduce the discontinuities that might
+leave the liquid particles hanging
+and for the latent space integration it
+can be also
+improved and we just use a simple
+multi-layer perception
+so which might not be an optimal option
+so in summary of the of this work
+contribution was
+uh we proposed a fast and plausible
+approximation of parametrizable eulerian
+fluid simulation with high compression
+ratio
+and also proposed to level latent space
+integrator
+and it could be suitable for games and
+real-time virtual environments
+and as a future work yeah we had to
+handle some boundary conditions
+and we can improve the latent space
+integration for example with the lstm
+and we can bypass the modeling by
+directly reconstructing capture data
+as well so that was the
+brief overview of the our first work d
+fluid
+and there were two more follows to this
+work one uh is uh frequency or
+reconstruction of fluid simulations with
+uh charted mattress and the second one
+was the recently
+presented at the simple german computer
+animation
+so titled latent space sub subdivision
+so i'll just gonna give a very
+quick brief overview of each work
+so as i mentioned the default uh the
+reconstruction quality
+wasn't perfect so it basically shows two
+smooth wizards
+so in this work we try to improve the or
+bringing back the high frequency details
+while reconstructions
+so the idea is that we try to persist
+problem in a spectral domain
+so for uh from training sample the
+the parameter c and the u the velocity
+field of c
+we can fit this to reconstruct the
+uh use c hat which is the g is the
+generator the d fluid architecture
+and we can take the free transform of
+the
+reconstructed velocity field also can do
+the same thing on the
+ground truth and then compare the
+each band the the frequency of each band
+by filtered by each
+box filters for example
+and then compare the
+frequencies in each event and then yeah
+so that was the basic idea because to to
+bring the high frequency back so that we
+can give more
+uh impacts on the the high frequency
+area
+so the the free fourier loss was uh
+basically can be constructed by the
+magnitude comparison or phase or norm
+but we just took the normal comparison
+with the l1 loss
+and this was the result of the d fluid
+which is baseline
+and this is the result of the this work
+the follow-up
+and this is ground juice maybe i can go
+back again so baseline
+and improve work and then this is ground
+chest
+so that was a brief overview of the
+follow-up of the fluid
+and and this is more direct
+follow-up of the d fluid
+so in this paper
+we try to have more
+stable and controllable integration in a
+latent space
+so the contribution is
+basically provide the joint end-to-end
+training
+to allow the holistic view on both
+temporal
+and spatial components so within
+d fluid we train the auto encoder
+separately just to get the
+spatial representation to compress
+spatial representations and then train
+the
+the latent space integrator separately
+for the time integration but in this
+work we do the joint training
+to give a holistic view on both sides
+and also to be more generalized
+we separate the we subdivide the latent
+space
+to be more physically informed
+so they could be more generalized and
+robust and stable
+in a temporal prediction and also speed
+ups as well
+so this is kind of a schematic view like
+the the right one the label no split
+shows the
+like uh show the latent space
+uh trend laden space of uh which is
+train on
+density and velocity fields so if we fit
+both informations to the auto encoder
+and the laser and then we take a look at
+the latent code
+then the latent space has like a
+diffused
+information of both quantities but by
+in this work by constraining for the
+soft constraint on the latent space
+we try to separate the
+uh the spaces for storing the
+quantities or its velocity and density
+and we could have more structured
+latent space in time and then it helps
+for better and stable
+temporal predictions so
+last one is the
+pca visualization of the network without
+any constraint
+and then b is the visualization of the d
+fluid laden space and the
+right one which shows much more
+structured
+latent lines
+are the result of this work
+so
+here's uh the revert the visual readers
+of this work
+so it shows better predictions and in
+terms of long-term predictions
+the no split version which is the fluid
+start to fail after
+like certain like 300 frames for example
+but the hours is much more
+stable
+here it shows like it now
+allows some controllability on the
+latent space we could
+fit additional obstacle information in
+the laden space
+which wasn't uh able to be handled
+in a previous version and this is a
+visual of 3d
+so
+that was the first part of
+our uh of this talk and the second part
+i'd like to present some other work
+about the
+vortex extraction which is uh usually
+done in a scientific visualization field
+and this work is titled a robust
+reference frame extraction from
+unsteady to the vector fields with
+convolutional networks
+and presented at the eures last year
+so the visualization process can be
+commonly summarized to a four-step
+procedure
+the first we pre-process the raw data to
+filter
+unnecessary parts or fill out missing
+parts by
+smoothing or resampling or interpolation
+then feature extraction will be followed
+as
+we dig out what we want to see
+the next step is mapping and rendering
+to match corresponding graphics
+primitives to the extracted feature
+and to obtain a final image
+in recent years deep learning has been
+quite successful in many computer vision
+tasks
+and today i'd like to show how deep
+learning can
+combine pre-processing and feature
+extraction in one step for visualization
+so in order to understand fluid dynamics
+better we investigate the features or
+patterns in vector fields
+so in this talk the feature that we want
+to take a look at is
+vertices as seen in the video
+vertices themselves are studied in many
+different applications such as for
+engine design
+or blood flow analysis
+the main challenge in these applications
+is about how to extract vortices
+in unsteady flow fields
+a vertex is commonly understood as a set
+of particles rotating
+rotating around a common point or axis
+if the flow is viewed in a correct
+reference frame
+here we show uh three different
+reference frames to illustrate how they
+affect the visual vertex extraction
+on the left and right reference frames
+by standing still and arbitrary movement
+leads to the failure of vertex
+extraction
+while on the middle linearly translating
+reference frame shields plausible
+wizards
+this dependence on the reference frame
+is what makes
+vortex extraction in unsteady flows
+difficult
+to avoid this problem we want methods
+that
+are invariant under reference frame
+motions
+a popular class of reference frame in
+variance is called objectivity
+which is the the invariance to a smooth
+rotation and the translation of the
+reference frame
+on the right image we can see
+translating reference frame while
+rotating
+now the question is how can we find
+vertices objectively
+the method that we take is to find the
+reference frame in which
+flow is steady the advantage of these
+ways is that a standard techniques of
+steady flow
+become applicable such as critical
+points searching 2d
+or surgically high mass in 3d and the
+search is formulated as an optimization
+problem
+so let's look a little bit closer at the
+optimization problem
+given is an unsteady flow v at position
+x and time t
+and we want to find the the parameters
+of an objective reference frame
+transformation
+here q and c such that the time partial
+is minimized meaning that the flow is
+steady
+and here we show a high level
+illustration of this
+optimization problem eventually
+the time partial depends on of the
+second order derivatives of
+transformation parameters and it is
+difficult to
+robotically estimate if the data is
+noisy
+so as an example we show vortex core
+lines resulting from linear reference
+frame optimization method of skin
+through error
+on the left side horizontal plane
+represent
+a spatial domain while vertical axis
+represents time axis
+on the right side also shows our vertex
+core lines from the same method but on
+noisy data
+on the top right corner we can see
+incomplete vertex core lines compared to
+the left side
+this result implies that existing method
+is sensitive to noise
+by conditioning the neural network to
+noise to
+noisy inputs and resampling artifacts we
+obtain numerically more stable
+research than existing optimization
+based approach
+so in this paper we propose the first
+convolutional network that can robustly
+extract the optimal reference frame of
+noisy unsteady flow by combining
+filtering and extraction pipeline
+in addition our second contribution is a
+novel parametric flow mixture model for
+a large collection of vector fields data
+set which is typically required for
+supervised learning
+so now i'm going to illustrate the
+overview of our method
+our method takes the patches of unsteady
+flow
+and corrupted by noise and resampling
+artifacts as an input
+and infer the first and second order
+derivative derivatives of
+reference frame transformation
+parameters
+as we need a large number of vector
+fields for supervised
+learning we first synthesize the steady
+flow
+and transform it to unsteady flows with
+a random transformation
+then the degenerated with noise and
+resampling artifacts then finally
+performs
+supervised learning next i'd like to
+detail the
+steady flow synthesis
+so how do we generate steady flow fields
+first
+so if we have more feasible
+parametrization
+one way we can do is to do the reduce
+parametrization by dimension reduction
+for manifold learning as i mentioned but
+one could employ
+but however we're not aware of enough
+real world data for learning this task
+and we use a pairs of unsteady flow and
+transformation parameters for training
+but there is no ground truth parameters
+in measured data
+moreover these reconstruction approaches
+require additional confidence for
+physically plausible flows such as
+divergence 3
+first we propose a parametric mixture
+model
+for steady vector fields
+since we mainly interested in vertices
+we looked into fluid dynamics
+literature and made the use of batista's
+experimentally obtained
+vertex model so you illustrate the
+the tangential flow velocity
+and uh for the rotationally symmetric
+uh unit vertex and it takes rc
+radius with the maximum velocity and
+shape exponent as a parameter i'm just
+gonna skip the details
+so we show an example of the case that
+the rcs1 and
+ns2 top image is illustrated by
+a line integral convolution with color
+coded velocity magnitude
+and the bottom is the plot of tangential
+velocity field along
+the radius so interestingly the tista's
+profile contains other well-known vertex
+models such as kaufman rankine and the
+rambojim model for specific values of
+n then based on batista's velocity
+profile
+we define a parametric model first for a
+steady flow
+with a critical point at t
+uh divergence in a vertical motion
+so in total each primitive has 8 degrees
+of freedom
+so we show some examples of different
+parameterizations
+all models represent a variety of
+different flow structures
+including vertices saddle and zinc and
+source
+lastly we define a mixture model of end
+flow of
+primitives since vector field patches
+might contain multiple critical
+points so our method
+leads to a large number of different
+vector fields
+we found that the parameter space needs
+to be restricted to physically plausible
+flows
+first we fit our model to
+numerically simulated flows
+so first with the extract optimal
+reference frame to make flows
+steady then we perform the
+simulated annealing followed by gradient
+descent to fit the
+model parameters and the l1 distance
+with the gradient is used as distance
+function between velocity fields
+so here we show a fitting example with
+one flow component
+component on the left and the reference
+flow on the right
+so we with only one model it doesn't
+approximate the reference flow
+perfectly
+with two more or two more model
+components it gets closer to the
+reference flow
+and again with three it shows a adequate
+uh match to the numerical data
+we have seen how well we can approximate
+a single patch from
+numerical data here we visualize the
+approximation
+error across the entire domain using the
+heat maps of fitting residual in a
+cylinder
+filled with varying number of models and
+the domain around the vertices is well
+approximated with the three model
+components
+and we show that we can approximate flow
+around vertices
+furthermore we want to
+generate more flows looks like a given
+numerical flows
+which share similar flow characteristics
+for that region we approximate the
+distribution of
+individual parameters and it allows
+sampling for
+further steady vector fields patches
+so going back to the overview of our
+method
+so far i have explained how we develop
+our parametric mixture model for
+steady vector field synthesis
+in order to train our network that
+recovers the reference frame
+transformation
+in a supervised manner we have to
+generate unsteady vector fields with the
+unknown ground truth transformation
+for that we start from a steady vector
+field and
+transform it to unsteady fills with
+random reference frame transformations
+finally transformed unsteady fuels are
+degenerated in order to
+condition the network
+so we consider two operations for
+degeneration
+the first one is additive uniform noise
+and the second one is download sampling
+as a distortion artifact
+by using uh already generated unsteady
+flows for training the network can
+combine filtering and reference frame
+reference frame extraction in one step
+so next is supervised learning for
+reference frame
+extraction so we design our architecture
+to efficiently handle
+unsteady flow so instead of
+using a sequence aware architecture like
+lstm
+we mainly used 3d convolution kernels
+for feature extraction in spatial and
+temporal domain
+simultaneously and each convolution
+block is
+followed by batch normalization relative
+activation layers
+and two multi-layer perceptions are
+added for final inference of parameters
+so here are some some results of the
+training and validation
+firstly we have tested our model on the
+test data which hasn't seen to the
+network while training
+we had compared our wizard with linear
+optimization method of cancer error
+and on the left the visual linear
+optimization
+doesn't match to the ground truth on the
+right side
+in the middle however our method
+robustly handles
+degenerated flows the numbers in
+parenthesis are mean square error and we
+obtain up to two orders of magnitude
+lower errors than linear optimization
+method
+we also apply our network to unseen
+numerical data to evaluate
+how well the model is generalized
+we used ceiling the flow with the
+resolution of
+640 by 80 by 5
+and our network is trained on the window
+size 16 by 16 by 5
+so we slide the window by stride one and
+yeah and we illustrate the single time
+slice of the data and degenerated one
+and in the closer view we can clearly
+see the difference between
+those flows
+quantitatively our method
+shows consistent robotness
+on a varying scale of resampling
+artifacts
+here metric used the magnitude of time
+partial of steady reference frame
+the orange line is hours while blue line
+is
+from a linear optimization method
+so this is the qualitative results
+and also here this is uh
+tested on the resampling artifacts
+and also we showed a better result
+compared to the
+naive linear optimization method
+so but the limitation
+we
+our network hasn't seen to the the
+obstacle or boundary data
+and our parametric mixture model also
+can be pre
+improved for better accuracy and didn't
+extend to 3d yet so
+there are some summaries so we utilize
+the cnn to combine two steps of
+featurelization pipeline in the
+end-to-end manner
+the filtering and the feature extraction
+which it can be uh
+can be difficult to handle by the the
+knife
+optimization method
+so yeah that's i think
+all for my side and thanks for your
+attention and if you have any
+questions i'm happy to answer to that

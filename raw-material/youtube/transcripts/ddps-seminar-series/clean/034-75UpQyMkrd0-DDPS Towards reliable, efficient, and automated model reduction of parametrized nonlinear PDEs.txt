@@ -1,0 +1,1641 @@
+all right uh
+welcome
+everyone to the ddps seminar uh before
+we introduce our invited speaker let's
+go over some rules and logistics uh
+first of all please mute yourself during
+the talk unless you have questions if
+you have questions you are welcome to
+unmute and ask
+otherwise please use chat room to post
+your questions so that we can address
+them in q a session at the end second
+today's gdpr seminar is open to external
+audiences
+therefore no classified discussion is
+allowed so please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is a an honor and it's my pleasure
+especially because
+today's speaker i
+know
+very well
+who is masayano
+he is a assistant professor in the
+university of toronto institute for
+aerospace studies
+he obtained his bachelor's degree in
+aerospace engineering from georgia tech
+master's degree
+in computation for design and
+optimization from mit and phd in
+aerospace computational engineering from
+mit
+his research interests lie in the
+development and assessment of numerical
+methods for pdes
+with emphasis on adaptive high order
+methods error estimation
+model reduction and data simulations
+i know he's giving a
+very
+very good talk so you can anticipate a
+wonderful talk from masa
+today masala will talk about
+words reliable efficient and automated
+model reduction of parameterized
+nonlinear pdes
+error estimation adaptivity
+and application to aerodynamics all
+right
+now without further ado let me pass the
+button to masa
+by asking one random question as you
+joule today's random question is what is
+your favorite things to do other than
+research master other than research and
+teaching i i guess
+i actually enjoy playing tennis quite a
+bit ah so
+yeah so that's that's my
+i love tennis too we should play
+sometime oh we should play something
+when we have uh in person meetings at
+some point yeah yeah exactly exactly all
+right how the stage are yours hamasa
+okay so yongsu thank you very much for
+the invitation to give a talk here and
+thank you everybody for being here um
+so today as young said i'm going to talk
+about our work towards reliable
+efficient and automated model reduction
+of parametrized non-linear pdes
+and recurring themes for this talk will
+be error estimation adaptation and
+application to aerodynamics
+now before i get started i'd like to
+acknowledge the contribution of my
+students jeff eugene ben adrian and
+michael
+what i'm going to present here is really
+a product of their work
+i would also like to acknowledge the
+financial support provided by natural
+sciences and engineering research
+council of canada canada foundation for
+innovation and sign it which provide
+computational resources
+so in today's talk we'll be looking at
+parameterized partial differential
+equations so these are problems where we
+start with a set of parameters mu and
+then given the parameter we compute the
+state u of mu and given the state we
+evaluate the output s of mu
+for example in aerodynamics parameter
+could describe flight condition like
+angle of attack and mach number
+it can also describe shape things like
+span chord or even airfoil geometry
+and also model parameters for example
+associated with turbulence models
+and then given these set of parameters
+that describe the problem we want to
+compute the state velocity pressure
+density and so on and then ultimately
+evaluate the quantities of interest or
+outputs things like lift drug and moment
+on aerodynamic body
+now we would like to solve this
+parameterized problems in many query
+scenarios
+so here we are thinking about scenarios
+like parameter sweep where we might want
+to understand the aerodynamic
+performance for various mach number and
+angle attack
+design and optimization where we change
+the shape to see how that affect the
+performance of the
+product and optimize it
+and uncertainty quantification where we
+want to quantify say the effect of
+variability in the input on the
+quantities of interest and also
+scenarios like unsteady flow prediction
+where we might want to say perform flow
+control by solving this class of problem
+in real time
+now one thing that all of these programs
+have in common is that they typically
+require hundreds or even possibly
+millions of simulations so if we try to
+use standard cfd method it can become
+too expensive so we want to accelerate
+the solution of these many query
+problems significantly
+now one way to do that is to use
+surrogate models
+so here goal is to construct reliable
+efficient pde-informed surrogate models
+now one such method that we're going to
+talk about is projection-based reduced
+order models or the roms
+the idea is quite simple in what's
+called offline stage we are going to
+obtain solutions for training parameters
+and then construct a surrogate model so
+in the middle i'm showing the parameter
+domain we basically sample the parameter
+space and then create a reduced order
+model
+in the online stage once you have that
+rom we can invoke that for any parameter
+values so go from the parameter mu to
+state u of mu to the output and we can
+do this um
+for parameter values that are not
+typically in the training set
+so our goal here is to basically create
+a surrogate model such that the types of
+simulation that might require a
+supercomputer can be performed on
+something like a laptop
+now in terms of mathematical problem we
+are looking at
+here's the general formula of the
+parameterized pd
+so we start with a parameter mu that
+lies in a p-dimensional space and given
+that we found the state u of mu that
+satisfies say a conservation laws things
+like navier-stokes equations or reynolds
+average navier-stokes equations
+we then evaluate the output s of mu
+again things like lift dragon moment
+now there are many parameters pd's out
+there in this talk we are going to focus
+on aerodynamic flows because they are
+complex in the following sense so they
+exhibit severe non-linearity
+they also exhibit convection dominance
+they exhibit wide range of scales in a
+sense that things like boundary layers
+are so much smaller than the size of an
+aerodynamic body
+they also exhibit limited regularity
+things like shocks
+so all of these features makes
+aerodynamic flows complex and what we
+would like to do is to accelerate the
+solution of these types of problems
+so here is our goal we would like to
+enable model reduction for these complex
+pdes and be able to go from parameter to
+state to output in rapid reliable and
+automated manner
+now when i say reddit what i mean is
+that we want to provide orders of
+magnitude online computational reduction
+such that we can solve these many query
+problems efficiently
+at the same time we also care about
+offline training cost we want it to be
+efficient such that we can use it in a
+practical engineering settings
+when i say reliable what i mean is that
+we want to provide quantitative online
+error estimate in predictive setting
+so we want such an error estimate
+to be very fast so that we it can
+evaluate error estimating the time it
+takes to evaluate the itself and also
+working predictive setting in the sense
+that it works for parameter values that
+it wasn't trained for
+and in the offline stage we want to use
+such an error estimate to adaptively
+control various sources of error and
+finally we want the entire process to be
+automated such that it requires minimum
+user intervention or problem specific
+tuning
+now before we dive into how we approach
+this problem i'd like to provide a high
+level overview of approximation
+hierarchy
+so as i mentioned our goal is to solve
+parametrized pde
+and parameterize pde of course the
+solution lies in a sense in an infinite
+dimensional space
+now in practice we approximate the
+solution to this problem by using a full
+order model where the solutions
+approximate in the nh
+dimensional space
+for a typical cfd simulation nh might be
+in order of a million or so
+now reduced order model is further
+reduction of that floater model where
+the reduced order space might be of
+order of 10 to 100 degrees of freedom
+but looking at this approximation
+hierarchy what this means is that if in
+order to construct and accurate wrong we
+in fact have to control the error
+associated with each one of these
+approximations and also estimate error
+in order to control the error
+so the picture i would like you to keep
+in mind is that total error in a reduced
+order model is a sum of the full order
+model error and the reduced order model
+error and ideally what we would like to
+be able to do
+is that user provide the problem
+description
+and target tolerance
+and automatic algorithm should basically
+choose appropriate full order model and
+reduced order model such that we can
+achieve that error tolerance
+and that's what we would like to do
+so as a first step i would like to focus
+on the control of the full order model
+error
+to do this we'll be using adaptive iota
+method
+so in particular we'll be using
+discontinuous galactic method so dg
+method approximate the solution in the
+nh-dimensional piecewise polynomial
+space like the one shown on the bottom
+right
+and given this space we seek a solution
+view of h that satisfies the dg residual
+statement um which involves integration
+over elements as well as facet and given
+the solution we evaluate the output
+now there are many discretizations out
+there but dg methods have number of
+attractive features including probes
+providing stability for conservation
+laws
+working with unstructured measures such
+that we can mesh complex geometries and
+also perform adapt or support adaptive
+mesh refinement in an easy manner
+and this last piece is going to play a
+crucial role as we
+try to control the error associated with
+the full order model so i'd like to talk
+a little bit about how this is done
+and here the key is that we want to
+control the error associated with the
+output so the quantities of interest
+things like lift and drag
+and in that context not all errors and
+residuals are important some errors or
+some residuals play more important role
+in computing quantities of interest
+and one way to understand that is to
+solve a dual problem so on the bottom
+left i'm showing you an example of the
+dual solution we might obtain for
+aerodynamic flow
+and what this tells us is the
+sensitivity of the output
+to the residual committed in the various
+region of the flow
+so by weighing our residual with this
+dual solution we can come up with an
+error estimate for the quantity of
+interest and that is called dual
+weighted residual error estimate because
+residue is weighted by the duo
+we can also localize this statement to
+get an elemental error indicator like
+the one shown on the right
+so in this particular figure what we see
+is that for this particular mesh we have
+actually a lot of error coming from the
+lack of boundary layer resolution for
+computing the drug in this case
+once we know the arise barge we can
+refine the mesh to control the error
+and we can keep refining until user
+prescribed error tolerance is met
+now i'd like to talk a little bit more
+about exactly how this adaptation
+process work
+so this is an iterative procedure we
+solve a problem on a given mesh estimate
+the error marks the elements for
+refinement and then actually refine the
+element
+as i mentioned the solution is obtained
+using the discontinuous galactic method
+the estimation is performed using duo
+with residual formulation
+now in terms of marking we not only want
+to know which elements to refine but we
+also want to understand how to refine
+those elements
+so for example you know you can refine
+the element in an isotropic manner by
+splitting it vertically or horizontally
+or an isotropic manner
+and this type of anisotropic refinement
+can be quite important for aerodynamic
+flows which has many anisotropic
+features
+so let's take a look at how this
+particular method works
+so throughout this talk i'm going to be
+using this flow of our owner m6 wing as
+an example so the governing equation is
+a reynolds average navier stokes
+equation here are the flow parameters
+i'm first going to solve this problem
+using a kind of a best practice mesh we
+might use in aerospace engineering and
+using a piecewise linear p1
+approximation which corresponds to the
+second order method
+i i'm going to see how much um
+refinement is required to reach 0.5
+percent error level so i'm going to
+target 0.5 percent because eventually we
+are going to split overall error into
+0.5 percent for the full order model and
+0.5 percent for the reduced order model
+to achieve the total error of one
+percent
+so here is a convergence plot of the cd
+era against the number of degrees of
+freedom using the second order method on
+the sequence of best practice meshes
+without adaptation and it requires about
+33 million degrees of freedom to achieve
+the target error level
+now if we perform adaptation
+we can reduce that quite significantly
+about 5.5 million degrees of freedom so
+about a factor of six reduction
+we can reduce this further by using high
+order methods so using not piecewise
+linear polynomial but higher order
+polynomials and when we do that we get
+this error history so for p 2 through 4
+that corresponds to third order to fifth
+order method the number of degrees of
+freedom required to achieve that 0.5
+percent error level goes down to about
+0.5 to 0.85 million degrees of freedom
+or roughly the fact of 65 reduction
+compared to second order mesh a second
+order approximation on best practice
+measures
+so the key takeaway here
+is that adaptive high order methods are
+very efficient
+and this is actually quite important in
+the context of reduced order modeling as
+well because we still have to train
+these models so we want to solve each
+one of these problems efficiently such
+that in the offline stage we can perform
+this calculation um in a
+in more quickly than what would be
+required we just use the second order
+method okay so that's basically what we
+are going to be using for full order
+model
+now the question is that we want to
+develop a model reduction method that
+works well for these adaptive high order
+method
+and here is the formulation
+our starting point is the selection of
+radius spaces i think this is idea that
+have come up many many times in these
+ddps seminars so the idea here is to
+replace this finite element polynomial
+space with empirical or terrorized
+spaces
+and these spaces can be obtained for
+example by applying pod or pca on a set
+of snapshots
+orthogonal bases we obtained might look
+like what is shown on the bottom
+so this basis basically captures the
+parametric variation the solution um
+and the parameters are varied
+now once we find such a low dimensional
+space we can use galactic in projection
+to find the solution to the problem
+now one caveat here is that even though
+we've reduced the dimension of the space
+the computation of this residual still
+requires order nh operation because we
+still have to evaluate the residual all
+over the mesh to compute this reduced
+residual
+now one way to reduce this is to use
+hyper reduction so we are going to
+accelerate residual evaluation using a
+hyper reduction procedure there are many
+hyper reduction procedures out there one
+particular method we are going to use
+is called element wise reduced
+quadrature method so the idea here is
+that instead of evaluating the residual
+on every single element we are going to
+evaluate it in a very small subset of
+elements
+so that we can evaluate this residual
+quickly now we want
+to choose these reduced quadrature
+weights carefully such that we can
+provide both sparsity and accuracy so
+sparsity simply means that there is
+small fraction of the elements are
+selected
+now accuracy means that we want to make
+sure that error in the output due to the
+use of this hyper-reduced residual is
+small
+so we have to somehow control the error
+due to hyper reduction
+and here we can again appeal to this
+idea of dual weighted residual
+so use of hyper reduced residual intri
+introduces some error in the residual
+calculation but we can try to find a set
+of weights that minimizes such error and
+still achieve sparsity
+so the procedure we used to actually
+compute that such a weight is called
+empirical quadrature procedure
+so here basically the user prescribes
+the tolerance on the quantity of
+interest and then we have an algorithm
+that is going to seek a set of weights
+that minimizes the number of non-zero
+subject three constraints including inc
+having non-negative weights
+be making sure that it accurate
+accurately integrates constant weights
+and also satisfying the condition about
+residual matching so what the residual
+matching means is that even though we
+are approximating this residue using
+this radial set of weights we want to
+make sure that residual is accurate on
+the set of training parameter set
+now we can solve this problem and the
+solution has a number of attractive
+properties so first of all the ways that
+we find are sparse which is good so that
+we can evaluate these hyper-reduced
+models
+efficiently
+second is that it provides error control
+under mild assumptions we can prove that
+error due to this use of hyper-reduced
+residual is controlled to use a
+prescribed tolerance
+and third computationally set of
+constraints becomes linear and this can
+be solved efficiently using modified
+parallel non-negatively squares
+algorithm
+and lastly algorithm is quite versatile
+so that we can replace this residual
+masking matching constraints to hyperuse
+various forms and construct things like
+error estimate um solving unstudy
+problems and so on and i'll demonstrate
+this later in the talk
+so let's revisit this on era m6 example
+and see how it works so this time around
+the problem is parameterized we are
+still solving reynolds average
+navier-stokes equation but we have
+certain variation in the mach number as
+well as angle of attack reynolds number
+is fixed at one million
+in terms of error tolerance we are going
+to allocate point five percent for full
+order model and point 0.5 percent for
+the reduced order model
+so on the left i'm showing you the
+result for using the adaptive dg method
+this is basically a summary of the early
+graph that we show
+and what we see is that in general as
+the order of approximation increases
+from second order fifth order or p
+equals one p equals four number of
+degrees of freedom required to achieve
+point five percent accuracy goes down
+number of elements also goes down
+significantly and so does the
+computational time so adaptive high
+order method enables efficient offline
+training
+now in terms of the reduced model
+constructed this is what we observe so
+for this particular problem turns out we
+only need about 12 degrees of freedom
+about 100 elements are marked after
+hyper reduction
+but notice that computational time on a
+laptop goes up from about 31 seconds to
+about 250 seconds and in particular the
+speed up relative to the original
+floater model in fact decreases as we
+use higher order approximation
+so somehow this method becomes
+increasingly less efficient when we
+consider higher order approximation
+and this is not so good because we
+wanted to create a method that works
+well with high order approximations
+and the reason for this slow down is
+actually twofold so first of all more
+computation is required per element for
+higher order approximation at least for
+dg methods because it involves more
+quadrature points by elements
+second one is that there are fewer
+number of elements to reduce so these
+two measures i'm showing you here
+achieves about the same amount of error
+left second node approximation writes
+the fifth order approximation they have
+about 0.5 percent um drug tolerance
+but
+there are basically far fewer elements
+for the higher order discretization
+which is good from the full order model
+computation point of view
+but in terms of reduction this means
+that there are much fewer opportunities
+to actually reduce the problem
+so a key takeaway here is that this
+element-wise reduce quadrature is not
+well suited for this high-order dj
+approximation and in fact this
+limitations also applies to other
+algebraic or discrete hyper-reduction
+methods
+so how can we fix this problem
+now one idea is to work with quadrature
+points instead of elements
+so instead of decomposing the
+in terms of elements we are going to
+decompose it further into the level of
+the quadrature points which are shown in
+blue and red on the right figure
+and we are going to use this
+as a single unit when we construct our
+hyper-reduced residual
+the rest is identical so we are still
+going to try to approximate the residual
+using this hyper-reduced residual but
+approximations applied at quadrature
+point level and this is shown
+pictorially on the bottom right figure
+so the gray dots corresponds to the
+original quadrature points and we are
+selecting a very small subset of those
+points to compute the uh
+to compute the reduced order model
+the algorithm for finding these points
+are identical as before so we try to
+minimize the number of non-zero subject
+to non-negativity constant accuracy and
+residual matching conditions
+so now let's revisit how this particular
+method works
+exactly the same method as before on the
+left again i summarized the result for
+adaptive dj method this time around i
+also add the number of quadrature points
+so quadrature points varies from about
+27 million points to about three million
+point for this one era m6 problem
+we've already seen the result for
+element-based reduced quadrature
+basically the time goes up as the quad
+as the polynomial degree goes up
+with the pointwise method we use little
+more points than the number of elements
+that was used but in terms of
+computational time the computational
+time becomes independent of the
+polynomial degree that was used
+approximately solution so what this guy
+achieves is p independent cost and also
+it is significantly faster than element
+wise method a factor of about 70 000
+speed up in terms of cpu time
+now you might be worried that reducing
+tens of millions of degree um quadrature
+points to just hundreds of quadrature
+points might require you know
+significant training cost because the
+optimization program is large but it
+turns out this training cost is only
+about 30 to 70 percent of a single digit
+solved on the final adapted mesh so this
+doesn't really cause a significant issue
+um in terms of the offline training
+so we are quite happy with this
+particular method so this is what we are
+going to use to construct the rom
+now one issue i haven't really addressed
+is error estimation and control
+now so far what we have done is to
+create a rom with efficient offline
+training and online evaluation and that
+was a product of combining adaptive high
+order digi method reduce spaces and
+point wise radius culture
+so our next goal is to equip this rom
+with an estimate of the output error so
+we would like to be able to basically
+compute the error between the full order
+model and reduce the order model in
+online efficient manner in predictive
+setting
+so both of these were important so
+online efficient means that evaluation
+cost for computing this error estimate
+is comparable to just evaluating the rom
+and predictive means that this error
+estimate has to work even if that model
+is not trained for that particular
+parameter value
+and then once we have such an error
+estimate we want to control the error
+between floater model and reduce the
+model in the automated manner
+so i'd like to talk about error
+estimation first
+so we use the same ingredients that we
+that we use to construct an error
+estimate for the full order model so
+namely the dual weighted residual method
+the only difference here is that we are
+going to approximate the solution to the
+dual problem using reduced basis as well
+so just as a short recap the idea is
+that we solve the primal or the flow
+problem we compute this dual solution
+and then by combining them we can come
+up with an error estimate for the
+quantity of interest
+so that's what we are going to do
+now one caveat here is that again the
+solution of the duo problem also
+requires evaluation of the residual so
+we have to hyper reduce that as well
+and we use exactly the same technique
+the empirical quadrature procedure with
+a different set of constraints such that
+we can also accelerate the evaluation of
+this error estimate
+and this is an
+estimate that can be evaluated in the
+online efficient manner
+once we have such an error estimate we
+can actually automate the training of
+the reduced mode of reduced order model
+so as a starting point basically user is
+going to supply the output tolerances
+for finite element and reduce basis
+approximation
+and then the algorithm is going to
+create a reduced order model that meets
+user specified tolerance
+and idea is the following let's say we
+first use just single dot to compute the
+constructor run
+and then using that one dof rom we are
+going to evaluate error estimate at
+whole bunch of points in the parameter
+space
+we are going to find a point where the
+rom performs a prorest
+and then compute the finite element
+solution at that point
+we are going to perform adaptive mesh
+refinement at that point as necessary
+such that snapshot is accurate
+we then update the reduced spaces and
+retrain these reduced quadrature rules
+using empirical quadrature procedure
+and then we basically keep adding points
+every every iteration we basically probe
+the part of the parameter space that is
+least well approximated as informed by
+this error estimate and then keep adding
+points until the user prescribed error
+tolerance is met for all of the training
+points
+okay
+so that's how this simultaneous finite
+element reduce spaces and reduce
+quadrature greedy training procedure
+work
+and going back to the initial discussion
+of the approximation hierarchy what this
+method is really trying to do is to
+control all three sources of the error
+associated with the finite element
+approximation so this comes from the
+finite mesh
+reduce basis error which comes from the
+use of finite reduced spaces and reduce
+quadrature error which comes from the
+use of the reduced quadrature rule
+and we have a mechanism for controlling
+each of these three sources of error and
+also mechanism for estimating these
+sources of error
+so this enables automatic construction
+of the rom in the sense that we provide
+problem description and users specify
+the target error tolerance for the
+quantity of interest say one percent on
+lift or drug
+and then the algorithm is going to
+automatically train the finite element
+space reduce basis space and reduce
+quadrature to create a certified rom
+i put certified here in quotes because
+we don't have error bounds these are
+simply estimates um but we'll see how
+these methods work
+so let's revisit this honorarium 6
+problem again so we have two parameters
+angle attack and mach number reynolds
+number is fixed and as a user i'm going
+to provide a geometry and say that i
+want surrogate model to achieve one
+percent error level
+and at this point the algorithm takes
+over
+and first going to basically perform
+adaptive mesh refinement to make sure
+that all of the snapshots needs the user
+prescribed error tolerance
+in terms of the
+drug error and i'd like to again
+emphasize that these high order adaptive
+methods are quite a bit more efficient
+than just using second order method on
+best practice measures
+so that's how we control the finite
+element error now in terms of the
+reduced basis error this is what we
+observe in terms of the error estimate
+against the number of basis function so
+in that greedy iteration where we keep
+adding more nodes or sorry more training
+points basically error goes down as we
+add more training points
+we terminate after adding ninth point
+number of degrees of freedom goes down
+from about one point one million to nine
+and number of quarter points goes down
+from six point three million to about
+now we can test this method on a set of
+test points which are different from the
+trend set and here is what we observe
+so blue line here corresponds to the
+actual error computed at the set of test
+points which are different from the
+training point and we see that yes the
+error does come down quite rapidly
+perhaps even more encouraging is the
+orange line which is the error estimate
+so this is an error estimate that can be
+computed in online efficient manner and
+we see that their estimate is quite
+effective in the sense that it predict
+the three true error in a reduced order
+model even though this is invoked a test
+set which are different from the
+training set
+now we can talk a little bit more about
+computational cost to characterize that
+i'm going to use a wall clock time
+associated with a single finite element
+so on the adapted mesh as a single time
+unit so this doesn't involve the time
+required perform actual adaptation just
+solving the problem on that final
+optimized mesh
+now in terms of total offline cost it
+requires about 60 times a single solve
+of the finite element
+much of the cost comes from performing
+this adaptive digi approximation for all
+of the snapshots and making sure each
+one of those snapshots are accurate
+and second dominant cost comes from this
+identification of the reduced quadrature
+rule using this training algorithm
+but once we pay that we achieve
+significant speed up in the online stage
+if we want to just evaluate the output
+speed up is in the order of 22 000 in
+world clock time if we want to evaluate
+both output and error estimate it's
+about 21 000.
+now in terms of cpu speed up it's even
+greater because there's certain parallel
+efficiency loss for this small reduced
+order model when we try to use many
+cores
+so that was basically uh um kind of the
+set of tools we use to construct these
+reduced order models so now i'd like to
+briefly talk about number of different
+applications of this cluster method so
+first is extension to moderate and high
+dimensional problems
+um assumption that i'm going to make is
+that problem is still reducible in a
+sense that even if the extrinsic
+dimensions large the intrinsic dimension
+is still small
+even if we make this assumption though
+there are a number of challenges so
+first of all we have to ensure that
+model is accurate for all training set
+training parameters sorry all parameters
+in this high dimensional space
+and sleek on the ball we have to control
+the offline training cost when you're
+training in this high dimensional space
+and i think one way to approach this
+problem is to adaptively construct this
+training parameter set such that we can
+tackle these moderate to high
+dimensional problems
+okay
+so what we want to do so there are two
+goals so first of all we want our
+training set that sufficiently covers
+this high dimensional space
+but at the same time we want to make
+sure that our training time doesn't blow
+up because we are using a very large
+training set and we combine three
+ingredients to address this challenge so
+first of all we use this online
+efficient error estimate
+as i mentioned our rom achieves order of
+thousand plus speed up so that means
+that we can use sampling point maybe a
+thousand points or so in the parameter
+space without too much issues
+second is that we are going to
+adaptively refine this training set
+during the greedy iteration such that we
+can focus the sampling um sampling the
+region of the parameter space that has
+large errors
+and lastly we are going to perform
+adaptive enrichment of these hyper
+reduced training points such that we can
+construct a reduced order model
+efficiently
+so i'd like to show an example of this
+for a uh uncertainty quantification of
+the range flow so we are here looking at
+the flow of a ra 2822 airfoil
+and our parameters are seven dimensional
+so it's a moderate dimensional problems
+and these are the parameters associated
+with the spalatal mars turbulence model
+what we would like to do is to
+understand how the variability in these
+parameters affect the drug prediction
+now one thing i would like to emphasize
+is that in the context of uq it is
+important to control the discretization
+error
+in a careful manner such that we don't
+conflate the error due to the model and
+error due to the discretization
+for this reason we are going to actually
+control the discussion era to be less
+than one percent for all parameter
+values even though the actual variation
+in the drug for this particular problem
+tends to be around 20 percent
+so let's take a look at how it works so
+again we are trying to control all
+sources of error in terms of the finite
+element error using adaptive scheme we
+can reduce the error from 23 to about
+0.25 percent with a very small increase
+in the number of degrees of freedom
+and on the right i'm showing you the
+training history for this radius basis
+approximation so this silver line
+corresponds to the maximum error
+obtained on an adaptively chosen
+training set which is about 400 points
+and we see that it terminates after
+about 24 basis functions are chosen
+number of degrees of freedom goes down
+from about 64 000 to 24. quadrature
+point goes down from 104 000 to about
+five hundred
+now we can check if this method in fact
+solved the high dimensional problem
+correctly
+checking it on a set of test points here
+we use test set of 20 test points and
+plot the worst case error
+blue line again corresponds to the vast
+era and we can see that error actually
+does come down and in fact it is bounded
+by the error obtained over the training
+set
+orange curve corresponds to the error
+estimate so again error estimate works
+quite well even though the
+even in this high dimensional space and
+this is one of the key ingredients that
+allows us to explore high dimensional
+space relatively efficiently
+now in terms of training cost i have to
+admit that it is quite expensive overall
+training cost is about 200 times just a
+single finite element solved and we are
+trying to improve this computational
+cost right now
+but in terms of the online acceleration
+we achieve about the fact of 300 speed
+up including the evaluation of this
+error estimate which is quite accurate
+we can extend this to time dependent
+problems as well
+so here
+we are going to look at example of flow
+past a naka double o 12 air foil
+equations lamina navia stoke
+angle attack is very high 20 degrees
+that's why the flow is separated we are
+going to treat reynolds number as a
+parameter
+and our output of interest is time
+averaged drug
+now in terms of methodology everything
+we talked about can be extended to these
+unsteady problems so we can still use
+the greedy type training to construct
+reduced basis space except now we are
+going to combine that with pod
+we can also use this type of sparse
+quality identification technique
+and finally for error estimation and
+control we appeal to spectrum
+formulation and unsteady adjunct so for
+this particular problem adjoint looks
+something like this so it's solved
+backward in time and it still tells us
+which region of the flow is most
+important to compute the quantity of
+interest accurately
+so let's take a look at how this method
+works again we perform adaptive mesh
+refinement to control the finite element
+error
+on the right i'm showing you the change
+in the reduce basis error and in this
+case we just need three training points
+over the reynolds number space
+and era goes down and meet the user
+prescribed target error tolerance
+in terms of the size of the model it
+goes down from about 160 000 to 42
+number of quadrature points goes down
+from 320 000 to about 1000 so we achieve
+rapid convergence over the training set
+in terms of prediction performance it's
+not quite as good as what we see for the
+steady state problems so blue line
+corresponds to actual era orange line
+corresponds to error estimate notice
+that their estimate is not quite as
+sharp as what we have seen for steady
+state problem nevertheless it's still
+indicative of the error we have
+in terms of speed up we achieve about
+the fact of 330 speed up in wall clock
+and if we want to also compute the error
+estimate speed up is about a factor of
+240.
+now once we have this type of unsteady
+problem capability we can also use the
+other application oh sorry one more
+slide so this is just a
+time instantaneous history of drag and
+lift and we see that it can predict
+these quantities i should know that
+instantaneous quantity approximation
+typically is not as good as time average
+quantity approximation but nevertheless
+it rises around two percent for this
+case
+now once we have this kind of uh
+unsteady flow simulation capability we
+can also try to use it in the context of
+data assimilation
+so here the goal is to combine imperfect
+non-linear dynamical model and noisy
+sparse and incomplete data to estimate
+state of physical system one example we
+all know is whether prediction where we
+combine say with global circulation
+model and whether station data to
+predict the state what we would like to
+do is to bring such a capability to
+engineering systems and emphasis here
+that we want to make sure that data
+simulation methods can meet practical
+turnaround and resource demands of
+engineering setting we can't afford to
+run the simulation on the thousands of
+cores consistently so we want to really
+reduce the computational cost
+now one way to solve this problem is to
+use ensembl common filter so here we
+basically this is an ensemble method so
+initially estimate the error using monte
+carlo type approximation
+and then we generate initial set of
+approximations in the forecast stage we
+are going to propagate each one of these
+guys for in time
+until we take the measurement at this
+point
+and when we take the measurement we
+update the state and that's called
+analysis stage
+now one of the key to computing this
+update correctly is that we have to
+compute the common gain accurately
+and computing the common gain accurately
+means that we have to compute these
+covariances accurately and accuracy of
+the covariance depends on the size of
+the
+ensemble that we are using
+so in order to ensemble common field
+that work well we have to use
+sufficiently large number of ensemble
+such that we can compute the covariance
+correctly
+but
+obviously the computational cost goes up
+as we try to use large number of
+ensemble so what we would like to do is
+to replace much of this ensemble with a
+reduced order model approximation and
+that's the idea behind the multi-level
+enc based on florida model and reduced
+order model
+so we run the floater model to compute
+the solutions
+we train the wrong using those full
+order model samples and then we run a
+whole bunch of wrong simulations
+and then at the analysis stage we are
+going to incorporate data perform
+multi-level update that incorporates
+information from form rom and
+observations
+and then again perform form solution
+from abstract update retrain the rom
+perform the wrong solutions and so on
+so
+and then update the state again at the
+next time step
+now i'd like to illustrate how this
+particular method work we are going to
+look at the same problem but now we are
+going to treat initial condition as
+uncertain okay
+and then random output uh
+uh
+uncertain and then we are going to
+basically take observation of about
+every every one fourth oscillation
+period
+so this is a preliminary result but this
+is typically how data simulation method
+work so this is relative l2 error
+against time
+and this is a result obtained using 64
+full order model samples so this is
+about as good as it gets
+every time we make that takes a
+measurement error goes down and the
+error slowly converges
+for this particular case i'm also
+showing the shaded region because the
+performance of the filter changes
+there's some randomness in the filter so
+i'm showing you the performance we
+obtained for the 10 percent um
+within the 10 to 90 percent percentile
+this is about as many as we get but this
+method is very expensive because we have
+to solve the full order model 64 times
+if we try to reduce that and just use
+four solves you can see that the
+performance gets far worse than weight
+was
+so this is cheap but not as well
+if we use eight instead
+again it's cheap um but still doesn't
+perform that well
+but if we use multi-level method we get
+basically this purple curve now the cost
+for using this multi-level method is
+comparable to this may cause 8
+approximation which is showing yellow
+line
+but notice that in terms of the error it
+achieves error comparable to the image
+equals 64 case except towards the very
+end
+so what this multi-level acceleration
+allows us to do
+is to basically reduce the computational
+cost required to achieve a given
+accuracy so this is just one application
+of the rom in the context of
+ensemble-based data assimilation
+okay so that basically concludes my talk
+um so in today's talk we talked about
+goal-oriented rom for non-linear pds
+based on this adaptive high order method
+reduce basis approximation deal with the
+residual error estimate and this
+empirical quadrature procedure hyper
+reduction
+and really the emphasis was to quantify
+and control various sources of the error
+and in our case we consider the control
+of the finite element error reduce basis
+error as well as the error due to the
+use of reduced quadrature rule
+and the goal was that user can just
+supply the target tolerance and the
+entire trans process should be automated
+and i showed an example of this type of
+technology for parameter design sweep
+uncertainty quantification and study
+flows and data assimilation
+so thank you very much for coming to the
+talk and i can take any questions
+thank you thank you so much for the
+great talk massa i i really loved it um
+i mean i
+i i should say i i especially love your
+point wise uh um iq method um i'm very
+interested in
+uh knowing more more about that okay
+let's do i have a q and a sessions uh we
+do have a question from the
+the chat room in emmanuel
+from emmanuel um
+yes how close the the parameters used in
+the simulations are to actual values did
+the reduction seems always to be related
+to spatial coordinates
+would we look at the fourier components
+of the fields involved in a spectral
+method or prototype i i think the okay
+what he remembers a method is a
+singular value
+i guess okay okay let's see yeah i'm
+seeing that i just opened the chat so i
+can read this as well so
+uh
+how close the parameters using
+simulations are to actual
+values uh
+for the prediction case i guess oh i see
+okay i understand yes so
+so points are chosen randomly whenever i
+do test so very much the how far they
+are depends on the
+extent of the parameter space um
+so
+uh
+right so for example uh
+let's see so the earlier example we
+looked at yes for example mach number
+point three to point five and then of
+attack of zero to three when i do test
+i'm just choosing points randomly so i
+think uh in this case i was choosing
+product five points or so to test
+randomly the point so the distance
+is entirely um based on this
+the choice of the parameter domain and
+i'm always plotting the worst case error
+so the largest error obtained at the
+largest um
+the largest error obtained over the test
+set
+uh
+so that's the largest error is less than
+one percent
+right that that was always my goal yes
+that's correct uh reduction seems to be
+always related to spatial code rate um
+could we look at
+three components of the field involving
+a spectrum method approach so this is a
+very uh very interesting question so
+there's a i think very tight connection
+between spectral method and types of
+reduced basis method that
+i presented today or we have been seeing
+in these
+gdps seminars um i think one key
+difference is that
+in spectral method the basis functions
+are still constructed in a program in a
+sense program agnostic manners these are
+polynomial spaces that can in general
+approximate any function that might you
+know it might encounter
+here i think the emphasis is on the fact
+that we are using empirical or tailored
+basis in the sense that these basis
+functions are targeted for the
+particular parametric variation that
+problem exhibit so um i think i think
+there's a very tight connection i've
+never actually looked at uh the spectrum
+for this uh
+these uh for example these uh these
+particularly spaces but there's
+certainly a connection between the two
+but the physics is involved when we're
+using dimensions
+frequencies
+yes so i completely agree with this
+remark so in a way this type of
+approximation you know it's not treating
+all the features in a same manner things
+like you know boundary layer plays an
+important role so um in a sense i think
+emphasis more emphasis is placed on
+those particular features i don't know
+if i'm doing a particularly good job
+answering the questions but uh hopefully
+that was okay
+he says thumbs up
+okay so you did a good job okay next
+question uh
+is from han
+and he asked the adjoin equation is
+quantitatively interesting dependent
+right
+uh what if we
+care only the carbohydrate instead of a
+specific quantity of interest can we
+still formulate the abstract equation so
+no so in that case adjoint wouldn't be
+the uh um i guess the right approach to
+the problem we want to use as you say
+you know if you have more of the energy
+norm type quantity then we might want to
+use more of the energy type
+error error estimate and control say h1
+norm of the error or something like that
+um one thing i wanted to emphasize here
+though is that we focused on quantity of
+interest because in things like
+aerodynamic flows those are the things
+people typically care about things like
+lift and drug and so on so that was um i
+guess our emphasis in this particular
+talk uh but
+you absolutely right um you know
+different formulation would be required
+to control global error and in fact
+we've actually done that in some other
+works um
+for example if you are looking at you
+know more of the elasticity type
+problems and so on you know there you
+might actually have things like you know
+total strain as year and so on that
+might be that might be a little more
+engineering relevant so we have also
+done work in that area as well but uh um
+i didn't really talk about this in this
+talk here i really focused on
+aerodynamics and controlling the error
+due to uh some quantity of interest
+or error quantity of interest
+yeah
+that's great i think with a
+excellent answer
+okay i don't i see any more questions
+from
+the chat room but i do have some
+questions while i'm asking questions you
+guys can
+post your question in chat room
+so
+um
+obviously
+the point-wise
+iq
+method is a lot more efficient
+element-wise iq i can definitely see
+that
+um
+have you compare
+have you done some comparison between
+the element-wise iq with a
+some some other hyper-reduction
+technique
+like like a ti-n and
+ganet etc yeah so that's that's an
+excellent question so no we haven't done
+explicit comparison um
+but what i can say is that basically
+um
+all of the algebraic based reduction
+methods so things like dim
+yeah they all require they work at
+algebraic level yeah in the end right so
+all of those methods in a sense have to
+work with element as a working unit
+effectively because you still have to be
+able to compute the residual associated
+with the full order model degrees of
+freedom which means that you used to
+have to perform integration over
+elements and so on so that limitation of
+having to work with elements still
+still exists in this type of discrete or
+any algebraic type hyper-reduction
+methods and i feel that we have to peel
+basically one level deeper in a sense
+that go one more one one more level
+intrusive to uh
+to you know do point wise type recons uh
+approximation if we want to
+our method to work really well for
+high-order approximation because
+you know the coyote approximation
+especially in the three-dimensional
+space single element can contain you
+know a lot of degrees of freedom right
+so that's that's basically the um
+limitation we have um at least for this
+dg type method
+right right right uh well i mean that's
+really relevant to what we are uh trying
+to solve at
+now
+do you know
+mfm by the way
+um it's understandable
+and and then um it's the software uh the
+higher order functional element uh
+software uh developed at lawrence level
+yes yes i think i think he actually
+mentioned this to me before and uh yeah
+so here i'm i'm not really building on
+mfm here i'm just uh
+digi solver but uh i mean obviously the
+concept discussed here applies to any
+high order method as well right so right
+right well i i don't know i i might want
+to introduce you to um some of the mdm
+teams um
+maybe you guys can collaborate on a full
+auto model
+size
+just in terms of the high uh higher the
+final one and then dg method
+um
+there might be some um
+way collaboration future collaboration
+can be done uh yeah
+i'm very excited yes suddenly yes please
+let me know yeah
+i'm sure they will be interested
+knowing more about your work okay so
+while we are talking uh another question
+from uh
+okay
+the split between fluid model error and
+reduce to model error tolerance was 0.5
+each if the goal is very rapid online
+computation and offline cost is less
+significant
+seems to make sense to change the limits
+so that form limit is lower yeah and
+wrong limit is higher
+if
+yeah so yeah um yeah so that's a good
+point i've kind of arbitrary chosen the
+split of 0.5 percent for both but yes
+depending on exactly where the emphasis
+is for example if you cared more about
+creating the smallest rom then yes you
+might actually reduce the formula such
+that you can commit little more room
+errors and so on um here we didn't
+really do any optimization of that kind
+um and in the end it doesn't make that
+significant of difference only because
+error tends to go down exponentially
+with n so
+um
+that convergence is quite fast so
+difference between between point five
+percent and one percent might not be
+that significant uh hopefully that
+answers your question
+great
+yeah he's smiling
+so that's great um
+all right
+so
+um
+you're not doing
+any adaptive refinements um i mean
+you're doing the relative requirements
+um
+uh
+you're not doing other tv refine
+let me rephrase you're doing you're not
+doing adductive refinements um in
+unsteady uh like in thai marching uh
+sense right well uh so i'm not doing any
+online adaptive refinement not the kind
+of stuff you know that kevin did i'm not
+doing that but the mesh refinement
+itself we do do it so i guess it's kind
+of hard to see maybe i need to maximize
+this again but uh
+yeah so the same principle applies we
+can still use dual weighted residual
+method and compute the error and then
+perform adaptations so you know you can
+see that the elements are refined in a
+selective manner i guess uh yeah that is
+for the steady problem but i'm i was
+talking about honestly this is a study
+problem this is a steady problem oh that
+is a study problem
+yes yes but one thing we don't do is
+that we don't we use we perform mesh
+refinement but in the end we use the
+same mesh for all time snapshots and
+just so that we can simplify the
+computation of uh you know pod and so on
+um
+so it's not dynamic it's a static mesh
+but it is refined in uh
+it is refined in adaptive manner yeah i
+see i see okay
+well how about that in dynamic sense
+let's say you the other tip alignment
+has been done in dynamic sense and
+yeah so the only it's not really a huge
+challenge but if you do dynamic
+refinement then each one of the
+snapshots can potentially line up
+different on a different mesh right so
+in order to
+actually perform things like pod you
+have to work on the common mesh so you
+might have to construct at least a pair
+of pairwise common mesh to compute all
+the inner product associated with pod um
+we've done this for uh um
+much simpler problems 2d problems and so
+on but
+right now we don't do this for
+aerodynamic flows partially because when
+you support an isotropic mesh refinement
+where you don't just refine the
+isotropic manner but like you might
+split in one direction only and so on um
+it becomes much more difficult to solve
+this pairwise matching problem so um we
+we are not really doing that
+um i don't think there's any conceptual
+or mathematical challenge to doing that
+um it's just mechanics we don't we don't
+have the mechanics to do it so yeah
+let's see
+yeah
+maybe one last question in slide 31 um
+you mentioned that you you're trying to
+improve the offline cost um yeah
+and
+can you um
+can you um discuss a little bit what
+what's the approach you are taking right
+now to improve that offline course
+yeah
+so number of different things so so
+first of all i think what i presented
+here is not really optimized in any way
+so the i mean the fact still remains
+that uh we have to use in a relatively
+large training set because it's a high
+dimensional space i don't think there's
+a really good way to cover it using a
+small number of sets so that fact
+remains but there are things we can do
+in terms of for example
+so hyper reduction right now is actually
+quite expensive in a sense that uh
+especially in high dimensional space
+when you have lots of training points uh
+identifying this reduced quadrature rule
+becomes quite expensive so we're trying
+to improve both just not just the speed
+but also the accuracy of that process so
+we're trying to make it a little more
+robust and i think those actually small
+things can make quite a bit of
+difference for even higher dimensional
+spaces we might actually need to
+consider more formal dimensionality
+reduction so reduction of the parameter
+space before you do the reduction of the
+um
+well the reduction of the parameter
+space itself but we haven't really
+um
+looked too much into it or integrated
+that with the rest of our um um greedy
+algorithms and so on so um yeah it's
+very much working progress i just wanted
+to note that this is not certainly not a
+solved problem i know many people work
+on high dimensional problems and uh
+there's still a lot of challenge there i
+think um yeah i totally understood um i
+i just wanted to um you know know what
+approach you're
+you're taking
+to solve that challenging problem um
+all right
+yeah the other big challenge is you know
+transgenic flows flows with shocks you
+know you talked about this in the last
+ddps seminar and you know people martin
+thomas also i think talked about in
+earlier seminars as well i think that's
+a huge huge problem we are just starting
+to uh get into that but uh nothing to
+show yet so yeah i see i see all right
+um
+if if you have anything to show please
+let me know also that i i can invite you
+again okay all right well thank you so
+much for inviting me and thank you
+everybody for coming to the talk so yeah
+thank you massa thank you so much for
+the great talk um i hope i i'm sure the
+audiences uh have enjoyed your talk
+right now a lot of people left already
+because it's past uh
+yeah yeah all the time in that time
+but i'm sure they enjoyed it
+well with that let's conclude uh our
+ddps seminar uh talk today uh thank you
+so much masa again no thank you
+it's nice seeing you as well bye-bye and
+thank you thank you everyone
+masa i

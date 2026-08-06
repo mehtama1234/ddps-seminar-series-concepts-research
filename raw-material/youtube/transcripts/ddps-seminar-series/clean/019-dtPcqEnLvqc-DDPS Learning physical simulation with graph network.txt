@@ -1,0 +1,2193 @@
+Okay, um
+welcome to the DDPS seminar today.
+Before we introduce our invited speaker,
+let's go over some rules and logistics.
+First of all, please mute yourself
+during the talk unless you have uh
+Uh if you have
+if you do one, uh you're welcome to
+unmute yourself and ask
+those questions. Otherwise, please use
+chat room to post your questions so that
+we can address them in Q&A session at
+the end.
+Uh second, today's uh DDPS seminar uh is
+open to external audiences.
+Uh
+therefore, of course, no classified
+discussion is allowed. So, uh please
+watch out. Uh finally, the talk today
+will be recorded and uploaded in um our
+YouTube channel. Um that's about it. Uh
+now, let me introduce our speakers
+today. Actually, we have two speakers
+today. Uh it's it's an honor to host um
+two speakers. Uh
+uh the Tobias uh
+Tobias and Alvaro uh will be our
+speakers today. Uh both of them are from
+DeepMind,
+a uh the famous uh AI company also known
+as the creator of the AlphaGo player who
+defeated a human
+professional Go player Lee Sedol from
+South Korea.
+Alvaro is a research engineer at
+DeepMind focusing on applying graph
+neural networks to physical simulation
+and
+reinforcement learning. Alvaro has
+background in physics and computer uh
+engineering and got his PhD at uh
+Imperial College London in 2017 in
+experimental ultrafast physics using
+X-ray free electron lasers, uh so-called
+xfel,
+including applying machine learning to
+improve xfel diagnostics.
+Toby, Tobias, is a research scientist at
+DeepMind also, but currently working at
+the inter-
+intersection of physics simulation and
+machine learning. His background is in
+physical simulation for computer
+graphics.
+And in his PhD in Zurich and postdoc in
+Berkeley, he studied turbulent fluids,
+fracture, and cloth the simulation,
+and wrote the fluid solver, which is now
+included in Blender.
+Maybe he can talk more about the Blender
+today.
+Um, but
+Toby and Alvaro will present today the
+learning physical simulation with graph
+network, which is a very exciting topic.
+Uh, so please enjoy and expect a
+wonderful talk from Toby and Alvaro.
+Uh, now without further ado, let me pass
+the baton to Alvaro first.
+And but let me do that by asking one
+random question just to set the stage
+somewhat informal for both speakers and
+audiences.
+Okay, here is random questions.
+Um,
+for both of you, uh, the Toby and
+Alvaro, um,
+if you were the CEO of DeepMind, what
+would you do? Uh, you may not want to be
+a CEO, but if you just imagine it.
+Anyone? And Alvaro or Toby?
+That's a tough question. I mean, I would
+say I would say
+I'm kind of
+I'm not in a position to answer it
+because if anything, I'm kind of like
+learning a lot by being in DeepMind
+about like what a a can care about, and
+especially, you know, how important is
+for companies to care about applications
+of the actual work that they do in the
+real world to solve important problems.
+So, like, uh if anything, yeah, I don't
+think I'm no no no no way even close
+where I could actually put myself in
+that situation, but I am learning a lot
+from what I see the CEO of our own
+company do. So, um
+yeah, that's that's my answer. Maybe
+that's not what you expected, but uh
+How about Tony? Uh Toby?
+Yeah, that's actually tough one. Um you
+don't know, like, DeepMind has a lot of
+very different things they do. Um
+I mean, I don't know, like, and
+personally I I I I would be very
+interested as a like, you know,
+imaginary DeepMind CEO kind of I mean,
+obviously like,
+push uh the directions I'm interested in
+more, right? But like, I mean, there's
+it is kind of cool that there are so
+many different things going on
+currently. I mean, it would be
+would be very interesting to see like
+more like, I don't know, science and
+engineering applications. But we I mean,
+we're doing that in other ways already.
+Um
+I don't know. I don't have a good
+answer.
+Okay. Well, today's random question was
+tough question. Okay, uh the Alvaro? Uh
+please.
+Okay. Thank you.
+Um so, yeah, hi everyone. My name is
+Alvaro Sanchez, and as uh Young-soo was
+uh presenting me uh my research in here
+at DeepMind, and today I'll be
+presenting with uh my colleague Toby,
+who is uh research scientist. Um so,
+we're talking a little bit about our
+research on learning simulation using
+graph networks.
+Uh so, the work that we're presenting
+here was done in collaboration with our
+great colleagues uh Misha Fortunato,
+Jonathan Godwin, Rex Chen, Judy Illes,
+Kaiming Peter Battaglia.
+Uh and in this talk, we will actually
+try to show the results from our recent
+research, including some high-level
+insights. Uh but we will also explore
+some of the design principle behind our
+models, including some more in-depth
+detail about how graph neural networks
+work. Uh
+so, we hope we will have something for
+everyone, independently of the level of
+machine learning expertise. Uh plus, if
+you find the model section maybe too
+low-level, there will be some nice
+videos with generalization examples
+towards the end that we hope uh you will
+enjoy.
+So,
+overall we believe simulation is
+fundamental to science and technology.
+But the first important question is why
+we would want to learn simulation at
+all?
+So, the most common argument here is the
+speed.
+There are pretty well engineered
+solvers. However, they're usually very
+computationally expensive. And because
+they require taking very small time
+steps and very high high special
+resolution, mostly something can
+approximate the derivative. So, this
+this is what makes them expensive that
+they have to approximate kind of like
+perfect spatial or temporal derivatives.
+And these limits are there for classical
+solvers, they don't necessarily apply to
+machine learning models, which can often
+learn subgrid dynamics or compensate for
+large time steps or you know, large
+spatial discretizations.
+But beyond this, there are less obvious
+reasons why it's a good idea to learn
+simulation. Like, for example, neural
+networks are often differentiable and
+they have smooth gradients. And this can
+be immensely helpful for solving inverse
+problems, such as you know, optimizing
+the shape of an airfoil or for like an
+optical control problem.
+Optimal control problem, sorry.
+And sometimes we don't even know the
+exact model of equations of the
+parameters of a system that we want to
+solve. So, running the exact simulations
+is hard. You think of for example of
+climate models or like modeling friction
+and contact in robotics or or stuff like
+that.
+And finally, you know, writing
+simulators is hard and even harder if
+you want to write them for accelerators
+or for GPUs or for TPUs. So, distilling
+models into a learned model that can run
+well on a modern accelerator can be very
+useful too.
+Now, this sounds so great and you know,
+when we are used to kind of like
+seeing news and headlines about machine
+learning, usually we see things like you
+know, 2 billion times acceleration. And
+you know, this sounds amazing.
+But actually, you know, if you start
+digging more into the detail, actually a
+lot of the models that are behind these
+headlines, they often look like the one
+in the right, where do maybe have a few
+input in parameters that you fit into a
+black box neural network, which then
+outputs a single number or maybe a curve
+or an image. And you know, of course,
+the inference time for this neural
+network is probably just a few
+milliseconds. So, if the number you're
+regressing is the output of a climate
+model that normally runs on a super
+computer, you very easily get a 1
+billion factor improvement.
+What is actually a bit less clear is
+whether the model has actually learned
+anything at all about the actual physics
+or about the actual system. In most
+cases, it's probably just fitting and
+interpolating a curve. And neural
+networks are very good at non-linear
+interpolation. So, this is this is not
+necessarily bad when it works and you
+can train a model. But we know they are
+usually bad at extrapolation. So, for
+example, if you have a model predicting
+the flow around an airfoil,
+uh and then you try to learn on a lot of
+samples where the airfoil is between 0
+and 10° inclination, and then you try to
+test this model on a 30° inclination,
+the model will usually not give you a
+good prediction for this, like most of
+the models that what people are used to.
+Um so, you really need to make sure that
+the input space during training covers a
+kind of like representing range of the
+inputs that you expect to be able to
+test on later.
+And because you need all of this
+training data to be representative of
+any possible future inputs, now you have
+to run tens of thousands of expensive
+simulations to generate training data.
+Uh so, you can later maybe run 10 cheap
+simulations on this very narrow set of
+parameters. Um
+and you know, it get worse. If you want
+to learn like a full model of a typical
+general-purpose engineering simulations
+like COMSOL or ANSYS, there's no way
+that you can build a data set that even
+begins to cover the whole input space of
+the things that you could simulate with
+it.
+Uh and of course, now the situation of
+the billion time acceleration starts to
+look a bit bleak compared to the
+headline.
+So, our current research is focused on
+exactly this issue. So, we try to train
+models which actually learn reusable
+knowledge, something like physical laws
+that allows them to then be applied far
+outside the data that it was trained on.
+Um and we do this by structuring our
+model right. Uh so, we can actually get
+such strong generalization um along with
+kind of like a lot of like nice
+differentiable properties by really
+imposing inductive biases in our model.
+And like you can actually get things
+like scalability, stability, speed,
+versatility of the model across domains.
+Um So, in general, most of the work
+covered in this talk today is work from
+our two recent papers from ICML 2020 and
+I clear this year.
+Um
+I would also be playing a few videos. Um
+they will probably look a bit choppy
+over the video call.
+Uh so, if you look at the project page
+links on this slide, uh you can actually
+look at the videos live.
+But, you know, keep in mind that like
+what we're doing is still basic research
+and this problem is far from resolved.
+So, we focus on generalization, but
+there's lots of other angles that you
+can study learn simulation from such as
+accuracy, convergence properties. Um and
+of course, we focus on kind of like an
+end-to-end learned approach to learning.
+So, you don't have to know a lot about
+the system you're learning. Uh but of
+course, combining learn components with
+hard code solvers is also a completely
+different area with its own benefits and
+challenges.
+So, before I tell you how about like how
+our model works and talk about
+generalization, let's look at the kind
+of things that we can do with it.
+So, these are rollouts of our model
+trained on particle simulations of
+water, sand, goop uh with the particle
+representation that our model is working
+on on the bottom and a rendered version
+at top.
+So, here's a very different simulation.
+Now here we have flow from left to right
+around a cylinder. So color is the
+velocity field and this is on a 2D
+triangular mesh.
+So you can see that it's very hard to
+see the difference between the model
+prediction at the bottom and the
+reference console simulation at the top.
+Here's compressible flow around the
+cross-section of an airfoil.
+Um you can see the model correctly
+captures things like socks and vortex
+shedding.
+For something a bit different, maybe
+like cloth dynamics on a moving dynamic
+mesh uh learned from a computer graphics
+simulator.
+And in this case, you can see even the
+triangles adapting to the simulation.
+And this is something that's uh Toby
+will talk about later, too.
+And finally, also a deformable plate now
+on a tetra tetrahedral mesh. Uh and this
+is also quasi-static simulation as
+opposed to the inertial simulations
+before. Uh now the interesting part is
+like all of these simulations that we've
+shown, they are learned using the same
+model with the same architecture. Uh
+whether it's 2D triangles, particles, or
+3D tetrahedra.
+So this is what we find very interesting
+about our model, that a single model can
+do all of this with virtually no changes
+to the model.
+So without further ado, let's actually
+start looking at how we're doing all of
+this. Um so what What do is we learn a
+next step prediction model.
+This is a model that takes the
+simulation state at the current time
+step and predict the state at the next
+time step.
+So, the model is an encode process
+decode graph network. So, at high level,
+at every time step, we encode the system
+state into a graph.
+Then the neural networks process the
+information on that graph, and then they
+decode back the updated system state.
+And all of these using jet
+reasonable general purpose components.
+Now, our main design principle behind
+all of these general purpose inside
+these neural network components is this.
+So, essentially, recognizing that neural
+networks have issues with extrapolation,
+uh then we can actually make their life
+easier by by, you know, recognizing what
+the problem is here and try to design
+components that would make them better
+at extrapolation.
+And, you know, giving machine learning a
+little bell is not very unfair. Like,
+help is not very unfair. Uh so, one of
+the most important things that Sir Isaac
+Newton acknowledged is that he was
+standing upon the shoulders of giants,
+and that, you know, he was not starting
+from scratch, but benefiting from all of
+the work that came before him.
+So, in general, we found that it is very
+useful to give neural networks the
+opportunity to do this. And the way we
+achieve this by adding inductive biases
+to our networks.
+So, an inductive bias is anything that
+allows a model to prioritize one
+solution over another.
+So, if you want to say this differently,
+uh
+can can you still hear me?
+Yeah, yeah, I can see your slides and I
+can I can hear you. Yeah.
+Yeah. So, um
+I I don't know what what happened.
+If uh if if if you want to say this
+differently, you know, an inductive bias
+from my Bayesian point of view it's a
+way to give our model a prior over what
+to do in the absence of data.
+Uh
+Alvaro,
+somehow um
+we cannot see your slides.
+Okay.
+I think someone else shared the screen
+for a second. I'll I'll share them
+again. Oh, okay. I see.
+Can you see them now?
+It's starting to share contents.
+Yeah, now. Okay. Perfect. Let me say a
+word to audience. Please do not share
+anything except the speakers.
+I wish I
+I know how to you know prevent that.
+Okay, please go ahead Alvaro. Sorry
+about that. Yeah, no no problem.
+So yeah, so essentially we usually find
+that models with a strong inductive
+biases are are much more data efficient
+and can generalize much better to unseen
+scenarios.
+So let's look at a simple inductive
+bias.
+Imagine we're trying to model the
+position of this falling piano using a
+black box
+neural network.
+Now, the first thing that we can
+consider is to use a neural network to
+produce the next position of the piano
+given the previous position and
+velocity.
+And you know, a model like this one will
+have to spend training time and possibly
+capacity just to learn that usually the
+position the position of the piano at T
+plus one is close to the position of the
+piano at the previous time step.
+Um
+So instead, we can ask the neural
+network to predict the difference
+between the previous position and the
+next position.
+Now, the model prior we have it very
+easy to indicate that the piano will
+remain on the previous position just by
+having the neural network output zero.
+Um but of course, we can take this one
+step farther because we know that this
+system is actually driven by inertial
+dynamics and in the absence of forces,
+it's not really position but velocity
+that remains constant.
+So this model will still have to learn
+that a piano moving with constant
+velocity will in most cases continue
+moving with that velocity.
+So instead, we can ask the neural
+network to predict a correction to the
+initial trajectory. So, this way, if the
+neural network outputs a zero, then the
+object will continue moving with
+constant velocity.
+So, now that now this model has an
+inertial prior, and the neural network
+can focus the learning and the capacity
+to actually learn the non-trivial parts
+of the dynamics, like for example, the
+effect of gravity or the effect of air
+friction.
+So, what we do is we add many useful
+inductive biases like this to our model.
+And these are inductive biases that are
+well known to be very general in many
+problems. Uh one of them, for example,
+is a spatial equivariance. You know,
+this is kind of like saying that if we
+place this box 1 m to the right, the
+physics should be the same that that
+were they were before. Uh or local
+interactions that like, you know, maybe
+particles are often more strongly
+influenced by particles that are nearby
+than particles that are farther away.
+Um such um we know that, you know, if we
+were to place this this kind of like box
+1 m to the right, then the physics would
+be the same uh according to kind of like
+the first inductive bias. So, I'm not
+kind of like to go into the full set of
+um into inductive biases that we have
+here, but, you know, we'll we'll just
+say kind of like a few to give you an
+idea of like why we constructed our
+model in the way we did it.
+So, first, we're mentioning that like
+we're using graph networks. Uh and we
+will see that graph networks are graph
+of
+are a type of neural networks that allow
+to very naturally express many of these
+inductive biases.
+So, let's actually see how our graph
+neural networks work.
+Imagine we're working with this
+gravitational system.
+And many of you will be familiar, you
+know, with uh the simplest of neural
+networks, the multi-layer perceptron,
+which takes a vector as input and
+returns a vector as output.
+So, we could put the position and
+velocity of each body into a vector and
+feed it through the MLP.
+The problem is that by doing that, we're
+imposing an ordering.
+Um so, if now we were to ask the neural
+network the same question, but giving
+the inputs in another order, the answer
+will not be guaranteed to be the same.
+So, the MLP has to learn the interaction
+of all of these bodies separately, just
+to eventually figure out that gravity
+works in the same way for all of them.
+A better representation of vectors for a
+system like this one are graphs, because
+by definition, nodes and edges in a
+graph don't have a specific ordering.
+And in these graphs, you know, maybe we
+can still have each node representing an
+object, and store some node features,
+such as the position, mass, velocity uh
+of the particles in those objects.
+And we can also store features in the
+edges connecting the nodes. For example,
+something like a spring constant, if the
+particles are connected with springs.
+And finally, we may also have some
+global context that affects all of the
+particles, such as like the
+gravitational contact constant, if we
+want to change it between simulations.
+So now, all we need is a neural network
+that is able to operate on these graphs,
+and this is what graph networks do.
+A graph network simply takes a graph
+with node, edge, and global features,
+and updates all of those
+representations. So, we can, for
+example, ask the graph network to
+produce the position of a node at the
+next time step.
+The magic is that all of the updates
+that the graph network
+does uh happen in a
+permutation-equivariant way,
+independently in the of the order in
+which we specify the nodes and the
+edges.
+Um and this is possible because graph
+networks were based on something called
+message passing.
+So, let me explain in detail for those
+of you that are not familiar with this
+model what message passing is.
+Let's start looking at a single edge of
+the graph.
+So, for that edge, we can take uh we can
+build a vector by concatenating
+uh the vector feature of that edge,
+the vector feature of the two nodes that
+are connected by the edge and the global
+vector feature.
+And then, we can apply a neural network
+to this vector to compute an updated
+vector associated with the edge, which
+we will refer to as the message.
+And we know many forces in physics are
+typically defined as pairwise
+interactions such as this. Uh so, we can
+actually think of pairwise messages as
+an inductive bias.
+Now, we actually repeat the process to
+update the representation for all of the
+edges, but using the same neural
+network.
+And this also imposes a prior that the
+update function should be the same for
+all of edges, similar to how the laws of
+physics are universal.
+After we have updated the edges, then we
+have to update the nodes. And now, we do
+something similar. We start looking at
+one node, and for this node, we take all
+of the messages that this node receives
+using a sum.
+And this is closely related to the
+superposition principle in physics, and
+how forces can usually be just added up.
+Um and of course, in this case, instead
+of forces, we'll be operating over
+learned representations rather than just
+forces, but the principle the main
+principle still apply.
+And then, once we have aggregated these
+messages, then we build another vector
+with the feature vector of the node, the
+aggregated messages, and the global
+vector.
+And again, we give this vector to
+another neural network, and then we use
+this to update the node representation
+this time.
+Um and note that in this case, uh a node
+can only update itself based on its
+neighbors. So, imposing a prior this is
+So, this is imposing a prior of local
+interactions.
+And similarly to before, then we repeat
+the same process to update the
+representation for all of the nodes
+using the same neural network.
+So, these two steps is what makes the
+network kind of like uh equivalent to
+permutations of the nodes because
+actually, it doesn't care in which order
+you provide you provide the nodes on the
+edge and the edges.
+So, there's usually an additional update
+step uh which allows to update the
+global features of the graph.
+But, this particular update is not
+local. So, for this work we don't use
+it.
+Um
+but like you know in some of other work
+you you may be seeing that people
+actually use global updates.
+So, now that we know
+that we will be using graphs and why, I
+will leave you with Toby who will
+explain how these models are connected
+to our domains and actually go through
+the results and the generalization.
+Let me share my slides. Um
+I think you have to unshare cuz my share
+button is grayed out.
+Oh, it's still grayed out.
+Ah, there we go.
+Can you see my uh screen?
+Yeah.
+All right.
+So, yeah. Thanks Alvaro for the
+introduction. Um
+So, let's talk about uh how this
+actually works for a concrete system. Um
+So, specifically let's look at the
+encoder um
+and what's happening there.
+So, the encoder is a module that takes
+the input set of nodes and builds a
+graph. And then we can use it in the
+graph processor to process and then pass
+messages on the graph.
+And so, our model can deal with various
+types of systems. So, we showed that we
+specifically looked at particle systems
+and meshes.
+And so, for meshes building a graph is
+kind of a trivial operation, right?
+Because a graph and like a mesh is
+already a graph. So, we have mesh nodes
+and mesh edges.
+And so, we can directly use those to
+build a graph by just saying like every
+node in the mesh is a node in the graph
+and every edge connecting these in the
+mesh is an edge connecting them in the
+graph.
+If you have a particle system on the
+other hand, we can use the particles as
+nodes and we can just connect them by
+proximity.
+So, that means that
+we take a particle and within a certain
+radius
+we will connect all other particles in
+that radius by an edge to build a
+locally connected graph.
+And then as we as I already mentioned
+before um
+we can encode features into these graph
+nodes and edges.
+So, with this example of a particle
+system representing liquids, that would
+be something like each particle's
+position, velocity, and maybe a particle
+type. Is it like a liquid? Is it a
+boundary particle or whatever?
+And then we could use this graph and
+pass messages on it.
+But it turns out we can actually do even
+better than this. So, if we don't encode
+the position directly into a node and
+instead encode the positional difference
+between two nodes into an edge
+then we get translational equivariance
+basically for free, right?
+This is a property that we know that
+pretty much all of a lot of the physical
+systems that we care about have and our
+network can then exploit.
+And there's a lot of other things that
+are very similar that we can do and I
+think this is just to give you the basic
+idea of
+why we're doing this. It's like we we're
+trying to reduce the amount of
+information that a single neural network
+can see as an input as much as possible.
+So, for example, due to using graph
+nets, we only need to reason about the
+local neighborhood around each node,
+right?
+And due to encoding relative distance in
+edges as opposed to like the absolute
+position in a node the network inputs
+will look the same for a similar
+neighborhood wherever that may be
+located in the simulation domain.
+And so, this property allows the model
+to for example to be used on uh
+systems that are much larger and have
+higher position values than has been
+seen in training. And this is something
+we going to going to look at later more
+in detail.
+Okay, so this is kind of how we can
+build a graph. Um and as I was saying,
+we can run message passing on this
+graph.
+And then as a last step, we have to kind
+of decode this graph and get back our
+next system state.
+And so this is the job of decoder and
+updater.
+So again, let's look at this example we
+had from our liquid system using
+particles.
+And one obvious thing here what we could
+do is we can just say like we take the
+features stored in the graph nodes and
+just
+add an MLP on that and then decode that
+into like say the next position, right?
+But as Alva already mentioned earlier,
+this makes the problem just
+unnecessarily hard. So in practice, we
+can predict something like an
+acceleration exploiting the inductive
+biases of inertial motion.
+And this is kind of nice because what it
+means again is that if you just have a
+neural network giving you a zero
+prediction, it would just keep all the
+particles flying with their previous
+velocity. So that is a useful bias to
+exploit and we only have to
+predict the deviation from that.
+So there's a lot of model
+to talk about, but I think like you get
+hopefully the basic idea how we
+constructed our method. Um
+And why we did so, right? So we encode a
+system into a graph, we do message
+passing on the graph.
+Decode back to the next step.
+And we try to pack as much inductive
+biases we can in that process.
+Um
+And the beauty of all of this is that
+the actual core model can remain exactly
+the same for all of these different
+systems, right?
+Whether we simulate liquids or cloth or
+aerodynamics and whether that's an
+inertial or quasi-static simulation or
+like if it's particles, triangle meshes,
+tetrahedra, what have you, right? So,
+the only thing we need to do different
+for these systems is
+how we actually encode or what
+quantities we encode and how we decode
+them.
+So, we already seen for example that for
+particles we can encode node positions
+and decode to accelerations of these
+particles.
+But, if you have for example a
+continuous field like these velocity
+fields in the Eulerian fluid
+simulations, all right? We can just
+encode the samples of the velocity field
+at the mesh nodes
+into our graph nodes.
+And then we can decode the changes in
+these fields, right?
+Or if you have incompressible flow, then
+we do the same for a density field in
+addition to the velocity field.
+And so like it will come to no surprise
+then that what this basically amounts to
+is learning the right-hand side of an
+underlying PDE of these systems, right?
+And we're not only learning the PDE, but
+we also learn all the nasty
+implementation details surrounding
+discretization schemes, parameters that
+you might not want to encode, global
+effects like pressure, like everything
+basically that makes writing classical
+simulators hard. That's all learned in
+our model.
+The only thing you have to deal with is
+getting our variables out and updating
+them.
+All right. So
+So, this is basically how you learn a
+next step model. And once you have such
+a model, you can use it to make
+predictions.
+So, because we are learning these
+temporal simulations or dynamic
+simulations,
+what we do is we unroll these
+We unroll our model to get a simulation
+trajectory, right? So, that means we
+start with an initial state
+and we apply our model to this initial
+state and we get the next step and on
+this next step we evaluate the model
+again until we get like a rollout that
+we can then render for example as this
+animation or look at in some other way.
+And
+so
+this is it's actually kind of surprising
+that this works at all because normally
+what happens if you train a model on
+like predicting the next step
+and then unroll it for hundreds of step,
+you will get something like the
+animation on the right, right? So this
+tends to explode. And the reason for
+that is error accumulation.
+And
+so even if you have a model that's very
+accurate, there will always be some
+slight imperfect predictions and further
+steps will compound this error.
+And this is something that's not
+particularly surprising. It also happens
+in classical solvers as well and this is
+why we all have like these fancy
+integration schemes. But this is much
+much worse for learned models of
+dynamics.
+Because eventually what will happen is
+that the accumulated error can form
+states that haven't been seen in
+training.
+This is particularly true for things
+like physically invalid states. So here
+we have an example of like particles
+getting too close and overlapping.
+Or it could also be things like
+divergences in incompressible flow.
+Anything that hasn't been seen in the
+training data because it can't be for
+this physical system.
+And because neural networks are dumb as
+we mentioned before and they don't
+extrapolate well, given such an input
+they haven't seen, they will give us a
+very random prediction and particularly
+often it leads to these exploding
+trajectories.
+So often what people do is things like
+training over multiple steps. But what
+we found is much simpler and works a lot
+better is using training noise.
+What we do is during training we corrupt
+our input data with Gaussian noise and
+ask network to compensate for it.
+In this way the network can learn to
+like A see these states which are
+slightly deviation from our like
+training set input, but also they can
+correct some physically invalid states.
+For example, such these unexpected
+divergences, right?
+So, let's have a closer look at one of
+our rollouts.
+So, this is the rollout again trained on
+one step and we roll it for a few
+hundred steps.
+You notice there's definitely no
+explosions here.
+But also like even in this very chaotic
+regime, we actually remain pretty close
+to the reference simulation on the right
+at all times, which is also kind of
+interesting to see.
+And so, this is a rollout of a few
+hundred steps, but that's not
+necessarily the limit, right? So, you
+can basically unroll indefinitely. So,
+here is an example where you just keep
+unrolling for I think 40,000 steps in
+total.
+Um
+and you see like
+the dynamics
+just keeps being the same. So, we don't
+have any like super bad build-up of
+error.
+And again, this is just trained on next
+step prediction as before.
+Okay. And yeah, now finally, I think we
+should talk about generalization, which
+is kind of the thing that motivated a
+lot of our work.
+So, for that, let's look at this simple
+example. So, we have a model that we
+trained on this little 2D domain on the
+left. So, this is There's really That's
+the only thing that's in the training
+set. We have a set of like these single
+water cubes, which fall onto a
+randomized line obstacle. And there's I
+mean some variations. The cube might be
+slightly different size or this obstacle
+might have might be slightly different
+orientation or position.
+But that's kind of all there is.
+But then at test time, what you can do
+is we can take this model and we apply
+it to a very different scene, right? So,
+first of all, we have have a bigger
+domain.
+And you also have a continuous inflow.
+And you can immediately see that the
+dynamics that we get here are
+qualitatively different from what we
+have on this training set on the left,
+right? So, neither this continuous
+inflow nor these water vortices have
+been observed in training at all.
+And this is exactly that type of
+generalization that you really wouldn't
+expect to get with like a learned model,
+unless you construct it particularly to
+do so.
+But,
+we already know kind of why this works.
+And this is because of all of the
+inductive biases that we have built into
+our model, as I will explain earlier.
+So, for example, each node in the
+network only sees a particle in its
+local neighborhood, right?
+And even if you have a very different
+dynamics on a global scale, chances are
+that a similar neighborhood has been
+actually observed in training at a local
+level. So, for example, we have seen
+um like the dynamics around water
+surfaces, or like how particles interact
+with the box boundaries, or the dense
+blocks of water just move around.
+Oops. Um so,
+due to all of the locality invariances,
+the network inputs for all of these
+little neighborhoods is kind of they
+actually look quite a lot the same. So,
+it's not surprising that the neural
+network can actually give us a good
+prediction for those.
+And the effect that it has is that
+encourages our model to learn local
+universal laws, something that's very
+much like the actual underlying physics,
+as opposed to overfitting to some more
+global feature of the training data,
+which is something you see often in in
+learned models dynamics.
+All right. Um so, let's look at a bit of
+a bigger bigger example.
+Um so, so this is an example of meshes
+this time. And again, we have a training
+set that's the box on
+the left corner. So, we have just a
+bunch of variations of these rectangular
+flags. And then at test time, we apply
+it on this very different windsock with
+tassels.
+And um so, I mean,
+the shape is different. It has never
+seen the cylinder. But also, this mesh
+this mesh is much bigger than the
+training meshes, right? So, we have 10
+times as many nodes. You can see all the
+little triangles here.
+And again, like this is a close-up here
+with the training and the test domain
+side by side.
+And so, the fact that we can actually
+run these simulation at test time on
+much bigger scale is actually also quite
+interesting by itself, right? Because
+what it means is that the our training
+data doesn't necessarily have to be
+expensive. Because that's the point
+that's often made about um
+that you have to like balance the cost
+of like training a model versus the the
+thing you that you can use it for. But
+like with this kind of method, you can
+actually train on cheap lowest data and
+then at test time scale it up to
+something more complex.
+All right. As a last point, um
+let's look at
+at meshes.
+And this is relevant because a lot of
+simulators like finite elements, which
+are very popular simulators in
+engineering particularly, they use
+meshes as representations. Um and that's
+for good reason cuz I mean, a lot of
+domains like the ones here,
+you could represent them as like voxel
+grids, but it's not particularly
+efficient to do so.
+And also, if you operate on meshes,
+there's a lot of nice tools from
+continuum physics that you can exploit
+to
+give you nice solutions to these PDEs
+that you're solving.
+But the fact that we are working on
+things like meshes and graphs is
+actually quite unusual in the field
+because the vast majority of machine
+learning research for physics prediction
+does that on 2D regular grids.
+That's of course because um these are
+well-understood convolution
+architectures like ResNets and U-Nets
+are very prevalent and well-understood.
+Um so, a lot of you would just use them.
+But also, there's a bit of an impression
+that learning on graphs only works for
+small systems.
+And one of the points we try to make in
+our research is that that is not
+actually longer true. So, um learning on
+graphs can actually scale. Now that we
+can use meshes and graphs as
+representations, we might as well do so
+and reap all the benefits that these
+representations bring us. And these are
+exactly the same that they bring to
+classical simulators.
+So, here's an example of
+one of these nice swatches we get using
+meshes and that is just um
+adaptivity, right? So, this is one of
+these aerodynamic examples that Alvaro
+showed you earlier.
+The flow around an airfoil wing. And the
+whole simulation domain is 4 m, but
+these this wing tip
+region, which is apparently very
+important for these simulations, we get
+sub-millimeter accuracy.
+And that's with a mesh of 5,000 nodes.
+If you were to put this on a grid, you
+would need a uniform grid of 40 billion
+nodes for the same precision.
+But we can take it even further.
+In this cloth example earlier, you might
+have noticed that the triangles keep
+shifting during simulation.
+Uh and this is because the optimal
+triangle size we kind of want for the
+system but also over the course of the
+simulation, right? Um
+You might want to have smaller triangles
+where these bends and folds are, which
+of course move if the flag blows in the
+wind.
+And this is actually something we can
+learn, too, right?
+So, what we do here is we learn a graph
+net model, much like the one we used for
+dynamics prediction. And we predict a
+sizing field.
+Which is basically a spatial map which
+indicates where in the simulation domain
+we need higher resolution and where we
+can get away with coarser triangles.
+And this sizing field can then be used
+to dynamically adapt the resolution
+during the simulation or but by passing
+it to a very generic remesher. And all
+of the cloth examples that are that
+we've shown you used this method and it
+seems to work very well even in the
+generalization setting.
+Here's an explicit example for we can
+see the sizing field and
+the simulation side by side. You can see
+that like where these bends and folds
+appear and propagate by the wind blowing
+the flag, there will be smaller
+triangles appearing in in the meshes as
+well.
+All right. Um I think it's time to wrap
+up our talk. Um I think the general
+message we have everyone is that um
+straightforward application of deep
+learning to simulation often results in
+models that don't do so well on
+generalization particularly.
+But it is totally possible to construct
+models that do generalize, right? Uh and
+we believe the key to do so is carefully
+constructing them with inductive biases
+in mind.
+And in particular, I think uh I hope we
+convinced you that uh
+graph and mesh representations are very
+powerful and promising way forward for
+learning the dynamics of physical
+systems.
+Because they have a lot of these uh nice
+properties that we want from a learned
+model.
+And as you said earlier, um
+our research mostly focused on these
+end-to-end learned models, um
+but there's a lot of other things you
+can do um
+in the domain of learning physical
+models. And for example, mixing learned
+components with like hard-coded solver
+components or trying to interpret uh
+the the networks you have learned and
+trying to distill equations out of that.
+And there's a lot of cool work in that
+direction. So like I put some links on
+you uh on the slide for you to look at
+if that's something you're interested
+in.
+And um
+Yeah, so finally I We believe this is
+really an exciting area to do research
+in. There's lots of more open questions
+um and no shortage of hard problems to
+tackle, but we feel we feel like we're
+making some progress here and um
+we're really excited particularly in
+looking more into adaptivity. Um we're
+also kind of curious how far you can
+actually scale these models up in terms
+of like real problems in in science and
+engineering.
+And again, like there's these links to
+uh to website for these two papers again
+on the slide where you can find like
+both the paper and also like all the
+videos that we showed here, which
+probably like didn't play you know, it
+fell over the video chat. All right,
+that's it from us. Thank you so much for
+joining.
+Okay, thank you so much for the great
+talk, both for Alvaro and the Toby.
+Um we will have a Q&A session. We have a
+um
+a lot of questions, by the way. Okay,
+let's
+Let's start from the the beginning.
+Um okay, the rab um
+asked, "How do you deal with a node that
+have a higher degree
+than other nodes? Wouldn't that change
+the size of that local node vector?"
+So, so in principle, because of how the
+node that the updates work,
+um
+we never look at a whole neighborhood
+and put that into a vector and give that
+to a near neighbor. What we do is we
+look at all of the edges one by one, and
+the edges always have two nodes, and
+then when we update the node, we take
+all of the edges, and then we sum them.
+So, like that sum,
+the out the size of the output of that
+sum is the same regardless of whether
+you have one neighbor or do you have 10
+neighbors. Um and there's a lot of
+research that like, you know, some other
+people sometimes take the mean instead
+of the sum or the max. In principle, the
+sum is the most powerful powerful one,
+but for some applications, actually
+taking the mean is better. The only
+important thing is whatever op you take,
+you want it to be
+uh permutation invariant, because you
+don't want the output to depend in the
+order of of which, you know, you maybe
+specify the nodes. So, the sum is is
+commutative, so it's it's kind of like
+permutation invariant by definition.
+Okay. Uh Toby, do you want to add
+anything to that?
+No, I think that's exactly it. Okay,
+thank you.
+Uh next question is by Betty. Uh how do
+you ensure conservation law, for
+example, mass, momentum, and energy
+conservation? Um is are they satisfied
+in the system you are studying?
+I guess the simple answer is that
+they're not. Um just like uh as Alborz
+mentioned, there's a few inductive
+biases we put in.
+Um energy conservation specifically is
+not something we did put in, right? So,
+just like um
+some drift we can get in these
+variables. And in general, we found that
+um if we do it well, they are not too
+bad. So, like certainly like if you look
+at the simulations, uh there is no kind
+of explosion in energy for example as
+like you will have another of solvers
+where the integration goes bad, right?
+But there there might be drift in things
+like accumulating divergences and things
+like that. And I mean, this is something
+we're interested in like exploring a bit
+more what you can actually do to give
+you better guarantees on these things. I
+think I mean, currently
+um
+what we do is kind of you kind of um
+want to try to do two things with a
+model um unless you specifically have
+something built in that like um
+guarantees you that, which is if you try
+if your model error low enough, and also
+you through for example training noise,
+give your model inputs that um
+a little bit out of the training range,
+you kind of are
+um making sure that you don't get any
+crazy results, right? But you don't
+necessarily guarantee anything beyond
+that. I'm not sure if you have something
+to add to that, Alborz.
+Um
+yeah, not not not much. Just say that
+like
+there's yeah, different models may have
+may make different compromises. So, like
+even simulators, when we say you know, a
+simulator conserves energy uh very well,
+often it does so because it compromises
+with something else. Maybe it has a
+constraint satisfaction states that it
+that it kind of like is particularly
+targeted at energy conservation. And in
+by solving that constraint, it's
+actually moving something else that
+could have been like better in a
+different way. So, like in that sense,
+we can also we also know how to
+introduce these these constraints to
+neural networks.
+Uh we're just not doing in these papers,
+but we would know have to do it, I
+think.
+Okay.
+Sounds good.
+The next question is by Mark Mark.
+How much of the work is publishable and
+how much is appropriate?
+Three.
+I mean, everything we cover in the talk
+is published. Also, this is these two
+papers here mostly. So, there's not
+things super secret. I mean, there's
+more things we're working on, but we're
+not ready yet. But once it is, we will
+publish that. For the first paper,
+there's even code out and like some of
+the actually all the data sets and the
+code is out there. It's also like a
+there's a link on this webpage on top.
+For the the newer paper on the matches,
+we're preparing a release for for code
+and and data sets, but it's not there
+yet. I'm I'm not sure how long it will
+take.
+Okay. Wonderful. All right. Next
+question is by Matt. Do you have
+quantitative error metrics beyond the
+video?
+You know, looking good.
+I mean, we have
+some I mean, so the it's like always a
+little bit hard to measure uh
+quantitative error on these like
+dynamical simulations. So, I mean, we
+did the obvious thing, which is we
+measure one step
+mean square error for all of these. And
+we also measure the error over
+like a window of time steps, right? So,
+like over the first 50 time steps or
+like first 100 or whatever, right? And
+these are indicative of certain
+different properties. Um And you can
+compare them to other methods.
+In general, like it is true that like
+the lower them the error goes, on
+especially one-step error, the better
+like your rollouts will become. But like
+certainly for especially for chaotic
+systems, at some point these errors stop
+making sense, right? Because even like a
+small perturbation at step one will like
+down the line then give you very high
+error, even though the behavior is
+completely reasonable. And this is
+something that's also true of classical
+solvers, right?
+And there's probably other
+metrics you can look at like statistical
+um
+what is like looking at like energy over
+frequencies like that? We haven't really
+done that.
+Okay. Okay, next question is by Kyle.
+For a granular system where the locally
+connected grains change as a function of
+time, how do you handle creating and
+destroying edges?
+So for the edges, we just use a spatial
+hashing algorithm for computing the
+nearest neighbor distance with this
+within a certain radius.
+We never tried to optimize that part of
+the code too much. So actually we were
+recalculating everything at every step.
+Um
+So in principle, you know, edges just
+come and go at every step after you
+compute the next positions. Then in some
+of the simulation we actually add
+particles in the middle of the
+simulation.
+I don't remember if we remove particles
+in any of the demos. I don't think we
+do, but like in principle that's not a
+problem. You can just you can because
+our model only takes a single step of
+inputs.
+It's a just a transition model. It
+doesn't have a recurrent state. You can
+very easily just like add more things or
+remove things, add edges, remove edges.
+You you you can just like have that
+flexibility usually. And in the mesh one
+for example,
+we're just recomputing the entire mesh
+and re-interpolating the positions and
+that that works fine.
+Okay.
+Thank you so much.
+Oh my goodness, still the questions are
+pouring out. Okay.
+It's almost out of control.
+Okay, the next question is by Yasaman.
+How much of the computational cost do we
+save with graph networks versus
+numerical simulations using
+physics-driven models?
+Okay, who's going to answer that?
+this is also something that's a bit hard
+to measure. I mean in the in the
+Now in your paper we have some
+performance comparisons. So like
+generally like especially if you have a
+numerical simulation that's very
+expensive, you can get a lot of gains.
+So I mean we have numbers with like just
+like end-to-end wall clock time 10 to
+100 times faster than the reference
+simulator.
+Um but it's like it's always a little
+bit tricky to compare that. A lot of
+these simulators uh don't have like
+GPU-accelerated versions, for example.
+But I think like one of the point that
+that's worth mentioning here is I think
+this is kind of like one of the benefits
+you model can give you is that in areas
+where it's really hard to have a very
+fast hand-written solver,
+um these models can shine particularly
+well, right? So, like if you have just a
+very simple domain, you have like I
+don't know, a box uh
+with fluids and you have periodic
+boundary conditions, and there's very
+fast solvers you can use to solve that
+problems. Like a learned model might not
+be necessarily faster there.
+Uh however, if you have a very complex
+domain, which is the case in a lot of
+these engineering applications with
+complicated meshes, boundary conditions,
+whatever, like a lot of these
+um
+nice properties that traditional solvers
+like multigrid solvers or whatever have
+kind of break down the more complicated
+the domain becomes, right? Um
+whereas uh a neural network model can
+actually learn very
+very nice approximations to like still
+give you large speedups here. And this
+is the same as true also for time.
+So, like our model, for example, it can
+kind of learn something like an internal
+fancy integrator, and we can take much
+larger time steps than a classical
+solver, right? Because
+the all of these traditional things like
+CFL condition or whatever don't
+necessarily apply to our model because
+it can kind of look at more like bigger
+coherent structures and not only at like
+the single-cell level.
+Okay, thank you. Uh the next question is
+by Xiao. Uh why is GNNs
+superior to CNN? Can you briefly explain
+uh when we want to use GNN instead of
+using CNN for image-to-image prediction?
+So, uh that's a very interesting
+question. So, like I I don't think CNNs
+or GNNs are really uh opposed to each
+other.
+Often often we actually often use CNNs
+for like some of the work that we do.
+Actually recently we we published
+something in a workshop in ICLR. Let me
+share the link here.
+So this is essentially or actually
+that's meant to be two links.
+But it didn't yeah. There you go. So
+essentially this added
+this is
+this work that we did modeling PDEs and
+we were modeling PDEs on grids in this
+case and for this one we actually used
+convolutional neural networks because we
+found they were sufficient for that
+domain.
+And actually when we tried graph neural
+networks they were fine. But you know
+graph neural networks tend to be a bit
+more expensive to evaluate. So what I
+would say is if for your application a
+CNN works fine then
+I will not discourage people from using
+CNNs. If if you suspect your model
+doesn't have enough like you know
+reasoning capabilities then there's a
+whole spectrum from like a CNN a
+transformer and a graph neural network
+that you can start exploring. And you
+know
+in this in a way like graph neural
+network is the one that can model the
+interactions in the kind of like in a
+way that is closer to how like most
+simulators model interactions.
+So like is this a continuum of models
+really and you should just pick whatever
+works best for your application. So I
+wouldn't
+I don't kind of like play I just I just
+think overall if you don't know what's
+going to work and you want to invest on
+one then you can just do the job network
+graph network usually it will work and
+it gives you flexibility for like you
+know non non kind of like a sparse non
+like uniform grids.
+But overall yeah like I
+unless you unless you have like long
+range dependencies that are very hard to
+reason about or and like using kind of
+like a convolution sort of approach I I
+wouldn't discourage people from trying
+CNNs for their problems.
+Yeah.
+Okay, thank you. The next question is by
+Charles. Would you comment on why the
+error in your
+flag wind simulation predictions plateau
+as time grows in your paper? I'm
+particularly interested in having low
+errors at
+some final time and I'm worried that
+using, you know, the update from, you
+know, previous time step to next time
+step will propagate the errors. Um
+Thanks for the talk, by the way.
+So so that's very similar to the point I
+raised for unlike that it's hard to
+measure error. So I think for this flag
+particularly what we see is the
+coherence error, right? So what I mean
+by that is like the error that you see
+at the plateau as if the flag that we
+have
+and the flag in the reference simulation
+are in a different angle, right? Because
+like the little differences in the first
+few steps made like the flag just like
+swing into a different direction, right?
+And um
+so like at
+at these long ranges
+our simulation that's like often after
+like 50 or maybe 100 time steps, like
+most of the error measured is the
+coherence. The main thing that we wanted
+to show with this graph is that the
+error doesn't increase beyond that,
+right? So we don't have any uncontrolled
+stability. So we only the only thing we
+have is that this kind of like um
+chaotic behavior
+accumulating over time.
+And so so I don't know if you
+if you're looking at like more So yeah,
+there's two things. Like one it's good
+to know that it does plateau, right? So
+there's no no explosion. The other thing
+if you actually want to compare more
+like what's a more accurate model, you
+may want to look at just like MSEs in
+very short
+time horizons. So like just at the one
+step or like the few step error. This is
+much more indicative of the of the
+final performance there. And the other
+thing is you can do like you can again
+like start looking at these um
+kind of more
+I don't know domain dependent
+statistics, right? So for cloth you
+could look at, okay, do your triangles
+actually stretch at some point, right?
+Or for um
+for incompressible flow, you can easily
+like oh, do you actually have any
+singularities
+um or divergences um
+that appear over time and something like
+that, right?
+Okay. Uh thank you. Uh next question is
+by Shao Shao you. Uh
+well, it's just a comment he made. The
+graph is a good idea for mesh-based
+modeling compared to CNN and LP. It is a
+good choice for simulation on FEA, graph
+element network. Um
+however, personally, I feel most of the
+papers are just fancy ways to
+approximate finite difference or finite
+volume. Uh imagine uh if you have a poor
+scheme, poor uh mesh, um it is still
+able to tell you something about
+physics, even though it might be
+incorrect. They behave much like the the
+prediction results you have, but since
+you have data to correct the model,
+uh dissipation is less and
+would you would you uh respond to this
+comment?
+Um not 100% sure like I understand it
+fully. I mean, if it's if it's about
+triangle quality, yeah, I think there's
+interesting things we can do with like
+learned models. Um and I mean, classical
+solvers have really strong dependence on
+like good well-conditioned meshes, which
+but with learned models, it might not
+necessarily be true. We haven't really
+tested it because I mean, in the end,
+you also need training data for that.
+And so, like you have to think about how
+to generate training data for like bad
+meshes so you can actually deal with
+those at test time.
+Uh but I think like fundamentally, there
+yeah, I guess probably much more you can
+do to compensate for something like
+that.
+Uh I think there was probably another
+element in this comment. Uh I don't
+know. Did you pick up on something else,
+Alvaro?
+Yeah, I'm I'm not sure like the part
+about the dissipation like what it mean
+like what like sort of like what I find
+is like neural networks are like very
+good at producing like high contrast
+outputs.
+Like for example, in this other paper
+that I was kind of like mentioning
+before, we found that like if you take
+the same simulator and you run it at
+like lower spatial resolution, then it
+gives you an answer that like it's still
+like it still has like the
+correct physics, but maybe it's much
+more affected by numerical viscosity. Um
+so kind of like our model, you can use
+it just to model the entire system, or
+you could maybe just, you know, use it
+to correct the the other model and
+compensate for numerical viscosity. So
+in this sense, our models can be very
+good at this, and this is why the videos
+look good because, you know, the neural
+networks are good at producing states
+that look like the real state. Um and I
+think
+they can be complemented easily with
+like other models.
+Uh and, you know, probably for science,
+for actual like scientific applications,
+in many cases they they kind of like
+winner combinations will involve
+combining them with something that is
+that you know that has nice properties,
+or maybe tells you something about the
+physics, even if it's not correct, and
+then use the model to correct that.
+Um if you want to have more guarantees.
+Okay, thank you. Uh the next question is
+by Piyush. Um any thoughts on uh graph
+level predictions? Any specific type of
+models that work better in those kinds
+of problems? Um should one use global
+node read out or an MLP on aggregated uh
+node attributes? Yeah, so um so to
+answer this, this this is a very
+interesting question, and in most
+applica- in lots of applications, you
+don't know which should you which one
+you should use. Uh now, the main problem
+here is that like often when you work
+with graph networks, you want to
+generalize to larger graphs. Um and if
+you actually have a global component in
+the graph that can communicate to
+everything, and then a single output,
+then it can be very easy
+uh for the model to to overfit to the
+sizes of the graph that it was trained
+on. So, if you when you generalize,
+you're planning to generalize to graphs
+that are larger, I usually recommend to
+try to not use a graph network with
+globals. Keep Keep like pure message
+passing, and then have all of the nodes
+or all of the edges contribute via a
+linear operation to the answer in a way
+that when you scale to the graph, maybe
+you know, it would just be a linear
+operation. So, there will not be a a
+neural network that will get surprised
+by receiving like the sum of, you know,
+40 elements where at train time it only
+it only saw 20 elements. Um but this is
+a very interesting question. It really
+depends on the application. And I think
+it's one of the big challenges. So,
+something else that people have tried to
+is you can use a different aggregation
+function for the globals. You can use
+that something like a mean or a max or
+or a or for the globals, which, you
+know, is less sensitive to the size of a
+system. Uh and then for the messages,
+you continue using a sum for the node
+aggregation of messages. So, it's really
+like a very interesting question, and
+I'm afraid, you know, beyond that
+intuition, I cannot really give you a
+rule of thumb because there's there's no
+right answer, I think. It depends on the
+application.
+There's also another approach that
+sometimes people take is but
+specifically for things like point
+clouds or like stuff that has
+geometrical structure, which is you take
+your whole graph, and then you have a
+down-sampled graph, and you connect
+these edges, and you kind of go down
+level by level, similar to like CNN
+models often like converts down to like
+a very low like step by step to kind of
+a lower resolution. And in the end, you
+read out on those nodes, right? So, like
+uh
+DGCNNs and stuff like that do that. And
+there's a lot of like shape models do
+similar things. And I think it's the
+idea is that you can capture both local
+and global information this way better.
+But it really depends what you're doing,
+as I was saying.
+Okay, thank you. Uh the next question is
+by Boxiong. Uh for a chaotic system, is
+the simulated state space same as the
+ground truth state space? Is it possible
+to pose some state space level
+constraints as useful inductive biases?
+I'm not sure I understand the question.
+Uh,
+if you're there uh Yeah, if you want to
+just move Yeah, do you want
+So, yeah, I think to answer the
+question, we're not modeling a latent
+space. So, when we do when we when we do
+kind of like one step model, it's always
+going from the ground truth state space
+like you know, spatial coordinates in
+the real world back to spatial
+coordinates in the real world. Like
+another option would be to have a model
+that like does what we would call a
+latent rollout, uh, you know, which is
+you do the same thing without going to
+the back to the spatial world. Uh, in
+practice we find that like you know, we
+didn't need to do that. So, we it it it
+was easier to keep it simpler but just
+going back and forth from the real world
+all the time. Was that Was that the
+question?
+I was wondering that we are just using
+the mean square error as some
+some guidance to train the network,
+right? And uh, we this might not provide
+really informative guidance to to learn
+the from one step to a net to a next
+step. And in a chaotic system, so we
+have we have all of these the states
+estimations and we may generate a PDF of
+this whole trajectory of a simulated
+system and the original system. And if
+would they match? If they do not match,
+can we use this as some inductive bias
+to to constrain the network?
+Yeah, I mean there's certainly a lot of
+other things we can do. I mean we
+haven't really experimented with any of
+that. I mean we mostly use L2 like
+direct L2 loss cuz we know that's easy
+to optimize.
+Um,
+I mean, with that I mean you can also do
+that not necessarily on things like
+position. You can also do that on other
+things, you know, these systems have
+right like for
+for turbulent system. I'm not sure like
+necessarily what's the what's the thing
+you want to concern your learning by,
+but like certainly for like, I don't
+know, for fluids what a lot of people do
+is say like, "Oh, well, I know if it's
+incompressible, I know my divergence is
+zero. So, I put that in my loss, right?"
+And there's like a lot of other stuff
+you can add depending on
+information that you know of your
+system, right? And so, we didn't really
+go into that game very much, but there's
+certainly like a lot of application
+specific papers do that.
+Yeah, thank you, but our question is
+that many of the efforts are are going
+through the like the simulating part.
+What about the like if there any other
+way to training using graph neural
+network to trying to provide some other
+guidance beyond L2 norm?
+Oh, you mean like things like GANs and
+stuff? Yeah, like graph graph-based GAN
+have some learning loss function in
+graph neural network. Is there any
+progress in that direction?
+Not super Do you know a bit more on
+that, Oliver?
+Uh
+I mean, so far like our approach has
+kind of like been the opposite. Like,
+we've we've several times in the past
+discussed the idea of like using GANs
+for a for a simulation,
+but like it was kind of because MSE was
+working fine. We didn't want to kind of
+like make it our lives hard, but like
+having to train GANs which you know are
+very well known to be like much harder
+to train. But, there's certainly no one
+We went When we think about like how we
+would extend these models to a
+stochastic systems, uh
+GANs are definitely like one of the
+options. And
+uh and you know, we we have like tried
+some things in the past, but like we
+haven't really explored that direction
+much.
+Okay, thank you.
+Okay, thank you. Uh the next question is
+by Francisco. Have you ever tried to use
+inductive biases based on invariance to
+lie group transformation, group CNN, or
+other differential geometry notions,
+geometric deep learning in general. What
+is your opinion on this matter? Do you
+see possible future developments there?
+So,
+we we have played with these ideas a
+little bit. The answer is a little bit
+similar to the previous one. For for the
+sort of challenges that we have set
+ourselves so far, we didn't have to go
+into these directions. We anticipate,
+you know, actual actual like
+you know, more kind of like powerful
+geometry representations inside of
+neural networks
+could actually paid off once you
+actually want to generalize more from
+like, you know, low data regions to
+large data regions. And you know, I
+think here we're actually talking about,
+you know, inductive biases inside of the
+model, but like even something as simple
+as like having a model that's
+rotationally equivalent or, you know,
+equivalent to like, you know, whatever
+lie group, you know, rotations, mirror,
+um
+mirror symmetries and stuff like that,
+it will only make the model like more
+data efficient to it, but like so far we
+haven't found that like for the datasets
+that we had, this was really necessary.
+But it's certainly like
+a very nice kind of like a research
+direction and, you know, we would love
+to see papers published in this and we
+would love to read them, too.
+So.
+Yeah, I mean, translation is the the
+only thing we do and that we got like a
+lot out of, I have to say. Like, we had
+initially just worked with absolute
+positions. But that's like
+all the generalization stuff is only
+possible because of that. Rotation is a
+little bit, I mean,
+yeah, it will give you a little bit less
+bang for the buck cuz it's very easy to
+do that with data augmentation, but
+yeah, the all of these is very very
+interesting directions.
+Okay.
+Next question is by
+have people cast traditional PDEs over
+us to use NN framework without any
+learning so as to use the high speed GPU
+infrastructure. I don't know if this
+makes sense or is possible.
+I I think people are doing this, yes.
+And especially like right like now for
+this papers we use TensorFlow and for
+like apart from TensorFlow we also use
+something that is called Jax.
+Um
+and Jax is TensorFlow is kind of like
+written more for machine learning even
+though you can use it for this. But this
+other TensorFlow Jax is actually written
+not as a machine learning framework but
+more as kind of like a distributed
+compute framework with GPU acceleration,
+GPU compatibility, all of this. So I
+think in I don't remember any specific
+cases but like in kind of like workshop
+talks in the past I've certainly been
+people seen people writing simulators
+using those machine learning frameworks.
+And yeah, it's I think it's a great idea
+and it's it's you know these frameworks
+are written to to be kind of like make
+using accelerators easy to people. So
+like
+very often like I know I know some
+people that like you know write
+simulators and they maybe they don't
+want to use Jax or TensorFlow because
+they don't want to have an additional
+dependency. But you know, to me the the
+wins of being able to use that if if you
+can is just like immense because then
+you can write like a high performing
+simulator in Python. So which to me is
+amazing.
+Yeah, there's like a lot of work on
+writing differentiable solvers without
+necessarily any like neural network
+learned components. Um particularly like
+one that comes to mind is PhiFlow from
+like Niels Thuerey's lab at TUM which is
+like a differentiable fluid solver for
+it in TensorFlow. And like yeah, people
+don't necessarily write those they are
+fast even though that you can do that.
+They write them generally because then
+it allows you to put a little bit of a
+learned component in the middle of this
+whole solver and then like uh
+like differentiate through the whole
+thing and just like learn gradient based
+updates and apply a little component. Um
+so there's a lot of work in that area.
+Okay, thank you.
+Well, I would like to comment the
+following comment. There's the recently
+we have developed a non-linear manifold
+reduced to model where we use the
+non-linear the manifold representation
+as a neural net and then plug that into
+the traditional PDE solvers and probably
+Matt or even Alvaro and Toby you want to
+check that out. Okay, the next question
+is by
+Dolly Shin.
+Thank you for the talk. Did you have any
+general requirements for the
+physics-based simulation models for
+training?
+In general, as the computational cost
+became cheaper than in the past, people
+in computational mechanics are trying to
+catch up with more accurate results
+using more complex simulations. Is this
+coinciding with the database that these
+data-driven modeling requires?
+Um,
+I'm not necessarily sure exactly what's
+going but I mean for the
+the way we picked the data like of the
+data sets to train on, it's like there's
+things that play more to the strengths
+of a model than others. So, for example,
+like like one very strong inductive bias
+you put in is that
+like interactions are local and message
+passing propagates information and
+that's like um
+true for like a lot of these like
+dynamic
+equations but like if you have something
+that's like instantaneous or very fast
+like long-range interactions, there's
+probably less good prior, right? And so
+like there's there's a little bit of
+that kind of requirement. But that's not
+necessarily much beyond that. I mean,
+you can kind of use whatever data you
+want to train this thing. It's just like
+some things play more to the strengths
+than others.
+Um, I'm not sure there was another
+element to this question that I didn't
+get.
+Is there anything you want to add, the
+Alvaro?
+No? Okay. Okay, next question is by Fay.
+The edge embeddings depend on depend on
+the displacement vector according to the
+paper and do not seem to be explicitly
+rotationally invariant. Are the current
+GNN prediction rotationally invariant?
+So, the current model is not
+rotationally invariant as we kind of
+like said before,
+right? Like answering the other
+question.
+So, yeah, in principle we we we we kind
+of like played with this idea and like
+what we find is like there's kind of
+like a bunch of like rotationally
+equivariant models out there. Most of
+them were kind of like designed for
+molecular property prediction for kind
+of like, you know, low data regimes
+because I mean, you know, when you're
+working with molecules like any regime
+is like low data regime because there's
+too many molecules in the test set. So,
+like in principle for this data set we
+never needed to use this, but this is
+actually something that we're interested
+on and, you know, if if there's any any
+particular
+equivariant model that you're interested
+on I'll be
+I would be very happy to kind of like um
+follow up on that if if you want to
+share it.
+Um
+I guess that's it. The I I think
+great great job. You are the rockstar. I
+mean, you you you you you banged all the
+all the questions posted in the chat
+room. Um is there any other
+questions by I mean, you can unmute
+yourself and then direct directly ask
+those questions.
+Um
+If not, we can ask John. Um just quick
+one quick question. Toby,
+can you like comment out like comment
+out comment on the difference and
+similarities between these graph neural
+network models and, you know, classic
+reduced order modeling, you know, model
+reduction, PCA, you know, like some of
+the work Dr. James Yarbrough did.
+You know, like those real-time subspace
+simulation.
+Mhm. Yeah, sure. There I mean there's an
+obvious
+similarity. I mean generally like
+learned like models using neural
+networks and PCA there's a little bit of
+similarity in that like yeah, you learn
+like a
+different type of space in which like
+your predictions are much easier to do
+with. And like I think like specifically
+what's more similar to that kind of like
+um
+reduced models is something like you
+just take your mesh or take your grid or
+whatever. You put everything into one
+latent, right? And on this latent you do
+then prediction, right? And this is like
+a very low-dimensional latent. This is
+kind of like what I think there's a
+bunch of papers even combined with a
+PCA, but like you can think about as as
+a like a non-linear version of PCA,
+right? And this kind of works. It has
+some advantages cuz it's not linear,
+things like especially like collisions
+and whatever
+are often hard to express with linear
+PCA.
+Um but I think like the main difference
+between our model specifically in these
+methods is that it's like not
+compressing everything into a single
+latent. We still exploit this um
+exploit structure to a degree because we
+are operating on these graphs and we're
+learning local rules on this graph,
+right? And this is something that gives
+you compositionality, right? Like this
+is the the only reason why our models
+generalize at all versus that is
+something that's really hard with PCA. I
+mean it really only works if you have a
+very small set of dynamics that you want
+to learn and compress into like your
+your your PCA basis, right? Versus if
+you have some sort of like structure
+then that you can compose like this
+graphs, then it's much more likely to
+apply to an a very like a an unseen
+scenario.
+Okay, thank you so much.
+Is there any other questions? I I guess
+Oh, okay, there is one more.
+Uh by Paradeep.
+Uh do the results have any sensitivity
+towards to mesh scaling factor or mesh
+quality used during the training.
+I mean, we haven't really experimented
+much with that. So, we just took the
+meshes that our simulators gave us,
+which are very different. Like, you can
+see like the the ones we got from
+console are very regular meshes. Like,
+the cloth simulation gives us much
+crazier meshes that are much more like
+elongated. Um
+And I mean, we didn't have any problem
+with that. I think like I mean, probably
+the the limits for a neural network
+model are like actually like much higher
+than they are for classical methods
+anyway. They probably can compensate for
+a lot. But, it's not something we
+necessarily tried um much with.
+Um
+Yeah.
+Okay, thank you so much. Oh, okay. Well,
+I let's wrap it up um here. Um I mean,
+we I mean, I sounds like we can go on
+and on, but
+Uh if you have additional questions,
+please um directly, you know, contact
+Tobi and Alvaro. Um they provided the
+email address to you guys at the end,
+you know, at the last slide, right? Um
+so, please contact them directly.
+Okay, I mean, you guys did awesome job
+today uh with all all those difficult
+questions. Uh you
+you really uh rocked it. Uh let's thank
+our speakers
+for the wonderful uh the presentations
+and then wonderful Q&A sessions.
+And um
+you know, keep up the good work.
+Thanks. Thanks. Thank you for inviting
+us. It was great. Uh no problem. Well,
+uh Tobi and Alvaro, if you can stay um a
+little bit longer. Um so, there are some
+some group of folks uh who is a
+real fan of you, right? So,
+um yeah. Other than that, uh let's
+adjourn. Uh let me finish the recording
+here.

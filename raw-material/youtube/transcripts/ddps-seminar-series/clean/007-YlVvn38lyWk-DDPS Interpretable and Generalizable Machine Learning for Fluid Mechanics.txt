@@ -1,0 +1,1852 @@
+okay let's start
+um welcome to the ddps seminar uh
+today before we introduce today's
+speaker
+let's go over some rules and logistics
+first of all please mute yourself during
+the talk unless it is urgent
+so that our speaker can talk without
+unnecessary interruptions
+that way we all can enjoy and focus on
+the talk
+second no classified discussion
+is allowed here so watch out
+finally the talk today will be recorded
+so if you have questions it is
+encouraged
+to use the chat room so that our speaker
+can address
+them at the end of the seminar but if
+you like to address the question right
+away
+you cannot mute yourself and ask
+questions that's no problem
+okay that's about it now let's introduce
+our speaker today
+um i'm honored to host
+today's speaker professor stephen
+brunton from university of washington
+strictly speaking i do not have to
+introduce him because he
+is just famous you probably all know him
+as a great scientist and popular
+youtuber
+if you are not aware of his youtube
+channel
+try to search his name in youtube you
+will
+see a series of lectures very informal
+on various computational science
+subjects such as food fluid mechanics
+machine learning and many more he has
+achieved a great deal
+in his career just to mention a few he
+received the
+army and air force young investigator
+program awards
+and the presidential early career awards
+for scientists
+and engineers today he is going to talk
+about interpretable
+and generalizable machine learning for
+fluid mechanics
+we expect a great talk from steve today
+now
+let me pass the button to steve see it's
+all yours
+so thank you very much for the very kind
+introduction and also for the invitation
+and thank you all for being here so it's
+really a pleasure to get to tell you
+uh just a little kind of window into
+what's happening in my lab
+and in the labs of some of my close
+collaborators working on this very
+interesting problem of machine learning
+for fluid dynamics uh and before i jump
+in i want to
+acknowledge some of my closest
+colleagues and co-authors on the work
+i'm going to show today
+a lot of what i'm going to talk about
+has been work done with nathan kutz
+and john priasoph lazo and many of our
+excellent
+phd students and postdocs imaged below
+here
+and i'll point out this is really just
+kind of zoom into one topic in my lab
+and so kind of in the picture
+you'll feel free to interrupt and ask
+any questions you want
+or you know a lot i'm going to talk that
+i'm not
+going to talk about is on youtube or in
+our papers
+so a lot of what i'm going to talk about
+today is going to parallel
+a review paper that we recently wrote
+and i saw it with barrett noak and
+petros kubitzakis
+and this was an annual review of food
+mechanics in machine learning for fluid
+mechanics
+and so the big idea here is
+that machine learning is not going to
+replace
+modeling immunizations experiments
+is going to complement our historical
+efforts in these thrusts
+and so um just like the computational
+fluid
+and the abs did not
+put us out of business but instead
+created this complementary view of the
+world
+we believe that that's how machine
+learning is also going to enter
+uh in this next phase of data intensive
+studies
+and so um you know i like giving the
+talk to an audience here like a
+technical audience
+of scientist engineers but i often find
+myself giving this talk
+to senior leaders at companies like
+boeing or lockheed
+and often when i talk about machine
+learning i get this feeling
+that maybe they think of machine
+learning as a magic wand
+they've got some big engineering problem
+that's costing them billions of dollars
+and they're gonna point magic the magic
+wand at it and proof
+it's going to get better and that's not
+how machine learning works
+so at the very offset i want to give you
+an idea
+of how i think of machine learning as it
+relates to engineering problems
+so i want to massively oversimplify
+and say that machine learning is a
+growing set
+of techniques to build models from data
+either through optimization or
+regression
+okay so it's a better way of modeling
+from an
+increasingly rich set of data through
+advanced optimization and regression
+algorithms developed over the past
+decades in statistics
+and so in blue here i'm pointing out
+hopefully
+they have our chronicle
+mechanics small russian sparse sensing
+optimal sensor placement
+optimal control these can naturally be
+posed as optimization problems
+and those optimization problems have the
+challenges outlined in pink
+they are non-linear because the navy or
+stokes equations are not linear
+they're high dimensional because our
+fluids are often multi-scale
+in space and time so we need lots of
+discretization points
+and that culminates into a very large
+non-convex optimization problem
+lots of local minima to solve these
+optimal control
+and sensing and modeling problems in
+fluids
+and that's why they've been
+traditionally so challenging
+learning is a growing set of techniques
+that is tailored specifically for these
+kinds of high
+non-context optimization problems that
+occur
+in image classification and video
+processing
+and so there's a lot that we can carry
+with us over to our engineering problems
+in fluid mechanics
+now this is a just snapshot of how i see
+the world i want to give you a big
+picture of what my
+lab does i like to joke that i'm a bit
+of a control freak so i try to put
+everything in the world up here in the
+dynamics block
+and then i spend my time in my lab
+trying to
+focus on how to design controllers to
+manipulate the behavior of my system
+to some engineering nominal
+configuration
+and so a lot of what my lab works on is
+applying machine learning to those
+dynamical system
+models of these complex systems and we
+want them to be interpretable and
+generalizable we want to uncover the
+underlying
+physics of the systems as much as
+possible
+good and i'll talk a lot more about this
+block
+in a little bit the next area we focus a
+lot on
+is in trying to learn controllers
+through trial and error through kind of
+biologically inspired
+optimization algorithms and a lot of our
+work is in renewable energy systems
+aerospace fluid systems and then the
+third
+big area of work that we think about a
+lot in my lab
+is in sparse sensor placement and
+optimization
+so if you had a set of sensors a few
+sensors or actuators where would you put
+them to maximally impact your system
+and this is very much inspired by
+biological
+uh systems like pets that
+have on their wings distributed tens if
+a strain sensitive neuron
+that they use to reform their control
+algorithms
+now i want to point out at the offset
+that although i'm going to be talking
+about fluid dynamic systems
+most of what i'm talking about will
+apply to generic high dimensional
+your multi-scale analysis so you can
+think about a disease spreading across a
+continent
+or your network of neurons in your brain
+or a financial market
+these are kind of high dimensional time
+varying nonlinear processes
+that we can uncover models and
+controllers
+and get good sensor and actuator
+placement because i'm going to discuss
+today good now
+i'm going to start off my kind of
+vignettes into machine learning for
+fluids with what i'm going to call
+kind of the lowest hanging fruit and
+lowest hanging fruit in
+machine learning for fluids is when you
+can treat your data like it's an image
+or a series of images that are evolving
+in time
+because there have been literally
+billions of dollars of industry
+investment over the last few decades
+on developing uh very powerful image
+processing techniques in robot
+statistics and machine learning
+um so the the minute we can cast our
+problem as an
+image science problem we get tremendous
+amounts
+of algorithms for free and so i love
+this picture this is taken from a review
+paper by sam tyra from ucla
+where he's pointing out kind of this
+emergence
+of low dimensional coherent structures
+or
+patterns in this very complex flow over
+richiri island
+low passive mountain that's the volcano
+uh and you can see that even though it's
+a very complex geophysical flow
+it has this emergency street
+that we see in much simpler low reynolds
+number of blow pass facility the idea
+that they're
+separating low dimensional patterns that
+emerge in these fluid dynamics
+applications
+is one of the cornerstones of modern
+fluid
+but it's also a cornerstone of machine
+learning all of what we talk about
+in machine learning is based on the fact
+that there are pattern data
+that you can exploit for some objective
+and there were patterns we'd be sub
+there would be no effort or no point in
+putting in the effort to machine
+learning
+or to data-driven
+so the first thing i want to show you is
+this one by isabel cheryl who's
+the phd student working with brian
+pelagi
+and what she's done here is trying to
+take these
+image processing and techniques from
+image sciences
+and apply their emotional fluid
+mechanics
+so here in the movie pivot path system
+to make
+it much more like when you get the
+experiments from a particle image
+velocimetry laser sheet experiment
+and any of you who have done these
+experiments know that
+you don't get perfectly clean flow
+fields you often have this kind of tv
+static
+that's on top of the flow field and
+we've made it extra bad here as a
+cartoon
+but the goal in this case is to leverage
+the fact that there are patterns
+to clean the data and extract those
+patterns and clean up the
+noise and so what we're trying to do
+is take this movie given by x and
+decompose it into the sum of two movies
+l plus s where l has all of the coherent
+structures
+and statistically correlated patterns
+and s is everything that's
+really uncorrelated with that low
+dimensional structure
+and this move cartoon this is really
+an algorithm that she wrote for this
+data in x and this is the decomposition
+she gets
+which is an incredible clean version of
+l the actual flow past the cylinder
+that separates out all of the
+contaminates
+so again to do this it really relies on
+writing down the right optimization
+problem
+in this case this seems too good to be
+many ways of decomposing one matrix into
+the sum of two
+and so we find the right decomposition
+we want by imposing our physical priors
+into the optimization problem
+in this case we want l to be low rank
+and we want s to be sparse
+and this is the famous robust principle
+components analysis algorithm of candes
+at all
+that we have uh extended and used for
+fluid systems
+now the optimization i have in blue is
+non-convex
+and intractable at scale this does not
+scale with moore's law
+so we have to relax this to something
+that does scale
+and so the convex relaxation we swap out
+the rank of l for the nuclear norm
+and we swap out the zero norm of s for
+the one norm
+and those with high probability will
+still promote these low rank sparse
+decompositions
+now when you take the clean version in l
+and compute the principal components we
+get the modes on the right column
+that are almost perfect in almost
+perfect agreement with the true modes of
+the clean system
+and if we naively apply this dimension
+to the
+noisy data and x we would get these
+contaminated modes in the middle
+now when you build models based on these
+models sorry based on these modes
+so dmd before that
+you get a bunch of values inside the
+unit circle
+we accept all the eigenvalues to live on
+the unit circle because it's
+a purely periodic system but many of
+them are contaminated with that noise
+however after applying the most clean
+procedure and we applied dmv to the
+l matrix almost all of our eigenvalues
+are perfectly on the unit circle
+so this is really good confirmation that
+this is working not just for getting
+modes but for getting models
+in this i'll point you to isabelle's
+paper
+in physical review fluids where she
+applies this to the johns hopkins
+turbulence database the
+uh turbulent channel flow see what
+happens
+r on high wave number of turbulence when
+we apply this decomposition
+so really interesting results she also
+applies this to two experimental piv
+datasets
+good long story short if you can view
+your
+flow field as an image sheet you
+immediately
+get techniques for free so another
+example that's really promising is super
+resolution
+so this is very very closely related to
+many problems in fluid mechanics where
+either you have limited measurements of
+assist
+or where you want to simulate a high
+resolution system with low resolution
+grid
+like in a large eddy simulation
+and so this is worked by ben erickson
+when he was a postdoc with nathan indeed
+where he essentially builds a shallow
+decoder network
+so that you can take this low resolution
+down single engine panel b
+you can reconstruct from training data
+the high resolution
+flow field that you use to trade
+so this is the super resolution and this
+is again positive turbulent
+data set so this works
+surprisingly well with relatively small
+data set when you set it up as an
+interpolation task
+and i really want to highlight that in
+machine learning
+the neural network approaches that a lot
+of people are using and that we're using
+here
+are extremely powerful for interpolation
+but they're not that great for
+extrapolation
+so if you look at the lower left here
+what you'll see is
+how we have arranged our training and
+our test data
+so the train data is given by these dark
+columns in gray and the test data are
+these light
+blue columns so what you'll notice is
+that nearly every
+test data set is sandwiched between two
+training set and so in some sense
+everything is interpolated
+in the future but when you set up the
+problem to look more like an
+extrapolation task
+so i train on the first 70 of my data
+and then i
+test on the next 30 in time
+the prediction starts off being very
+good you get very good super resolution
+for short times
+but for longer times the super
+resolution degrades quite rapidly
+and again this is just pointing out the
+fact that interpolation problems are
+somehow easy
+and extrapolation problems can be quite
+difficult
+okay now in image sciences
+google images or facebook you often have
+um kind of this idea
+that these tasks can really be doing
+extrapolation
+but i would argue that google images and
+facebook
+have so many images their training data
+is so large
+that almost every task in the future is
+fundamentally an interpolation between
+things you've already seen in the past
+okay and so for us to reach that level
+of data
+in fluid mechanics so that future tasks
+are look like interpolations
+is going to be extremely challenging for
+highly uh turbulent flows
+even right looking climate science or
+control
+we want to train on the past we don't
+believe that the future is going to
+necessarily look like the past either in
+the climate because
+role because we're actively trying to
+boom
+okay so this is kind of a caveat that's
+where you're wrapped into one you can
+get
+lots of great results with interpolation
+but extrapolation is hard
+okay good i'm gonna start transitioning
+from this idea that you put your data
+like images things are easy
+and i'm going to start going into this
+world of modeling dynamical systems and
+bringing in more physics
+into the picture okay so that's where
+it's really getting interesting uh
+at least for my group so i want to talk
+about this really exciting work by jared
+callahan
+a phd student working with me and nathan
+where he's essentially trying to learn
+from data
+these dominant balance physics laws that
+uh essentially codify asymptotized
+balance laws in governing physics
+okay so we're going to look at the johns
+hopkins
+turbulent termula boundary layer data
+and i'm going to walk you through how
+jared's automated method works
+see the reynolds average navier-stokes
+equations for that turbulence
+that turbulent flow field and you can
+see that there are six
+equations six terms in the equations so
+for each term
+i can plot that term spatially over the
+entire spatial field
+so this is the u var u bar x field
+got all six of your equations
+like stuff in the bar sometimes they're
+small and they
+it's in different ways in different
+regions of the space
+and so what jared realized is that you
+can take this data
+and you can plot it instead of spatially
+equation
+firms you can take each space
+and you can plot it in a six digital
+push space
+so every point can be scatter plotted in
+the six dimensional equation space
+i'm showing you a couple of slices here
+in the upper right
+and you can see that the data has
+patterns there are different patterns
+that the data adheres to
+in equation space so if we apply
+clustering
+really simple stuff gaussian mixture
+models in this case you can find
+that there are these different unique
+clusters of these facial points
+in how the equation turns
+and for example you see in red our w bar
+x term is
+in the other equation terms and so if we
+try to find
+spark spaces in an equation of different
+cultures live
+what you find is that there are these uh
+five color-coded regions where you have
+different
+dominant balance physics where different
+terms are
+out and balance each other in the
+physics
+of those really equal to zero so this is
+really a data-driven automatic uh
+generalization
+of the asymptotics from the 50s and the
+60s where a lot of applied math
+departments and
+built around asymptotics dominant
+balance for fluids
+so these regions and back in space
+you find that you recover many of the
+kind of the boundary layer
+that would be not or hard fought through
+uh real analysis
+and so for example this all came
+directly out of that data just by
+plotting it in equation space
+we learned from the data that there's a
+viscous sub layer and a transitional
+region and an inertial sub layer
+and those have the right balance physics
+uh of which terms are active in those
+equations
+so in principle you could use this for
+reduced order modeling potentially for
+different closure modeling in these
+different regions
+i think the sky's the limit very
+expensive
+and what's really nice about this is
+that you can apply this to systems where
+we have not had thousands of brilliant
+researchers over 100 years
+studying the system so we can apply this
+to
+optical pulse propagation this is the
+super continuum high energy laser
+where we can find dominant physics
+regimes you can apply this to the gulf
+of mexico and recover
+geostrophic balances and other balances
+and maybe discover
+new balances that were slightly more
+complicated than what people could write
+down with their kind of human intuition
+we've applied this to neuroscience
+systems rotating detonation engines
+i really encourage you to try to think
+of an equation
+because it is how
+okay wonderful so that was just one
+kind of approach still based on looking
+at things like images
+but now we're starting to build in these
+dynamical systems elements of the actual
+terms of the physics
+okay so for the remainder of the talk
+for the next half
+i'm going to talk almost about reduced
+order modeling for
+pollutants of interpretable and
+generalizable machine learning
+good so i have been
+preaching this for a while and i know my
+good colleague and friend nathan cuts
+is also preaching the same story that we
+don't just want
+black box machine learning techniques
+those are powerful
+they're useful you know the
+representational power of them
+cannot be discarded or underestimated
+but we don't want all of our advances in
+machine learning
+okay we want interpretable generalizable
+models too
+and instead of defining edge
+interpretable in general because i'm
+sure that i will make most of you trying
+to define them
+i'm going to describe what i mean
+through an analogy so i think that
+newton's second law
+is the quintessential interpretable
+generalizable model
+so let's break it down it's
+interpretable in
+their terms f and
+balance each other out we can write
+these down for a system
+and we can discuss what it means we can
+do analysis they're interpretable
+it's generalizable in the sense that
+newton can learn at equals end date
+in the apple on earth or syllabus
+and that law is still valid when we
+design
+space missions to send humans to the
+moon so
+ultimate generalizable model building
+some videos that was only not hurt
+with enough data faithfully reproduce
+the trajectories of apples and be able
+to even make movies of apples falling
+but it would pull from designing things
+to the moon it would not generalize
+beyond fault
+and this idea is not just a special
+second law
+it's special to equal square and in fact
+the entire history of mathematics
+over the years has been formulated
+obsession
+that things should be as simple as
+possible and no simpler
+so this is the principle of parsimony
+this is uh
+aristotle's principle this was tommy's
+principle
+pareto uh akka einstein newton
+you name it the great advances occurred
+because of parsimonious model
+and so what that means mathematically
+today
+in my opinion is sparsity and low
+dimensionality
+i want low dimensional models i want to
+get rid of all of the clutter
+and focus on the variables that matter
+what are the variables that matter for
+the following
+well it's f m and a now
+sparsity comes in because the
+description the physical
+law that describes how those low
+dimensional quantities interact
+i want it as possible too i wanted to
+have as few terms as possible
+and generally i'm
+sorry interrupt um i don't know why but
+um the sound is breaking sometimes so
+maybe you can um uh
+not showing your face the video the
+video and just
+can you hear me better now um yeah
+yeah let's try that yeah let's try that
+yeah let's try that good so so the real
+idea here
+is that by imposing sparsity and low
+dimensionality
+we tend to promote models that are
+robust interpretable
+and generalizable and so that's what i'm
+going to talk about
+um for the second half of the talk now
+newton's second law
+is great but for complex systems like
+fluid flows
+i think an even better analogy is this
+thermal convection model
+of lorentz the lorent63 model
+so the idea here is that even for a very
+complicated high dimensional fluid flow
+like rayleigh bernard convection
+if we pull out the right coordinate
+system you can get a very very simple
+model for this fluid flow given by these
+lorentz equations
+uh here in x y and z
+and again this has all of the three
+characteristic the two characteristics
+we're looking for
+it's low dimensional in terms of three
+variables x y and z
+and the right hand side dynamics are
+sparse only a few
+terms are active in the dynamics out of
+all the things that you could possibly
+write down to describe those equations
+and so this is the kind of idea we want
+to bring into fluids we want to automate
+lorentz
+or fluid systems and the way that we do
+that is through this algorithm called
+the sparse identification of nonlinear
+dynamics or
+cindy for an acronym and i'm going to
+walk you through this on the lorette
+system
+so we're going to imagine that we have
+the system on the left
+but we don't know the equation all that
+we do is measure
+x y and z and we compute the derivatives
+x dot y dot and z dot from those
+measurements
+so each row is a measurement in time
+and the simplest thing you might be able
+to do is a linear best fit regression
+that's what the dynamic mode
+decomposition does
+is a linear best fit regression to find
+the best
+three by three a matrix that would map x
+y and z
+to x dot y dot z dot but i don't think
+any of us really believe
+that a three by three linear model could
+possibly capture
+the richness and complexity of the
+lorette system the a matrix has one
+fixed point at the origin
+whereas lorentz has multiple fixed
+points and unstable periodic orbits
+and chaos and so instead of this linear
+regression
+what we do is we augment our right hand
+side library
+to include more possible terms in the
+library in the dynamics
+and now the goal is to find the fewest
+columns of theta
+that equal x dot to equal y dot and then
+equal
+z dot in this case my theta matrix
+includes polynomials up to fifth order
+polynomials
+and those can all be constructed from my
+measurements of x y and z
+now if you asked me 20 years ago i would
+have said that this is actually
+an intractable brute force problem you
+wouldn't be able to solve the sparse
+optimization
+but in the last 20 years this has
+essentially become a commodity there are
+dozens of algorithms for finding the
+sparsest linear combination
+of columns of theta that equal x dot and
+in doing so
+what we find is that the sparses
+combination of
+terms that equal x dot are actually the
+terms in the original
+red system and the same for y dot and z
+dot
+and so by collecting the data like this
+and applying sparse optimization
+we essentially uncover the nonlinear
+structure
+and the parameters of our of our lorette
+system that generated that data
+and remember in this example i never saw
+the equations i
+only collected measurement data so this
+is true nonlinear system identification
+you can actually uncover
+real physics from measurement data
+now if you're interested in this we
+recently released an open source
+software package pi
+cindy so you can download this and try
+it out yourself
+on your data sets
+good so now you can also instead of just
+discovering ordinary differential
+equations we can discover partial
+differential equations
+let's say i take my flow path to
+cylinder example
+where i measure omega the vorticity and
+the
+x and y components of velocity u and v
+now i can build a similar library like
+in cindy
+but i can include partial derivatives of
+these variables and nonlinear products
+of those partial derivatives
+and when i find the sparsest combination
+that equals the time derivative of
+vorticity
+lo and behold we find we uncover
+the non the navier-stokes equations and
+we get the reynolds number to within
+about one percent
+which is quite remarkable since our data
+is so
+vast in space and time you can
+dramatically
+down sample your data and when you run
+this library
+uh regression on even on this sub sample
+data we still
+recover the correct equations so pretty
+cool we've applied this to
+you know a dozen other pdes and in every
+case where we knew the answer ahead of
+time
+our method came up with the true physics
+of the system
+and we're currently using this with our
+collaborators
+in plasma physics to try to find
+a hierarchy of models that goes beyond
+the mhd equations that are both more
+complex
+and less complex at different fidelities
+okay so now i'm going to talk about how
+we use these to get reduced order models
+for fluids
+so back to our flow path to cylinder in
+noak and collaborators in this famous
+paper
+showed us that if we measure the system
+in the right coordinate frame
+in these three coordinates given by pod1
+pod2
+and the shift mode then our system
+actually becomes quite simple we can
+alert and project the navier-stokes
+equations
+onto these three modes and we get a
+system of ordinary differential
+equations in blue here
+that is characterized by a slow manifold
+a parabolical manifold
+that captures all of the transient and
+steady state behavior of the system
+so we thought this would be a good test
+case for cindy
+we collect measurements of the
+simulation in those coordinates
+and we run it through our sparse library
+procedure
+and what we find is a governing equation
+system
+this is very similar to that in blue we
+have the same slow quadratic manifold
+the same transient and so this is very
+promising we can discover the reduced
+order model
+that experts you know took years to
+write down
+no act and all directly from the
+measurement data if we measure it in the
+right coordinates
+x y and z now shortly after
+we published this paper i got an email
+from john kristoff lazo from paris tech
+and he came up with two very very
+cool innovations that i think have made
+this much more powerful for physical
+systems
+so the first innovation is that
+we know a tremendous amount about the
+structure of the navy or stokes equation
+and how those conservation of energy
+manifests itself in these reduced order
+equations
+specifically we know that these models
+have skew-symmetric quadratic
+non-linearities
+and so our sparsity procedure
+is essentially based on an iterative
+least squares
+procedure where you do a least square
+solution you
+zero out small terms of the coefficients
+you do another least squares onto the
+remaining coefficients
+you zero out the small ones and so on
+and so forth
+and at each stage we can include
+constraint equations that enforce the
+skew symmetric
+symmetric energy conservation and so
+what jc did was just by adding these
+constraint equations
+you can force our cindy models to be
+conservative by construction
+which immediately improves stability of
+the models
+the second innovation that i think is
+really neat is
+our original model we tried to include
+quadratic
+non-linearities because that's what the
+navy or stokes equations have
+but if you allow yourself higher order
+non-linearities cubic
+quintet septic nautic terms you can
+account for the
+very low energy mode that we've
+truncated
+on how they affect the the high energy
+modes x and y
+and so just as a cartoon here what you
+see in this z
+equation if lambda is a very fast
+eigenvalue
+then z rapidly equilibrates to x squared
+plus y squared
+that's what this slow parabolic manifold
+means
+and if you substitute z equals x squared
+plus y squared into the first two
+equations
+you get a term that looks cubic uh
+that third term looks cubic and
+similarly
+if i substitute in the next higher
+frequency mode pair
+i'll get fifth order terms and the next
+higher mode pair
+are seventh order and so on and so forth
+and by
+including these higher order
+non-linearities we in some sense get a
+rudimentary closure model
+for the low energy modes we've truncated
+good
+now let's see how well this works on
+some real examples so the cavity flow
+and the cylinder flow here
+the column on the right what i'm showing
+is
+the industry standard state-of-the-art
+pod galerkin models
+with three modes and seven modes
+so the white curve here is a proxy for
+the drag coefficient
+and you can see how it evolves in time
+now both of the pod
+models essentially capture the right
+qualitative dynamics but they fail
+quantitatively
+they have the wrong rise time they
+overshoot and they have steady state
+error
+but when we include these cubic
+constrained cindy models
+we almost perfectly quantitatively match
+all of the aspects of this transient
+drag coefficient
+so this is much more accurate and useful
+for drag prediction and for control
+and what's nice is that these cindy
+models are sparse by construction they
+only have a few terms
+and so we can manipulate those terms and
+this is exactly what jc
+did and he was able to cook up an
+extremely simple model
+in terms of the cylinder flow as a
+spring mass damper with nonlinear
+damping or a van der pol oscillator
+and so to date uh to my knowledge this
+is both the most
+accurate and the simplest model for the
+cylinder flow that has ever been written
+down
+okay and so that's what i mean when i
+say that sparse
+low dimensional modeling gives you the
+power of really extracting something
+interpretable
+and generalizable now you don't need the
+full flow field to do this you don't
+need to do pod
+it turns out you can build these models
+purely based on lift and drag
+measurements on the bodies themselves
+so in this case the fluidic pinball we
+have three cylinders in an arrangement
+and all we measure is lift and drag and
+you can build very very faithful
+nonlinear models to capture these lift
+and drag dynamics
+okay good so um let's go back to this
+chaotic thermal convection so i've shown
+you hopefully
+that we can get reduced order models for
+these these wake systems and
+shear systems um and going back to this
+lorentz model for a thermal convection i
+really want to share
+this uh cool work by jc this is the same
+jc lonzo from before
+this is where he published in 2020 just
+at the end of last year
+where he's looking at this thermal this
+thermosyphon which is basically a hula
+hoop
+that is heated from below and cools from
+the top
+and by extracting the modes using
+dynamic mode decomposition
+and modeling the time series using cindy
+he showed that this system has exactly
+the same
+dynamics as the traditional lorenz 63
+model
+of standard rayleigh bernard convection
+which is very cool
+so he showed in some sense that this
+lorentz model is a normal form for other
+types of
+thermal convection in different
+geometries
+i've recently worked with igor novosilov
+and ife quan who is his phd student
+on chaotic electro convection which has
+a more complex
+three-way coupling between the fluid
+flow the charge density and the electric
+field
+and what we found is that this is an
+incredibly rich chaotic conduction
+system
+so if you take your time series of data
+and you extract your low dimensional
+representation your pod modes
+what we find is that the mode amplitudes
+how these mode
+amplitudes evolved in time have
+incredible symmetries
+so a1 is the amplitude of mode 1 a2 is
+the amplitude of mode 2 and so on and so
+forth
+and these mode mixtures change in time
+but they adhere to these very strong
+symmetries that you see in the data
+and so we can extract what symmetries
+had to be true from the data
+and enforce those in our constraints in
+the architecture
+and what we get out is a sparse kind of
+skeletal model
+that captures those qualitative features
+uh of
+this kind of symmetric chaotic
+convection system
+and i want to zoom in a little farther
+to these symmetries so if we zoom in
+to this data we find these five
+fundamental symmetries
+and what that means is that when i build
+my cindy library all of these different
+nonlinear terms
+many of them more than half of them are
+immediately eliminated
+because they can't possibly exist with
+those observed symmetries
+and so what this does is this means that
+we're searching in a much
+smaller search space of possible
+nonlinear
+dynamics and so we can get away with
+less data we get better models with less
+data by enforcing these symmetries
+and our resulting model essentially
+captures these different chaotic paths
+that the system can take very faithfully
+it captures the statistics
+and we can reconstruct the flows uh
+dynamically
+using these models so i was pretty
+pleased with this i was really
+impressed uh by this work by ebay guan
+who's now a postdoc at rice
+uh and alan captain auglu who's a
+fantastic phd student working with me
+has been extending this to spheromach
+fusion reactors
+so he has a simulation here that's
+matched to
+an experiment and by extracting the
+right pod mode these are dimensional pnd
+modes
+he's able to build these sparse
+constrained cindy models
+that essentially captured the same
+attracting dynamics of these course
+variables
+much much more efficient than actually
+solving these numerically
+so we're hoping that we can include the
+effects of control
+and disturbances and injector dynamics
+and actually use these
+reduced order models for efficient
+real-time control
+in experiments good
+okay so the last thing i'm going to tell
+you about before i break for questions
+is how we are extending this to
+stochastic systems
+so this is work by jared callahan that
+he calls longivin regression
+and the idea here is that for really
+turbulent systems
+we're not just modeling a few coherent
+structures there's also this effect of
+turbulence and forcing
+so we're not only going to model x not
+equals f of x
+where x are my low dimensional coherent
+structures
+we're also going to include this effect
+of colored
+noise forcing in sigma x that accounts
+for all of the turbulence
+this is called the launch of an equation
+and we're going to identify this using
+our cindy approach
+now this is closely related to or
+plump which involves
+distributions and i'm not going to go
+through all of the details of our
+algorithm
+essentially we're parameterizing our
+nonlinear dynamics and our noise model
+and we're trying to learn a sparse
+nonlinear model from the system
+this requires building distributions and
+doing adjoint optimization so it's a bit
+more involved
+but in every example we've looked at
+from toy problems
+to turbulent wakes we uncover
+low dimensional nonlinear dynamical
+systems models with the correct
+bifurcation
+and with the correct colored noise
+forcing and we've applied this to
+experiments with our collaborator george
+regis and imperial
+for the turbulent axis symmetric wake of
+a bluff body
+with real turbulent experimental data
+and it works
+and so just for a movie here and this is
+again that's
+um a more turbulent cavity flow example
+and what we find is that we don't just
+get the right uh
+kind of quasi-periodic behavior we also
+get the right broadening
+of that trajectory because of the noise
+model because of this colored noise
+model
+so that's also really important for uh
+turbulent statistics
+okay so i've talked about a lot and i
+think it's probably best at this point
+for me to stop
+and field any questions and i have tons
+of
+additional stuff i'd love to talk about
+so feel free to ask me anything
+thank you so much thank you so much
+what a great talk as usual um
+let's yeah let's open uh to the audience
+for the
+any any questions please
+speak out if you have any questions
+okay i have one um so a lot of videos to
+the model
+you know the one of the goal of the
+video model is
+getting good accurate you know
+solutions but at the same time you would
+like to accelerate
+and get some speed up compared to the
+corresponding high fidelity models we
+have
+so i haven't seen any speed up
+results from your presentation so if you
+can comment on
+some of them
+stephen i i cannot hear you um i'm sorry
+i needed myself and then i forgot
+so yeah that's a great question thank
+you um a lot of what i'm showing here
+fits very much into the framework of
+reduced order modeling that people use
+with
+projection-based methods galarkin
+projection
+um you know they have these known speed
+ups over
+uh over full yes
+and so i'm not supposed to talk about
+the factors but i would argue that our
+methods are actually
+um better
+in terms of speed up than galore
+projection
+because if i take an n dimensional pde
+discretization
+and i project it on to r mode let's say
+r
+is a hundred my quadratic non-linearity
+is going to end up looking like an r by
+r
+by r tensor so r cubed
+okay and so very quickly even
+for moderate reduced order uh dimensions
+our reduced order models can become as
+expensive as the original
+order model but our models are not
+dense like those reduced order galerkin
+projection models
+in galerkin projection every single term
+that could be there
+is there whereas our sparse procedure
+kills as many terms as possible
+so our scaling the number of terms that
+we get is much closer to r
+log r which is much much better than r
+cubed
+so again none of this is rigorous but in
+principle
+well these are extremely extremely fast
+fast enough
+for for instance that you could use them
+for real-time model predictive control
+in some examples very nice very nice
+thank you for the answer
+steve we have a bunch of questions but
+uh trains you raise your hand
+so i did okay
+yeah go ahead hey save nice talk very
+nice thought
+as usual i have a i have a quick
+question for you so
+um i mean is there so you you mentioned
+this
+projection reducer the models um and
+and since they they're derived from you
+know like pdes with uh
+with classical tools like alerting
+projections so so
+many times it's easy to straightforward
+to prove uh
+to prove uh you know things like
+convergence like uh
+stability for the for the you know uh
+for these videos or the models
+projection based for example so can you
+do the same for
+for the for the models that you're uh
+you know that cindy spits out
+so i understand that you know you and jc
+uh came up with this idea of uh
+constraining and i think that this
+you know uh add some mathematical uh
+support to
+to these models but other than that is
+there anything else that that
+you can you can prove yeah that's a
+fantastic question
+uh and i think you're you're 100 correct
+like this is one of the strengths of
+traditional approaches is that there is
+this wealth of
+rules um that they've been really hard
+fought to build
+these urgent guarantees and uh stability
+guarantees for gilligan projection
+models for projection models
+um and i'm actually very very excited
+about this um so alan i mean allen is
+just
+a incredible researcher and he's working
+on one of the hardest problems in my lab
+this mhd fusion equation we have
+lots of terms in the model high
+dimensional
+state vectors so he's really challenging
+himself with a lot of the complexity
+that cindy sometimes struggles with and
+so his
+models are not always fiction right
+oftentimes he'll cook up a model and it
+just blows up it's really frustrating
+and so instead of getting frustrated
+what alan
+did was this is very recent um it's not
+published yet
+he's taken that global convergence
+result of
+uh yan haas and barrett nowak
+and has essentially built in those
+global stability and convergence
+uh conditions into this in the
+optimization procedure
+so you can look at it two ways one a
+cindy model now we can analyze directly
+what is global
+sorry what is basis of attraction is
+using these conditions
+and second of all we can add as a
+constraint to our regression that we
+want our
+you know stability in a certain epsilon
+ball
+around you know wherever our training
+data is still kind of wrapping our heads
+around
+how useful this is how well it works how
+much more expensive
+you you know again just figures to sort
+this out but
+it really blew me away i didn't think it
+was possible and so
+um if you had asked me a month ago i
+would have told you something totally
+different so that's how
+fast alan's been working on this thanks
+for the great question
+sure thank you oh yeah actually i'd love
+to get your opinion about you know i
+know we have quite a few experts
+uh here you know uh training among them
+so
+this we would certainly benefit from uh
+from a little bit of a sanity check here
+since this is not our
+um you know our main mainline research
+okay uh let's move on to the next
+question then driver
+raise uh the hands how why don't you uh
+on major assessments because
+hi uh less of a question and
+maybe more of a request it looks pretty
+incredible and i think
+it would be really helpful for me if you
+hosted something like a hands-on
+workshop
+maybe like a half a day that was like
+data to dynamics with cindy
+where we just learn how to turn the
+crank and
+and things like that i think that would
+be really incredible so the less of a
+question and just a
+thumbs up maybe for for a workshop
+thanks that's a great suggestion um you
+know
+out there in a very distributed sense
+you might be bringing it together in a
+workshop
+um so for example we have um
+brian da silva led this pi cindy package
+and so he has you know github tools and
+youtube tutorials
+through the youtube software
+kristoff lawso and every second
+lectures and he's a brilliant lecturer
+and he
+you know has built this into his
+curriculum for his master's students
+so exactly how to kind of build these
+models
+i think you're right like it would be
+nice if we could provide an engaging
+kind of interactive community
+workshop effort thanks for the
+suggestion yeah thank you i
+will definitely be pulling i think i'll
+definitely be pulling the library
+out and um maybe if you could uh send
+some of those resources
+to youngsu to distribute to this list
+that would be really great i'd love to
+watch those videos and we can pretend to
+be masters students
+for a day cool sounds good thank you
+that sounds good okay let's move on to
+the next uh brian you
+raise your hands why don't you amuse
+yourself and speak up
+hi it was a great talk thank you so much
+um i just had a quick question i was
+wondering um
+you didn't talk much about um how many
+simulations uh
+were needed to sort of generate the data
+that you did this sort of a
+decomposition on and
+i wanted to get a sense of how many you
+know runs you need to do
+since since in my field at least there's
+you know it's very expensive to run
+these folder models so we're not we
+wouldn't be able to run them uh
+generate that that much data so i just
+wanted to get a sentence yeah
+that's a fantastic question um it
+totally depends
+so you know we've been surprised in both
+directions before
+um and i think you can still see my
+powerpoint slide
+so uh when we look at this
+equation um okay so in the lorettz
+equation
+kathleen champion showed us something
+that absolutely blew us away
+if i have data from a half of a period
+of this thing it's basically going
+around one half of a load
+if i have data with a fine enough delta
+t
+you
+so sometimes it can be very very smart
+if it's clean and fast um
+and so they're already free often noisy
+data or use or less data or more
+you know there's kind of this cube of
+when it works and when it doesn't
+for the fluid flow examples if i
+remember
+i gave the system two or three
+trajectories
+this took me a couple of hours to
+generate on my laptop
+and you know i had a trajectory that was
+it started at point c
+and wound up i had one that started at
+point d
+and wound down and then wound up and
+then i think i had another trajectory i
+forget which one
+and i had another trajectory that i used
+as a test one that was not used for
+training
+so again for this you know relatively
+clean numerical data with a pretty fast
+pt
+i actually need that much data just two
+or three older
+trajectories great this was a great
+question
+okay next uh rap replica
+can you omit yourself and ask your
+question hi um i had a question about
+systems with missing information
+for example what would happen with your
+models if you
+fed in something like the lorenz system
+but left out
+one of the coordinates like z how would
+your system fare
+recovering the information or
+rediscovering the indian state
+so that's a really really really good
+question
+and it turns out that this was an entire
+large research effort that we stumbled
+onto by asking that exact same question
+so i don't know if you can still see my
+am i still sharing my screen
+yes yes you are okay i'm going to share
+a different screen
+okay can you see this keynote now a
+different one
+okay so we got a fantastic referee
+comment in our original cindy paper and
+asked that exact question what if i
+don't measure
+all of my variables i don't measure x y
+and z i just measure
+x okay and so essentially what we do
+is we take that
+resolved data measurement or that that
+single measurement and we
+build a henkel matrix the moment where
+our net vector with time delays
+we can choose the svd of that matrix so
+we get these kind of
+angular coordinates and it turns out
+that this is very closely related to the
+groupman operator
+these timeline coordinates give you an
+embedding of the coupement operator
+and so when you try to build a linear
+model on those time delay coordinates
+the linear model you get is linear which
+is crazy so we do cindy
+in the non-linear terms just a sparse
+linear model
+in a coordinates and this linear
+used for very nasty chaotic systems
+long story short is that um that
+question
+was very fortuitous for us and helped us
+stumble upon this idea that time delay
+coordinates
+actually give you a universal account
+embedding so
+like it opened up a whole can of words
+but very interesting stuff
+thanks for the great question
+okay um i don't see anyone raising
+their hands but we have a handful of
+questions in chat room so
+let's start with a jazz piano
+is there a requirement that the dynamic
+systems
+be elliptical or can hyperbolic systems
+also be modeled by
+wrong yeah that's a great question so
+definitely reduce
+order modeling methods for broad ranges
+of different classes and pdes
+so there's um there's reduced order
+models there's reduced basis method
+there are you know you name it there's
+different classes and methods for these
+different classes
+and i think in principle almost all the
+generalized
+kind of modern regression ideas so for
+example what i've shown you here is
+cindy for
+time varying systems we also have a
+cindy boundary value problem
+so uh even if you have boundary value
+problems you know or
+like things we can build non-linear
+models for those structures
+so that's a little bit of a tangential
+answer but i would say
+it's a bit broader today
+okay next question is from dick zhang
+he asked can you please explain more
+details about the results of complex
+high reynolds number problems in your
+last slide
+i'm asking this because i have
+experienced many other data driven
+a attempts for reduced modeling before
+machine learning
+however although many of them worked
+almost perfectly
+for simple problems such as lawrence
+attractor and
+von karman vortex shedding behind a
+cylinder none of them
+were successful for complex confidence
+problems thus
+it is really great to hear that your
+method worked
+for by bifurcating problems tolerance
+etc
+yeah i mean i was blown away when this
+worked like
+you know again if you asked me a year
+ago uh water products for real
+turbulence where
+i'd say you know it's kind of this works
+on laminar problems it's good for flow
+control and reduced
+modeling but i would be skeptical and
+actually it's not just our
+team um several researchers from across
+the world have
+come up with different cindy
+perspectives for closure modeling so
+there's a great paper out of michigan
+and others in german doing this
+our perspective is really big on you i'm
+going to jump around my slides a little
+so please
+to get verdict to go um if we go down to
+this picture here
+you know this will not work for full
+unstructured turbulence isotropic box
+turbulence i don't think that's going to
+work
+it's going to work when you have these
+elements patterns these kind of low
+dimensional coherence
+and perturbed and that's
+that's what we believe we have in these
+experimental systems
+so for example um trying to find my
+backup slide here
+um this is an experiment of a d-shaped
+body with our collaborators in germany
+and brownshine
+and you can see that you know you get
+this kind of you still get vortex
+force by turbulence or spin stochastic
+noise
+these kinds of persistence matter now
+i because it's very hard for projection
+based roms
+to capture this turbulence
+because it's very rigid and constru
+whereas when you
+regress you have a little bit more
+degrees of freedom it's a little bit
+wigglier
+so your coefficients can move a little
+to be more accommodating to the data
+and to things that you're leaving out of
+the data
+again we're still you know writing this
+up we're still trying to figure this out
+so i can't give you a
+perfectly satisfying answer but we were
+surprised too and very pleasantly
+surprised
+okay let's move on to the next question
+question by
+jeffrey given that you can capture the
+aggregate dynamics of the lorenz system
+can you say anything about extending the
+time window
+of predictability for systems with
+strong dependence
+of initial conditions for example
+weather
+yeah that's a great question um so i'll
+point out that in the lorette system
+we're learning the lorette system like
+we're basically learning the lorette
+system almost perfectly almost to
+machine precision
+coefficient of the moment system which
+means that our model has exactly the
+same
+sensitive dependence as the lorenzo we
+have the same chaos we have the same
+exponential divergence of
+trajectory and so the forecasting
+problem
+well it doesn't seem much better um it's
+you know how do i want to say it
+at least we have the model that is
+actually what is governing the
+stretching and folding of trajectories
+so that's good we can use that for
+better data assimilation
+and better for uncertainty
+but we still have these fundamental
+limitations
+and every system is going to have that
+if someone tells you that they can beat
+uh so i'm gonna i'm gonna like
+really interesting results on these uh
+reservoir reservoir networks and
+reservoir learning for
+for forecasting chaos and
+i think you know the popular media has
+miscommitted authors have
+said very carefully the authors said the
+right thing very carefully
+um quantifying how their error grows in
+these predictions
+if you look at this cube of initial
+conditions in red here
+you'll see that it actually stays
+coherent it is not doing
+exponential stretching until
+it gets close to the saddle point at the
+bottom so it's still not even stretching
+that much
+and now when it gets to the saddle point
+at the bottom that's when the
+exponential stretching
+occurs and gets out of control so
+in chaos it's not like you always have
+exponential strength
+there are massively increased
+uh the local we have an estimate and the
+stretching and so the
+results of the machine learning model
+predicting the future of
+the autism all of them everything
+including the true loretz model
+is going to begin to fail eventually
+when your trajectories go through those
+saddle points like that's just
+that's the nature of those equations
+either they're exact
+or approximate
+yeah it's a really cool question really
+cool research area
+and i think by uh
+and others on the reservoir computing is
+super interesting okay
+um it's thank you so much steve uh for
+answering the questions we have one last
+question
+uh but by the way it's past full after
+one o'clock
+um are you still available dude uh yeah
+i can go for a couple more minutes sure
+okay awesome okay this is the last
+question i see from
+um tyrol armand okay these examples show
+derivation of complete models from data
+as
+um have you looked at taking traditional
+models and
+attempting to check out missing physics
+for example looking at the van space cfp
+code
+and giving it to the fidelity of les or
+dns by reduced more order models
+collectors implicit in the simpler
+formulations
+yes i love this question it's an
+incredibly good um
+so i will say that our colleagues have
+absolutely been using this for closure
+modeling for modeling missing
+uh terms and you know for lds and for
+ram modeling
+so yes definitely not us per se but our
+colleagues
+we get to model missing physics in
+uh plasma dynamics so if you have a
+very very highly resolved kind of
+you know particle and cell method
+simulations
+there the magnesium hydrodynamics the
+mhd equations are only approximate
+those full dynamics and there are
+missing terms that we're trying to
+recover
+uh with our collaborators at slack and
+i'll just find this last slide here
+uh we have a pretty big effort uh
+working with boeing and others on what
+we call discrepancy modeling
+where we have an imperfect model
+something like a hamiltonian
+and we're focusing our modeling effort
+on this discrepancy term
+the model mismatch and so what we see
+here
+on the top is it's not really a bad
+model it's just our imperfect
+model on the bottom this is going to be
+correct for that model mismatch
+and focus our modeling efforts on on
+that discrepancy feature
+and it's a good enough model for
+stabilizing the inverted pencil
+good question thank you thank you so
+much steve um i think
+that's all the questions i have been i
+mean do you do you get any questions
+uh directly to you uh people kind of
+believe these are the ones that i've
+seen as well okay
+awesome well uh okay let's thank the
+our speaker steve um today for the
+wonderful talk
+um well as usual thank you so much steve
+thank you everyone i really appreciate
+it and it was very uh informative
+and um straightforward easy to follow
+talk we i think we all got to learn
+something from
+from steve thank you so much for that uh
+and
+also thank you so much for participating
+even though we passed the our due
+time which is one o'clock seven minutes
+after one o'clock
+and this shows how enthusiastic we are
+about the data with data-driven physical
+simulations so
+we will continue our seminar i believe
+that our next seminar is
+wednesday next week so
+please stay tuned and stay healthy
+of course and that's how it's gone
+okay thanks thank you
+you

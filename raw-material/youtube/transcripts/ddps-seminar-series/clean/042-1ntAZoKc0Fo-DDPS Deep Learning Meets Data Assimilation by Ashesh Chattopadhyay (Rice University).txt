@@ -1,0 +1,1968 @@
+recording right okay um let's start um
+welcome to the ddps seminar everyone
+before we introduce our invited speaker
+let's go over some rules and logistics
+first of all please mute yourself during
+the talk unless you have questions
+if you have questions you are welcome to
+admit and ask otherwise please use chat
+room to post your questions so that
+we can address them in q and a session
+at the end second today's gdps seminar
+is open to external audiences therefore
+no classified discussion is allowed
+so please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host ashish
+chatham
+hat
+who is a peace student at rice
+university he did his bachelor's uh from
+the department of mechanical engineering
+at
+indian institute of technology
+patna
+where he worked primarily in
+optimization and computational geometry
+for fluid interface modeling
+he got his masters from the university
+of texas el paso from the computational
+science program
+where his research was focused on high
+performance computing
+since then she has been a phd student at
+vice university in the department of
+mechanical engineering
+where he works at the intersection of
+theoretical deep learning dynamical
+systems and turbulence modeling for
+broad applications in forecasting
+atmospheric dynamics and extreme weather
+during his phd
+he has spent a year and a half at
+lawrence berkeley national lab
+as a research intern affiliate working
+in different areas of geometric and
+generative deep learning for
+stochastic emulation of all
+system models
+today i just
+will give a talk with the title of
+deep learning meets data assimilation
+on physically consistent architectures
+and hybrid
+sample kalman filters
+for weather forecasting
+please expect a wonderful talk and enjoy
+it
+now without further ado
+let me press the button to assist by
+asking one random question as usual
+today's random question is
+what is your favorite things to do other
+than research
+so the maximum amount of time i spend
+outside research is with a small group
+of people where we have a small musical
+band so i spent a lot of time in music
+so yeah apart from that i think it's
+been more or less phd
+nice do you play any instrument yeah i i
+play a percussion instrument called the
+cajon
+i never heard of it
+yeah it's it's a version of a drum where
+your neighbors don't get very angry at
+you so that's okay
+all right sounds good okay the stacy
+yours is yours ashish thank you
+thank you so much thank you so much for
+the introduction
+okay so my name is ashish i'll be
+talking today about uh some aspects of
+putting deep learning and data
+simulation together with physically
+consistent architectures and the kind of
+data estimation algorithms that i talk
+about today are sequential ones and i'll
+introduce them and how it works and it'd
+be based on ensemble calming filters and
+all this is aimed towards applications
+uh in weather and climate modeling how
+to improve current weather and climate
+models uh and so on
+but in doing so we're going to look at a
+hierarchy of complexity in terms of
+systems and how to
+how to develop algorithms in for example
+say a simpler system and then generalize
+it to more complex systems
+so uh before i start i want to uh give
+out uh my my sincere thanks to all my
+mentors and collaborators uh a
+significant portion of this work was
+done at lawrence working national lab
+where i spent some time uh most of it uh
+was done with my advisor pedram
+hassanzadeh um uh and my colleague
+ibrahim uh
+at rice and uh our collaborator at
+currently was at lmd in paris aviator
+bach
+okay so the motivation behind most of
+the work that we do in our lab and and
+what i worked on is our weather and
+climate system and and the challenge
+that with that weather and climate
+systems have is that it's a multi-scale
+chaotic dynamical system
+and and the process the physical
+processes uh that are involved in inner
+weather system
+ranges from for example micrometers to
+tens and thousands of kilometers in
+space as well as seconds or minutes to
+maybe multiple years in terms of time so
+it's it's a multi-scale system and there
+is really no scale separation most of
+the physical processes that are
+happening inside the weather system for
+example
+uh in in in the west system you would
+see very large scale very large scale
+for example the large scale circulation
+or the weather maps that we see in our
+new station to synoptic scale patterns
+for example thunderstorms and tornadoes
+to very small scale uh small scale
+processes for example gravity waves
+which in today's state-of-the-art
+climate models
+or many of the climate models today are
+actually under-resolved or not resolved
+at all and parameterized
+so the difficulty the challenge here in
+in writing climate model for example or
+or uh
+or really resolving uh uh the the flow
+around uh from the entire earth is that
+you have to resolve uh both your space
+and time
+into into a very large number of grid
+points and a very large number of
+waypoints to account for the very small
+scale processes as well if you really
+wanted to resolve all the physical
+processes ranging from the micrometers
+to the kilometers right so you could
+typically think of the system as having
+a large scale flow x and and and a
+smaller of a scale flow y and then there
+is some poorly understood variables
+uh maybe maybe you could think that
+gravity waves is one of those fully
+understood variables that that that
+maybe we could ignore for the time being
+although they are actually parameterized
+in climate models uh but if you think of
+it that way then then ideally what
+climate models would do that is that
+they would really resolve the large
+scale flow that is they will actually go
+and integrate the uh
+the equations of the large scale
+dynamics numerically
+and they would somehow approximately
+account for the effect that the small
+scale processes would have on the large
+scale variables right and this process
+is called parameterization for example
+convection is parameterized in in many
+other climate models uh clouds for
+example are very small-scale processes
+so they they cannot really be resolved
+in in many of the climate models so they
+have to be parameterized while more and
+more eastern climate models actually do
+have uh cloud-resolving components as
+well and i'll talk about it in a little
+bit
+but the idea is you can't really afford
+to resolve all the processes that's not
+computationally tractable so what you do
+is resolve some of the results of the
+large scale processes and then you
+really account for the effects of the
+small case small scale processes on the
+large scale ins in form of some
+approximation either these are
+semi-empirical approximations driven by
+physics or more recently there's been a
+certain interest for having data-driven
+approximations where you can really
+learn from data
+so if you think about today's challenges
+in terms of data driven modeling for
+improving weather and climate models
+then we could maybe divide it and this
+is really my perspective of it you could
+really divide into three major category
+of problems
+the first one being can you account for
+these unresolved physical processes in a
+data-driven manner so uh here what
+you're seeing is that uh there is when
+you when you when you divide the earth
+into large larger grades tractable
+bridge 100 kilometers or so then you're
+not accounting for the dynamics of the
+physical processes that are within that
+hundred kilometers right the small scale
+processes
+and that and so if you really want to
+solve the governing equations you have
+to account for the forcing that those
+small scale processes would give on on
+the large scale on the scale flow
+and and so far in climate models you
+have this semi-empirical function f
+which is which is derived from physics
+and and a bit of empirics as well and
+you really account for how these small
+scale processes may may vary as a
+function of the large scale flow
+right so so really the idea is uh
+have a static function
+uh that is that is purely a function of
+the large scale variables but accounts
+for
+the accounts for the effects that it
+would have that the small scale
+processes would have for the large scale
+flow
+or what one can do is that if you could
+afford high resolution simulations for
+example say locally or if you have
+observations
+which are
+high resolution enough
+then you can learn the effects you can
+learn the tendency of these small square
+processes y as a function of x by using
+some sort of a data driven model and and
+i call this a neural network could be a
+kind of neural network could be
+something else as well but but you don't
+have an a purely structure as to how y
+varies as a function of x but you could
+really just fit a very over
+parameterized model and see and you see
+whether you get a good representation of
+why or not and these approaches are
+called data-driven approaches and
+they're called ddp
+but of course you see there's a problem
+here is that you really you're really
+saying that y is in quasi-equilibrium
+with x that that is
+y
+varies purely as a function of x it does
+not it does not vary as a function for
+for example of its memory of its memory
+so it is not dependent on how y varies
+in the previous time steps but we know
+that is the fact because y is also a
+dynamical
+the the evolution of y is also common by
+a dynamical system so y should be
+non-markovian in nature
+and and that approach is called super
+parameterization and this actually does
+exist in many of the climate quantities
+although they're not i guess
+uh operational ones for example e3 sm is
+a super parameterized model from the aoe
+uh from n car it used to be um
+sp cam which was a super parameterized
+cam model
+and the idea behind super
+parameterization was that okay i will
+resolve the large scale variables on a
+on a low resolution grid
+but inside each of these grid cells
+as you see inside each of these grid
+cells
+i will i will dyna i will numerically
+solve the equations governing the small
+scale processes y but maybe not the
+exact equations maybe some approximation
+of that something that is more tractable
+so
+in doing so what you do what what you
+what you ensure is that you don't assume
+that y is in quasi-equilibrium with x
+you actually solve uh
+the the time dependent y equations to
+some extent and a data driven version of
+that
+these are the things that we had worked
+on was that you
+you if you if you were to afford high
+resolution simulations or had
+observations then you try to fit a in a
+stateful neural network like for example
+a record in neural network as a function
+of both the large scale variables
+and the small scale variables of the
+previous time step
+now as you know as you understand these
+are not purely data driven models you
+need to then couple these equations back
+into your large scale numerical solver
+and then we'll solve it in a tightly
+coupled fashion
+so this is one aspect of what
+data-driven data-driven modeling in
+climate and weather looks like today
+of course
+there's another uh approach to doing
+this is that we really are often just
+interested in the large scale
+variability for example we're interested
+in the large scale circulation
+not necessarily about
+we don't not
+necessarily want to probe into the small
+scale process as long as we are
+correctly accounting for them so we
+could have a fully data-driven model
+that just learned from the large-scale
+variables so it can it can just look at
+the time history
+one can just look at the time history of
+the large-scale variable and evolve it
+with a neural network
+while this is obviously a much more
+challenging problem because you're not
+really accounting for y but just
+assuming that somehow the information of
+y is independent in x this has been a a
+an area of recent interest from from
+multiple different groups including ours
+work relab and university of washington
+well dale duran and jonathan wayne have
+shown some really amazing results
+of what you could achieve by by training
+a complicated enough neural network on
+observational data and and how you can
+forecast you can actually come very
+close to our operational forecasting
+stand where operation forecasting stands
+today
+so the third aspect of it is improving
+data simulation and data assimilation
+i'll talk about it in more details is
+that it's a it's a process by which you
+integrate observational data so you take
+observations which come in as noisy and
+sparse data and you integrate into your
+dynamical model uh in such a way that
+you have a better representation a
+better estimate of yours of the state of
+the system with which you can start
+forecasting and today i'll focus on the
+the the second the the second and the
+third point here i look at climate
+models that look like this ddwp stands
+for data-driven weather weather
+prediction so this is not a coupled
+numerical
+uh deep learning scheme it's a purely
+data driven scheme where you have
+where you're trying to predict the large
+scale variable directly with the health
+data-driven model and then i look at how
+i can use deep learning to improve data
+simulation to some extent or at least
+enhance computations involved in data
+simulation how these two can be tightly
+coupled together for forecasting
+applications i will not focus on any of
+the work uh related to ddp or ddsp
+so to look at the to look at the kind of
+developments that we did we will look at
+a hierarchy of systems not directly go
+to the most complex climate model level
+but we'll first look at a two-layer
+quasi-juice traffic flow and develop a
+hybrid deep learning based uh
+data simulation scheme look at how we
+can tractably generate large number of
+ensembles repetitions and the challenges
+and opportunities there and then we are
+going to look at re-analysis or
+observations so go to the most complex
+climate so the re-analysis is not
+completely observations so it is it has
+a greater simulation component to it as
+well but is the closest to observations
+that we can get so we're going to look
+at how we can facilitate predictions by
+training on actual observational data
+and how we can couple da schemes to a
+ddwp model at that
+at this uh hierarchy of complexity as
+well so obviously
+getting data
+from reanalysis would involve running a
+full nwp
+so
+the computational cost is obviously much
+higher the complexity of this data is
+much higher than the complexity of these
+data as well so this is more or less a
+chart uh really development would
+involve making this line much more dense
+having more many more systems making
+sure to generalize across these systems
+but i'll look at these two things today
+so a little bit about data assimilation
+so data explanation is used in
+engineering and the earth sciences uh
+in both engineering and earth sciences
+and in fact it's an indispensable
+process in weather forecasting
+and and the way it works or the way it
+looks like is this suppose you have a
+system and you have a dynamical model of
+your system with which you want to
+forecast it so ideally you start with an
+initial condition which may not be
+accurate it could be noisy it could be
+sparse you may have interpolated onto a
+grid so that it can facilitate the
+resolution of your dynamical model
+and you start forecasting with your
+model now more often than not this model
+of your system especially if the system
+is complex will not have all the
+relevant physics it will have some
+missing component or it would have some
+parameterizations which are not accurate
+so your model trajectory is going to
+deviate from the true trajectory of your
+system
+right and and from from time and again
+you will get observations from your
+systems which are division given in red
+and the idea of data simulation is that
+you take the model forecast you take the
+observation at that time if it's
+available
+and then you combine these two
+information to come up with an estimate
+of your state which may be a more
+faithful and a true representation of
+the state of your system at that point
+of time and in a sequential data
+estimation algorithm for example enkf
+that i'll talk about ensemble kelvin
+filter as you have more and more
+observations you are going to converge
+to a more correct uh or a true
+representation of your state as you keep
+on
+updating an ensemble typing filter so as
+you move on and you get more and more
+observations your estimated state is
+going to be more closer to the true
+trajectory as compared to your model
+state
+or as compared to an observation which
+is actually going to be very noisy so
+observations come in as very noisy as
+fast data uh
+you have to be able to assimilate them
+before it can be used to be
+useful anyway
+and once you have this estimate of your
+state you can start forecasting by
+treating this as the initial condition
+as compared to an observation on a model
+forecast so use this initial condition
+which is a better representation of the
+state you could get better forecast
+accuracies with your dynamic model even
+though it might have missing physics
+so
+in order to propose the algorithm that
+we want to talk about and we're going to
+propose a hybrid ensemble kalman filter
+which has a deep learning component to
+it the system that that we will consider
+is a two-layer quality geos traffic flow
+a two-layer quasi-geostrophic flow
+and um in this system this is a very
+simple climate model very simple
+two-layer climate model it's used as a
+canonical like a textbook example to
+start off with new algorithms uh it has
+two two layers so it has two states the
+states are going to be the stream
+function at the upper and the lower
+level what you're showing in the view
+what i'm showing on the video is the
+shading which is given by which is the
+velocity and then the open contours of
+the stream function this is a good
+representation this is simple but a
+great representation of the mid-latitude
+dynamics of the earth
+so
+it's not a full climate model but it
+it's not even close to a full climate
+model where it's a good place to start
+so it's a fully turbulent flow so it is
+all complexities that you would see in
+atmospheric dynamics in terms of the
+nature of turbulence that exists in
+concrete animals
+so let's look at what a regular data
+assimilation with ensemble kelvin filter
+would look like in a system like this so
+you start with an initial condition okay
+of your of the state of your system and
+then you perturb this initial condition
+to generate an ensemble and you put up
+with typically maybe using gaussian
+randomize
+and then you have a bunch of ensemble
+members right and each ensemble member
+is indexed by j over here
+so what you do then is that you use a
+numerical model of of your qg flow for
+example in the system and you integrate
+each of these ensemble members
+until for example say 200 delta t and
+why did i choose 200 delta t here
+because in this system that's equivalent
+to one day one earth day
+and suppose assume that in this system
+you have observations coming in every
+day albeit they commit come in as as as
+noisy observations not not not perfect
+ones
+so the first thing that you would do a
+while while implementing your ensemble
+calvin filter is that you would first
+compute this background covariance
+matrix which is the expectation of this
+quantity
+and if you look carefully this quantity
+is dependent on all the ensemble members
+that you have integrated for 200 delta t
+once you compute this background
+covariance you're going to you get a
+kelvin gain
+which is uh that the carbon gain is then
+used to weigh the observations and the
+background forecast so this background
+forecast is coming from your model the
+observation is coming from the system
+and the kalman gain is something that
+you've computed from the background
+covariance matrix
+okay
+now the problem with this approach is
+that if you're if the system that you're
+that that that your
+uh
+if the system that you have is very high
+dimensional
+then the number of ensemble members that
+you need has to be sort of of the same
+order of magnitude as the number of
+states of your system so you really need
+to integrate
+all the ensemble members and if for
+example this system has 36 000 states so
+you really want to afford uh you really
+want to be able to afford to integrate
+ensemble members in in in the ranges of
+2000 or 3000 which could be very
+intractable for a certain system think
+about the weather and climate situation
+where you have 10 power eight states you
+really can't afford to integrate that
+many number of ensemble members using an
+nwp right because that's that's too
+expensive so what people typically
+resort to is that okay i'll
+i'll integrate a few ensemble members
+typically in the order of magnitude of
+and i'll resort to a low i rank a
+deficient p matrix because then this
+background covariance matrix becomes
+rank deficient it suffers from sampling
+error so it gives some spurious
+correlations which
+may affect the accuracy of your kelvin
+gain and hence the accuracy of your
+estimated state so let's look at how
+this works out with different number of
+ensemble members so you have 20 ensemble
+members you see the normalized rmac it
+tries to come down every time you have
+data simulation every time you have an
+observation you're assimilating you're
+getting a better estimate of the state
+but the overall trend of this rms curve
+is upward which means this filter is not
+converging it's actually divergent and
+the reason is you don't have enough
+number of members even with the 100
+ensemble members which is sort of
+interactive in the system
+uh you you still have a divergent filter
+only when you can increase the number of
+ensembles to say 5 000
+that is when you have a convergent
+filter that is that that that that is
+the error comes down every time you have
+data simulation and you have a constant
+error curve so this is really what you'd
+expect
+and the reason this happens is because
+if you investigate the background
+covariance matrix what i'm showing you
+here is the correlation
+that i get from p by looking at this
+point on the domain
+so
+what i ideally expect is that this point
+is correlated with itself and not
+correlated with any other point in the
+domain but you see there is a lot of
+spurious correlations all over it should
+look like this a blob of correlation at
+the center and and nothing around
+but it has a lot of spurious
+correlations really saying that the
+instantaneous wind in you know
+texas is correlated to the instantaneous
+wound in beijing something like that
+which which which may not be true in
+most cases is not true so so this is the
+reason that this is this this is due to
+rank deficiency this is due to sampling
+error and this causes this blow up
+now
+what we are proposing is a deep learning
+based uh circuit to enhance the
+computation of p so let's see how that
+how that would look like
+so the first step to that process is
+actually building a data-driven
+surrogate for this system so instead
+of integrating uh instead of instead of
+integrating the system numerically one
+could of course build a data-driven
+emulator that
+that integrates the state of the system
+from time t to t plus 40 n to t
+so
+this emulator may not be very accurate
+for very long right but we don't need it
+to be accurate for a very long time we
+need to be accurate for a very short
+number of time steps and we have reasons
+to believe as i'll show you later on
+that even for very complicated systems
+this approach to building fully
+generated surrogates for forecasting
+actually works out
+and suppose that you have been able to
+train it this way and you have a
+surrogate that goes from time t to t
+plus 40 delta t with the deep learning
+model
+then our approach to doing hybrid
+ensemble kelvin filter is that you keep
+this pathway the same
+but you integrate
+uh up but but you introduce a parallel
+unit that integrates a large number of
+ensembles from the same initial
+condition now because a trained unit is
+going to be very cheap during inference
+you can actually afford thousands of
+ensembles here and just to give you a
+cost comparison of how this scales the
+time required to integrate one numerical
+ensemble with this numerical model is
+the same as the time required to
+integrate 200 of these data driven
+ensembles
+okay
+so you keep integrating them up to 200
+delta t until you get a stated 200 delta
+t with the unit
+and then
+instead of computing the background
+covariance with the with the numerical
+ensembles you compute the background
+covariance with these thousands and
+thousands of data driven ensembles that
+you were able to afford
+and here's a trick that you just need
+this data-driven model to be accurate
+for 200 delta t it just needs to be able
+to integrate accurately for 200 delta t
+so you get a not rank deficient matrix p
+well it is going to be random division
+still but it's less
+it's less than
+you could have a thousands of ensembles
+so it does less sampling here as
+compared to numerical ensemble
+so you get your back so you get your
+kelvin gain based on that but your
+background forecast you still get it
+from a more accurate
+numerical model that has integrated a
+small number of ensembles something that
+is affordable
+so you have this hybrid approach to
+computing k with the deep learning model
+and the background forecast with with
+the numerical model and then you get an
+estimated state
+uh you have their analysis state which
+you hope is a better representation of
+the true state of your system so let's
+see how it really does
+so this is a regular ensemble kelvin
+filter over 60 day cycles for this
+system
+and it uses 20 numerical ensembles
+something that is roughly tractable for
+this system
+now if i if i if i trade away 10 of
+these numerical ensembles for 2 000 data
+driven ensembles remember the cost
+conversion 10 of these is equivalent to
+2000 of these
+the line that i get is the black line
+which is stable and accurate about four
+times reduction in error at the end of
+60 day cycles and in fact with half the
+number of
+uh half the computational cost half the
+number of driven ensembles
+i can get the blue curve which looks
+visually to have the same
+accuracy
+as 2000 data driven ensemble so really
+this box and this box has no difference
+in computation because i just traded
+away 10 of these numerical ensembles for
+2000 data reverence numbers
+and this is the performance gain that i
+have
+so this model has absolutely no
+forecasting skill to be honest with 20
+numerical ensembles while this model
+would have a far better forecasting
+skill and the reason is again the
+background covariance the the spurious
+sampling uh the spurious correlations
+arise due to sampling error because you
+have lower number of ensembles
+this is what it would look like with 20
+numerical ensembles trade 10 of them for
+data driven ones and you would have a
+much more localized structure of your
+co-variance matrix
+and and this gives you a better estimate
+of your analysis state so if you plug
+that analysis state in to your dynamical
+model this is the forecast accuracies
+that you would guess this is free
+forecasting so this is with the analysis
+state that you obtained with
+with this enkf model h and kf model
+so uh if you consider 0.6 to be like the
+prediction horizon limit for example
+then uh this model has about five and a
+half days of forecast forecasting skill
+while
+while this model actually has much
+lesser so despite the fact that their
+analysis states look visually same it's
+a very chaotic system so error is going
+to grow very quickly so there is a
+difference uh there is a advantage using
+more number of data driven ensembles
+now
+the main challenge in this pro in this
+work was never about the onslaught like
+it wasn't about implementation or
+enthusiasts about building that data
+driven surrogate that works
+and and i did it for a qg flow one could
+ask what would happen when it's a more
+complex system well we did it for
+complex systems as well here's an
+example uh
+this paper and more recent papers
+actually tried to build these surrogates
+for
+uh trained on re-analysis data so really
+observational data for for for weather
+and what they showed was that these
+their driven models may not uh be
+competitive with operational forecasting
+models so ifs 363 while it's not
+operational forecasting it could be
+it is a nwp that is run by ecmwf which
+is very accurate which is this line what
+you're looking at is the acc of z 500
+which is the large scale circulation
+five kilometers above the earth's
+surface and how the accuracy acc is like
+correlation correlation coefficient and
+and and this blue line is a a deep
+learning based unit model that
+integrates z 500 exactly the same way i
+did it for qg almost exactly the same
+way i did for qg
+now while it is not comparable to other
+operational models but for one day
+it is actually quite competitive so for
+if you look at a one day forecasting
+skill then it is going to be competitive
+to any operational model and and things
+have moved on since since this picture
+we have better models now but um for one
+day it can be very competitive and
+that's what we need for for data
+simulation we don't need it to be
+accurate forever we just need to be
+accurate for the length of time until
+which i get another observation and i
+can integrate it and we also showed that
+you can improve more uh improve on these
+models by adding more physics into it
+and talk about this this picture on the
+right uh in in a short bit but it is
+possible to build these data different
+circuits for short time scales which can
+be in fact as accurate today it can be
+as accurate as operational ifs models
+that ecmw influence
+now of course this is the challenge that
+we talked about let's go to a more
+complex system like i said what is what
+would be what is the main challenge of
+having a more complex system uh well one
+of them is we have we are sort of uh
+married to a convolutional architecture
+which in the unit was a convolutional
+architecture one of the things we wanted
+to ask was
+was it even uh did it make sense to have
+a convolutional architecture in the
+first place and and one of the things
+that we did earlier on with an extreme
+events paper was that you realize that
+you know us if you look at the weather
+patterns on on on
+if you look at the z500 circulation
+patterns you may have for example a high
+pressure anomaly over a low pressure
+anomaly or you may have a situation
+where you have a low pressure anomaly
+over high pressure now these two are
+different uh configurations of the
+pressure system right
+and and these two really would be
+treated as should be treated as two
+different features now i think it's
+important here because this can likely
+lead to an extreme event
+while this would probably just be a
+rosby way of moving eastward
+so these two are different situations
+and it turns out that your your
+convolutional architecture which is
+invariant to translation but not
+rotation and other orientations can't
+really uh by construction figure out uh
+the difference between these two
+if this is extracted as a feature set
+then these two are the same features
+because it does not understand the
+relative differences between
+orientations
+not to say that it never would if you
+traded enough number of samples these
+are very expressive networks it might
+but they're not that by construction
+right they're not equivalent by
+construction and and there's a better
+architecture to go about in doing that
+and a very long time back this was
+called capsule neural networks and now
+we have better versions of equivalent
+neural networks that deal with this but
+generally the idea is that you have to
+be able to capture rotational rotational
+variances in your features the
+rotational variance in the in the flow
+features when you're when you're when
+you're trying to predict especially for
+physical systems such as these right
+uh so so capturing rotational features
+became an important challenge especially
+for complex systems and and
+and really what we wanted to do was if
+you're if if your input for example your
+your state was rotating in this manner i
+wanted i want my neural network and i'm
+calling it a stationary transformer in
+this case to be able to really capture
+the rotational behavior like really
+capture the features that are that are
+rotating in space at least the so3 part
+we want our networks to be uh so3 eq
+variant that's that that's one of the
+things that that we realized we needed
+to do
+and the reason is that the current
+convolutional architectures are cooling
+less and in most cases and pooling
+layers are effective for training the
+system it has that you know it provides
+inductive bias that you need to train
+these models but then it what what
+happens is that you know you can't
+capture features
+um
+especially when there are large
+distortions in the input space
+and and and to capture rotational
+features uh is very important for for
+spatial temporal modeling because you
+know we know that turbulent flow has
+wattages that are moving around in space
+so we wanted to be able to incorporate a
+differentiable model so that we can do
+end-to-end back propagation but at the
+same time be able to make at least some
+portions of the network equivalent to
+rotations
+so if this is a unit our simple solution
+to having
+some
+sense of equivalence within this network
+this is not a fully equivalent network
+is to really have a spatial transformer
+in the living space so you ensure that
+your latest space undergoes a
+transformation and undergoes you know uh
+unfine transformations
+define transformation
+and then you interpolate it based on
+your based on on on on on the input to
+the network right so this is called a
+spatial transformer network and i what i
+really did was i took a special
+transformer network and and hooked it to
+the latest space of unit so i'm not
+making the entire network endpoint
+equivalent i'm just ensuring that this
+this transformation is equivalent by
+construction so that when i go to the
+decoder i have a representation which
+captures the richness of the rotational
+features of my field
+so
+uh so we so
+exactly the same way that we that we did
+for the qg flow we started training this
+on observation later we analysis data
+with an usda network this kind of a
+network again zt zt plus delta t
+here we have uh we have trained this
+model on 12 hourly z500 data
+and and and and this is what
+this is what this is what we get out of
+our
+free forecast for a free forecast so we
+have about four five like maybe five
+days of accuracies for z 500 from error
+five reanalysis and we realize that an
+equivalence preserving network in the
+it's not equivalent end to end it's only
+in the latent space but nikoi's
+preserving network has has better
+correlation as compared to say
+a regular unit not so much in the
+earlier days maybe a little more as you
+move forward in time and it can capture
+like subtle features like like wave
+breaking
+like you see the wave breaking phenomena
+happening in high latitudes which is
+being captured by the equivalence
+preserving network
+and we don't necessarily say that we
+better represent these phenomena these
+are very non-linear phenomena but maybe
+we better capture features that
+ultimately leads to a better
+representation at this point so that's
+this is what we realized and this was
+just just a better network 12 year
+stands for the fact that we are
+training this on 12 hourly data instead
+of hourly data and there's a carry the
+reason why i'm doing 12 hourly or not
+hourly and i'll tell you about it
+so this is what the acc would look like
+it has about one and a half days uh
+better accuracy it's a marginal
+improvement but you know we get we will
+take what we can get for these systems
+so it's about
+if you cut things off at 0.6 it has
+about one and a half days of better
+accuracy to a regular uh very over
+parameterized network both of them these
+have undergone extensive hpo before we
+decide to use this network
+now
+now adding data simulation to this is
+obviously more complicated because if
+you want to do forecasting on area 5 you
+need to be able to run an nwp model
+which is sort of not our forte but
+instead what you can think of is that
+you treat this ustn you treat this
+data-driven circuit as your dynamic
+number as your background forecast model
+so replace the dynamical model
+altogether so you start with an initial
+condition on z you use your ustn right
+to predict z t plus delta t t plus two
+delta t until for about 24 hours when
+you have an observation
+and then you directly integrate this
+observation into your data driven
+dynamical model to say
+and here instead of using ensembl kelvin
+filter we use an uncentered version of
+it uh because we were using the low
+resolution error 5 we could actually
+afford an optimal number of ensemble
+members the thing is this system is
+about 2048 dimensional right this is the
+low resolution five and a half degree
+error five
+and and for the unscented kelvin filter
+the the optimal number of ensembles that
+you need is about two times the
+dimension of your system plus one so we
+could really afford 4000 ensembles
+because our forecasting model was a
+fully data-driven model which was
+trained previously
+so
+uh the the formulation for us for also
+for unscented kalman filter is very
+similar you compute a kelvin gain uh
+based on the kelvin gain you get an
+analysis state at 24 delta t and if you
+look at the results once again this is
+the correlation this is rmse every time
+you have data assimilation you see that
+your error goes down i have
+these experiments
+have
+the two experiments here one with a
+higher higher degree of noise one with a
+lower degree of noise obviously the
+amount of noise you have in your
+observation governs the amount of
+accuracy of that you have your analysis
+state but anything around and this is in
+meters this rms is in meters for z 500
+and this is correlation coefficient so
+you see you can get very decent
+correlation coefficient even with high
+degree of noise for this system
+now uh once we did that we realized
+there's something more interesting here
+and the interesting thing is that these
+data-driven models don't the error
+propagation in these data-driven models
+don't quite behave the same way as the
+error propagation in numerical models uh
+by saying that what i mean is that if
+you train a model to predict 12 hourly
+data 12 hourly states
+you would likely to have a longer
+prediction horizon
+as compared to a model that is trained
+on hourly hourly date or hourly state so
+if your model is going from x t to x t
+plus one hour
+you're going to lose prediction more
+quickly than a model that's going from x
+t to x t plus 10 ounce
+and this could be useful uh uh i don't
+want i don't want to take a lot of time
+talking about why this happens although
+we have some ideas and now we have
+more uh explainable experiments to show
+what happens but we can leverage this
+thing so basically what i'm trying to
+say here is that ustn 12 which is
+trained on 12 hourly data has a better
+prediction on the horizon as compared to
+a ust and one which is trained on hourly
+data similarly for rmsc
+so a 12 hourly model is more accurate
+than an hourly model
+so what we can do now is use both these
+models together in our data simulation
+scheme and we call this uh virtual
+observations that is if you you really
+want to do prediction every hour but you
+know your hourly model is bad and your
+12 hourly model is much better so let's
+use both these models in conjunction so
+you have an hourly model doing
+prediction every hour until say for
+example 12 hours
+what you do is you take the state
+predicted by the 12 hourly model and
+treat it as a virtual observation
+and integrate it to get an analysis
+state so this is not a real observation
+you don't have an observation from the
+system what you have is a more accurate
+forecast let's treat it as a virtual
+observation and get a better estimate at
+this 12th hour so that you can start
+forecasting with a better initial
+condition at the 12th hour
+and you keep doing that until you go to
+24 hours you get the real observation
+so
+when you do that you see that the blue
+line is essentially the the this vibe
+with the virtual observation framework
+which we call the multi-step
+framework in this case
+and what you see that every 12 hours you
+have a peak in your in your correlation
+or you have a drop in your rmc which
+means that the virtual observations are
+really kicking in and helping you get an
+improved state as compared to the
+regular ml plus da and this happens
+throughout and you have a divergent free
+filter at all times because you could
+afford 4000 ensemble members so this is
+really our approach to doing multi-time
+step da with with multiple models and it
+really works with data data models
+even for for for data as complex as
+observational weather data
+so with this i'll i'll come to my
+conclusions as you know so that we can
+have some time for questions i'm
+[Music]
+10 minutes above 30 minutes or 10
+minutes beyond 12 30. so um
+so one of the challenges always the
+challenge in these problems is building
+a skillful ddwp model a data driven
+weather prediction model that is that is
+uh that is you know competitive with
+operational models right but we're not
+far behind there are there are papers
+coming out more and more that are
+showing that we can really achieve this
+and while most of them were on low
+resolution uh fields
+uh we along with a few folks at working
+lab and nvidia have been working on this
+really monster of an afno model with 33
+atmospheric variables at the native era
+5 resolutions the highest resolution
+error 5 and and these results are
+comparable to operational uh operational
+ifs which is ecmws operational model
+so
+uh
+it so it's really going somewhere so
+really replay so when like six years
+back if people talked about replace a
+dynamical core with a data driven model
+no one would believe you but six that
+since then there's been a lot of
+progress and maybe we couldn't think
+about at least replacing some components
+so for example you can do all the
+atmospheric variables maybe but this is
+the first time we did about 33
+atmospheric variables and this preprint
+will be coming out very soon
+uh there can be further improvement by
+having physics-based biases into the
+architecture for example equivalence was
+one of them you could do other things
+like enforcing the loss function with
+some physical quantities all of this is
+harder to do for real systems like real
+observational data but but that one can
+one can think about doing this even if
+you have a great data driven model
+getting initial conditions in real time
+is a challenge like if you really
+if you really want to
+start forecasting in real time you you
+want initial conditions coming in from a
+weather station at the same time as you
+want forecast this is obviously an iot
+sort of challenge there which which
+needs to be
+taken care of you have to look at
+further explorations in doing da because
+data simulation is always a challenge
+you need to be able to integrate your
+observations and noises parts you can
+never really use them you have to be
+able to assimilate them so further
+improvements and data simulation with
+deep learning needs to be uh performed
+and finally the holy grail in using
+data-driven models is that can be
+seamlessly integrate this data-driven
+weather prediction models
+uh to get climatology
+and at least today we can't do that
+because these models are unstable and
+they drift
+not that nwp models don't even whether
+models will drip they don't give you
+climate that's why there's weather
+models are not climate models but really
+one of the holy grails was that we could
+really do that that you can integrate
+these data driven weather prediction
+models because they don't have the same
+biases as as
+as
+numerical weather models maybe you would
+be able to integrate them currently this
+is
+things that we and other people are
+working on but there's a lot of evidence
+that there is unphysical drifts and
+instability
+so this is more or less the challenges
+less conclusions more challenges uh and
+with that i'm open to questions
+thank you thank you so much for the
+great talk ashish
+we do have a you know tons of tons of
+questions from pat actually
+i
+actually i i don't even know where to
+start that um
+youngster we don't have to go over these
+i can always take them offline with with
+the speaker i i i've really learned a
+lot from this talk okay but there are a
+bunch of assumptions you make along the
+way
+that uh
+to someone like me who comes from a very
+different background i'm going well why
+why are you willing to assume that or
+this or this and so i know that for the
+the computational science audience
+the who do who do these kinds of models
+many of these assumptions will be
+familiar
+i think they are debatable and worth
+worth exploring but uh but i think the
+biggest surprise for me
+it wasn't that you were
+starting from
+from these fine-grained pde models right
+that's a pretty common thing uh what's
+really surprised me was a shift to and i
+knew that ensembles are you used in in
+weather weather prediction these days um
+i was
+uh but
+but but
+i've i've never understood the
+connection there because if you believe
+that navier stokes equations or whatever
+are enough
+and they're correct um then why in the
+world do you need ensembles and and and
+if you believe that the world is markov
+why do you need column and filtering
+these these are there's there's a
+there's a disconnect
+between
+the
+between the uh the the basic assumptions
+of of
+pde modeling and and the way that that
+people have gone ahead with with
+actually incorporating these ideas from
+statistics
+it's not evil but it's it seems to me
+violating core assumptions of what it
+means to build a scientific model what's
+going on there can you help me
+understand the motivation or is it just
+a hack
+um yeah i can i can uh
+give you a shot um
+so why do we need ensembles if if navier
+stokes is accurate right
+so
+one is
+even though so so we're not analytically
+solving knowledge we're approximating
+navistox with a numerical solver so
+there are two sources of error here
+one
+is a model error so so the navier stoke
+solver in this case the qg solver
+although it's as accurate as a solver as
+i could write it would have some finite
+sized approximation so there's a model
+error here which is very small because
+this is a it's a spectral solver it's
+actually very small you can neglect it
+for this for the timing
+but the other source of error here which
+is a major solution
+wait but won't those average out or is
+there something about the chaotic nature
+of it that that
+that does not let averaging
+get rid of of uh the errors
+okay so if you even if you neglect model
+error the initial condition error will
+not average out because it's a chaotic
+system it's a positive lyapunov exponent
+the initial condition error with which
+you are say you have a perfect
+but an imperfect initial condition so
+you will never actually be able to
+retrain the trajectory of your truth and
+it will not average out because it's a
+it has a positive level of exponent and
+the error would grow now what ensembling
+here does is that so so if you have an
+initial condition error one way to go
+around it is on sampling
+now
+what ensemble kelvin filter is doing is
+it's slightly different what it's doing
+is that it is weighing in between this
+ensemble model forecast
+and
+again a piece of imperfect information
+that is coming from the observation now
+this model forecast could have had a lot
+many errors he could have had model
+errors this model may not have been
+perfect in this system i've i've written
+a qg solver in an nwp in a weather
+forecasting model there is missing
+physics so so obviously your model
+forecast is going to deviate a lot even
+if you had a perfect initial condition
+for example but your observation is
+coming from the true system it has all
+the physics but it has other challenges
+it's noisy it's it's parts as soon as it
+spars and you want to put it on inside a
+dynamical model you need to interpolate
+onto the right grid so there you have a
+process so what what ensemble kermit
+filter is doing is that in this equation
+as you see it's weighing in
+between
+the observation
+and the background
+forecast with this kalman gain and this
+carbon gain is sort of like you know if
+it was one dimensional it would be like
+a weight whether should i should i trust
+my observations more should i trust my
+model for customer and
+that trust is coming by looking at the
+the how the background covariance looks
+like if the background covariance looks
+good based on that you decide on what
+what the key is that's okay so so i this
+is i mean as i expected this is a
+complicated answer to a complicated
+problem and that's all right um
+i don't even know how you would you know
+to uh to me maybe everyone else on the
+on the
+listening in the talk already got this
+right but i certainly didn't and so i
+would encourage you to to spend a couple
+of slides clarifying where this is
+coming from in particular yeah where are
+the sources of error and how is how is
+the common filter and the ensemble how
+are they addressing those different
+sources of error um and i and and and so
+i i like i like the style of your answer
+i'd like to understand more maybe
+can introduce us by email and we can
+follow up separately
+and i'll be questioning with other
+people to talk
+i can certainly do that
+thank you thank you so much for the
+question pat um and answering um
+all right
+well the robot said he had the same
+question and he's thanking
+you
+all right um so i'm i don't know if if
+there's any other questions please um
+please post it in the chat room or admit
+yourself um
+while you're doing that let me ask my
+question
+on this very slide and you're
+computing the covariance um
+using the unit
+yes and that
+and the units
+you set um
+you know
+it is accurate for
+like the first day
+up to say for example
+up to 24 hours or one day or um
+and in order to achieve that accuracy um
+i was i was wondering if you can
+you know elaborate on how you train the
+unit actually um sure sure
+so
+this in this particular example this
+this is a very regular unit i don't have
+any physics constraints equivalent stuff
+here so the way it has been trained is
+that i've generally so i have a
+simulation data a long
+long climate simulation from this qg
+flow
+and this the input to this unit is the
+stream function at both levels at time t
+and the output is the stream function at
+both levels at time t plus 40 delta t
+here 40 degrees that vection time scale
+of this system
+so i have trained this unit exactly in
+this fashion i've shown it multiple
+samples of t and t plus 40 delta t and
+i've learned a map between t to t plus
+40 delta t during inference
+it's an auto regressive model you put in
+an initial condition t you get t plus 40
+delta t you take this prediction plug it
+back into the unit you get t plus 80
+delta t you plug it back you get t plus
+160 delta t and so on
+and and that's uh um
+in small scale data or the large-scale
+data um the data you use to train the
+unit uh this is this is so uh in this
+problem it's trained on the full high
+resolution full resolution data there's
+no there's a large scale defined
+resolution yeah
+okay and as you increase the size of
+that
+data
+you will have a hard time training the
+unit itself
+so we used about
+10 000 data for example in this case uh
+so
+you mean in terms of computational cost
+that that yeah yeah yeah
+yeah this is an expensive training
+process to be honest uh i mean this is
+this is this 36 thousand dimensional so
+it's an expensive training process but
+during influence it can be you know as
+cheap as it gets so yeah it's training
+10 000 days uh yeah i don't doubt the
+inference will be very fast and once it
+is trained to be very um you know
+you know accurately and
+with enough data
+the training is always the challenging
+part
+the trend is pretty costly
+right and
+in for example in global climate model
+the the size of the data will be even
+even bigger
+yeah
+so and it would have much more number of
+variables but yeah so it's so like that
+uh the fno model that we have been doing
+with nvidia it has 33 atmospheric
+variables at quarter degree resolution
+so it's a mammoth model you have to do
+distributed you know model parallelism
+to to really train it but
+but then you know once trained you can
+actually deploy it in on one gpu so
+that's that's that's something yeah yeah
+once it is trained yes uh yeah of course
+um
+okay we have a
+question from dave at the end uh you
+showed how one could
+combine the one hour unit and a 12 hour
+unit yeah and compare it to the one hour
+unit alone
+how does the solution compare to using
+only the 12-hour unit
+okay what is the advantage of the hourly
+calculation
+correct great so uh i'm not showing you
+the uh the the the comparison with 12
+hourly unit is because like okay so the
+assumption is um
+you want predictions every hour
+so it's it's not that
+if i used a 24-hour unit i would have
+probably got gotten away with better
+accuracy but the point is if you use
+that then you don't get any prediction
+between 0 and 24 hours or if you just
+the 12 hour unit you won't get
+predictions between 0 and 12 hours so
+you do one prediction every hour so
+that's that's the requirement but how
+can you use hierarchically low fidelity
+models to improve that hourly that
+forecast because until here there is no
+improvement
+but once you have the virtual
+observation you have an updated state so
+every hour from there
+would now have a better
+better accuracy as compared to just
+using the hourly unit right
+so so basically until here there was
+hardly any change but after that
+you you you had an improvement in the
+state so
+because these different fidelity models
+have different accuracies
+i want to improve that
+ultimately i need hourly forecasts so i
+have to improve like i can't just say
+i'll not use the r i have to use the
+hourly model but how can i reinforce
+hourly model by using these virtual
+observations so that that was the idea
+that's why i didn't compare with the
+12-volume
+sounds good thank you
+um
+baby said thanks i didn't catch the one
+hour forecast requirements
+all right uh any other question from
+audience um
+this is ramit i have a quick question
+for you hi thanks thanks for the talk
+yeah uh
+so so it was regarding the the virtual
+observation concept so
+could you like just build it into the
+architecture with a resnet layer that
+does d a like a d a layer or something i
+don't know
+so that you have data assimilation
+happening through a parallel sort of
+operation at each time step perhaps
+and you just choose the window of the
+output the total window of the output
+which could be like 12 in this case for
+example
+does that make sense no
+yeah
+it did make sense i mean
+we have to we have to like talk about it
+and figure but what what you just said
+strikes right you're right
+okay yeah another question is so you
+know like a lot of the papers that are
+being published recently these are all
+on the 64 by 32 resolution with the exam
+with the exception of the work you're
+doing with nvidia
+so is there any value to those forecasts
+i'm not talking about whether they work
+i'm just curious if anybody uses a 64 by
+32 forecast
+not if it's at very large so we are
+looking at z 500 data that's why okay 60
+32 is okay but the one jaideep is
+leading at nvidia that was at quarter
+degree so the other thing is training on
+many variables so if you don't
+reduce the number of i don't reduce the
+resolution native resolution
+then training this model becomes very
+hard for a large number of atmospheric
+variables that's why i also looked at
+like things like just z500 t2m t850 very
+large-scale slow moving variables right
+precipitation this is totally useless
+useless yeah
+okay all right okay thank you so much
+[Music]
+uh going back to the the the ram is the
+first uh the comments about the parallel
+implementation
+i don't know it reminds me of the
+the parallel in time uh algorithm
+yeah
+so if you if you introduce the
+you know artificial uh the observations
+and yes
+that it
+that framework is totally possible to
+apply right yeah not take off the
+integer
+that's that's right as soon as room
+mentioned it i i realized that yeah it
+could it yeah it's very possible it's
+probably very possible yeah
+all right okay so
+another question from shady the very
+nice talk ashish i might have missed
+that point but when you introduce a
+rotational invariant neural network with
+a
+spatial transformer it would see a low
+pressure john
+on top of a high pressure zone
+as the same as a high pressure joint on
+top of a low pressure zone right
+how is this physically consistent
+yeah so uh okay let me clarify so know
+that
+first of all this was just a cartoon uh
+but but that's not what i was what i
+meant was that
+um if you have uh
+so so so con convolutional neural
+networks especially with pooling
+uh is is not rotationally equivalent
+which means that it cannot it cannot
+capture
+rotational distortion generally any
+large scale distortion is in the input
+field so it can't capture rotational
+distortion input not by construction if
+that doesn't mean that it can't that
+doesn't mean if you rotate a cat it
+won't be able to predict it if it's
+trained on you know all the images of
+cats so that's that's not why we have it
+but construction it is not rotationally
+equivalent right transl it has
+translation variance it does it cannot
+capture rotational variances in the
+future field
+so this was one and not just rotation
+any relative orientations so i think you
+can actually find a very good uh
+uh overview of exactly how that works
+and so so in this painting for example
+uh this this would be for example
+classified by a continent to be a face
+where in reality it's not really a phase
+because the relative positions of of of
+of the eyes and the and the lips that
+sort of change so changes in relative
+positions can be captured by
+construction once again i use the word
+construction because
+if you train on enough data data
+augmentation these things can do
+anything so
+when we're doing this work on extreme
+events we realize this is one of the
+problems we were having that
+these two
+large if these two are captured as large
+features
+in in in one of the layers in a
+convenient they would they they both of
+them were captured as the same feature
+basically both of them were leading to
+the same prediction
+but they they might not they may they
+should not right because this might
+cause something this will definitely not
+cause something
+so and we realized the issue was with
+the fact that it was not rotationally
+equivalent and at that time we solved it
+by doing capsules because
+but then we realized capsules has you
+know other implementation challenges
+especially with scaling and stuff
+so we went ahead with spatial
+transformers again special from what
+facial transformers would do is that it
+would ensure that i am capturing the
+rotation or any destroy any sort of yeah
+rotation scaling and you know
+translation so anything in the in in our
+theta matrix it would capture uh
+uh from input from input to output here
+of course we can't afford uh
+an end to end spatial transformer so we
+just put it on the latent space again
+does that make sense
+all right i hope that answers the shade
+is questioned and
+is it sufficient shady
+i assume it is
+all right uh is there any questions okay
+he said make sense yes okay great
+wonderful is there any questions from
+audience
+oh yeah i have a quick question yeah
+very nice talk uh yeah i'm actually
+working on totally different kind of
+domain like substrates problem but doing
+it very similar kind of framework we are
+using some data simulation as well and
+then
+when you do some construction of
+this data model and is there any way to
+incorporate certain kind of physical
+constraint rather than just data driven
+only so that you may be able to
+kind of
+preserve certain properties like some
+invariants i think your transformer
+kind of
+algorithm made good but i think when i
+look at some other kind of turbulence
+kind of community or fluid dynamics they
+really try to preserve certain
+properties either from tensor
+or some other physics right and and
+since i i'm quite curious about this
+kind of weather forecasting as well so
+you may have certain quantity you really
+want to preserve during data 31
+consumption
+yeah
+yeah so there's been a there's been
+actually a lot of work around that now
+uh so if you were doing a more canonical
+fluid dynamic assistance you could think
+about putting conservation laws right
+now you can do it in two ways you can do
+it in the loss function so you have a
+penalty term with the conservation law
+which is a soft constraint which means
+that it will not be exactly satisfied or
+we could come up with a clever way to
+change to write a custom layer that
+incorporates the conservation right if
+you are doing for example divergent free
+condition then you could you know
+predict on the curve of your output so
+that it would and then have a custom
+layer with with your divergence so that
+it becomes by default divergence free
+and things like that
+but obviously for weather and climate
+it's it's much more difficult to think
+about these things
+but
+uh i would
+but there have been work around it so
+for example for generalizing neural
+networks across climate change scenarios
+there has been some work done by tom
+weichler in terms of um
+um
+scaling like using the classes club
+relationship to scale the input so that
+it generalizes that's one thing
+and then again the same guy tom uh
+probably tom beckler has and definitely
+my creatures would they have a paper in
+prl where they talk about putting any
+kind of heart constraint into neural
+architectures and then they show an
+example with
+either a convection or some
+thermodynamic quantity in an actual
+atmospheric model but that paper is
+about putting hard constraints in
+architecture analytical heart
+concentration architecture and any
+general heart constraints uh it's a
+paper in prl that came out maybe a year
+ago that really talks about how it will
+but
+yeah it is definitely possible and there
+have been different different work
+around it but it's obviously much more
+difficult for weather and climate as
+compared to canonical like fluid
+dynamical systems
+it's much more
+tractable
+yep i mean if time allowed i have one
+more following
+yeah you touch based on very important
+aspect of this weather forecasting
+because your weather gets nearly
+influenced by your initial condition
+dramatically weather changes quite a bit
+and
+like for data driven forecasting how low
+blows that to your data-driven focused
+model really account for those change of
+initial condition otherwise you have to
+retrain your mother with different
+initial conditions every time right okay
+wonderful so
+yeah that's a great great question
+so
+you're obviously talking about a change
+in initial condition that is coming in
+due to a distributional shift in your
+system right for example climate change
+has happened so you're in so that that
+kind of changes initial condition that
+you're talking about right where you
+have to retrain your model entirely
+so
+yes
+um under a situation where there's
+distributional shift that means for this
+climate change system has changed
+reynolds number has changed something
+has changed these models will not
+generalize that's that's the like that's
+that's the final answer there's no way
+this generalizes so
+we have worked on this extensively one
+of the things we can do is transfer
+learning of course transfer learning is
+again a whole new different ball game
+which layers do you retain how much data
+that you do you need
+so we have a very nice explainability
+framework around it the way to go about
+generalizing these neural networks is to
+do transfer learning unless you come up
+with a very clever relationship so that
+if you like for example tom wycler's
+paper it looked at variables which you
+know were affected by temperature and
+you used it as a scleroderma scale in a
+very clever paper but it was and and and
+it really looked at generalization but
+if you don't have the
+uh you don't have the luxury if you
+don't have that kind of relationship for
+certain systems then the only way to go
+about it is doing transfer learning and
+then you have to understand which layers
+to retrain
+how how what are the physics that is
+getting transferred how we can really
+optimize which layers you can retrain so
+we have this framework where you can
+look at the change in your system and
+then determine which layers to retrain
+by looking at lost surfaces and things
+like that and this was heavily motivated
+by stuff that michael mahoney does
+i know he gave a talk a couple of maybe
+weeks back so yeah the way to go about
+is transfer learning and there may be
+ways to improve how to effectively do
+transfer learning maybe even in online
+mode if you don't have
+uh capabilities the way tom bradley did
+in that paper uh yeah
+yeah yeah thanks for yeah detailed yeah
+explanation i mean that's kind of what
+we are kind of thinking about but you
+know i think
+by uh based on my experience actually
+some kind of challenge we face through
+the actual data
+or kind of problem itself really give us
+some chance to think about more kind of
+a small way yep thanks yeah thanks for
+response
+thank you thank you so much for the good
+question and
+um the nice answer
+by ashish
+is there any other questions
+okay if not let's thank our speaker
+ashish and i um
+thank you so much for the great talk and
+um a wonderful q a sessions um
+um
+i just you're hiding yourself
+let me i'll
+stop sharing
+oh all right oh okay yeah that's fine
+yeah thank you so much for um
+for hosting me thanks a lot i hope to
+keep yeah
+that would be wonderful all right um
+thank you everyone uh we will i think we
+have another gdpr seminar next week so i
+will announce that uh as as soon as i
+get
+uh all the the information from the
+speakers all right until then
+have a nice weekend and week everyone
+and i will see you next week
+all right let me

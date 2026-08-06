@@ -1,0 +1,2099 @@
+Okay, everyone. Uh, welcome to the DDPS
+seminar. Uh, before we introduce our
+invited speaker, let's go over some
+rules and logistics. First of all,
+please mute yourself during the talk.
+But if you have an origin questions, you
+can unmute and ask questions or use chat
+room to post your questions so that we
+can address them in Q&A session at the
+end. Second, today's DDPS seminar is
+open to external audience. Therefore, no
+classified discussion is allowed. So,
+please watch out. Uh, finally, the talk
+today will be recorded and uploaded in
+our YouTube channel. That's about it.
+Now, let me briefly uh introduce our
+speaker today. It is an honor to host uh
+professor Sid Mishra who is a chair
+professor of applied mathematics at ETH
+Jurich where he has the computational
+and applied mathematics laboratory. He's
+also the director of computational
+science jurik and a core faculty member
+of the ETH AI center. Mishara's uh
+research is focused on the design and
+analysis of numerical and AI and
+algorithms for uh simulating um physical
+systems and their applications to
+astrophysics, geopysics, climate
+science, engineering and biology.
+Mishira is an elected fellow of the
+European Academy of Science and the
+recipient of the awards such as Kat
+Prize of ICAM
+uh Dal Dquist Prize of Siam Bone Mrs.
+prizes of GAM and Rosa prize of ETH. He
+has been an invited speaker at leading
+inter international conferences
+including the international congress of
+mathematics and the international
+congress of basic uh sciences. Today
+Michelle will talk about AI for
+datadriven simulation in physics which
+is a very exciting talk.
+Now uh before
+before I pass the button to you the
+tradition of the DDPS seminar uh here is
+I always ask the speaker some informal
+question if that is okay m
+>> yes of course of course
+>> okay okay cool um
+so what motivated you when you are young
+and um and make you jump into this
+awesome exciting
+computational science and recently this
+AI uh
+>> okay uh to begin with my undergraduate
+degree is in physics mostly physics a
+bit of math but mostly physics so I
+think of myself as a failed physicist
+right because I and then when I when I
+went into graduate school I realized
+that I was better in math than physics
+so I have sort of a dual background
+>> and then when I was actually trying to
+do math particularly and I was always
+interested in math that is relevant for
+physics. Uh PTE partial differential
+equations they became sort of my main
+topic. Uh have a lifelong love affair
+with them. And then I realized very
+quickly that you need numerical methods
+because there's only so much that you
+can do with your pen and paper. And uh
+that's the starting point into
+computational science. And as you will
+see, there's a very nice motivation, a
+very natural motivation of why a
+computational scientist who's been
+working all the time with sort of
+traditional numerical methods realizes
+that they hit a limit and then you have
+to use an alternative and this is where
+AIdriven methods are or datadriven
+methods are and you'll see I think I'll
+provide the motivation in that sense.
+>> Awesome. Well, thank you. That was very
+nice. A perfect answer and uh the stage
+is yours.
+>> Okay. Thank you so much Yu for this
+first of all for the invitation and
+second for this lovely introduction and
+also for the informal question. I know a
+lot of people are joining. So I will
+jump right in about the topic and uh
+let's see. Yeah. So let me start with
+some examples just to motivate what's
+going on right and the kind of problems
+that I personally am interested in.
+Good. So the first example as I said is
+from tsunami simulations. So just
+imagine that there's an earthquake off
+the coast of Greece Creed in this
+particular case and because of the
+earthquake the water gets displaced the
+ocean water and it sets off tsunami
+waves that are going to sort of track
+across the entire Mediterranean basin.
+And people are interested in discrete
+locations for instance um off the coast
+of Greece and off the coast of Italy and
+they want to measure what is the wave
+height at some buoys just outside the
+coast something which looks like this
+right so this will be the basis of a
+tsunami forecast so there are buoys all
+over the Mediterranean or the Pacific or
+the Atlantic and this kind of recording
+or this kind of prediction is necessary
+to issue a evacuation warning. This is
+one example which is more from the
+sciences and another example from
+engineering is an example that was uh is
+joint work with people at IBM. So there
+is a race car company Delara. They
+design race cars for instance for
+Ferrari and so on. And you want to
+optimize the design of race cars right?
+So to do so you need to predict
+aerodynamic forces. You need to change
+uh things like the location of the fin
+or the in the sail in the front or
+something like that. and you want to see
+how much is the are the aerodynamic
+forces optimized how much is the drag
+reduced for instance right so these are
+the kind of problems that we're
+interested in one from an example from
+science and an example from engineering
+and we all know how these problems are
+solved currently so what you do is first
+you write down a mathematical model and
+more often than not the vast majority of
+cases these are PTE partial differential
+equations and we know that they are like
+language of nature and they cover an
+immense sort of diversity of physical
+phenomena all the way from the smallest
+scales to the largest and I think at
+less
+at all possible scales. So this is this
+is standard you write down a
+mathematical model. We also know that we
+cannot find a solution formula for PES.
+That's why I moved into computational
+mathematics or numerical simulation to
+begin with and we have all kinds of
+numerical techniques finite elements
+finite difference find volume and so on
+which are very very effective and they
+have been around for quite a long time
+and also from our lab we do everything
+from I don't know simulating supernova
+core collapse to the dynamics of strata
+cumulus clouds to as I said um for
+instance 3D laser manufacturing there
+are many many examples where this
+successful and I think at less
+of these kind of examples every day
+right so this is so successful so what's
+the what about the use cases so for
+instance for tsunami simulations you
+solve the shallow water equations and
+you get this propagation of the tsunami
+waves across the midterranean similarly
+for the race car simulations one has to
+solve some version of navia stokes uh
+rans navia stokes equations and you get
+the aerodynamic forces uh pressure shear
+and so on on the body so this is a very
+very established let's say pipeline. So
+what's the issue? What's the catch? So I
+think all of us who are joining this
+seminar probably know this that the key
+key catch in some sense is computational
+cost right because this these
+simulations expensive just to give you
+an idea of the scale of the simulations.
+Uh this is an academic example from my
+lab but I think it's instructive. So
+this is just Navia talks direct
+numerical simulations. So you start with
+some initial conditions and then you
+want to propagate the solution which
+looks very complicated. As you can see a
+single simulation if I used our old CPU
+code would have been almost 5,000 CPU
+node hours but we have a very optimized
+GPU code. So this enables us to reduce
+it by a factor of 50 to approximately
+100 uh node hours on a supercomput.
+But uh this is uh not good enough and
+the reason is obvious because this uh
+turbulent fluid flow small changes in
+the initial conditions can lead to
+dramatic changes in the in the solution.
+So you need to do some sort of
+uncertainty quantification. You need to
+repeat the simulation many many many
+times or else if you're doing some
+forcing do it over very long time scales
+and this will blow up the cost because
+uh if you do a thousand of these
+simulations you are easily with 100,000
+load hours and as you can see this is a
+very very expensive almost unaffordable
+proposition. So it's very clear that
+whenever you have these many query
+problems where the PD solver needs to be
+called again and again again you need to
+solve PDS fast otherwise this pipeline
+breaks down. So that's the first first
+point. What is in these examples? This
+is a very good um illustration of this
+because state-of-the-art tsunami
+simulations they take maybe this is down
+to half an hour but it doesn't make a
+difference. It's between half an hour
+and an hour with uncertainty
+quantification. And the issue with that
+is that it just is you need real time
+right half an hour the tsunami has
+already reached many of these places in
+the basin. So this is just useless in
+some sense to make predictions. And for
+the flow past the race car, it's in 3D
+very complex simulation. So it takes
+about 500 node hours per shape. This is
+even a low resolution computation. And
+just imagine when you try to do
+optimization, this is just unaffordable.
+So you have to sort of solve PDS fast in
+some setting. But I think what's even
+more troublesome in some sense is the
+fact that to solve a PD we have to write
+it down first, right? And in many many
+cases we can do that. But in many many
+more cases particularly when we're
+dealing with real world phenomena we
+can't do that and I'm sure at Livermore
+you have that situation. Let's take a
+classic example the earth system itself
+right. So in the earth system we know
+that the flow of um the ocean and the
+atmosphere is navia stokes of some
+version and uh radiation is radiative
+transfer. But if you just imagine the
+other processes there is land there is
+um there is forest cover vegetation uh
+aerosols all these things there are no
+sort of um abinio first principles
+derivations that you can make so there
+are many many things that you sweep
+under the rug and you don't really know
+the physics um at a first principles
+level right so in robotics people call
+this as a simtoreal gap but we have
+exactly the same situation here that
+even if you make the best possible
+simulation
+your predictions are still off right so
+this is so either the PDEs are um slow
+to solve or hard to solve or it's
+difficult to write them down so what is
+it that we can sort of uh do to sort of
+salvage the situation a little bit right
+so one thing that we should remember is
+that in most real world applications we
+do have some data the idea behind
+datadriven modeling nowadays is to
+combine data and physics so that you can
+you can either solve PD P is fast or you
+can s sort of do it in situations where
+the PD itself is unknown or P system of
+PD are unknown. So this is the problem
+that I want to address. Now how do I
+address this problem? So it's a learning
+problem, right? So this is the basic
+idea. It's a learning problem and there
+are different quantities that you can
+target to learn. So I think there is a
+consensus in the community now that what
+you should really target are what are
+called solution operators of PDS mean
+these are very very well- definfined
+objects in some sense. So for instance
+if you have elliptic or steady state PD
+like darc flow so this is a permeability
+which is your input a function and your
+output is the solution of the PD another
+function. So the solution operator is
+mapping the input to the output uh and
+it sort of predicts systemic behavior
+right similarly for a time dependent PD
+like let's say the compressible oiler
+equations which I illustrated here this
+could be the mapping that takes the
+initial data to solution at a later time
+or trajectories of the solution. So in
+some sense uh uh PTE solution operators
+exemplify or they describe the entire
+behavior the entire gamut of behavior
+that the PD entails right and this is
+what we want to learn from data. So
+remember that it's very important that
+this is actually
+this is a solution operator. It's a
+mapping which takes a infinite
+dimensional function and returns an
+infinite dimensional function. And we
+need to because we're talking about data
+we need to specify some sort of
+description of the data that we are
+talking about right so all that you have
+to do is to take uh a probability
+measure on functions mean these are very
+well definfined quantities then we
+assume that we have access so we we take
+some random samples and we have access
+to the effect or the action of the
+solution operator on the samples and
+then this forms you forms the data of
+the problem. Needless to say, there
+could be some noise, some measurement
+noise here, but I'm going to stick to
+the noise free case. Extensions to the
+noise, noisy case are fairly
+straightforward. So now remember that we
+have mathematically formulated this
+problem as learning what is called a
+push forward of the solution operator of
+the PTE given the measure that is there
+on the data, the distribution that is
+there on the data. So it's a very well-
+definfined mathematically sound problem.
+However, the issue is that and how are
+we going to learn this? So, it's very
+clear that this the age of AI means we
+have very powerful illustrations that I
+don't have to repeat here. And the key
+to AI in some sense these days is deep
+neural networks of different types. It
+could be MLPS, it could be CNN's, it
+could be transformers, whatever. But the
+point is that these are maps uh deep
+neural networks are maps which take a
+finite dimensional input and they map
+you on to a finite dimensional input uh
+output. Now input and output dimensions
+can both be very large but they are not
+infinite whereas what did I tell you
+that our problem is essentially an
+infinite dimensional problem. So our
+inputs are functions outputs are
+functions. So there is a dichotomy
+there's a gap here right that you have
+to project down an infinite dimensional
+problem or lift up a finite dimensional
+construction which is what neural
+networks are and in some sense this is
+numerical analysis because numerical
+analysis sort of moves between or
+scientific computing for that matter
+between the infinite dimensions the
+level of the PTE and a numerical method
+which is a finite dimensional
+construction so there are many analoges
+here so there are different ways to do
+this to sort of bridge this divide One
+way which was I would say formalized at
+least by people at Caltech with Nick
+Nick Kovachki as the first author some
+years ago is why don't you take neural
+networks. So these are maps in final
+dimensions. So all that they do is that
+they're compositions and at each layer
+of the composition you take an input
+vector right you do a matrix vector
+multiply add another vector bias vector
+and apply pointwise nonlinearity. So
+that's a neural network and what Nick
+and his co-authors suggested is why
+don't we extend this to infinite
+dimensions more or less u what Latin
+would call mutatism mutandis which is
+just with an obvious extension and here
+of course now we don't have uh vectors
+anymore we have functions so this guy is
+replaced by a function and for matrix
+vector multiply there's a very natural
+canonical extension which is a kernel
+integral operator so you take your input
+throw it against the kernel integrate
+now this will be a function And now you
+apply the nonlinearity the so-called
+activation function pointwise. So
+essentially this is revisiting what are
+called kernel integral operators but you
+have to choose your um discretization
+carefully right because otherwise you
+cannot really sort of implement this on
+a computer. So this is still to be done
+at a finite dimensional level. So you
+have to sort of think about
+computational complexity in this
+setting. So one particular choice of the
+kernel for instance was done by the same
+group of authors and it's called FIA
+neural operators. It's it's around for a
+while and it's very very popular and
+powerful. So their idea was that you
+keep everything intact just change the
+or choose a kernel to be a convolution
+but you instantiate you uh sort of
+realize it in 4 years. So what you do is
+that you have the you this is your
+classical formula. So you take a
+function take its 4 year transform apply
+a learnable 4y year multiplier go back
+to physical space with inverse 4year
+transform and then apply the
+nonlinearity pointwise. So that is FNO
+FIA neural operator and this is a very
+very powerful architecture in some sense
+it's widely used uh there's also very
+solid theory particularly from me and my
+collaborators but the basic idea is that
+you have convolutions which are
+implemented in a non-local manner and uh
+activations which are local pointwise
+right but this is not the only choice
+this is a good choice we'll see later
+what are some of the implications a
+choice that we made uh from my lab some
+years ago is called convolutional neural
+operators where we kept the structure as
+it is but instead of having a non-local
+fier implementation of convolution we
+did a local uh sort of a pointwise
+implementation of convolution but the
+big change for us is that we changed
+this local activation into a non-local
+activation and the reason why we did
+this it comes from some mathematical
+depth but it mostly people who do
+spectral methods know this that if you
+apply nonlinearity pointwise to any any
+sort of function which is let's say band
+limited then you end up generating high
+frequencies. So imagine that you have 10
+frequencies sin 10x and take the square
+of it you get sin 20x. So this can lead
+to aliasing which is the generation of
+wrong high frequencies which can create
+problems. So to sort of fight against it
+to alleviate it we said no no we have a
+smart way in which we can sort of change
+this to a non-local activation. So there
+are these sort of differences, subtle
+differences and do this really matter.
+So here's an example. Uh this is an
+operator that is well defined. You take
+Navia Stokes in 2D very very well posed
+and then take some initial datam in the
+velocity space and then move it forward.
+Uh this is how it looks in vorticity and
+what all methods do well in this case
+and you can see the numbers there. But
+the key here is to remember recollect
+that this is an infinite dimensional
+problem. However, I have to discretise
+it right otherwise you can't implement
+it on a computer. So I fix a resolution
+at which I discretize. In this
+particular case it's 64 squared. So if I
+have just taken a CNN, a CNN would be
+this architecture but with just a local
+activation then what happens is that the
+error when you change the grid
+resolution at test time it increases in
+both directions. You course in the error
+goes up you refine the error goes up.
+This is because it never learned the
+operator. It only learned a particular
+one finite dimensional representation of
+it. With FNO the situation is much
+better but still there are these
+aliasing errors that I told you about.
+You can even see it visually and as you
+refine as coren in particular you see
+that the error goes up with CNO it has
+been designed to fight against this. It
+has been constructed to be structure
+preserving then what happens is that you
+get a flat line. So it seamlessly
+generalizes across different grids. So
+this is an additional design feature
+that you can endow an architecture and
+machine learning model because you're
+dealing with these kind of operators
+infinite dimensional objects. So this is
+this an important point that I wanted to
+make. But uh this is not the only choice
+of kernels. You can choose other kinds
+of kernels. Right? So one particular
+choice of kernels is linear kernels.
+FNO, CNO. These were based on linear
+kernels. But you can make it as general
+as possible. That will imply nonlinear
+kernels here. Right? And one particular
+nonlinear kernel has attracted a lot of
+attention in last five years because it
+is attention. This is from transformers.
+So this is a structure of the nonlinear
+kernel. It uses a soft max as the kernel
+here. And as it's it has very nice
+theoretical properties. It has
+universality and so on. But what is
+annoying here is the scaling the
+computational cost because as you can
+see it's quadratic. To update the value
+at this point, what you have is um all
+kinds of you you collect information
+which is broadcasted from all these
+points but you weigh them with
+information that is clean from all the
+other points. So you have two all to all
+maps all to one maps and that becomes an
+all to-all map which is quadratic in the
+number of tokens. So this is very
+unaffordable essentially but from
+computer vision there are techniques
+which allow us to scale this u in 2D and
+3D for instance. So first technique is
+what is called patching which is just
+finite volume methods. So you don't uh
+work with pointwise data. You work with
+some learned averages inside what are
+called patches or cells. In my in my
+interpretation and this works quite well
+but uh if you have very small cells or
+small patch sizes there's another trick
+called windowed attention which comes
+again from the computer vision community
+where attention is now localized. So you
+just have localized inside this big
+windows. It's like domain decomposition
+for those who do numerical methods. It's
+like domain decomposition. You divide
+the domain into subdomains. You apply
+attention at each step inside each
+subdomain. But the whole point about
+attention was this global information
+transfer. And this is affected through
+the fact that when you you have a
+multi-layer structure. So when you
+change the layer, when you go to the
+next layer, you just move the windows or
+shift the windows. And then what happens
+is that then there is global transfer
+information. points which are not
+talking to each other, they start
+talking to each other and you have a
+global information transfer. So this uh
+what we did is uh in a paper last year I
+even saw that Max my student he even
+joined this meeting so he's probably
+listening in and uh so this is uh
+essentially from his work. So what you
+do is that you just take this
+architecture this twin transformers and
+you stack them in a nice manner and then
+you end up getting a operator
+transformer that is scalable. It is a
+universal approximator of continuous
+operators. It has all nice theoretical
+properties. So you can you can use
+convolutions, you can use the tension.
+There are different choices that you can
+make it at this level it doesn't make a
+difference. Later on in 10 15 minutes
+you will see that there is going to be a
+difference but um yeah let's say for the
+personal equation the transformer was
+slightly better for the wave equation
+convolution was slightly better they're
+generally comparable to each other. So
+the point is that as long as you have a
+two-dimensional cartitionian domain uh
+then across a wide variety of benchmarks
+not just from our lab but from many many
+other groups you have seen a lot of
+success of FNO CNO different kinds of
+transformers and so on. So I would say
+that in 2D on academic test cases this
+is a solved problem in some sense you
+know how to approximate operators
+but this was precisely my caveat right
+because uh most domains in practice in
+engineering in the sciences these are
+not cartisian domains so this is what we
+have somehow solved as a community but
+these are the sort of more towards the
+real domains right the race car as an
+example so then your models should have
+the flexibility to work with arbitrary
+data and this or arbitrary point clouds
+and this is um this is a choice that one
+has to make. So you can use graphs, you
+can use graph neural networks. I know
+many people in the national labs in the
+US are very fond of graph neural
+networks. So graph neural networks are
+uh because you can take these point
+clouds and you can interpret them. You
+can build graphs out of them and then
+what happens is that you just uh
+transfer information on this graph. So
+in particular to update at this point
+you collect information from the
+neighbors through some MLPS for instance
+and then you sort of uh aggregate the
+information for instance with sum and
+then you process it through another MLP.
+So that's a message passing neural
+network very standard graph neural
+network. Uh from our lab we have our own
+uh sort of structure construction of
+this. It's hierarchical. It's a let's
+say a graph neural network on steroids
+with some nice design features. And the
+advantage with graphs is that you have a
+lot of generality, right? You can you
+can discretize or solve PDS on a circle
+or flow past an air foil or some elastic
+deformations. So there's a lot of
+generality and it's also very accurate
+means there are tons of numbers here.
+But that's uh you can just believe me
+that the graphs are very very accurate.
+But the problem is that they're not
+necessarily efficient since in some of
+these cases it took us two days to train
+some of these models even in 2D because
+it's very expensive and the reason is
+that there's a lot of sparse memory
+access in graphs and that sort of blows
+up your compute. So we have to if you
+want to scale it further towards 3D 2D I
+think graphs are very good perhaps for
+some 3D problems graphs are very good
+but to really scale it to industrial
+scale problems in 3D I'm not convinced
+that graphs are the solution so what can
+solve it so one option would be to
+combine the nice features of
+convolutions or transformers with that
+of graphs right so graphs is generality
+transformers is efficiency and
+scalability so there are different ways
+to do this One attempt from us recently
+is what is called geometry aware
+operator transformers. So what you do is
+that so you have a grid here that is um
+essentially instantiated as a graph and
+you want to go from a graph to a to a
+cartisian grid let's say as an example
+but it could be some other grid a latent
+grid. You do this using graph neural
+networks. There's a lot of technology
+let's say a lot of huristics that go
+into this but this is essentially the
+construction that you go from a um very
+complex point cloud to something better
+behaved like a structured grid as an
+example. Once you are on a structured
+grid or let's say coarse unstructured
+grid you can use transformers readily
+and then you go back. So this is sort of
+the construction transform to a latent
+grid work in the latent space and come
+back right so this is this is basically
+the idea and this is a very very
+efficient it's is as accurate as graphs
+in the paper there are many examples but
+is much more efficient. uh I I'll give
+you some examples in a sec. And because
+of this efficiency, we can really go to
+industrial scale problems. So let me
+give you some examples. So this is uh
+data set that is available from people
+at MIT. It's called driveet++
+8,000 car shapes. What these people did
+is that they took different shapes of
+passenger cars, computed the flow around
+the car, and they're interested in sort
+of surface quantities, surface pressure,
+sheer stress, and so on. And uh each
+surface is approximately 2 million
+nodes. This is RANs. So that's that's
+sort of the mesh resolution that they
+looked at. And for instance, our model
+here did very very well. It was
+significantly more accurate than some of
+the leaderboard models. And be that as
+it may, the key point is now this a
+three-dimensional industrial scale data
+set, industrial scale problem. to do the
+computations to generate the data the
+people at MIT took them 300 node hours
+per sample per shape which is insane
+right but that's the number that you're
+talking about but uh for the model
+itself to do inference it took 1/3 a
+second or one 0.4 4 seconds extremely
+fast right so this is the promise of AI
+methods if they're accurate and if they
+scale well then you can get six seven
+eight orders of magnitude speed up so
+this is an example of that you can up
+the ante you can go to ales scale
+computations so this is driver ML from
+Neil Ashton who is currently at Nvidia
+so what Neil did is that he took ales
+simulations roughly of the same car
+shapes only 500 because it's much more
+expensive but uh And on the surface
+there are 10 million surface nodes. And
+go does a fairly good job at handling
+this. And to the best of our knowledge
+at the moment it's the only model that
+can handle the full surface mesh at one
+go because of its in inbuilt efficiency.
+You can do aircraft simulations. This is
+an example. This is from the NASA CRM
+benchmark. Uh and again it's a full
+aircraft and rans of course not less.
+and you can still uh the point that I'm
+trying to make is at the moment I would
+say that this is a bit of a breakthrough
+not just from our model but from the
+community we're able to scale these
+models to sort of industrial scale
+benchmarks in 3D that's that's that's
+very pleasing it's not just on some 2D
+academic test cases uh but you can you
+can make it harder you can make your
+task harder and I would argue among the
+hardest tasks are PTE whose solutions
+are chaotic and a multiscale And what
+better than turbulent fluid flows right
+and this is an example uh DNS in this
+setting you have threedimensional nav
+talks um forget about complex geometries
+let's focus on simple geometries in this
+case and what you see here are
+simulations with respect to viscosity
+method
+I think I alluded to it before and what
+you can see here is the pointwise
+amplitude of the kinetic energy so there
+are this is you can already see a lot of
+small scale structure there's a
+turbulent flow But what is very
+interesting here is that uh I don't know
+if you focus for instance on this uh
+little bit here the quadrant near the
+origin you see significant differences
+between different samples and these have
+been generated by tiny tiny little
+perturbations to the tailor green
+initial data. So there are two features
+here. It's multiscale, lots of different
+scales as chaotic. Small changes imply
+large divergence in trajectories.
+Now we want to learn the solution
+operator of these equations. Right? Let
+me take whatever machine learning
+architecture that you want. It doesn't
+matter. We took a combination of local
+and global convolutions. Uh something
+called convolutional 4 operator. And
+then you see this behavior that first of
+all all the fine scale details are
+washed out what you end up are just the
+let's say the average details but and
+what is second is that there's no
+variance here
+there's significant amount of
+variability in the here at the ground
+truth none of it here so we you could
+argue this is a poor model and if you
+change the model you'll get better
+results but in a recent paper which was
+pub not published but on archive with
+some colleagues at uh Google research.
+What we first discovered or found out is
+a mechanism by which this happens. And
+this is a very very interesting
+mechanism in the sense that um
+that uh neural networks you know they
+they are in some sense universal
+approximators. So one thinks of neural
+networks as being able to approximate
+anything. But to make them match
+parameters with your observed data or
+with your data, you need to train them.
+And training is done with gradient
+descent. That's more or less the
+universal way of training. So to train
+with gradient descent, you need to have
+well- behaved gradients. If your
+gradients are very small or very large,
+then your neural network doesn't train.
+So lots of tricks have been used to make
+uh gradients well behaved, which means
+that gradients can't be too large,
+right? And this is why some people say
+that neural networks operate at the edge
+of chaos. They they cannot represent
+chaos. They're at the edge of chaos.
+Essentially, they're insensitive to
+small perturbations. If you have tiny
+pertibbations, then you don't really see
+them. Once you make this assumption,
+this hypothesis, and you go back to my
+problem, I'm trying to learn a map which
+is very sensitive to small
+perturbations, right? It's a chaotic
+map. So, this is my ground truth. I take
+small perturbations and I average
+against the small perturbations because
+I'm interested in average quantities
+apply my neural network give it the same
+input then what happens is that this is
+insensitive doesn't see the perturbation
+the neural network the ground truth sees
+the perturbation so now you have this
+form here and then you can sort of
+expand this into two terms uh this is
+sometimes called the bias variance uh
+decomposition but uh this is this is
+just technicality so you decompose it
+into two terms terms. There's one term
+which is just the variance of your
+underlying operator. It has nothing to
+do with neural networks and this is a
+large quantity for chaotic flows. So you
+can't you can't make it zero. It will be
+large. On the other hand, this is a
+quantity that you can optimize for and
+the best you can do is to set this equal
+to this which means that your neural
+network just collapses to the mean. And
+so this is what what really happens
+here, right? that you have you have no
+variance and you have a collapse to the
+mean and these hypothesis tell us that
+you cannot approximate this kind of
+chaotic maps very very sensitive maps
+with neuronet networks but what can you
+do so this is where some of my previous
+work uh has come in handy because we
+understand that for a fluid dynamic
+equations uh essentially in a sto you
+cannot really this deterministic
+solution operator is very very poorly
+behaved so you cannot approximate it in
+any meaningful sense even with
+traditional numerical methods. What you
+can do is that thankfully for us that
+chaos there's some statistical order to
+deterministic chaos the distributions.
+So if you take a distribution of the
+initial data distribution and function
+space and you look at the resulting
+distribution as a function of time of
+the solution this map is well behaved
+and this map is much more stable. It's
+difficult to prove it rigorously but
+everyone doing fluid dynamics knows that
+this map is well behaved. So in that
+sense uh statistical computation going
+directly from here to here is feasible
+going through each of these bits is
+infeasible. So the idea is to learn the
+conditional distribution right given the
+initial datam learn the distribution of
+the solutions that that you're going to
+get and conditional sampling is very
+popular in machine learning these days
+means all text to image generators use
+it and almost all of them are using some
+form of diffusion models. Now, diffusion
+models are a way to go between
+distributions, right? You go from a
+target distribution to a noisy
+distribution by adding noise and then
+when you're inferring, you sort of take
+out the noise by denoising. And this is
+what is denoising diffusion what it
+does, right? And we sort of took this
+ideas and we sort of translated them
+into a setting.
+This leads to an algorithm which is
+called genf. And the idea is it's a
+conditional diffusion algorithm. So you
+noise the this is the initial condition
+for instance this is a solution at a
+later time in a forward step you add
+noise so that you go to essentially a
+gausian right a gausian measure with
+noise and in the reverse step you sort
+of given some noisy distribution known
+noisy distribution and given the initial
+conditions you can sort of take out
+remove the noise and you get back the
+solution. Okay, this is uh saying it
+simply and all this is done with uh
+stoastic differential equations uh in
+this case some reverse SD and to train
+this uh all that you do is that given
+your input your sort of condition
+initial condition for instance given
+some noisy sample given the level of
+noise all that you all that your neural
+network is going to do is to d noiseise
+is to come back to the ground truth
+right so this is sort of the basis of
+diffusion models now it's the same
+neural network. This is precisely the
+neural network that was not able to sort
+of take this extreme sensitivity into
+account. Right? So it has the same
+features as before but the way in which
+we employ it or deploy it rather is uh
+different. Right? So now all that we're
+doing is that we we are just removing
+some noise which is uh which is a let's
+say well behaved process in some sense
+but then we're adding this noise during
+the SD. So these two things somehow
+cancel out. They compensate and in the
+paper we show that this can you can even
+prove for some simple cases that you'll
+get the conditional distribution. So
+does it work in practice? It works in
+theory and it does work in practice. So
+this is the same example as before and
+this was what the machine learning model
+gave and this is what my diffusion model
+gives. Right? It's sort of it's almost
+impossible to distinguish and similarly
+for the vorticity. So the samples look
+very realistic but that's not enough.
+You you want the statistical quantities
+to be good. So everything from the mean
+to the variance particularly the
+variance. Remember that traditional
+neural network it simply did not have
+any variance. It could not generate
+variance with such small perturbations.
+This one gets absolutely the right
+variance and distribution spectra all
+these quantities are done correctly. So
+this is one way I think perhaps the only
+way in some sense to handle this kind of
+very complex uh PTE where distribution
+learning is the only way to go and uh
+you can scale it to real world right
+once you do it for some academic cases.
+We know how to scale it to the real
+world and these are some examples. Uh
+this is for instance a turbulent
+boundary layer the shock wave hitting a
+turbulent bubble. This is essentially
+smoke coming out of a chimney. all the
+cases, realistic samples, statistical
+fidelity and at inference these are very
+fast right these are 1 to two seconds
+maybe the biggest model was 4 seconds
+but uh we generated the data it was 15
+hours so you still have four five six
+orders of magnitude speed up so again
+you can even handle very very complex uh
+PTE with complex multiscale phenomena so
+now needless to say after having done
+all this hard work in principle uh when
+you apply it to some of these other
+problems that I started out with tsunami
+simulation this takes uh this is some
+work some years ago and this is very
+very fast you know it it really takes uh
+1,000th of a second 1 millisecond even
+the race car simulation okay this is a
+one one number off this is uh 10 the
+minus one so I I made a mistake when I
+was making it but still compared to 500
+node hours this is uh this is a massive
+massive difference so in these examples
+you can see that there is uh there's a
+big payoff
+Right. So, but still I have five six
+minutes left in my talk. There is there
+is a caveat and there's a very very
+important caveat and this caveat comes
+from the fact that what's the amount of
+data what's the cost in some sense of
+learning these models not at the time of
+inference but how much data do I need to
+feed them right the good news is all
+these models so CNO FNO the graph based
+method rigno the graph and
+transformer-based method gen CFD all of
+them scale what it means is that if you
+put more data then the error Whatever
+error that you have the right error
+metric this decays as a function of uh
+the number of samples uh this you can
+this can even be justified with some
+theory there are a couple of papers that
+we wrote and other people have written
+and that's a good news right more data
+means better results but the problem is
+that the constants are poor and this
+alpha it's at best 0.5 at best you know
+it's always less than 0.5 and then even
+to get 1% error you need 10,000 samples
+you you know that's roughly the roughly
+the scale. So all the examples that I
+presented were mostly of the order of
+thousand to 10,000 samples. Now you'll
+ask what are the applications where you
+have that weather and climate yes you
+have a lot of data and that's why it
+works machine learning works very well
+in that domain but for most engineering
+you don't have this high amounts of data
+right so how do you do can you scale
+your models better is there a way route
+by which this hard problem can be solved
+now you can look at for inspiration
+modern AI systems Gemini different kinds
+of chat GPT these are able to you know
+of course they have been uh means they
+they they can do things with a single
+prompt, right? Almost almost no data. So
+how how do they do that right? So you
+can think of it in some sense by looking
+at what are called foundation models
+which are the base behind uh chat GPT
+and so on. And the point about
+foundation models is that there is no
+consensus on what they are. But a rough
+idea would be that uh this is trained on
+multiple distributions you know text
+images different kinds of text different
+kinds of images and this goes into a big
+machine learning model billions or
+trillions of parameters these days
+learns representations
+and then you look at one particular
+domain for instance I don't know object
+recognition and then you take this model
+and you sort of hyperloize it adapt it
+to that particular situation and it
+turns out that for physics there is a
+very natural road map by which This
+picture can be extended and let me just
+uh give you that uh that as a data point
+here. So remember that uh underlying
+physical systems there are PTEs. This
+could also be system of PDS just imagine
+heat equation, wave equation, LLAS
+equation, Navia Stokes or whatever
+multifysics that you have. For each PTE
+you can change the coefficients,
+boundary conditions, domain initial
+conditions. This gives rise to
+operators. So infinitely many PDs
+infinitely many operators on the on the
+y-axis here. And what a foundation model
+would do is that it will take some of
+these PDs finitely many of course and
+some of these operators train the model
+on them and then at the time of
+deployment what are called downstream
+tasks with fine-tuning it could take the
+same PTE but a different operator or it
+could take a completely different PTE
+and try to see how much of
+representations are useful. So that's
+the basic idea behind a foundation mode.
+It turns out that for PDEs a priority if
+you if you have learned gone to a PTE
+class particularly from mathematicians
+you'll see that uh you start with
+elliptic PDEs lelasses equation then you
+go to heat equation then you go to wave
+equation for each PD there are different
+techniques there are different numerical
+methods there doesn't seem to be these
+are like isolated silos or islands in an
+ocean right and there doesn't seem to be
+any connection but this entire picture
+this needs to rely on some connections
+so a priority it shouldn't work in some
+sense but we will not find it out unless
+until we try it out. So this was our
+attempt uh and the paper is again max
+first author this has been there since
+last year and uh you can you can
+download the code you can download the
+models and the idea is precisely to do
+that to train on some fixed set of PTE
+and then deploy it for let's say PDEs
+that have not been seen before and this
+is still a proof of concept I would say
+and um yeah so the model itself is just
+a transformer that I've just described
+for scalable operator transformer but
+the foundation model is not about the
+machine learning model it's more about
+the data and what kind of data did we do
+remember that we can only choose
+finitely many PDs so just for
+convenience um perhaps not for
+convenience but based on some huristics
+we chose just two PDS the incompressible
+Navia Stokes equations with high uh
+reol's number and there are two
+operators from that periodic boundary
+conditions and the compressible oiler
+equations these are the two PDS that I
+know the best. So these were the PDEs
+that were there in pre-training and uh
+then we have a model and we have
+different uh versions of the model. So
+roughly speaking we have uh data set
+with 5 million image pairs and we
+trained a model. Our largest model was
+630 million parameters. So this was this
+was the scale at which you operated. In
+principle you can take larger models but
+this is the scale at which you operated.
+So that's the pre-training and we're not
+interested in this right? This is where
+you do what the pre-trainer does. But
+what we're interested is in downstream
+tasks where you can deploy this
+pre-training model. And there are 15 of
+them. Some of them are with the Navia
+Stokes and the oiler equations. But many
+of them are not. Many of them add new
+phenomena for instance transport or
+gravity and some of them are completely
+different like the wave equation or
+reaction diffusion equations or posh
+mold's equation elliptic equations which
+are not at all seen during the during
+the pre-training process. So this is uh
+the setup still academic still 2D
+cartian grade but I think it sort of
+addresses some of the key issues whether
+this entire thing is feasible or not and
+how do we do this remember that I have a
+model which has been trained and roughly
+speaking this model takes some inputs uh
+embeds them into a latent space and then
+recovers them back right so what we
+often do is that this latent space is
+what we transfer so instead of um
+starting from scratch We transfer the
+latent space from the foundation model
+and we keep the embeddings and the
+recovery for perhaps from scratch. So
+this is roughly roughly the picture
+here. There are a little bit more
+details and does it work? How am I going
+to quantify this? There are 15 different
+PDs or operators that I've tested on and
+I'm not going to show you pictures of
+all 15. So we need some metrics and
+there are two natural metrics that come
+in. So remember that all that I cared
+about is how many how few samples I can
+get by right earlier I needed thousand
+samples how few samples that I can get
+by and this is what I call as a sample
+efficiency gain and I measure it with
+respect to fn so let's say fno takes a
+th00and samples to get I don't know
+whatever 20% error in this particular
+case how many uh or 2% I don't remember
+but how many samples do I need for my
+foundation model and in this particular
+case it's about 50 samples Right. So
+this is roughly roughly the idea that I
+gain a factor of uh 20 in this
+particular case. The other metric could
+be that you have fixed number of samples
+let's say 100 fn or whatever model that
+you have makes a certain amount of error
+by starting with the foundation model.
+How much can I reduce this and this will
+be the second gain which is the gain in
+accuracy and we have quantified it for
+all the 15 but this is again uh you can
+you can look at the table in the paper
+but let me just summarize it right. So
+the summary is at least at this scale
+the foundation model works very very
+well. Why is that? Because our largest
+foundation model it is 50 times on an
+average more sample efficient than an
+FNO for the same task. What does it mean
+that if FNO needed thousand samples this
+will require roughly 20 samples right
+and this is you can generate 20 samples
+not a thousand. And the second thing is
+that in terms of accuracy also it's a
+factor of 10. So if you have 20% error
+on an average now you get 2% error at
+let's say with 100 samples roughly
+speaking. So this works. The other
+things that work is that there is very
+nice scaling in the sense that as I
+increase my model size the these metrics
+get better. So that's a good thing. The
+third thing that happens is that at
+least when we wrote it it was the
+state-of-the-art foundation model. uh
+and I think it still is because the
+other models are not as good. There
+there are other models around. There is
+one from Flat Iron in New York. There's
+one from people in Shinua University.
+There are other models that are coming
+up. But uh and they they also do a good
+job. So it's sort of this field is sort
+of rapidly emerging. And the final point
+which is perhaps worth making is that I
+said that there is not a huge difference
+between convolutions and attentionbased
+uh new operators. That is very much true
+when you look at them as uh on a
+particular task. But as foundation
+models, one is seems to be better.
+Transformers seem to be better at
+assimilating information from different
+uh sources.
+So I'm almost coming to an end. I'll
+take a couple of minutes and I'll wrap
+up. So just let me give you an example
+just to illustrate what's going on. So
+remember that my foundation model has
+been trained on the two equations of
+fluid dynamics, compressible and
+incompressible. I'm going to test it on
+the poson equation very simple equation
+not so simple for machine learning it
+turns out but it has never seen the
+poson equation remotely so so the
+phenomena are different the input output
+map is different because earlier it was
+initial data to solution at a later time
+now this is from a forcing term to the
+solution boundary conditions are
+different um steady state time dependent
+so there are many many differences right
+this would be a good example where the
+models might not work and uh what would
+you expect if you show this to a model
+that has been trained on fluid flows,
+it'll probably move these gausians
+around as if it was a fluid flow. But it
+turns out that even with one sample,
+this is not the case. Uh one one image
+pair, right? And it sees that and what
+the foundation model does is that it
+more or less diffuses it a little bit.
+By 16 samples, it has learned some some
+sense of diffusion, right? And this is
+and by 128 samples it gets an almost
+perfect solution. And this is true when
+I transfer the entire latent space. But
+if I freeze the latent space, this is
+also true in some sense that uh the
+information is there in the latent
+space. It is slower but still by 16
+samples it has learned some sort of
+diffusion and it's not sort of
+propagating it as a fluid flow. So this
+tells us and this is very encouraging in
+some sense that some rich physical
+representations have been learned and
+this is what is being leveraged right
+and this this augers very well for the
+future. Okay, let me what all that this
+showed is there is some feasibility that
+these islands that are hitherto
+disconnected in some sense are connected
+right otherwise there wouldn't be uh
+this foundation model wouldn't be
+working let me just directly go what
+we're doing now we're sort of scaling it
+up uh still work very much in progress
+we are making it uh 3D with point clouds
+and so on diffusion models and so on
+some very positive preliminary results
+but uh maybe perhaps the next time it
+will be really sort of at a large scale.
+So let me just summarize my findings. So
+all that I wanted to convey is that uh
+if you have PDEs uh machine learning
+models are getting to be very effective
+neural PT sort of particularly in 2D on
+cartigian grids I I sort of maintain
+that this is a solved problem uh that
+things are very mature now on arbitrary
+domains in 3D it's still sort of
+evolving but we are getting there means
+as I said graphs and transformers seems
+to be a very powerful combination even
+for the most difficult PDS multiscale
+chaotic PDS diffusion models seem to do
+the trick. But the challenge is sample
+efficiency. You have to uh more more
+data you throw in the better results you
+get. So the question is for limited
+samples how are you going to make these
+models work. I think the only route at
+the moment that is promising in my view
+are foundation models and so far these
+are still small scale. So they need to
+be scaled up and there's plenty of
+interesting stuff that is going to
+happen in the next 3 four years. So
+thank you very much for your attention
+and I finished one minute.
+That's okay.
+>> Thank you so much for the nice talk.
+Very nice. Very nice.
+>> I think there many many people who asked
+questions on the chat but uh
+>> yeah there are two people who asked the
+question.
+>> How do I
+>> let's do that. Uh Sumant uh if you're
+there can you actually unmute yourself
+and ask your question
+that way. Um
+>> I don't see the question at all.
+>> Well I see the question but uh I think
+it it's better you know the person who
+has a question actually asked the
+question directly.
+>> Sumant are you there?
+>> Yeah. Yeah I'm here. Can you hear me?
+>> Yeah.
+>> Yes.
+>> Uh thank you professor Misha that was an
+amazing uh talk and I mean most of us
+have been familiar with your work for a
+long time now and we knew all the
+amazing work you know all the amazing
+work you do so thank you so much for the
+opportunity so my question is much
+regarding to like the initial parts of a
+presentation that is when you're
+introducing like Nicolola Kovach's
+kernelbased methods are most of them
+based on the uh approx I mean are most
+of them based on the approximation on
+the linear subspace as per like Chen and
+Chen's original operator learning
+theorem
+No, they are actually based on
+nonlinear.
+Well, actually I don't see a huge
+difference. Uh in Nick's paper, I helped
+them with that particular bit where they
+showed that which is version from Chen
+and Chen. This can be rewritten in this
+uh in in the same spirit you know. So in
+some sense the form that I wrote down is
+very very general
+but it's not linear. Where is it now? So
+let me let me just quickly get to it so
+that I can explain it. This is the
+general form right. So deep I think it
+is there in their paper they also
+acknowledge that I helped them set set
+this particular argument up is that you
+can you can realize deepon nets uh also
+in this in this setting but that doesn't
+mean that everything in the setting
+reduces to that no so that's why we
+proved this theorem about fno that was
+the first first attempt that you you
+don't that theorem of deep net that
+genench style theorem doesn't work here
+because it's not a linear method and
+what destroys this are the fact that
+this guy is done pointwise, you know, it
+does not combine across a basis, but it
+applies the nonlinearity to the entire
+subspace. So, you cannot view it as a
+linear subspace method. But of course, a
+linear subspace method can be viewed in
+this sort of general nonlinear setting.
+So there is there there is an argument
+to be made that uh in fact the most
+general version of this is done by a
+student of mine former student of mine
+Samuel Lanthala who has mentioned many
+many times and what Samuel has shown uh
+with others Jong Lee and Andrew Stewart
+is that as long as you have some
+nonlinearity which could be pointwise
+and as long as you have some spatial
+averaging you can learn any operator. So
+you don't need any linear projection
+nothing just non-local averaging and
+linear or local nonlinearity are good
+enough
+but this is a very sort of I think this
+is more or less the edge. So as long as
+you have even just an average and then
+you apply nonlinearity that's that's
+good enough.
+>> Okay. Uh I have one follow-up question
+to that and I think it's a little more
+anecdotal but uh I mean on our
+experience all the physics informed
+version of all this all this operator
+learning based methods
+>> uh if we are directly using the weak
+form of the PDEs and not working on the
+strong forms how does it differ in terms
+of like like the metrics for example
+speed and stuff like that
+>> uh it differs on a lot of things. First
+of all, it's very difficult to get the
+physics informed version of these things
+working because uh there is an
+understanding now that if you do physics
+informed learning the way let's say it
+has been around in the pins community
+including me for that matter there's an
+essential conditioning problem that uh
+this oper and we also showed this
+mathematically that the training process
+will be illitioned because it depends on
+the hermission square of the operator.
+So if you have a lelassian then the
+training is behaving more or less like
+the blasslassian and the blasslassian is
+very ill conditioned operator but if you
+work with a weak form then it will
+behave like the llassian because some
+derivatives are thrown to the test
+function right so it should be better
+but then why do you need this means uh
+we one of the advantages of physics
+informed neural networks for instance is
+that you don't need a grid you don't
+need basis functions and so on right
+>> so but so it is uh I think there is
+people can disagree with me of course
+but at least I haven't been able to make
+the physics informed versions of this
+neural operators work because slowly
+people are understanding how to
+condition physics informed neural
+networks where the inputs are just space
+and time right yeah
+>> but now your input is a field your
+output is a field this is very very hard
+to this is very very hard to condition
+means the perhaps the best person is my
+postoc Mario Zinhoer and I have asked
+this for a year and he's not been able
+to do it till now. So I think this is a
+very very hard question.
+>> Okay. Well, let's move on to next
+question. Um thank you um Suman for
+asking the questions. James um would you
+like to unmute yourself?
+>> Uh yeah, by the way, hi Sid. Uh good to
+see you again. If you remember, we did a
+a paper when I was at Twitter in 2022.
+>> Yes, of course I know what I know him
+very well.
+So, so this was the PDS for neural
+network architectures, right? Instead of
+the other way around.
+>> Yes, of course.
+>> Um, so just my question quickly when
+when you were showing the the pictures
+of um I guess the pressure pressure
+fields on the surface of the car of the
+car and the airplane, it struck me that
+in these methods you're throwing away
+the volume simulation and it's
+essentially a direct map from the
+geometry to uh pressure fields.
+um which seems like the internal
+workings of the neural network's doing a
+lot maybe it's doing a finite volume sim
+inside the internal don't know what
+you're thinking
+>> so this is a very very good question
+James you always ask good questions as I
+remember you but indeed in this
+particular case we have done that but
+there is no reason not to take the
+volume into account in fact uh in the
+next version I'm sure that we will we'll
+take the volumetric fields into account
+uh Johannes Brownstead letter and his
+group they have taken the volumetric
+fields into account and they get better
+results. But uh just thinking in terms
+of maps right just thinking in terms of
+maps you know that the so you have a
+operator which goes from the shape to
+the flow this is hopefully a well-
+definfined operator and then you have
+the trace right but if the if the if the
+manifold if the solution itself is well
+behaved then the trace is a very nice
+linear operator so composing the two um
+is still a viable option means I think
+you still have uh enough enough sort of
+expressivity in that in that process So
+I I do agree that uh the ideal thing
+would be to learn a finite volume
+simulator but I'm pretty sure that the
+machine learning algorithm is not doing
+that because there's no reason why it
+should compose the two when it can learn
+the map directly. But I agree with you
+that it should be that the map should be
+learned to the volume but uh you know
+yeah most people are learning the
+surface so just to be comparative we we
+did that but we we can do the volume not
+a problem and it should be like that.
+Thanks. Hope to see you in the future
+>> hopefully.
+>> Okay. Well, thank you. Thank you for the
+question, James. And next phase out, do
+you want to be possible to ask one more
+question?
+>> Go ahead. Is it related?
+>> Uh, it's well, it's a different
+question, I guess. Uh, I'm sorry. Put it
+in the chat actually if you wanted to
+say. I I had just hadn't finished typing
+it, but
+>> Okay. Well, the phase I'll um, you know,
+put his question first. So can we
+>> Oh sure sure first
+>> I will answer both.
+>> Yeah sure sure sure.
+>> Um yeah my question is so yeah I mean
+this uh foundation model is very very
+inspiring. So uh so did you find
+learning this uh foundation model of
+operator learning and the uh school
+model in the division model are they
+kind of complimentary? Do you share the
+same model ways? Do you find you know
+trends to be
+>> complimentary to each other or
+>> there is there is no reason why they
+can't be the same. Uh they were not the
+same because these were parallel
+projects at that time. At the moment we
+have some efforts where they are the
+same and they they seem to work well in
+the limited test that you have. But uh I
+think that's that's not important
+because both in the foundation model as
+well as in the in the diffusion model
+the detail the model has to be
+reasonable. And I think uh it has to
+have a transformer. If you don't have a
+transformer, I think it will be very
+hard to accumulate the kind of
+information. But uh they could be the
+same model. In fact, at the moment, we
+have a very similar in fact even the
+same model in both cases uh which is
+doing very very very well. and uh but uh
+as it is published these are they're
+related to each other because what you
+know swin is a form of transformer that
+you've used which is vit with a but
+there are some convolutions but I think
+these are these are sort of minor
+details that that's not not essential in
+some sense to to the inner workings of
+these models it's more the nature of the
+training the data and so on that are
+that are more vital
+>> thank you
+>> okay well thank you. Well, Elen, it's
+your turn.
+>> Sorry. So, um, uh, yeah, sorry about
+that earlier. I didn't see the other
+question. Um, yeah. Um, I'm actually
+really interested in the question or the
+concept of probability distribution
+function learning that you used for
+chaotic dynamics. I think that's really
+important for pushing the field forward.
+Um, and I I think that the strategy that
+you're ultimately doing in that
+situation is you're looking for what the
+dynamical systems community calls ruel
+polycott resonances
+and
+>> yes yes go ahead. Yeah, I know
+>> is that the that that the spectrum of
+those resonances is discreet rather than
+continuous as it is for the chaotic
+system.
+And so I was wondering if you have any,
+you know, what your own perspective is
+on that and if you'd actually tried
+looking for ruel polycott resonances of
+dynamical systems like simple systems
+you know you could do many different
+types or whatever you know
+>> okay I can give you my own perspective
+which will probably not be very popular
+in my opinion Laurens system is far from
+being easier than Navia Stokes is
+probably harder than Navia Stokes it
+does not have it does not have some of
+the smoothing effects that uh real
+fluids have. So I think those kind of
+systems that you described and sort of
+the finer properties like the invariant
+measure that you talked about these are
+very very hard concepts and to even
+contemplate understanding them in
+infinite dimensional setting like with
+Navia Stokes is certainly above my pay
+grade. I I don't even want to attempt
+that. I do believe that it's actually
+simpler to learn now his talks like the
+kind that we showed than Lawrence.
+Lawrence is even harder because you know
+this is there is um yeah I don't have a
+theorem to that effect but just
+intuitively the the spread of these
+measures is better for these books than
+for than for Laurens. I don't know the
+mechanism for that right. So of course
+we have tried diffusion models on lorens
+and other peoples have tried diffusion
+models on lurens and this has worked
+reasonably well. So that's uh that goes
+without saying but I would still
+maintain that that's a harder problem
+just trying to get those resonances out
+and so on. This is a very hard problem.
+So I don't know if uh if this technology
+is already able to do that. I my
+suspicion is probably not you know
+because those are sort of high order
+effects and at the moment what it is
+very good at is getting the sort of
+basics of this distribution correct but
+to get the entire distribution on a
+function space is a very hard hard thing
+maybe it needs more data I I don't know
+that but already this is very data data
+heavy so but it's a very good question
+it's sometimes I I wonder and then I say
+okay it's you know above my pay grade to
+try and do this for Navia Stokes
+So,
+>> okay. Well, thank you. Um, wow. Okay.
+So, I
+>> there are many many questions.
+>> Yeah, I was about to ask questions but
+um I don't get to do that.
+>> Robert, yes, please.
+>> I have one question. May I ask please?
+>> Sure. Uh uh the robot is first. Um
+robot, are you there?
+>> I have lost complete track.
+>> Yeah, I'm I'm here. I I had an open
+question. and someone else will go
+before me. Um why you said that um the
+transformers and the foundation models
+that you've seen and this continuous
+operator seem to perform better than
+CNN's. Do you have any idea why?
+uh
+probably because um yeah so I I can
+speculate on this but I don't have any
+cast iron evidence so I'll probably uh
+keep it to myself but roughly speaking I
+think what's going on with transformers
+is that because the in a in a way they
+are this sort of nonlinear data
+dependent kernel it's it's sort of very
+degenerate you know it uh it is it's
+difficult to sort of in a way have a low
+rank representation so if If you have
+data that is not having okay this is
+very rough and I don't have a theorem to
+justify it okay but let me tell you my
+rough intuition here so CNN's are very
+good at sort of learning many of these
+models are very good at learning low-
+rank representations if there are any
+right but in a foundation model probably
+when you have multiple distributions and
+so on it's not obvious at all that there
+there is a low rank distribution out
+there so maybe transformers because you
+know that kernels are very nonlinear
+maybe they fit that fit that much
+better. This this this could be a
+potential mechanism. I'm not able to
+distinguish them with any hard theorem
+because at the level of universal
+approximation everything is universal at
+the level of some approximation theory
+everything is nice. So I but I do
+believe that the nature of the softmax
+kernel the fact that it is in some sense
+degenerate and it's very difficult to be
+represented by sort of a linear subspace
+as someone asked maybe that is actually
+a good thing that it's able to sort of
+learn much more highdimensional latent
+spaces that that are that are there but
+this just intuition I don't have any
+theorem or any sort of hard evidence
+backing it so it's really open question
+but no one has been able to answer that
+in computer vision for instance right
+because before transformers came in uh
+units were very very popular or unit
+type architectures were very very
+popular but I think uh at least for
+foundation models no one uses them
+people all use transformers so there
+must be some some mathematical reason no
+one has been to the best of my knowledge
+been able to answer that so we just see
+this also in physical systems
+>> yeah I was just curious because I've
+seen more math here than I often see in
+a lot of neural net stuff. So I was
+wondering if you had had more math
+thing. It also drives me nuts. I really
+want someone to answer it.
+>> Maybe maybe in a maybe in a couple of
+years, but at the moment I I don't have
+a theorem. So
+>> all right. Uh Samantha
+Samantha, can you unmute? Yeah.
+>> Yeah. Yeah. Yeah. Sorry, I was me. So I
+have one more question and it goes back
+to Elon's question of learning like
+probability distributions and stuff like
+that. So I was thinking that uh like um
+if we think about going for more like
+traditional variational autoenccoders or
+similar methods right where we infer
+like we have a like we have a prior and
+input the posterior. How about how about
+instead of using a naive gausian prior
+or something like that, we first
+pre-train uh like a first we pre-train
+some other machine learn probabilistic
+model based on similar data set or at
+least of the same fidelity and then use
+that learn distribution as a prior.
+Would that would that help?
+uh perhaps I I have never tried that
+because you see autoenccoders are very
+useful in to learn representations but
+we want not just to learn
+representations we want to make
+predictions right so it's sort of uh
+perhaps I I don't know that it it could
+happen but uh there's there's no
+guarantee that there is an automatic way
+of finding out what is a close enough
+distribution what's a good prior then
+you're then you're lost in the in the
+business of finding a good prior which
+is also what I have been doing or we
+have been doing right because we put a
+good prior because we we understand a
+little bit how PDS behave and then we
+put some things in the pre-training data
+set. So we have provided a good prior
+and then we let the transformer do the
+work rather than going through this sort
+of variational autoenccoder machinery
+but this could be a viable option right
+but the difficulty would be the choice
+of the prior as always so
+>> um Rakkesh
+>> yeah uh I can go ahead thank uh thank
+you for your presentation Dr.
+Uh so my doubt is like uh if uh we have
+a potential uh direction in the future
+to towards the foundational model it
+could be promising for multifysics uh
+too. uh in that case uh so whenever we
+are trying to solve a multifys make a
+multiysics prediction uh by pre-training
+that model with the different uh pdes in
+such cases uh is there any possibility
+that uh we can override the assumption
+we made uh like some of the paper made
+like kawachi paper made like the banax
+space is continuous in nature because
+there are possibilities that some PD uh
+multifysics PD can go to discontinuous
+approximation and stuff.
+>> No, I don't think they made that.
+Perhaps they made that assumption but
+this has been relaxed in many many many
+many cases including in my own papers
+there's nothing there is nothing uh so
+you mean that if the operator itself is
+not continuous.
+>> Mhm. Yeah.
+>> This is probably no but again I think in
+one of our papers we even worked with
+measurable operators. So this is this is
+fine. This is
+>> okay. So his paper with Lanthala and
+Kanyak is it's at the level of
+measurable measurable operators.
+>> Okay. Okay.
+>> So this is not an issue.
+>> Okay.
+>> Okay. Well I finally I get to ask
+questions.
+So going back to foundation models.
+>> Yeah.
+>> Um I I totally agree that we lack the
+formal definition of what foundation
+model is. Um our recent paper tries to
+>> I know
+>> tackle that issue.
+>> I know. Um
+>> okay so you read that paper?
+>> Yes. Sure. Sure.
+>> Awesome. Awesome. Um so one of the you
+know key challenges we raised in the
+paper was um you know in the
+computational science
+um each sample
+size
+would be uh very huge. I mean you know
+for example comparing to the large
+language models or digital models um
+each sample is tokens which whose size
+is what some some sort of bytes units
+right.
+>> Yes. Yes. But we are dealing with um the
+simulation data um whose vector size
+could be millions or billions and you
+know just to you know you know store
+that in the memory it it may take a
+gigabytes just for the one single data
+point. Um so because of that um
+foundation model
+uh needs you know to generate a lot of
+samples right I mean as you pointed out
+you you need to you know bring the
+diverse data sets um and train the
+pre-trained model
+>> and apply that to downstream task
+various different downstream task um but
+the single sample size the data size is
+humongous like generating the big data
+like the diverse data itself is very
+challenging. Um so how do you how would
+you overcome that issue that challenge
+you know in the development of your own
+foundation? Yeah, this is a very very
+good question and there are two ways in
+which I fully agree with you actually
+there is a challenge here a very let's
+say severe challenge in some sense but
+there is uh to me there are two two
+points here first of all let's say in
+terms of simulation there's no question
+that we have to resolve a certain scale
+right otherwise we can't represent
+interesting phenomena and so on and the
+time step has to be dictated by the CFL
+number and so on and so forth but once
+we have done the simulation Once we are
+finished with the simulation and we have
+humongous amounts of data the question
+that I ask myself is I'm going to make
+errors right means there will always be
+errors at some level and in pre-training
+you can even make large errors it does
+not really matter to some extent how
+much of errors can I make if I keep on
+sort of compressing the data right and
+this compression can be just by physical
+downsampling that I take randomly some
+of the points and not all the points or
+it could be in terms of tokenization
+that I tokenize it into some suitable
+space and so on. And my claim is that
+the errors compared to simulation when
+you do downsampling or tokenizing or
+whatever errors that you're going to
+make are going to be much smaller than
+you would have simulated at that scale.
+In other words, let's say that I
+simulate a turbulent flow at 100 cube, I
+don't see anything, right? But if I
+simulate it at a,00and cube which is a
+very expensive simulation but downs
+sample it at 100 cube I still have quite
+a bit of information contained in it
+right mean it's still the thousand cubed
+it's just an interpolation or a sampling
+error that is there I don't want to do
+it in let's say in fia space that's not
+that's not the right way but uh this
+this is uh sort of there is a degree of
+freedom there that that you don't need
+that kind of fidelity there is a
+compressibility in the data if you have
+no compressible ility then it's white
+noise and there's no chance right then
+we cannot do anything but as I have
+repeatedly argued even for turbulent
+fluid flows then it is not uh not like
+that the distributions are well behaved
+and other things are well behaved so
+there's a possibility that the
+compression once you have simulated the
+simulation there's no choice you have to
+do it at the necessary resolution the
+compression can help you in this case
+and that's the only route you know there
+should be enough compression and I keep
+on telling that the pre-train model
+doesn't have to be very accurate. You
+know, it has to learn some useful
+representation and when you go to
+fine-tuning, when you go to some
+concrete task, you anyway don't have a
+lot of samples. So, there is some degree
+of freedom there.
+>> And uh whether this is enough, this is
+still an open question, right? But
+>> but uh there is there is a degree of
+freedom that there there there is a way
+out.
+>> Okay. Okay. Well, I mean I mean I I I
+mean you you mentioned compression and
+also the downsampling but um by doing so
+you're losing some information
+>> some information for sure. The question
+is how much of information is necessary
+>> necessary or not. Yes, exactly. That
+will depends on the applications and
+>> this will depend on how well I I fully
+agree with you that at a downstream task
+level this should not be done because
+you need correct results right but in
+pre-training I'm not convinced that we
+need all the information out there and
+there is some degree of freedom but I
+fully agree that this needs to be
+investigated right means this field is
+like one or two years old so I'm sure as
+a community in two three years we'll be
+able to find good answers
+>> yeah yeah we we are heading there um so
+So the my following question is about
+the downstream um downstream uh task uh
+as you just mentioned um yes I mean
+downstreaming to different PTE um so
+that's awesome so it's check mark for
+the um you know the predicting being
+able to predict the uh the solutions for
+the uh across the different PTE problems
+that that's awesome but how about you
+change the domain geometry like from the
+circular to the rectangular or even 2D
+to 3D and or
+>> you change the boundary conditions or
+>> um you know well material properties or
+initial conditions or and and so on.
+>> Those are uh very very relevant
+questions. Some of them are already
+answered in our paper because we changed
+the material properties, we changed the
+initial conditions, we changed the
+boundary conditions. Some of them will
+be answered in the next one because we
+already have results where we change
+domains and it works very well and we
+change there have been some master's
+thesis which have already done that and
+we change uh also in this paper I think
+the it's already out there this paper
+when at all the you can see that we did
+some transfer learning where we had
+different kinds of shapes um a square um
+I don't know circle and then we
+transferred to ellipse and and so on.
+>> So this is already out there in the
+domain. So 2D 3D as you can see I have a
+I have an example here which is uh
+hopefully coming out soon. Where is the
+example? I'll just show it. And so you
+can see that this is actually trained
+with a 2D checkpoint. So this has 2D
+features in it. This is from scratch and
+you can see that there's a big
+difference. So even with the 2D
+checkpoints it sort of transfers well to
+3D. And I know that people from Shinhua
+also did some of it and so that again as
+I said that there are some good
+indications. Okay. So
+>> so so
+>> uh fine tuning you're using the transfer
+learning.
+>> Yes. Yes. Yes.
+>> Um to adapt to the different geometry.
+>> Yes.
+>> So my next question would be how
+expensive that principal learning?
+>> Uh it's very very compared to learning
+from scratch it's very very cheap
+because uh you just uh you You need only
+a few few samples, right? Means this is
+sort of this is where the in in our
+paper we have done that sort of a
+comparison that how much of compute do
+you need in order to do the finetuning.
+It's much less than scratch training
+simply because as you can see with a
+fewer samples you can get by with uh you
+know the same error as you would have
+done with a lot lot more samples. Right?
+So this is the this is the way to go.
+It's not not expensive compared to
+pre-training. Pre-training is very
+expensive.
+>> Oh. Oh. Well, um looking forward to the
+next paper. Um
+>> now I think I'm a bit tired after
+I also have to make my kids sleep. So
+>> yeah, sure. Sure. Well, thank thank you
+so much. Um so you know listening to you
+know that demonstration of the next uh
+the papers uh you know generalizing to
+the different domains uh that sounds
+very promising. Um and yes and since you
+have read our paper on on the defining
+foundation model in computational
+science we we introduce you know list of
+this criteria
+>> and I I see that your next paper is get
+the check mark for all
+>> sure sure we'll do that don't worry
+>> good job see okay well let's
+>> thank you so much
+>> you know yeah let's wrap up the um
+>> byebye everyone thanks for staying so
+Yeah. Bye.
+>> Thank you. Thank you. See it. Bye.

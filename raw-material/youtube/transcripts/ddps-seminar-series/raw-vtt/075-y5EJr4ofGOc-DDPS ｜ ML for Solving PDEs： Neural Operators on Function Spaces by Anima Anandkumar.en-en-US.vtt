@@ -1,0 +1,2814 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.949 --> 00:00:06.149
+Unknown: All right. Welcome to the DDPS seminar everyone. It is an honor to host the enema. And undo Kumar, who is a professor at Caltech and director of ml research at Nvidia. She was previously a Principal Scientist at Amazon Web Services. And uma is really a pine pine pine pioneer pioneer of the neural operators. And today she is willing to talk about ml for solving PDS neural operators on the function spaces. Yeah, so any maths yeah, thanks for all yours. Thank you, Yong Soo, and great to be here. Sorry for the delay, you know, the WebEx I haven't used in a long time. So some teething problems, but yeah, so I'm happy to talk about neural operators, and what is the methodology behind it? Why that is suitable for different scientific applications, including solving partial differential equations? And also why not just the standard neural network tools, right, what is special about neural operators? Yeah, so indeed, you know, if you want to think about modeling multiscale processes in a variety of scientific domains, you know, this is very challenging, right? I mean, the scales are enormous, you can go all the way down to problems at the quantum level, looking at interactions as wave functions between electrons in a molecule and using that to predict the properties, especially when it comes to designing new drugs or materials. This is important, all the way to the planetary scale, if you want to predict the weather or climate, how we can look at microscopic interactions and the impact it has globally at planetary scales. And that's the aspect that is so challenging tomorrow. And of course, there's so many other problems in between as well, that are multiscale in nature. And this is different from text or image processing, right, that we've seen a lot of exciting developments. But that doesn't directly translate into our ability to model these processes. Text is discrete data. Again, image processing. Typically, you'll just think of doing that at one fixed resolution. Right, and it's object centric and natural images, you are main goal is to reduce from this pixel space to some low dimensional representation that is centered around objects, you know, for instance, segmenting the objects being able to recognize the objects. So that's where a lot of the focus is on, right, going from these pixel dimensions to low dimensional space. On the other hand, if you think about these multi scale processes, there's information in all scales, right. So you cannot quick, easily read use it to some high level representation, like we do with image processing. And so we need to think of different frameworks to be able to nicely capture all of the scales and do high fidelity modeling. And as an example, I want to show the challenges in modeling climate, are the one big source of uncertainty. In fact, the biggest source of uncertainty is the presence of these low lying clouds, what we call stratocumulus. Clouds, and the turbulence in them. So the ability to model the turbulence at very fine spatial and temporal scales is important. In order to get very, you know, the right answers, or the in these micro scales, ultimately impact the macro behavior. And what my colleague tapeo Schneider estimates is, you really need to go down to one meter spatial resolution, planet wide. And that requires about 100 billion times more computing than what we have today. And so if you're trying to do standard numerical methods, and we need to go to these fine scales, it's just very out of reach to be able to do that, right in a brute force manner. And so right now, our capabilities are barely getting to one kilometer, right. So that's also not fully there, we are still getting to that resolution. And so there's a big gap between what we can do today, versus what we really need to do to capture the fine scales and climate modeling. And so that's just one of the examples. The same is true with quantum chemistry or multitude of other examples I showed you, we cannot get to the level of computation needed to capture all the scales of the problem. And also, you know, in this case, we are going from bottom up physics, right, so we are starting with partial differential equations, each time, we are redoing all of the computations to get us to the answers. So the question is, what is the role of data driven methods that could learn from previous data, and be able to do these computations much faster. So, this is where I think machine learning can have a very big impact, you know, helping us build on top of accelerated computing, you know, GPUs are indeed the workhorse of AI. So getting all those hardware, accelerations and efficiency, and of course, supercomputing scale. So we'll use all of that. But machine learning is really the enabler of that scale, right? It's going to help us leapfrog and get us very big speed ups, in terms of being able to do much faster computations. If we can avoid the fine grid required for numerical methods and get away with coarser grits, we get away with not having to do intermediate iterations and get to the answers faster. Because we learn the features that are relevant to that domain, then we can really leapfrog in our computational abilities. And I think that's the promise. And we will also see in many applications, we are able to get very impressive speed ups. And we're able to maintain the fidelity or sometimes even surpass it compared to traditional methods. Yeah, so let me first start with a framework and give an overview of what neural operator is, right. So what makes it different from standard neural networks, I think I told you just a few slides ago that we cannot use the same models as text or image processing, because we need to capture all of the scales. And I think that's the key difference. If we used any of the standard neural networks for image processing, whether it's convolutional neural network, or vision transformers, they're typically trained to work at a fixed resolution. So you have training data at one resolution, and you also have testing data at the same resolution. On the other hand, if we are thinking about solving scientific problems, as I mentioned, we need to capture many different scales. And not only that, we need to be able to query at any scale, right? So if you use any of the scientific methods, any numerical methods, we have the flexibility of having different grids, right? So in fact, different problems and tell different shapes of grids. For instance, the airfoil, you know, typically we have this non uniform grid, because you want more finer grid near these sharp points. And so this flexibility to go different shapes of grids, as well as query at any point, because the phenomenon is no continuous domain is important. And so standard neural networks don't have that capability. And so the question is, how do we design neural operators that can mimic the capabilities of current numerical methods, but are also having high fidelity are expressive, they're able to capture the multiscale phenomena. And they're fast, right? So we need to be able to do all of this at once. So that's where our inspiration comes from, the ability to solve first linear partial differential equations. So as a thought process, if we start with asking what is an efficient way to learn solutions for linear partial differential equations, you can think of this form of the solution right the inverse of differential operators the integral operator, and we can look towards building a block here that learns to solve this integral linear operator. So, this is now a building block that can solve linear partial differential equations. For instance, the heat diffusion equation is linear partial differential equation. And in some cases, we even know this kernel or this greens function and analytically. In other cases, you have to numerically compute it. But the key is here solving linear partial differential equations involves, you know, learning the kernel or this greens function and also being able to integrate that on the continuous domain. So because this integration is over the continuous domain, you can now give your input at any different discretization, right, and you would still be able to have the output be at any discretization. So that's the key difference from a standard neural network where the input is only in a fixed discretization of fixed grid. Here, we have the flexibility to have the input in any point in the continuous domain, because it's computing this integration at any point. And so that's the key aspect that is, you know, will be different from standard neural networks. And also now the question is how do we compute this efficiently right. So there is two aspects. One is how do we compute this efficiently? The other aspect is, how do I extend this beyond linear equations to nonlinear equations, you know, so many phenomena of interest that I showed you, fluid dynamics for climate modeling, or quantum chemistry, right. So, you know, many of the especially approximations of that become nonlinear problems. So we need to be able to handle non linearity. And so that's where we introduce a more general framework that takes these blocks that learn integral linear operators, and compose that with non linearity. So these compositions of integral linear operators with nonlinear activations, you know, they can be standard, nonlinear activations, like ReLU, or Gelu. Usually Gallo, because we want also second order derivatives, right. In many of these differential equations, they involve second order derivatives. So we want that smoothness. And so we use a function like Gallo, for a nonlinear activation. But that's a detail, but the general framework is that by composing linear blocks with nonlinear activations, we get an expressive model. And this is the same philosophy as a standard neural network, because even there, you have a linear function and you compose with nonlinear activation. The linear function in fully connected neural network is matrix multiplication in convolutional neural network is convolution. Right, by the same philosophy holds here that we compute a linear operator, and then we compose with non linearity. The only difference is this is now learning a linear operator, as opposed to a linear function. So this operator maps a continuous input to an input in a continuous domain to an output, which is also a function on continuous domain. Right? So that's the main difference. Panama, muddy has a question about are the inputs here location time and outputs the solution of the equations? So the input can be both space and time, right? So to be input is any function on a continuous domain? And that domain could be space or time or both, or anything else as well. So this general framework as you know, that's that's one option. Okay, thank you. Great. And again, yeah, if there are further questions here, do feel free to interrupt me. So that's the framework. Now, of course, one thing I haven't told you is how to learn these integral linear operators efficiently. And so one framework that has been very successful is what we call for your neural operator where we relaxed the kernel to a convolutional kernel. So meaning you only look at translations, right. And this is, indeed a limitation compared to the general kernel. But because we compose it with nonlinear activations, we can show that it's still expressive and in fact, you know, both this original neural operator as well as the convolution based neural operator are both universal approximator errs. So you can approximate any nonlinear operator, which is a mapping from one function space to another with these frameworks, and I think In this is important to be able to capture, as I said, any nonlinear operator. So but of course, this I have just made this simplification. But what is this bias? Right? Why is this more efficient to learn a convolutional operator. So this is where we can do change of basis, we can go from convolution to element wise multiplication in the Fourier domain, for instance. So, we know Fourier basis is a good inductive bias for many problems, including fluid dynamics, it's been used for numerical methods as well. So we can use that inspiration and say Fourier domain is a good inductive bias. And not only that, it becomes much more efficient to learn the coefficients in the Fourier domain, right. So this way, the integration over the continuous domain just becomes matrix multiplication. So, this is efficient. And we can learn the coefficients in an efficient manner. So, that's the principle it's very simple, that we can transform our input into the Fourier domain, we learn the coefficients in the Fourier domain, and we go back to the standard domain. And then we do non linearity in the standard domain, which could be space and time. And we then repeat this again. So, a few points here, right, so, first of all, you know, if he did just this convolutional operator in the Fourier domain, without non linearity, that would be limiting, right. So, and in fact, that's what the numerical methods to they transform to the Fourier domain, and they judge to iteration there. On the other hand, we have nonlinear activation. So we have the now flexibility to not just, you know, it's not just limited to the Fourier spectrum of the original signal, we're also learning features over nonlinear activations. So that's a benefit. The other benefit, we can get us through regularization, or we can capture only the low frequency modes in the first layer. So we just filter out and only retain low frequency modes here. Of course, if you didn't have non linearity, this would be a strong aliasing, right. So this will lead to errors. Because many signals of interest have high frequency components, so you can't just threshold them. But on the other hand, because we have nonlinear activations present, we can further transform the signal and still have the ability to capture high frequency content. And that's why we are able to provide the guarantees of universal approximation, even though in each layer, we are using a regularization to keep low frequency modes. Of course, that's a hyper parameter of how much do you threshold to retain low frequency modes? versus how many layers do you have, right, so both are hyper parameters, we can choose for different problems. But really, the benefit is the ability to now make learning efficient, as well as key the discretization invariance, meaning I can now input my signal at any resolution, or you know, with any resolution, I can still capture the signal through Fourier transform, right, because I can do Fourier transform at any resolution. And that's a key ingredient that makes this overall framework end to end discretization invariant. By that what I mean is, let me first show you just an example of proof of concept in terms of showing how we can, you know, train in one resolution and test in a different resolution, right, which wouldn't be possible with standard neural networks. So we're training using only coarse resolution data for this Nabeel stokes equation. And we do that over different initial conditions, and then a testing time we provide higher resolution inputs, and then we look at how well does it predict right and what we see is indeed that does predict pretty well. And in can see that in fact, in the frequency spectrum as well that the prediction is very graceful, even beyond the scene resolution, meaning it extrapolates to higher resolution without seeing it during training. So this is what we mean by zero short super resolution. And you can see that here that you know, there is right I mean, these systems are dissipative so you do have to see the drop off of the energy spectrum. But, you know, when we are given training data at a fixed resolution, we only see these wave numbers, right. So these we have no idea what the higher wave numbers are. But in cases where there is a nice drop off, our framework is able to track that compared to other standard frameworks like unit. I think there was another question. Yes, there was another question by Ahmadi. He said, this also assumes that the set of equations that represents the physics in one scale is also valid in another scale, right? Yeah, we are currently assuming there's only a fixed set of equations, right. So the way I mean, I haven't even used the equations, right. So if you're using the equations in a physics informed manner, that would matter. In this case, we're just giving data, right? There's no physics knowledge built into the model. But what really, you know, where this will work well, is when there's a nice drop off in terms of energy, right? In these higher frequencies. If you, for instance, have something very arbitrary like this, right, some arbitrary spectrum here, that is having very high energy content, you know, we cannot expect to capture in because we have absolutely no information about that. Alright, he also asked what is what is the difference between two scales, backed up by 200? You can see that here, right? The wave numbers. So these are the wave numbers we provide, we can go all the way up to 200. So we provide a little more than what it's 25 wave numbers of 30, something like that. And, and we can go much further. We can go to any scale, right? The prediction can happen at any scale. Sounds good. Thank you. aneema. Yeah. Yeah, so just to kind of make this point about discretization invariance, what can we guarantee right, as I mentioned, we cannot guarantee that we will give you as error free answer at any resolution, because that's impossible. If we do not see higher resolution inputs, you know, there's no way we can capture all of the information about it. On the other hand, what we can guarantee is graceful degradation, right? Graceful, like kind of having consistent answers, even as we refine the mesh. So the idea is you keep refining the mesh and asking, what is the value? At any point here, you should converge to a limit. And ideally, that limit should be closer to the ground truth operator. Right? So so what we're guaranteeing is this kind of convergence. And this is something you may not, you know, otherwise see in other frameworks. And so just to kind of make that point clear, in a standard neural networks do not have this ability, because most of them, you can't even query at any resolution, right? So the standard architectures expect always the resolution to be fixed. Whereas neural operators remove that dependence. There's of course, an intermediate step where you could use interpolation on top of standard neural network. So you train your neural network at a fixed resolution, you're using standard fixed interpolation, whether it's by linear interpolation or any such framework you can use on top where there is no learning for interpolation. So, that framework indeed allows you to query anywhere in the domain, but it does not guarantee universal approximation, because the neural network just learns that of fixed scale right. So it is not learning in the function space, like we do with neural operators, and that to me, is the big benefit we obtain here. Yeah, so just to reiterate, the framework of neural operators is taking, you know, ways to compute these integral linear operator and composing with non linearity to give it both expressivity, but by learning blocks that compute integral linear operators, we still keep discretization invariance. And so that kind of like, you know, ability to have both aspects of discretization invariance and non linearity is crucial. So, there's an extensive library, I encourage you to go check it out, you know, it's open source also contribute to it would be great to hear your thoughts, where we do have implementations of the Fourier neural operator that I mentioned, but also there are other approaches right in order to be able to estimate this for instance, through graph based method because you can learn through a graph neural network and message passing, what is the relationship between nearby points, and then you can turn it into an operator, because once you learn the kernel, you can approximate the integration as summation. So this works well, if the phenomena is fairly local. So it's much harder to do for global dependence like in fluid dynamics, because you would need the neighborhood to be very large and that is expensive. So, I think there are frameworks where the graph based methods are effective, and then there are other domains especially with where we know the operator is highly non local, where Fourier based methods are effective, because you know, we can express these kinds of global dependence efficiently through Fourier transforms. Yeah, so far, what I mentioned was just computing on a, you know, practical implementation was computing on a uniform grid, right, because Fourier transform, the efficient implementation is fast Fourier transform that assumes uniform grid. And if you tried to do Fourier transform on non uniform grids showed that our algorithms, but those implementations are not efficient. And so we wanted to keep the Fourier transform as fast Fourier transform on uniform grid, and the way we decided to handle non uniform input domains, right, the physical space, for instance, this airfoil wing, this is a irregular geometry shape. And we also want a grid to be irregular to capture that non uniformity. So this is our input domain. So what we propose is to learn a deformation from this to a uniform grid in a latent space. And we know from topology that such deformation sexes, so if you assume this is homeomorphic, to Taurus, you can learn that transformation, right. And if not, they can also there, you decompose the domain into multiple parts and piece them together, which is a detail from topology. But the idea is this is very general. So in general, you should be able to learn the transformations from a physical space that is irregular to a latent space that is regular. And so what we do is we learn such deformations point wise. And this way, we can go to a latent space, and do efficient computations and come back to the standard domain. And so you can see that where we credit deformation for plastic fortune here, and again, we see the you know, really impressive speed ups about 100,000 times speed up over standard numerical methods. And you can see the geometry is changing over time, and it's able to maintain and do that prediction. So this is another example where we, you know, can handle irregular shape, in the sense that the fluid is now flowing through a catheter with all these triangular shapes, right, so we propose triangular shapes as a way to limit the bacterial contamination. So what's known as the bacteria swim upstream to the fluid flow, and if we can reduce the size of bacteria, by trapping it in these triangular places, then we can reduce the contamination. And so one benefit with these methods is that we can do inverse design very effectively. So not just in was designed any kind of inverse problems because the train neural operators are differentiable, right? So we can directly get the gradients back. And so what we did was to ask, you know, how can I find the optimal triangular shape to minimize the bacterial contamination. So here, the contamination should be ideally zero because we don't want the bacteria going back into the patient. And so we were able to do that by doing gradient descent, which is very fast and effective. And that's how we, you know, we're able to very quickly proposal design and our collaborators 3d printed it and tested it in the lab. And this is just a visualization of, you know, how we can see many particles are getting trapped in these triangular groups. Yeah, and so this is another here. demonstration with airfoil. If you want to optimize for lift versus drag, right, we can directly do gradient descent and come up with Yes, and here we are having the simulation of the fluid dynamics around the aircraft wing, right. So we are only training for the forward model. So in the forward model, we have many different aircraft wings, we are predicting how, you know, what is the fluid dynamics around that, and, and then we can directly do the inverse problems. So, the key is, you don't need to know, what is the optimal design when you're doing the training of the neural operator. And you can do the inverse and come up with the optimal design. So far, I did not incorporate any of the physics, I think there was a question earlier asteroid. So, you know, how does it capture the different scales. So, in terms of if you want to really capture the fine scales, and we need to do that with high accuracy, we would need to know the equations as well. And so the idea is, if the data is only at coarse resolution, I now have the flexibility to express my equations at a much finer resolution. And so this way, we can capture both data and the equations. And we can get to high fidelity results. And so we can then do zero short super resolution very well, even at higher resolutions. And we can also further fine tune our model, because, you know, during training, we have a variety of initial conditions and solutions. But at test time, we have a single initial condition, right? So we want to do well on this, we can further fine tune with the equation loss on this specific instance. And that way, we get to a better error. And so we can also do better transfer learning with physics based losses, because we can, you know, learn the operator safe on one Reynolds number, if you want to fine tune on a different Reynolds number, there is a distributional shift. But having the equation laws allows us to quickly figure out what the distribution change, right, what parameter change, and still utilize the information that was, you know, in the earlier train model. And so this leads to faster convergence. Yeah, so, so far, what I told you was to learn deterministic maps between function spaces, right, what about learning probability distributions on function spaces? And indeed, this directly, you know, asks similar questions, as we've seen with generative AI, whether it's text generation image generation, right, so they're all learning probability distributions? Can we do the same? And indeed, for scientific computing, that's very important, right? So inverse problems, if you want the posterior of your inverse problem, that's a probability distribution naturally, right? uncertainty quantification, learning like chaotic dynamics. So you want to ask what are the different attractors and what is the distribution. So all of this are about problems that require probability distribution. And of course, if you're looking at stochastic differential equations, or other stochastic processes, those are also, you know, involved learning probability on function spaces. So what we've recently derived is a diffusion model, but now on function spaces. And so we're doing that by extending what is known as core function in diffusion models in finite dimensional spaces to now score operator, right, so this operator maps a function space of, of one domain to another. And in this case, what we want to do is map instead of Gaussian noise, a Gaussian random field to the output distribution. And so this is the key difference here. With Gaussian random field, you can now sample at any resolution. So you're no longer limited to sampling at the resolution of the training data, like we see in image generation models. And that's how we can now you know, do this training at low resolution and generate high resolution images and still get a very good fidelity of what we generate, right. So if you now have a density of initial conditions, you want to capture that random distribution of solutions for these given initial conditions. In this example, you can see that we can do very well. So I wanted to see if there are further questions before I I maybe showcase one or two examples of using these various methods. Yeah. Marty, do you want to unmute yourself? I see you please raise your hand. Buddy, are you there? I don't, I don't hear. Okay. See. Any other questions from audience? anymore? You can move on? I think there's, I think there's another question. No, yeah. Yeah. Yeah, I don't think so you can move on. Okay. Yeah, so to give you some examples in OB train, using these four year neural operator and its variants on weather data, so but this is era five reanalysis data that's available since the 1970s. So having this wealth of historical weather data, allows us to train a model that's very accurate, as well as fast. So here's a visualization of the atmospheric rivers. And you can see that it can capture these very wide, you know that those are 1000s of miles wide phenomena that has a huge impact on whether there are storms or drought in the western coast here. And not only that, it's very fast, it's about 45,000 times faster than current numerical weather models. So you can also see that with trajectory prediction, we can predict these wind conditions, and the high wind conditions are in purple. And you can see our prediction closely follows the trajectory of Hurricane Matthew, which was certainly not in the training data, right. So we are looking at how well it does on new hurricanes. And it's able to give you a good uncertainty bound around the trajectory of the hurricane. So these are some more details. And we also have some of our models open source there, I welcome you to go check it out. And what you can see is the ability to have big speed ups over current numerical weather models, and at the same time, good accuracy. So What would take hours on a CPU cluster for current numerical weather models takes less than a second on a single desktop GPU. Yeah, and we continue to improve this. I think we just recently talked, I think, yesterday, the talk was at Eichler workshop on climate AI, where by incorporating the spherical geometry, so instead of the Fourier, Fast Fourier Transform on Euclidean space, we now have spherical harmonics, and we build that into our model. And that leads to even better extrapolation. So you can do much longer rollouts than what we had trained for. We trained it just for a few time steps of six hours or so. Right. So we have very short range training. But we can extrapolate the model to long rollouts, and there's good stability. And we continue to improve the forecasting skills as well compared to the ifs, which is the current numerical weather models. So we've also used in a number of other scenarios, to mitigate climate change, carbon capture, and storage is a big aspect. So how do we model the buildup of pressure as carbon dioxide is pumped into these wells. So we are now able to do multi well modeling. So being able to look at multiple wells at once. And if you have a permeability map, so you know how permeable the ground is. And we can then use that as the input. Given a permeability map, we have high resolution, a fine grid prediction within the wells as well as a coarser grid to connect the different wells. And you can see that we can model the gas plume evolution as well as the pressure buildup. And we can do that over 30 year range. And we can even do further if needed. But the key is, you can see that it has a very big speed up about 700,000 times faster than current numerical weather models. So this are applicable in many other scenarios as well. You know, predicting air turbulence for drone flights or other flights is important. So we've been testing it in the lab by looking at turbulent conditions here and using laser laser measurements and showing that we can do very nice real time, fluid prediction directly from noisy as experimental data, and so we continue to test models like this also in the right physical hardware on the lab to see how well we can stabilize the airfoil wing and many other cases. So just to show like at Caltech, we also have the finery where we can test this very carefully on different kinds of wind conditions. So I think I already mentioned the catheter before. So let me Yeah, so, you know, again, sorry for the delay, but I hope you got a good overview of what neural operators are, what is the principle behind designing them, and how they differ from standard neural networks and their ability to capture multiple scales and do inferences in a discretization invariant manner. Thank you. Sounds good. Thank you so much for the wonderful talk. Anima. I guess, did I miss the the question from the Joseph, let's have a q&amp;a sessions. By the way. Jews have asked, Are there any special considerations for using neural operator operators on inverse problems. Um, so there are different options, right, so you can do the, you can learn the neural operator for the forward problem, and then just take gradients differentiate through the model, or you can directly learn the inverse mapping. And so there are both options, or you can couple both of them as well. And also, in both of these cases, you can ask, you know, how do I also incorporate the physics, right, so you can also do the physics informed version. And then there is the aspect that to capture the not just point estimates, but to get the right proper posterior distribution. You know, can we use diffusion models? So what I proposed efficient models and function spaces. Thank you. Okay. Another question by Hawaii. For the CCS case, the heavier team, try to explore the super resolution property of app No. Yeah, we can certainly give predictions, but we don't have the ground truth. Right. So we are now working with some partners getting real data and validating on that. Awesome. Okay, next question is by Faisal, what do you need to train the neural operator? Do you need the original PDE? Can you learn on noisy ground through? Yeah, so we don't need the original PDE. Right. So the framework I described is very general, the input can be any function on a domain, and the output is a function, right? So you're learning that mapping. And so you can take some data from solvers, existing solvers, like I showed you the Navier stokes example. Or you can take the weather example where the data is already there, the historical weather data and the reanalysis data and we train on it. So it can be very general. Sounds good, okay. The equations are there, we can incorporate that as the loss function, in addition to data as you go in Pino, right. Okay, the next question is by Rudy Pang. And he asked for the function mapping to learn from PDE coefficient to solution, any ideas what function spaces it is in? And is the mapping unique? So for to learn from the coefficients to the solutions? You know, the PDE is well posed, you assume there's a unique solution, right. But we don't need to even assume that as long as we have the data that learns the mapping, we can do that. But of course, if it's unique, then you have a good error. And you can learn this well. All right. Sounds good. So I don't think there is any other questions that have raised their hands. Yeah, for the for the FMO can see more about like the boundary conditions, especially like non pure periodical boundary conditions. And also for the like the, in the carbon storage case, you showed that to have like, like the course grades, for fields, and also like near the well, like I have the high high resolution grades. So how you make the boundary conditions consistency between these two? Yeah, that's a good, that's a great point. So for the first generally, like for non periodic cases, right, the four year branch may not capture that very easily. I mean, you can correct that with four year continuation methods. And we also propose that but we also have alternative branches, so we have skipped connections. And so that's a very efficient way to capture non periodic conditions. And so we've we have architectures that I handle that very efficiently. So in terms of like, for the specific case of CCS, what we did was a nested fNo model. So we now have different economic models for, you know, within the well versus outside, we have multiple levels. And so they just share the information across them. That makes sounds good. Thanks. Yeah. Have more questions? No. Okay. So fNo is known to require many, many data. And from your experience, piano, if you incorporate the physics, then do you see that you require the last data is required? Absolutely. Our data requirement goes down significantly? And of course, it depends on the hardness of the problem, right. So, you know, some cases you may even do with one data point, that's the physic physics and form neural network setting, right? So if the optimization landscape is very efficient, you don't need any data at all, you can directly solve for the equation loss. And then there are others that are high dimensional, very hard, and you may need more data. So there's a whole spectrum of problems. Okay. Sounds good. I have just clarify qualification questions. You said that people net is not discretization independent, I thought heroes discretize. So this is there's a, so the original deep on it that was proposed was on assuming a fixed input grid. So the input grid was assumed to be fixed, the output is also is still a function. So the output is can work at any resolution, but the input was a fixed grid. And then later on in the solution, others proposed a solution as well to fix that. But anyway, I wanted the the original one had. Yeah, I just wanted to clarify, Chris. I think the current version of the deponent Yeah, that doesn't seem dependent. Okay. Another question from CO Juan Chang. What is the regularity assumptions needed in the function spaces? If the solution is of low regularity? For example, the domain is singular and the function on its roof, can the current framework be applied? Yeah. So we are working on like kind of extensions of this in terms of practical architecture. But there's already theory showing that you can use for your neural operator to approximate those well, as well, like Sam Lanter and understood have like a recent paper, but yeah, this is something we're working on. Okay, yeah. I have another question. For one. Yeah. So for the transplant learning, Eve, the differential equations are different, like for different problems, do you think of that transfer learning is still helpful or not? I know, like in the same equations, probably, it's like a helpful forum. But But from the point of view of different differential equations. Yeah, that's great. And that's unclear, right? It's, again, the same as any, you know, what we see in other vision domains, like how much is the shared features, you might think some of it is still shared? Because numerical methods, right, like kind of have similar approaches for all these domains. So it may still transfer. But it's a good question. You know, how effective it is? We haven't tried it so far. Yeah, we've sent comments on the Ching chi, I mean, transfer learning not on the neural operator, but on the traditional neural network, sensing a sense, it hasn't been applied, you know, the quiz or the different PDE. And, you know, use that to accelerator on the neural net model on a PDE. That hasn't been demonstrated, but I guess it's an example by example. Yeah, exactly. But it's I think, I think I expect that there should still be an advantage. You're Osama Osama useful, right. All right. Any other questions from audiences? Oh, yes, we do. Okay, as the person from platano when you compare the speed up to you consider the training or data generation time. So, you know, no, I mean, these numbers, we don't first of all, it's still not a significant amount, right. So because to me, data is just something that you know, you only do training once, right, and then inference is running cost. And so this is the standard way of we would evaluate Do any methods so, because also there is cost that goes into programming these algorithms even for traditional methods, so, so I would just you know, to me that's something that guy, you know, happens before the solver comes online. But we do report that in our papers. Got it? Another question by muddy can the matter the extrapolating new and unseen to matrix? Yeah, in the geometric fNo that I proposed the ideas. That's how you can see that even online changing geometry of the deformation, it's able to track you should have some mapping from, you know, once your metric to another that we just learned that we learn that. Okay, yeah. All right. different geometries. That's how we're able to generalize it. All right. Sounds good. Is there any other questions from audience? Now, let's thank our speaker aneema for the wonderful talk and, and good discussion times, and so on. Thanks, everyone. And thanks for sticking around. I really appreciate it. Yeah, and I do reach out if you have further questions. That'd be awesome. Okay. Thank you. Thank you. Thank you, everyone. We have another TDPs seminar tomorrow. So see you tomorrow. Bye now. Thank you. Bye.
+
+
+00:00:06.149 --> 00:00:11.969
+ 
+
+
+00:00:11.969 --> 00:00:16.589
+ 
+
+
+00:00:16.619 --> 00:00:22.709
+ 
+
+
+00:00:22.709 --> 00:00:27.569
+ 
+
+
+00:00:27.569 --> 00:00:31.739
+ 
+
+
+00:00:31.739 --> 00:00:37.919
+ 
+
+
+00:00:38.039 --> 00:00:40.199
+ 
+
+
+00:00:40.230 --> 00:00:44.160
+ 
+
+
+00:00:44.580 --> 00:00:49.470
+ 
+
+
+00:00:50.250 --> 00:00:54.930
+ 
+
+
+00:00:54.930 --> 00:01:00.540
+ 
+
+
+00:01:00.540 --> 00:01:03.360
+ 
+
+
+00:01:03.360 --> 00:01:07.230
+ 
+
+
+00:01:07.260 --> 00:01:11.400
+ 
+
+
+00:01:11.400 --> 00:01:13.440
+
+
+00:01:14.819 --> 00:01:18.029
+ 
+
+
+00:01:18.029 --> 00:01:23.489
+ 
+
+
+00:01:24.179 --> 00:01:26.639
+ 
+
+
+00:01:26.639 --> 00:01:31.919
+ 
+
+
+00:01:31.919 --> 00:01:36.809
+ 
+
+
+00:01:37.079 --> 00:01:41.609
+ 
+
+
+00:01:41.609 --> 00:01:45.749
+ 
+
+
+00:01:45.749 --> 00:01:49.499
+ 
+
+
+00:01:49.499 --> 00:01:53.879
+ 
+
+
+00:01:53.879 --> 00:01:59.429
+ 
+
+
+00:01:59.429 --> 00:02:04.559
+ 
+
+
+00:02:04.559 --> 00:02:07.799
+ 
+
+
+00:02:07.799 --> 00:02:11.819
+ 
+
+
+00:02:11.819 --> 00:02:16.199
+ 
+
+
+00:02:16.199 --> 00:02:20.549
+ 
+
+
+00:02:20.549 --> 00:02:25.469
+ 
+
+
+00:02:25.469 --> 00:02:31.259
+ 
+
+
+00:02:32.339 --> 00:02:35.279
+ 
+
+
+00:02:35.279 --> 00:02:38.729
+ 
+
+
+00:02:38.729 --> 00:02:44.699
+ 
+
+
+00:02:44.789 --> 00:02:47.729
+ 
+
+
+00:02:47.729 --> 00:02:50.879
+ 
+
+
+00:02:50.879 --> 00:02:55.319
+ 
+
+
+00:02:55.319 --> 00:03:00.689
+ 
+
+
+00:03:00.689 --> 00:03:04.019
+ 
+
+
+00:03:04.019 --> 00:03:07.679
+ 
+
+
+00:03:07.679 --> 00:03:13.679
+ 
+
+
+00:03:13.709 --> 00:03:16.769
+ 
+
+
+00:03:16.769 --> 00:03:20.669
+ 
+
+
+00:03:20.669 --> 00:03:26.819
+ 
+
+
+00:03:26.819 --> 00:03:31.559
+ 
+
+
+00:03:31.559 --> 00:03:36.629
+ 
+
+
+00:03:36.629 --> 00:03:39.959
+ 
+
+
+00:03:39.959 --> 00:03:44.189
+ 
+
+
+00:03:44.189 --> 00:03:48.599
+ 
+
+
+00:03:48.599 --> 00:03:54.329
+ 
+
+
+00:03:54.329 --> 00:04:01.859
+ 
+
+
+00:04:01.859 --> 00:04:07.559
+ 
+
+
+00:04:07.559 --> 00:04:11.069
+ 
+
+
+00:04:11.069 --> 00:04:16.409
+ 
+
+
+00:04:16.409 --> 00:04:20.639
+ 
+
+
+00:04:20.639 --> 00:04:24.629
+ 
+
+
+00:04:24.629 --> 00:04:28.469
+ 
+
+
+00:04:28.469 --> 00:04:33.299
+ 
+
+
+00:04:33.299 --> 00:04:38.069
+ 
+
+
+00:04:38.069 --> 00:04:42.479
+ 
+
+
+00:04:42.479 --> 00:04:46.619
+ 
+
+
+00:04:46.619 --> 00:04:50.519
+ 
+
+
+00:04:50.519 --> 00:04:54.689
+ 
+
+
+00:04:54.689 --> 00:04:58.019
+ 
+
+
+00:04:58.589 --> 00:05:02.249
+ 
+
+
+00:05:02.249 --> 00:05:08.639
+ 
+
+
+00:05:08.639 --> 00:05:13.229
+ 
+
+
+00:05:13.229 --> 00:05:16.859
+ 
+
+
+00:05:16.859 --> 00:05:19.919
+ 
+
+
+00:05:19.919 --> 00:05:24.209
+ 
+
+
+00:05:24.209 --> 00:05:28.289
+ 
+
+
+00:05:28.289 --> 00:05:34.469
+ 
+
+
+00:05:34.469 --> 00:05:39.269
+ 
+
+
+00:05:39.269 --> 00:05:44.039
+ 
+
+
+00:05:44.279 --> 00:05:49.979
+ 
+
+
+00:05:49.979 --> 00:05:54.149
+ 
+
+
+00:05:54.149 --> 00:05:57.989
+ 
+
+
+00:05:57.989 --> 00:06:02.099
+ 
+
+
+00:06:02.339 --> 00:06:05.849
+ 
+
+
+00:06:05.849 --> 00:06:11.189
+ 
+
+
+00:06:11.189 --> 00:06:15.629
+ 
+
+
+00:06:15.629 --> 00:06:20.309
+ 
+
+
+00:06:20.339 --> 00:06:24.359
+ 
+
+
+00:06:24.359 --> 00:06:28.769
+ 
+
+
+00:06:28.769 --> 00:06:32.519
+ 
+
+
+00:06:32.519 --> 00:06:36.839
+ 
+
+
+00:06:36.839 --> 00:06:40.799
+ 
+
+
+00:06:40.799 --> 00:06:44.849
+ 
+
+
+00:06:44.849 --> 00:06:48.089
+ 
+
+
+00:06:48.089 --> 00:06:52.709
+ 
+
+
+00:06:52.709 --> 00:06:57.659
+ 
+
+
+00:06:57.659 --> 00:07:02.159
+ 
+
+
+00:07:02.219 --> 00:07:05.489
+ 
+
+
+00:07:05.999 --> 00:07:11.339
+ 
+
+
+00:07:11.369 --> 00:07:15.239
+ 
+
+
+00:07:15.239 --> 00:07:18.839
+ 
+
+
+00:07:18.839 --> 00:07:23.189
+ 
+
+
+00:07:23.219 --> 00:07:26.789
+ 
+
+
+00:07:26.789 --> 00:07:32.459
+ 
+
+
+00:07:32.459 --> 00:07:36.569
+ 
+
+
+00:07:36.569 --> 00:07:40.589
+ 
+
+
+00:07:40.589 --> 00:07:45.269
+ 
+
+
+00:07:45.269 --> 00:07:49.379
+ 
+
+
+00:07:49.379 --> 00:07:54.929
+ 
+
+
+00:07:54.929 --> 00:07:58.889
+ 
+
+
+00:07:59.159 --> 00:08:03.869
+ 
+
+
+00:08:03.869 --> 00:08:07.289
+ 
+
+
+00:08:07.289 --> 00:08:10.379
+ 
+
+
+00:08:10.379 --> 00:08:15.389
+ 
+
+
+00:08:15.389 --> 00:08:21.179
+ 
+
+
+00:08:21.179 --> 00:08:25.919
+ 
+
+
+00:08:25.919 --> 00:08:31.019
+ 
+
+
+00:08:31.019 --> 00:08:35.009
+ 
+
+
+00:08:35.009 --> 00:08:38.999
+ 
+
+
+00:08:39.029 --> 00:08:44.549
+ 
+
+
+00:08:44.999 --> 00:08:47.699
+ 
+
+
+00:08:47.699 --> 00:08:52.109
+ 
+
+
+00:08:52.139 --> 00:08:56.999
+ 
+
+
+00:08:56.999 --> 00:09:01.709
+ 
+
+
+00:09:01.829 --> 00:09:05.909
+ 
+
+
+00:09:05.909 --> 00:09:10.769
+ 
+
+
+00:09:10.769 --> 00:09:14.639
+ 
+
+
+00:09:14.639 --> 00:09:21.359
+ 
+
+
+00:09:21.359 --> 00:09:24.719
+ 
+
+
+00:09:25.049 --> 00:09:32.699
+ 
+
+
+00:09:32.699 --> 00:09:37.469
+ 
+
+
+00:09:37.469 --> 00:09:41.129
+ 
+
+
+00:09:41.129 --> 00:09:44.819
+ 
+
+
+00:09:44.849 --> 00:09:49.619
+ 
+
+
+00:09:49.619 --> 00:09:52.439
+ 
+
+
+00:09:52.529 --> 00:09:55.889
+ 
+
+
+00:09:55.889 --> 00:10:00.929
+ 
+
+
+00:10:00.929 --> 00:10:05.909
+ 
+
+
+00:10:05.909 --> 00:10:09.989
+ 
+
+
+00:10:09.989 --> 00:10:13.469
+ 
+
+
+00:10:13.469 --> 00:10:17.249
+ 
+
+
+00:10:17.249 --> 00:10:21.329
+ 
+
+
+00:10:21.329 --> 00:10:25.649
+ 
+
+
+00:10:25.649 --> 00:10:30.599
+ 
+
+
+00:10:30.599 --> 00:10:34.679
+ 
+
+
+00:10:34.679 --> 00:10:38.639
+ 
+
+
+00:10:38.639 --> 00:10:43.079
+ 
+
+
+00:10:44.039 --> 00:10:47.099
+ 
+
+
+00:10:48.779 --> 00:10:52.679
+ 
+
+
+00:10:52.679 --> 00:10:56.279
+ 
+
+
+00:10:56.279 --> 00:11:00.269
+ 
+
+
+00:11:00.269 --> 00:11:05.339
+ 
+
+
+00:11:05.339 --> 00:11:09.479
+ 
+
+
+00:11:09.479 --> 00:11:13.139
+ 
+
+
+00:11:13.139 --> 00:11:17.999
+ 
+
+
+00:11:17.999 --> 00:11:21.119
+ 
+
+
+00:11:21.119 --> 00:11:27.539
+ 
+
+
+00:11:27.539 --> 00:11:34.379
+ 
+
+
+00:11:34.379 --> 00:11:39.809
+ 
+
+
+00:11:39.809 --> 00:11:44.939
+ 
+
+
+00:11:44.939 --> 00:11:49.979
+ 
+
+
+00:11:49.979 --> 00:11:53.249
+ 
+
+
+00:11:53.249 --> 00:11:58.469
+ 
+
+
+00:11:58.499 --> 00:12:01.439
+ 
+
+
+00:12:01.649 --> 00:12:03.809
+ 
+
+
+00:12:03.809 --> 00:12:09.029
+ 
+
+
+00:12:09.059 --> 00:12:15.239
+ 
+
+
+00:12:15.239 --> 00:12:19.589
+ 
+
+
+00:12:19.589 --> 00:12:23.429
+ 
+
+
+00:12:23.429 --> 00:12:28.199
+ 
+
+
+00:12:28.199 --> 00:12:31.799
+ 
+
+
+00:12:31.799 --> 00:12:35.609
+ 
+
+
+00:12:35.609 --> 00:12:39.779
+ 
+
+
+00:12:39.779 --> 00:12:44.039
+ 
+
+
+00:12:44.399 --> 00:12:50.939
+ 
+
+
+00:12:50.939 --> 00:12:54.929
+ 
+
+
+00:12:54.929 --> 00:12:58.619
+ 
+
+
+00:12:58.619 --> 00:13:03.509
+ 
+
+
+00:13:03.509 --> 00:13:09.419
+ 
+
+
+00:13:09.419 --> 00:13:12.209
+ 
+
+
+00:13:12.209 --> 00:13:13.739
+
+
+00:13:13.830 --> 00:13:19.920
+ 
+
+
+00:13:19.920 --> 00:13:23.610
+ 
+
+
+00:13:24.449 --> 00:13:28.739
+ 
+
+
+00:13:28.799 --> 00:13:34.469
+ 
+
+
+00:13:34.469 --> 00:13:39.449
+ 
+
+
+00:13:39.449 --> 00:13:44.369
+ 
+
+
+00:13:44.399 --> 00:13:48.869
+ 
+
+
+00:13:48.869 --> 00:13:56.129
+ 
+
+
+00:13:56.129 --> 00:14:00.389
+ 
+
+
+00:14:00.389 --> 00:14:06.899
+ 
+
+
+00:14:06.899 --> 00:14:12.329
+ 
+
+
+00:14:12.329 --> 00:14:17.999
+ 
+
+
+00:14:17.999 --> 00:14:23.489
+ 
+
+
+00:14:23.519 --> 00:14:28.709
+ 
+
+
+00:14:28.709 --> 00:14:32.639
+ 
+
+
+00:14:32.639 --> 00:14:36.719
+ 
+
+
+00:14:36.719 --> 00:14:42.089
+ 
+
+
+00:14:42.089 --> 00:14:46.859
+ 
+
+
+00:14:46.859 --> 00:14:51.269
+ 
+
+
+00:14:51.299 --> 00:14:55.679
+ 
+
+
+00:14:55.679 --> 00:15:01.289
+ 
+
+
+00:15:01.829 --> 00:15:08.069
+ 
+
+
+00:15:08.069 --> 00:15:11.909
+ 
+
+
+00:15:11.909 --> 00:15:16.379
+ 
+
+
+00:15:16.379 --> 00:15:20.279
+ 
+
+
+00:15:20.279 --> 00:15:24.959
+ 
+
+
+00:15:24.959 --> 00:15:29.069
+ 
+
+
+00:15:29.069 --> 00:15:33.509
+ 
+
+
+00:15:33.509 --> 00:15:37.529
+ 
+
+
+00:15:37.679 --> 00:15:42.599
+ 
+
+
+00:15:42.599 --> 00:15:47.069
+ 
+
+
+00:15:47.069 --> 00:15:51.329
+ 
+
+
+00:15:51.329 --> 00:15:54.809
+ 
+
+
+00:15:55.199 --> 00:15:58.319
+ 
+
+
+00:15:58.319 --> 00:16:04.139
+ 
+
+
+00:16:04.169 --> 00:16:09.029
+ 
+
+
+00:16:09.029 --> 00:16:13.349
+ 
+
+
+00:16:13.349 --> 00:16:16.529
+ 
+
+
+00:16:16.529 --> 00:16:20.969
+ 
+
+
+00:16:20.969 --> 00:16:24.029
+ 
+
+
+00:16:24.029 --> 00:16:30.029
+ 
+
+
+00:16:30.059 --> 00:16:34.679
+ 
+
+
+00:16:34.679 --> 00:16:38.519
+ 
+
+
+00:16:38.519 --> 00:16:42.509
+ 
+
+
+00:16:42.509 --> 00:16:46.259
+ 
+
+
+00:16:46.769 --> 00:16:51.179
+ 
+
+
+00:16:51.179 --> 00:16:55.079
+ 
+
+
+00:16:55.079 --> 00:16:58.739
+ 
+
+
+00:16:58.739 --> 00:17:02.489
+ 
+
+
+00:17:02.489 --> 00:17:06.179
+ 
+
+
+00:17:06.179 --> 00:17:09.239
+ 
+
+
+00:17:09.239 --> 00:17:14.249
+ 
+
+
+00:17:14.249 --> 00:17:18.539
+ 
+
+
+00:17:18.689 --> 00:17:22.139
+ 
+
+
+00:17:22.139 --> 00:17:25.589
+ 
+
+
+00:17:25.589 --> 00:17:29.789
+ 
+
+
+00:17:29.789 --> 00:17:33.089
+ 
+
+
+00:17:33.629 --> 00:17:37.379
+ 
+
+
+00:17:37.379 --> 00:17:41.129
+ 
+
+
+00:17:41.339 --> 00:17:45.389
+ 
+
+
+00:17:45.389 --> 00:17:48.839
+ 
+
+
+00:17:48.839 --> 00:17:53.669
+ 
+
+
+00:17:53.669 --> 00:17:58.319
+ 
+
+
+00:17:58.319 --> 00:18:03.329
+ 
+
+
+00:18:03.329 --> 00:18:07.229
+ 
+
+
+00:18:07.229 --> 00:18:10.829
+ 
+
+
+00:18:10.829 --> 00:18:17.249
+ 
+
+
+00:18:17.279 --> 00:18:21.539
+ 
+
+
+00:18:21.539 --> 00:18:25.919
+ 
+
+
+00:18:25.919 --> 00:18:30.359
+ 
+
+
+00:18:31.319 --> 00:18:35.069
+ 
+
+
+00:18:35.069 --> 00:18:38.609
+ 
+
+
+00:18:38.609 --> 00:18:42.719
+ 
+
+
+00:18:42.719 --> 00:18:49.529
+ 
+
+
+00:18:49.529 --> 00:18:53.969
+ 
+
+
+00:18:54.179 --> 00:18:59.279
+ 
+
+
+00:18:59.279 --> 00:19:01.799
+ 
+
+
+00:19:01.799 --> 00:19:06.359
+ 
+
+
+00:19:06.359 --> 00:19:10.079
+ 
+
+
+00:19:10.079 --> 00:19:14.429
+ 
+
+
+00:19:14.759 --> 00:19:18.359
+ 
+
+
+00:19:18.359 --> 00:19:22.409
+ 
+
+
+00:19:22.409 --> 00:19:27.509
+ 
+
+
+00:19:27.509 --> 00:19:31.679
+ 
+
+
+00:19:32.219 --> 00:19:38.159
+ 
+
+
+00:19:38.159 --> 00:19:41.399
+ 
+
+
+00:19:41.399 --> 00:19:45.629
+ 
+
+
+00:19:45.629 --> 00:19:49.829
+ 
+
+
+00:19:49.829 --> 00:19:55.199
+ 
+
+
+00:19:55.199 --> 00:20:00.509
+ 
+
+
+00:20:00.509 --> 00:20:05.249
+ 
+
+
+00:20:05.249 --> 00:20:09.569
+ 
+
+
+00:20:09.749 --> 00:20:13.799
+ 
+
+
+00:20:13.799 --> 00:20:20.789
+ 
+
+
+00:20:20.789 --> 00:20:26.609
+ 
+
+
+00:20:26.609 --> 00:20:28.259
+ 
+
+
+00:20:29.940 --> 00:20:37.020
+ 
+
+
+00:20:37.020 --> 00:20:39.930
+ 
+
+
+00:20:39.930 --> 00:20:44.220
+ 
+
+
+00:20:44.790 --> 00:20:48.990
+ 
+
+
+00:20:48.990 --> 00:20:52.800
+ 
+
+
+00:20:52.800 --> 00:20:56.040
+ 
+
+
+00:20:56.040 --> 00:20:59.280
+ 
+
+
+00:20:59.310 --> 00:21:04.050
+ 
+
+
+00:21:04.050 --> 00:21:08.430
+ 
+
+
+00:21:08.580 --> 00:21:12.540
+ 
+
+
+00:21:12.540 --> 00:21:15.480
+ 
+
+
+00:21:15.480 --> 00:21:19.230
+ 
+
+
+00:21:19.230 --> 00:21:23.430
+ 
+
+
+00:21:23.430 --> 00:21:25.770
+ 
+
+
+00:21:25.770 --> 00:21:27.960
+ 
+
+
+00:21:28.470 --> 00:21:31.440
+ 
+
+
+00:21:31.440 --> 00:21:34.200
+
+
+00:21:34.890 --> 00:21:37.680
+ 
+
+
+00:21:37.680 --> 00:21:41.160
+ 
+
+
+00:21:41.160 --> 00:21:45.120
+ 
+
+
+00:21:45.120 --> 00:21:49.740
+ 
+
+
+00:21:49.740 --> 00:21:52.740
+ 
+
+
+00:21:52.740 --> 00:21:53.190
+
+
+00:21:53.730 --> 00:21:55.680
+ 
+
+
+00:21:58.920 --> 00:22:02.670
+ 
+
+
+00:22:02.670 --> 00:22:05.760
+ 
+
+
+00:22:06.090 --> 00:22:10.860
+ 
+
+
+00:22:10.860 --> 00:22:14.370
+ 
+
+
+00:22:14.370 --> 00:22:17.940
+ 
+
+
+00:22:18.000 --> 00:22:21.300
+ 
+
+
+00:22:21.300 --> 00:22:27.510
+ 
+
+
+00:22:27.510 --> 00:22:31.500
+ 
+
+
+00:22:31.500 --> 00:22:35.520
+ 
+
+
+00:22:35.520 --> 00:22:40.140
+ 
+
+
+00:22:40.140 --> 00:22:43.320
+ 
+
+
+00:22:43.320 --> 00:22:47.220
+ 
+
+
+00:22:47.220 --> 00:22:50.940
+ 
+
+
+00:22:50.940 --> 00:22:54.300
+ 
+
+
+00:22:54.300 --> 00:22:58.920
+ 
+
+
+00:22:58.920 --> 00:23:03.510
+ 
+
+
+00:23:03.510 --> 00:23:07.890
+ 
+
+
+00:23:07.890 --> 00:23:11.520
+ 
+
+
+00:23:11.520 --> 00:23:17.430
+ 
+
+
+00:23:17.430 --> 00:23:22.260
+ 
+
+
+00:23:22.320 --> 00:23:25.950
+ 
+
+
+00:23:25.950 --> 00:23:29.160
+ 
+
+
+00:23:29.190 --> 00:23:32.040
+ 
+
+
+00:23:32.040 --> 00:23:35.970
+ 
+
+
+00:23:35.970 --> 00:23:40.050
+ 
+
+
+00:23:40.050 --> 00:23:44.190
+ 
+
+
+00:23:44.520 --> 00:23:48.630
+ 
+
+
+00:23:48.630 --> 00:23:52.170
+ 
+
+
+00:23:52.170 --> 00:23:56.190
+ 
+
+
+00:23:56.190 --> 00:24:00.480
+ 
+
+
+00:24:02.190 --> 00:24:07.770
+ 
+
+
+00:24:08.100 --> 00:24:13.860
+ 
+
+
+00:24:13.860 --> 00:24:18.480
+ 
+
+
+00:24:18.480 --> 00:24:22.530
+ 
+
+
+00:24:22.530 --> 00:24:26.790
+ 
+
+
+00:24:26.790 --> 00:24:31.740
+ 
+
+
+00:24:31.740 --> 00:24:36.540
+ 
+
+
+00:24:36.540 --> 00:24:40.380
+ 
+
+
+00:24:40.380 --> 00:24:44.100
+ 
+
+
+00:24:44.100 --> 00:24:48.300
+ 
+
+
+00:24:48.300 --> 00:24:51.630
+ 
+
+
+00:24:51.630 --> 00:24:55.380
+ 
+
+
+00:24:55.380 --> 00:24:59.370
+ 
+
+
+00:24:59.580 --> 00:25:06.360
+ 
+
+
+00:25:06.390 --> 00:25:09.930
+ 
+
+
+00:25:09.930 --> 00:25:12.810
+ 
+
+
+00:25:12.810 --> 00:25:17.400
+ 
+
+
+00:25:17.400 --> 00:25:21.210
+ 
+
+
+00:25:21.210 --> 00:25:24.960
+ 
+
+
+00:25:24.960 --> 00:25:27.960
+ 
+
+
+00:25:27.960 --> 00:25:31.770
+ 
+
+
+00:25:31.770 --> 00:25:34.410
+ 
+
+
+00:25:34.410 --> 00:25:38.760
+ 
+
+
+00:25:38.760 --> 00:25:41.910
+ 
+
+
+00:25:41.910 --> 00:25:47.100
+ 
+
+
+00:25:47.100 --> 00:25:50.970
+ 
+
+
+00:25:53.340 --> 00:25:58.830
+ 
+
+
+00:25:58.830 --> 00:26:03.510
+ 
+
+
+00:26:03.810 --> 00:26:06.570
+ 
+
+
+00:26:06.840 --> 00:26:10.320
+ 
+
+
+00:26:10.320 --> 00:26:14.250
+ 
+
+
+00:26:14.250 --> 00:26:17.070
+ 
+
+
+00:26:17.940 --> 00:26:22.380
+ 
+
+
+00:26:22.590 --> 00:26:26.520
+ 
+
+
+00:26:26.520 --> 00:26:33.960
+ 
+
+
+00:26:33.990 --> 00:26:37.230
+ 
+
+
+00:26:37.230 --> 00:26:42.750
+ 
+
+
+00:26:42.750 --> 00:26:47.670
+ 
+
+
+00:26:48.540 --> 00:26:52.770
+ 
+
+
+00:26:52.770 --> 00:27:00.180
+ 
+
+
+00:27:00.480 --> 00:27:04.650
+ 
+
+
+00:27:04.650 --> 00:27:08.910
+ 
+
+
+00:27:08.910 --> 00:27:14.070
+ 
+
+
+00:27:14.130 --> 00:27:17.190
+ 
+
+
+00:27:17.190 --> 00:27:21.300
+ 
+
+
+00:27:21.300 --> 00:27:24.690
+ 
+
+
+00:27:24.690 --> 00:27:28.530
+ 
+
+
+00:27:28.530 --> 00:27:32.790
+ 
+
+
+00:27:32.790 --> 00:27:38.310
+ 
+
+
+00:27:38.310 --> 00:27:42.540
+ 
+
+
+00:27:42.540 --> 00:27:47.280
+ 
+
+
+00:27:47.280 --> 00:27:53.610
+ 
+
+
+00:27:53.610 --> 00:27:57.510
+ 
+
+
+00:27:57.750 --> 00:28:02.220
+ 
+
+
+00:28:02.220 --> 00:28:06.330
+ 
+
+
+00:28:06.330 --> 00:28:14.400
+ 
+
+
+00:28:14.400 --> 00:28:19.530
+ 
+
+
+00:28:19.530 --> 00:28:23.670
+ 
+
+
+00:28:23.670 --> 00:28:28.860
+ 
+
+
+00:28:28.860 --> 00:28:33.690
+ 
+
+
+00:28:33.690 --> 00:28:39.450
+ 
+
+
+00:28:39.450 --> 00:28:43.770
+ 
+
+
+00:28:43.770 --> 00:28:47.850
+ 
+
+
+00:28:47.880 --> 00:28:52.770
+ 
+
+
+00:28:52.770 --> 00:28:56.790
+ 
+
+
+00:28:57.090 --> 00:29:00.570
+ 
+
+
+00:29:00.570 --> 00:29:05.820
+ 
+
+
+00:29:05.820 --> 00:29:09.150
+ 
+
+
+00:29:09.150 --> 00:29:13.740
+ 
+
+
+00:29:13.740 --> 00:29:16.770
+ 
+
+
+00:29:16.770 --> 00:29:20.670
+ 
+
+
+00:29:20.670 --> 00:29:25.500
+ 
+
+
+00:29:25.500 --> 00:29:30.450
+ 
+
+
+00:29:30.450 --> 00:29:34.500
+ 
+
+
+00:29:34.500 --> 00:29:38.340
+ 
+
+
+00:29:38.340 --> 00:29:41.070
+ 
+
+
+00:29:41.070 --> 00:29:47.700
+ 
+
+
+00:29:49.170 --> 00:29:54.750
+ 
+
+
+00:29:54.750 --> 00:29:59.370
+ 
+
+
+00:29:59.370 --> 00:30:05.190
+ 
+
+
+00:30:05.550 --> 00:30:08.820
+ 
+
+
+00:30:08.820 --> 00:30:12.480
+ 
+
+
+00:30:12.480 --> 00:30:17.490
+ 
+
+
+00:30:17.790 --> 00:30:22.800
+ 
+
+
+00:30:22.800 --> 00:30:25.650
+ 
+
+
+00:30:25.650 --> 00:30:28.740
+ 
+
+
+00:30:28.740 --> 00:30:32.820
+ 
+
+
+00:30:32.820 --> 00:30:38.820
+ 
+
+
+00:30:38.820 --> 00:30:41.820
+ 
+
+
+00:30:41.820 --> 00:30:46.500
+ 
+
+
+00:30:46.500 --> 00:30:54.150
+ 
+
+
+00:30:54.150 --> 00:30:58.650
+ 
+
+
+00:30:58.650 --> 00:31:03.330
+ 
+
+
+00:31:03.330 --> 00:31:07.470
+ 
+
+
+00:31:07.470 --> 00:31:12.960
+ 
+
+
+00:31:12.960 --> 00:31:18.210
+ 
+
+
+00:31:18.210 --> 00:31:24.390
+ 
+
+
+00:31:24.390 --> 00:31:28.950
+ 
+
+
+00:31:28.950 --> 00:31:33.150
+ 
+
+
+00:31:33.150 --> 00:31:36.660
+ 
+
+
+00:31:36.660 --> 00:31:40.290
+ 
+
+
+00:31:40.290 --> 00:31:43.410
+ 
+
+
+00:31:43.410 --> 00:31:47.430
+ 
+
+
+00:31:47.430 --> 00:31:51.360
+ 
+
+
+00:31:53.190 --> 00:31:57.210
+ 
+
+
+00:31:57.210 --> 00:32:02.490
+ 
+
+
+00:32:02.490 --> 00:32:06.180
+ 
+
+
+00:32:06.180 --> 00:32:10.470
+ 
+
+
+00:32:10.470 --> 00:32:15.780
+ 
+
+
+00:32:15.810 --> 00:32:19.350
+ 
+
+
+00:32:19.380 --> 00:32:23.580
+ 
+
+
+00:32:23.580 --> 00:32:31.170
+ 
+
+
+00:32:31.170 --> 00:32:36.990
+ 
+
+
+00:32:36.990 --> 00:32:40.560
+ 
+
+
+00:32:40.560 --> 00:32:43.980
+ 
+
+
+00:32:43.980 --> 00:32:49.650
+ 
+
+
+00:32:49.650 --> 00:32:53.640
+ 
+
+
+00:32:53.940 --> 00:32:57.360
+ 
+
+
+00:32:57.360 --> 00:33:01.530
+ 
+
+
+00:33:01.530 --> 00:33:04.590
+ 
+
+
+00:33:04.590 --> 00:33:08.460
+ 
+
+
+00:33:08.460 --> 00:33:12.300
+ 
+
+
+00:33:13.260 --> 00:33:16.470
+ 
+
+
+00:33:16.470 --> 00:33:21.060
+ 
+
+
+00:33:21.240 --> 00:33:25.650
+ 
+
+
+00:33:25.650 --> 00:33:28.440
+ 
+
+
+00:33:28.440 --> 00:33:33.150
+ 
+
+
+00:33:33.150 --> 00:33:36.750
+ 
+
+
+00:33:37.110 --> 00:33:43.890
+ 
+
+
+00:33:43.890 --> 00:33:50.310
+ 
+
+
+00:33:50.310 --> 00:33:54.300
+ 
+
+
+00:33:54.300 --> 00:33:57.450
+ 
+
+
+00:33:57.450 --> 00:34:02.310
+ 
+
+
+00:34:02.520 --> 00:34:07.680
+ 
+
+
+00:34:07.680 --> 00:34:12.240
+ 
+
+
+00:34:12.240 --> 00:34:15.240
+ 
+
+
+00:34:15.240 --> 00:34:19.860
+ 
+
+
+00:34:19.860 --> 00:34:23.940
+ 
+
+
+00:34:23.940 --> 00:34:28.080
+ 
+
+
+00:34:28.080 --> 00:34:33.150
+ 
+
+
+00:34:33.300 --> 00:34:38.310
+ 
+
+
+00:34:38.310 --> 00:34:43.020
+ 
+
+
+00:34:43.020 --> 00:34:47.160
+ 
+
+
+00:34:47.340 --> 00:34:50.940
+ 
+
+
+00:34:50.940 --> 00:34:56.730
+ 
+
+
+00:34:56.730 --> 00:35:01.500
+ 
+
+
+00:35:01.500 --> 00:35:05.220
+ 
+
+
+00:35:05.250 --> 00:35:08.730
+ 
+
+
+00:35:08.820 --> 00:35:14.820
+ 
+
+
+00:35:20.130 --> 00:35:24.870
+ 
+
+
+00:35:24.870 --> 00:35:29.070
+ 
+
+
+00:35:30.120 --> 00:35:33.870
+ 
+
+
+00:35:35.370 --> 00:35:41.100
+ 
+
+
+00:35:43.770 --> 00:35:48.480
+ 
+
+
+00:35:48.480 --> 00:35:53.520
+ 
+
+
+00:35:53.520 --> 00:35:59.160
+ 
+
+
+00:35:59.160 --> 00:36:03.360
+ 
+
+
+00:36:03.360 --> 00:36:08.070
+ 
+
+
+00:36:08.070 --> 00:36:12.660
+ 
+
+
+00:36:12.660 --> 00:36:17.730
+ 
+
+
+00:36:17.790 --> 00:36:22.440
+ 
+
+
+00:36:22.470 --> 00:36:26.400
+ 
+
+
+00:36:26.400 --> 00:36:31.110
+ 
+
+
+00:36:31.110 --> 00:36:35.850
+ 
+
+
+00:36:35.850 --> 00:36:39.390
+ 
+
+
+00:36:39.720 --> 00:36:44.730
+ 
+
+
+00:36:44.760 --> 00:36:49.620
+ 
+
+
+00:36:49.650 --> 00:36:54.060
+ 
+
+
+00:36:54.060 --> 00:36:57.210
+ 
+
+
+00:36:57.210 --> 00:37:01.980
+ 
+
+
+00:37:01.980 --> 00:37:06.210
+ 
+
+
+00:37:06.210 --> 00:37:11.430
+ 
+
+
+00:37:11.430 --> 00:37:15.930
+ 
+
+
+00:37:16.470 --> 00:37:20.850
+ 
+
+
+00:37:20.850 --> 00:37:25.350
+ 
+
+
+00:37:25.350 --> 00:37:29.700
+ 
+
+
+00:37:29.700 --> 00:37:34.410
+ 
+
+
+00:37:37.290 --> 00:37:41.790
+ 
+
+
+00:37:41.790 --> 00:37:45.570
+ 
+
+
+00:37:45.570 --> 00:37:49.170
+ 
+
+
+00:37:49.170 --> 00:37:53.640
+ 
+
+
+00:37:53.640 --> 00:37:57.600
+ 
+
+
+00:37:57.600 --> 00:38:01.470
+ 
+
+
+00:38:01.470 --> 00:38:05.910
+ 
+
+
+00:38:05.910 --> 00:38:11.850
+ 
+
+
+00:38:11.850 --> 00:38:16.920
+ 
+
+
+00:38:17.100 --> 00:38:20.340
+ 
+
+
+00:38:20.340 --> 00:38:23.820
+ 
+
+
+00:38:23.820 --> 00:38:28.410
+ 
+
+
+00:38:28.440 --> 00:38:32.580
+ 
+
+
+00:38:32.580 --> 00:38:37.290
+ 
+
+
+00:38:37.290 --> 00:38:42.540
+ 
+
+
+00:38:42.600 --> 00:38:47.670
+ 
+
+
+00:38:47.670 --> 00:38:52.050
+ 
+
+
+00:38:52.050 --> 00:38:56.910
+ 
+
+
+00:38:56.910 --> 00:39:02.280
+ 
+
+
+00:39:02.280 --> 00:39:06.060
+ 
+
+
+00:39:06.240 --> 00:39:10.200
+ 
+
+
+00:39:10.200 --> 00:39:13.410
+ 
+
+
+00:39:13.410 --> 00:39:18.570
+ 
+
+
+00:39:18.570 --> 00:39:24.060
+ 
+
+
+00:39:24.240 --> 00:39:27.960
+ 
+
+
+00:39:27.960 --> 00:39:32.640
+ 
+
+
+00:39:32.880 --> 00:39:38.160
+ 
+
+
+00:39:38.160 --> 00:39:41.070
+ 
+
+
+00:39:41.070 --> 00:39:45.840
+ 
+
+
+00:39:45.840 --> 00:39:50.340
+ 
+
+
+00:39:50.340 --> 00:39:54.840
+ 
+
+
+00:39:54.840 --> 00:39:59.100
+ 
+
+
+00:39:59.100 --> 00:40:03.900
+ 
+
+
+00:40:03.900 --> 00:40:08.370
+ 
+
+
+00:40:08.370 --> 00:40:13.380
+ 
+
+
+00:40:13.380 --> 00:40:18.360
+ 
+
+
+00:40:18.360 --> 00:40:23.670
+ 
+
+
+00:40:23.670 --> 00:40:27.480
+ 
+
+
+00:40:27.480 --> 00:40:32.580
+ 
+
+
+00:40:32.580 --> 00:40:37.470
+ 
+
+
+00:40:37.470 --> 00:40:41.100
+ 
+
+
+00:40:41.100 --> 00:40:45.120
+ 
+
+
+00:40:45.120 --> 00:40:50.220
+ 
+
+
+00:40:50.730 --> 00:40:55.710
+ 
+
+
+00:40:55.950 --> 00:41:00.060
+ 
+
+
+00:41:00.060 --> 00:41:03.420
+ 
+
+
+00:41:03.420 --> 00:41:08.040
+ 
+
+
+00:41:08.040 --> 00:41:12.540
+ 
+
+
+00:41:12.540 --> 00:41:13.800
+
+
+00:41:15.150 --> 00:41:18.540
+ 
+
+
+00:41:18.540 --> 00:41:24.000
+ 
+
+
+00:41:24.000 --> 00:41:27.780
+ 
+
+
+00:41:27.780 --> 00:41:31.860
+ 
+
+
+00:41:31.860 --> 00:41:35.490
+ 
+
+
+00:41:35.490 --> 00:41:39.570
+ 
+
+
+00:41:39.570 --> 00:41:44.400
+ 
+
+
+00:41:44.460 --> 00:41:48.150
+ 
+
+
+00:41:48.150 --> 00:41:52.230
+ 
+
+
+00:41:52.230 --> 00:41:55.680
+ 
+
+
+00:41:55.680 --> 00:41:59.520
+ 
+
+
+00:41:59.520 --> 00:42:00.630
+
+
+00:42:01.560 --> 00:42:06.270
+ 
+
+
+00:42:06.300 --> 00:42:10.590
+ 
+
+
+00:42:10.590 --> 00:42:12.240
+
+
+00:42:13.110 --> 00:42:16.680
+ 
+
+
+00:42:16.680 --> 00:42:19.200
+ 
+
+
+00:42:19.200 --> 00:42:22.890
+ 
+
+
+00:42:24.180 --> 00:42:29.490
+ 
+
+
+00:42:29.520 --> 00:42:33.780
+ 
+
+
+00:42:33.780 --> 00:42:35.970
+ 
+
+
+00:42:36.000 --> 00:42:39.540
+ 
+
+
+00:42:39.540 --> 00:42:44.550
+ 
+
+
+00:42:44.550 --> 00:42:47.760
+ 
+
+
+00:42:47.760 --> 00:42:51.510
+ 
+
+
+00:42:51.510 --> 00:42:54.690
+ 
+
+
+00:42:54.690 --> 00:42:58.320
+ 
+
+
+00:42:58.320 --> 00:43:00.900
+ 
+
+
+00:43:00.900 --> 00:43:04.860
+ 
+
+
+00:43:05.130 --> 00:43:09.480
+ 
+
+
+00:43:09.480 --> 00:43:12.480
+ 
+
+
+00:43:13.319 --> 00:43:20.069
+ 
+
+
+00:43:20.069 --> 00:43:24.089
+ 
+
+
+00:43:24.089 --> 00:43:29.069
+ 
+
+
+00:43:29.069 --> 00:43:32.789
+ 
+
+
+00:43:32.790 --> 00:43:37.740
+ 
+
+
+00:43:37.770 --> 00:43:41.190
+ 
+
+
+00:43:41.190 --> 00:43:44.970
+ 
+
+
+00:43:44.970 --> 00:43:49.080
+ 
+
+
+00:43:49.080 --> 00:43:52.680
+ 
+
+
+00:43:52.680 --> 00:43:53.670
+
+
+00:43:54.120 --> 00:43:58.380
+ 
+
+
+00:43:58.380 --> 00:43:59.640
+
+
+00:44:00.480 --> 00:44:06.360
+ 
+
+
+00:44:06.360 --> 00:44:09.630
+ 
+
+
+00:44:09.630 --> 00:44:13.170
+ 
+
+
+00:44:13.200 --> 00:44:17.250
+ 
+
+
+00:44:17.250 --> 00:44:22.530
+ 
+
+
+00:44:22.530 --> 00:44:26.280
+ 
+
+
+00:44:26.280 --> 00:44:29.970
+ 
+
+
+00:44:30.420 --> 00:44:33.330
+ 
+
+
+00:44:33.330 --> 00:44:37.980
+ 
+
+
+00:44:38.520 --> 00:44:42.060
+ 
+
+
+00:44:42.060 --> 00:44:45.300
+ 
+
+
+00:44:45.300 --> 00:44:48.630
+ 
+
+
+00:44:48.630 --> 00:44:53.760
+ 
+
+
+00:44:53.760 --> 00:44:58.740
+ 
+
+
+00:44:58.740 --> 00:45:02.640
+ 
+
+
+00:45:02.640 --> 00:45:10.110
+ 
+
+
+00:45:10.110 --> 00:45:14.280
+ 
+
+
+00:45:14.430 --> 00:45:17.040
+ 
+
+
+00:45:17.040 --> 00:45:21.930
+ 
+
+
+00:45:24.000 --> 00:45:28.740
+ 
+
+
+00:45:28.770 --> 00:45:39.450
+ 
+
+
+00:45:39.450 --> 00:45:43.500
+ 
+
+
+00:45:43.500 --> 00:45:47.370
+ 
+
+
+00:45:47.549 --> 00:45:51.599
+ 
+
+
+00:45:51.599 --> 00:45:54.479
+ 
+
+
+00:45:54.479 --> 00:45:58.649
+ 
+
+
+00:45:58.649 --> 00:46:01.739
+ 
+
+
+00:46:01.769 --> 00:46:05.909
+ 
+
+
+00:46:05.909 --> 00:46:09.509
+ 
+
+
+00:46:09.509 --> 00:46:13.259
+ 
+
+
+00:46:13.259 --> 00:46:16.439
+ 
+
+
+00:46:16.439 --> 00:46:18.239
+
+
+00:46:18.870 --> 00:46:25.560
+ 
+
+
+00:46:25.590 --> 00:46:32.460
+ 
+
+
+00:46:32.460 --> 00:46:33.960
+
+
+00:46:33.989 --> 00:46:38.129
+ 
+
+
+00:46:38.669 --> 00:46:43.589
+ 
+
+
+00:46:43.589 --> 00:46:46.499
+ 
+
+
+00:46:46.499 --> 00:46:51.149
+ 
+
+
+00:46:51.149 --> 00:46:57.419
+ 
+
+
+00:46:57.419 --> 00:47:01.289
+ 
+
+
+00:47:01.289 --> 00:47:02.699
+
+
+00:47:03.780 --> 00:47:07.290
+ 
+
+
+00:47:07.290 --> 00:47:10.440
+ 
+
+
+00:47:11.010 --> 00:47:16.350
+ 
+
+
+00:47:16.350 --> 00:47:20.760
+ 
+
+
+00:47:20.760 --> 00:47:25.050
+ 
+
+
+00:47:25.050 --> 00:47:28.950
+ 
+
+
+00:47:28.950 --> 00:47:29.790
+
+
+00:47:30.150 --> 00:47:34.380
+ 
+
+
+00:47:34.380 --> 00:47:37.830
+ 
+
+
+00:47:37.830 --> 00:47:41.040
+ 
+
+
+00:47:41.040 --> 00:47:46.440
+ 
+
+
+00:47:46.440 --> 00:47:49.620
+ 
+
+
+00:47:49.620 --> 00:47:50.370
+
+
+00:47:51.630 --> 00:47:52.890
+
+
+00:47:52.890 --> 00:47:57.840
+ 
+
+
+00:47:58.680 --> 00:48:04.020
+ 
+
+
+00:48:04.020 --> 00:48:06.780
+ 
+
+
+00:48:06.780 --> 00:48:11.790
+ 
+
+
+00:48:11.820 --> 00:48:16.620
+ 
+
+
+00:48:16.620 --> 00:48:18.690
+ 
+
+
+00:48:20.100 --> 00:48:23.370
+ 
+
+
+00:48:23.370 --> 00:48:27.540
+ 
+
+
+00:48:27.540 --> 00:48:29.940
+ 
+
+
+00:48:29.940 --> 00:48:33.810
+ 
+
+
+00:48:33.810 --> 00:48:38.220
+ 
+
+
+00:48:38.220 --> 00:48:41.160
+ 
+
+
+00:48:41.160 --> 00:48:43.530
+ 
+
+
+00:48:44.130 --> 00:48:48.390
+ 
+
+
+00:48:48.390 --> 00:48:52.560
+ 
+
+
+00:48:52.560 --> 00:48:57.330
+ 
+
+
+00:48:57.330 --> 00:49:04.620
+ 
+
+
+00:49:04.830 --> 00:49:09.840
+ 
+
+
+00:49:09.870 --> 00:49:13.350
+ 
+
+
+00:49:13.529 --> 00:49:17.189
+ 
+
+
+00:49:17.189 --> 00:49:19.769
+ 
+
+
+00:49:19.800 --> 00:49:25.380
+ 
+
+
+00:49:25.380 --> 00:49:35.160
+ 
+
+
+00:49:35.160 --> 00:49:40.140
+ 
+
+
+00:49:40.140 --> 00:49:41.220
+
+
+00:49:41.640 --> 00:49:45.390
+ 
+
+
+00:49:45.390 --> 00:49:49.260
+ 
+
+
+00:49:49.260 --> 00:49:53.910
+ 
+
+
+00:49:53.910 --> 00:49:57.840
+ 
+
+
+00:49:57.840 --> 00:50:01.320
+ 
+
+
+00:50:01.530 --> 00:50:05.370
+ 
+
+
+00:50:05.370 --> 00:50:10.350
+ 
+
+
+00:50:10.350 --> 00:50:14.820
+ 
+
+
+00:50:14.850 --> 00:50:19.170
+ 
+
+
+00:50:19.170 --> 00:50:19.890
+
+
+00:50:20.579 --> 00:50:23.489
+ 
+
+
+00:50:23.489 --> 00:50:26.549
+ 
+
+
+00:50:27.179 --> 00:50:31.589
+ 
+
+
+00:50:31.589 --> 00:50:34.919
+ 
+
+
+00:50:34.919 --> 00:50:36.869
+
+
+00:50:37.769 --> 00:50:41.639
+ 
+
+
+00:50:41.639 --> 00:50:43.169
+
+
+00:50:44.520 --> 00:50:46.590
+ 
+
+
+00:50:47.160 --> 00:50:47.940
+
+
+00:50:49.770 --> 00:50:52.770
+ 
+
+
+00:50:52.800 --> 00:50:53.580
+
+
+00:50:55.710 --> 00:50:59.160
+ 
+
+
+00:50:59.160 --> 00:51:06.720
+ 
+
+
+00:51:06.720 --> 00:51:09.780
+ 
+
+
+00:51:10.770 --> 00:51:13.710
+ 
+
+
+00:51:13.710 --> 00:51:17.730
+ 
+
+
+00:51:17.730 --> 00:51:18.480
+
+
+00:51:18.600 --> 00:51:22.950
+ 
+
+
+00:51:22.950 --> 00:51:25.920
+ 
+
+
+00:51:25.920 --> 00:51:29.460
+ 
+
+

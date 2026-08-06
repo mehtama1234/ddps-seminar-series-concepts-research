@@ -1,0 +1,1646 @@
+all right everyone welcome to the ddps
+seminar uh before we introduce our
+invited speaker
+let's go over some rules and logistics
+first of all please mute yourself during
+the talk unless you have questions
+if you have questions you are welcome to
+unmute and ask otherwise please use
+chat room to post your questions so that
+we can address them in q a session at
+the end
+second today's ddps is open
+to external audiences
+therefore no classified discussion is
+allowed so please watch out finally the
+talk today will be recorded and uploaded
+in our youtube channel that's about it
+now let me introduce our speaker today
+it is an honor to host
+misha
+kodak who is a phd student in computer
+science at
+frank
+university advised by nina balkan and
+amit
+thal walker
+his research focuses on foundations and
+applications of machine learning in
+particular the theoretical and practical
+understanding of meta learning and
+automation
+is a recipient of the facebook phd
+fellowship and has spent time
+as an intern at microsoft research
+new england
+and also the lawrence lieberman national
+lab and
+the princeton plasma physics lab
+previously he received a a b in
+mathematics and mse in computer science
+from princeton university today misha
+will talk about tours automatic
+architecture design for
+emerging machine learning tasks this is
+very interesting topic please enjoy and
+expect a wonderful talk now without
+further due let me pass the button to
+misha by asking one random question
+question as usual today's random
+question is what is your favorite things
+to do other than research
+uh i like this ski
+and
+uh i'm learning how to garden very
+slowly oh garden okay are you good at
+skiing
+i'm
+decent at skiing i think you're probably
+you're better than me all right the
+stage is yours
+sounds good uh yeah thank you so much
+for inviting me uh my name is mitha
+kodak and at cmu
+and today i hope to give you
+uh
+some description of some work we've been
+doing to design new operations for
+machine learning tasks going beyond the
+classic tasks that we all know like
+vision and text that machine learning is
+good towards emerging machine learning
+applications
+so let's get started
+so the past decade in machine learning
+as many of you probably know has seen a
+lot of advances in many different areas
+so it started at the beginning of the
+decade with this developments from
+university of toronto and google
+in visions object detection with
+applications for example to self-driving
+and text applications so machine
+translation was a really big deal
+and then later in the decade there was a
+lot of progress from especially deep
+mind and opening eyes so these large
+well-funded startups on things like game
+playing protein folding uh even more
+advanced text
+models
+and so this has really been kind of a
+large a large amount of progress in a
+very very short amount of time spurred
+by deep learning models neural networks
+and so on in machine learning
+so they've achieved these impressive
+results in a few specific domains such
+as vision so image classification
+segmentation and text such as language
+prediction translation and some other
+tasks where you have a good control over
+the environment for example game playing
+what the focus of this talk is is really
+that we believe that this is really
+scratching uh only the tip of the
+iceberg for
+what machine learning can be applied to
+so at the bot at the top you can see we
+have
+things like transportation so image
+detection can be used for autonomous
+vehicles uh audio has been had a lot of
+progress text has had a lot of progress
+but at the bottom there's many other
+things that deep learning has maybe
+there's been some applications but it is
+not an established field where people
+are constantly developing new models and
+there's lots of funding and lots of
+discoveries for these areas such as
+you know pde solvers medical
+applications
+ad tech applications all the way down we
+think there's a lot of these
+applications that are so far
+underexplored that deep learning can be
+very easily applied to or should be very
+easily applied to but it's not yet
+and the reason it's applying deep
+learning to these new applications is
+trickier is because of the type of
+neural networks being used for them are
+not actually well tuned for them so we
+have these neural networks they're very
+effective for
+for a vision for text we've developed
+very advanced and sophisticated methods
+that encode the right biases for these
+deep nets on the other hand when we have
+data such as experimental data from the
+natural sciences simulation data data
+based on graphs like social networks or
+protein graphs
+or biological sequences we don't really
+know what neural network we want to use
+for them and the goal of this talk is to
+push us towards automating uh how to
+discover
+neural networks for deep for applying
+deep learning to these emerging tasks
+so the question we're going to ask is
+can we automate this tuning of neural
+networks and to enable the
+straightforward application of deep
+learning to many new tasks that you know
+people haven't been applying them before
+so first let's discuss what a neural
+architecture is and maybe
+maybe many of you know what this is but
+we should go over it anyway just to make
+sure we're all on the same page
+so a standard picture we have a neural
+network is you have some input such as
+an image and you pass it through a lot
+of matrix multiplications of some kind
+and non-linear operations
+for example a logistic function sigmoids
+that sort of thing you pass it through
+several layers that's why it's called
+deep and the goal is to
+learn
+what
+numbers to put in these weight matrices
+so as to output the right classifier at
+the end uh so the the zero one encoding
+of the of the word frogs if the input is
+a frog and to train uh to train or to
+learn the numbers and use weights what
+we usually do is we specify some
+objective that's large if it's the wrong
+answer and smaller fits the right answer
+and we apply gradient descent to these
+weights and magically nobody knows why
+it seems to work well both in terms of
+uh training and that we
+get global optima and training and also
+we do fairly well on test performance so
+out of sample performance on samples we
+haven't seen and this requires
+collecting all of data but it seems to
+work pretty well for some tasks
+especially computer vision
+now this is a very simple neural network
+on the left on the right we have a much
+more complicated neural network that one
+that we've actually been designing so
+this is kind of what we started with
+with very simple operations what we're
+actually designing in a neural network
+is this general computational graph
+where you have an input it's going to be
+passed through
+multiple edges on each edge is some
+operation so for example a linear
+multiplier followed by a non-linearity
+it could be an operation and they're
+parameterized by a model weight's w and
+then the inputs to each x okay each edge
+will be past these operations and then
+as you
+as you go forward through this
+computational graph these operations or
+these edges can combine their inputs at
+each node so for example node four will
+combine the inputs of this edge and this
+edge through concatenation or addition
+or something like that
+and you pass it forward to this graph
+and eventually you come to your output
+which you hope again to be something
+that's correct for the input
+and so we have been designing
+architectures neural networks or the
+deep learning community has been
+designing these for a very long time so
+this human-driven architecture research
+as we call it is has generally proceeded
+in two different directions
+one direction is discovering which
+operation we want to use so in the first
+slide we had like a linear operation but
+of course what really powers computer
+vision for example these days are these
+convolution operations where instead of
+just multiplying the entire input by uh
+by a matrix we
+apply this convolutional filter which
+slides along the input and only
+and only allows local
+local interactions between
+between pixels to
+propagate to the immediate next layer
+and there there's been a lot of other
+designs for what we actually put on the
+edges of this graph
+most recently transformers have
+transformed the field and allowed a lot
+of progress in things like protein
+folding and so on
+the other direction that people proceed
+in designing architectures is a network
+topology so which of these edges how do
+we connect these edges like is edge one
+three on or off
+should uh should we concatenate or add
+and so on uh probably the most famous
+of these network topology discoveries in
+human driven architecture so which is
+the resonant in which we pass an input x
+into
+into this node
+and then there's one edge that applies
+some convolutions to that node and
+there's another edge that just applies
+an identity operation and then they're
+summed at the end so basically which
+operation to use and
+how to connect them is kind of a
+topology search question and
+discovering operations themselves so
+discovering things like convolutions
+discovering transformers is more of an
+operation search question so these are
+the main
+directions of progress that humans have
+been developing architectures for the
+past decade and even earlier you know
+convolutional neural networks were
+discovered in the 90s
+as many of
+you have probably seen uh this image of
+the improvement of imagenet on imagenet
+so this big image classification
+benchmark over the past 10 years and
+what you we actually want or what i
+actually want to show
+in in this plot is how important these
+discoveries of neural architectures have
+been to
+uh to drive this progress in machine
+learning for example on this benchmark
+and not only that but also how
+complicated these architectures have
+been so on each on the bottom you see
+the best architecture from each year up
+through 2015 and you can see it keeps
+changing and if we zoom in on one of
+these architectures this is called
+googlenet we can see it's very complex
+expert driven architecture design here
+so we have a lot of weird choices that
+these architecture designers made so for
+example we have the structure where we
+repeat blocks of the graph as we
+propagate the input from the left to the
+right
+we're going to somehow connect
+internally we're going to connect these
+blocks somehow so we have edges from
+certain nodes but not
+from others so for example there's no
+node between uh this one and the input
+here
+uh we have a lot of different operations
+we might want to use so in different
+places we're going to use a convolution
+with a kernel of size three by three in
+other areas we're going to use a
+convolutional the kernel size five by
+five we might use different types of
+pooling where we gather
+local pixels together uh by taking a max
+or an average of them
+and of course we also chose to use
+convolutions anyway this was also an
+architecture decision and the question
+becomes say if we're not applying to a
+vision task why are we using
+convolutions anyway so these are the
+sorts of very complicated decisions that
+in architecture search we have to
+consider
+and so
+the goal of neural architecture research
+as a human architecture
+is to automate away this design of
+architectures so that non-experts or
+so that non-experts can apply it to
+their task or to help experts get even
+better performance like ink out the last
+two accuracy percentage points from
+their tasks so if you want to help
+practitioners in advanced areas of my ml
+where machine learning already does well
+such as vision language and so on and
+you also want to accelerate progress in
+new areas which is our goal today
+and i think there has been a lot of
+progress in real architecture research
+over the past
+three years or so
+we've discovered that with this repeated
+block structure it just always seems to
+work so this is often not something we
+search we
+uh we have lots of architecture so it's
+algorithms we've worked on them many
+other people have worked on them to
+select which topology to use
+within each block we have a lot of
+algorithms for picking from a small set
+of operations which operations to use
+within each block
+we don't really know why we're using
+convolutions for a lot of these other
+tests for images they seem to work and
+these days if you have a new application
+the first thing many people do is
+they're going to apply a say a resnet or
+vgg or something like that a
+convolutional neural network or a cnn to
+their problem and both for the best at
+least initially
+and so the focus but yeah unfortunately
+the focus of this existing neural
+architecture research has really been on
+this first bullet point which is to help
+practitioners in areas of a metal that
+already work so these architecture merge
+search methods glue together existing
+primitives so existing operations like
+convolutions and those we know already
+work well on these heavily study tests
+like vision
+and the question really becomes like why
+are we studying architecture so heavily
+uh our architects are searched so
+heavily if companies like google and so
+on already have many engineers that can
+be applied to these tasks you know why
+are we why are we working on this field
+when we have this whole other area of
+research that we might want to work on
+to accelerate progress in new areas so
+specifically we want to design a search
+space in this work that can serve as an
+initial automated solution to machine
+learning problems on diverse domains
+beyond vision text audio and so on
+before i go forward are there any
+questions about
+the motivation of the word
+great so let's start first with defining
+what the neural architecture search
+problem actually is
+so remember we have this computational
+graph and our goal is to pick an
+operation for each edge in this
+computational graph to maximize some
+objectives such as accuracy latency you
+know efficiency memory and so on
+uh and so here's our graph and we're
+running there's a computer that's
+running this architecture research
+algorithm and usually what people do if
+you have a standard
+discrete narrow architecture search
+space is we're going to pick which
+operation should we use on each of these
+edges so are you going to use a
+convolution are we going to use an
+average pooling or so on and this also
+more or less covers
+the network connection question because
+one of these operations could be the
+none operation so we don't pass any
+input forward and then there's this edge
+is just not connected so if we have a
+small set of operations we're going to
+redefine it using our search space and
+for example this very popular search
+space called darts has eight different
+operations such as the identity so just
+pass the input forward the zero
+operation as i was describing past
+nothing forward and some convolutions of
+various kinds and some pooling and
+various kinds these specific operations
+aren't that important but this is kind
+of
+the standard approach neural
+architecture search define a very small
+set of operations and figure out where
+in your neural network to put them
+which edge do we put which operation and
+hope that this is what we need for our
+task
+and we know convolutions so all these
+operations are sort of convolutional as
+we'll see we know that these operations
+work well for vision tasks
+the question is does this search space
+there's a search base of consisting of
+just these operations would this work
+well for other data domains
+so for example other data we might
+consider would be sequence modeling so
+if you for example want to figure out
+what the next word is in
+in your sentence that starts with neural
+architecture and you might want to have
+search here uh this is a sequence
+modeling problem that can be modeled as
+a multi like multi-dimensional array
+input with um
+with one sequential dimension and one uh
+kind of vocabulary dimension and here it
+turns out convolutions work okay but
+need to have some special designs to
+actually work well like large dilations
+and other operations like transformers
+work even better
+there are other operations this will be
+the focus of our empirical evaluation at
+least
+in this talk is in for example solving
+partial differential equations if you uh
+if you have say an input at time zero
+can you use uh classical solver data to
+figure out what the uh what the fluid
+state should be at time fifty and here
+it turns out convolutions work poorly
+although they are closely related to
+some state-of-the-art operations such as
+the fourier neural operator which i'll
+get into later
+and then there are many other problems
+you might want to use such as prediction
+on graphs where regular graph
+convolutions bear regular convolutions
+doesn't even make sense but there are
+graph convolutions that do work well
+so we have these many other applications
+and many i'm not listing uh
+that we don't know that we can just
+apply convolutions and expect good
+performance and in some cases we
+actually get bad performance
+on the other hand a lot of these
+operations actually
+even when we use do use new operations
+such as the transformers or this
+state-of-the-art pd operation or this
+graph convolution we are using fairly
+basic topologies so we're using this
+residual network topology here or just a
+basic like feed forward like the first
+neural network i showed you uh is being
+used here
+and so the question of how we can handle
+these domains we think has a pretty
+simple solution but uh some other
+possible solutions are we can just use
+the search space this very small
+operation search space anyway uh we
+believe this will give you a large gap
+in performance it's been seen
+empirically and it's not going to
+discover truly novel architectures it's
+just going to glue together convolutions
+pooling layers and so on
+you can also add a new operations one by
+one as we discover them unfortunately a
+lot of discrete nas methods don't scale
+well with the number of operations and
+we might not know the right operation to
+use so we would have to you know employ
+human effort and not automation to
+discover which operation discover a new
+operation for a specific task
+and so our argument here is that we need
+a more general search space focused on
+operations and not on the actual
+topology of the network
+so we're going to construct a new more
+general search space in this talk and
+the way we're going to do this is we're
+going to start with the darts operations
+so remember it's going to contain the
+density operation the zero operation
+multiple kinds of convolutions and
+pooling layers and we're going to
+observe that seven of eight of them are
+linear so if you give the if you give
+them some weights and you give them an
+input then the action of the operation
+can be expressed as a matrix multiplied
+times this input so that's that's the
+first thing you can observe and then we
+can also observe that since they're all
+basically convolutions uh then you can
+diagonalize
+this matrix a w by
+the fourier transform or the dft
+so they have this diagonal form where
+you apply the fourier
+dft to the input
+you multiply it by the fourier transform
+of your weights padded which uses
+underlying just a padding
+that doesn't matter too much and then
+you
+you take the inverse square transform of
+the product
+and so this this can describe any of
+these operations uh
+with some modifications
+and what this allows us to do is to
+replace these discrete fourier
+transforms but a more general family of
+efficient matrices so it's going to how
+we're going to construct a new search
+space based on diagonalization rather
+than just combining operations you know
+using a zero one approach
+so before getting actually discussing
+what this more general family of
+efficient matrices is i'm going to keep
+going and uh how we're going to use them
+so
+right we're going to transform we're
+going to replace each of these dfts so
+discrete fourier transform matrices by
+some other matrix k l and m
+and we're going to call
+these the architecture parameters of uh
+of our search space so they define like
+what specifically kl and mr are is going
+to define the search space we're going
+to use how we're going to encode new
+operations in uh in the search base and
+we call this search space
+xd for expressive diagonalization uh
+because you get basically by allowing
+your
+matrices to vary beyond the discrete
+fourier transform you
+uh you get a more expressive
+diagonalization than if you just use the
+convolution approach
+so which family of efficient matrices
+are we're going to use uh the family we
+want is
+uh was introduced by our collaborators
+in 2020 and they're called kaleidoscope
+matrices or k matrices and this is a
+really neat uh really neat family of
+matrices is basically you take the you
+take the
+uh fourier the fft
+uh fft algorithm structure so as many of
+you probably know the fft operates by
+applying a successive uh successive
+number of small matrices to the input
+where each of the entries in these small
+matrices is some roots of unity and you
+apply this successively and since
+they're
+since they're nicely structured you can
+get a very efficient algorithm to apply
+your dft to your input
+and so what this paper proposes is to
+replace all the entries or all these
+roots of unities in the discrete fourier
+transform to allow them to take on any
+complex number
+and the reason this is interesting is
+that you can by doing this you can
+probably express any efficient matrix of
+vector operation so any matrix vector
+operation that can be applied to an
+input in uh in linear time so what this
+is going to include is sparse operations
+low rank operations permutations uh
+discrete fourier transforms discrete
+cosine transforms uh wavelet transforms
+um so many different operations that
+we're going to see are very useful uh in
+architecture search
+so going back to our applications we're
+going to substitute these k matrices in
+for this discrete fourier transform and
+use them to define our architecture
+space so k l and m which is uh which
+kind of encodes what operations we're
+using uh where will basically be how
+we'll basically define how big our
+architecture search space is and the
+reason this is nice beyond uh beyond the
+properties of the gaming trees they
+discussed is that they preserve all this
+preserves the efficiency and short
+description length of convolutions so
+all this because kl and m are still just
+uh still have this fast square like
+structure uh they still uh maintain the
+efficient matrix vector uh
+multiplication
+uh quality so we're not just using
+arbitrary matrices that would be too
+complex but on the other hand it allows
+us to express many different operations
+of interest
+and specifically
+it allows us to express uh all the
+all but one of the operations in the
+dart space so that serious space i
+discussed before all of them except max
+pooling so average filling convolutions
+dilations of various kinds they're all
+included in the search space which i'm
+representing by this blue blob
+uh it also is going to include all
+convolutions in the popular uh python uh
+neural networks package called pytorch
+it which has that many dilated
+convolutions it has transpose
+convolutions and so on it can express
+all of those convolutions so you can
+search over like when searching this
+operation search base it can search over
+all these convolutions
+a very neat result is that we can
+actually express graph convolutions for
+fixed graphs and the reason we can do
+this is because graph convolutions
+basically depend on multiplying the
+input by the adjacency matrix of the
+graph roughly speaking and since the
+adjacency matrix matrix is sparse it can
+be represented by k matrices and so it
+is contained in our search space once
+you work out the math
+and finally yes
+what about
+the fully connected layers and uh
+activations
+uh so fully connected layers uh is kind
+of a tricky question some people might
+say that fully connected layers are
+equivalent to a convolution with uh
+with a filter size one but that's
+not necessarily the case uh the issue
+with fully connected layers is that
+they're a bit too expressive if you
+apply them to the full image so
+we can't necessarily express those
+unless you allow your parameter space to
+be really large
+um your other question was about uh
+activations um activations are
+non-linear operation and so we can't
+actually express them uh one of the one
+of the key things we identified with uh
+with all these darts operations is that
+seven out of eight of them were linear
+so they had this form where once you
+gave them parameters uh they could
+express a w they could be expressed as a
+linear matrix multiplied times x for
+some a right
+but non-linear non-linear activation
+functions won't have that property so
+that's why we can't for example have max
+pooling and also operation and also
+activations
+um but we can still search over them
+using some other algorithm it's just it
+won't be covered by this experience
+okay
+thanks for the question
+right and so the last thing i think
+that's uh i think very neat also is that
+it expresses the fourier neural operator
+i'll get into exactly how it expresses
+that later
+and this is the state of the r at least
+before us for these neural pd solvers
+that people have been developing
+at least on the benchmarks that they
+guessed
+okay so now that we have this search
+space of xd operations
+we're going to briefly discuss how we
+can actually use them uh to do this
+we're going to
+we're going to mod modify the standard
+pipeline for how people might use other
+deep neural networks in practice
+so the standard pipeline is you obtain
+your data
+you choose some convolutional network
+topologies such as linnet resnet vgg
+there's many networks that people have
+come up with
+and then you're going to apply your this
+neural network to uh and by training
+model ways for it by using stochastic
+gradient descent or some other
+gradient-based optimization algorithm
+such as atom
+on some loss function depending on how
+well this network fixed your data fits
+your data and then you're what you're
+going to do is it's not going to work
+the first time
+so you're going to evaluate how well it
+did on some uh some validation data say
+and tune as needed so tune your
+optimizer maybe choose a different
+topology so on
+the way we're going to apply xd
+operations is
+quite simple once we just basically a
+simple insertion into uh into the
+standard pipeline what we're going to do
+is replace all convolutions in this
+convolutional mirror network by an xd
+operation initialize as convolutions
+we're going to call this also warm
+started as convolutions and the re the
+way we specifically do this as uh if you
+remember the k matrices that we use to
+parameterize our architecture search
+space we're going to initialize them as
+the dfts or inverse dfts as needed
+to kind of make sure that the network
+starts as a convolution because it seems
+convolutions are a good starting point
+at least and then we're going to allow
+them to vary uh these architecture
+parameters to vary uh together with the
+model weights by also training them
+using some algorithm such as to cast the
+gradient descent or atom and again we
+will tune all this also is needed but
+it's just basically an extra a little
+amount of tuning for the architecture
+optimizing
+so before i get into some empirical
+results that we have are there any more
+questions on
+the setup uh and on the design of our
+architecture systems
+sorry on the previous slide i'm not
+clear are you doing bi-level
+optimization as in friendship
+architectures or is
+it's a great question
+so in
+in this work we don't do bi-level
+optimization in this work we're actually
+just going to do simultaneous training
+of uh of the model weights and the
+architecture parameters
+this does indeed go against some or
+maybe most architecture search
+algorithms we'll do this by level
+optimization step uh and there's no real
+reason why you can't apply to our in our
+case but we found that uh
+simultaneous optimization so single
+level works
+well enough and is simpler
+so we used single level in this case
+that's a great question
+okay thank you
+so i have one one question i think i'm
+following all this but just to make sure
+there are no
+integer
+variables everything's continuous
+yes this is an excellent question uh
+indeed there is no integer variables uh
+or no like binary variables and so on
+and this indeed is kind of a difference
+from standard architecture search
+algorithms or search spaces right where
+it's really a question of do i use a
+three by three convolution or a five by
+five convolution or average pooling
+these are all discrete questions that
+you can encode as indeed an integer or
+kind of like a binary string
+um and so yeah there there is no
+discrete there's no discreteness here so
+we train these architecture parameters
+and
+after training we don't do anything with
+them we don't have to discretize or
+anything we can just apply gradient
+descent and be happy
+yeah that that's awesome
+thank you great questions
+okay great so i'll keep going then uh to
+discuss some applications which we're
+pretty excited about
+um i'm going to really focus on the
+applications that i think are very
+relevant to livermore and i think are
+the most exciting uh kind of discoveries
+in our work um but before going into
+that we do have a variety of different
+tasks we evaluated on so remember our
+goal was to see how well neural networks
+do on a diverse set of tasks so kind of
+to present this work we need to evaluate
+on a diverse set of tasks so for example
+as a baseline we started by seeing you
+know
+regular cnns do well on regular image
+classification uh the question is
+uh or what we try is permuted image
+classification where we apply a
+permutation to the rows and columns of
+an image so for example this image of a
+horse if you apply some permutation to
+it you'll get
+what looks like nonsense nonsense on the
+right but in principle if you unpermute
+this then you should be able to do just
+as well with a cnn as long as you have a
+permutation in front of it right so if
+we apply it to that we do much better
+than a cnn
+and part partially the reason is because
+permutations followed by convolutions
+are also an operation in our search
+space which is great unfortunately we
+don't do quite as well as exactly on
+permeating and then applying a cnn but
+that's of course i think quite a
+difficult problem
+and then we go on to less toys tasks so
+for example predicting uh distance
+prediction and protein folding which is
+a two-dimensional problem where you
+extract some features from uh your
+protein strings and you try to predict
+uh the
+correct distances between them uh and
+this is part of the kind of protein
+folding pipeline that's been popularized
+by things like alpha fold from deepmind
+that you may have heard they use the
+transformer model here it's much more
+advanced but we're just doing a baby
+evaluation use then comparing to the
+cnns and we also perform cnn's at least
+here
+and also we look at next note prediction
+in sheet music so kind of an alternative
+to language modeling you can predict
+notes in like what is the next note in
+uh corral or a fugue um
+and here we also outperform uh regular
+convolutional neural networks with even
+if the neural networks have this custom
+designed dilation pattern
+but the focus i think of this talk will
+be on neural pde solving
+so that i'll get into that now
+so neural pd solvers
+maybe many of you have seen uh seen some
+of this work but the setup is basically
+that you
+you want to sample problems a partial
+differential equation solving problems
+from some distribution over the initial
+conditions of say a fluid state
+and for each problem we're going to
+generate a quote-unquote ground trade
+solution this might have error as solver
+as classical solvers do
+but we're going to generate this what
+we'll call a round-trip solution using
+some standard solver such as crank
+nicholson or we can go more advanced but
+this is what the machine learning
+community has used
+and we're going to train a neural
+network to learn a function from these
+initial conditions to a later state so
+at time equals zero we have this uh
+initial condition of the fluid state
+we'll run crank nicholson to get
+the solution at time equals 50 and this
+is going to be our training data our
+goal is to train a neural network that
+predicts from some distribution over
+initial conditions like this what the
+final condition what the final state of
+the fluid will be at time
+and 50.
+targeted application here is to directly
+use this so i think uh if you have a
+kind of a repeated repeated need to
+solve partial differential equations
+start starting from some distribution
+over similar uh similar initial states
+and similar boundary conditions and so
+on
+then this might be useful because this
+uh this will only be one forward pass
+through a neural network rather than
+running an iterative solver for many
+time steps
+another big application this is inverse
+problems so here if you have a final
+state and you have some distribution
+that you want to solve over initial
+states can you
+use can you learn
+uh can you learn solutions such that you
+can basically sample from your initial
+distribution and basically speed up your
+markov chain monte carlo algorithm for
+your inverse problem uh to figure out
+the initial state faster
+and then of course there is the idea of
+transferring to new problem domains say
+you have a
+say you can train a very
+like a very coarse-grained solver
+neural network solver can you use that
+to improve uh classical solver and so on
+and so the operations that people have
+been using for
+training these neural pd solvers uh
+really started with the standard
+approach of can we apply convolution to
+this problem so this is going to be the
+baseline we're going to use people apply
+a cnn to these inputs they're nice 2d 1d
+3d inputs so we can apply our standard
+convolutions to them
+unfortunately convolutions don't work
+quite well here at least in the settings
+we've looked at
+and many other people have looked at the
+performance decreases as the resolution
+increases and so the issue is as you
+want as you want to increase the
+resolution of
+the grid you're evaluating on the
+performance is going to get worse and in
+general the performance is also just not
+good the relative error is high as
+wilson
+now this year at uh at a machine
+learning conferences the conference
+there was uh introduced a dysphoria
+neural operator or fno uh from a group
+at caltech and it resulted in much
+stronger performance that was three
+orders of magnitude faster than
+traditional solvers so this was not a
+improvement over convolutions but uh the
+forward pass through this network based
+on this flair neural operator was much
+faster than running a traditional solver
+on the same problem and you got
+consistent performance also across
+resolutions which it was a big plus
+and now what we're going to do is
+compare xd operations to these two
+uh older operations
+so the great thing about xc operations
+and we didn't design it this way but
+this uh we've discovered that xdf
+reasons contain a lot of new a lot of
+existing things uh they contain both
+convolutions and fnos we'll see epinos
+how they contain epinopes in a bit
+they are slower but we still believe
+they're fast enough to be useful so
+they're basically maybe two and a half
+two to two and a half orders of magnetic
+faster than traditional solvers rather
+than three orders of magnitude and we'll
+discuss some ways that we're looking at
+to improve their efficiency
+so first we'll look at what the square
+neural operator is
+and basically what it is is you take
+your convolution and you get rid of this
+fourier transform that you apply to your
+filter weights so it's basically the
+identity operation
+and then you then you basically apply it
+in the same way you might apply a
+convolution
+and the great thing about this uh in our
+case at least is that this of course is
+also an xd operation right because we
+used to have a fourier transform here uh
+to initialize our kl and m uh now we
+know that an identity operation is a
+very efficient operation it uh is
+contained in the set of k matrices we're
+using to encode these so it is of course
+also an xd operation
+and these fourier neural operators on
+say an inverse problem requiring uh
+three thousand uh thirty thousand solves
+uh they can determine the initial
+vorticity of a neighbor stroke system uh
+in two and a half minutes at least as
+advertised although this kind of hides
+the twelve hours it takes to generate
+the training data using cranktanklesson
+and to train the network um
+but it's still faster than your standard
+solver which takes 18 hours now this is
+fmo this is not us
+this is kind of the motivation of this
+work and kind of the baselines that
+we're going to be comparing against
+are there any questions so far
+okay so the experiments we're going to
+consider taken directly from
+from previous work
+is the burgers equations on the domain
+from zero to one with random initial
+conditions a darcy flow on a 2d domain
+also with random initial conditions and
+two dna stokes on the zero to one domain
+or 2d domain but also with the time
+domain and with some random initial
+verticity
+and the discretization is going to just
+be a square grid in time and we're going
+to measure performance and as the
+average of squared losses of our grid
+vertices uh normalized to the so
+basically the relative error
+and we're going to borrow all backbone
+networks and settings from this previous
+fno paper where possible to ensure fair
+comparison
+okay so on the
+1d and 2d problems without the time
+component so the kind of simpler
+problems to study this is how a cnn does
+so on the x-axis you have the resolution
+so starting at around 100 cells and
+going up to about 10 10 000 cells in the
+1d case and from around 100 to 400 cells
+in the 2d case you can see that as you
+as you increase the resolution the
+performance of the cnn backbone gets
+worse uh in terms of l2 relative error
+so it starts off not great and it gets
+worse as you increase the resolution
+on the other hand this uh
+this xd approach so we basically uh
+insert xd into so initialize with the
+same network the same convolutional
+neural network
+but allow both the model weights and
+the dfts so the k matrices initializes
+dfts to vary and if we train them
+together then it turns out that we can
+get good and consistent performance
+across resolutions so you'll see that we
+have much better performance and
+it's much flatter especially in the 2d
+case on darcy flow but also in berger's
+equation basically get
+good performance across all resolutions
+using this approach
+and it turns out it's even better than
+uh this custom design for a neural
+operator approach uh which does do much
+better than cnn but remember is custom
+design we all we had uh to train our
+approach was you know our xd approach
+and knowledge of convolutions whereas f
+and l was custom design so even though
+we knew that con that
+uh that fnl is contained in the xd space
+we didn't use it we didn't use that fact
+to actually get this good result and it
+turns out that if you initialize xd with
+fnos it actually does slightly worse
+than initializing them with convolutions
+which is a somewhat surprising result to
+us considering how much better fnos do
+here
+and then our second or last set of
+evaluations for the pde problem we also
+looked at navier stokes and here we got
+a very similar story over here we're
+tracking across viscosities rather than
+resolutions again in terms of uh l2
+relative error on the y-axis and you'll
+see that we again do much better than uh
+cnns using xd operations despite
+starting or initializing our
+architecture search with a convolution
+and it again does slightly better than
+the fno in this study
+so to recap uh the reason we might want
+to use uh our xd operations uh is or the
+reason why we think this is an exciting
+line of work in general for many
+applications and not just pd solvers is
+that you can transform any convolutional
+neural network background so a resonant
+vgg and so on into a search space over
+operations and you can find something
+better than convolutions for any problem
+you might think of
+and so in this work i've really focused
+only on the partial differential
+equations operation but we've looked at
+a lot of a lot of different
+applications where this has actually
+worked well so for example we've uh we
+found it worked well on permuted image
+classification or image classification
+where instead of permuting we just
+flatten the image and pretend it's a 2d
+or a 1d problem so these are kind of toy
+problems but our approach works well
+here as we discussed it works quite well
+on neural pd solving
+it works well on this module for
+distance prediction for protein folding
+which is an emerging application that
+people are applying many models to
+there's a lot of focus on this but i
+think the fact that it works that just
+starting from cnn and our approach
+already improves upon that is a positive
+sign
+and it works we've also seen improvement
+both on kind of classical sequence
+modeling tests so language modeling text
+prediction predicting the next word we
+saw some improvement over convolutions
+there but also in less study tasks like
+music modeling or
+some also results on financial time
+series
+of course uh not everything can work
+well on everything so uh to be
+completely transparent we have also
+not done a lot better than the baseline
+on kind of your more standard tasks like
+image classification so convolutions
+seem to already work great for image
+classification and we
+so far haven't seen
+our operations improve upon image
+classification yet
+and similarly for audio classification
+it seems that convolutions do quite well
+and we don't see much improvement using
+these xd operations
+i think uh
+broadly speaking i think these results
+where we do much better on some
+applications and not others uh is
+indicative of the fact that you know
+these existing applications are really
+located in this
+tip of the iceberg setting where we
+we've studied them for a long time and
+we're not going to possibly see much
+improvement using uh or see very strong
+improvement using something like a more
+general search space for operation on
+the other hand i think a lot of these
+applications do come in the more
+emerging applications in machine
+learning or off machine learning and we
+hope to see
+a lot more a lot more progress using
+something like this or work that builds
+on it in the future
+now i'd also like to get into what xd is
+not uh and it's not a replacement for
+classical topology search neural
+architecture search algorithms so for
+example uh the dart space uh i think
+deep hyper from argonne um and many
+other application approaches that kind
+of
+decide which operations to use uh where
+and so on decide connectivity in the
+neural network and so on uh what we
+believe is that these remain important
+and that xd is solving a somewhat
+different problem of discovering new
+operations and not necessarily
+connecting existing ones
+and we haven't done this yet but i think
+the right approach here is to use them
+in conjunction
+with these
+classical approaches general
+architecture search where we for example
+we might find a good convolutional
+neural network first and then apply xd
+operations
+and the reason we think this is a good
+idea is because
+so far at least in our evaluations of
+things like darts and uh not d piper but
+things like auto deep lab
+on for example pds shows that they alone
+using them alone is not sufficient to
+get good performance so for example is
+auto deep lab which is a classic
+neural architecture search approach
+actually does get consistent performance
+across resolutions but consistently bad
+performance
+compared to say the fno or the xd
+so we believe using them in tandem might
+be a fruitful direction
+it's also not a direct way to improve
+efficiency of your network uh applying
+xd to a cnn so there is a large cost to
+replacing your
+uh your for your uh your dfts by uh by
+xd operations or by k matrices uh it is
+uh five times slower to train for
+example on the pde test
+on the protein task it's two times
+slower and similarly for inference it's
+currently slower and these are things we
+have to work on in order to get this uh
+to actually perform well and be useful
+on some of these tasks especially if a
+computation is critical for usefulness
+such as in the pde task
+and there are also large memory costs
+currently associated with this so yeah
+this is definitely uh kind of ongoing
+work that we're working on
+and specifically to get into this uh the
+inefficiency in xd operations is
+actually pretty hard to nail down uh but
+there's dependence on new software for k
+matrices you know we're competing with
+this paper uh with ffts which is a
+classic algorithm with lots of work over
+many years decades
+and we're competing we're
+replacing this
+by
+by something that was introduced a
+couple years ago maybe one year ago
+and we're basically still working on how
+to actually make this fast
+and there's other reasons we can't take
+advantage of say the permission symmetry
+of dft um
+and the kernel filters we have to pad
+them to the input size before
+multiplying them and this of course all
+adds to
+the complexity but ongoing efforts is to
+actually develop this better software or
+to develop alternative structured
+matrices that are more gpu friendly so
+all this is trained on gpus how can we
+make structured matrices that are as
+expressive or similarly expressive to
+these k matrices but actually make them
+run efficiently
+and also developing approximations or
+truncations that can speed things up
+while not losing too much in accuracy
+we're also working on benchmarking so as
+we proceeded with this problem it turned
+out that evaluating neural architecture
+search on many of these tests was more
+non-trivial than we expected
+it's difficult to define what a diverse
+task is how many do you need to evaluate
+on how do you actually compare different
+methods if you have a lot of tasks to
+evaluate on and how do you consider
+computational tradeoffs uh so this is
+something we're working on with this
+benchmark for neural architecture search
+called mass bench 360 which can be found
+at this website
+uh currently you have 10 tasks which are
+understudied but feasible to evaluate on
+an academic budget they include many
+different tasks
+from the protein so the pd solving tasks
+we've discussed the protein folding
+tasks from genomics audio and so on
+and we also have evaluated different
+methods at different budget constraints
+on these tasks and have some interesting
+results
+and finally uh
+there's uh we're also working on new
+search spaces so so far we've developed
+a search space that contains a lot of
+interesting operations as i've discussed
+it contains graph convolutions and
+agencies fno operations many different
+kind of standard convolutions or
+transpose convolutions uh and of course
+an infinite number of operations because
+it is a continuous space on the other
+hand it doesn't contain everything
+as was mentioned it doesn't contain
+things like max pooling or
+non-linearities it doesn't contain
+self-attention uh so this is a plot of
+what like this transformer architecture
+self-attention architecture actually is
+and so
+so of course it's not going to contain
+everything we might want because there
+are many different nonlinear operations
+that we might care about and but the
+goal i think is to see if similar ideas
+to xd can be applied to define
+new search spaces that are efficient to
+search over but contain maybe some of
+these operations and of course many more
+so different types of convolutions say
+approximations to self-attention which
+is a very important task since
+self-attention is quadratic can we
+define uh can we similarly find kind of
+an elegant definition such as ours
+to encode these
+operations in a way that makes them
+searchable uh and also usable for uh for
+new applications
+and so that largely con concludes my
+talk uh i hope you uh i hope i've
+convinced you of the importance of using
+of studying diverse applications
+using neural architecture search and i
+hope you can also try out our method
+which is available as software on github
+i'd like to thank my collaborators of
+course nick roberts who co-led the work
+with me uh tree dial liam lee chris ray
+and amy talker
+and you can also see our paper which
+will appear at the nerves conference and
+machine learning uh this december uh it
+is an archive and of course please feel
+free to email me
+with any questions
+thank you thank you so much yeah thank
+you thank you misha for the wonderful
+talk it was wonderful uh let's have a q
+and a sessions
+um you can either post your questions to
+the chat room or you can unmute yourself
+and
+directly ask questions let me start with
+my question then while you guys are
+preparing your questions
+so the challenge of the pd is over is
+that as
+the problem can get
+pretty complex and becomes large
+very easily and therefore the simulation
+data can be large and
+you know the corresponding image can be
+very large and
+therefore the you know this
+arc the neural net architecture it has
+to include a lot of
+parameters and noise and edges etc so
+um i guess the xd is slower actually
+than the the cnn
+in terms of training so i guess that has
+to be
+addressed further in order to be
+applied to a lot truly large-scale
+problem i guess
+if you can connect on that
+yes so that that is definitely true in
+order to apply
+in order to apply this to truly large
+scale pde problems you will need to you
+will need to address this problem uh
+there is i think some hope and that uh
+our collaborators are working on i think
+uh more uh like better uh structured
+matrices than the k matrices that might
+be faster more cpu friendly uh there's
+also work on
+uh on
+truncating uh the things we need to do
+or they're kind of truncating the
+uh the outputs of or the input to these
+k matrices in order to make the input
+smaller while not actually losing so
+much air it's a bit difficult to get
+into but basically there's a lot of
+padding involved that and you end up
+with a lot of zeros and places um in the
+internals once you try to actually
+multiply all these things and kind of
+getting rid of these zeros would
+hopefully get
+uh hopefully get you better results
+um i think they're also hope in the
+sense that for example fno
+is actually a very efficient operation
+not r not xd but fno is actually quite
+efficient uh it is more efficient i
+think than cnns at least in the
+applications we've tried
+um
+and there's hope i think in uh in sort
+of using uh using similar structures to
+what they're doing so for example uh
+restricting ourselves to a search space
+that contains fnos but does not contain
+convolutions there are ways to do that
+that i think might be faster than
+forcing ourselves to contain
+convolutions uh so i think there there
+are definitely directions for making
+this faster for that application
+specifically
+and yep that those directions will
+hopefully be useful to other
+applications that also require speed
+yep um cannot wait until until that's
+actually come true my next question is a
+some sort of clarification um question
+xd you said cannot apply
+to the nonlinear operators such as the
+activate some nonlinear activation
+functions
+but that doesn't mean that you cannot
+use activation nonlinear activation
+function in your neural net it's it's
+just you are not searching for those um
+you know activation function
+yeah that's exactly true yes um yeah
+it's just you substitute in like a
+convolution is itself not a nonlinear
+operation you substitute it for the
+convolution uh but then you maintain the
+non-linearity after it um that's network
+so yes all our networks doesn't contain
+revolutions yes
+great great okay is there any other
+question from audiences
+you can
+uh okay kevin asked
+how much more expensive is it on memory
+usage
+i guess it's talking about actually
+yes
+so memory is also it can also be
+challenging um it can be
+up to
+2x more expensive 5x more expensive on
+memory as well um
+i think it basically aligns with uh with
+the computational expense
+and this is something also that we're
+working on uh
+yeah
+i think specifically the the idea of
+truncation uh which is something that
+fno uses to make themselves make it more
+efficient is something that will
+hopefully also make this more efficient
+and basically reduce the ma the like
+large kind of entries of zeros were
+passing around
+right sounds good thank you um the next
+question is from charles uh
+if it's he asked if it's too expensive
+to apply xd on his full data will it be
+worthwhile to apply xt on
+part of his data let's say
+he could only
+run xd on
+hundredth or thousandth of uh useful
+data
+a partial application
+yeah so certainly there's a question of
+whether you can uh whether you can
+develop trade-offs between having more
+samples and having uh having a more
+expensive network right so for example
+the fno approach since it's more
+efficient you might be able to run it on
+more data
+more quickly
+and get better results on the other hand
+to train xd uh it takes a lot longer and
+so you might not be able to train on as
+much data but it is a bit better so you
+can develop kind of like a trade-off
+curve there of at some point maybe i
+need if i have enough data you know i've
+run
+my classical solver for long enough
+uh then
+uh then you should maybe use fno uh or
+if you don't have a lot of data um then
+you can use xd uh and that will be
+better it really it does depend on your
+problem and maybe there is a trade-off
+that can be found that is advertises
+for our case
+okay great um
+all right um i have one more questions
+you said
+well
+i'm just curious um
+you suggested to combine the you know
+um
+you know coupled search type of nis and
+your xd types of nih um they can be
+combined um maybe
+purples can be um you know optimized
+first and then applied xd after that
+how about like you know optimizing both
+simultaneously you know both searches
+the base
+do you think that is possible
+uh it's a bit
+it's going to be a bit trickier i think
+to do that simultaneously
+depending on exactly how you want to do
+it
+but it might be tricky because the dart
+search space and many other kind of
+classical topology search spaces are
+discrete
+and so if you optimize them
+simultaneously you're going to have to
+round after your training procedure and
+that might
+ruin kind of any benefit you're getting
+from xd
+uh because you've kind of changed your
+network structure dramatically once
+you've rounded
+got it okay yeah so it's like you're
+solving like
+discrete continuous optimization
+simultaneously
+yes yeah and so that's difficulty there
+okay
+sounds good
+all right
+is there any other questions from
+audience
+you cannot mute yourself and ask
+questions directly
+well if not uh let's thank our speaker
+today for the wonderful talk michelle
+from carnegie mellon um i think we all
+have learned a lot and
+and we all agree that
+xt or nas in general is very useful um
+so thank you so much misha what a
+wonderful talk and i hope that um the
+future collaborations will uh will will
+happen uh you know after this uh the
+ddps seminar so thank you let's thank
+misha
+thank you so much for having me this is
+very great questions great great all
+right let's uh conclude um the the
+seminar today thank you so much everyone
+to joining us and i think we will have
+another gdpr seminar next week
+if not then two weeks from today until
+then stay healthy everyone okay bye
+everyone

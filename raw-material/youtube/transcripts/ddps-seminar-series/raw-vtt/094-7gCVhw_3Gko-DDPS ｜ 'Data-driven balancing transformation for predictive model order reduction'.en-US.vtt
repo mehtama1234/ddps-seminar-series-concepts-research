@@ -1,0 +1,2228 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:03.840 --> 00:00:09.800
+All right. Welcome to the DDPS seminar everyone.&nbsp;
+Before we introduce our invited speaker,&nbsp;&nbsp;
+
+00:00:09.800 --> 00:00:15.120
+let's go over some rules and logistics. First&nbsp;
+of all, please mute yourself during the talk.&nbsp;&nbsp;
+
+00:00:15.120 --> 00:00:22.400
+But if you have questions, you can unmute&nbsp;
+and ask questions or use chatroom to post&nbsp;&nbsp;
+
+00:00:22.400 --> 00:00:27.760
+your questions so that we can address them&nbsp;
+in q&amp;a session at the end of today's DDPS&nbsp;&nbsp;
+
+00:00:27.760 --> 00:00:34.080
+seminar is open to external audiences.&nbsp;
+So no class wide discussion. Finally,&nbsp;&nbsp;
+
+00:00:34.080 --> 00:00:40.720
+the talk today will be recorded and uploaded&nbsp;
+in our YouTube channel. That's about it. Now,&nbsp;&nbsp;
+
+00:00:40.720 --> 00:00:48.880
+let me briefly introduce our speaker today.&nbsp;
+It is an honor to host Dr. Elmas. With Xi'an,&nbsp;&nbsp;
+
+00:00:48.880 --> 00:00:56.280
+who is a postdoctoral fellow at the Department of&nbsp;
+Aerospace Engineering at University of Michigan.&nbsp;&nbsp;
+
+00:00:56.280 --> 00:01:04.520
+She received her PhD in mechanical engineering&nbsp;
+from Kansas State University in 2020. With her&nbsp;&nbsp;
+
+00:01:04.520 --> 00:01:08.600
+dissertation focused on stabilization of&nbsp;
+projects and basically the student models&nbsp;&nbsp;
+
+00:01:08.600 --> 00:01:15.720
+for real time prediction of dynamics in strongly&nbsp;
+nonlinear compressible flow obligations. During&nbsp;&nbsp;
+
+00:01:15.720 --> 00:01:21.480
+her postdoctoral experience at the University&nbsp;
+of Michigan, she has been working with Professor&nbsp;&nbsp;
+
+00:01:21.480 --> 00:01:28.840
+Karthik, Euro Sami at the computational&nbsp;
+neuroscience lab on surrogate modeling and&nbsp;&nbsp;
+
+00:01:28.840 --> 00:01:34.880
+non intrusive modal reduction in complex systems&nbsp;
+using system identification and machine learning.&nbsp;&nbsp;
+
+00:01:34.880 --> 00:01:42.760
+Today elnaz will present an exciting topic, which&nbsp;
+is data driven, balancing trans transformations&nbsp;&nbsp;
+
+00:01:42.760 --> 00:01:48.320
+for predictive model order reduction. I'm&nbsp;
+sure we will hear an exciting talk today.&nbsp;&nbsp;
+
+00:01:48.320 --> 00:01:55.280
+But before I pass the baton, let me ask a couple&nbsp;
+of questions to Elena's so that we get to know her&nbsp;&nbsp;
+
+00:01:55.280 --> 00:02:03.280
+better and make this seminar somewhat informal.&nbsp;
+It's okay here the question goes. Obviously,&nbsp;&nbsp;
+
+00:02:03.280 --> 00:02:08.440
+you are passionate about data driven modeling&nbsp;
+in general, is there any moment in your life&nbsp;&nbsp;
+
+00:02:08.440 --> 00:02:16.040
+when you realize that? Wow, this is it? This&nbsp;
+is the field I would like to commit my career.
+
+00:02:16.600 --> 00:02:21.920
+Well, first of all, thank you so much for&nbsp;
+the introduction, Dr. Chou. And regarding&nbsp;&nbsp;
+
+00:02:21.920 --> 00:02:29.840
+the question, I should say that, yes, I guess,&nbsp;
+when I realized the vast application of model&nbsp;&nbsp;
+
+00:02:29.840 --> 00:02:37.200
+reduction in many query applications, and how&nbsp;
+these methods can accelerate applications,&nbsp;&nbsp;
+
+00:02:37.200 --> 00:02:42.360
+like uncertainty quantification, and design&nbsp;
+optimization, I was really amazed by that.&nbsp;&nbsp;
+
+00:02:42.360 --> 00:02:47.480
+And I thought that this, this should&nbsp;
+be the topic that I should pursue in my
+
+00:02:47.480 --> 00:02:54.360
+future career. Awesome. Awesome.&nbsp;
+Okay, the floor is yours.
+
+00:02:54.360 --> 00:03:02.480
+Okay, thank you so much. I'm very glad to have&nbsp;
+the opportunity to be here in this seminar today,&nbsp;&nbsp;
+
+00:03:02.480 --> 00:03:11.680
+and talk about our studies on balanced truncation.&nbsp;
+So first and foremost, let me introduce the&nbsp;&nbsp;
+
+00:03:11.680 --> 00:03:17.320
+airport Center of Excellence on multi fidelity&nbsp;
+modeling of rocket combustion dynamics, which is a&nbsp;&nbsp;
+
+00:03:17.320 --> 00:03:23.520
+collaboration between five different universities&nbsp;
+on advancement of model reduction methods for&nbsp;&nbsp;
+
+00:03:23.520 --> 00:03:30.280
+complex systems. And what I'm going to talk about&nbsp;
+in today's presentation is mainly part of our&nbsp;&nbsp;
+
+00:03:30.280 --> 00:03:37.640
+studies on model reduction in linear systems. They&nbsp;
+have been amazing developments in this group on&nbsp;&nbsp;
+
+00:03:37.640 --> 00:03:43.720
+other topics as well under this project, including&nbsp;
+basis adaptation operator inference methods and&nbsp;&nbsp;
+
+00:03:43.720 --> 00:03:50.320
+neural network based roms that you can check&nbsp;
+out here if you're interested. And with that,&nbsp;&nbsp;
+
+00:03:50.320 --> 00:03:58.280
+let's get started. So, as you know, reduced order&nbsp;
+modeling techniques are have emerged to substitute&nbsp;&nbsp;
+
+00:03:58.280 --> 00:04:05.320
+their high fidelity simulations in many career&nbsp;
+applications, in which we need to repetitively&nbsp;&nbsp;
+
+00:04:05.320 --> 00:04:12.340
+compute the qualities of interest for 10s of&nbsp;
+1000s of times. And so using the high fidelity&nbsp;&nbsp;
+
+00:04:12.340 --> 00:04:19.040
+simulations, some at least millions of degrees of&nbsp;
+freedom in these applications will be infeasible.&nbsp;&nbsp;
+
+00:04:19.040 --> 00:04:25.600
+Mother reduction methods fall under two&nbsp;
+categories. intrusive and non intrusive, intrusive&nbsp;&nbsp;
+
+00:04:25.600 --> 00:04:31.440
+intrusive methods need access to the governing&nbsp;
+equations and non intrusive methods mainly rely on&nbsp;&nbsp;
+
+00:04:31.440 --> 00:04:36.920
+data, and they don't need access to the governing&nbsp;
+equations. And now if you're familiar with model&nbsp;&nbsp;
+
+00:04:36.920 --> 00:04:45.040
+reduction, you know that sorry, projection based&nbsp;
+model reduction methods are being applied to&nbsp;&nbsp;
+
+00:04:45.040 --> 00:04:50.160
+problems of increasing increasing complexity these&nbsp;
+days, such as the examples that I've shown in&nbsp;&nbsp;
+
+00:04:50.160 --> 00:04:58.080
+these pictures. And this is enabled only by making&nbsp;
+major improvements in that standard projection&nbsp;&nbsp;
+
+00:04:58.080 --> 00:05:03.480
+based model reduction and framework so Let's first&nbsp;
+take a very quick look at the standard process for&nbsp;&nbsp;
+
+00:05:03.480 --> 00:05:09.640
+projection based ROMs. In which let's consider&nbsp;
+this set of generic equations as our heart&nbsp;&nbsp;
+
+00:05:09.640 --> 00:05:16.520
+hyperreality model, what we do is that we first&nbsp;
+use data to compute a low dimensional to obtain&nbsp;&nbsp;
+
+00:05:16.520 --> 00:05:22.200
+a low dimensional space using a dimensionality&nbsp;
+reduction method. For example, proper orthogonal&nbsp;&nbsp;
+
+00:05:22.200 --> 00:05:27.040
+decomposition is a popular choice. And so let's&nbsp;
+say there are purely modes, they're also called&nbsp;&nbsp;
+
+00:05:27.040 --> 00:05:32.880
+that trial subspace here are represented by&nbsp;
+matrix V. And then we use a test subspace W to&nbsp;&nbsp;
+
+00:05:32.880 --> 00:05:39.240
+project their governing equations onto their lower&nbsp;
+dimensional space. In Galerkin projection that has&nbsp;&nbsp;
+
+00:05:39.240 --> 00:05:45.160
+centralized subspaces are the same. Now, there&nbsp;
+are certain limitations in the standard process,&nbsp;&nbsp;
+
+00:05:45.720 --> 00:05:51.080
+and specifically periodic working procedure that&nbsp;
+prevents application of the standard process&nbsp;&nbsp;
+
+00:05:51.080 --> 00:05:57.720
+to complex problems like this. What are the&nbsp;
+limitations is that pod is a linear dimensionality&nbsp;&nbsp;
+
+00:05:57.720 --> 00:06:03.680
+reduction method. So if you're if you're dealing&nbsp;
+with strongly nonlinear problems, then we're gonna&nbsp;&nbsp;
+
+00:06:03.680 --> 00:06:09.000
+need a lot of modes to capture the true dynamics&nbsp;
+and that defeats the purpose of model reduction.&nbsp;&nbsp;
+
+00:06:09.000 --> 00:06:14.680
+And on the other hand, pod is biased towards&nbsp;
+the most energetic modes. So, for example,&nbsp;&nbsp;
+
+00:06:14.680 --> 00:06:19.960
+in control applications, we are mainly interested&nbsp;
+in the most control about modes rather than the&nbsp;&nbsp;
+
+00:06:19.960 --> 00:06:26.560
+most energetic modes. So, pod is only suitable for&nbsp;
+these applications. If the most controllable modes&nbsp;&nbsp;
+
+00:06:26.560 --> 00:06:32.120
+are also the most energetic modes, we have similar&nbsp;
+issues with observability as well. For example,&nbsp;&nbsp;
+
+00:06:32.120 --> 00:06:37.760
+if you're interested in capturing acoustic modes&nbsp;
+that do not contain a lot of energy, then these&nbsp;&nbsp;
+
+00:06:37.760 --> 00:06:46.200
+modes these features will be these waves will be&nbsp;
+truncated through the standard pod process. And&nbsp;&nbsp;
+
+00:06:46.200 --> 00:06:51.200
+another limitation with the standard political&nbsp;
+working procedure is that if the Jacobian matrix&nbsp;&nbsp;
+
+00:06:51.200 --> 00:06:56.960
+of the high fidelity model is not symmetric,&nbsp;
+which is the case in many complex applications,&nbsp;&nbsp;
+
+00:06:56.960 --> 00:07:03.920
+the Galerkin method does not necessarily preserve&nbsp;
+stability through model reduction. Now, there have&nbsp;&nbsp;
+
+00:07:03.920 --> 00:07:12.000
+been many methods that are developed in their past&nbsp;
+years to address these limitations in the standard&nbsp;&nbsp;
+
+00:07:12.000 --> 00:07:16.120
+projection based model reduction methods and I&nbsp;
+believe these methods fall under these categories&nbsp;&nbsp;
+
+00:07:16.120 --> 00:07:21.800
+that I have mentioned here. The first thing&nbsp;
+that we can do is to move away from the linear&nbsp;&nbsp;
+
+00:07:21.800 --> 00:07:28.680
+dimensionality method and use a nonlinear manifold&nbsp;
+that is, that could be for example, constructed by&nbsp;&nbsp;
+
+00:07:28.680 --> 00:07:37.160
+auto encoder neural networks or to adapt the pod&nbsp;
+basis in time to get a piecewise linear subspace.&nbsp;&nbsp;
+
+00:07:37.160 --> 00:07:45.200
+And other set of methods are developed to promote&nbsp;
+symmetry in ROM equations. So that's stable&nbsp;&nbsp;
+
+00:07:45.200 --> 00:07:49.520
+stability is preserved through model reduction. We&nbsp;
+also have run stabilization techniques and closure&nbsp;&nbsp;
+
+00:07:49.520 --> 00:07:56.240
+modeling, that basically improve the reduced&nbsp;
+order models by modifying their arm equations&nbsp;&nbsp;
+
+00:07:56.240 --> 00:08:01.680
+and also hyper reduction which is outside of&nbsp;
+the scope of this talk. Now for specifically&nbsp;&nbsp;
+
+00:08:01.680 --> 00:08:07.760
+for linear systems, balanced truncation developed&nbsp;
+by marine 1981 is also a projection based model&nbsp;&nbsp;
+
+00:08:07.760 --> 00:08:15.360
+reduction method that addresses the limitations&nbsp;
+of the standard pod Galerkin projection, mainly&nbsp;&nbsp;
+
+00:08:15.360 --> 00:08:22.400
+by taking the first two approaches here. So let's&nbsp;
+consider a linear time invariant system as shown&nbsp;&nbsp;
+
+00:08:22.400 --> 00:08:27.200
+here imbalanced truncation, we are still looking&nbsp;
+for a hierarchical model representation. But the&nbsp;&nbsp;
+
+00:08:27.200 --> 00:08:32.400
+definition of hierarchy imbalance, Truncation is&nbsp;
+different from purely so unbalanced truncation.&nbsp;&nbsp;
+
+00:08:32.400 --> 00:08:37.560
+Instead of ordering the most from the most&nbsp;
+energetic to the least energetic, we would&nbsp;&nbsp;
+
+00:08:37.560 --> 00:08:43.720
+like as we do in a pod, we would like to order the&nbsp;
+most from the most controllable and observable to&nbsp;&nbsp;
+
+00:08:43.720 --> 00:08:51.960
+the least controllable and observable. And in the&nbsp;
+next, I guess, 50 minutes, we'll see how we can&nbsp;&nbsp;
+
+00:08:51.960 --> 00:08:58.880
+do that. So first things first, I'll go through&nbsp;
+some basic system theoretic topics that we need&nbsp;&nbsp;
+
+00:08:58.880 --> 00:09:06.080
+to understand unbalanced truncation and its data&nbsp;
+driven version eigen system realization algorithm.&nbsp;&nbsp;
+
+00:09:06.080 --> 00:09:10.560
+And then we'll talk about so for example, external&nbsp;
+description, internal description and system&nbsp;&nbsp;
+
+00:09:10.560 --> 00:09:15.800
+realization are the foundations for the August&nbsp;
+system realization algorithm, and reachability and&nbsp;&nbsp;
+
+00:09:15.800 --> 00:09:22.640
+observability and system grammarians are required&nbsp;
+to understand the balance truncation. And after&nbsp;&nbsp;
+
+00:09:22.640 --> 00:09:27.160
+talking about these algorithms, we'll see the&nbsp;
+results of applying against the symbolization&nbsp;&nbsp;
+
+00:09:27.160 --> 00:09:32.320
+algorithm to two numerical experiments a one&nbsp;
+dimensional reacting to a problem and then&nbsp;&nbsp;
+
+00:09:32.320 --> 00:09:39.320
+aeroacoustic prediction problem and here I will&nbsp;
+also further introduce some additional methods to&nbsp;&nbsp;
+
+00:09:39.320 --> 00:09:46.840
+reduce the offline cost of construction Abrahms by&nbsp;
+era era. So now what is the external description?&nbsp;&nbsp;
+
+00:09:46.840 --> 00:09:51.720
+There are two ways to describe a system external&nbsp;
+description and internal description. External&nbsp;&nbsp;
+
+00:09:51.720 --> 00:09:56.680
+description of a system is mainly concerned with&nbsp;
+its input output behavior. So let's consider a&nbsp;&nbsp;
+
+00:09:56.680 --> 00:10:02.160
+system to be like a black box. When we look at&nbsp;
+this black box From outside, the only things&nbsp;&nbsp;
+
+00:10:02.160 --> 00:10:08.280
+that we can see are the input signal that we&nbsp;
+are applying to the system. And as we generated&nbsp;&nbsp;
+
+00:10:08.280 --> 00:10:14.520
+by the system in response to that input,&nbsp;
+which is probably measured by some sensors,&nbsp;&nbsp;
+
+00:10:14.520 --> 00:10:18.720
+and this is what happens in many real world&nbsp;
+applications in which we don't have access to&nbsp;&nbsp;
+
+00:10:18.720 --> 00:10:25.920
+the governing equations, and we don't know what's&nbsp;
+going on inside this black black box. So external&nbsp;&nbsp;
+
+00:10:25.920 --> 00:10:34.120
+description is basically the mapping S from the&nbsp;
+inputs u to the outputs y. And for discrete time&nbsp;&nbsp;
+
+00:10:34.120 --> 00:10:41.600
+system, it's given by this equation here that&nbsp;
+takes this shape in matrix form. And this matrix&nbsp;&nbsp;
+
+00:10:41.600 --> 00:10:46.440
+in the middle of that slide is actually a&nbsp;
+weighting matrix that identifies how the&nbsp;&nbsp;
+
+00:10:46.440 --> 00:10:52.200
+outputs depends on the inputs at different time&nbsp;
+steps. Now, we want to see how we can obtain this&nbsp;&nbsp;
+
+00:10:52.200 --> 00:10:58.240
+mapping, and also whether we can use this mapping&nbsp;
+and the external description to understand what's&nbsp;&nbsp;
+
+00:10:58.240 --> 00:11:07.120
+going on inside this black box. And of course,&nbsp;
+the answer is yes. So, our linear time invariant&nbsp;&nbsp;
+
+00:11:07.120 --> 00:11:12.480
+system, the each row in that weighting matrix&nbsp;
+in the external description can be described by&nbsp;&nbsp;
+
+00:11:12.480 --> 00:11:20.120
+a sequence of constant matrices this sequence is&nbsp;
+also called the sequence sub Markov parameters.&nbsp;&nbsp;
+
+00:11:20.120 --> 00:11:25.080
+So for linear time invariant and causal system and&nbsp;
+by causal we mean the output at the current time&nbsp;&nbsp;
+
+00:11:25.080 --> 00:11:30.240
+step depends on the inputs at the current time the&nbsp;
+past time steps and not the future time steps. So,&nbsp;&nbsp;
+
+00:11:30.240 --> 00:11:36.720
+for a system under these conditions, this sequence&nbsp;
+of Markov parameters is given by the response of&nbsp;&nbsp;
+
+00:11:36.720 --> 00:11:43.120
+the system to unit impulse. So it can be obtained&nbsp;
+in a data driven manner. And each of these blocks&nbsp;&nbsp;
+
+00:11:43.120 --> 00:11:48.640
+in this sequence are p by n matrices, where p&nbsp;
+is the number of outputs and m is the number&nbsp;&nbsp;
+
+00:11:48.640 --> 00:11:57.000
+of inputs. So under these conditions, the&nbsp;
+impulse response snapshots of the system&nbsp;&nbsp;
+
+00:11:57.000 --> 00:12:06.040
+basically identify their input output behavior&nbsp;
+or the external description of their system.
+
+00:12:06.040 --> 00:12:11.640
+Now, as I mentioned, another way to describe the&nbsp;
+system is through the internal description, this&nbsp;&nbsp;
+
+00:12:11.640 --> 00:12:20.160
+is also called state space representation, which&nbsp;
+may be more familiar to you. And for discrete time&nbsp;&nbsp;
+
+00:12:20.160 --> 00:12:25.200
+system, the internal description is given by a set&nbsp;
+of difference equations as shown here, which has&nbsp;&nbsp;
+
+00:12:25.200 --> 00:12:33.800
+this exact solution at the bottom of the slide.&nbsp;
+And so here, the system is no longer a black box.&nbsp;&nbsp;
+
+00:12:33.800 --> 00:12:38.920
+So this besides their inputs and outputs, we also&nbsp;
+have information about the state and the governing&nbsp;&nbsp;
+
+00:12:38.920 --> 00:12:44.880
+equations. And this is the output equation here&nbsp;
+with where c is the output map that identifies&nbsp;&nbsp;
+
+00:12:44.880 --> 00:12:50.560
+the how the system interacts with the surroundings&nbsp;
+and use that fifth term in the exact solution here&nbsp;&nbsp;
+
+00:12:50.560 --> 00:12:56.880
+x k zero is the initial condition. And here b is&nbsp;
+the input map and A is the dynamics matrix. And of&nbsp;&nbsp;
+
+00:12:56.880 --> 00:13:02.360
+course, if the system matrices are constant with&nbsp;
+respect to time, we have a linear time invariant&nbsp;&nbsp;
+
+00:13:02.360 --> 00:13:12.920
+system. Now, we can use this exact solution of&nbsp;
+the state space representation to show that this&nbsp;&nbsp;
+
+00:13:12.920 --> 00:13:18.200
+equation at the bottom of the slide is actually&nbsp;
+that impulse response of the system. Now, why do I&nbsp;&nbsp;
+
+00:13:18.200 --> 00:13:23.800
+mention this here? The reason is that later when I&nbsp;
+when I explain eigen system realization algorithm,&nbsp;&nbsp;
+
+00:13:23.800 --> 00:13:28.360
+I will refer to this expression here as the&nbsp;
+impulse response or the sequence of Markov&nbsp;&nbsp;
+
+00:13:28.360 --> 00:13:36.000
+parameters. And I'd like to to you to see why this&nbsp;
+is their sequence of Markov parameters. So simply&nbsp;&nbsp;
+
+00:13:36.000 --> 00:13:41.200
+substitute a unit impulse for you in the exact&nbsp;
+solution and substitute x in the output equation,&nbsp;&nbsp;
+
+00:13:41.200 --> 00:13:47.920
+and you'll get the impulse response of the&nbsp;
+system at each time step. Now, as I mentioned,&nbsp;&nbsp;
+
+00:13:47.920 --> 00:13:52.840
+the sequence of Markov parameters for a linear&nbsp;
+time invariant system is given by the impulse&nbsp;&nbsp;
+
+00:13:52.840 --> 00:13:57.800
+response. So if you're convinced that this is&nbsp;
+the impulse response of the system, then we can&nbsp;&nbsp;
+
+00:13:57.800 --> 00:14:04.200
+go ahead and use this expression to obtain each of&nbsp;
+them Markov parameters in this sequence in terms&nbsp;&nbsp;
+
+00:14:04.200 --> 00:14:09.520
+of their system matrices. So for example, at the&nbsp;
+first time said k equals zero and the first block&nbsp;&nbsp;
+
+00:14:09.520 --> 00:14:15.320
+would be D. Then at the second time, step k was&nbsp;
+one, the second block would be ECB, and so on so&nbsp;&nbsp;
+
+00:14:15.320 --> 00:14:20.560
+forth. Now, I'd like to mention here that the&nbsp;
+system transfer function which is actually the&nbsp;&nbsp;
+
+00:14:20.560 --> 00:14:27.360
+Laplace transform of the impulse response of the&nbsp;
+system, and of course, the markup parameters are&nbsp;&nbsp;
+
+00:14:27.360 --> 00:14:32.640
+invariant under coordinate transformation, which&nbsp;
+means that later imbalanced truncation when we&nbsp;&nbsp;
+
+00:14:32.640 --> 00:14:43.680
+transform the system to another coordinates,&nbsp;
+these quantities remain unchanged. Now system,&nbsp;&nbsp;
+
+00:14:43.680 --> 00:14:50.400
+the system realization theory is the foundation&nbsp;
+for the data driven version of balanced truncation&nbsp;&nbsp;
+
+00:14:50.400 --> 00:14:56.760
+that we are mainly focused on in this work. And&nbsp;
+as I mentioned in many enduring applications,&nbsp;&nbsp;
+
+00:14:56.760 --> 00:15:00.920
+we do not have access to the governing equations&nbsp;
+or we do have access to equations, but we want&nbsp;&nbsp;
+
+00:15:00.920 --> 00:15:06.440
+to build a lower dimensional representation&nbsp;
+for the system. And a system realization uses&nbsp;&nbsp;
+
+00:15:06.440 --> 00:15:10.840
+the external description or the input output&nbsp;
+behavior of the system to build the internal&nbsp;&nbsp;
+
+00:15:10.840 --> 00:15:17.040
+description or the state space representation. So&nbsp;
+again, let's say the system is like a black box.&nbsp;&nbsp;
+
+00:15:17.040 --> 00:15:21.720
+And the only information that we have is about&nbsp;
+the inputs and sensor measurements, we want to&nbsp;&nbsp;
+
+00:15:21.720 --> 00:15:27.600
+know if we can use that information to identify&nbsp;
+the governing equations. Now, there are multiple&nbsp;&nbsp;
+
+00:15:27.600 --> 00:15:36.480
+ways to do this. But we are here specifically&nbsp;
+focused on on taking a system theoretic approach&nbsp;&nbsp;
+
+00:15:36.480 --> 00:15:41.960
+that resembles close connections with balance&nbsp;
+truncation that comes with stability guarantees.&nbsp;&nbsp;
+
+00:15:41.960 --> 00:15:49.080
+So the problem is to is that given the external&nbsp;
+description from simulations and experiments,&nbsp;&nbsp;
+
+00:15:49.080 --> 00:15:55.880
+we want to identify the internal description.&nbsp;
+And I'd also like to mention here that there&nbsp;&nbsp;
+
+00:15:55.880 --> 00:16:02.280
+are infinitely many realizations for a system.&nbsp;
+But we are interested, and these realizations&nbsp;&nbsp;
+
+00:16:02.280 --> 00:16:08.240
+will give us the same output for a specific input.&nbsp;
+But we are interested in the realization that can&nbsp;&nbsp;
+
+00:16:08.240 --> 00:16:13.560
+do this task with the minimum number of degrees of&nbsp;
+freedom. And that's called the minimum realization&nbsp;&nbsp;
+
+00:16:13.560 --> 00:16:22.560
+and the eigen system realization algorithm is a&nbsp;
+way to construct this minimum realization. So,&nbsp;&nbsp;
+
+00:16:22.560 --> 00:16:30.200
+the Eigen system realization algorithm mainly&nbsp;
+relies on a matrix that is called Hankel matrix.&nbsp;&nbsp;
+
+00:16:30.200 --> 00:16:37.040
+This matrix that's shown here is assemble a&nbsp;
+matrix by with the impulse response or the&nbsp;&nbsp;
+
+00:16:37.040 --> 00:16:43.440
+sequence of Markov parameters as its rows, then&nbsp;
+this matrix is called the hanging Hankel matrix.&nbsp;&nbsp;
+
+00:16:43.440 --> 00:16:53.440
+And it's plays a key role in model reduction&nbsp;
+of linear systems as we will see. So only two&nbsp;&nbsp;
+
+00:16:53.440 --> 00:16:58.440
+topics are left here there is stability and&nbsp;
+observability and also the system grimy hands&nbsp;&nbsp;
+
+00:16:58.440 --> 00:17:04.560
+before we can talk about Balanced truncation. And&nbsp;
+what is reachability? Yeah, what is reliability a&nbsp;&nbsp;
+
+00:17:04.560 --> 00:17:10.080
+system is reachable if all of these states can be&nbsp;
+excited by the control action or in other words,&nbsp;&nbsp;
+
+00:17:10.080 --> 00:17:16.240
+if the impact of the control signal can reach all&nbsp;
+of the states in the system, then that system is&nbsp;&nbsp;
+
+00:17:16.240 --> 00:17:21.880
+reachable. And for a linear time invariant&nbsp;
+system reachability reduces to an algebraic&nbsp;&nbsp;
+
+00:17:21.880 --> 00:17:27.440
+definition that's basically identified by this&nbsp;
+matrix here, which is called the reachability&nbsp;&nbsp;
+
+00:17:27.440 --> 00:17:34.360
+matrix and LTI system is reachable if and only&nbsp;
+if the rank of this matrix is equal to the order&nbsp;&nbsp;
+
+00:17:34.360 --> 00:17:41.240
+of the system. And, and observability, on the&nbsp;
+other hand, determines whether the all of the&nbsp;&nbsp;
+
+00:17:41.240 --> 00:17:47.240
+states in the system are accessible through the&nbsp;
+outputs. For example, if the output of the system&nbsp;&nbsp;
+
+00:17:47.240 --> 00:17:54.160
+remains unchanged, and with respect to variations&nbsp;
+in one of these state variables, then the system&nbsp;&nbsp;
+
+00:17:54.160 --> 00:17:59.640
+is not observable. And also observability is&nbsp;
+identified by this matrix that's shown here, which&nbsp;&nbsp;
+
+00:17:59.640 --> 00:18:07.040
+is the observability matrix. And how the system is&nbsp;
+observable if and only if this matrix is full rank
+
+00:18:08.240 --> 00:18:12.760
+small n here, or is the size of the state.
+
+00:18:13.440 --> 00:18:17.320
+Yes, and n is the size of that&nbsp;
+state its degrees of freedom.
+
+00:18:17.320 --> 00:18:20.680
+Okay. Thank you. Sure.
+
+00:18:20.680 --> 00:18:25.560
+So now we can go ahead and define the system&nbsp;
+Grammy is for a stable continuous time&nbsp;&nbsp;
+
+00:18:25.560 --> 00:18:30.880
+system and the reachability grammarian is as shown&nbsp;
+by this equation, and it's actually the solution&nbsp;&nbsp;
+
+00:18:30.880 --> 00:18:36.400
+of this layup equation. For discrete time systems,&nbsp;
+this reachability grammarian can be computed using&nbsp;&nbsp;
+
+00:18:36.400 --> 00:18:43.880
+the reachability matrix. And the system gram Ian's&nbsp;
+are Hermitian matrix matrices and they have real&nbsp;&nbsp;
+
+00:18:43.880 --> 00:18:49.680
+Eigen values, which means that if we apply Eigen&nbsp;
+value decomposition to the reachability gram,&nbsp;&nbsp;
+
+00:18:49.680 --> 00:18:56.800
+Ian its largest Eigen values correspond to the&nbsp;
+directions that are the most reachable in the&nbsp;&nbsp;
+
+00:18:56.800 --> 00:19:04.360
+system or the states that can be affected by&nbsp;
+the smallest amount of actuation energy. Now,&nbsp;&nbsp;
+
+00:19:04.360 --> 00:19:08.840
+keep that in mind, I'll come back to this&nbsp;
+point in a few seconds. Similarly, for a&nbsp;&nbsp;
+
+00:19:08.840 --> 00:19:13.560
+stable continuous time system that observability&nbsp;
+grammarian is given by this equation and it's&nbsp;&nbsp;
+
+00:19:13.560 --> 00:19:18.160
+the solution to another the opponent equation&nbsp;
+and for discrete time systems, this Crimean&nbsp;&nbsp;
+
+00:19:18.160 --> 00:19:23.640
+can be computed using the observability&nbsp;
+matrix. The observability granion is also&nbsp;&nbsp;
+
+00:19:23.640 --> 00:19:30.440
+a Hermitian matrix and its largest Eigen values&nbsp;
+correspond to the most observable directions&nbsp;&nbsp;
+
+00:19:30.440 --> 00:19:35.080
+and now remember that at the beginning of the&nbsp;
+talk, I mentioned that in balance truncation,&nbsp;&nbsp;
+
+00:19:35.080 --> 00:19:41.240
+we are looking for modal representation that&nbsp;
+basically orders the modes from that most&nbsp;&nbsp;
+
+00:19:41.240 --> 00:19:48.600
+comfortable about and most observable to the least&nbsp;
+controllable and observable. The system grammars&nbsp;&nbsp;
+
+00:19:48.600 --> 00:19:54.560
+the reachability and observability. Grandmas&nbsp;
+identifies how reachable and observable each state&nbsp;&nbsp;
+
+00:19:54.560 --> 00:20:01.100
+in the system is. And therefore we can directly&nbsp;
+use these grammars to identify That's more than&nbsp;&nbsp;
+
+00:20:01.100 --> 00:20:11.160
+representation for balance truncation and other&nbsp;
+points here is that instead of solving these&nbsp;&nbsp;
+
+00:20:11.160 --> 00:20:17.560
+the operative equations to obtain their system&nbsp;
+grammarians, we can also obtain these granules by&nbsp;&nbsp;
+
+00:20:17.560 --> 00:20:23.960
+a by a data driven approach. So, the reachability&nbsp;
+graph can can be computed by the impulse response&nbsp;&nbsp;
+
+00:20:23.960 --> 00:20:29.840
+of the direct system and the observability grania&nbsp;
+and can be computed by the impulse response of the&nbsp;&nbsp;
+
+00:20:29.840 --> 00:20:39.440
+joint system and these are called the empirical&nbsp;
+grandmas. Okay, so, I guess that we've covered&nbsp;&nbsp;
+
+00:20:39.440 --> 00:20:44.920
+all the theory that we needed to lay the&nbsp;
+foundation for balance truncation and eigen&nbsp;&nbsp;
+
+00:20:44.920 --> 00:20:52.200
+system realization algorithm. And at this point,&nbsp;
+we can jump into these exciting topics. So, for an&nbsp;&nbsp;
+
+00:20:52.200 --> 00:20:57.560
+LTI system that's shown here, which represents&nbsp;
+our high fidelity model, imbalance truncation,&nbsp;&nbsp;
+
+00:20:57.560 --> 00:21:03.000
+we are looking for a transformation matrix T&nbsp;
+that makes the reachability and observability.&nbsp;&nbsp;
+
+00:21:03.000 --> 00:21:09.120
+grammarians equal and diagonal or in other words&nbsp;
+balanced. So WEP is here, the reachability Damion,&nbsp;&nbsp;
+
+00:21:09.120 --> 00:21:16.160
+who is the observability, grammarian, and sigma&nbsp;
+is that is a diagonal matrix. Now, why do we want&nbsp;&nbsp;
+
+00:21:16.160 --> 00:21:21.000
+to balance the ground? Yes, the reason is that we&nbsp;
+want to give equal weight to the controllability&nbsp;&nbsp;
+
+00:21:21.000 --> 00:21:26.720
+and observability such that the states that are&nbsp;
+difficult to reach are also difficult to observe.&nbsp;&nbsp;
+
+00:21:26.720 --> 00:21:34.280
+And we can get rid of them because these states&nbsp;
+need a lot of activation energy to be affected.&nbsp;&nbsp;
+
+00:21:34.280 --> 00:21:39.560
+And even if they are affected, the output of&nbsp;
+the system is barely sensitive with respect&nbsp;&nbsp;
+
+00:21:39.560 --> 00:21:47.880
+to their variation. So we can just remove those&nbsp;
+states from the system. And so as I mentioned,&nbsp;&nbsp;
+
+00:21:47.880 --> 00:21:53.880
+the reachability unobservable to gram yawns are&nbsp;
+the key components of balance truncation. So the&nbsp;&nbsp;
+
+00:21:53.880 --> 00:21:58.040
+first thing that we do here is to compute&nbsp;
+these grammarians by solving the opponent&nbsp;&nbsp;
+
+00:21:58.040 --> 00:22:04.640
+of equations. And right up front, you can see&nbsp;
+that this method can only be applied to stable&nbsp;&nbsp;
+
+00:22:04.640 --> 00:22:12.080
+systems because these granules are only defined&nbsp;
+for a stable system. They're not defined for&nbsp;&nbsp;
+
+00:22:12.080 --> 00:22:18.760
+unstable systems. And so in order to compute the&nbsp;
+transformation matrix that balances the Grampians,&nbsp;&nbsp;
+
+00:22:18.760 --> 00:22:23.400
+we compute the Cholesky factors of the gram&nbsp;
+years, and then SVD of the product product of&nbsp;&nbsp;
+
+00:22:23.400 --> 00:22:28.120
+the two, let's get factors. And from there, we&nbsp;
+can compute the balancing modes and the inverse&nbsp;&nbsp;
+
+00:22:28.120 --> 00:22:34.120
+balancing modes that are at the end used&nbsp;
+along with the full order model matrices A,&nbsp;&nbsp;
+
+00:22:34.120 --> 00:22:44.120
+B, and C to construct their own matrices. So the&nbsp;
+transformation matrix T is actually a matrix that&nbsp;&nbsp;
+
+00:22:44.120 --> 00:22:50.680
+transforms that system to coordinates in which the&nbsp;
+most control but most are also the most observable&nbsp;&nbsp;
+
+00:22:50.680 --> 00:22:57.160
+modes. And in this stage, where we can't be&nbsp;
+SVD of the product of the two Alaskey factors,&nbsp;&nbsp;
+
+00:22:57.160 --> 00:23:03.240
+we actually try and create the singular vectors&nbsp;
+corresponding to the smallest singular values,&nbsp;&nbsp;
+
+00:23:03.240 --> 00:23:13.280
+because the singular vectors represent the least&nbsp;
+controllable and the least observable directions.&nbsp;&nbsp;
+
+00:23:13.280 --> 00:23:19.120
+And as you can see, in order to compute the raw&nbsp;
+matrices, we are directly using the order model&nbsp;&nbsp;
+
+00:23:19.120 --> 00:23:25.000
+matrices, so the method is intrusive. For balance&nbsp;
+truncation, we need to have access to the raw&nbsp;&nbsp;
+
+00:23:25.000 --> 00:23:33.040
+matrices. Powerful aspects of balanced rams is&nbsp;
+that they satisfy these error bounds that I've&nbsp;&nbsp;
+
+00:23:33.040 --> 00:23:39.200
+shown here, where g is the transfer function of&nbsp;
+order model, and gr is the transfer function of&nbsp;&nbsp;
+
+00:23:39.200 --> 00:23:49.520
+the room. So that rom error is upper bounded by&nbsp;
+the sum of the truncated singular values. Now,&nbsp;&nbsp;
+
+00:23:49.520 --> 00:23:55.440
+although balanced drums satisfy theoretical&nbsp;
+error bounds, but there are certain limitations&nbsp;&nbsp;
+
+00:23:55.440 --> 00:24:03.680
+that prevent their application to more complex&nbsp;
+problems. We've already talked about some of these&nbsp;&nbsp;
+
+00:24:03.680 --> 00:24:11.840
+limitations. And at the bottom here, I have some&nbsp;
+methods that address each of these limitations&nbsp;&nbsp;
+
+00:24:11.840 --> 00:24:18.560
+and challenges. And in their eyes, I have a list&nbsp;
+of a few sample references that you can look at&nbsp;&nbsp;
+
+00:24:18.560 --> 00:24:24.480
+if you're interested in any of these scenarios.&nbsp;
+Like for example, if the system is unstable, if&nbsp;&nbsp;
+
+00:24:24.480 --> 00:24:30.840
+there are a few unstable nodes in the system that&nbsp;
+you want to preserve through model reduction for&nbsp;&nbsp;
+
+00:24:30.840 --> 00:24:38.280
+some control purpose, then the original balance&nbsp;
+truncation method cannot be used. And so, under&nbsp;&nbsp;
+
+00:24:38.280 --> 00:24:42.680
+these conditions, we can for example, decompose&nbsp;
+the system into stable and unstable sub systems.&nbsp;&nbsp;
+
+00:24:42.680 --> 00:24:47.320
+We can use empirical grammarians or a partially&nbsp;
+data driven version of balanced truncation which&nbsp;&nbsp;
+
+00:24:47.320 --> 00:24:52.600
+is called the approximate balance truncation&nbsp;
+although these two require adjunct simulations,&nbsp;&nbsp;
+
+00:24:52.600 --> 00:24:57.120
+so if you don't have access to the address system,&nbsp;
+you can use these methods and finally the eigen&nbsp;&nbsp;
+
+00:24:57.120 --> 00:25:03.560
+system realization algorithm that's the Pew&nbsp;
+Really data driven version RBT and if the system&nbsp;&nbsp;
+
+00:25:03.560 --> 00:25:10.760
+is extremely stiff, then the choice key factors in&nbsp;
+the analytical balance truncation method will be&nbsp;&nbsp;
+
+00:25:10.760 --> 00:25:17.520
+affected can be affected by numerical errors and&nbsp;
+the balance rooms can be inaccurate. And in that&nbsp;&nbsp;
+
+00:25:17.520 --> 00:25:24.400
+case, we would resort to the data driven versions&nbsp;
+of balance truncation. Also, if a dimension of the&nbsp;&nbsp;
+
+00:25:24.400 --> 00:25:31.320
+system is more than a few 1000s, then computing&nbsp;
+that grammars with the standard method by solving&nbsp;&nbsp;
+
+00:25:31.320 --> 00:25:38.320
+the Elliana equations will become expensive, and&nbsp;
+we should go with methods two to five. And lastly,&nbsp;&nbsp;
+
+00:25:38.320 --> 00:25:43.160
+if we don't have access to the internal&nbsp;
+description or the governing equations,&nbsp;&nbsp;
+
+00:25:43.160 --> 00:25:49.000
+or if we want to build a ROM based on the data&nbsp;
+that comes from experiments, then eigen system&nbsp;&nbsp;
+
+00:25:49.000 --> 00:25:53.560
+realization algorithm is pretty much the only&nbsp;
+method that we can use here. So, as you can see&nbsp;&nbsp;
+
+00:25:53.560 --> 00:26:00.360
+era, is a very versatile method that basically&nbsp;
+addresses at least all of the limitations&nbsp;&nbsp;
+
+00:26:00.360 --> 00:26:07.240
+that I have mentioned here. But there is no pre&nbsp;
+launch. Like any other data driven methods, the&nbsp;&nbsp;
+
+00:26:07.240 --> 00:26:14.600
+performance of era roms depends on the training&nbsp;
+data that we use for them. So era roms do not&nbsp;&nbsp;
+
+00:26:14.600 --> 00:26:20.920
+necessarily satisfy the theoretical error bounds&nbsp;
+given by by the analytical balance truncation.&nbsp;&nbsp;
+
+00:26:20.920 --> 00:26:26.160
+And that's why we should be very careful about&nbsp;
+the sampling properties when we want to collect&nbsp;&nbsp;
+
+00:26:26.160 --> 00:26:35.200
+training data for the era ROMs. So now, the I&nbsp;
+guess the same realization algorithm is originally&nbsp;&nbsp;
+
+00:26:35.200 --> 00:26:41.640
+a system identification method that uses the&nbsp;
+external description of the system to build a&nbsp;&nbsp;
+
+00:26:41.640 --> 00:26:49.560
+minimum realization for the for the system,&nbsp;
+and it has strong connections with balanced&nbsp;&nbsp;
+
+00:26:49.560 --> 00:26:54.320
+truncation method, which is why it's considered&nbsp;
+a non intrusive data driven version of balanced&nbsp;&nbsp;
+
+00:26:54.320 --> 00:27:00.600
+truncation. So considering this discrete time&nbsp;
+system, which is our full order model, then we&nbsp;&nbsp;
+
+00:27:00.600 --> 00:27:07.160
+have the Hankel matrix here that we have already&nbsp;
+seen before. And why is the sequence of Markov&nbsp;&nbsp;
+
+00:27:07.160 --> 00:27:13.800
+parameters are the impulse response of the system&nbsp;
+and each subsequent row in this Hankel matrix is&nbsp;&nbsp;
+
+00:27:13.800 --> 00:27:22.320
+constructed by shifting the impulse response&nbsp;
+one step forward in time. And despite I've
+
+00:27:23.600 --> 00:27:28.560
+written this sequence of Markov parameters in&nbsp;
+terms of the system matrices, but note that&nbsp;&nbsp;
+
+00:27:28.560 --> 00:27:35.320
+this is a completely data driven process, and we&nbsp;
+don't need access to the full order model matrices&nbsp;&nbsp;
+
+00:27:35.320 --> 00:27:41.800
+at all. So the next thing that we do is to compute&nbsp;
+another matrix, which is called the shifted Hankel&nbsp;&nbsp;
+
+00:27:41.800 --> 00:27:48.400
+matrix. And this matrix is obtained by shifting&nbsp;
+the entire Hankel matrix one step forward in&nbsp;&nbsp;
+
+00:27:48.400 --> 00:27:54.320
+time. Now, this may remind people of dynamic mode&nbsp;
+decomposition, we'll talk about the connections&nbsp;&nbsp;
+
+00:27:54.320 --> 00:28:01.200
+of era with DMD in the next slide. So then we use&nbsp;
+that shifted Hankel matrix along with the singular&nbsp;&nbsp;
+
+00:28:01.200 --> 00:28:06.280
+values and singular vectors of the Hankel matrix&nbsp;
+to build their own matrices. And as you can see,&nbsp;&nbsp;
+
+00:28:06.280 --> 00:28:11.480
+there are no ABC matrices in these equations,&nbsp;
+because the method is non intrusive, and we don't&nbsp;&nbsp;
+
+00:28:11.480 --> 00:28:17.800
+need access to the full order model matrices or&nbsp;
+any adjuncts in simulations unlike the approximate&nbsp;&nbsp;
+
+00:28:18.720 --> 00:28:23.760
+balance truncation method and therefore, even if&nbsp;
+the data comes from experiments, we can still use&nbsp;&nbsp;
+
+00:28:23.760 --> 00:28:32.560
+this method. Now, for those of you who are&nbsp;
+familiar with dynamic mode decomposition,&nbsp;&nbsp;
+
+00:28:32.560 --> 00:28:38.840
+as shown in this paper, that era is directly&nbsp;
+related to the end. So, if we apply DMD to H and&nbsp;&nbsp;
+
+00:28:38.840 --> 00:28:44.880
+H prime instead of the usual snapshots matrices&nbsp;
+A tilde is here, the linear operator given by&nbsp;&nbsp;
+
+00:28:44.880 --> 00:28:50.920
+DND and if we compare this linear operator&nbsp;
+against the dynamics matrix given by era,&nbsp;&nbsp;
+
+00:28:50.920 --> 00:28:57.040
+we can see that the two matrices are related with&nbsp;
+a similarity transform. So, their Eigen values are&nbsp;&nbsp;
+
+00:28:57.040 --> 00:29:09.520
+the same and their Eigen vectors are related. So&nbsp;
+we can as well use era to compute the DMD modes.
+
+00:29:09.520 --> 00:29:16.040
+Okay, so now, I guess we can see some results&nbsp;
+of application of the Eigen system realization&nbsp;&nbsp;
+
+00:29:16.040 --> 00:29:26.240
+algorithm to our two numerical experiments and&nbsp;
+also talk about some practical aspects of our era.&nbsp;&nbsp;
+
+00:29:26.240 --> 00:29:32.440
+So the first example that we are, we are going&nbsp;
+to look at is a one dimensional reacting flow&nbsp;&nbsp;
+
+00:29:32.440 --> 00:29:37.280
+problem that's governed by the one dimensional&nbsp;
+gnabry stokes equations with species transport&nbsp;&nbsp;
+
+00:29:37.280 --> 00:29:42.200
+and reaction that are shown here. We solve these&nbsp;
+equations with a finite volume approach using&nbsp;&nbsp;
+
+00:29:42.200 --> 00:29:47.960
+the second order row scheme and do all times time&nbsp;
+stepping. And in order to solve these equations,&nbsp;&nbsp;
+
+00:29:47.960 --> 00:29:53.800
+we have used an open source code as developing&nbsp;
+our group. This framework is called perform which&nbsp;&nbsp;
+
+00:29:53.800 --> 00:29:59.960
+stands for prototyping environment for reacting&nbsp;
+the order reduction methods, and it's basically a&nbsp;&nbsp;
+
+00:29:59.960 --> 00:30:05.640
+pack Occasionally, it provides multiple benchmark&nbsp;
+problems, including wind emission or reacting&nbsp;&nbsp;
+
+00:30:05.640 --> 00:30:12.560
+flow problems that can be used to test model&nbsp;
+reduction techniques. And it also comes with&nbsp;&nbsp;
+
+00:30:12.560 --> 00:30:19.320
+multiple model reduction capabilities, including&nbsp;
+different projection based model reduction methods&nbsp;&nbsp;
+
+00:30:19.320 --> 00:30:23.320
+with hyper reduction and linear nonlinear&nbsp;
+dimensionality reduction methods. So the&nbsp;&nbsp;
+
+00:30:23.320 --> 00:30:29.840
+code is available in this GitHub repo, along with&nbsp;
+the complete documentation and the capabilities&nbsp;&nbsp;
+
+00:30:29.840 --> 00:30:37.640
+out there who order model and ROM in the code. So&nbsp;
+we saw the nonlinear foot order models subjected&nbsp;&nbsp;
+
+00:30:37.640 --> 00:30:44.000
+to characteristic boundary conditions. And&nbsp;
+this table shows some of the specifics. And&nbsp;&nbsp;
+
+00:30:44.000 --> 00:30:48.880
+we obtain a steady state solution that's shown&nbsp;
+here in these plots which represents a standing&nbsp;&nbsp;
+
+00:30:48.880 --> 00:30:54.440
+frame in the vicinity of their domain. So this is&nbsp;
+pressure, this is velocity, this is temperature,&nbsp;&nbsp;
+
+00:30:54.440 --> 00:31:00.600
+and this is species mass fraction. And then we&nbsp;
+linearize the equations about the steady state&nbsp;&nbsp;
+
+00:31:00.600 --> 00:31:10.640
+solution together linear setup equations that&nbsp;
+we then use to build their era rooms. So this&nbsp;&nbsp;
+
+00:31:10.640 --> 00:31:15.800
+is our mini article order model here, where j is&nbsp;
+the Jacobean matrix evaluated at that city state&nbsp;&nbsp;
+
+00:31:15.800 --> 00:31:21.280
+solution. And Q is the vector of our primitive&nbsp;
+variables, and B contains the boundary fluxes,&nbsp;&nbsp;
+
+00:31:21.280 --> 00:31:27.160
+u is our input. This plot here shows that Eigen&nbsp;
+values have their full order model, all of the&nbsp;&nbsp;
+
+00:31:27.160 --> 00:31:33.120
+Eigen values are in the left side of them complex&nbsp;
+plane. And so the system is stable. Now, what's&nbsp;&nbsp;
+
+00:31:33.120 --> 00:31:39.960
+challenging about this application is the extreme&nbsp;
+stiffness of the system due to the presence of a&nbsp;&nbsp;
+
+00:31:39.960 --> 00:31:46.120
+chemical source term. So the condition number of&nbsp;
+the Jacobean matrix is in the order of 10 to 13,&nbsp;&nbsp;
+
+00:31:46.120 --> 00:31:52.000
+which as I said, it will introduce numerical&nbsp;
+errors in them to address key factors in the&nbsp;&nbsp;
+
+00:31:52.000 --> 00:31:57.440
+analytical balance truncation. And that's why I&nbsp;
+resorted to the data driven version of balance&nbsp;&nbsp;
+
+00:31:57.440 --> 00:32:05.960
+truncation here, so we train the era wrongs&nbsp;
+by by applying unit impulse to the system,&nbsp;&nbsp;
+
+00:32:05.960 --> 00:32:11.760
+you're applying unit impulse to the backpressure&nbsp;
+through the characteristic boundary conditions&nbsp;&nbsp;
+
+00:32:11.760 --> 00:32:18.040
+at the downstream of the domain, and we collected&nbsp;
+snapshots, these thoughts show their normal this&nbsp;&nbsp;
+
+00:32:18.040 --> 00:32:23.400
+state for pressure, velocity, temperature and&nbsp;
+species mass fraction. And as you can see, this&nbsp;&nbsp;
+
+00:32:23.400 --> 00:32:29.560
+system has a likely damped impulse response, which&nbsp;
+means that there is a there's an Eigen vector in&nbsp;&nbsp;
+
+00:32:29.560 --> 00:32:36.800
+the system that takes a long time to die out.&nbsp;
+And that's makes construction of Vi ROMs. More&nbsp;&nbsp;
+
+00:32:36.800 --> 00:32:42.280
+complex, because we need to capture enough samples&nbsp;
+to we need to collect enough samples to capture&nbsp;&nbsp;
+
+00:32:42.280 --> 00:32:49.640
+the decay of this Eigen vector. And that results&nbsp;
+in a larger Hankel matrix that is harder to work&nbsp;&nbsp;
+
+00:32:49.640 --> 00:32:56.000
+with. So we do that. And then this plot here&nbsp;
+shows the singular values, the decay of the&nbsp;&nbsp;
+
+00:32:56.000 --> 00:33:02.240
+singular values of the Hankel matrix 77, pressure&nbsp;
+and velocity minutes 50 temperature and 19 mass&nbsp;&nbsp;
+
+00:33:02.240 --> 00:33:12.440
+fraction modes capture 99.99% of the input output&nbsp;
+energy. So we construct their arms, and this plot&nbsp;&nbsp;
+
+00:33:12.440 --> 00:33:18.600
+here shows the Eigen values of their arm, all of&nbsp;
+them are stable. But note that that time step of&nbsp;&nbsp;
+
+00:33:18.600 --> 00:33:23.240
+that era ROM is two orders of magnitude larger&nbsp;
+than the time step of the full order model. So&nbsp;&nbsp;
+
+00:33:23.240 --> 00:33:27.400
+if we run the order model, with the same&nbsp;
+time step as the ROM, it will be unstable,&nbsp;&nbsp;
+
+00:33:27.400 --> 00:33:34.000
+which is what these red circles show. And on the&nbsp;
+right, we are comparing the reconstruction of&nbsp;&nbsp;
+
+00:33:34.000 --> 00:33:39.640
+the impulse response by the ROM against the foot&nbsp;
+order model, which is perfect match. But we are&nbsp;&nbsp;
+
+00:33:39.640 --> 00:33:43.760
+more interested in their predictive performance&nbsp;
+or roles because at the end of the day, that's&nbsp;&nbsp;
+
+00:33:43.760 --> 00:33:51.520
+the ultimate goal of model reduction. So we have&nbsp;
+trained their arms with unit impulse, and we are&nbsp;&nbsp;
+
+00:33:51.520 --> 00:33:55.920
+here testing it with a completely different input,&nbsp;
+which is the sinusoidal input with a frequency of&nbsp;&nbsp;
+
+00:33:55.920 --> 00:34:03.120
+215 kilohertz. So ignoring these discrepancies at&nbsp;
+the right side for a few seconds, we can see that&nbsp;&nbsp;
+
+00:34:03.120 --> 00:34:08.960
+in the rest of the domain, the wrong solution&nbsp;
+perfectly matches the full order model. Now why&nbsp;&nbsp;
+
+00:34:08.960 --> 00:34:15.840
+do we have these discrepancies here? Let's look&nbsp;
+at these plots on the left which show the impulse&nbsp;&nbsp;
+
+00:34:15.840 --> 00:34:23.840
+response at an early time step. As you can see, as&nbsp;
+the impulse enters the domain from the right side,&nbsp;&nbsp;
+
+00:34:23.840 --> 00:34:30.480
+there are very sharp gradients close to the&nbsp;
+right boundary that attenuate as their impulse&nbsp;&nbsp;
+
+00:34:30.480 --> 00:34:37.160
+propagates in the domain. And apparently, the&nbsp;
+sampling frequency that we use during collection,&nbsp;&nbsp;
+
+00:34:37.160 --> 00:34:43.840
+our training data for era roms was not sufficient&nbsp;
+to capture these sharp gradients and that's why&nbsp;&nbsp;
+
+00:34:43.840 --> 00:34:49.560
+these discrepancies are here at the right&nbsp;
+side of the domain through prediction. But&nbsp;&nbsp;
+
+00:34:50.080 --> 00:34:55.640
+this is challenging because as as I mentioned, the&nbsp;
+system already has a likely dams impulse response,&nbsp;&nbsp;
+
+00:34:55.640 --> 00:35:03.720
+so we needed to capture a lot of collect a lot of&nbsp;
+snaps was to capture that and we cannot afford to&nbsp;&nbsp;
+
+00:35:03.720 --> 00:35:09.280
+further increase the sampling frequency in the&nbsp;
+entire domain to capture those sharp gradients.&nbsp;&nbsp;
+
+00:35:09.280 --> 00:35:14.680
+And that's why we came up with a simple output&nbsp;
+domain decomposition method to resolve these&nbsp;&nbsp;
+
+00:35:14.680 --> 00:35:19.760
+gradients without the need to increase the&nbsp;
+sampling frequency the entire domain. I'll&nbsp;&nbsp;
+
+00:35:19.760 --> 00:35:27.000
+talk about that later. But before that, we did&nbsp;
+some tests to compare the era roms against the&nbsp;&nbsp;
+
+00:35:27.000 --> 00:35:32.120
+projection based ROMs. Specifically the periodic&nbsp;
+collection ROM in this slide, where the purity&nbsp;&nbsp;
+
+00:35:32.120 --> 00:35:38.160
+modes are trained with the same impulse response&nbsp;
+snapshots as the era ROMs and then their arm is&nbsp;&nbsp;
+
+00:35:38.160 --> 00:35:43.160
+being tested with the same sinusoidal input that&nbsp;
+I talked about in the previous slide. So these&nbsp;&nbsp;
+
+00:35:43.160 --> 00:35:48.240
+plots here show the appropriate measurements for&nbsp;
+a probe located at the vicinity of that flame,&nbsp;&nbsp;
+
+00:35:48.240 --> 00:35:52.800
+the black line is the ROM and that red line is&nbsp;
+the full order model. And as you can see, the ROM&nbsp;&nbsp;
+
+00:35:52.800 --> 00:36:00.520
+is not doing a good job at all in prediction.&nbsp;
+And this encouraged us to further compare era&nbsp;&nbsp;
+
+00:36:00.520 --> 00:36:06.840
+against these squares, Petrov, Galerkin, as well.&nbsp;
+So here are the prediction based ROMs are trained&nbsp;&nbsp;
+
+00:36:06.840 --> 00:36:14.760
+with combined snapshots with perturbations with&nbsp;
+frequencies of 200 to 210 and 220 kilohertz,&nbsp;&nbsp;
+
+00:36:14.760 --> 00:36:20.920
+and then tested with with a with an intermediate&nbsp;
+frequency of 215 kilohertz. And these bars show&nbsp;&nbsp;
+
+00:36:20.920 --> 00:36:26.480
+the relative error computed based on the order&nbsp;
+model solution Q and the wrong solution Q hat.&nbsp;&nbsp;
+
+00:36:26.480 --> 00:36:31.120
+So as you can see, the black line shows the era&nbsp;
+wrong, which is the best, and the blue line is&nbsp;&nbsp;
+
+00:36:31.120 --> 00:36:36.520
+the purity electron. And these three lines&nbsp;
+are for the least squares, Petrov, Galerkin,&nbsp;&nbsp;
+
+00:36:36.520 --> 00:36:42.440
+we have multiple lines because lseg is sensitive&nbsp;
+with respect to time step, and we wanted to try&nbsp;&nbsp;
+
+00:36:42.440 --> 00:36:48.080
+different time steps. So as you can see, none of&nbsp;
+these rejection based ROMs are able to compete&nbsp;&nbsp;
+
+00:36:48.080 --> 00:36:58.240
+against era for this linear system. So let's&nbsp;
+return again to the problem that we had at the&nbsp;&nbsp;
+
+00:36:58.240 --> 00:37:07.040
+right side of the boundary with sharp gradients.&nbsp;
+So I said that we didn't want to increase the&nbsp;&nbsp;
+
+00:37:07.040 --> 00:37:11.240
+sampling frequency in the entire domain, because&nbsp;
+that would give us a huge Hankel matrix that's&nbsp;&nbsp;
+
+00:37:11.240 --> 00:37:18.680
+hard to work with. So we use this output domain&nbsp;
+decomposition idea. So consider the description&nbsp;&nbsp;
+
+00:37:18.680 --> 00:37:25.640
+for order model here. The idea is to decompose&nbsp;
+that output matrix output map output matrix C,&nbsp;&nbsp;
+
+00:37:25.640 --> 00:37:31.040
+into three blocks where each block is used by&nbsp;
+a different rom separately. That's why we have&nbsp;&nbsp;
+
+00:37:31.040 --> 00:37:37.200
+round one, round two and round three. So each&nbsp;
+of these roms is trained with impulse response&nbsp;&nbsp;
+
+00:37:37.200 --> 00:37:43.120
+snapshots collected with a different sampling&nbsp;
+frequency. Round one that has the lowest sampling&nbsp;&nbsp;
+
+00:37:43.120 --> 00:37:48.440
+frequency covers the majority of the computational&nbsp;
+domain and run free that has the highest sampling&nbsp;&nbsp;
+
+00:37:48.440 --> 00:37:57.080
+frequency covers only the five rightmost cells&nbsp;
+of the domain, that's where we had the sharpest&nbsp;&nbsp;
+
+00:37:57.080 --> 00:38:02.920
+gradients. And so although around three has many&nbsp;
+more markup parameters compared to round one, but&nbsp;&nbsp;
+
+00:38:02.920 --> 00:38:10.600
+the number of rows in the Hancock matrix of Round&nbsp;
+three is one order smaller than Romblon. And so,&nbsp;&nbsp;
+
+00:38:10.600 --> 00:38:14.560
+we are basically from moving from the left side&nbsp;
+of the domain to the right side of the domain,&nbsp;&nbsp;
+
+00:38:14.560 --> 00:38:19.480
+we are increasing the sampling frequency while&nbsp;
+maintaining computational efficiency as much as&nbsp;&nbsp;
+
+00:38:19.480 --> 00:38:26.080
+we can. And then we use another method to further&nbsp;
+reduce the size of the hand count matrix. This&nbsp;&nbsp;
+
+00:38:26.080 --> 00:38:31.120
+is called tangential interpolation, which is&nbsp;
+developed for multi input multi output systems&nbsp;&nbsp;
+
+00:38:31.120 --> 00:38:36.080
+to reduce the number of inputs and outputs&nbsp;
+before construction of the hand count matrix.&nbsp;&nbsp;
+
+00:38:36.080 --> 00:38:40.920
+So I've been doing is that we first assemble&nbsp;
+the impulse response in two different ways,&nbsp;&nbsp;
+
+00:38:40.920 --> 00:38:47.560
+as can be seen in theta l n theta r, when we apply&nbsp;
+SVD to each of these two matrices separately,&nbsp;&nbsp;
+
+00:38:47.560 --> 00:38:55.880
+and the singular vectors of theta L are the left&nbsp;
+tangential modes w one that represents their
+
+00:38:56.720 --> 00:39:03.520
+low dimensional output space. And the singular&nbsp;
+vectors of theta are, are the rights see rights&nbsp;&nbsp;
+
+00:39:03.520 --> 00:39:10.240
+tendencia modes of w two that represent the low&nbsp;
+dimensional input space. And so what we do is that&nbsp;&nbsp;
+
+00:39:10.240 --> 00:39:18.360
+we go ahead and project the impulse response onto&nbsp;
+these input and output subspaces to get y hat and&nbsp;&nbsp;
+
+00:39:18.360 --> 00:39:24.480
+use y hat instead, to construct the Hankel matrix&nbsp;
+and we follow that same standard procedure for&nbsp;&nbsp;
+
+00:39:24.480 --> 00:39:31.000
+construction of era ROMs. But at the end, we're&nbsp;
+going to need to leave the era raw matrices back&nbsp;&nbsp;
+
+00:39:31.000 --> 00:39:38.880
+to the original high dimensional input output&nbsp;
+space. So we use these methods in our application&nbsp;&nbsp;
+
+00:39:38.880 --> 00:39:45.760
+and this table shows the offline cost era roms&nbsp;
+with and without tangential interpolation,&nbsp;&nbsp;
+
+00:39:45.760 --> 00:39:51.720
+as as you can see, the tangential interpolation&nbsp;
+method has reduced the offline cost by a factor&nbsp;&nbsp;
+
+00:39:51.720 --> 00:40:00.200
+of around 1.7. And in the online phase, the&nbsp;
+online world clock time either era ROM is&nbsp;&nbsp;
+
+00:40:00.200 --> 00:40:06.480
+is pointing to 116th and which basically gives us&nbsp;
+two orders of magnitude reduction in computation&nbsp;&nbsp;
+
+00:40:06.480 --> 00:40:12.520
+time compared to the world order model. And at the&nbsp;
+bottom we have the non predictions for this case&nbsp;&nbsp;
+
+00:40:12.520 --> 00:40:24.360
+where there is no trace of those discrepancies&nbsp;
+at the right out of the domain anymore.
+
+00:40:24.360 --> 00:40:31.320
+So, next we decided to apply era to a&nbsp;
+slightly more complex problem. The goal&nbsp;&nbsp;
+
+00:40:31.320 --> 00:40:37.920
+here is to use era roms to predict aeroacoustic&nbsp;
+response of an airfoil. So, for this example,&nbsp;&nbsp;
+
+00:40:37.920 --> 00:40:43.120
+we have a subsonic flow and mark points by flow&nbsp;
+over an airfoil. And we are prototyping the entire&nbsp;&nbsp;
+
+00:40:43.120 --> 00:40:49.960
+farfield boundary to model atmospheric turbulence&nbsp;
+and then, we are aiming to predict the acoustic&nbsp;&nbsp;
+
+00:40:49.960 --> 00:40:57.480
+response of the airfoil as the perturbations&nbsp;
+propagate and interact in the domain. So,&nbsp;&nbsp;
+
+00:40:57.480 --> 00:41:02.360
+to that end, we first run the full order the high&nbsp;
+fidelity simulations, which are based on the two&nbsp;&nbsp;
+
+00:41:02.360 --> 00:41:08.960
+dimensional Euler equations here, we use a finite&nbsp;
+volume approach with a second order row scheme to&nbsp;&nbsp;
+
+00:41:08.960 --> 00:41:15.080
+solve the equations subject to characteristic&nbsp;
+boundary conditions. So, we generate a steady&nbsp;&nbsp;
+
+00:41:15.080 --> 00:41:20.760
+state solution, and then we project the equations,&nbsp;
+we linearize the equations about that steady state&nbsp;&nbsp;
+
+00:41:20.760 --> 00:41:26.440
+solution to get a linear set of equations here&nbsp;
+that's used to build the era ROMs. Here J is the&nbsp;&nbsp;
+
+00:41:26.440 --> 00:41:34.440
+Jacobean matrix and Q prime is the perturbation&nbsp;
+field. Now, I'd like to mention a few practical&nbsp;&nbsp;
+
+00:41:34.440 --> 00:41:42.480
+points about application era in this example,&nbsp;
+and also in general. So, although theoretically,&nbsp;&nbsp;
+
+00:41:42.480 --> 00:41:50.880
+we train era roms by the response of the system&nbsp;
+to unit impulse, but in practice, depending on&nbsp;&nbsp;
+
+00:41:50.880 --> 00:41:57.960
+your application, a unit impulse may not even be&nbsp;
+physical, or it may not be effective. For example,&nbsp;&nbsp;
+
+00:41:57.960 --> 00:42:03.240
+in this application, we have a subsonic flow.&nbsp;
+And so a unit impulse would mean that we need&nbsp;&nbsp;
+
+00:42:03.240 --> 00:42:10.440
+to set Mach number along the farfield boundary to&nbsp;
+one which is not even consistent with our problem&nbsp;&nbsp;
+
+00:42:10.440 --> 00:42:16.320
+setup. And on the other hand, we realize that in&nbsp;
+this application, applying an impulsive input in&nbsp;&nbsp;
+
+00:42:16.320 --> 00:42:24.640
+a single time step is not effective. And we&nbsp;
+need to apply that input for a longer time to&nbsp;&nbsp;
+
+00:42:24.640 --> 00:42:31.760
+actually affect affect the system. And so that's&nbsp;
+why we decided to perturb the velocity along the&nbsp;&nbsp;
+
+00:42:31.760 --> 00:42:37.800
+entire farfield boundary with a Gaussian shaped&nbsp;
+input. And another point is that as I mentioned,&nbsp;&nbsp;
+
+00:42:37.800 --> 00:42:43.320
+we need to protect the entire farfield boundary&nbsp;
+in this case. So we have a multi input multi&nbsp;&nbsp;
+
+00:42:43.320 --> 00:42:49.880
+output system, which means that we need to protect&nbsp;
+each cell along the pocket boundary to collect a&nbsp;&nbsp;
+
+00:42:49.880 --> 00:42:56.800
+separate sequence of Markov parameters, and&nbsp;
+assemble all of those Markov parameters in&nbsp;&nbsp;
+
+00:42:56.800 --> 00:43:03.920
+one Hankel matrix and proceed there and proceed&nbsp;
+to construction of era roms from there. So for&nbsp;&nbsp;
+
+00:43:03.920 --> 00:43:11.000
+example, if you have a 400 by 100 grid, we're&nbsp;
+going to have 604 cells or input channels along&nbsp;&nbsp;
+
+00:43:11.000 --> 00:43:16.320
+the parpi boundary for this application. And&nbsp;
+therefore, we need to protect each of those&nbsp;&nbsp;
+
+00:43:16.320 --> 00:43:22.160
+channels, or each of those 604 channels&nbsp;
+separately, to collect the training data,&nbsp;&nbsp;
+
+00:43:22.160 --> 00:43:28.680
+which is apparently very expensive. So as the&nbsp;
+grid becomes finer, the number of cells along&nbsp;&nbsp;
+
+00:43:28.680 --> 00:43:35.520
+the profit boundary increases and the offline cost&nbsp;
+of construction of era roms becomes prohibitive.&nbsp;&nbsp;
+
+00:43:35.520 --> 00:43:41.960
+And that's why we came up with an idea based&nbsp;
+on the gappy pod approach to basically reduce&nbsp;&nbsp;
+
+00:43:41.960 --> 00:43:48.080
+the number of input channels along the path for&nbsp;
+field boundary. And therefore the offline costs&nbsp;&nbsp;
+
+00:43:48.080 --> 00:43:53.960
+of construction of era rounds. We read so many&nbsp;
+tests, so you can find the results in this paper,&nbsp;&nbsp;
+
+00:43:53.960 --> 00:44:01.320
+but in the interest of time, I just directly&nbsp;
+jump into the gappy pod idea. So, Gabi pod is&nbsp;&nbsp;
+
+00:44:01.320 --> 00:44:08.400
+a method that is usually used for sparse sensing&nbsp;
+and construction of entire flow fields from sparse&nbsp;&nbsp;
+
+00:44:08.400 --> 00:44:16.640
+sensor measurements and also for high production&nbsp;
+in reduced order models. And the general procedure&nbsp;&nbsp;
+
+00:44:16.640 --> 00:44:23.040
+for Gabby pod is that we first computer set up&nbsp;
+modes for example, purely modes, based on a set&nbsp;&nbsp;
+
+00:44:23.040 --> 00:44:29.720
+up start training data that are collected&nbsp;
+in matrix Q here. So, q can be approximated&nbsp;&nbsp;
+
+00:44:29.720 --> 00:44:38.040
+by a linear combination of pod mode spy and an ASC&nbsp;
+are the modal coefficients. SC is an observation&nbsp;&nbsp;
+
+00:44:38.040 --> 00:44:47.760
+matrix that basically contains our sparse sensor&nbsp;
+measurements. And P is a permutation matrix that&nbsp;&nbsp;
+
+00:44:49.000 --> 00:44:54.720
+basically identifies the elements chooses the&nbsp;
+MN sub q and phi that correspond to the sensor&nbsp;&nbsp;
+
+00:44:54.720 --> 00:45:00.160
+locations. And the goal here is to reconstruct&nbsp;
+the entire flow view from this far set. So&nbsp;&nbsp;
+
+00:45:00.160 --> 00:45:08.320
+measurements. Now the question is, how do we&nbsp;
+know where should we locate those sensors in&nbsp;&nbsp;
+
+00:45:08.320 --> 00:45:13.320
+order to get maximum reconstruction accuracy? And&nbsp;
+that that question is answered in this paper and&nbsp;&nbsp;
+
+00:45:13.320 --> 00:45:22.360
+also some earlier words. And it's shown in this&nbsp;
+paper, that's the optimal location of the sensors&nbsp;&nbsp;
+
+00:45:22.360 --> 00:45:30.160
+is given by the pivot locations where we apply QR&nbsp;
+factorization with column pivoting to the matrix&nbsp;&nbsp;
+
+00:45:30.160 --> 00:45:36.160
+of pod modes. And this is for the case where the&nbsp;
+desired number of sensors is equal to the number&nbsp;&nbsp;
+
+00:45:36.160 --> 00:45:40.840
+of retained modes. And for the oversampled&nbsp;
+case, we should apply QR factorization to&nbsp;&nbsp;
+
+00:45:40.840 --> 00:45:48.280
+phi phi transpose. And so having the optimal&nbsp;
+sensor locations and the sensor measurements&nbsp;&nbsp;
+
+00:45:48.280 --> 00:45:54.120
+in s and also the pod modes, then we can solve an&nbsp;
+inverse problem to obtain the model coefficients.&nbsp;&nbsp;
+
+00:45:54.120 --> 00:46:02.560
+And from there we can reconstruct the flow field.&nbsp;
+And so we have basically adapted this algorithm&nbsp;&nbsp;
+
+00:46:02.560 --> 00:46:09.200
+for actuator selection. And in our case, our&nbsp;
+goal is basically to use this algorithm to&nbsp;&nbsp;
+
+00:46:09.200 --> 00:46:18.440
+identify the most critical input channels along&nbsp;
+the profit boundary, or training the era Ron's.&nbsp;&nbsp;
+
+00:46:18.440 --> 00:46:23.920
+So the general procedure is very similar to&nbsp;
+their standard method. But our training data&nbsp;&nbsp;
+
+00:46:23.920 --> 00:46:28.920
+is different. Our training data is basically&nbsp;
+the Markov sequences corresponding to all of&nbsp;&nbsp;
+
+00:46:28.920 --> 00:46:34.560
+the input channels that are computed using the&nbsp;
+cores a coarse grid. So the whole idea here is&nbsp;&nbsp;
+
+00:46:34.560 --> 00:46:41.440
+to avoid running the full order model in the high&nbsp;
+resolution grid to obtain that Markov sequences&nbsp;&nbsp;
+
+00:46:41.440 --> 00:46:46.560
+for all of the input channels. So we instead run&nbsp;
+the full order model in a coarser grid and collect&nbsp;&nbsp;
+
+00:46:46.560 --> 00:46:52.400
+the training data for gappy pod. And this table&nbsp;
+compares the dimensions of these matrices in our&nbsp;&nbsp;
+
+00:46:52.400 --> 00:47:00.000
+implementation of the method against the standard&nbsp;
+Gephi pod method. And so Q that contains our&nbsp;&nbsp;
+
+00:47:00.000 --> 00:47:05.400
+training data here is p by n, where p is the total&nbsp;
+number of actual leaders, and m is the number of&nbsp;&nbsp;
+
+00:47:05.400 --> 00:47:13.200
+snapshots as the observation matrix is p, which is&nbsp;
+actually not the observation matrix. But PS by m,&nbsp;&nbsp;
+
+00:47:13.200 --> 00:47:19.160
+where p is is the desired number of actuators&nbsp;
+and p is their permutation matrix, it's Psy p&nbsp;&nbsp;
+
+00:47:19.160 --> 00:47:28.000
+and a hat is similar to the standard approach.&nbsp;
+So let me take this algorithm and reconstruct&nbsp;&nbsp;
+
+00:47:28.000 --> 00:47:34.680
+the Markov sequence of a note that we are not&nbsp;
+using the reconstruction of Markov sequence by&nbsp;&nbsp;
+
+00:47:34.680 --> 00:47:40.080
+Gabby purity at all. Here, the only thing that we&nbsp;
+need from this algorithm is the location of the&nbsp;&nbsp;
+
+00:47:40.080 --> 00:47:47.160
+most critical input channels along the far field&nbsp;
+boundary that we want to use in order to train&nbsp;&nbsp;
+
+00:47:47.160 --> 00:47:55.720
+in order to perturb only those channels in the&nbsp;
+full order model that is run in the final grade.
+
+00:48:00.280 --> 00:48:07.200
+So we use this method for our 400 by 100 grid,&nbsp;
+where we have a total of 604 input channels along&nbsp;&nbsp;
+
+00:48:07.200 --> 00:48:15.080
+the powerful boundary and gappy pod gives the&nbsp;
+optimal location for 150 input channels. That's&nbsp;&nbsp;
+
+00:48:15.080 --> 00:48:20.840
+the only part of those channels to collect Markov&nbsp;
+sequences to train the era roms then we also use&nbsp;&nbsp;
+
+00:48:20.840 --> 00:48:25.640
+a tangential interpolation to further reduce&nbsp;
+the size of the Hankel matrix. And this table&nbsp;&nbsp;
+
+00:48:25.640 --> 00:48:31.680
+shows the number of retained left and right&nbsp;
+tangential nodes and also their arm dimension.&nbsp;&nbsp;
+
+00:48:31.680 --> 00:48:38.360
+Note that their left modes represent a reduction&nbsp;
+from 40,000 output channels and the right modes&nbsp;&nbsp;
+
+00:48:38.360 --> 00:48:46.640
+represented reduction from 100 and originally 600&nbsp;
+150 And originally 604 input channels, so that&nbsp;&nbsp;
+
+00:48:46.640 --> 00:48:53.880
+reduction is major. And the left plot here shows&nbsp;
+the decay of singular values of the Hankel matrix&nbsp;&nbsp;
+
+00:48:53.880 --> 00:49:01.960
+and the lower right plot shows the Eigen values of&nbsp;
+the era roms that are stable. So now, we'd like to&nbsp;&nbsp;
+
+00:49:01.960 --> 00:49:08.400
+evaluate the predictive performance of the ROMs&nbsp;
+by trying different types of inputs that are not&nbsp;&nbsp;
+
+00:49:08.400 --> 00:49:14.280
+seen during the training. So, we have trained the&nbsp;
+era roms by the Gaussian shaped input and here we&nbsp;&nbsp;
+
+00:49:14.280 --> 00:49:22.720
+are using the sinusoidal input in perturbing&nbsp;
+velocity along at all 604 channels along the&nbsp;&nbsp;
+
+00:49:22.720 --> 00:49:27.720
+forward boundary simultaneously. And these parts&nbsp;
+here show their probe measurements or probe that&nbsp;&nbsp;
+
+00:49:27.720 --> 00:49:33.160
+is located at the bottom of the airfoil. So,&nbsp;
+besides some discrepancies in the amplitude of&nbsp;&nbsp;
+
+00:49:33.160 --> 00:49:39.360
+the v components of velocity, we can see that&nbsp;
+the ROM agrees very well with the full order&nbsp;&nbsp;
+
+00:49:39.360 --> 00:49:46.040
+model. And this is also shown in these in this&nbsp;
+snapshot of the pressure perturbation control,&nbsp;&nbsp;
+
+00:49:46.040 --> 00:49:52.840
+where the left one is the full order model and&nbsp;
+the right one is the ROM. So we decided to test&nbsp;&nbsp;
+
+00:49:53.840 --> 00:50:00.720
+more complex input signal which is this triangle&nbsp;
+wave with sharp radians and a I'm looking at the&nbsp;&nbsp;
+
+00:50:00.720 --> 00:50:05.600
+probe measurements, there are some discrepancies&nbsp;
+in the new components of velocity. But overall,&nbsp;&nbsp;
+
+00:50:05.600 --> 00:50:11.880
+their arms are correctly picking up the dynamics&nbsp;
+in response to a more challenging input channel&nbsp;&nbsp;
+
+00:50:11.880 --> 00:50:19.800
+as well. And the last input signal that we tried&nbsp;
+was a non periodic step input that we apply to the&nbsp;&nbsp;
+
+00:50:19.800 --> 00:50:28.000
+entire profit boundary all 604 channels, not only&nbsp;
+the channels identified by GAAP up already, and&nbsp;&nbsp;
+
+00:50:28.000 --> 00:50:34.040
+again, we can still see that they're wrong, is&nbsp;
+replicating the dynamics and dynamics of the order&nbsp;&nbsp;
+
+00:50:34.040 --> 00:50:40.040
+model very well. So that's where the accuracy of&nbsp;
+the reduced order models regarding computational&nbsp;&nbsp;
+
+00:50:40.040 --> 00:50:45.600
+savings, this table gives us some information&nbsp;
+about the online and offline computational&nbsp;&nbsp;
+
+00:50:45.600 --> 00:50:53.200
+savings, the linear linearization of the order&nbsp;
+model gave us an order of magnitude reduction in&nbsp;&nbsp;
+
+00:50:53.200 --> 00:50:58.680
+computation time for each Markov sequence,&nbsp;
+the low fidelity gap up with the approach,&nbsp;&nbsp;
+
+00:50:58.680 --> 00:51:03.480
+reduce the number of input channels by a factor&nbsp;
+of four, and therefore the computation time of the&nbsp;&nbsp;
+
+00:51:03.480 --> 00:51:12.400
+training data by 353 hours. And unfortunately, we&nbsp;
+were not able to compute an online offline speed&nbsp;&nbsp;
+
+00:51:12.400 --> 00:51:18.840
+factor because without the Gabi pod method,&nbsp;
+constructing the era roms was beyond our&nbsp;&nbsp;
+
+00:51:18.840 --> 00:51:25.520
+computational resources. And at the in the online&nbsp;
+phase, the era rom gave us a speed up factor of&nbsp;&nbsp;
+
+00:51:25.520 --> 00:51:36.160
+258. And so we went through a long journey in the&nbsp;
+past 15 minutes, almost 15 minutes. The takeaway&nbsp;&nbsp;
+
+00:51:36.160 --> 00:51:41.600
+message messages are that I guess it's gonna&nbsp;
+be a violation algorithm is a non intrusive,&nbsp;&nbsp;
+
+00:51:41.600 --> 00:51:46.440
+data driven version of balanced truncation&nbsp;
+that addresses many of the limitations of&nbsp;&nbsp;
+
+00:51:46.440 --> 00:51:51.880
+this method in application to more complex&nbsp;
+problems. Although the downside is that,&nbsp;&nbsp;
+
+00:51:51.880 --> 00:51:57.880
+like any other data driven method, the performance&nbsp;
+of era roms depends on the training data. And so&nbsp;&nbsp;
+
+00:51:57.880 --> 00:52:03.200
+we should be careful about the sampling properties&nbsp;
+to train era ROMs. But if if trained properly era&nbsp;&nbsp;
+
+00:52:03.200 --> 00:52:11.240
+roms can operate in a purely predicting predictive&nbsp;
+scenario. And looking at the applications,&nbsp;&nbsp;
+
+00:52:11.240 --> 00:52:17.760
+we also said that sampling the impulse response&nbsp;
+sufficiently could be challenging, because it may&nbsp;&nbsp;
+
+00:52:17.760 --> 00:52:23.360
+increase the upfront cost of construction&nbsp;
+of era ROMs. For example, when the system&nbsp;&nbsp;
+
+00:52:23.360 --> 00:52:28.600
+has a lightly damped impulse response, or sharp&nbsp;
+gradients that need higher sampling frequencies,&nbsp;&nbsp;
+
+00:52:28.600 --> 00:52:34.200
+and also in systems with many inputs and&nbsp;
+input and output channels, also, the cost&nbsp;&nbsp;
+
+00:52:34.200 --> 00:52:42.040
+of era increases. And then we introduced some&nbsp;
+additional methods to reduce the offline cost,&nbsp;&nbsp;
+
+00:52:42.040 --> 00:52:47.800
+like the tangential interpolation method, domain&nbsp;
+decomposition approach, and also a low fidelity&nbsp;&nbsp;
+
+00:52:47.800 --> 00:52:55.640
+version of the gappy pod method for actuator&nbsp;
+selection. And lastly, there are topics that could&nbsp;&nbsp;
+
+00:52:55.640 --> 00:53:02.960
+be pursued further, as as future work will be, for&nbsp;
+example, application era to larger scale problems&nbsp;&nbsp;
+
+00:53:02.960 --> 00:53:08.760
+and coming up with ideas to further decrease the&nbsp;
+offline custom era ROMs and also improving upon&nbsp;&nbsp;
+
+00:53:08.760 --> 00:53:14.800
+the existing algorithms for era in time varying&nbsp;
+and nonlinear systems, which is also something&nbsp;&nbsp;
+
+00:53:14.800 --> 00:53:20.040
+that we are currently working on. And with that,&nbsp;
+I'd like to open the floor for any questions.
+
+00:53:20.040 --> 00:53:25.760
+Thank you. Thank you so much for the wonderful&nbsp;
+talk. Very informal talker, and I learned a lot&nbsp;&nbsp;
+
+00:53:25.760 --> 00:53:35.600
+about the balance truncation. Great. Yes, let's,&nbsp;
+let's have a q&amp;a session. I can start, I have&nbsp;&nbsp;
+
+00:53:36.240 --> 00:53:47.640
+clarification person if you go to slide 35 If you&nbsp;
+don't mind. 30. Yeah. And you compare the LSP 10.&nbsp;&nbsp;
+
+00:53:47.640 --> 00:53:56.520
+color scheme. Okay, pod there. You apply the LSP&nbsp;
+and Galerkin to legalized pool the motor Moodle?&nbsp;&nbsp;
+
+00:53:56.520 --> 00:54:01.080
+Yes, that's correct. Yes. Okay, cool, because&nbsp;
+they can be applied to nonlinear? Yes,
+
+00:54:01.080 --> 00:54:04.440
+of course. Yeah. But we wanted&nbsp;
+them to be consistent with the&nbsp;&nbsp;
+
+00:54:04.440 --> 00:54:10.280
+era round. So we applied them to the&nbsp;
+linearized pull order modeling. So
+
+00:54:10.280 --> 00:54:13.040
+and when the conclusion like that story,&nbsp;&nbsp;
+
+00:54:13.040 --> 00:54:17.520
+you you're telling in this slide is&nbsp;
+when it when it is applied to the&nbsp;&nbsp;
+
+00:54:17.520 --> 00:54:27.720
+linear problem? Yeah, they can outperform in&nbsp;
+terms of accuracy, both lsphp and consulte.
+
+00:54:27.720 --> 00:54:32.880
+Yes, so CCRA is basically that data&nbsp;
+driven version of balance truncation,&nbsp;&nbsp;
+
+00:54:32.880 --> 00:54:40.400
+it's able to perform in a purely predictive&nbsp;
+setting where the input signal is not seen&nbsp;&nbsp;
+
+00:54:40.400 --> 00:54:46.560
+during that training in the training data,&nbsp;
+why the projection based ROMs are not able to&nbsp;&nbsp;
+
+00:54:46.560 --> 00:54:55.080
+perform as well as era in such a truly predictive&nbsp;
+setting without having observed that perturbation.
+
+00:54:56.120 --> 00:54:59.920
+Well, there are there are ways of parameterizing&nbsp;&nbsp;
+
+00:54:59.920 --> 00:55:04.760
+the A call akin pod and LSPD.&nbsp;
+Sure you have all tied those
+
+00:55:04.760 --> 00:55:09.400
+back? No, no, we are here using the standard&nbsp;
+prediction based model reduction methods.&nbsp;&nbsp;
+
+00:55:09.400 --> 00:55:15.280
+So we are basically comparing the&nbsp;
+era to the standard methods. Okay,
+
+00:55:15.280 --> 00:55:26.240
+that variant, the parametric. Alright. We do&nbsp;
+have a question in chat room, Kevin asked. Okay,&nbsp;&nbsp;
+
+00:55:26.240 --> 00:55:33.600
+he has a few questions for future milestones&nbsp;
+first, what would your approach be toward&nbsp;&nbsp;
+
+00:55:33.600 --> 00:55:39.000
+unsteady nonlinear problem? And second&nbsp;
+question is how can it be extended toward&nbsp;&nbsp;
+
+00:55:39.000 --> 00:55:47.080
+a more generic input than a linear actuator?&nbsp;
+So he basically has a two questions. Right.
+
+00:55:47.600 --> 00:55:52.560
+So for linear problems, for&nbsp;
+nonlinear problems, and I mean,&nbsp;&nbsp;
+
+00:55:52.560 --> 00:55:57.200
+that's the million dollar question. Although&nbsp;
+there have been some efforts. Like for example,&nbsp;&nbsp;
+
+00:55:57.200 --> 00:56:02.960
+for weakly nonlinear problems, some people&nbsp;
+directly apply the same balance truncation&nbsp;&nbsp;
+
+00:56:02.960 --> 00:56:12.080
+algorithm. And also there have been&nbsp;
+some recent efforts using again,&nbsp;&nbsp;
+
+00:56:12.080 --> 00:56:17.920
+methods that stem from the approximate balance&nbsp;
+truncation mainly using covariance balancing,&nbsp;&nbsp;
+
+00:56:17.920 --> 00:56:27.800
+for example, but I haven't seen any methods&nbsp;
+that apply era rounds to nonlinear problems,&nbsp;&nbsp;
+
+00:56:27.800 --> 00:56:34.120
+it has been in the same direction as approximate&nbsp;
+balance truncation, but not the, I guess, the same&nbsp;&nbsp;
+
+00:56:34.120 --> 00:56:40.160
+realization algorithm, because they are different.&nbsp;
+You know, because approximate balance Truncation&nbsp;&nbsp;
+
+00:56:40.160 --> 00:56:44.800
+is kind of partially data driven, we still&nbsp;
+need access to the broader model operators&nbsp;&nbsp;
+
+00:56:44.800 --> 00:56:52.040
+and I joined system simulations, but balance&nbsp;
+location is about era is purely data driven.
+
+00:56:52.040 --> 00:57:01.480
+And the question was, how can it be extended for&nbsp;
+the more generic input than a linear actuator?
+
+00:57:02.040 --> 00:57:09.040
+Well, at least for the problems that we have&nbsp;
+considered here, and any type of input that&nbsp;&nbsp;
+
+00:57:09.040 --> 00:57:16.840
+we have used, works on these problems. So&nbsp;
+I think, if the ROMs are trained properly,&nbsp;&nbsp;
+
+00:57:16.840 --> 00:57:26.680
+any type of input that you use would&nbsp;
+be would result in accurate rounds.
+
+00:57:26.680 --> 00:57:35.640
+Thank you. And that's, um, I have questions about&nbsp;
+the gappy pod that, that you introduced. And I&nbsp;&nbsp;
+
+00:57:35.640 --> 00:57:44.200
+don't know if it's like 4243 or something like&nbsp;
+that. When I heard that, first, I thought to you,&nbsp;&nbsp;
+
+00:57:44.200 --> 00:57:51.280
+you use the KP pod to reduce the Amira&nbsp;
+dimensionality cost, as you you know,&nbsp;&nbsp;
+
+00:57:51.280 --> 00:57:57.520
+refine the mesh on the boundary, the number&nbsp;
+of parameter increases crazy and the high&nbsp;&nbsp;
+
+00:57:57.520 --> 00:58:04.440
+dimensional parameter space, it's, it's really&nbsp;
+hard to deal with in the data driven approach in&nbsp;&nbsp;
+
+00:58:04.440 --> 00:58:12.720
+general. So you try to use the dimensionality of&nbsp;
+the permanent space on campus using a pod. There&nbsp;&nbsp;
+
+00:58:12.720 --> 00:58:18.960
+was what I my understanding, but up to in this&nbsp;
+slide here, you're doing something different,&nbsp;&nbsp;
+
+00:58:18.960 --> 00:58:25.480
+I mean, you apply, you run the&nbsp;
+simulation course agreed. And then
+
+00:58:25.480 --> 00:58:31.640
+yeah, so we are running the simulations over&nbsp;
+the coarser grid to collect the training&nbsp;&nbsp;
+
+00:58:31.640 --> 00:58:38.920
+data for gappy pod. And then we are using the&nbsp;
+optimal actuator location locations given by&nbsp;&nbsp;
+
+00:58:38.920 --> 00:58:45.680
+the pivots of a QR factorization with Colin&nbsp;
+pivoting in the iPod to identify the most&nbsp;&nbsp;
+
+00:58:45.680 --> 00:58:54.200
+critical input channels, which means their input&nbsp;
+channels that affect the Markov sequence the most.
+
+00:58:54.200 --> 00:59:02.720
+Okay, great, I guess my understanding what&nbsp;
+some are correct, then how many how many,&nbsp;&nbsp;
+
+00:59:02.720 --> 00:59:07.960
+you know, indices do you extract Okay, pod is
+
+00:59:07.960 --> 00:59:15.920
+Yeah, so, we are so, p is here is the desired&nbsp;
+number of actuator locations, we have considered&nbsp;&nbsp;
+
+00:59:15.920 --> 00:59:27.000
+150 input channels. So, we are reducing from the&nbsp;
+original 604 input channels to 150 input channels.
+
+00:59:27.000 --> 00:59:32.760
+I see. Okay. So, that definitely helps on the
+
+00:59:33.480 --> 00:59:38.120
+Yes. So, as as I said, this basically reduces the&nbsp;&nbsp;
+
+00:59:38.120 --> 00:59:44.360
+cost of construction duration of&nbsp;
+the training data by 353 hours.
+
+00:59:44.360 --> 00:59:51.800
+Okay. All right. Sounds good. Okay, any&nbsp;
+other questions from audience? You can&nbsp;&nbsp;
+
+00:59:51.800 --> 01:00:04.520
+unmute yourself and ask questions. To be shy&nbsp;
+Um, well, if not, let's thank our speaker&nbsp;&nbsp;
+
+01:00:04.520 --> 01:00:12.080
+today elnaz for the wonderful talk, and it&nbsp;
+was very informal talk, and I learned a lot
+
+01:00:12.800 --> 01:00:16.160
+from you, so much texture and everyone has
+
+01:00:16.160 --> 01:00:23.840
+a great speaker. Well, that's, you know,&nbsp;
+concludes the today's seminar. Let's thank&nbsp;&nbsp;
+
+01:00:23.840 --> 01:00:33.560
+our speaker. That's one more time. And I think&nbsp;
+the next TDPs seminar is Tuesday next week,&nbsp;&nbsp;
+
+01:00:34.440 --> 01:00:40.840
+which will be a hybrid. So if you're on&nbsp;
+site, and you can actually come in person,&nbsp;&nbsp;
+
+01:00:40.840 --> 01:00:49.920
+so I hope to see you there. All&nbsp;
+right. Thank you. Nice. Thanks.
+

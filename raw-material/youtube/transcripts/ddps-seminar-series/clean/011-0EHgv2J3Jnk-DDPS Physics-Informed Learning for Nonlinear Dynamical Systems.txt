@@ -1,0 +1,1809 @@
+okay let's start
+welcome to the edps seminar today before
+we introduce today's speaker let's go
+over some
+rules and logistics first of all
+please mute yourself during the talk
+unless you have
+questions so that our speaker can
+talk without unnecessary interruptions
+if you have clarification questions you
+are welcome to unmute yourself and ask
+those questions
+otherwise please use chat room to post
+your questions so that we can
+address them in q a session at the end
+second no classified discussion is
+allowed here
+so watch out finally the talk today will
+be recorded and uploaded in our
+youtube channel okay
+that's about it now let me introduce our
+speaker today
+um it is an honor to
+host today's speaker excuse me
+dr goyal who is from max planck
+institute he graduated from the
+department of
+engineering design at
+indian institute of technology
+in 2003 2013
+he then joined the department of
+professor peter banner
+at the max planck institute for dynamics
+of complex
+technical systems in germany
+for his phd in 2018
+he received his phd in mathematics at
+the autobahn
+greek university of magdeburg
+in germany again he has been a
+postdoc for the period of 2018 to 2020
+at the mpi dcts
+magdaberg germany again since 2021
+he is the team leader of
+physics-enhanced machine learning
+in the csc csc department
+at the same institute dr goyal's main
+research interests are scientific
+machine learning model order reduction
+physics enhanced learning of dynamical
+systems
+and image reconstruction today dr goyal
+will present physics-informed learning
+for
+non-linear dynamical systems a deep
+learning approach to
+operator inference which is aligned with
+our core interest here so we expect a
+great talk today
+and now without further ado let me pass
+the button
+to dr goyal dr boyle it's all yours
+okay thank you very much for the kind
+introductions and it is
+my pleasure to be to be here and present
+some of our work
+which we have been doing very recently
+in our department
+and so i'm also happy to present our
+our recent work in this seminar and
+looking forward for some fruitful
+discussions later on as well
+so today i will be presenting some work
+on the physics inform learning for
+nonlinear dynamical systems and
+basically in this
+work we have focused on operator
+inference approach
+to learn dynamical systems before i
+go further so i would like to first
+thank
+all my collaborators with whom i have
+worked and
+and to present some of the joint work
+and which includes peter banner karen
+wilcox
+benjamin festovar boris kramer ego
+pontus and highland
+and bullet karazhan and suleiman yadines
+and so the main focus here
+what we are looking into modeling
+dynamical models
+for processes and why we need dynamical
+models is to analyze transient behavior
+under the operating different different
+operating conditions
+and for example if you want to design a
+control for a chemical plant
+for example you want to avoid some
+disaster in your plants and you want to
+function your plant according to your
+desires and you want to
+implement a control strategies
+or if there is a parameters you want to
+optimize the parameters and want to
+predict
+long time horizons for dynamics and for
+this all purpose we need
+dynamical models so that we can carry
+out our engineering
+design studies
+so let's look up the what are the main
+things so
+you are giving a physical systems and
+the physical system might come from the
+for example mechanical systems or for
+the networking or electrical circuits
+and etc etc and these are the physical
+models which has been studied
+for more than a decade and these are
+very well studies
+one of the thing is if you if your
+process which is very well understood
+there are probably partial differential
+equations which
+are very well known for example in
+incompressible flow there is a neighbor
+stocks
+and which can describe the flow
+of inflow in a given domain
+moreover on the other side which you can
+see is that
+a physical system might carry some
+expertise
+and some knowledge which can come from
+our experts or
+experimentals and these are probably
+there is no laws which we understood but
+from the experience by expertise
+there is a model which we can write
+which will describe the physical
+or physics of a particular process
+and then we will end up in the
+differential algebraic equations and
+other side
+which we can also end up in the
+differential algebraic equation if you
+discretize
+a partial differential equation
+and once we have this algebraic
+differential equation then you can use
+that model into simulation control and
+optimization or uncertainty
+quantification etc
+whatever your desire is but however
+there are two main
+bottleneck in the whole process which i
+want to highlight here and
+there's two tooth measure concern point
+is a discretization step so
+how you really would discretize such
+that the all the dynamics are captured
+in
+in your model and the second thing is
+the high fidelity of the models
+and which can also cause some concern to
+us
+so let's dive into these two concerns a
+little bit more details so
+the first challenge is again the
+discretization for complex process the
+discretized model
+which describes all the underlying
+dynamics and features is a challenging
+task so
+if a given domain and if the comp and
+the process is
+very complex then you want to discretize
+in such a way that
+all the dynamics is very well captured
+and all the features of the process
+and this this becomes even more
+challenging and demanding if
+if your geometry is more complex
+involves multiphysics as well
+and there is a coupling between the
+different components for instance
+and then this all the process becomes
+even more cumbersome and the last thing
+which i would like to highlight is
+is the case where you do not even have a
+access to a discretized model so for
+example consider the case where
+you are giving a legacy code to to
+simulate a particular problem or
+that is very dedicated simulator toolbox
+for instance
+and if you really want to get a
+discretized model then you have to
+really understand what is
+the code is doing and how these matrices
+are assembled
+and which may not be an easy task for
+for an end user for instance and this
+code
+generally always has on the regular
+times updates and
+you have to again see what has been
+changed in the code so that you can get
+again discretized model and this process
+also can be very cumbersome
+and second point which i i would like to
+highlight
+is the high fidelity models and if you
+if your dynamics is very complex then
+and to resolve all the dynamics and the
+underlying dynamics you need to have
+a lot of degrees of freedom which will
+describe the dynamics and which is also
+called like state space dimension which
+can easily
+go up to ten power four or ten power six
+and if you have a such high fidelity
+models then simulations or repeated
+simulation and control and optimization
+becomes very infeasible
+so these are the two two challenge which
+we have in front of us
+and we would like to resolve this
+to come around with these two issues
+so again i would like to like sketch out
+so
+so in the end what we want to have is
+if you want to get in a model for
+example which
+describe the dynamics of a process so we
+typically go
+through these four steps so first you
+are giving a partial differential
+equation with a boundary condition which
+you want to have it
+and then the first step which we do is a
+model and what we do is again
+discretize the model and which will lead
+to high fidelity models
+and we if you want to do control and
+simulation with this high frequency
+model and to
+to ease this task we want to get a
+reduce for the models so these are
+typically as a flow of the work which we
+typically follow
+so as i said it these are the two steps
+which is one is discretization and this
+high fidelity models
+can we go out of these two steps
+so what we want to do is that we
+are giving a partial differential
+equation and we are we want to get
+directly reduced for the models but
+this this process is reversed by the
+fact to collect the data
+and we are giving a data set which
+simulates
+or which are obtained by the simulation
+of a partial differential equation
+but we do not have access to a
+discretized model
+and we or these are the process which
+you want to avoid
+for instance so as aesthetic the data
+can be
+obtained for example from a commercial
+software or legacy code
+and this this steps or this software
+does not allow us to
+dig into discretization or how these
+things are discretized or we
+do not want to do these things because
+it's a cumbersome task to get a
+discretized model directly
+or out of from the out from the software
+or from a code
+and so and our goal is to get a same
+reduced order model which you
+if you would follow this path partial
+differential location and discretize and
+high fidelity model and then reduce all
+the models and this reduced order muscle
+model can be get directly from the data
+so if you are giving a data which
+simulates a partial differential
+equation
+and if we can get directly the same
+reduce order models which we'll get from
+this path
+and one of the advantage of this this
+approach would be that
+the all the analysis which we have
+obtained for example error bounds and
+the convergence analysis
+for this path can be directly applied to
+this path
+but now we can skip these two steps
+which are kind of a discretization and
+the high fidelity
+to obtain the high fidelity models
+so a little bit dive into
+the approach which we typically do to
+get a reduce for the models
+so you are giving a high fidelity model
+which is x dot is equals to a x
+and f of x is a non-linear term and we
+want to get
+a reduced order models which are in the
+low dimensional
+and typically workflow which we have is
+that this high fidelity model is
+projected on the low dimension
+using the project sense matrix v and
+to obtain the v matrix and the common
+approach is a
+proper orthogonal decomposition which
+actually looks
+takes the snapshot of the x at the
+subway time instance and apply
+singular value decomposition to get
+dominant modes
+and this will give you a very good
+approximation
+of the high fidelity state into low
+dimensional
+and then once we have this and matrix we
+we can apply
+reduced order models or we can opt and
+reduce order model by projecting
+the high fred lit model in into low
+dimensional using this projection matrix
+and as we can see it if you want to get
+this reduced order models we need the
+matrix a
+which is a discretized model
+or this which can be obtained from the
+discretization of partial differential
+equation
+and this f of x also we need it
+and as we said it we want to avoid
+computation of this the full matrix a
+and f of x as well
+so this rise to the
+one of the frameworks which we are
+interested in and this is operator
+inference
+framework and the operator inference
+framework allows us to construct reduce
+order models directly from
+data this was the approach initially
+proposed by benjamin fresco and wilcox
+in 2016
+and the operator inference actually is
+the approach which makes
+use of non-physical structure at the pde
+level
+we do not uh look into the descriptive
+discretized version but only look at the
+partial differential equation level
+the how this structure will look like
+and for simplicity
+here i assume this parsing differential
+equation other in quadratic form
+and which actually if you were to
+discretize this partial differential
+equation which are in the quadratic form
+you will get
+this kind of form and
+then if you want to construct and reduce
+order models then
+what we typically do is collect again
+the snapshot of the
+high fidelity state vectors in the
+different time instant
+and com determine the projection matrix
+using the dominant pod basis
+and construct the reduced state by
+projecting
+the high dimensional state into low
+dimension using the v
+and then also once you project the
+the high fidelity high fidelity state
+into low dimensional and then we also
+compute the time derivative of this
+small dimension here so these are the
+all the steps to in the preparation of
+the data set
+here as you see here is we only make use
+of the data
+of the state but we do not touch this
+high fidelity model on discretized model
+then we compute the reduced order models
+of the quadratic form by solving a
+directly an optimization problem so
+let's assume that you
+you want to achieve or reduce our models
+which are in the quality form
+then we can
+solve for this operator a hat and h hat
+directly
+by solving an optimization problem so
+then we will get a reduced order models
+directly you know
+using the data set and we do not require
+the any any point of time the full order
+models
+or high fidelity model in the
+discretized space we just need to
+simulate
+simulated data at the different time
+instance
+and moreover it can be also shown that
+the
+this optimization problem and the
+reduced order models which we get
+by solving this optimizing problems
+recovers these new
+intrusive pod models if the data is more
+focusing
+and as a result what we have is all the
+analysis
+and the error estimates directly from
+the period
+reduce order models
+and typically i would just wanted to
+highlight one point is that
+typically these kind of least square
+problems are ill conditions and hence
+we need to regularize these problems and
+this has been studied
+in the um by the mercury and also by us
+and to how to regularize this so that we
+get a meaningful solution and
+and we can elevate this problem of
+inconditioning
+so these are the one of the things
+which assumes the very particular
+structure which are in the quality form
+moreover we have studied also in where
+we don't do not restrict ourselves to
+quality form but we can also consider
+a general nonlinear systems
+and where the non-linear term is given
+by f of x
+but the assumption which you make here
+is that
+we know the form of f of f t of s
+so we do not know um in the discretized
+form but we only know at the partial
+differential
+equation level and our goal is to learn
+reduce order models directly from the
+data
+without discretizing this non-linear
+partial differential equation in this
+form
+which and then f of x or the reduced f
+has a
+almost similar structure which is in a
+partial differential equation
+and this also in the similar framework
+by solving an optimization problem we
+can directly obtain
+the reduce of the models using the data
+in this form
+without requiring a discretized model as
+as an intermediate step
+and we also can use this hyper reduction
+to
+further accelerate accelerate reduce
+non-linear systems and
+this is actually you can apply hyper
+reduction one of your favorite methods
+for example eim or dim or
+gnet for instance so
+here was so far for the operator
+inference and we have applied to various
+applications these things
+and one of the applications which are
+present here is a
+table tabular reactor model this is a
+single reactions which is a coupled
+equations
+and these are phi and the and the theta
+which denotes the concentration
+and temperature and we are interested in
+the output
+quantity and what we only know is
+partial differential equation
+we and we do not want to have a
+discretized model and directly
+uh get a reduced order modulus direct
+from the data set
+so we what we do is we collected
+snapshots of phi
+and theta in the time interval 0 to 30
+and
+look at the decay of
+decay of the similar values of the
+training data set
+and we observe a very steep or rapid
+decay of single values which
+allows us to construct and reduce order
+models of the very low dimensions
+here we we consider we try to learn a
+reducer models
+only order 10 and
+we we compared with the if you were
+giving a reduce
+if you were giving a discretized model
+and project in the classical pod setting
+and what we observe is that you can also
+learn reduce order models
+almost as good as pod model without
+requiring
+requiring a discretized model in the
+intermediate step
+and here also we see the trend only the
+model for
+0 to 30 and we predict from the 30 to 60
+and the predictive capability of the
+both reduced water models are also very
+good so that
+it kind of tells us that we are not over
+fitting the system
+and one more example which we have is
+coming from
+batch chromatography is a chemical
+process which is a mixture of
+two compounds with a and b and what we
+do we our goal is to separate
+the a and b from the mixture of two
+products so
+and the process follows
+a particular kind of uh
+the process is done generally done in
+the columns and this
+column has a very special property so
+what we do is we're feeding
+the mixture of a and b and this is
+passing through the
+on the columns and but in the columns
+that come
+the the product a for example will move
+faster than the
+product p and in the end of the channels
+you will actually collect
+the the separation of these two products
+and this is a kind of a separation
+um process which is followed in a
+comical cross chemical
+processes to to separate the
+the products from a and b for instance
+so and the dynamics of this process is
+given by the best chromatography which
+is also again a coupled partial
+differential equation
+and and it is couple for instance
+and our here is also our goal is to to
+preserve this coupling structure in the
+reduce order model so
+so that we don't mix these two uh
+two quantities with c and q which
+kind of denotes the concentration of the
+compounds a
+and b in a particular form
+so here if you want to really preserve
+this coupling structure what we can do
+is we can
+apply a block diagram projection so that
+we do not mix the quantities
+and so that the reduced space of the all
+the quantities are
+reduced independently without mixing
+them
+so here again we up we compare with the
+intrusive pod and and we also learn
+reduce order model directly from the
+data
+and we see the we observe that
+both reduce order modus performs very
+good and on the one hand we
+in the if you want to apply intrusive
+pod models then you need to have a
+discretized model but
+wherever if you want to learn a reduced
+mode directly from
+operator inference then we do not
+require this intermediate steps there
+and we can directly
+compute reduce order model directly from
+the data
+also we can also extend this this
+operator inference approach for a
+parametric case and we have also
+if you have a parametric partial
+differential equation then you can
+directly
+learn reduce order models which also
+have the same parameter dependencies
+and so here we take example of the
+shallow water equations which is also
+parameterized by the theta which
+actually
+uh indicates the angle corresponding to
+latitude
+and this is again a coupled partial
+differential equation where you have the
+u and v which are velocity and h is a
+high field
+and we want to construct a reduced
+models
+for the shallow water equations without
+having access to a discretized
+version of this cello water equations so
+for this one what we do is we
+collect the training data set for the
+five different parameter settings
+in the range of pi by 6 to pi by 3 and
+we infrared
+reduce order models directly from the
+data of order 75 for instance
+and we compare the for example the
+height field for the parameter
+pi 5 pi by 24 which is not in our
+training sets
+which is on the testing set and we see
+this
+the comparison of the full order models
+and the
+reduce of the motors for these
+parameters and in the eyeball knob they
+looks
+very similar to each other so here the
+advantage here is the reduce order mod
+is directly constructed
+from the data without having a
+discretized version
+in as intimate step
+okay so this was i presented so far
+is a reduced sort of models how to
+construct reduced models
+using the operator inference and though
+so far we have not considered a
+particular find
+type of structure or the the partial
+differential equation which might have a
+constraint
+so let's look into how this framework
+can be
+tailored to constraint non nonlinear
+dynamical systems
+so so far as i said it we have
+considered a
+operator inference for non-new system
+which are not subject to
+constraint but many processes may have
+algebraic constraints
+involved and one of the application
+which we are looking into
+is incompressible flows uh and the
+dynamics of incompressive flow can be
+given by the incompressible navy stocks
+equation
+where the algebraic constraints are kind
+of a divergence
+of the velocity field and this is
+actually the constraint
+and so far we have not
+actually have done or have treated this
+algebraic constraint
+very particularly so let's look into
+a little bit more in details how we can
+make use of this algebraic constraints
+in learning um our reduced order models
+directly from the data
+so just to highlight a few points so
+this
+this incompressible navier stokes
+equations which are coupled
+coupled equations in the velocity fields
+and the pressures
+and again the one of the thing is
+there's a constraints which are kind of
+for the divergence of
+in the divergence of the velocity field
+so
+if you were to discretize a nav stocks
+equation for incompressible flows you
+will have
+this kind of discretized form so
+you have and differential equation in
+the velocity
+and then there's a constraints here and
+these are again the
+coupled so here you have the velocity
+field and the pressure
+which are actually coupled let's say it
+here and
+there are some properties of if you
+if you get a discretized navy stock so
+one is like this e1 one
+will be a positive definite matrix and
+this also this matrix will be
+non-singular and
+which actually tells us that if you do
+not have these non-linear terms then
+this linear part of this nav stocks is
+actually index two system
+so and in the rest of the talk i will
+consider actually in
+this g of t which is sitting here is
+actually 0 but if you do not have 0 then
+also you can treat
+by some modification which we have
+discussed in our paper but for the
+simplicity in the
+talk i will assume that g of t here is
+zero so if you are given if you are
+given a discretized model and if you
+want to compute a reduced sort of models
+for
+incompressible or discretized version of
+incompressible navy stocks
+and if you construct a reduced model
+directly from the pod proper orthogonal
+decomposition
+so what as a first step what we do is
+com
+determine dominant pod basis for
+velocity and pressure which are denoted
+by this vp and and vb
+and construct a reduce order models
+using the block collecting projections
+and you will construct
+you will um if you
+if you if you put this vv and vp in the
+block form and
+use the collecting projection you can
+directly get a reduce set of models
+however if you not these things that the
+reduced model which you'll get in the
+classical
+setting will be independent of pressure
+and therefore
+and the one of the reason why you will
+be independent of pressure is this
+vp i think this would be the transpose
+here but vp times
+a a12 will be actually zero and that
+therefore the reduced modulus will be
+independent of pressure
+and if you really are interested in the
+pressure field in the classical pod
+setting you cannot get it
+so these are the some of the
+observations and if you
+make analogy with how you really do with
+the
+if you construct a reducer model using
+pod however i just wanted to mention
+that
+they are of course the setting or the
+their treatment to get a pressure fills
+in the modified pod settings
+but in the classical setting it is not
+not possible to get a for example
+pressure field
+so here our goal is to construct a
+reduced sort of models
+directly from the data sets so you are
+giving velocity and the pressure
+fields for the different time instance
+and
+and we want to do these things with
+going through a discretization so for
+example if you are giving a
+as legacy core to which simulates a flow
+and we want
+for income so flow and we want to get
+reduced models directly from the data
+set
+so the first observation which you make
+is that
+that this they all those um
+discretized navy stock are coupled and
+but using by making use of projector we
+can
+decouple these equations so to do these
+things so
+look at this constrained equations and
+if you take the derivative of it
+we will again get this constraint or
+this equality here
+and if you substitute v dot from this
+equation then we can directly get the
+pressure field
+or pressure here which is given in terms
+of
+velocity only and note that here the
+velocity
+and the connection between the velocity
+and pressure is algebraic
+there is not even a dynamic so if you
+are giving a velocity field you can
+directly get a pressure field
+and if you substitute this pressure
+again in this
+differential equation then you can get
+an
+evolution equation for the velocity
+which is actually independent of
+pressure and which is actually this one
+here
+so you you do this analysis if you were
+giving a discretized model
+but the lesson which you learn here is
+that the velocity field
+can evolve independent of pressure field
+and the pressure
+is an e pressure can be given in the
+algebraic equations
+in terms of velocity field itself so
+these are two main observations which we
+can make
+from our analysis if you are giving a
+discretized model
+and we use this this knowledge in
+learning
+reduce order model directly from the
+data circle
+so for this one what we do is let's
+prepare our
+data set so you take the snapshot or the
+training data set for the velocity and
+pressure and the you for example can be
+a control input
+and again for like in the classical
+operator inference we
+determine the pod basis for the velocity
+and pressure which
+actually will project the high fidelity
+vector of velocity and pressure in the
+low dimensional
+and we also approximate
+the derivative of the reduced velocity
+and once we have this data set we
+we can learn a non-intrusive way reduce
+order models for incompressive flow of
+this form
+so as we as we discussed in the last
+slides that
+the velocity field can be given
+independent of
+pressure pressure so this is what we
+have it
+and the pressure actually will can be
+given as an algebraic equation
+in terms of velocity only and we can get
+this operator
+directly by solving this optimization
+problem and this square problem and we
+will get
+directly operators of the reduced order
+models
+so and let's look at
+how this works in an experiment so we
+have
+a cylindrical wick example and
+which is and for this which actually
+and the flow is controlled and this
+boundary here and we we observe the flow
+in the in the domain here and we have
+collected 513 snapshots in the time
+interval from 0 to
+two seconds and we learn reduce order
+models
+of order 30 from these snapshots
+so we look up the pressure field which
+is actually in the average pressure in
+this domain in
+some point in the i have not marked here
+but this is a domain here in this domain
+we look at the average pressure obtained
+from the full order models and operator
+inference
+and we we see that in our training data
+sets from the up to
+like we split the training into up to
+here so we take
+these all the points in our trainings
+and the computer reduce our models
+and using the operator inference and we
+see that this both models
+captures the pressure fields in the
+given domain very well but
+it's kind of deteriorates outside the
+domain
+of the training data sets but it still
+is
+can uh can very well approximate
+the pressure field as well outside the
+training set as well
+and if you look up the fill so here the
+velocity field as well and we if we
+compare the error between the full order
+models and the reduced order models
+and the velocity field we also see the
+error almost like a
+less than one percent or less than one
+percent here
+the error of in between the reduced
+models
+and directly obtained from the operator
+inference and the full order models
+okay so here we have shown so far that
+how we can
+tell our operator inference for
+encompassing flow and we can make use of
+the knowledge of
+the algebraic equations in our learning
+process
+and we can get a like very efficient uh
+reduce on the models for incompressible
+flows directly from the data set
+so here i will jump a little bit how we
+can really combine operator inference
+with deep learning and this is our
+some of our preliminary work in this
+directions and how we can make use of
+these two worlds
+as well so what we know in operator
+inference is that
+we need to know the full knowledge at
+partial differential equations
+and so that we can make use of this
+information in learning
+however there are many scenarios where
+we do not have the full knowledge of
+all um the full knowledge of partial
+differential equation or partial
+differential
+equation which we know which way which
+may not characterize the whole
+dynamics of the process so
+then what we can do is split the the
+dynamics into two times
+two terms so f of v and r of v and
+f of v the term which can be think
+which we already know about the process
+so which we know from the physical laws
+or by experts
+for example in the reactor models we
+typically
+happen to see this arrhenius kind of
+terms for example or
+if you are working with incomes of flow
+then you know there is a compressibility
+condition and this kind of knowledge you
+know
+about about the process and there is
+some more terms which is rfa which i
+like all these terms and which is a kind
+of hidden dynamics or unknown terms in
+the dynamics
+and one of the typical example which we
+can think of is a friction term in the
+robotic sum
+and the there is no concrete way how we
+can really model
+the friction terms in the robotic sum so
+but we still know how the robotic sum
+comes and for example there is a
+classical mechanical systems but this
+mechanical system may not
+really describe the whole dynamics of
+the robotic sounds
+so then we can split into two parts so
+and to this one
+moreover if you look from the simulation
+software
+side then as we as we discussed before
+that we can collect the data from a
+software
+and and we can build the reduce order
+models directly having
+access to a discretized model but we
+need a full
+knowledge of partial differential
+equations or underlying partial
+differential equations which
+will describe or where the data come
+from however
+in these softwares they are also if you
+has a complicated
+process then there of course there are
+small tweaks and error correction terms
+which
+we actually are not aware of these
+things and
+or is not possible to put in the
+discretized model
+and then they then there is a
+some kind of a mismatch between the
+passive differential equation
+and the data which you collect from the
+simulated software
+and therefore it can also fit into this
+category so
+you have the some good knowledge of
+partial differential equation but still
+there is some correction term which you
+are not aware of it
+so how we can get a reducer models or
+models directly
+from uh from which or we can build a
+model which will describe the full
+dynamics
+where we only know the partial knowledge
+of the systems
+for simplicity uh i assume this f of v
+to be
+a quadratic form and
+why we make this simplification and
+there are some supporting arguments
+here which i will put across and these
+are the
+some some arguments which are
+are as follows so first is that most of
+the dynamics or the many dynamics
+which we see or governing equation which
+are qualitative and nature
+and typical example for example navistox
+you will also see in the fischer's
+equation which
+describe the dynamics of a gene and
+which are also quadratic in the nature
+moreover what is also possible is that
+we can do
+hand engineered variables we can define
+the hand engine variables in which
+dynamics are qualitics
+and this is a philosophy of lift and
+learn so if you have
+if you if there's a dynamics is given by
+a more complicated nonlinear systems
+then it is possible to make a hand
+engineered variables
+and on those variables dynamics will
+which
+dynamics will evolve quadratically and
+so people who are not really familiar
+with the lift and learn approach i have
+some
+one example for example you consider a
+non-linear system which is
+in this form so you have x dot is equals
+to minus x plus e of
+x and e of x is kind of a non-linear
+term
+and so how we can write into quadratic
+form is
+by by lifting so you what we do is
+introduce a variable g
+and e which is e to the power of minus x
+and if you take the derivative of it
+then you
+have this form and if you do the same
+algebra of it then you will get this g
+dot
+is equals to h g times of minus x
+plus g which is also a quadratic so
+and then if you write into lift so
+initially you have only one variable x
+and but now you have the two variables
+but
+the beauty of this this form is that the
+dynamics is now
+the in the quadratic form so as i said
+it
+they are also possible to make hand
+engineered variables and
+in those those variables quadratic the
+dynamics will evolve quadratically
+and therefore we we by some kind of a
+simplification or without loss of
+generality in fact in some cases
+we assume this quality form and
+so now once we have this quadratic form
+so
+still we have this r of v and r of v one
+of the thing is like uh
+you can interpret this r of v as a
+residual which you cannot resolve by
+either by the quality form or the prior
+knowledge and which are come
+somehow derives the hidden dynamics in
+the process
+so what we do is we can make use of the
+regional networks and the regional
+networks has
+this following architecture so this is
+the regular networks is kind of also the
+name suggest is a residual and it's only
+learned residuals in the networks
+so if you and the residual is
+kind of learned by the by the network
+and and
+this is kind of enforced by this big
+connections
+and it has shown a lot of powers in the
+computer reasons
+moreover it has the residual networks
+has a very nice connection with the
+dynamical system how we integrate
+dynamical system for example
+explicit euler request euler schemes or
+kind of schemes and it this all uh
+integrating schemes has a strong
+connection with the regional networks
+and we want to use these things in
+learning dynamical processes
+and moreover you can think of residual
+connections
+as a adaptively refinement of your
+solution or the features
+so if you have as a
+network goes deeper and due to the skip
+connection
+what you are doing is you are matching
+this function close and close to
+the the the velocity field or the
+derivative of the velocity phase
+and therefore you can actually add the
+residual blocks
+to refine your solution space again and
+again without restarting the
+optimization process which i will
+show you in the next slides so inspiring
+by these all uh facts we purpose a
+the linear quadratic regional network so
+you here
+the one term is a linear term one is a
+quadratic term and then we have the
+residual terms which launch the residual
+of residual dynamics in the process
+so as i said it there are a lot of
+advantage of the residual networks and
+the one of the thing is
+which particularly is very interesting
+is the
+is a loss landscape and typically
+neural networks are high dimensional
+optimization problems
+however due to the skip connection which
+we have seen in the residual networks
+the loss length scan becomes much more
+smoother and the training also becomes
+much more smoother here
+and again the layers as as i described
+in the previous slide that the
+layers can be seen as a refinement of
+your solution so
+we can add the layers in the course of
+optimization process
+without restarting the whole
+optimization process from the scratch
+so this this is why this kind of
+connections can be used
+in into learning dynamical process in a
+very adaptive
+adaptive way so here
+we have tested this this approach to two
+um biological examples they are not
+large consistent but they still
+exhibit the the the characteristic of
+learning dynamical processes
+so here we have the two
+the first example which come from the uh
+from the neurology which describes the
+the
+the neural dynamics in the more
+simplistic way
+so what we we do is we take 10
+time series from the different initial
+conditions
+and we built the networks and the
+residual
+linear quadratic residual networks and
+we checked the
+the the predictive capability of the
+models under the new condition
+from the or from the unseen data sets
+and we have observed that these
+um this models which we get it they are
+much more robust
+as compared to if you do the fully
+connected
+neural network and this residual or
+linear quality gradual
+networks tend to perform much better and
+also the training also becomes much more
+smoother
+even with the less number of data sets
+and the other example is again from the
+biochemistry which actually determines
+the dynamics of the
+the yeast glycolysis and which actually
+involves seven
+species and for this one also we have
+taken the 30 different initial
+conditions
+and to test the models the learned
+models
+under the unseen data sets and we also
+observed that
+that the linear quadratic residual
+networks tend to
+perform much better and also has a very
+good
+compromise between the ground truth and
+the learned dynamics
+and here we do not have the full
+knowledge about the process but we learn
+the whole the residuals from the
+residual networks here
+and this this brings to this
+brings me to end of my talk
+so what we have seen is uh in this talk
+the learning reduce our models for
+nonlinear system directly from the data
+in the operator inference framework
+without having access to discretized
+models
+and but this is globalized by the fact
+that
+the knowledge of partial differential
+equations in norm
+we have also tailored the operator
+inference framework for incompressible
+navy stocks equations
+and in the towards the end we have seen
+a
+linear quadratic residual kind of
+network which allows us to
+learn the hidden dynamics which we may
+not fully know
+then this is kind of inspiration between
+the lift and learn and
+also form the residual networks
+and there are a lot of ongoing work and
+the one of the things which we are
+looking into is a non-uniform time
+series
+so far in the operator inference we
+assume that the data is giving at the
+uniform sample time but uh
+but is not the case all the time for
+example in biology you will not get the
+data at the regular time interval and it
+can be irregular or non-uniform time
+interval so
+to to tailor this kind of approach also
+for non-uniform time series
+we have not discussed um the noise in
+the data set so
+of course if you get a from simulation
+then of course there's no noise but
+if you want to also refine your solution
+or the models
+using experimental data and then
+experimental data will
+have some some noise and therefore we
+have to
+make use of like proper tools
+for for the noisy case missing
+and corrupted data sets we are again
+this is very common if you are working
+with an experimental setup
+and we are also doing some real world
+application of this approach to learn
+processes in the chemical engineering
+and we are strongly collaborating the
+other departments at our institutes for
+this one
+and with this i would like to thank you
+for attention and
+there are some references which are
+presented in this work
+thank you so much uh dr coyle for the
+great talk i
+really enjoyed it um personally i i
+think the same thing
+it's the same thing for other audiences
+we do have some questions in chat room
+let's start from the boxing
+question but the boxing um the question
+is answered by
+peter already but if if not please
+omit yourself or ask the question again
+boxing if you are still here
+yeah i see you're there can you hear me
+yeah
+hi it's my answer i
+i i don't know i i i wonder if it's true
+the number of differential equations of
+the model
+okay so boxing's original question was
+how is
+the order of reduced auto mode reduced
+model defined
+okay so
+um it is as bit also said its number of
+differential equation of the models
+this is also defined and so how
+how many um how many differential
+equation you need to
+or you can also see the the dimension of
+the state vector
+so the for example
+the here is x and if the x lies in the n
+dimensional
+then generally we have like n
+differential equation and
+if it's in the reduced space and which
+is
+the if the x hat
+is lies in the n-dimensional or
+r-dimension then
+this also actually the number of
+differential equations you have it
+so this is how you can save the order of
+the system
+uh okay thank you yeah okay sounds good
+okay
+let's move on to the next question next
+question is
+uh uh from zhao
+and he asked if we don't have any
+knowledge
+um on pde even partial partial knowledge
+can we use neural net to learn the
+reduced automotive or
+if our prior knowledge of high fidelity
+pde
+is wrong can the neural net correct
+the prior knowledge by learning process
+through some study
+for example some correction terms
+yes this is actually the in the last
+part of the talk
+and of course this kind of networks
+allows you to learn the residual and if
+there is
+you don't know correctly the partial
+differential equation then it can be
+correct by the residual network
+and in the both example what i showed in
+the last two
+from the biochemistry
+and we do not have full knowledge or any
+knowledge about the partial differential
+equation and we learn directly
+from the network and do you get the data
+from
+experiments where do you get the data
+you know here we have simulated data
+sets here
+we do not have the real experimental
+data at the moment
+simulated data okay okay next question
+is from you're welcome okay
+next question is coming from terrain um
+very nice talk pawan
+what types of venos number did you use
+in your numerical test
+how would do the operator inference
+framework
+in an under resolved turbulent regime
+yeah in our this example we have venous
+number 100
+i i must say that we have not tested our
+operating influence so far for trouble
+and regimes or turbulence or
+so this is like we are still looking
+into
+in turbulence and see how far we can go
+with it but
+yeah well i would say that we have not
+tested in the extreme cases so far
+yeah i i guess i'm sure you will get
+there soon um
+turbulence region okay the next quest
+okay
+let's next question is coming from
+longchan
+thanks for the very nice talk in my
+experience we use regularization
+regularization
+when the optimization problem is
+ill-posed
+where we need to make additional
+assumptions for the solution
+you you mentioned that you do
+regularization
+because your optimization problem is
+conditioned
+can you give some more detail on that
+the regularization
+so we we have tested two kind of
+regularizers so one is techno
+regularizers so we
+just regularize with the norm of the
+solution
+and one more which we also do is
+on the svd best regulation which is
+typically done in the dynamic mod
+decomposition
+as well so you for example
+let me go to optimizing problem okay
+let's say here so
+here for example you have this d matrix
+which might be in condition so what we
+do is
+we take the svd of this matrix and
+truncate the smaller singular values of
+it
+this is also one way of regularizing so
+but yeah there can be a various many
+more but we have tested these two of
+two kinds of regularizers and it works
+both
+these regularizers works almost equally
+good
+in in our experience
+okay um thank you next question is
+coming from
+brenda ing thanks for the talk pawan
+given your proposed architecture assumes
+the decomposition into
+h quadratic a linear term
+and all residual term did you
+confirm whether the quadratic linear
+residual effects are being
+captured by the constituent residual
+meaning is the structure actually
+increasable
+or the effects are not captured the way
+that you were
+expecting thanks okay
+to answer this this this question is
+very nice question
+um
+we have tested these things so if the
+dynamics are
+governed exactly by linear and quadratic
+term um
+then actually you will see they
+interpretability there
+however if if the dynamics are not
+governed by lean and quadratic term and
+there's a residual terms
+and the residual terms is a kind of
+hidden and you don't know what kind of
+residual it has it
+then the interpretability becomes a
+little bit harder
+but however you can still see the
+dependency on the linear and quadratic
+term how strong it is
+so if it is strong then
+you have very little uh
+or they they this more residual which
+you need to learn and the network will
+be small
+and then you see there is a dynamics is
+heavily depend on linear and quadratic
+term
+so in that sense it's more interpretable
+but
+if if there is a weak dependency on
+linear and quadratic term and the
+residual dominance then
+it becomes hard the interpretability
+becomes becomes harder
+okay brenda you can actually use this
+for effect discovery in a sense if so
+very nice
+right yes yes yes basically awesome so
+you can see the
+the how the dynamics goes and also to
+learn also to see the effect of these
+terms
+and i mean of course is a kind of a
+networking processor so it's not like
+you you make a network and then you you
+will have
+all the interpretability so you have to
+go an iterative way and learn it
+so if you want to get more
+interpretability there
+okay thank you next question is coming
+from
+david chambers uh he asked
+what is the relationship between rom
+accuracy
+and number of snapshots in the training
+set would you
+have difficulty if the system has a
+high degree of intermittency
+okay i'm sure if i understood the last
+part of the questionnaire correctly
+but the accuracy of reducer models and
+snapshots i mean
+the
+i mean there is a i think i would say i
+would really say that
+the quality of training set really
+depends so
+the accuracy of reduce or the system
+depends on the quality of
+training data sets so and though the
+dynamics you want to capture
+so and if the training data set does not
+describe the
+dynamics the overall dynamics very well
+then the reduced
+order model will also will not
+generalize to all the scenarios
+in our experience okay and
+so i mean can you okay intermittency
+means that there can be
+short intervals with less variability
+combined with
+long periods of relatively low
+variability okay yeah
+i think nice question but i i i must say
+that
+we have not that this is all the
+variability that
+if you go if you take more data set with
+the
+uh with the longer periods
+and low variability so we have not
+tested so i i
+it's a little bit hard for me to say
+anything concrete in this direction
+okay okay okay um i mean i i have a
+following question
+about that dave um you know in
+traditional reduced
+although as you increase the basis size
+um in reproductive case
+your accuracy of the rom has to you know
+reach the full
+model uh accuracy right
+yes do you see that in this framework
+you know the in the operator inference
+framework i'm very
+curious about up to
+some level uh i wouldn't say that you
+need to go to machine precision but
+it can go very low until the numerical
+issues hits you
+so but we can go up to like 10 minus 10
+order
+accuracy with respect to original model
+but afterwards when the regularizer or
+the ill condition becomes
+dominant and solving this optimism
+problems becomes trickier
+if you if
+if you take more and more bases actually
+what you're doing is
+you are actually also increasing the
+condition number of the optimization
+problem
+so there will be like a kind of uh going
+in the opposite direction here yes yes i
+i got you
+okay all right um the next question is
+coming from boxing again
+if the residual is non-deterministic
+how could your methodology be applied i
+noticed that it is
+listed in the future work can you
+illustrate a little bit more
+how would you tackle that
+um i mean of course i think if
+if there's a i mean we don't
+consider like a stochastic as this is
+for at the moment the thing
+so we we say that there is a noise
+in the measurements but still the
+process is very much deterministic and
+the noise is actually coming from the
+sensors
+or the measurement errors
+so but we do not look into the proper
+stochastic
+systems and get into the
+learning stochastic system of the
+networks
+um yeah this would be this what i would
+say
+at the moment and we are not looking
+into stochastics but in the
+more into uh more
+into deterministic case assets well at
+the moment
+okay um the next question is coming from
+brenda
+are you familiar with the universal
+differential equations
+generalization of neural odes by chris
+rachael vlad is this a pure
+neural network or are you using as
+joints part of the back propagation
+are you familiar with the neural od yes
+yes i am familiar with it
+well we are not using any
+more sophisticated things what they use
+in
+in the neural ods we are doing in the
+very classical
+networks there we are not using the
+adjoint of the
+back propagation at the moment no
+okay um
+how okay next question is coming from
+soprano
+how do you estimate the dimension of the
+worms
+so this is actually done on the looking
+at the
+k of singular values so which i plotted
+like one of the examples
+so here you collect your data set and
+you look at the you take the
+single value decomposition of your data
+set
+and look at the decay of single values
+and
+to the order of reduced system which
+determine how much energy which you want
+to capture
+so here for example which choose the 10
+which is goes here and
+which already captures almost 99.99
+of your energy or
+energy present in your training data
+sets
+so this is how you can determine order
+of for the dimension of reduced order
+model
+by looking at the decay of singular
+values
+great um my following question on that
+would be
+i mean it's related to what uh terrain
+asked
+if the reynolds number is really high
+then the
+solution becomes advection dominated
+you will not have a common growth with
+decaying fast enough
+then how would you deal with that
+so so far we in our framework we have
+assumed that
+the linear projections gives you
+sufficiently reduction in the state
+dimension
+but if you becomes convection dominant
+problems then
+linear projection does not work anymore
+and
+we have to look into nonlinear
+projection and this is some of the work
+for example
+kevin carvik is doing and we we are
+looking
+into doing for example convolutional and
+best
+um reduction which i kind of you can
+think of
+known in your projection of the state
+but we have not
+really looked into very strong convex
+diffusion equations i would say right
+but
+as i said like in the operator inference
+so far we assume there is a sufficient
+like the easier reduce order model
+sufficiently small
+by linear projects themselves right
+right
+well we have a recent work extending
+kevin kalberg's work
+um by achieving some speed up i mean
+kevin's original work
+you know was was not that fast and we
+extended his work to accomplish the
+actual speed up so you might want to
+take a look at that um yeah thank you
+we look at this list okay i don't have
+any more questions
+in the chat room but that doesn't mean
+you cannot ask questions you can
+unmute yourself and ask questions
+directly
+okay the xiao asked another question can
+we use
+this reduced auto model for data
+assimilation or
+optimal control if so then we will
+define a cost function or
+some kind of quantities of interest that
+means the video studio model has much
+less output dimension
+to consider will it be easier to build
+one
+difficult i i
+i wouldn't say that this will be easier
+to to construct reduce order models but
+however you can still improve your
+the accuracy of quantity of interest
+little bit
+by the post processing or by solving an
+additional optimization problem there
+but i in my experience i wouldn't say
+that
+it will it will make the building
+disorder models
+are cheaper or easier
+okay thank you um any other questions we
+we are
+five minutes after the um you know
+scheduled time
+but yeah any other questions
+uh rob i just asked is the
+neural i think the residual case
+what will your lq residual map to if you
+are missing 3 or w
+2 yeah how does it handle incomplete
+information
+um we
+at the moment we don't say that we are
+having the missing so we assume that
+the sequence is at the regular time
+interval
+if it's missing then we at the moment
+not doing any kind of
+processing so that's why i listed in the
+one of our online work we are
+looking how if if there is any uh
+missing data set in the sequence then
+how we really
+make use of it still compares to the
+signal so
+at the moment we are we do not have a
+methodology which
+actually handles the missing v and u
+okay i hope that answered your question
+rob
+um i i think we
+kind of have to end here um
+well if you have further
+more questions please directly email um
+you know pawan i i i'm sure he doesn't
+mind
+it sure i'll be happy to receive
+something
+okay awesome okay so with that let's
+thank our speaker
+dr goyal for the great talk uh thank you
+so much
+welcome our pleasure okay uh
+thank you so much and um in for the next
+ddps
+seminar i think we do have a another
+seminar next week so please uh stay
+tuned
+um otherwise at john
+let's call the day thank you so much
+it was a great talk thank you it was
+our pleasure to give talks okay we look
+forward
+to hearing from you more about getting
+something
+yeah okay thank you
+and then have a a very nice day i think
+it's very early morning still there so
+you have a still complete day
+yeah yeah
+okay all right all right thank you very
+much again
+and then for hosting and inviting no
+problem
+oh um okay send me send me a slide
+sure sure i'll send you those slides
+okay
+okay thank you okay bye-bye

@@ -1,0 +1,1691 @@
+Welcome to the DDPS seminar, everyone.
+Before we introduce our invited speaker,
+let's go over some rules and logistics.
+First of all, please mute yourself
+during the talk, but uh if you have
+questions, you can unmute and ask
+questions or use chat room to post your
+questions so that we can address them in
+Q&A session at the end.
+Second, today's DDPS seminar is open to
+external audience.
+Therefore, no classified discussion is
+allowed, so please watch out. And
+finally, the talk today will be recorded
+and uploaded in our YouTube channel.
+That's about it. Now, let me briefly
+introduce our speaker today.
+It is an honor to host Dr. Aditi
+Krishnapriyan, who is an assistant
+professor at UC Berkeley, where she is a
+member of Berkeley AI Research,
+Electrical Engineering and Computer
+Science, and Chemical Engineering.
+Her research interests include
+physics-inspired
+machine learning methods, geometric deep
+learning, inverse problems, and
+development of machine learning methods
+informed by physical sciences
+applications, including including
+molecular dynamics and fluid mechanics.
+A former DOE Computational Science
+Graduate Fellow, she holds a PhD from
+Stanford University and in
+and in 2020 to 2022 was the Luis Alvarez
+Fellow in Computing Sciences at Lawrence
+Berkeley National Laboratory. Today,
+Aditi will talk about bridging numerical
+methods and deep learning with
+physics-constrained differential
+solvers. I'm sure she's going to give us
+a a fantastic talk, so please have a
+high expectations.
+But before I pass the button to Aditi,
+let me ask a
+you know, one questions as usual as a
+tradition of this DDPS seminar. So, my
+question is for you, Aditi, is um I
+happen to know
+one of your hobby is uh translating your
+your language from one language to the
+another language. How
+my Why is that a hobby? That's my
+question. And
+what kind of language do you uh usually
+translate from, you know, to, you know,
+what what what other language? Yeah.
+Oh, yeah. I'm uh I'm just generally
+interested in uh different language
+families and bridges between different
+language families, which tend to also be
+informed by migration patterns. So,
+looking at completely different areas of
+the world and seeing um what the
+overlaps are in language families is uh
+just a fun hobby to work on. And it's
+gotten quite interesting now, especially
+with some of the LLMs and a lot of the
+improvement in um in translation.
+Oh, that's awesome. And And that's kind
+kind of related to your the title of
+your talk today.
+The bridging numerical methods and the
+deep learning. Yes. So, you like you
+like to preach.
+Okay.
+Store stage is yours.
+Great. Uh yeah, thanks a lot for the
+invitation and the introduction. Uh I
+was uh looking forward to giving this
+talk because I think a lot of the themes
+here, my impression is that they are
+going to overlap a lot with uh the
+backgrounds of people in the audience,
+which could be a mix of applied math, uh
+machine learning, physics, and so on. Um
+and so,
+this is going to just be a general
+overview of what we can get from
+numerical methods that we've known for a
+long time, and a lot of the more modern
+machinery in deep learning that has
+obviously seen a lot of success, um
+especially in the last uh decade or so.
+So, So, a lot of this talk and a lot of
+uh the research that we work on is
+really motivated by this big question of
+machine learning potential in modeling
+scientific systems.
+And more specifically, a lot of these
+problems I think come down to how well
+you can model spatial and temporal
+behavior.
+So, whether it's something like modeling
+fluid dynamics or some type of weather
+patterns or even when you're looking at
+molecular systems, how did the atoms
+move over time? These are really all
+underlying represented by modeling
+spatial and temporal behavior of those
+systems.
+And I think there's so many applications
+where this is actually a pretty
+challenging task where we have some
+really complex phenomena. We want to
+really understand all of the intricacies
+of that spatiotemporal behavior. And by
+doing so, I think this really unlocks a
+lot of insights in many, many different
+fields of science.
+So, I'll briefly talk about what I think
+are some of the advantages that neural
+networks can offer for physical
+modeling. I think these can be a
+powerful tool to assist us in this task
+while also keeping in mind some of the
+limitations or some of the things that
+we have to just know
+a priori or account a priori when we're
+developing these methods.
+So, the the first point and one of the
+big advantages here is after you train a
+neural network, when you actually go and
+test it or you do inference on new
+problems, this is quite cheap because
+you've amortized the computation during
+training.
+And neural networks, as we as we've seen
+time and time again, they're really,
+really good at approximating
+high-dimensional functions. And this
+starts to become really nice when we're
+trying to solve these scientific
+problems that are very high-dimensional
+problems and may have complicated
+solutions or ways to get to complicated
+solutions.
+At the same time, I think there's also
+some things to keep in mind,
+particularly with neural networks in the
+context of scientific computing. So, how
+do they actually compare to these
+current mechanistic models or even
+experiments in a lab? So, there's always
+going to be this cost of training, this
+cost of data generation, and because we
+have these nice models we've developed
+for many, many decades that came before
+neural networks, I think it's important
+to keep in mind these models themselves
+at the same time as we're developing new
+methods that are going to bring in this
+idea of machine learning.
+And the other point here, another thing
+to keep in mind is the accuracy point.
+So, it's not very useful if a neural
+network is really fast, but it converges
+quickly to the wrong answers. Since this
+is again something really important for
+scientific modeling that we want
+something that is going to be in a
+decent ballpark that's going to be at
+least a good initial guess to getting us
+to the right solutions.
+And then finally, I think this other
+point, again important for scientific
+modeling, is this idea of reliability in
+methods. So, a lot of the numerical
+methods that have been developed over
+the decades have really very strict
+reliability criteria or have been really
+stress tested to ensure some level of
+reliability. And so, can we actually
+keep that in mind when we're bringing in
+this component of machine learning into
+these problems?
+And so, I'll start with a really example
+common scenario, and this is really
+going to be the the basis of the rest of
+this talk as I describe some of the
+methods that we've been working on now
+that go beyond some of these common
+scenarios or some of these more toy
+examples.
+And in this example, this is some type
+of damping pendulum. So, you might have
+some training data in the early part of
+this trajectory, and your goal is to
+predict the later dynamics of this
+system. And this could be governed by
+this very simple PDE. So, this is a
+really toy example.
+So, if you train a neural network on
+predicting only the points in your
+training data, so you train it by
+minimizing this loss function to match
+those training data points, you can see
+that it doesn't do very well when it's
+trying to predict the later time steps,
+even though it gets the early time steps
+that it's seen before uh quite well,
+which is what we would expect.
+But one approach here that I think
+uh many of you will be very very
+familiar with is this idea that you
+could add that underlying ODE, or
+possibly an underlying PDE, as a soft
+constraint to the neural network loss
+function, and you essentially optimize
+over this. So, you have that training
+data, but then you since you have some
+form of the differential equation, this
+could be some type of conservation law,
+you add that to the loss function, and
+you essentially enforce that over all of
+the later points in the domain. And when
+you train with both of these objectives,
+you can see that in this case it seems
+like it's actually fitting the later
+dynamics because you were giving some
+implicit information, some
+self-supervisor auxiliary information
+about the later time steps.
+And this is very colloquially known as
+this physics-informed neural network
+loss, where you have these physical laws
+that are enforced over points in the
+domain, so some discretization.
+So, the the one thing about this type of
+approach, on one hand it's potentially a
+way to deal with limited data, or if you
+have some type of conservation laws
+you'd like to enforce, it's potentially
+one way to try to add in that type of
+information.
+But I think in as maybe many of you have
+dealt with, if you train some of these
+models, adding the physical laws this
+way doesn't necessarily guarantee the
+convergence or correct solution or
+enforcement of those laws. And often it
+takes a lot more beyond that to actually
+get some type of convergence property.
+And this is just a simple example of
+uh a convection problem where you have
+just this 1D PDE. Uh as you increase
+this wave speed parameter, you can see
+that this type of training doesn't
+converge very well to the later time
+steps. So the left-hand side is this
+actual solution and the right-hand side
+is what would happen when you train the
+model and then predict with this
+solution.
+So that brings us to
+yeah.
+I just did there's a question on uh
+slide seven. Do you want to answer that
+first?
+Oh, sure. Uh I actually can't uh see the
+screen uh
+Yeah, what what would So So what
+um Pearson asked, what would happen if
+you only gave the first data point, but
+then enforced the PDE constraint? Would
+it solve the PDE?
+Yes, if you only gave this initial
+condition up here and then predicted the
+rest of the PDE.
+Yeah.
+Yeah, I think it really depends on the
+problem setting. I think in a very
+simple problem setting like this one, I
+think that would work fine if you just
+gave the initial condition and then just
+optimized over the rest of the PDE. So
+you might not even need those training
+data points in the first place. But this
+setting doesn't uh
+do super well when you go to harder
+problem settings. If you just do this
+kind of ad hoc approach and so One
+example here is that in this case um
+only the training was done by only
+giving the initial condition and the
+boundary conditions and then predicting
+a solution over the rest of the domain.
+Um and as you can see in this case,
+especially when you have very sharp
+features in your solution, this becomes
+a lot harder to capture.
+Yes.
+I I hope that answered the Pearson's
+questions.
+If not, Pearson, um speak up.
+Or let's move on.
+Okay, then feel free to ask questions uh
+throughout the talk.
+So, that brings me to one of the uh the
+main uh idea of this talk, which is
+really this idea of how do we resolve
+some of these underlying issues when we
+try to solve PDEs with machine learning.
+And there's a few key points here, I
+think, to keep in mind.
+So, one of those points is that this
+idea of physical consistency or having
+an accurate solution, this is especially
+important at inference, so at test time
+when we actually want to go use the
+neural network for some type of task or
+deploy it for some type of task. And the
+current approaches um that I've
+mentioned, whether it's data-driven or
+you add this self-supervised PDE loss,
+there's no guarantee of those physical
+laws being obeyed at test time in
+particular. And so, that's potentially
+posing a problem for how you would
+actually reliably deploy this.
+The the other point is that these so far
+are all grid-based methods. So, this
+means that uh your solution is over some
+type of discretized domain.
+And that means that you could have some
+type of error that comes up because
+there's uh some inherent error in that
+discretization. And it can also be
+expensive because if especially if
+you're training with some type of PDE
+loss, it requires differentiating um
+back through that if you're going to
+take derivatives if you have higher
+order derivatives in your loss. And if
+your architecture is more complicated,
+that can start to get expensive to
+train.
+And there's also some other points here.
+So, sometimes um if you have some type
+of physical law and it's only
+approximately enforced, so this soft
+constraint added to the loss function,
+this can sometimes be hard to optimize
+over and tricky to actually get to
+converge. And again, you have that first
+issue that this type of approach doesn't
+guarantee any convergence at test time.
+And all of these issues all become
+particularly noticeable in limited data
+settings. So, when you don't have a lot
+of data, each of these issues really
+comes up again and again and becomes a
+bigger and bigger problem.
+So, the general theme of this talk is
+really going to be about this idea of
+numerical methods that have been really
+successful historically at modeling
+complex systems.
+And machine learning that's been very
+fast and successful at these prediction
+tasks in a lot of different areas. How
+do we take both of these and get the
+best of both worlds when we develop the
+next set of methods for scientific
+modeling problems?
+And both of these have their
+limitations, too. So, numerical methods
+can be quite slow. Machine learning can
+be hard to get accurate or hard to
+generalize to new problems. And so,
+we're all hoping that by taking the best
+of both worlds, we can also limit the
+actual limitations of both of these
+approaches.
+And by combining both, the goal is
+perhaps we can get better accuracy with
+less data as well as more robust methods
+downstream.
+And so, the approaches that I'll talk
+about are some of the things that we've
+been thinking about and working on for
+exploring this intersection between
+numerical methods and neural networks.
+So, the the And for most of this talk, I
+think that I'll talk about is solving
+PDEs that represent some type of complex
+system.
+So, in this case, this is an example of
+Navier-Stokes equations. You might have
+some initial conditions like an initial
+vorticity. And your goal is to predict
+the spatiotemporal behavior of this
+system over time.
+And in these cases, because these are
+spatiotemporal phenomena or fluid
+problems that we know a little bit
+about, we can sometimes know that this
+might have some type of conservation of
+momentum, it might have some type of
+conservation of mass and so on.
+So the first issue I talked about with
+this idea that physical laws are not
+imposed at test time, and this can be
+when it matters most to have that
+physical consistency.
+And this can also be sometimes be useful
+to enforce these laws at training time
+because that ends up actually improving
+convergence. This ends up that helping a
+lot especially in limited data settings.
+And so the first solution I'll talk
+about is implementing PDE constrained
+optimization as a layer in a neural
+network to tackle some of these issues.
+So before the neural network setup
+looked something like this where you
+have some spatiotemporal points in your
+domain, you use a neural network to
+predict the solution.
+And you could train to either matching
+the solution loss over your domain. You
+could also add this differential
+equation loss for the PDE, so this soft
+constraint approach.
+And then to train a neural network, we
+would back propagate through this loss
+function with respect to the weights of
+the neural network. And after we train
+the neural network, we can go test it on
+new problems.
+As mentioned before, there are some
+potential issues with this approach.
+And so the thing that we try to do
+instead is actually looking at can we
+have more control over these physical
+laws and enforcing these physical laws?
+And to do so, we developed this
+framework to add a PDE constrained
+optimization layer to a neural network
+architecture. So this is a high-level
+overview, but I'll go into some of them
+important pieces and and details.
+And in this case, this PDE constrained
+optimization layer can be added on top
+of any neural network architecture.
+So, the problem setting here is
+essentially differential operator
+learning where we're trying to find some
+operator that maps some parameters here
+to some solutions U
+such that that conservation law or that
+operator is enforced and we know that
+it's going to be equal to zero.
+So, what we do here is we take a neural
+network. So, this is a neural network F
+parameterized by some theta
+and we want to map the neural network
+the parameters of your physical system
+to B which is a set of N basis
+functions. So, our neural network is
+trying to do this parameter mapping.
+And we formulate this instead as we want
+to find some omega such that when you
+take this product of those basis
+functions with respect to omega, this is
+going to satisfy whatever your
+conservation law is. So, this
+equivalency is trying to make an
+approximation to your solution U.
+And so, what we do is we solve for this
+omega value using some type of iterative
+non-linearly squares solver. So, this
+could be LM, it could be Gauss-Newton or
+whatever your favorite solver is and
+this is done by sampling a set of
+spatiotemporal points on your domain.
+And after we solve this problem, the
+final solution operator prediction is
+reconstructed together
+with having solved for a reasonable
+value of omega with your numerical
+solver. And so, you're then having some
+approximation for the solution using
+this approach instead. So, this is
+giving you a bit more precise control
+over actually enforcing this
+conservation law because you're
+explicitly using a solver to try to
+actually approximate that PDE
+constrained optimization problem.
+So, when you look at this setting, I
+went through essentially what's a
+forward pass of the neural network.
+But the issue is that when you run that
+solver, so you project your outputs of
+the neural network onto some solver, and
+that's the solver that you're running to
+now actually learn the the PDEs more
+precisely. The issue is that when you
+take all of these steps of your solver,
+you still have to train the neural
+network somehow, and doing standard
+backpropagation where you differentiate
+back through all of those steps is
+really expensive. It's actually usually
+impossible because you run out of memory
+very quickly.
+And so to get around this issue, what we
+did instead is um so we looked at this
+problem, and we see that what we want to
+do is the solver is run after the neural
+network to come to a solution. And if we
+want to actually train the neural
+network, we need to differentiate back,
+and we need to do some type of gradient
+descent on theta, our neural network
+parameters, to learn what the correct
+solution is.
+And so we use uh implicit function
+theorem and implicit differentiation,
+which I think is a really powerful tool
+when you're doing anything with
+combining numerical methods and neural
+networks. And what that does is you can
+formulate this differentiation problem
+in an implicit way. So what that means
+is that you don't need to differentiate
+back through all the steps of your
+solver. So you don't have to
+backpropagate through the whole
+computational graph that got you to that
+final point. You can just differentiate
+the last step and bypass all of those
+intermediate steps.
+And a lot of the details you can check
+out uh the the paper for a lot of the
+details on the full uh framework and the
+exact problem that you're solving, but
+this is essentially the trick that makes
+it possible to combine these two things
+together.
+So coming back to this and the full
+problem setup, so now we have this
+neural network architecture. We project
+onto this PDE-constrained optimization
+layer, which solves the optimization
+problem more precisely that represents
+our conservation laws. We use implicit
+differentiation to train the model. So,
+what it means is that the forward pass
+of the neural network is decoupled from
+the backward pass of the neural network,
+and that allows us to train this whole
+thing end-to-end with both the neural
+network and the solver.
+And this means that the neural network
+is able to get direct feedback from the
+solver, so the weights can update based
+on this exact solve that happens in the
+PDE constraint optimization layer.
+And then at test time, we can go ahead
+and run this neural network on a new
+problem. And because the forward pass of
+the neural network still goes through
+this layer here, it means that those
+constraints are more precisely enforced
+at test time as well.
+So, here's a very simple example of uh
+when we first tried this out. So, this
+was for a Darcy flow problem, uh very
+simple PDE where you have some PDE
+parameters, in this case uh diffusion
+coefficients, and you want to learn what
+the PDE solution is.
+And so, we ran this with uh a baseline
+of we just add the conservation laws to
+the loss function, this soft constraint
+approach, which uh does does okay, but
+it doesn't uh
+really converge that well, and it sort
+of uh uh plateaus at this point.
+And our new model, where we implement
+this new layer, which is acts more like
+a hard constraint, and you can see that
+it starts at a much lower point and then
+continues to go down. And this is on
+some unseen uh test set, so we just
+track how well it's doing during
+training on this test set. So, it does
+tend to converge more quickly for a
+problem like this.
+But, that being said, uh I mentioned
+that during training, you're going
+through this new layer
+and differentiating it, but also during
+test time, you also have to go through
+that new layer.
+And what that means is that as you
+enforce this layer and this whole setup
+on more and more points, which can
+happen uh or is quite necessary when
+your problem gets quite hard. That also
+means that your computational expense
+and memory cost increases. So, this is
+an example of solving
+the 2D Navier-Stokes equations. So, as
+we increase the number of sampled
+points, it's likely that the model does
+better because it's able to
+solve for a larger domain and force
+whatever physical laws over a larger
+domain.
+But, the issue is that as you increase
+these points, both your training and
+your inference time get larger and
+larger. So, there's this limitation of
+the computational trade-off. And if you
+sample more points in this setup, you
+often need to have a lower batch size
+because of the memory costs, and that
+ends up actually hurting training
+stability. So, for some of these much
+harder problems, it becomes very
+difficult to to solve with this current
+setup.
+So, to get around that setting, we used
+a mixture of experts approach to
+actually scale this full
+architecture. And mixture of experts
+really has made it possible to scale a
+lot of very large models in many other
+fields of machine learning like NLP and
+vision.
+And it's this nice way of actually
+increasing the capacity of the neural
+network, but still balancing the
+computational expense. Where now you
+split the computation over a bunch of
+different experts that solve these
+different sub-domain problems. And so,
+we wanted to see if we could actually
+bring this idea of mixture of experts to
+our physical modeling problem and
+actually be able to scale it to much
+harder systems.
+So, we framed this PDAE constrained
+optimization problem in our neural
+network as a mixture of experts instead.
+And the main difference is before we had
+this neural network, this f of theta,
+and we would go ahead and go straight to
+the end here and run our solver, do our
+prediction. And this time, we actually
+split our
+our domain into a bunch of different
+subdomains and use an expert to solve
+the problem along each subdomain.
+So, what that fully looks like is you
+have some type of neural network here.
+We use a
+neural operator for this type of
+problem. It doesn't matter which
+architecture you use though. It could be
+your favorite one.
+And this whole part here is our PDE
+constrained optimization layer. And to
+scale it up, we do this domain
+decomposition where we have a bunch of
+different subdomains. And we enforce
+this constrained optimization problem
+over each subdomain. So, these are the
+hard constraints that are enforced over
+these subdomains by the different
+experts. And so, this makes those
+constraints localized and it's split
+across multiple experts here. So, it's
+not just one single one, but many
+different ones.
+And the advantage of this is that now
+we've actually decomposed our domain and
+we can actually solve this problem in
+parallel. So, when we put it all
+together, if we have some PDE domain,
+I've kept it very simple here just a 2D
+problem, but we also do this on 3D and
+4D settings. You can give this PDE
+domain to the neural network and it'll
+go through this whole process of you
+have these learnable basis functions
+here.
+You evaluate and partition them over
+your subdomains.
+You have this mixture of expert setting
+where each expert locally solves the
+problem.
+And so, it looks something like this
+where within each expert, you're still
+doing that same task of finding a set of
+omega that satisfies this
+product here and actually satisfies the
+PDE of interest. So, it's the local
+constraint over each subdomain.
+And then you can go ahead and reassemble
+your full predicted solution together.
+And then putting it all together, you go
+ahead and differentiate your output and
+and you use implicit function theorem to
+actually train the full model end to
+end. And when you do this, that means
+that each expert is
+both being used in the forward pass, but
+also in the backward pass through this
+implicit differentiation technique. So
+this allows you to actually scale the
+model and train it over a lot of
+different problems because everything
+can also be done in parallel now.
+So as an example of what that looks
+like, this is this is a problem
+diffusion absorption problem. It's a
+tricky problem actually because it has a
+singularity at a certain point here. And
+this is what the numerical solver
+solution would look like.
+And if you're using a soft constraint
+approach,
+because of some of those difficulties,
+you can see here that in a lot of cases
+it's not really able to converge to
+any solution.
+So when we use our initial approach
+where we just have a hard constraint, we
+start to do a little bit better, but I
+think it's limited to some extent
+because you need to sample a lot of
+points for this problem. And because we
+can't fit all of those points, we often
+have to use a lower batch size, so it
+actually hurts our training stability.
+But when we go ahead and scale this with
+this new mixture of experts approach, we
+get a lot closer to what the true
+solution should be, so it starts to
+match the numerical solution pretty
+well.
+Another advantage is this idea of
+lacking training stability. So when we
+actually train with our regular
+layer with no mixture of experts, it's
+not doing super well because of the fact
+that during training it's unstable and
+it's not just because of this limitation
+that it can't sample enough points
+because of computational expense.
+But when you actually
+then train with this MOE setting, this
+is another sample that was pulled out of
+the system. So we we had a test set of a
+few hundred samples. In this case, when
+you actually train with that MOE
+setting, you're a lot more stable and
+predictable when you're doing the
+training. So, it's converging slowly to
+the right solution in a more stable way.
+And then when we come back to this plot
+where we
+saw that one of the limitations before
+was that as you increase the number of
+points, your training and inference time
+gets slower and slower. In this case
+now, when you increase the number of
+points, this scales sublinearly. So,
+this is a lot more efficient. And I
+think this is quite important because as
+we get to the whole point of neural
+networks is to be faster than numerical
+solvers. And at inference time in
+particular, if running a neural network
+is slower than running a numerical
+solver, there's not really much of an
+advantage to the neural network
+approach. So, getting this down to some
+level of
+computational efficiency and speed, I
+think is very important for actually the
+whole purpose of using neural networks.
+So, we'll come back to some of these
+underlying issues that we looked at
+earlier about resolving solving PDEs
+with machine learning. And the second
+big issue I had mentioned was this idea
+that grid-based methods introduce
+errors. So, when you solve for a
+solution over a discretized domain,
+that's going to inherently introduce
+some errors.
+And so, one solution that we thought of
+when we looked at this problem was again
+an idea of taking spectral methods,
+which have been really successful, used
+quite well in applied mathematics and
+scientific computing, and seeing if we
+could take the advantages of spectral
+methods and combine that with the
+advantages of neural networks.
+So, coming back to this setting of this
+physics-informed neural network loss, so
+this would be like a self-supervised
+setting for solving PDEs. So, when you
+optimize over this PDE residual in loss
+function, there's this first point that
+you're optimizing over physical points
+in your domain. So, those grid-based
+methods introduce errors. It can also
+require a large number of sampled
+points. So, if your problem is hard, you
+may need a lot of points to optimize
+over. And so, this approach also just
+has issues with scaling to to large grid
+sizes.
+And finally, if you're looking at this
+setting where you're using a neural
+operator and then optimizing over it
+with some type of PDE loss, this can be
+expensive to differentiate back through
+the architecture, especially for more
+complicated architectures like the
+Fourier neural operator.
+It means that some of the scaling
+actually doesn't do super well,
+especially if you have higher-order
+derivatives that you're trying to
+enforce.
+So, spectral methods have been very
+powerful for solving PDEs. So, these
+basis function expansions, you could use
+Chebyshev polynomials as one example.
+You could use Legendre polynomials. They
+can be quite powerful and efficient. And
+when you're learning PDEs in in the
+spectral representation, you can really
+do accurate approximations of
+differentiation and integration, or you
+can really do accurate approximations of
+algebraic operations. Going out to a
+certain when you go to out to a certain
+number of terms when you do that basis
+expansion.
+And so, I think these have a lot of
+potential to also think about how they
+can be integrated with neural networks
+because there are so many advantages of
+these methods in the scientific
+computing setting.
+And so, to
+take the ideas from spectral methods and
+neural networks and really get the best
+of both worlds,
+we came up with this neural spectral
+methods approach where we have in our
+base architecture some type of spectral
+base neural operator. It's not just
+limited to Fourier basis, so you can
+actually use Chebyshev polynomials or
+Legendre polynomials, like really any
+spectral basis function. And we actually
+find that for a lot of the problems we
+look at, using Chebyshev basis actually
+works a lot better than a Fourier basis,
+particularly in cases where you don't
+have a periodic boundary conditions as
+what you would expect for when you see
+how where they're used in scientific
+computing.
+And we also have this spectral loss
+function, and I'll go through each of
+these. And this is in contrast to this
+idea of physical space learning that had
+some of the limitations mentioned before
+that it could be harder to learn and you
+have these grid size limitations.
+So, we start in this case in our base
+architecture by having we have our
+parameters to solutions. This is the
+same setting that we want to learn. And
+we look at the spectral representation
+of our parameters.
+We do these spectral transformations, so
+this is where we're we're deciding what
+basis functions we want to use. In this
+case, Chebyshev polynomials
+tend to be the the ones that end up
+working quite well.
+And then, for the last point, we use the
+spectral training procedure where we can
+actually use Parseval's identity to come
+up with an equivalency between some type
+of PDE loss in your physical domain and
+what that spectral representation is
+because you can have this equivalency
+through the sum of the square of your
+spectral coefficients. And that
+essentially gives you a very good
+approximation for what the PDE residual
+of the problem is. And what that means
+is that you can actually not just
+project to spectral space and do all of
+the your architecture transformations in
+this part of the architecture, you can
+then train the whole model fully in
+spectral space by using the spectral
+loss function.
+And that allows you to just do
+everything in the spectral domain, uh
+which will have some advantages as I'll
+talk about now.
+But just a quick note is that this is in
+contrast to training in the physical
+domain if you have some grid-based
+neural operator and you have this uh PDE
+loss or this physics-informed neural
+network loss. So this would be uh so the
+top part is
+the spectral approach in contrast to
+this physical approach.
+So here's one example where we looked at
+a reaction-diffusion system. So in this
+case we have um this is uh just a 2D
+problem. You have some temporal
+dimension and some spatial dimension.
+And we ran a numerical solver on this.
+So you see that it behaves very
+predictably.
+As you increase the resolution of your
+domain, the error gets lower and lower.
+And this error is relative to a very
+fine discretization. So we generated a
+really fine solution and then we
+subsampled it to represent all of these
+different grid points.
+So if you use this approach of a
+standard grid-based neural operator and
+you add
+and then you add some type of uh PDE
+loss to that. So this would be training
+only in physical space. You can see that
+uh it doesn't quite match up super well.
+So it's slower with the finer
+discretization.
+And one thing is that you can see that
+it actually overfits a little bit to the
+training grid that it was trained on. So
+it actually sometimes will do worse for
+higher training grids rather than uh
+decrease continuously like this uh
+standard numerical solver. So this would
+be like the the grid-based approaches.
+And in contrast, when you do this all in
+the spectral domain, so you use the
+approach I talked about where you have
+this neural network, you train it with a
+spectral loss,
+you end up down here for all of your
+grid sizes because now the grid no
+longer matters because your
+computational cost is uh constant
+regardless of the grid size because
+you're not actually not expressing your
+loss function in terms of the grid
+itself. So, there's no sampling issue
+here.
+And you can see that it maintains
+accuracy. So, when you compare it to the
+standard numerical solver, it's faster
+for the same level of accuracy, which I
+think is the comparison that we should
+be doing for all new neural network
+methods in this ML for PDEs space.
+We also went and looked at different
+forms of the Navier-Stokes equations.
+So, this is an example where we're
+looking at unforced Navier-Stokes
+equations where the top row is our
+numerical solver. The middle row is our
+method and the bottom row is when you
+train only in physical space. So, this
+is actually an animation, but we
+converge pretty quickly with the
+spectral approach. Whereas, when you
+look at the bottom row, there's a lot of
+features here that just don't converge
+to what the numerical solver looks like
+and these are somewhat hard to resolve.
+And this is another example where now we
+look at forced Navier-Stokes equations.
+So, we have this numerical solver. We
+train only in physical space and this
+actually blows up over long time scales.
+So, the error gets really high as you
+get further and further away in time.
+And when you do this approach with
+spectral methods, it's a lot more
+well-behaved. So, over time the total
+relative error ends up being a lot
+lower.
+And I didn't plot the computational
+speed here, but that's also a very big
+advantage of this approach that it's a
+lot faster both during training, but
+also when you actually go and use this
+model during inference.
+So, the last thing I'll talk about is so
+far I've talked about this idea of
+inspiration for numerical methods and
+neural networks in the context of
+solving PDEs, so fluid dynamics problems
+or other general types of PDEs. But I
+think these simulation in the loop ideas
+can also be really relevant for other
+problems like molecular systems or
+things at the atomistic scale and
+running molecular dynamics.
+So this is an approach here where
+the way you train models for molecular
+dynamics, a very common approach is that
+you try to approximate the potential
+energy surface of these systems. And if
+you have a good approximation for the
+energies and the forces, you can then
+run these simulations over time by using
+a numerical integrator and hopefully you
+can run it for very long time scales
+without running into instabilities
+because then you can study the system
+better. You can compute observables
+about the system from that type of
+simulation.
+But there are also some challenges here.
+So this is an example of a neural
+network trained for these molecular
+simulations and we go ahead and run this
+over in time. So we simulate the system
+over ideally long time steps.
+And initially it seems okay, but as you
+simulate the system larger longer and
+longer, you see that there's this very
+clear unphysical thing happening where
+there's this bond stretching that
+results in very unstable structure. And
+both what that means is that so you
+can't really trust the simulation
+because there are these instabilities
+coming up, but any types of properties
+that you then want to compute from that
+simulation are probably going to be very
+inaccurate because the simulation is
+just not stable enough to get to the
+point of where you can do those
+computations.
+So coming back to the idea of simulation
+in the loop, there's a lot of learning
+signal that you can get from the
+molecular simulation itself. So in this
+case
+this approach
+is a slightly different problem setting
+that you might have some atomistic
+system, some molecular system. You give
+it to a neural network and you predict
+the energies and the forces of that
+system. And once you have the forces,
+you can use numerical integration to get
+to your next time step, and this is how
+you would run the simulation over time.
+And as you run this MD simulation over
+time, and keep running it, you can
+compute system observables about that
+system. So, something about that system,
+or multiple properties of that system.
+And so, typically the common approach to
+train these models is to train this
+neural network to just the energies and
+forces. But in this case, we wanted to
+actually train the neural network to the
+simulation itself. So, actually use all
+of this information of the simulation,
+and build that into the training
+procedure somehow. Because that would
+also then allow us to train to more than
+just energies and forces. We could
+actually train to observables of the
+system. Maybe those observables come
+from experiment. So, this could be
+actually a way to bridge some type of
+theory-experiment gap, as well.
+And so, the same idea here is when we go
+and train to these observables over MD
+simulation. So, we run the MD
+simulation, we query the neural network,
+run the integrator. We compute system
+observables,
+and we take a loss function on the
+observables. Now, we come into the same
+issue that we had before, where you
+can't differentiate back through all of
+the steps of your MD simulation, because
+it means that you're going to
+differentiate through all of the steps
+of your numerical integrator.
+And so, instead here, we can do the same
+thing. We can train the neural network
+with implicit differentiation. So,
+there's actually a way it's a different
+approach to formulate this implicit
+differentiation problem than the
+previous approach I talked about,
+because this is actually a stochastic
+setting. So, you're actually doing
+implicit differentiation over a
+distribution.
+But the key idea here is that you can
+formulate
+taking the gradients this way. And the
+key insight is really that you separate
+getting that out the neural network
+output from the rest of the neural
+network itself. So, you don't have to
+back propagate back through all of the
+steps of the solver to get there.
+And so, this ends up also being uh quite
+powerful in the context of molecular
+dynamics. So, this is an example of uh a
+water system and there's a local
+instability that comes up. So, the full
+simulation in the loop method uh and the
+differentiation technique we call this a
+Boltzmann estimator because we formulate
+the implicit differentiation problem
+based on the fact that we know that the
+underlying system obeys a Boltzmann
+distribution. And this is how you can
+actually formulate what the
+differentiation task should be.
+And so, before training, when you use
+standard training uh so, the approach uh
+over here where you just train it with
+these energies and forces,
+when you run this system uh over time
+over all of these picoseconds, all of
+the trajectories become unstable
+relatively quickly. So, often too
+quickly before you can actually compute
+things that are of interest, so
+observables of interest about the
+system.
+But when you actually now train it in
+the simulation in the loop style after
+we do our training procedure,
+uh we can actually simulate this system
+for we went all the way we went up to uh
+1 nanosecond, but you can also go
+further than that. Then, you can see
+that the system no longer has the same
+instability problems as before.
+And the way that this nicely manifests
+is that if we then want to go and
+actually compute things from the system,
+so in this case, we don't train it on
+anything about the diffusivity
+coefficient. So, it doesn't see anything
+about this. But after we train it with
+this procedure and we go run it at test
+time and we compute the diffusivity
+coefficient of the system,
+we end up being a lot closer to what the
+true coefficient is. So, this black line
+here represents the reference. And
+before training, all of these uh before
+our training, the trajectories were not
+really getting any close to the those
+reference observables. And after our
+training, we're a lot more in the
+ballpark or in the general range of what
+that true diffusivity coefficient should
+be.
+And so, I think this type of procedure
+is powerful for both bridging this
+theory and experiment gap, but also the
+fact that by doing this procedure, you
+can improve both the stability and
+performance on new systems or new
+observables, and actually have some
+level of hopefully more reliability in
+running those molecular simulations
+downstream. And the the very high-level
+general idea of bridging numerical
+simulations with neural networks is
+still generally true here in this
+setting as well.
+So, in summary, I think neural networks
+do have a lot of potential for these
+physical modeling problems.
+But at the same time, we really need to
+keep in mind this idea that we need
+accurate and rigorous methods that are
+going to be able to give us reliable,
+physically consistent answers when we go
+run that method in a simulation or go
+run that neural network in a simulation.
+And this idea of also having trust
+during deployment. So, after we train a
+model, we would like to trust it when we
+actually go use it for a lot of
+different downstream tasks.
+And so, here I talked about a few
+different examples of the best of both
+worlds. So, taking numerical methods and
+deep learning and putting these together
+with this idea of differentiable
+solvers. So, ways to actually come up
+with differentiation techniques that let
+you train these two things together. So,
+whether that's through this idea of a
+PDE constraint optimization layer in the
+neural network,
+or taking neural networks and combining
+them with spectral methods ideas, uh Uh,
+as well as the fact that these
+simulation and the loop ideas also
+extend to problems like molecular
+dynamics where it's a bit of a different
+setting because you have a stochastic
+setting, but you can still formulate the
+same differentiation approaches and
+train this model uh, to the output of a
+simulation itself and ideally improve
+the simulation stability as well as the
+accuracy of the properties that you
+compute from that simulation.
+And uh, the the papers with
+all the code available for everything I
+talked about are all down here. So, you
+can uh, definitely go check it out and
+uh, let us know if you have any
+questions.
+And finally, I I'd like to thank uh, a
+lot of the great students that I get to
+work with. So, a lot of the work I
+talked about here was with Yihang,
+Nitin, and Sanjeev on all of these uh,
+different areas.
+And I'll go ahead and come back to this
+summary slide and happy to take any more
+questions as well. Thanks.
+Awesome. Awesome. Thank Thank you so
+much for the wonderful for talk. Very
+nice.
+Okay. Um, there there were questions um,
+during your talk. Uh, so the first
+question is by Dijel.
+Uh, she wants to uh, know about what
+kind of neural network you used in slide
+eight.
+Oh, sure.
+Let me uh,
+I I think that's when you talk about the
+PINs.
+Oh, the Oh, yeah. I think slide eight
+um, Yeah, that was just the toy example
+setting uh,
+in
+in that setting, it was just a simple
+MLP for that problem. Um,
+but in some of the later
+uh, methods settings I showed, uh, we
+used a few different types of neural
+operator architectures. Um, but the
+methods I was talking about, a lot of
+them are agnostic to the underlying
+architecture. Uh, but in in that uh, toy
+example, it was just a just a regular
+fully connected neural network.
+Okay.
+Um
+and second question is by Daddy
+in slide 45 and 46,
+how would the spectral methods work when
+the flow has discontinuities?
+For example, shock.
+Yeah, that's a really good question. Uh
+so, how would you solve a problem if
+there's any discontinuities? That's
+actually uh exactly what we're working
+on right now. So, we have some ideas
+that there are potentially ways that you
+could parameterize uh your domain with
+uh maybe like using something analogous
+to finite element methods, and that
+would at least help with the fact that
+uh you would have discontinuities in
+your domain. I think it's a really good
+uh and a very important problem,
+especially if you're looking at systems
+with complex or varying geometries.
+Okay. Next question is by Sakar. Um
+he has a bunch of questions. So, do you
+mind, Sakar, unmute yourself and then
+ask that question yourself?
+If not, I I I can ask. Okay, his first
+question is is there a reference for
+implicit different differentiation
+applied to these applications?
+Uh the neural networks and the numerical
+solvers. That's his first question.
+Yeah, for these um there are some some
+of the
+earlier work in this area, there was um
+this idea of OptNet or optimization as a
+layer, which was this very general
+approach that maybe you could
+incorporate some type of optimization
+problem into neural networks. Um and
+there's also been uh
+approaches like using the adjoint
+method, though that's not I think quite
+in the same flavor as a lot of the work
+that I talked about here. And the
+adjoint method actually can have
+numerical instability problems that
+don't uh come up in the same way for uh,
+in the settings that I talked about
+here. For in the context of using
+implicit differentiation for uh, for
+example, solving PDE problems, uh, I
+think the reference would really be like
+uh, some of our work here where we
+in this first paper, we actually
+formulated doing this as a PDE
+constrained optimization problem, uh,
+and then extended it to the MOE setting.
+Okay. And his second question is, can
+the computation by each expert in the
+MOE method be parallel?
+Yeah, exac- exactly. Yeah, it can uh,
+definitely be parallelized. So, that's
+one of the big advantages that you're
+not just splitting solving the problem
+on a bunch of different subdomains, but
+you can do that computation on the all
+of those subdomains in parallel. So,
+that's also
+one of the reasons there's a big speed
+up in doing it with the MOE setting.
+Okay. The last question by Zachariah is,
+how much faster or slower is the method
+MOE compared to a numerical solver for
+inference?
+Yeah, compared to a numerical solver for
+inference, for the settings that we
+looked at, so we started looking at uh,
+a few different settings,
+diffusion-sorption, reaction-diffusion
+problems, and Navier-Stokes problems.
+With the MOE setting, we are faster than
+a numerical solver.
+Um, in the original setting that we had,
+where we didn't use the MOE, we were
+about equal with a numerical solver at
+the time. So, the MOE was actually quite
+crucial to be faster.
+That being said, when we first uh, did
+this, there it actually wasn't super
+optimized to run these iterative solvers
+on GPUs. Um, that operation was actually
+not uh, super well, um,
+optimized for the in this context of
+actually trying to do optimization
+directly there, because you have to do
+it on the GPUs if you want to train it
+with a neural network. Uh, since then
+there's been a lot of improvements. So,
+I think actually at this point even
+without the MOE setting, I think we
+actually would be faster than a
+the numerical solver for a lot of
+problems, but you get a much bigger
+speed up in the more practical version
+of this is to do it in the MOE setting.
+Okay. Next question is by Mike. Is there
+a communication in the parallel solve at
+the domain boundaries?
+Yeah, that's a really good question. So,
+how do you deal with the fact that
+there's a domain decomposition and there
+could be issues between the boundaries.
+So, what we actually found there was
+that as long as each expert, so each
+subdomain solve had the global initial
+and boundary conditions, that was
+actually enough for it to learn
+something reasonable and not have issues
+at the boundaries. Before we gave those
+global conditions, we were doing some
+things like trying to actually have
+overlapping domains, like stitching the
+boundary conditions, doing some type of
+Gaussian smoothing over the boundary
+conditions
+or over the boundary conditions of the
+different domains, but just giving the
+global initial and boundary conditions
+to each subdomain ended up actually
+solving that issue.
+Okay. Next question is by Quan Chan.
+Nice talk.
+You've shown strong advantage of neural
+spectral method. Perhaps uh
+he missed it, but are there any
+deficiencies to the method?
+Yeah, so for deficiencies deficiencies
+for the method, so I think one was the
+point that was brought up earlier. How
+do you deal with discontinuities? And so
+this is something that we're
+like I mentioned, we're actively working
+on this and using approaches to actually
+deal directly with discontinuities,
+especially if you have very
+complex domain geometries.
+And the so that's one approach. The
+other approach is also that sometimes
+you might need more frequency modes to
+actually really capture the domain
+especially for some of these more
+complex problems. And so you have to be
+careful there because there's that
+trade-off of more modes means that you
+have some computational inefficiencies.
+So it's going to be slower to train the
+model or run the model. But that's also
+something that we're actively working on
+now. And actually
+we've already made some speed ups which
+will be pushed to this repository pretty
+soon that deal with that computational
+inefficiency problem.
+All right. Quan Chen also asked that
+also can you recommend a good reference
+paper on MOE theory?
+Yeah, for
+a good reference paper so the
+one of the earlier papers that I think
+with the Noam Shazeer from 2017. That's
+a good starting point for
+one of the earlier examples of something
+that worked quite well. But if you want
+to go even further to the theory,
+there's papers from the '90s that
+describe the problem setting. But that
+2017 paper is an example of showing it
+in action in large-scale machine
+learning.
+Okay. Uh
+Next question is by Mike. If you run the
+new approaches, can you show that you
+can run these problems out indefinitely
+without an instability?
+Yeah, so is that in the PDE setting or
+like the molecular dynamics setting?
+Uh probably PDE setting. I'm I'm sure.
+Yeah, PDE. Yes.
+Sure. Yeah, so so we haven't tried
+running it out
+indefinitely so to speak just running it
+for
+months and months at a time. I think
+this does definitely help stabilize the
+method so you are able to do these much
+longer rollouts. And this is actually
+something we've started testing a lot
+more now. So we are able to run some of
+these Navier-Stokes systems for longer
+time scales, but I think this also
+comes into as the problem becomes harder
+and harder. So, if you have turbulence
+flow, for example, you have really high
+Reynolds numbers, I think that's where
+long time scales becomes hard, and I
+think that's actually one of the big
+challenges that we should really be
+working on with these methods to see how
+well we can do that that long time scale
+modeling.
+Okay.
+Next question is by Shutong.
+Does the network approximate the
+coefficients of the basis function for
+the spectral method?
+If so, will there be an error when
+transforming the field from the physical
+domain to the spectral domain? Will this
+error propagate during the time domain
+evolution?
+So, sounds like the question is, so you
+have you're operating on spectral
+coefficients, and you're training
+specifically in spectral space on those
+coefficients. So, the the nice thing
+about the spectral approach, and I can
+go back here. So, this
+this identity here, so Parseval's
+identity
+essentially gives you an exact form of
+the PDE residual up to
+a certain amount of basis functions, so
+whatever you truncate your basis
+functions at. And so, by actually and
+so, this is computed directly with the
+sum of the squares of your spectral
+coefficients. And so, because you can
+actually do this as an exact
+computation, this actually ends up not
+really mattering that much because
+you've effectively solved for the PDE
+residual in a mostly exact way up to a
+certain level of basis function
+expansions.
+And so, that issue doesn't really or we
+found that issue doesn't really come up
+when we actually use this neural
+spectral methods approach on a on a
+physical problem, that when you actually
+translate this to solving on a physical
+grid, it ends up being the either way.
+Right. Um
+you know, related question by me.
+But it is that accuracy of the spectral
+method uh neural spectral method is
+bounded by the whatever the um the
+spectral, you know, the basis you
+you're using, right? I mean, it's if if
+the spectral basis can capture like
+99.9% of your solutions, then you're
+stuck with it. That's the the best you
+can do.
+Right. So, it's So, it is um so, it is
+it does depend on what spectral basis uh
+set that you use. But we're also
+exploiting the fact that as your basis
+expansion goes towards infinity, it it
+means that you're in theory going to be
+able to exactly approximate the
+solution.
+Yeah, in theory, yes. But then in
+practice, you have to truncate at some
+point. You cannot go infinity. So, there
+will be,
+you know, the limitation in accuracy,
+how much you can represent with a
+spectral
+Yeah, so, we So, we found at least um in
+the settings I showed and we're now
+testing it on harder settings that there
+was we didn't have to go uh
+towards uh infinity or something uh
+to a very, very large number of terms.
+Usually, we could go within a reasonable
+amount, within a reasonable computation
+cost, and get most of the way there.
+If If the If there is no shock or
+discontinuity in the solutions, yeah.
+Right, exactly. If there's no shock or
+discontinuity. Um and that uh area now
+we're actively working on with a few
+other approaches, yeah.
+Yeah.
+Yeah, definitely.
+Yeah, I I another question by me is you
+know, um
+the nonlinear manifold reduced to the
+model like the projection-based reduced
+model, but you introduced that nonlinear
+manifold, you know, the neural network
+kind of basis solution representations.
+And you plug that into the, you know,
+existing numerical method
+and solve for the the latent space
+coefficients instead of the full space.
+Um you know, so that, you know, you get
+the efficiency.
+The the method you
+you know, introduce so-called the
+physics constraint
+um
+methods um
+you know, the first method you
+introduced. It it has a very similarity
+between those two. The by the fact that
+you you do take advantage of the
+existing numerical method
+and in- instead of the traditional
+basis, you use the neural network basis.
+Mhm. And then you actually solve that
+PDE, right? Um so yeah, so do you are
+you So my first question is are you
+familiar with that non-linear manifold
+with the pseudo model?
+Yeah, I'm I'm a bit I'm familiar with
+that general area and I I do agree that
+I think there is some overlap in that um
+I think some of the advantages of both
+the approaches I talked about here and
+that approach are that you're doing a
+change of basis and potentially now
+learning in a space that's going to be
+easier to learn on than it was before.
+Yeah, so but in that projection
+basically the pseudo model, you know,
+because you're introducing more
+non-linearity through the neural network
+you just introduced,
+it it was not
+there before.
+So so the complexity of the
+non-linearity is has increased.
+So because of that, it is very important
+to, you know, apply the techniques
+so-called hyperreductions there.
+Otherwise, you wouldn't get the speed up
+um
+cuz it's you're uh interacting with the
+existing numerical method
+and you have increased the non-linearity
+in very intertwined way.
+So you do need a some special method to
+deal with it. I'm wondering if
+if for your method
+if you need those kind of you know, how
+do you handle them the non-linearity you
+introduce through the neural network.
+Yeah, I think
+um
+So, I think in practice we haven't seen
+that be a a big issue. At at one point
+we were using much more complicated
+iterative solvers cuz we thought that
+that would be the one-to-one between
+solving this in a numerical setting and
+solving this in the neural network
+setting. Um but as long as we just have
+a reasonable iterative non-linear least
+squares solver, we found that the neural
+network would do the rest of the heavy
+lifting. Um and so we didn't explicitly
+see I think this issue that you're
+describing. Um but I think it's
+definitely interesting and it would be
+worth uh testing out on more cases to
+see if this actually explicitly needs to
+be dealt with.
+Okay.
+All right. Well, um
+it's 3 minutes after 11:00. So, we're
+I think it's a
+good time to
+uh finish
+um our you know, the your seminar. But
+thank you so much for the wonderful talk
+and um
+beautiful introduction of those three
+methods and yeah, definitely
+um more interested in going to deep and
+then learn more about it. So, thank you
+so much for
+Uh yeah, thanks a lot for all all of the
+great uh questions. It was fun to have
+so many questions and uh feel free to
+contact me afterwards if you wanted uh
+talk more or have more questions.
+Awesome. Awesome. Thank you, Aditi.
+Thanks.

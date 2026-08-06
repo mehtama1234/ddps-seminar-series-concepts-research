@@ -1,0 +1,1655 @@
+Um
+Today's speaker is Don Sub Rhee, um
+who is in um who is a postdoc uh scholar
+in Courant Institute at New York
+University. Um just to introduce uh our
+speaker today briefly, he previous his
+postdoc uh position, he was a um true
+assistant professor at Columbia
+University. And he received his PhD in
+applied math at the University of uh
+Washington under uh the professor
+um
+Randy LeVeque and co-advised by um
+Gunder Ohlmann uh in math department. Uh
+today um Don Sub uh is
+is going to talk about instilling
+nonlinear shock waves, nonlinear model
+reduction for transport dominated
+problem using deep neural network.
+So, please enjoy. Um no with with
+with no further ado, Don Sub, uh here
+you go.
+Um over to you.
+Thank you. Uh thank you for the
+introduction and the invitation. Um
+Yes, so uh
+I'm going to talk about uh
+uh model reduction for transport
+dominated problems.
+And uh
+as is well known, uh transport dominated
+problems are or or you know, similarly
+moving interface problems or one uh are
+kind of hard to handle with traditional
+uh reduced uh models. And uh me and uh
+my collaborators, we've been looking at
+ways to remedy that. And uh we believe
+that uh the there's a particular deep
+neural network that we could use to
+overcome this problem.
+Um so, to just to set the background, um
+um here's the here's the outline. So, um
+I'm not sure if I could get through all
+of all of these uh bullets, but uh first
+I'm going to discuss um when exactly low
+rank uh representations, linear low rank
+representations, which are crucial for
+classical reduced models are limited.
+Um, and how we can turn to non-linear uh
+low dimensional representations.
+Um, and I'm going to discuss very
+special cases where there is actually a
+very simple way to to achieve to
+construct these low dimensional
+representations.
+And then we will talk about a depth
+separation in model reduction in in the
+second part. Um,
+so this is where I will mention that
+these non-linear representations we're
+constructing uh in the first bullets uh
+can be written in terms of uh
+uh um
+in deep neural networks with a certain
+architectural structure and how these
+could be used to um
+uh reduce uh
+uh construct reduced models even for
+even when there's uh shock waves
+present.
+And in the third uh in the later part uh
+if I could get to it is uh I'm going to
+discuss a little bit about what's called
+the Lax-Phillips representation.
+Um, so the first half of the talk is
+going to be restricted to spatial
+dimension one
+where things are uh as you will see it's
+it's complicated already.
+Um, but
+there I believe there is a hope to
+extend these results to multiple spatial
+dimensions using a generalization of the
+Lax-Phillips representation.
+And um
+these representations actually require a
+certain an integral transform called the
+Radon transform.
+And um I will briefly very briefly
+discuss uh a certain discretization
+uh of the Radon transform that I've been
+looking into, which is called the
+approximate discrete Radon transform,
+ADRT.
+Um, and uh unlike the Fourier transform
+the discretizations of the Radon
+transform is far from a settled matter.
+And um
+um I believe that this new
+discretization uh relatively new
+discretization has has lots of desirable
+properties that might help us in
+extending um our
+our our results to multi space multiple
+spatial dimensions.
+And um please feel free to uh stop me at
+any time and ask the questions. And uh
+my camera tends to
+flicker sometimes and it it might add
+like a green or purple hue. Um it's a
+camera issue that I have. So, please be
+warned about that.
+And I apologize.
+Uh okay, so here's a one slide summary
+of what uh model reduction tries to
+achieve.
+So, in scientific computing, um we tend
+to write our approximation to the
+solution as a linear combination of some
+basis functions.
+So, these RVs could be, you know, finite
+element hat functions um or in the
+finite element case, they could be jump
+functions um and so on.
+So, taking these uh linear combination
+of some um
+um basis function basis vectors or
+functions RVs of n and belonging to some
+dimension uh I mean a finite dimensional
+space uh a linear space uh of dimension
+capital Ns,
+we try to solve uh some uh residual
+minimization problem
+uh which I can summarize here. So,
+roughly speaking, um finite element
+volume difference methods could be uh
+considered as solving this type of a
+problem.
+Um
+here T is uh for time. Um so, we'll be
+considering mostly time dependent
+problems.
+Um and then however, for many query
+problems um and inverse problems if you
+or machine learning, you typically
+require this solve uh upwards of 10,000
+times for various uh parameter
+dimensions. Um and uh it is infeasible
+to actually sample the solution that
+many times.
+Um
+I guess uh if you had a large enough
+computer, you might be able to do it in
+a small enough problem, but usually it's
+not practical to do so.
+So, um, to
+a way to get around this is to construct
+reduced models that is cheap to compute
+by projecting to a low-dimensional
+subspace called the reduced spaces. So,
+I guess
+I'm not sure if how familiar the
+audience is with the the reduced model,
+but I guess
+um
+So, all all you need to do is to project
+your solution to this new dimension new
+new bases uh C sub n
+that belongs to a much lower dimension.
+So, these bases will be n sub r
+dimension as opposed to the full model
+being n sub s dimension. And this
+uh number of bases here is should be
+much smaller than the number of
+dimensions of the full model.
+So, you derive a a corresponding
+residual uh for for the reduced system.
+And solving this gives you a reduced
+solution which hopefully matches the uh
+is close enough to the full solution so
+that you can you can
+solve this small much smaller system
+uh as opposed to solving a large
+complicated system. So, you can sample
+this reduced system 10,000 times and
+hopefully uh that'll be a good
+approximation to sampling the full
+model.
+Um
+Okay. So, but for transport dominated
+problems, here's a very simple example
+where this this uh fails miserably.
+And it's the simplest example. So,
+consider the transport equation in 1D
+and you have an initial condition which
+is this hat function in green.
+And so, the solution is just this uh hat
+function traveling to the right.
+And suppose you sample this uh at a
+certain time interval uh given here 0.1,
+3, and 5, and 7, and 6, then the
+supports are not even overlapping here.
+So, these functions these these
+snapshots uh the solution are taken at
+different times are even orthogonal to
+each other.
+So, if this pulse was narrow enough and
+your domain large enough, then you'll
+end up with a completely orthogonal set
+of snapshots.
+And therefore, a low low-dimensional
+reduced spaces cannot exist um if you
+want a certain certain accuracy for your
+problem.
+So, this
+this is a this is a presence of a
+familiar object to you notion
+if you're familiar with reduced spaces.
+The Kolmogorov n-width is
+the best error that you can achieve with
+a basis of dimension n.
+Um so, suppose your your this curly n is
+your solution manifold is the collection
+of solutions for your PDE that depends
+on time or parameter. Um
+and you want to approximate this every
+member in this the solution manifold by
+a linear combination of some uh some
+some basis functions
+basis functions of dimension n. So, you
+take a a member of the
+reduced spaces and you try to
+approximate all of the members as much
+as possible.
+And
+you want to approximate all of them with
+some some error and that error
+uh with a
+when you're using a basic reduced spaces
+of fixed dimension n is given by the
+n-width.
+Uh
+this Kolmogorov n-width tells you
+how how well you can approximate your
+solution manifold with a with a linear
+basis of dimension n.
+So, for example, if you have a decay of
+your n-width that is exponential
+decaying in respect to n, then you it
+means that you have a very good basis
+function
+available.
+But, so if you Over and Out and Gerstner
+showed for this very simple example, so
+as opposed to a hat moving, now you have
+like a jump moving.
+Um in this case, you can actually
+analytically bound the
+at bound the end with.
+So, the end with here uh decays like
+this end to the minus 1/2.
+Uh and this is a very slow rate.
+And when you have this
+slow rate, it means that no matter how
+well you can you try to construct
+reduced basis representation,
+you you you're about to fail.
+However, uh so
+there is a there is still is a
+low dimensional structure available for
+these these types of problems.
+Um which is uh if you look at that that
+that becomes apparent when you look at
+the characteristic curves.
+So, it is this well known um the 1D
+transport equation, the solution is
+given by
+the method of characteristics. So, you
+have x t is just the u not composed with
+x minus t.
+So, while the solution manifold itself
+is not low rank, if you look at the
+characteristic curves, this x minus t,
+you can view as
+uh some some inverse of a
+diffeomorphism. So, or inverse of a map
+that transforms to the the domain to
+itself.
+And so, this
+t sub t is just a representation of a
+characteristic curve emanating from
+point x.
+And this
+x minus t can be
+represented as a inverse map of x plus
+t.
+Right? So, I guess uh
+I can't see anybody's faces, so I'm not
+sure if people are finding this too too
+too simplistic. But uh so, this x plus
+t, if you if you kind of
+uh
+multiply by one, then you can see that
+this is actually a low it has a low rank
+representation in terms of space. So,
+it's just a identity times some
+coefficient that depends on t
+um and the ident the identity map x
+uh multiplied by one. So, constant
+constant one times t and identity times
+one.
+So, this this
+uh capital T sub T, which represents uh
+the characteristics curves propagating
+forward, uh has a low rank
+representation, although the solution
+manifold itself
+does not.
+And um in a in a very very simple case,
+uh uh
+when you when your characteristics uh
+curves are very smooth and they're very
+very very regular,
+you can represent this with a very small
+number of terms.
+So, you you do obtain some sort of a low
+dimensional representation of your
+solution.
+And um
+so, in a very simple case, in a very
+simple special case, you can actually
+construct this uh approximate this
+capital T sub T
+uh very efficiently um for a class of
+scalar conservation laws uh using using
+what's called the DIP maps, uh which
+I'll I'll mention a little bit here. So,
+this is a very uh special case when this
+capital T sub T can be constructed very
+very analytically without without a lot
+of approximation.
+So, what you try to do here is that this
+pulse, uh which is the uh initial
+condition at zero, is traveling to the
+right. You do what's called a monotone
+decomposition. So, you take these uh
+monotone parts. So, you express your
+initial condition and your uh solution
+at the later time as sum of these uh
+monotone functions.
+So, uh and once you've done that, these
+monotone functions, they correspond to
+certain cumulative distribution
+functions.
+So, you can kind of uh you can apply uh
+what's called the uh monotone
+rearrangement map that takes uh this
+distribution to distribution
+and distribution to distribution. So,
+um this only really works in the case
+that the monotone parts are matching.
+So, I guess if you have a uh monotone
+increasing part and a decreasing part
+and uh uh at time zero, and the same is
+true for all future times or parameters,
+then you can apply this map.
+Um, and this map, uh, if you
+uh, this this is monotone rearrangement
+map, which is a term that comes from
+optimal transport, gives you, uh,
+snapshots of these
+uh, transport.
+And once you've done that, you these
+transport maps, which are, you know, um,
+you you uh, you're you take your
+monotone function, and then you compose
+it with the the inverse of the monotone
+function at another time, um, you can
+take an SVD of these approximate
+transport maps.
+And you can see that the while the while
+the original POD of the solution that I
+called has a very slowly decaying,
+um, singular values,
+uh, the
+the transport modes themselves actually
+have a fast, uh,
+fast decaying singular values.
+Um, and a similar notion could be
+constructed. So, so, then we just uh,
+briefly mentioned that you can also
+interpolate
+um, using these transport maps. And uh,
+so these uh, transport maps are
+approximate, but they're approximate to
+they are approximations to the true, uh,
+characteristic curves. So, for example,
+if you take a Burgers equation uh, with
+this uh,
+initial condition, and then you you
+evolve it forward, and then you
+construct these transport maps and
+interpolate in between them, then they
+actually match up, um, exactly. So, they
+are, uh, these transport maps actually
+approximate
+the the characteristic curves.
+Okay. So, um, I mean, that's a briefly
+case brief case when when these
+transport maps could be constructed very
+very explosive.
+Um, but uh,
+regardless of that,
+what we've done is this is the the
+classical reduced model, where you're
+taking a linear combination of some
+basis function,
+and uh turned it into a long linear
+representation
+where your basis function is changing
+over time. So, these C's are your usual
+uh POD modes, for example.
+You are composing it that with uh uh
+these low-rank transport maps. So,
+you're composing these uh basis
+functions with the inverse of these uh
+transport maps.
+And this transport map, which
+approximates these uh uh
+characteristic curves, is is uh low-rank
+object.
+So, in an essence, what we're doing is
+we're taking the solution manifold and
+instead of trying to construct a one uh
+set of linear bases that approximate all
+the members
+of of this solution manifold, um what
+you're doing is you're constructing a
+local basis for very local portion of
+your manifold, let's say your initial
+condition or or a perturbation of your
+initial condition.
+And you're applying this uh transport
+map,
+which will generate another transported
+basis. So, you're constructing an
+adaptive basis because uh this when you
+compose uh your usual reduced bases with
+a transport map, then you as you can end
+up with a basis that is very different.
+Um and so, for example, if you have a
+time-dependent problem, then applying
+this transport map will propagate your
+reduced bases uh to uh along with the
+flow
+um so that you can represent the
+solution um
+uh well at all times.
+Okay, so so
+um this is uh very again, a very simple
+representation that could be used to
+construct reduced models. Um and we call
+uh this reduced model uh map, manifold
+approximation by transported
+uh spaces.
+Um so, as you've seen seen before, uh in
+a very special case, you can construct
+these transport modes or or or you can
+solve a minimization to obtain these.
+And once you have this transported
+subspace, well, what's nice is that all
+the interpolation methods like the uh
+uh interpolation methods, they require
+knowing only the uh your the
+sampling your your reduced model at only
+a uh uh certain uh small set of spatial
+locations.
+And
+this this still applies when you apply
+the transport map. So, these
+interpolation points um where you can
+evaluate these reduced bases to obtain
+your coefficient
+um are going to be transported along
+with with your uh
+with your transport map. So, as you
+change the reduced bases along the flow,
+your interpolation uh points will move
+along with the uh exactly with respect
+to these uh transport maps.
+So, not only do you get uh a single
+basis with the corresponding interval uh
+interpolation points, you get uh a
+transported basis
+and corresponding interpolation points
+for the changed basis.
+So,
+uh you you have a family of reduced
+bases along with uh corresponding
+interpolation.
+Um
+so, what's nice about this
+representation is that you can now uh
+evaluate and manipulate your reduced
+model in a very very uh cheap way.
+So, what you can do is uh you can time
+step this uh non-linear reduced
+representation um
+and the details uh all of the details
+and details are uh in our paper from uh
+2019.
+And uh so, what you can do is you can
+alternate the evolving the coefficients
+of your reduced bases and the
+coefficients of your transport map
+in sort of a uh semi-Lagrangian method.
+So, it's a semi-Lagrangian in the sense
+that you are changing the the by by
+applying the transport map, you're
+morphing the domain.
+But, you're morphing the domain in a uh
+very very specific and low-rank manner.
+So, that can be done uh by only sampling
+the transport map at the uh
+two free interpolation points.
+Um so by alternating
+the update of your basis and your
+coefficients you can you can solve a
+uh
+you can solve a parameterized PDE so
+Um so let's look at an example. So here
+is
+a
+a transport equation with a very very
+smooth speed. So C here is a speed that
+is some constant modulated by two
+sinusoidal waves and so forth.
+Coefficient here controls the amplitude.
+Here mu2 and mu3 controls the the
+frequency of of the modulation.
+Um this equation is also called a color
+equation representing dyes that are
+going on the going uh
+uh dye that's being transported along
+the flow.
+So if you started with the initial
+condition that looks like this, and it's
+traveling it's then not only going to
+travel to the right like the advection
+equation but its shape is also going to
+undergo change.
+Um although this is a very simple
+problem to to solve with the full model,
+it's actually hard to implement in this
+small um in in the classical
+um
+so
+let me give you the a brief analysis of
+this problem. So we can actually lower
+bound the end width of this uh solution
+manifold.
+Just as we provided lower bounds for the
+simple case of a jump moving.
+You can define what's called a sharply
+convective class functions. I I will not
+go into the details
+but essentially you look at the
+regularity
+of what's what's moving.
+So here
+is a half sharply convective class of
+functions which is where the jump
+there's a strict jump that's moving to
+the right. We saw that the end width of
+that was lower bounded by n to the minus
+half.
+For example, if you have a slightly more
+regular problem where where
+your
+your solution doesn't have a jump but
+its derivative for example, then you
+have what's called the 3/2 sharply
+connected cost function, and in that
+case you get a slightly faster decay.
+So, whenever you have an alpha sharply
+connected function, the N-width of that
+manifold is going to be lower bounded by
+N minus
+N to the power of minus alpha.
+Okay, so
+for this problem, you can actually show
+that
+when your initial condition
+has a discontinuity at some derivative,
+so it's continuous
+up to S minus one derivative, but not
+the S derivative,
+then there is a lower bound of the decay
+of N to the minus S over 2.
+Um so, for example, this home, which is
+which is
+piecewise analytic function where you're
+combining cosine, for example,
+with a constant function on the left and
+the right, so this this yellow initial
+condition
+shows discontinuity if you take this
+derivative.
+So, this
+will will give you N to the minus three
+over two decay, which is also very slow.
+You'd like it to be exponential for
+classical Fourier series models, too.
+However,
+uh the
+the C that we had earlier, which was
+a constant plus analytic function, the
+the the the variable C itself is
+actually very, very smooth,
+which implies that the characteristics
+themselves are are also smooth.
+And so, you can actually
+find a polynomial approximation that
+that does very, very well
+with the Fourier spectral methods.
+So, the N-width of the characteristic
+curves for this case actually decays
+very fast. It decays geometrically with
+respect to N.
+So, you can you can actually construct
+the the representation as we had
+earlier.
+So,
+uh while this is probably not an
+exciting uh for 1D 1D example, um we can
+evolve uh reduced spaces.
+And what you're when we are solving this
+evolution equation, we are really only
+doing computations at these red dots.
+So, although the the field is uh
+it fills up the whole space and it's
+actually um has the periodicity like 2
+to the to the 10 or something. Able to
+evolving this uh entire field, you're
+only doing computations that uh that
+scale with uh
+uh the number of these red dots.
+So, you're able to represent this uh uh
+relatively complicated moving wave by by
+doing computation at these points. And
+these points are the interpolation
+points. They're moving along with the
+flow and this flow uh uh
+uh if if if you uh track Wait, if you
+plot the trajectory of these
+interpolation points, then you can see
+that they they are close to the the
+perfect approach. Um and so on.
+And you can look at this You can vary
+the dimension of your reduced spaces
+uh and how many transport modes you keep
+and you can
+you can see that the the basis size is
+uh
+um with with with 10 basis functions
+composed with the four transport modes,
+you can actually represent this moving
+wave.
+And um as you can see, if you in two uh
+in this part, we show the difference in
+P and if we
+even if we increase the the resolution
+of this grid on which we represent these
+basis functions,
+the the the run time per time step for
+for this match representation in this
+non-linear reduced model, of course,
+does not increase
+because the number of uh interpolation
+points we keep and uh number of basis
+size and your transport modes is is uh
+is uh more or less irrelevant with
+respect to the resolution of of your
+basis functions and your transport
+modes.
+So, as far as I know, this is like
+uh uh this is the first uh
+um P-Nets result um where
+the the runtime for time step is
+completely decoupled from the runtime of
+the full model
+for for a non-trivial problem, a problem
+that's not constantly or or
+for the profile patching.
+Okay. So, um coming back to our initial
+title, we mentioned deep neural in the
+title. Um
+we we the the representation the the
+linear representation we had earlier, it
+can actually very nicely be put in terms
+of deep neural nets.
+So, as uh many of you will probably are
+probably familiar with a feedforward
+deep neural network is the setting that
+we are we are uh going to restrict
+ourselves to.
+Uh feedforward neural network is uh
+alternated uh composition of these
+linear maps with a with a non-linear
+activation function. And we will in in
+particular we'll consider only the ReLU.
+Um so, this is A's of one to A's of L
+composed are our linear layers uh linear
+maps which takes uh uh
+um an input V um
+of dimension um
+N sub L and outputs another vector of uh
+dimension N sub L plus one and the the
+operation is completely linear.
+So, these uh A's have uh these W's which
+are parameterized which are our weight
+parameters.
+And depending on these W's, uh you you
+get a different expression for X.
+Um so,
+for example, um if you want to
+approximate a solution to the PDE
+using a feedforward neural network, you
+can for for any given function F, you
+can find uh these W
+W weight parameters that approximate
+that that uh that given function.
+And the number of parameters is of
+course uh the the sum of all the weight
+values in this matrix.
+And of course it's the sum of S of L
+times S of L transpose.
+So um this deep neural network
+uh which is supposedly a large network
+it
+can be uh
+it can be be used to replace uh the
+notion of full models.
+So a full model
+uh as you've seen earlier is just a
+linear combination of uh these
+functions. Um so they could be
+considered as a one-layer uh deep or
+deep neural network.
+Um so uh if we have a representation of
+the solution manifold uh that depends on
+some some some parameter data this data
+could be for example the time variable.
+Um these uh
+so for each uh S of data you'll have all
+the weight parameters that depend on
+data.
+So uh for a solution to your PDE
+you'll be able to set find a set of
+parameters of of L um
+so that your um deep or deep neural
+networks which is defined by these
+weights will be you'll be able to
+approximate that solution uh very well.
+Now let us assume the special case when
+the
+uh these weight parameters actually have
+a low-rank structure.
+So these individual weights in the
+linear layers that apply up here in your
+uh up here in your linear uh
+um
+the linear maps in in in your deep
+neural network neural network suppose
+you can find a a common uh linear basis
+use of L and use of L.
+Um
+um and and this gamma sub L is now a
+very small matrix.
+So if your weight matrices have the
+structure then you can form what's
+called a reduced activation. So these
+reduced activations are analog uh
+uh the use state functions that we
+talked earlier for the classical case.
+Um and you can also reduce uh our our
+linear maps or affine maps
+um um to just a multiplication of this
+uh various functions.
+So, we can construct what's called a
+reduced deep net.
+Um and this deep network is just a deep
+forward neural network with a very
+specialized activation function and very
+small affine transforms instead of a
+very large one.
+And um so for this F theta,
+uh so this parameterized approximation
+of your solution manifold, we can also
+find a corresponding
+uh uh representation in this uh reduced
+setting.
+And the key here is the number of
+parameter is uh going to be going to
+scale with the M sub L times N sub L
+plus 1,
+which is the size of your gamma,
+uh which is the weight weight parameters
+for this specialized network with a
+special architecture.
+And this M sub L and N sub L plus 1 can
+be very very small
+um
+compared to the M sub L uh the the
+parameters of the the usual uh deep
+forward network.
+Um
+but it will be able to approximate uh
+the solution manifold just as well just
+by using this F theta.
+Uh F sub theta R, which is the reduced
+deep network representation.
+So,
+um
+just to just to uh clarify what what I
+what I'm saying. So, the
+uh classical reduced model can be viewed
+as a one-layer algorithm, which was uh
+if you recall with a Lipschitz shape.
+Um so, these
+thetas are essentially trivial weight
+functions.
+And these basis functions are can be
+represented as a uh when you freeze the
+the the first layer um and uh
+uh in a certain way, then you can
+represent these basis functions well
+because of their universal approximation
+theorem.
+Um so, you can consider the classical
+reduced model as the one layer RDN.
+And these one layer RDNs are uh
+only applicable when you have when you
+have a solution manifold that has fast
+decaying end rate. Like for example,
+they're exponentially decaying, then one
+layer RDNs work very well. Classical
+reduced models are of the class and they
+work very well.
+Um, the master representation, the
+nonlinear reduced model we had earlier,
+um also can be represented as an RDN.
+Um, and in this case the solution
+manifold has a slowly decaying end rate.
+So, classical reduced models are out. We
+cannot use them to efficiently solve the
+problem. uh solution efficiently. Um,
+and of course the one layer RDNs, which
+are equivalent to classical reduced
+models, do not apply here either.
+However, uh as we saw earlier, the
+characteristic curves and the wave
+profiles themselves, they might each
+individually have a fast decaying,
+rapidly decaying end rate. And in this
+case we have shown that our our
+nonlinear representation, which you can
+also represent as RDN, they can still
+give you a a very efficient
+parameterization or approximation to the
+solution manifold of the characteristic
+problem.
+And in the machine learning literature,
+when you have a deep uh network that is
+able to uh achieve something that a
+shallow shallow analog cannot, they call
+it a depth separation. And this is a
+instance of a depth separation um in
+terms of a dimensionality reduction.
+Um, and I guess I forgot to mention that
+we had like the word "distilling" uh in
+the title.
+Um, and this is uh in the machine
+learning literature uh uh an analogous
+uh concept is called the knowledge
+distillation. So, a knowledge
+distillation is when you have a large
+network
+that has that can describe certain data
+very very well. Um, you try to learn
+from um
+uh learn from that uh
+representation of a much smaller network
+with fewer parameters that is much
+faster to evaluate and faster to train.
+So, our reduced network is in in in a in
+a very high sense
+that it's a knowledge distillation
+technique
+that is specific to to this
+this class of problems.
+physical problems.
+Um any any questions so far?
+Um okay. So,
+uh
+So, here's a
+a little more involved example where I
+won't get too much into the details,
+but I mean let's look at the Burgers'
+equation, right? So, we've been
+mentioning how these characteristic
+curves could have a low-dimensional
+approximation, but if you take an
+initial condition that is
+a simple monotonic decreasing function,
+and it's
+as it evolves, it it forms into a shock
+wave.
+Um so, the characteristic curves here
+are not as regular. So, if you look at
+the this is the characteristic
+uh characteristic curves
+emanating from various points
+in in your domain,
+and it's propagating.
+And as you can see that there is a
+merging of the characteristic curves
+into a shock.
+And so, if you view this characteristic
+curves as a as a map from space to
+space,
+you can
+you can form this plot. So, in
+initially, you are working with the
+identity map. So, there's the
+characteristic curves
+emanating at these points are not really
+moving very much.
+They're staying They're staying right
+there.
+And as you're evolving forward,
+these
+you're you're adding on another uh
+you're adding another linear sum to a
+scaled initial condition actually to to
+your identity.
+Um so, the the transport map
+is actually by
+a little bit on the left side like this
+until it becomes uh a non-monotone
+function in which which which
+corresponds to the fact that the
+characteristic curves are going to
+overlap. So, there will be two
+characteristic curves emanating from a
+single
+uh spatial point.
+Uh and after that shock formation, you
+form this plateau. So, this is the the
+transport map uh from from your initial
+uh spatial domain to the forward spatial
+domain and
+And as you can see, there is like a this
+plateau that forms and propagates to the
+left and to the right.
+So, what this means is that the the
+the transport map map themselves have
+this traveling structure. So, if you go
+back to the the uh our our initial
+example of the advection equation when
+when something wasn't moving,
+um if there was an interface that was
+moving, you had a lower bound on the end
+width.
+So, now this is this plot is showing
+that when you have a uh a transport map
+that is evolving like this over time,
+the transport map itself can also have a
+uh the collection of the transport maps
+over time can also have a lower bound on
+the end width.
+So, um this is an example where
+characteristic curves themselves they
+have a singular propagating structure.
+It So, in in a strange sense, the
+characteristic uh curves themselves are
+traveling.
+So, there's a traveling feature in the
+characteristic curve.
+Um So, in this singular case,
+there's no hope of constructing uh uh
+essentially the the non-linear reduced
+representation we saw before. So, this
+breaks the mass representation
+because your your transport map uh
+there's no hope of constructing a
+low-rank transport map there.
+Because your now your characteristic
+curves themselves are singular.
+So, um we It's like a It's a sort of a
+layered approach. So, if you start with
+the one layer reduced network um and you
+see that your Kolmogorov width is
+decaying slowly, there's no hope of a
+successful reduced solution. But, if you
+compose it with a transport map that is
+well-defined, there are cases where that
+uh that gives you an efficient uh
+representation.
+And now in this case in the singular
+case of the Burgers' equation, uh when
+when there's shock formation,
+um now you run into the same problem in
+the inner layer for your transport map.
+So, you have a lower bound on the
+Kolmogorov width, in which case this uh
+transport map itself cannot be
+approximated in the lower standard, in
+which
+uh case you actually can
+add more layers. Um so, I won't get into
+the details because uh it's a little bit
+very complicated, but this plateau
+essentially
+is also a traveling uh traveling
+structure, like a traveling structure.
+So, it's uh it's something tran-
+transient to the right. So, if you
+actually
+subtract off the identity, you can see
+that this is an interface moving to the
+right.
+So, it is this itself is also a
+transport dominated object.
+So, we can approximate this separately
+with a with the inner layers of your
+reduced network. And essentially, we can
+prove that there is this uh uh uh
+small parameter approximation. So, for
+approximation of error of epsilon, we
+can construct a RDN reduced network uh
+whose number of parameters scales like
+uh a log of epsilon, which which is
+really small.
+Okay. So, any questions so far?
+Picture bar.
+Okay. So,
+um switching gears. So, this is uh all
+in um
+single spatial dimension, where you have
+this notion of uh
+method of characteristics. But, as as
+soon as you go to uh even a linear
+problem of Burgers' equation in multiple
+dimensions, you lose this uh notion of
+characteristics.
+Now, of course, there's there are
+special cases when you have like a
+hypercomplex limit and you're doing
+something similar. Topics that, uh, in
+the gen- in general, uh, situations in
+mathematics.
+So, um, here is a an integral transform,
+the Radon transform, which could be, um,
+helpful in practice.
+So, the Radon transform, um,
+in this series just a integral of your
+multi-dimensional function f
+um, along some hyperplanes.
+So, in 2D, let's say you have a 2D
+function, uh, whose contours are the
+circle written here. Um, the Radon
+transform is just an integral over all
+possible straight lines.
+And this line is, uh, parametrized by
+the omega, which is the normal direction
+of your your your line, and s is the
+distance of that line to to your origin.
+So, you're transforming by integrating
+your function f.
+And this transform variables, which are
+Radon variables, are these omega and s,
+uh, which are just the angle and the
+offset.
+So, if you take, uh, this this f, uh,
+which is this, uh,
+uh, 2D function, if you apply the Radon
+transform, you get another function in
+2D,
+where this omega is parametrized by the
+orientation and s the offset.
+So, you get these, uh, sinusoidally
+looking, uh, waves.
+Uh, this is the Radon transform of the
+2D function.
+And this is, uh,
+uh,
+uh, mono-famously used for, uh,
+centralized tomography.
+Um,
+it appeared, uh,
+regardless of the, uh,
+like it was utilized from other problems
+in in the early 1900s, uh, used by
+Radon.
+And the
+the interesting property of the Radon
+transform is that it intertwines the
+partial derivative with the univariate
+function.
+So, if you have a partial derivative of
+f with respect to the i-th variable,
+um, if you, uh, apply the Radon
+transform to that term,
+you always get a derivative in in S. So
+S was the offset variable uh multiplied
+by some some uh some scaling factor.
+So um for example, if you have uh a
+multi-dimensional um advection equation,
+uh you have to plus alpha cuz this alpha
+is the direction of the propagation uh
+dotted with the gradient. If you apply
+the Radon transform to this equation,
+you get an equation here uh which is uh
+the the the time derivative of the Radon
+transform is equal to some scalar
+multiple, now this scalar is alpha times
+the omega which is the angle of your of
+your hyper plane uh times the Radon
+transform derivative at the S. And this
+is a 1D uh advection equation. So you
+can take a multi-dimensional um
+transport equation and once you apply
+the Radon transform, it becomes a 1D
+advection equation except that uh you
+get a family of them for each angle. So
+in a way you're doing a planar
+decomposition of your multi-dimensional
+transport problem and in each direction
+you're solving a 1D advection equation.
+Um and once you've solved it for each
+direction, you can transform back and uh
+get the solution.
+Um
+So for example, this uh imagine uh your
+your advection equation is taking this
+red pulse to this blue pulse.
+The red pulse is going to be given by
+the Radon transform of that is given by
+this this red function over here.
+Um and the matter of obtaining the the
+solution after so if you apply the 2D
+Radon transform uh to the 2D uh
+advection equation in the one-one
+direction, it's just going to propagate
+this pulse over here.
+And on the Radon variables for each
+angle slice, you're only moving uh the
+contour of the slice uh in uh a no path
+in a certain speed. The speed will be
+different for each direction, but it's
+still a constant.
+Um while it's that that might be that
+itself is not very exciting for for the
+transport equation, the same principle
+applies for the 2D acoustic equation. I
+think in the interest of time, let me
+jump to this diagram.
+So again, we have the Radon transform of
+these two pulses.
+And so these two
+register as these sinusoidal waves in
+the the Radon domain.
+And so um if you look at this slice, um
+you you see you see there is this one
+hump.
+And um so as you evolve the time
+forward, you can go forward in time
+and evolve the wave equation forward in
+time,
+um then um the solution on the in the
+physical variables look pretty
+complicated. And there's no hope of
+constructing a transport map as we did
+in 1D that maps this to to this um in a
+very simple
+um in a in a low rank way.
+Um actually, you can you can prove that
+there is that that is not possible.
+Um however, if you look at the evolution
+in the Radon variables,
+for a fixed angle slice, this hump is
+simply
+uh
+two two humps separating to left and
+right and traveling.
+So if you do some characteristic
+variables transformation, then you can
+separate this into just a one hump
+moving.
+So all the 1D apparatus we developed
+earlier actually can be applied to the
+1D slices of the Radon transform of the
+object.
+Um and this uh idea of um
+the computing a low rank
+uh of transform approximation in the
+Radon variables is uh it has been
+actually studied uh by people in in
+image processing. Um
+although they weren't really applying it
+to to wave data um and all the way there
+are any relation to the physical uh
+uh differential equations.
+Um
+and this uh representation
+uh let me go slide back. It's also
+called the last build translation
+representation
+um which was used in their scattering
+theory
+uh in 1964.
+Um okay, so now we arrive at the issue
+of uh
+efficient computation of the discrete
+Radon transform. To to actually exploit
+this uh computationally
+um to go beyond the constant coefficient
+case,
+we
+do need an efficient way of
+uh applying the Radon transform and and
+uh finding the inverse.
+Um however, uh unlike the unlike the
+Fourier transform,
+um
+the the
+discretization of the Radon transform is
+a little harder
+um
+in the sense that it is not a uniform
+unitary transform.
+Um the singular values do to decay for
+that operator.
+So, um
+I've been looking at the this uh
+fantastic actually transform uh called
+the approximate discrete Radon
+transform,
+which uh discretizes uh what's called
+the digital line. So, instead of
+uh uh integrating over straight line,
+um what it actually does is uh it looks
+at the these uh
+digital lines where the slopes are uh
+slopes are broken up
+um by by some binary
+expansion.
+And so, these
+lines look a little broken.
+Um so, these digits and these but these
+digital lines have
+uh a recursive uh property that allows
+you to uh compute um the the the
+summation over these digital lines
+in in a fast way. So, O of N log N um
+optimal access. O of N squared log N for
+images of size uh N squared.
+Um so, this is what a Radon transform
+looks like. So, uh so, at each uh
+iteration, let's say your image uh looks
+like this.
+Um it's a it's a recursive process. So,
+um I don't think have the the
+but but as each level you you form a
+summation of broken lines
+twice the length from the previous step.
+So, in the end you get an approximation
+to the the Radon transform of the full
+full full line. And these are just in
+summation of the pixels that that lie in
+these are so-called vision lines which
+are close enough to to the straight
+lines but but are are they have this
+jagged broken structure.
+So, if you take the for example of the
+full ADT
+of this Radon transform, then you get
+the picture that looks
+this.
+And
+um
+this is an approximation to the
+continuous transform. So, what we saw
+earlier didn't have this a changing
+wedge shape. All you have to do is
+stretch them and let them in a personal
+way and then you can approximate the
+continuous Radon transform with this
+method.
+This is a discrete discretized version.
+And what's really interesting about this
+discretization is that
+William Press
+at the University of Austin actually
+found that it could be inverted to
+machine precision using a full
+multi-grid method.
+And this sort of accuracy is not usually
+expected from
+the computer computerized tomography
+field.
+And
+wondering why that was happening, we I
+actually discovered that this actually
+has a very actually has an algebraically
+exact inversion formula.
+So, among all the discretizations for
+the
+Radon transform, this is the only one
+discovered so far that has an exact
+inversion formula.
+And we also can use that inversion
+formula to characterize the range. And
+this is very important for you know,
+developing fast algorithms is the
+approximation the approximate of the
+Radon transform to exploit the the
+uh the intertwining property.
+Um
+Right. So, um I think I am about out of
+time. Um so, the summary is that uh
+there is this uh depth separation for
+reduced for non-linear hyperbolic
+problems even in chance.
+You can represent them very efficiently
+with few parameters if you use uh this
+particular um deep network with the
+low-rank structure.
+And this also generalizes to multiple
+spatial dimensions, and these are
+essentially a generalization of uh the
+classical Lax-Wendroff presentation by
+applying the the Radon transform.
+So, these are some references. So, the
+depth separation appeared in this paper.
+Uh master thesis in this paper.
+Um so, the Radon transform and
+Lax-Wendroff uh was presented in in a
+separate paper. And the exact ADRT
+formula, uh this is actually a very
+short four-page paper, uh appeared here.
+Um this is to give a fast uh
+approximation to the inversion formula.
+And recently, we we uh characterized the
+range. Um
+um
+So, these are the references. Um
+and uh
+Thank you for your attention.
+Thank you, Don. So, thank you so much
+for a very nice presentation. Okay, this
+is a uh Q&A session. Uh we have
+around 8 minutes. Um I see no questions
+in in the chat room, but uh please um
+you know,
+um
+step up uh if you have any question, you
+can speak up.
+Well, so the basic this is Jerome uh
+Solberg. The basic idea I think is that
+um in order to do these uh
+manifolds, um
+you need
+um in other words the advection problem
+you can't use a
+a linear reduced basis. You need to use
+what essentially is a quadratic basis in
+some sense.
+Right right right and and then you show
+basically that
+that for the Burgers equation you need
+what essentially is one more so like a
+cubic representation.
+Actually it's
+purely in terms of layers you need a
+little more than that. Remember there is
+was this inversion operation
+so you have to implement that. But if
+you yes yes exactly so if you block them
+into let's say a block layers and one
+layer is needed for the is corresponds
+to the linear linear case and two block
+layers are required for the smooth
+smooth advection. And if you have
+singular characteristics then you need
+I think you need four block layers. I
+think I ended up with four but but
+four is sufficient I guess.
+Four is sufficient
+that's
+that's singular
+those are I mean I'm trying to think
+about this in terms of uh
+in terms of instead of like
+singularities caused by like the Burgers
+equation like shocks but in some sense
+it's like somewhat like um
+when you have you know multiple bodies
+impacting
+I wonder whether
+you could characterize how many of these
+things you would need to some extent
+based upon the number of independent
+bodies.
+Yeah that's that's a very interesting
+problem. So
+I guess
+when you when you when you have
+particles and their trajectories are
+singular as in if they hit an object,
+then they they bounce off to a different
+direction,
+then that's representing that trajectory
+banging on my door.
+So
+So So that's an interesting question,
+huh?
+Yeah, that I I believe it is. Um
+What's
+Yeah, there is lots of interesting
+results about approximation properties
+of deep networks. So
+what what gives what gives us a little
+bit of hope of handling these these
+types of singular singular trajectories
+is that if you have even if you have a
+lot of them,
+if the if the angles have some sort of a
+similarity, um
+the the ReLU deep forward ReLU networks
+are able to create these jagged
+approximations in a very efficient way.
+Um
+So
+I think there's a paper by Yarotsky
+which has exactly this this paper. So if
+you have like a
+a singular uh
+a singular trajectory, but there's a lot
+of similar ones occurring at different
+spatial locations,
+um I think you can approximate that very
+well with a
+um well well, at least in theory, with a
+with a deeper network rather than a
+shallow one.
+Right.
+Um okay, well, thank you so much for
+your presentation.
+Well, no, thank you.
+Maybe I'll
+write you later.
+Okay, thanks so much.
+Good.
+Sounds good. Um any other questions?
+Uh I have one. Um
+Can you
+What What do you envision for your
+future direction after this? I see a lot
+of examples.
+Oh, I see. Yeah. I mean, there is
+multiple ways that we're looking into
+it. So here is
+So
+the the diagram that we had for maths,
+so this is kind of like uh um
+this is kind of like the the three
+components that we need.
+So, I guess like in the offline phase,
+we were able to somehow construct uh the
+inner layers.
+Um like these weight matrix
+approximations, the low rank
+approximations in the inner layers
+somehow.
+Um which is a difficult problem. I mean,
+I I showed like an example where this
+could be uh computed for easy way, but
+computing them in general is I think a
+hard problem.
+Um and for the and actually they need to
+have this uh transport through this
+tran- transport subspace structure. So,
+these low rank representations
+are what allows uh this uh during the
+online stage to manipulate your um um
+reduced deep network approximation by
+adjusting only a few parameters.
+Right? So, so what what we want is not
+just uh some deep network approximation,
+but we've got a deep network
+approximation that we can plug into a
+PDE
+and uh evolve the reduced system in a uh
+in a in a way that the number of uh
+number of operations you have to do does
+not scale with the full system.
+Right? So, um what we're trying to do is
+uh we for
+constructing this is a huge problem. And
+that's actually where um I think you
+know you you you already have some
+expertise in
+uh
+uh training these convolutional uh
+encoders to extract this low dimensional
+um
+low dimensional um
+representation of your solution
+manifold. And what I'm looking into now
+is what is the relationship between uh
+um a conv network the DCNNs are they
+train really well. And um as I've
+already seen in your paper and and a
+group of uh
+uh people working on this, the the
+convolutional neural networks have this
+advantage of being able very easy to
+train
+and they're very stable and they're very
+effective. So, how can we take a trained
+convolutional network
+and find an RDN representation of that
+network is something that we're looking
+into. So, if we could do that then
+that's
+that corresponds to like the first half
+of the problem.
+Um and I guess like at at the first
+bullet of the problem and the second
+bullet is to how we how do we evolve
+these and so these RDNs have this low
+rank structure and what we believe is
+that when you hit this RDN with a
+derivative
+and you use backprop
+we can apply like a sort of a empirical
+interpolation for each layer of the
+approximation.
+So, whether we can do backprop in a very
+efficient way and you know, find an
+evolution equation when you plug these
+things into the PDE, I think that's like
+another important direction to look
+into.
+And
+and
+I think that's also ties with the way
+that uh
+these um
+um these deep networks are
+they can be plugged into these
+you can form a functional essentially to
+to solve the PDEs.
+So, tying this idea of low rank weights
+with uh
+uh
+uh with a with a backprop and forming a
+forming a minimization problem that you
+can solve for for uh
+for these RDNs is actually another
+another direction.
+Um
+Yeah, so I guess that that that's
+actually includes two points two and
+three.
+But it's it's somewhat been done um
+I guess for the autoencoder the the
+first part is
+works very well. And well, at least at
+least that's to my knowledge. I think
+the con- the convolution autoencoder
+work
+um works really well with the
+with the training.
+However, to get the speed up at the
+online stage is is uh still a
+non-trivial problem. I I believe uh you
+have made some progress on that uh and
+uh but it's still I think uh um many
+people are kind of considering that
+problem.
+So, we have like the reverse problem, I
+think. I think if we have the the if we
+constructed these RTNs, then I think
+it's uh much easier problem to actually
+plug them into PDN solve them.
+However, constructing them is still a
+non-trivial problem. I don't think
+anybody in the machine learning
+community has looked at training these
+RTNs from snapshot data.
+So, it's a huge open problem where these
+are as as trainable as as uh
+convolutional neural networks are. Um I
+mean, this the whole revolution started
+with convolutional neural nets because
+they they train so well.
+Um so, if there is uh this complementary
+uh
+strength in in both directions and
+and I think so, if we could somehow
+borrow the trainability of the
+convolutional neural networks by turning
+them into the RTN and then evolving
+them, maybe I think that's a promising
+direction. So, that's kind of where
+we're headed. And uh
+yeah, so so the uh and lastly, the the
+Radon transform, we're trying to
+um
+build a efficient implementation um and
+try some things in multiple spatial
+dimensions.
+Um for example, variable speed uh in 2D.
+So, we're trying to see if uh
+all of this carries through in in two
+dimensions.
+Thank you. Thank you so much, Dong Seop.
+Yeah, and um I'm looking forward to um
+the new results in the future. I'm
+uh sounds very exciting.
+I I think
+Sounds great.
+very exciting. Uh I think uh it's time
+is up. Um
+it's um
+Thank you. Let's thank again uh for the
+today's speaker, Dong Seop. Uh thank you
+so much for coming and give a wonderful
+talk. And and few announcements before
+we um you know adjourn.
+Our next the seminar the DDPS seminar
+series will be next week.
+It's unusual we usually meet every two
+weeks but we will have another week
+another another seminar next week
+due to the Thanksgiving break.
+So
+so please join us next week and we'll
+meet again.
+Until then
+Bye.
+Thank you Donza. Thank you.

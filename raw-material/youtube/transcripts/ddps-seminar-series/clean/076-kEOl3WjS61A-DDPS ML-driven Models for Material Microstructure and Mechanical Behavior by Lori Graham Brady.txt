@@ -1,0 +1,1639 @@
+all right okay uh welcome everyone to
+the ddps seminar uh today uh before we
+introduce our invited speaker let's go
+over some rules and Logistics first of
+all please mute yourself during the talk
+unless you have questions
+if you have questions you are welcome to
+mute and ask otherwise please use chat
+room to post your questions so that we
+can address them in Q a session at the
+end second today's ddps seminar is open
+to external audiences
+therefore no classified discussion is
+Allah allowed finally The Talk today
+will be recorded
+and upload it in our YouTube channel
+um all right let's introduce our speaker
+today it is an honor to host Laurie
+Graham Brady who is a professor and
+former chair of the civil and system
+engineering department at Johns Hopkins
+University with secondary appointments
+in mechanical engineering and Material
+Science and Engineering she currently
+serves as director of the center on AI
+for material materials in extreme
+environments and associate director of
+the Hopkins extreme materials Institute
+our research interests are in machine
+learning enabled mechanics models
+uncertainty quantification computational
+stochastic mechanics multi-scale
+modeling of materials with random
+microstructures and the mechanics of
+failure under high rate loading she has
+received a number of hours including the
+presidential early career Awards of
+scientists and Engineers the Walter
+Hoover civil engineering research prize
+and William Huggins award for excellence
+in teaching she's a fellow of the asce
+engineering Mechanics Institute and the
+U.S Association for computational
+mechanics today Lori will talk about ml
+driven models for material
+microstructure and mechanical Behavior
+please enjoy and expect a wonderful talk
+now without further Ado let me pass the
+button to
+Lori by asking one random question
+today's random question is where is your
+favorite place in the world
+wow
+other than here in my home that's a
+tough one I've been to so many beautiful
+places over the years you've got to pick
+one so I gotta pick one well I got
+married in Lake Placid New York so uh
+and I have a lot of family history there
+so Lake Placid is is a happy place for
+me anybody hasn't been there I suggest
+you go visit all right sounds good okay
+Stacy's yours great thank you
+uh so thank you youngsu for uh inviting
+me and I appreciate everybody who is
+here and
+I hope I can deliver on the wonderful
+talk that Young Sue just promised
+um but it's a pleasure to talk to all of
+you and I wanted to
+um
+start by giving oops sorry some credit
+to the people who actually did a lot of
+the work here including my group
+including the PhD students and
+postdoctoral Scholars some of which I
+think might be online right now so
+they'll uh catch me if I say something
+wrong and as well as some of the staff
+that have been really supportive of what
+we're trying to develop here at Hopkins
+uh so the motivation for all of this is
+thinking about high throughput
+data-driven design so I I'm going to
+talk a little bit about something that
+we're building here called the AI for
+materials design in extreme environments
+aimd facility and right now it's under
+construction so I wish I had some
+beautiful pictures of the lab itself but
+right now it's pretty much drywall is
+getting hung at the moment but it's a
+2300 square foot facility and it will
+integrate Material Science data science
+Ai and Robotics and it's specifically
+targeting right now metal alloys
+although we're talking a little bit
+about ceramics at the moment too but
+what does it have so
+in terms of fabricating and processing
+materials we are planning or we are
+using spotter deposition to generate
+thick foils of these alloy specimens
+using High throughput care x-ray
+characterization where we can use for
+example x-ray diffraction to understand
+the crystal structure and maybe a little
+bit about average grain size and x-ray
+fluorescence to understand the chemistry
+of the specimens that we're looking at
+um and then finally thinking of extremes
+there's High throughput laser shock so
+with that we're looking at being able to
+run tests multiple tests a minute
+and characterize things like Spa
+strength and hel
+and some equation of State parameters
+so that's on the sort of physical side
+all of this is
+getting integrated
+it's not
+okay all of this is integrated through
+robotic automation so maybe I'll give
+you some fun videos of what we're
+talking about here so this is what the
+layout will look like it's sort of a j
+shaped conveyance that will move
+specimens from one piece of equipment to
+another and the robotic arms will be
+placing the equipment in and removing
+the or placing the material in and
+removing from the equipment
+and this is what it looks like in
+reality this is actually at the vendor
+they're still working out some of the
+Kinks and we'll be delivering it when
+the room is ready for it
+and the roboticist and our team Axel
+Krieger has developed some simulation so
+on the left you're seeing just a video
+of what we call the robotic arms dancing
+but it gives you an idea of that there's
+sort of multiple things happening at the
+same time and if you look at one
+particular equipment so this is the
+X-ray system
+um and going through the simulation of
+how do you get a small specimen how do
+you pick it up how does it get
+transmitted into the equipment
+um with an x-ray you have a very small
+aperture you don't want a lot of open uh
+apertures to the uh out the environment
+outside for safety reasons so that
+actually takes a lot of work to think
+through those processes so we have a lot
+of robotics
+in play
+the other piece that's really taking a
+lot of time is thinking about data and I
+think this is a huge challenge for
+everybody there's a coordinated data
+there's controlling the equipment the
+metadata about the materials Gathering
+and organizing and collecting the
+results
+that we can use to make on-the-fly
+decisions about the processes that were
+the experimental processes
+and so just to give you some idea of
+all that's involved in the data on the
+left hand side is representing physical
+systems so
+um
+profilometry laser shock x-ray systems
+and Robotics in the middle is the host
+machine this is the machine that's
+controlling everything
+um and so you can see the little person
+is in the application Service as and
+then there's all these acronyms here
+data services in the middle that's
+basically Distributing and moving data
+and then Arch is the sort of off-site
+facility where we send data and there's
+an AI driver in there that we're working
+on local Computing and so just to give
+you an idea if you come up with a script
+of something very simple to do all the
+steps of where data has to fly from one
+place to another in this system we have
+to think through all these connections
+and make sure that they're all formatted
+in a consistent way
+so never underestimate the data
+management process
+but beyond that to get to the meat of
+what I want to talk about is that that
+AI driver in there is going to need fast
+computational models and some measures
+of uncertainty in order to be able to
+make effective decisions
+now
+the models actually don't have to be
+perfect what they need to be able to do
+is say that the model will predict that
+situation A is better or different or
+worse than situation B
+but it doesn't necessarily mean that the
+model has to be able to predict the
+result down to you know Precision 10 to
+the minus 8. it's really
+um in this environment kind of a design
+Discovery environment
+it's a prediction of will something
+change
+so we can be a little bit looser in how
+we
+the Criterion we put on our models
+so
+what are the opportunities here and and
+why now so why develop something like
+aimd and I will note that there are a
+lot of AI for materials facilities out
+there that are really successful I think
+what's different about ours is that
+we're trying to capture extreme
+environments Dynamic environments and
+that's traditionally something that
+hasn't been easy to do in a high
+throughput setting
+um so I think the opportunities here are
+a few that there's certainly a greater
+availability ability to develop new
+materials so things like um
+additive manufacturing and advances in
+sputter deposition really enable a lot
+of new materials
+there's High throughput characterization
+and testing we're talking about
+processes that traditionally might take
+hours or days being able to be done in
+um seconds or minutes
+or alternatively maybe surrogate tests
+that are very fast that we hope
+represent something about a larger
+system
+we have more computational power than
+ever I always put an asterisk on this
+statement because no matter what we
+always want more computational power
+let's say we have as uh
+scientists and Engineers we have the
+ability to fill the available
+computational power with no problem and
+I think that could go on to infinity
+and then finally the uncertainty
+quantification tools are maturing and I
+don't mean to claim that this is a
+mature field that it's you know all the
+good work's been done but it's gotten to
+the point where it's actually
+practicable you can actually start
+implementing uq practices in in real
+problems
+and so just a little right showing one
+example of very complex model
+so in red I'm going to give the
+counterpart to each of those
+opportunities sort of the challenge that
+it presents we can develop many more new
+materials but it creates an enormously
+High dimensional design space so if you
+think about an hea that has say Five
+Element components there's an enormous
+number of possible combinations of those
+and certainly the full Continuum of all
+the um
+proportions of those
+High throughput characterization and
+testing is terrific it creates large
+quantities of data that we have to deal
+with we have to deal with those data
+flows and typically that data is low
+Fidelity so you're balancing sort of
+high throughput low Fidelity data with a
+little bit low Fidelity or High Fidelity
+but very sparse data and so there's a
+tricky balance there
+um
+true multi-scaling real models of these
+systems are often computationally and
+feasible even with a lot of
+computational power so we need clever
+ways to attack that and finally uq
+adds cost
+we're finding some very good tools but
+it but it is costly so I can't address
+all of those in this talk
+um but I do want to think about the
+issue the slow models do create a
+bottleneck for design decisions so if
+I'm thinking about our aimd facility
+if
+the laser shock system is sort of asking
+is it worth testing this particular
+specimen
+and I send it to a model that takes 24
+hours to answer then I've gained no
+value from the fact that laser shock can
+happen in minutes
+and so I don't want my models to be so
+slow that any decision that's made is
+waiting on some long
+um slow running model
+I need to have fast decisions
+so I think today I'll focus on these two
+particular pieces one is how can we
+enhance the data we have
+so for example can we enhance low
+Fidelity data to create High Fidelity
+data
+and how can we address multi-scaling in
+a way that's efficient
+so I'll start with the first one it's
+kind of a talk in two parts
+so here's our problem statement if we're
+given limited three-dimensional or even
+only two-dimensional data
+could we reconstruct a three-dimensional
+microstructure
+or better yet an ensemble of those
+so often in particularly in a high
+throughput setting you're not given
+three-dimensional information
+is there a way for us to take the
+two-dimensional information and generate
+microstructures that have similar
+characteristics so again our goal is to
+generate an ensemble of microstructures
+that match what are key characteristics
+of the microstructure are not the same
+microstructure a different instantiation
+of the same kind of microstructure
+and one challenge we face is that
+traditional stochastic simulation does
+not work well
+so there are a couple of challenges here
+say a binary material like this is very
+non-gaussian in its distribution right
+it's uh basically two direct Delta
+functions which is maybe the extreme of
+non-gaussianity so things like
+translation processes to generate
+microstructures won't work
+or at least won't work very well
+the other issue is that these kind of
+irregular microstructures aren't as
+simple as maybe a model where you would
+say I'm going to put you know circular
+inclusions down in space randomly you
+can't use that here
+so what are some description descriptors
+that we might want to think about
+um
+one could be something like the two
+point uh probability function which
+basically asks if I put a vector down
+randomly in the space what's the
+probability that it's two endpoints lie
+in four space and so on the right upper
+right you can see uh
+basically a typical probability function
+its maximum is at Delta X Delta y both
+equaling zero meaning you're comparing
+the point to itself so it makes sense
+those are a point is very well
+correlated to itself and that sort of
+correlation dies off as you go further
+away from the the vector gets longer and
+longer
+another characteristic you might think
+about is a pore size distribution which
+basically says if you pick a random
+point in the pore space
+what is the distance to the closest
+solid space
+and a typical function looks something
+like what I'm showing here kind of
+starts at a peak
+at zero and dies out as you go to longer
+and longer distances
+now a problem here is this it two point
+probabilities don't often capture all
+the characteristics so these are some
+results from um actually a fairly old
+paper
+where a student and I were working on a
+simulated annealing approach to simulate
+these microstructures and we wanted to
+match the two-point statistics so the
+upper row is the original
+image
+the second row is a simulated image and
+the two-point statistics are the same
+between the first and the second row and
+what you see is it's okay for the
+circular inclusion microstructure on the
+left the first one but if you look at
+the other three there's a lot of
+information lost shapes connectivity
+you see glimmers of what the original
+microstructure was but it's really not
+the same at all
+and we kind of hit a point where we said
+well we tried using three-point
+correlations and then improved the
+problem improved the simulation somewhat
+but it was incredibly slow to do that
+um
+and in the end it came down to like
+things that we see as people we say well
+this is more squiggly or that's more
+connected but that's not so easy to
+quantify so the what is missing question
+kind of hung out there until we started
+looking at some of the tools out there
+related to machine learning
+so the idea here is to use transfer
+learning
+the vgg 19 network is a network that's
+commonly used for recognizing objects so
+is this a picture of a cat or a truck or
+an airplane
+and it performs that recognition through
+a series of finding just all sorts of
+features that I don't even know there's
+no way to describe them physically but
+it just works with that image and
+identifies all the relevant features
+that would make it categorize into being
+a certain object
+so you can think of the same thing with
+microstructure we input a microstructure
+image and the vgd19 model gives us a
+sense of the feature Maps
+a bunch of aspects that we don't
+necessarily know how to describe but
+they're quantifiable
+and so how we can use those networks
+is let's say we have a Target image that
+we would like to create another image
+with the same characteristics
+so we can take the target image and run
+it through the vgg 19 model
+and we can do the same thing with a
+simulated image and we can just start
+with white noise and compare the
+uh Grim bases gram Matrix for each of
+them and the loss is the difference
+between those so that loss tells you how
+far away is my sort of initial
+simulation from the Target and there are
+other things that we can add to this
+loss function like total variation which
+is basically penalizing
+individual pixels like noise so it's a
+way of sort of reducing noise in the
+image but you can put whatever you want
+into this loss function
+combine it together to identify total
+loss different again essentially
+difference between the Target and where
+you are with your current image and ask
+have I minimized have I is the loss less
+than some threshold
+if it is well great we're done we have a
+reconstructed microstructure that has a
+lot of the statistics or the
+characteristics of the original
+if not then I need to update and
+basically the algorithm uses a gradient
+based optimization sort of an atom
+Optimizer to update that image and then
+we do the comparison again and we just
+keep going and iterating and changing
+that image and until it matches our
+Target image in some reasonable way
+um this actually was drawn from some
+work by Wei Chen's group at Northwestern
+where they just looked at the Grand
+Matrix loss and we've been playing with
+what goes into the loss function in
+addition to that
+all right so um
+I'm just gonna
+thing there
+um
+so this optimization based
+reconstruction we match the statistical
+descriptors
+and the vgg 19 feature maps from the
+target another thing that we added to
+the loss function was the two point
+probability so we wanted to actually
+minimize the difference in the two point
+probability between the original and the
+reconstructed
+and on the right you can see sort of a
+Target on the left is a quick GIF of an
+image going from White Noise converging
+to a simulated microstructure so you can
+see what happens is it iterates through
+this process from
+basically right now fuzzy white noise
+through to a final image
+and our final image we get a very good
+match in things like the two point
+probability function and the pore size
+distribution function so those basic
+statistics look really good
+now that was just a single image another
+thing we thought about was um
+we have a sample that it's actually a CT
+scan of a three-dimensional porous
+ceramic and it has 180 it's one of its
+Dimensions is 185 so we took each of
+those slices and treated it as one
+sample from the material so I think the
+way to think about this is
+you have a material that's all you know
+some bulk of material it's all the same
+material but if you looked at the
+microstructure in one region and in
+another region you will get different
+microstructures
+and so we wanted to capture that
+variability so we went slice by slice
+and you can see that there's a variation
+in porosity and correlation length and
+in mean pore size across all of these
+and again this is the experimentally
+obtained data the slices
+and our question was do the
+reconstructed microstructures capture
+this and so what we did was for each
+slice Target slice we generated uh
+simulated slice
+again you can see the Target and the
+simulated are not the same thing but
+they're statistically similar and we
+went did that over the full 185 slices
+and here we're comparing the Recon
+distribution of porosity Coral length
+correlation length and mean pore size in
+the reconstructed in green
+and the Target in blue
+and if you look at the means and the
+variances below each plot you can see
+that
+we're essentially matching definitely
+the mean
+with almost essentially no error and the
+variance very well in each of these
+distributions and the distributions
+match over each other quite well now
+again there's a statistical sampling
+that happens here that would mean that
+we wouldn't expect the distributions to
+be exactly on top of each other because
+these are different instantiations of
+similar statistics
+so we match those statistics but
+is that really sufficient that was a
+question that we asked ourselves and we
+thought about the idea that the reason
+you would typically want to generate
+these virtual microstructures like this
+is because you're using them to model
+something so you're you would typically
+simulate a microstructure put it through
+some sort of finite element model to
+develop some sort of prediction
+um and so we thought probably a good way
+to test this is to look at some average
+properties that would be predicted based
+on finite element models of the
+microstructure so what we did is for
+every microstructure that we simulated
+we put it into a finite element model
+um
+with different properties for the black
+and the white phase and I can't remember
+exactly I remember that the black phase
+was typically High values and the white
+phase was low we didn't do full on pores
+but just something with like a low
+stiffness or low conductivity
+um and so then we predict the stress
+distribution
+the heat flux distribution and the
+discharge distribution
+associated with each of those models
+and overlaid that with predictions from
+finite element models of the original
+microstructures
+and again you see there's a an excellent
+match in the mean and the variance of
+these quantities thermal conductivity
+probably struggles the most
+and maybe if I go back to that result
+for a second
+you can see the thermal conductivity in
+the middle
+it's very localized sort of Paths of
+heat flux
+so we would expect that that would be a
+little more difficult to predict than
+for example the Young's modulus which is
+like an averaged sort of quantity so
+that shows up here but even with thermal
+conductivity there's a really strong
+match between the simulated and the
+actual microstructure statistics
+so
+what have we accomplished here
+um
+if you compare this to simulated
+annealing which was sort of the more
+traditional approach the transfer
+learning here was orders of magnitude
+less time and achieved significantly
+Superior results so at some point we
+just ran out of patience with the
+simulated annealing and cut it off
+before it converged all the way but this
+was
+um
+we're talking
+hours versus
+minutes and the difference here so you
+know a couple orders of magnitude faster
+to get a very good multi-loss based
+reconstruction on the left
+we also were able to apply this to a
+variety of multi-phase materials
+thinking of polycrystalline kinds of
+materials and get different kinds of
+microstructures if you think about look
+at the top and the bottom they're both
+polycrystalline but they have sort of
+different kinds of features and we're
+able to capture that
+so that's 2D
+it's interesting from the perspective of
+being able to generate an ensemble of
+um
+of microstructures but
+really I think what's more exciting is
+the idea of being able to go to full
+three-dimensional microstructure
+simulation so I'm gonna go back to the
+3D reconstruction so this is our basic
+image this is again that porous ceramic
+we've been working with the image is
+around 10 to the eight eight voxels
+if we were to try to deal with this full
+3d structure and optimize it uh we'd be
+updating about 10 Megs of data at every
+optimization Loop it would be pretty
+memory intensive
+and furthermore the vgg 19 and similar
+models aren't really yet trained for 3D
+images
+so instead what we're doing is working
+with 2D slices of this image and that's
+much more easily paralyzed
+so I'll show you some of the results
+here
+so here's the idea think about this 3D
+structure
+you start with white noise that's our
+starting condition so every pixel is
+randomly assigned black or white
+independent of the pixels around it
+and first we start thinking in the X Y
+Direction and we take each of those
+white noise images we run it through our
+vgg 19 model the transfer model
+and we update it so that it turns into
+um
+what's viable as a microstructure in the
+2D slices now of course one slice is
+independent of the next so you have like
+within the slice it looks good but
+across the slices it won't look as good
+but so right now we have at this point a
+deck think of a deck of cards each card
+has a reasonable microstructure but it's
+not necessarily correlated to the
+microstructure through the cards
+um so you would end up with something
+like this actually it'd be even worse in
+the first step because they'd be totally
+uncorrelated but you have this sort of
+bandedness that happens right because
+what you did to one slice was
+independent of what you did to the
+previous slice and slice after it
+um so this inter-layer noise occurs
+um but it does converge over iterations
+if we do the following if we take say
+the slices with a light blue
+and now that's our deck of cards in that
+direction and we take each of those sort
+of banded noisy images we make that the
+initial condition for another transfer
+model
+transfer learning model we generate
+microstructures in that direction
+um and then we go to the dark blue
+Direction because now that's a little
+bit banded and strange looking and we do
+the same thing we go through each slice
+so it's kind of highlighted here this is
+going in the X Z direction we basically
+update the microstructure in that x z
+Direction and then we update the slices
+in the y z Direction
+so in the process of doing this what
+happened
+um in the X Y Direction now we've kind
+of messed up what was originally a
+pretty good looking set of
+microstructures within each plane
+um so what we'll do is now go pass
+through again go in the x y direction in
+the XC Direction the y z Direction maybe
+do three full passes five full passes
+but what ends up happening is as you
+move forward you're having to change
+fewer and fewer voxels so you're
+starting to see convergence in all three
+directions
+that ultimately
+plays out into a good 3D model
+based on the 2D image
+so again this is starting from a single
+2D image and saying if I assume that the
+statistics are the same in all the
+directions
+I can go ahead and generate a 3D
+microstructure based on those images
+I could also have three images one and
+one in the XY Direction one that's
+collected in the y z Direction and one
+is collected in the XC direction if it's
+an anisotropic material
+and I could follow the same process and
+generate an anisotropic 3D
+microstructure so I'm not limited to
+just isotropic but that's what I showed
+here
+okay so the statistics of these 3D
+microstructures
+um look pretty good they get better and
+better as we iterate more through the
+model this is after three passes if we
+went through five passes they might even
+get closer
+um so by three passes I mean that we
+went
+uh Direction one two three three times
+so sort of nine passes to through in
+different directions
+and the pore size distribution also
+looks very good in these 3D structure
+we also use this to look at
+polycrystalline microstructure so we
+have we only had the 2D slice that you
+see above the upper left
+and from that we generated a
+three-dimensional volume
+that statistically uh has the same
+characteristics as the 2D slice and
+actually if you look at the grain size
+distribution from
+sort of 2D cutouts of the 3D Volume
+they match almost imperceptibly they
+almost exactly with the target
+so these efficient simulations why do we
+want them there are a few different
+reasons one is uh the experiments are
+typically
+Limited in the amount that can be
+observed right so maybe you have
+A system that can only look at 128 by
+128 pixels or
+um so you're limited in the volume of
+material that you can characterize at a
+given resolution
+but what this tool allows you to do is
+to actually generate then
+similar microstructures
+that are larger you could go smaller too
+but I think larger is probably more
+motivating
+so you're not as Limited in a model
+based on the experimental observations
+you're not so limited by what the
+experiment is able to resolve
+um
+another piece that this enables is
+looking at the uncertainty that's
+induced by microstructure so you can
+generate an ensemble of microstructures
+and therefore get an ensemble of
+responses so you can actually use that
+to feed a model that would create or
+would generate some sort of uncertainty
+quantification
+and then the third reason or the third
+value of this is the ability to go from
+a 2D image to a set of similar 3D
+microstructures
+so if you have a 2d reading of even in
+different directions of what a
+particular material looks like you can
+come up with a reasonable
+representation of what the 3D
+microstructure might be
+so that's my uh pitch for one piece of
+trying to enhance data that's serving a
+data-driven system like this
+yes
+maybe this is a good time to ask about
+the first part yeah sure
+but I have a question
+you know the
+the transfer learning the PCG 19 model
+we you are using it is setting some
+multiple loss functions and you have to
+minimize it you said you use the
+add-ons algorithm yes
+that X that takes time right so the
+computational cost of that it's it's not
+free so when you compare the
+computational course with a three point
+three point
+um you know
+the methods of request reconstructing
+the microstructure
+all right which one is more expensive
+but but you are aiming to come up with a
+more efficient method so I guess
+transfer learning must be more efficient
+in some sense it is it's um
+it's it's significantly more efficient
+so in the
+so that's simulating and annealing kinds
+of approaches is that you're you're
+typically doing some sort of pixel swaps
+maybe in batch but you're kind of taking
+small numbers of pixels and you perturb
+them and then you ask is this new
+version closer than the old version
+um but there's no gradients in it so I
+think what makes this approach faster is
+using the gradient-based optimization of
+the week step okay so it's sort of more
+intelligently updating the
+microstructure than
+um I see but but still it it still takes
+time right those VCC 19 model it's to to
+solve that to minimize their loss
+functions it does it's not like seconds
+compared to two point method that's
+that's faster
+much faster yeah so it's
+um you can accomplish a ballpark you can
+accomplish what it would take an hour to
+do with a simulated annealing kind of
+approach it's in probably
+um
+I don't know half a minute
+now over a large number of these and
+over a large number of you know as you
+try to converge it it still adds up so
+I'm not saying that it's free it's not
+something that comes up with no effort
+at all but it just massively cuts down I
+mean honestly how we got here was we
+were trying to use simulated annealing
+for simulating a 3D microstructure and
+it just it was impossible we couldn't
+get it to go where we wanted it to go
+and so
+my clever student went out and found
+some interesting results in the
+literature and we we started to pull
+from that and actually found it just
+made all the difference in the world
+sounds good okay how many do you do you
+have a question yes uh hi thank you this
+is very interesting I I just have a
+maybe a simple question I I've never
+done anything about this before uh it
+doesn't make sense or is it efficient to
+like
+reconstruct these microstructures uh
+from K space like I would imagine that
+two similar
+microstructures would have similar
+distribution in case space
+um does that make sense or have you
+considered something like that before I
+haven't considered that that's a good
+question
+um
+another reason why I'm thinking about k
+space is that I would maybe also assume
+that if you do a 2d slice and then you
+measure like the k space distribution
+then if you want to extend it to 3D you
+can
+just simply extend that distribution in
+the other direction
+and then I don't know like I'm just
+thinking on the fly now yes
+does that mapping work well in a binary
+system
+um
+I actually don't know this is just all
+of my imagination actually so I was just
+wondering if you considered it in
+k-space
+it's it's actually it's a very good
+thought I I think what would come up
+is
+um
+these binary zero one systems are tricky
+uh
+oh
+so you can match the statistics but
+there's a lot of
+um it would be a lot of noise some
+things that you don't catch yeah
+yeah
+I mean yeah thanks
+all right sounds good I guess I don't
+know we can move on to the second part
+of you excellent okay well and certainly
+if if people think of questions uh
+during the second part on the first I'm
+happy to yeah later at the end yeah
+sounds good
+all right so um the next step is
+thinking about multi-scaling and and how
+could we have you how can we use machine
+learning for multi-scaling problems
+um and the idea here is what we need is
+something fast a surrogate that can
+enable real-time decisions and um
+be able to link scales and maybe even
+provide some uq this is actually a
+graphic that I I lifted from kaushik
+badacharya Caltech that I like just the
+concept of you have a large box you know
+large processor that can map inputs X to
+outputs y but you want some sort of
+small fast uh the
+Raspberry Pi that can map from some
+inputs to outputs in a much faster way
+and so
+you're all focused just on mechanics of
+simple two-phase materials to
+demonstrate an approach
+um
+through machine learning so let me start
+just first with an overall problem
+statement so you have some sort of
+structure with some sort of load on it
+in this case it's some sort of varying
+pressure load
+and that structure at the macro scale
+has a micro scale that for now we're
+assuming is some sort of simple
+two-phase composite
+and so if you wanted to go full on naive
+you would say well I need a full-scale
+finite element model of this system
+within each element there is a local
+microstructure and I'm going to mesh
+that whole thing all of those 10 000
+elements
+and I can come up with something like
+let's say this is a stress distribution
+so yellow indicates high stress blue
+indicates low stress and we capture the
+macro scale variations in stress but we
+also capture things like
+um actually let me make a little
+yeah laser pointer here
+um you know Force chains
+that travel through some of these
+fiber Arrangements
+now
+clearly we all know this I think anybody
+who's done any significant computational
+modeling that's just not the way to go
+we can't resolve everything at one scale
+in the next scale at least not for
+really interesting problems so the
+conventional multi-scale fem approach is
+to say well I'm going to take each
+element
+and I'm going to extract its
+microstructure
+use that to homogenize the material and
+figure out some effective properties so
+right now I'm sticking with linear
+elasticity
+um in a future direction as we move into
+non-linear actually future slash current
+but I don't have results for that that
+I'm going to show today
+so let's just stick with linear
+elasticity and the material could be
+orthotropic and come up with these
+effective properties
+you put those back into your finite
+element model for each element and you
+can get a distribution of average
+stresses and you can see that there's
+not a lot of variability in this that
+doesn't come from the macro scale
+loading though there are areas in here
+and in here where there's some effect of
+those variations in microstructure
+but it's pretty small variations
+what you can do now is take each element
+and say well this element is undergoing
+some strain state
+that's predicted by the model and given
+that strain State I'd like to figure out
+what is the stress at the micro scale in
+each of those elements so this is
+basically a down scaling step going from
+the upper scale to the lower scale
+and so using a finite element model you
+would take the microstructure apply that
+strain that's associated with that
+element that state of strain and you
+predict some stresses coming out of it
+and this is nice because it's
+paralyzable it reduces the computational
+time but it is still a lot of finite
+element analyzes and it turns out to be
+still quite costly
+in particular you're having to sort of
+resolve sufficiently the enter fiber
+regions with enough of a fine enough
+mesh to get some realistic results
+so what we're looking at is a
+representation that maybe uses some
+finite element results so you do need
+the finite element of results
+as training data
+but then being able to just take an
+arbitrary microstructure and from that
+to sort of take it in squeeze it into a
+cube uh what Wally does with it and spit
+it out into some uh stress so an output
+stress distribution
+so the first thing we need is the
+training data and so I'll walk through
+that and then I'll walk through the
+architecture that we're talking about
+for the machine learning
+um so from the training data we need a
+finite element model of the
+microstructure so for each
+microstructure
+um you can imagine that we could apply a
+unit 10 South Stream and come up with
+three this is a plane stress problem the
+way I've reformulated it that you have
+three different stresses coming from
+that the two axial plus the shear
+and then you could apply a unit Shear
+strain and again get three stress
+distributions could also do strain
+distributions if that's of Interest
+and so now for each microstructure in
+your training data you have six sort of
+output data associated with that so we
+want to train the model to be able to go
+from microstructure to those six outputs
+um we ran 50 models of the
+microstructure and got basically 50
+times 6
+stress distributions
+and then we were able to do one sort of
+cute trick that helps
+um so think about the original
+microstructure this shows just six
+fibers that's only for illustration our
+actual calculations have more fibers in
+each one but this just makes it easier
+to see
+so you have an original microstructure
+that maps to some stress distribution
+imagine that this is maybe an axial
+strain and this is the stress in that
+axial Direction
+I can take that same microstructure if I
+were to flip it around the vertical axis
+the stress distribution would just be
+also flipped accordingly
+so because everything about the problem
+is symmetric it's a symmetric loading
+I can do the same thing I can flip it
+around the horizontal axis again I just
+if I say the microstructure were the
+upside down
+of what it was before the stress
+distribution would just be the upside
+down of that and then I can do it one
+more time flipping again about the
+vertical axis and so basically each
+piece of data I can turn into four
+pieces of data
+um
+it's there's no free lunch
+um
+this is it helps but it's not the same
+as having an independent piece of data
+but it actually does uh
+give quite a bit of information to the
+model so it's it would say the model
+you know the model doesn't know the
+physics it might look at the stress
+distribution in the upper left and think
+well something happens typically in the
+upper right
+corner of these models and what these
+other pieces will do is sort of
+eliminate some of that bias
+so it sees that symmetry
+all right so we have an augmented data
+set now we have four times 50
+microstructures and four times fifty
+times six data even though we only ran
+50.
+and so the architecture we're looking at
+is called a unet it's a form of a
+convolutional neural net the idea is you
+have an input image an output stress
+tensor fields and the mapping between
+those is through a series of
+convolutions going down to a latent
+space that then is decoded back up to
+the output and then there's what are
+called the skip connections that
+basically recognize that there is some
+form to the microstructure that should
+influence what the results look like and
+so it kind of brings some of the
+microstructure and output connections
+into play
+um
+and so what we're doing when we train
+basically is training all the weights in
+this encoder decoder process
+and we get an input to Output mapping
+of course once trained running any image
+through this is like a trivial
+computational effort
+so unit predictions this is a
+microstructure that was not part of our
+training set
+and this is the prediction of the stress
+distribution that came out of that unit
+model so the upper row corresponds to a
+unit tensile load and the lower bottom
+row corresponds to a unit Shear strain
+and we can do a comparison between
+finite elements and unit again this is
+not part of the training set
+so for this microstructure the finite
+element prediction is shown on the left
+the unit prediction shown in the middle
+and then this gives a sense of the
+absolute error uh the error is small
+there's one region where it's higher
+than the rest but even there it's less
+than 10 percent
+error so that's the stress in the
+direction of the strain the transverse
+stress
+and the shear stress and so we have very
+good agreement between them
+similarly if we apply a Shear strain
+we have very good agreement between the
+two axial and the shear stress
+and since I started with linear elastic
+problems I can take advantage of
+superposition so I can say
+the total strain is a sum of some Factor
+times to tensile loading plus the shear
+loading to give me any general loading
+condition I've got so if my finite
+element model has a certain stream State
+I can use superposition to find the
+stresses for that arbitrary strain state
+so very simple for finite Four Element
+finite element model I don't suggest a
+Four Element model to anybody but this
+is just a nice illustration under a
+tensile loading the unit can predict the
+stress distribution in each of those
+four regions under unit loading
+and use that take the averages of those
+to find the constitutive relations for
+each of the elements
+when those are put back into the finite
+element model it gives us an average
+strain tensor for every element and or
+average stress
+that is a result of variations in the
+microstructure from one element to the
+next we apply those strains
+sorry to the unit model and we get a
+stress distribution
+and putting it all together looks like
+this so this is again purely using the
+unit model there's no finite element in
+here other than the finite element model
+two by two elements the macro scale
+and if I compare that to a full-scale
+finite element model where the fibers
+are all exactly resolved
+I have really great agreement and this
+was like trivial on the right this it's
+a two by two finite element model with
+like simple implementation of the unit
+um the only difference you see is along
+here where there's the element boundary
+but that's a problem in any
+multi-scaling uh Paradigm so if we'd
+used Fe squared we would have the same
+thing anytime you extract part of the
+model and analyze it separately you'll
+have some discontinuity at the interface
+and so we can show the same thing for
+something with a much more refined mesh
+this is the true stress map from the
+full finite element model this is
+predicted from the unit model this on
+the right took seconds to run this on
+the left took days to run but you get
+all the same kinds of force chains that
+you can see
+and actually one thing I should point
+out is you can kind of see a grid here
+because there are no fibers on the
+boundaries in the way we train the model
+since then we did an analysis where we
+looked at fibers that cross boundaries
+it doesn't create any problems for the
+unit so we can vary the volume fraction
+we can vary the fibers sizes we can put
+the fibers at the boundaries this is all
+from a single trained unit model
+and the predictions sort of this is I
+should have labeled this sorry the left
+I think is the finite elements and the
+right is the unit model we get excellent
+results in all these cases
+so we can apply this to an arbitrary
+geometry basic idea is macro scale
+Behavior to
+um
+homogenize and get our uh
+sort of average stress or strain state
+run that through the unit model that's
+trivially fast to run
+and get our micro scale behavior and put
+that back and we get a much richer
+picture of the overall stress
+distribution in this system
+I think
+um yeah so to conclude this deep
+learning is terrifically fast and it's
+accurate for predicting the micro scale
+stresses
+it provides a really efficient
+multi-scaling approach or a composite
+and some things that are in progress
+inelasticity and or dynamic Behavior
+we're tackling by treating that as sort
+of a
+an added Dimension to the problem so
+it's another dimension that we'll have
+to train for
+we could also look at three-dimensional
+microstructures so this was really just
+showing you 2D it also enables deep
+learning based uncertainty
+quantification
+both in terms of uncertainty of the
+model predictions also another piece of
+this is we're looking at uncertainty
+quantification for the CNN architecture
+so what kinds of uncertainties are
+introduced by even using this model
+and then finally the the
+animation is showing you how quickly we
+can analyze the system just moving
+fibers around right so we can get the
+updated stress distribution very fast
+this made us think that there's a real
+opportunity for thinking about topology
+optimization here where you could think
+about what it what should be the
+placement of inclusions in a two-phase
+system that would maximize or minimize
+some particular Behavior
+so those are all the things that
+we're thinking about this is actually a
+picture of the lab I was describing
+earlier the aimd lab when it becomes
+available so I don't think there'll be
+shadowy figures hanging out so much when
+it's up and running
+um so we're looking forward to that
+sometime this summer it's gotten a lot
+of support from the University and army
+research Labs has been a big supporter
+of this and it's all run through the
+center and AI for materials in extreme
+environments so thank you any questions
+thank you thank you so much for the one
+wonderful talk Lori
+um we do have a question Adam just raise
+the hand can you commute and ask a
+question yeah can you guys hear me yes
+hi Lori this is very exciting very
+awesome talk
+um so it seems like superposition is
+doing a lot of the legwork here for you
+to be able to take the data if you train
+for all those simple strain States and
+extrapolate
+um so can you talk a little bit about
+your strategy when you go into
+non-linear regimes or plasticity
+something like that and are you just
+going to need way more data or what
+what's going on there yeah it's a good
+question
+um so there's a couple of different ways
+to think about it one is if if you knew
+if it's just a problem of it being
+inelastic and you know the load path
+you're traveling through it's actually
+not too bad of a problem because you
+could train it for example we could
+treat the
+um
+the results is a three-dimensional
+entity right where you have each slice
+in three dimensions is the state as
+you're loading up yeah so you could
+capture that behavior
+um and that's actually quite doable and
+we've been able to accomplish some some
+work there the challenge I think in
+multi-scaling is that you don't know the
+load path a priority so you don't know
+this integration point is going to go up
+here and over here and done and so I
+think there has to be some training over
+possible viable load paths and or
+what I think is actually even more
+hopeful is to think of it the same way
+finding elements does right so you're in
+a certain state right now and you're
+advancing forward in a particular load
+step sure so you'd have to think about
+can I train my model to understand what
+happens in in a load step
+um so that it's not like having to think
+about the whole path the load path that
+it follows does that make sense yeah
+yeah so it's at least one more Dimension
+to your problem but possibly more
+Yeah It's Tricky I think in the
+multi-scaling
+um so it's something that we're trying
+to wrap our heads around right now and I
+do think that the incremental
+approach is probably the load increment
+approach is the way to go okay thank you
+very much
+sure thanks sounds good
+I have a
+maybe brilliant idea to
+oh I love it
+so if you go to slide 61 yep 61.
+so in order to enrich the data to train
+the unit you you you you know take
+advantage of the Symmetry right yeah
+okay on top of that you can animate more
+by just you know
+translating the microstructure like
+translation translational symmetric but
+basically so you have a small unit cell
+and then not just looking at the
+individual Chunk in discrete sense why
+don't you smoothly move right that will
+create a lot more data and you know you
+you do have the corresponding stress
+fields
+right so
+it means that's another way of enriching
+the data and then you know as everyone
+knows younet or any other neural network
+Big Data helps right so I think if that
+will improve the unit and performance
+um by and yeah yeah you're thinking kind
+of a moving window over uh exactly
+exactly yeah and and you know
+continuation onto the Adam's questions
+if you go to you know the time dependent
+path dependence
+um the material uh you said that you are
+going to introduce the time window right
+there you can also think about moving
+the time window like
+start with some small timing though I
+mean you you do have the data for the
+longer longer time but make it short and
+then just translate slowly those chunk
+and then you know build the unit on 3D
+dimensional x y and and the time domain
+and that's another video but when you
+slide the window with the boundary
+condition like because I assume that
+here for each little blog
+you apply some kind of uniform boundary
+condition then when you slide the window
+the solution is not a solution of that
+particular boundary condition is that
+correct that's right so yeah I think
+you wouldn't have the same so what's
+consistent here is that the boundary
+condition is always that uniform strain
+boundary condition
+and we would lose that in a moving
+window
+but in a sense the flip so
+um something I didn't really touch on
+here is you can train this model on
+these relatively small I wouldn't say
+six fibers but maybe 20 fiber model
+those are pretty quick analyzes to do
+and you can and you can perform a number
+of them
+what's interesting about it is that it
+captures enough of the local physics
+that it actually has potential to be
+applied to a much larger domain so in a
+sense it's sort of the reverse of what
+you're saying even so that you can
+actually use training on these small
+pieces to tell you something about a
+large piece without even
+without the full multi-scale finite
+element framework around it it turns out
+it tells you a lot about the statistics
+locally even in a larger system
+sounds good making sense and the other
+issue I think with the time I think you
+I get your point about sort of averaging
+over time the challenge you run into
+there is that it's not statistically
+homogeneous it's changing with time so
+what's happening in this part of the
+time might be very different than what's
+happening here so yeah
+it's a good thought though
+it is potentially brilliant I have to
+think about that
+sounds good hopefully it remains to be
+brilliant
+[Laughter]
+all right is there any other questions I
+just wanted to say to Henry's point that
+once you go into a non-linear regime
+you're not able to cleanly superimpose
+these simple strain boundary conditions
+anyway so knowing as long as you know
+what the stress and strain on the
+boundary of your window are and you
+track that as well in the data that
+might not be a huge problem
+that's a good point
+um if there's an advantage to having a
+large system
+that you have a model of and then you
+want to sort of locally average across
+you absolutely could you could measure
+the
+um stresses and strains on the
+boundaries of those local regions just
+the same way yeah
+so now the idea remains to be brilliant
+I think
+exactly
+sounds good
+all right uh we have a question from C1
+Tony yeah do you want to admit yourself
+and ask yes uh thanks Laurie for the
+great talk
+um yeah I learned a lot but uh I want to
+ask about the comparison of the follow
+element prediction of the Neo Knight
+protection uh I think is a field slice
+uh behind this but I'm not sure uh so I
+want to ask if you have any insights on
+how to incorporate such like over
+sampling techniques in the unit model to
+suppress the resonance along along the
+boundaries
+um as we do in multi-scale file in
+Memphis
+so I'm not sure I completely got the
+question you were talking about the
+issue of maybe let me go to a
+yeah
+[Music]
+um
+I'm not sure if for example here yes so
+you you say there is some like uh
+discrepancies along the boundaries I I
+don't know if it uh
+if we describe the same same issues with
+the same terms
+um in like Reservoir simulation and in
+like Material Science but uh so I think
+this is called a resonance effects uh in
+multi-scale Fire Island in Memphis when
+it applied to like uh risk of
+assimilations so uh we have like over
+sampling methods to try to reduce the
+resonance error but um
+I'm not I want to ask if this applies to
+your problems and do you have any
+insights on how to incorporate these
+techniques in the unit model
+yeah you should be able to actually do
+the same thing right so you could build
+the unit model
+to represent let's say you know
+oversampled region yeah um and then
+there's
+you'll have overlap between regions but
+you could do the same sort of I would
+imagine even just sort of linear
+filtering right you could sort of
+average the
+the results from two overlapping
+subsequent unit models which I believe
+that's what's done in the multi-scale
+finite elements too
+um or some you know more complex version
+of that but
+um yeah we didn't even think about that
+and as I say I kind of didn't touch on
+the fact that we found that in fact the
+unit model is is more powerful than we
+thought and we don't necessarily have to
+even stick to this finite element
+construct to get some pretty interesting
+results but we just those results aren't
+quite there yet so I I wasn't ready to
+bring them up today but I think you're
+hitting on exactly what we found too
+there is some way to use over sampling
+to kind of smooth out some of these
+discrepancies at the element boundaries
+thank you
+sounds good okay a question from Tom Tom
+do you wanna admit hi Lori thanks it was
+a great talk
+um have you applied any of these methods
+to carbon fiber Composites seems like
+that would be an easier problem because
+you have the fibers that you know would
+transmit uh stresses
+yeah we didn't actually go to a specific
+um composite system here here I think it
+was some generic composite with
+I can't even remember the contrast ratio
+maybe 10 to 1 or 15 to 1 or something
+like that
+um
+but there's absolutely no reason it
+could be applied to any combination of
+now elastic properties that we'd like so
+it could absolutely be a carbon fiber
+composite and I think actually thinking
+about real Composites I think going to a
+three-dimensional system
+is really exciting because then we could
+start getting into things like weave and
+waviness and some of the outer plane
+Behavior that's really important
+thanks Lori
+thank you is there any other questions
+from audience
+well if not let's thank Lori for the
+wonderful talk and wonderful q a
+sessions and hopefully there after this
+talk there will be some collaboration is
+going to go on between Lourdes Livermore
+and Laurie your groups so that's that's
+the whole that's the ideal I hope so I
+enjoyed this very much and absolutely I
+hope anybody who has any questions
+should feel comfortable getting in touch
+with me and you know maybe I would even
+pass you on sometimes to some of my
+students in postdocs who could really
+get into uh they know all of the details
+awesome awesome wow thank you Lori
+thanks so much
+thank you

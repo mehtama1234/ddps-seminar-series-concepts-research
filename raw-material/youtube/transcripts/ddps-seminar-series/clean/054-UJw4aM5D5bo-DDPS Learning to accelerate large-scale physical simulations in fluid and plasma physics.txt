@@ -1,0 +1,1809 @@
+um so welcome to the wps seminar
+everyone um before we introduce our
+invited speaker let's go over some rules
+and logistics as usual
+first of all please mute yourself during
+the talk unless you have questions if
+you have questions you are welcome to
+admit and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a session at the
+end second today's ddps seminar is open
+to external audiences therefore no
+classified discussion is allowed so
+please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host dr
+talin uh who is a postdoctoral scholar
+in the department of computer science at
+stanford university
+working with the professor joe
+laskovac
+his research interests include
+representation learning and machine
+learning for scientific simulation and
+inverse design using tools of graph
+neural networks and information theory
+he obtained his phd
+in mit physics where his thesis focused
+on application of machine learning to
+physics and introducing physics
+insights techniques into machine
+learning
+today thailand will give a talk about
+learning
+to
+accelerate large-scale physical
+simulations in fluid and plasma physics
+i'm sure he will give a wonderful talk
+so please enjoy it
+now without further ado let me pass the
+button to thailand by asking a random
+question
+that is it's not that random
+the question is
+what is your favorite things to do
+during the weekend
+after answering this question you can go
+on with your talk pilots
+um
+okay so very nice to meet you all so the
+question uh i think
+the thing i like to do most if you can
+right now is to watch sci-fi movies
+watch movie okay
+what movie uh sci-fi movie oh sci-fi
+movie yeah yeah yeah any favorite movie
+you can name
+uh like the
+expense or maybe some other
+tv that includes sci-fi okay well i i
+don't
+watch sci-fi movie usually so i don't
+know them all right it's 50 years
+okay so yeah very nice to meet you all
+today my topic is about learning to
+accelerate large-scale physical
+simulations in fluid and plasma physics
+so firstly i would like to give a
+further overview of the
+different kinds of simulations we might
+encounter in applications
+uh the first kind is that we uh
+discretize the whole state into a fixed
+grid or a match and we want to um like
+simulate the evolution on this match
+second we have the particle-based
+simulation in which uh the individual
+elements are the particles that can move
+around
+this includes light water or galaxy
+simulation
+the third kind is the platforming cell
+simulation in which we
+the elements include both the grid and
+the particles
+uh this is mainly uh uh applied in the
+plasma physics where we have the foster
+field and the ion electrons as particles
+so
+uh simulation is very important in both
+science and engineering
+and
+i think there are at least two calculus
+tips that are
+omnipresence in all of these simulations
+one is that they are a very
+very large scale in size it is typically
+at a problem of the high performance
+improvement
+and nevertheless even with this much
+computation
+it may still take a long time
+and to do some reasonable simulation
+for some small systems
+for example for a 3d laser plasma
+integration system
+in order to
+make it to have some reasonable uh like
+system dissemination you might need
+billions of cells
+and to simulate over a long time step
+and even then
+it may still um like
+uh simulate only a fraction of the
+usual
+assistance that we bought for simulation
+the second characteristic is the
+following uh the dynamics typically is
+multi-scale
+and have a large standard range
+for example uh
+the there are some fine scale
+dynamics
+there are there are some very highly
+energetic
+parts of the system that we need to
+resolve to a fine scale but there are
+also some other parts of the system they
+are less dynamic and we can use a closer
+grid
+and it is typically
+not not possible to simulate them using
+a single scale
+for example for a plasma system
+where there's a laser that's shooting
+from the left you can see that the
+middle has a very dynamic
+evolution and
+the maybe there are only a small
+percentage of particles
+but it can for example constitute a
+large fraction of the energy
+this opens the door for optimization
+that we can maybe use the different uh
+scale or different uh
+models to simulate different aspects of
+the system
+sorry
+so typically to address this uh
+simulation uh in the large scale systems
+uh we have the classical servers
+which are based on first principles and
+interpretable
+and they are accurate and have some good
+error guarantees
+but their challenge is that they
+typically require a large engineering
+effort to develop and is typically slow
+because of due to the limitation in the
+time interval or the implicit method
+required to ensure the numerical
+stability
+recently there are a search of the
+different target models
+which offers some benefits
+uh
+the pros are the following because the
+model can
+directly learn the
+model from the data it requires less
+engineering effort
+and also we can use a larger time
+interval and maybe use the explicit
+forward evolution which can be faster in
+inference time
+and it has the potential to address the
+multiscale challenge where we can use
+different
+models to learn different aspects of the
+system
+but on the other hand there are also
+some challenges of the data gm models
+which
+there are some challenge in the long
+term rollout and to ensure that we can
+still maintain the numerical stability
+that we roll out the system for a long
+time
+and also currently it lacks some
+theoretical guarantees for
+the generic deep learning model
+so i think
+uh
+these two parts these two solutions for
+the simulation are not one replacing the
+other but i think the best way is to
+combine the best of both worlds where
+either we can use the machine learning
+to correct parts of the classical server
+or we can
+incorporate
+some inductive bias into the deep
+learning model to make it more accurate
+and long-term stable
+so here i will first
+provide a general definition of the
+dynamical system and the problem we want
+to solve
+so
+a dynamical system can be thought of as
+there are some state of the system that
+is evolving which is u of t
+and
+this state can be defined on a grid a
+mesh or as a collection of particles or
+it can be even as a function
+and then
+the p here is the static parameters of
+the system for example it can be some
+diffusion coefficient or it can be the
+mass of the particle etc
+which does not change with time
+but influence the system at each time
+step
+and we have the boundary of the system
+satisfying some boundary condition
+we also may have some controls external
+can show f of t
+that we exert on the system
+and then we have a ground shoot a model
+f of star
+that evoke the state
+it can be a ground truth over or it can
+be some measurement of the actual
+physical process
+and the problem we want to address is
+the following
+given the tuples of the
+state by each time step as well as the
+static and control parameters
+and also the target at the next time
+step
+we want to learn a model
+that can
+match very well with this prediction
+and the goal is not only to predict one
+handstand very well but also in the
+influence time when we evolve the system
+using this model also regressively we
+can still uh
+obtain a reasonable evolution
+and the f
+here
+in general can be a convolutional
+network it can be a graph neural network
+or it can be a neural operator that
+evolves the function itself
+so besides this we can also have the
+inverse problem of
+like suppose that we have already
+learned the model
+and uh
+now we also have some objective we want
+to optimize for example we want to
+[Music]
+design the boundary of the system such
+that he optimize some
+objective line minimize the drag or
+maximize some certain
+objectives
+and then the problem is then to optimize
+some static parameter or maybe the
+boundary or maybe the control parameter
+such that it optimizes our predefined
+objectives
+so in this talk i will
+try to address
+uh the following
+two to three questions
+so first question is how to learn a
+model f system that can faithfully
+evolve the system long time
+and the second question is
+if the state u of t has a multi-scale
+dynamics
+how do we properly model it
+and if we have time we can also touch
+upon
+some of recent work of our work that
+perform the inverse optimization
+of the length model
+and
+uh note that our solution is just
+some solution
+over one
+over many possible solutions and he's
+still in the active development
+so for the first question
+are we
+mainly focusing on a subsurface
+simulation in which we want to model the
+rollout the stimulation of the
+oil and water flowing underground
+for the second question the multi-scale
+challenge we mainly focus in on a plasma
+laser system
+that we want to model is small physical
+dynamics
+for the third question
+we are mainly investigating it on a
+navier source equation
+fluid
+so for the first for the first part
+sub-surface relation
+uh this is a the collaboration with a
+run company
+so
+basically the problem is the following
+uh we want to develop a model that can
+predict the flow the flow of fluids for
+example the water or oil or the gas
+through the porous media underground
+and this is essential for the management
+of the oil and gas and groundwater
+resources
+and is also pivotal in industrial
+applications for example in oil industry
+and having a good model can ensure a
+fast and accurate
+like evolution that are needed for the
+downstream decision making for example
+how to or where to drill a new wheel
+and it is also important
+to ensure that the production is
+economically efficient and may be able
+to reduce the carbon emission
+so as a background here i will introduce
+the simplified pde for the system
+basically the whole simulation tries to
+model how the pressure as well as the
+water and oil saturation
+like e wolf on the ground where
+basically uh the s i is the saturation
+of either water or the oil which the
+situation means that what is the
+fraction of the
+water or oil that occupies the porous
+media of the rock
+which goes from 0 to 100 percent
+and then the pressure is the p here
+basically the change of the saturation
+of water or oil depends on two times the
+one turn is the source or sink where the
+sorcerer's sink are the wells that
+either inject water or maybe produce the
+water or oil
+at the shell location
+and then there's another turn which is
+the divergence of the flux
+basically the change of this saturation
+depends on the source of sink and also
+the total amount of the fluid flowing
+into the current cell
+where the flux here is proportional to
+the gradient of the pressure basically
+it will flow from the high pressure
+plate to a low pressure place where the
+coefficient here depends on
+what we call a relative permeability
+and this mental probability krg
+also is a nonlinear function of the
+saturation itself
+so basically this will make the whole
+pde non-linear and very intelligent to
+assimilate
+so classical servers typically use an
+implicit method to evolve the system
+where each cell
+will constitute one equation
+where even like if we have millions of
+equations like within cells then we have
+a minus of millions of equations
+and then it will be very uh time
+consuming to solve
+and
+uh so for the current physics based and
+they have given models you still need to
+address the long-term evolution
+multi-scale dynamics challenge
+where they might have thermodynamics
+means that we need to model both the
+potential dynamics which is
+happening on a much global scale and
+also this model how the water and oil
+flow
+between the neighboring cells which is
+much much more local
+and also we need to scale to millions of
+nodes
+so
+to address this question
+uh like typical physics-based models
+project the whole system into some
+reduced basis although it can simplify
+the system
+it will it is inefficient
+insufficient to model this nonlinear
+multiscale behavior
+for the contribution models
+typically use the data to render
+evolution and it has shown the promising
+results but up to now it has been
+limited to apply to the 2d problem
+with up to 10k cells
+and the work that is most similar to
+ours is the graph neural simulator that
+is developed by deep mind
+where they apply it for the particle
+based simulation and apply it up to 20k
+particles
+but that pro by the model is not
+designed for this system which is
+based on a match and also it is much
+less
+size
+so in this work we basically introduce a
+hybrid graph network simulator
+which consists of a
+graph network to model the dynamics of
+the water and oil
+and also a 3d unit which models the more
+global dynamics of the pressure
+and we also develop training techniques
+to improve the long-term accuracy
+and also performance performing some
+strong baselines
+and we apply up to 1.5 million cells and
+achieve total 184 speed up
+so
+recall in our previous diagram
+and in this system our input
+contains the dynamic variables which are
+pressure and the saturation
+and then the static parameter includes
+the log properties such as the
+permeability velocity and so on which
+model how the rook is able to transduce
+fluid
+and we also have the control variable
+that is uh how much of the
+fluid is injected to the
+cl at each time step
+and then we also have some competitive
+features
+which we compute for the network to be
+able to
+uh easier to model
+and the output is the dynamic variable
+at the next time step
+so
+uh basically yeah here our model has two
+parts the gnn and the 3d unit
+basically we discretize the whole uh 3d
+grid into this
+3d cell structure
+where for the gn we model each cell as a
+node where it has the edge
+that connecting it towards these six
+neighbors
+and then
+our gn uses this encoder processor
+decoder
+architecture where the encoder embeds
+the input into the latent graph of the
+node and the edges
+and the processor includes a stack of
+m layers
+at each layer it performs the typical
+gin operations where it first
+based on the
+every pair of notes
+and the edge feature to compute
+a message between this pair of notes
+and then he aggregates the message
+on each note
+and then based on the aggregate message
+he will usually to update the note
+feature at the next time steps
+and after a few layers of this
+uh the last layers node feature will be
+used as the prediction for the next 10
+steps
+so
+having this model
+we still have the challenge of the
+long-term rollout
+basically what we find is that even if
+we
+train the model with one step loss to a
+very low loss
+it is still uh
+very hard to roll out into a long time
+step even basically the error will
+diverge
+and the cause of this is that
+during rollout we use the model's
+prediction as the input for the next 10
+step and the error
+by the model can accumulate after we
+look out for longer time steps
+and to address this uh test
+problem
+our pathworks has introduced several
+approaches
+one is to add noise into the training
+input and this noise can simulate some
+of the roll-out area during the
+influence and can make the model more
+robust
+and then another work by maxwelling they
+introduce the nice
+adversarial knights which are generated
+by the motor floor itself
+so in this work
+we find that when we train the model
+with the autoregressive layout it
+actually performs much better
+and specifically which means the
+following
+typically when you train the model they
+just use you just use the model to
+predict one time step in the future and
+then you compare it with the ground
+truth so this is the one step box
+but instead we also
+use the model to go out a few more 10
+steps and for each time steps in the
+future we also compare the graph with
+the ground shots and control the dots
+and our goal is to minimize the
+summation of other losses
+and in this way the model is trained to
+model the long-term dynamics pattern
+and you have some weights for each time
+step
+focusing more on the one step loss but
+also have some weight for the
+longer time steps
+uh yeah so in this way we find that uh
+it
+allows the model to go out much longer
+uh apart from this we also have the
+challenge of the large science because
+if you have millions of cells per times
+that
+we cannot fit the whole thing into a
+single gpu
+therefore we introduce the sector-based
+training in which uh basically we have
+partitioned the whole data upgrade into
+many sectors and in each sector
+uh we also have the overlap in the
+sector because we don't want to compute
+the loss
+at the boundary of the center because
+they are less accurate
+so then
+uh became just the sector as the turning
+data instead of the
+full grid
+so here are some results of the
+of our method we basically compare our
+method with
+some strong baselines of the 3d unit
+and a convolutional neural network
+we roll out the model for 10 steps or 20
+steps into the future and compare the
+prediction of the pressure water and oil
+and as you can see our model outperforms
+the other models by a large match margin
+we also perform the evolution study in
+which
+one amplitude is that we only use either
+the 3d unit or the gn to model the full
+system instead of modern then
+respectively and we find and we find
+that
+the error with the full model is much
+better than using
+a single model to model them both
+because
+the 3d unit is more suitable to model a
+more global dynamics and the gnn here is
+more suitable to model local dynamics
+we also find that if we train with one
+step loss the performance is much worse
+than trained with a multi-step loss
+this uh
+lie
+confirms that the multi-step loss can
+really help the long-term rollout
+and here we see that our model uh
+have a lag much less cells
+that have some area above some threshold
+so here is some robot where we see that
+we have an injector that inject water
+into some some place
+and then we have a producer that produce
+the oil water
+and then as the time goes by
+we see that the water
+is flowing from the injector to the
+producer in the middle and we see that
+our model matches very well with the
+ground tubes
+and here it is the oil
+visualization in which we see that the
+oil
+is depleted
+due to the producer in the middle
+and it matches also very well with the
+ground tubes
+so for the speed uh our method
+our model uses
+20 seconds to roll out 20 steps
+with a gpu in comparison a standard
+server with multiple
+nodes takes around 46 seconds to 370
+seconds
+to do the same
+simulation which
+is a total of 18 volt reduction in the
+time
+and right now we are scaling our model
+to 50 million cells and we are also able
+to uh model the well of our production
+uh with very small lots
+yeah so basically in this first part uh
+we are going to introduce this hybrid
+model to model this subsurface
+simulation and we introduce this
+multi-step locks to improve the
+long-term loadout
+okay so this is the first part
+of the sub-surface simulation
+for the second part we are going to
+introduce our work on the laser plasma
+interaction
+uh basically in here
+this is the work we collaborated with
+slack and ucla
+so
+firstly what is a plasma
+so a plasma
+consisting of ions and three electrons
+and on light of typical materials that
+where the electrons are bound to the
+ions in the plasma the electrons can
+freely move around
+and the electrons and ions are
+interrupted by the en field
+examples of these are the fire the sun
+the lightning etc
+so the nasoplasma interaction is a very
+important application
+where we have some laser uh high energy
+laser that shoot from the left and there
+are some material here
+that are in a sudden vaporize into a
+plasma
+and then after the interaction some of
+the ions or electrons will go to the
+backward and it will heat some target on
+the back background here
+which can be used for
+material or medicine or fusion
+so
+typically
+to model this process
+a particle in cell method is used
+which
+use both the cell and the particles to
+model the whole dynamics
+so
+so the simulation of the plasma is very
+difficult because of the long-term
+interaction between the ions and
+electrons
+and suppose that we have n ions and
+within the time frame each ion can
+actually
+influence
+all the other electrons or ions so
+there is a unsquare uh for example
+unsquare time complexity of the system
+if we model a pair of bias interactions
+between each particle
+and if the n is median then the n square
+will be trillions which is uh impossible
+to simulate
+uh typically the physics uh solution is
+the following
+uh instead of modeling the pair by
+interaction between ions and electrons
+we use the field en field as a medium
+to transduce the interaction
+basically we model both the ions
+electrons and the fields and they
+interact
+locally
+and specifically the whole simulation of
+the pic particle in cell consists of
+this
+four step process
+uh basically
+the ions and electrons can move freely
+and we model the electromagnetic field
+on the vertices of the grid
+and
+in the first sub step
+we
+interpolate the electromagnetic field
+from the grid vertices to the particle
+to obtain the field at the vertical
+location
+and then
+based on the field
+uh we use the range equation to
+advance the momentum and the position of
+the field
+of the particle
+and then the next
+next step
+uh
+when the particle moves it will also
+induce some current and the current we
+can deposit them onto the field vertices
+and finally based on the field nearby
+and also the current deposited we can
+also update the field at each time step
+so basically we iterate this fourth
+subset process
+to evolve
+both the ion electron and also the field
+so is this clear
+okay so
+typically
+this laser plasma interaction
+involves the multi-scale dynamics
+by microscope i mean the following
+suppose the laser shoots from the left
+and this bug is the plasma
+and we can see that
+only a small fraction of the
+uh
+region
+is
+excited and the majority of the whole
+region is like very static
+in the position and
+momentum phase space we can also see
+that
+a majority of the particles uh stays
+in the classy thermal background where
+their distribution of the momentum
+obeys a gaussian distribution and a
+small fraction of the particles they are
+injected by the laser to a high energy
+and they constitute a majority of the
+energy but they have very small flexion
+so we can see that here there is a scale
+separation in the momentum of the
+particles
+and the typical part in particle in cell
+server needs to resolve the smallest
+skin depth here
+and to model the highly dynamic
+particles as well as all these thermal
+particles at the same time
+which is very very inefficient because
+this part of the particle that is
+thermal can be modeled with a much
+closer scale
+and
+such
+similar
+uh types of line multiple dynamics can
+be also find in many other applications
+where a small fraction of the system is
+highly dynamic and need to resolve to a
+very fine scale and the majority of the
+system is much less dynamic
+this can be found in
+nuclear fusion and also in galaxy
+information
+and recall that
+the benefits the cons and challenges of
+the classical servers and the detachable
+models
+so to address this multiscale challenge
+why not combine the best of both worlds
+where we use the accurate uh solvents to
+model the
+very dynamic particle and use the
+consumer model to learn the more closer
+line
+particles
+so
+based on this uh
+idea we basically introduced this fluid
+and particle hybridization in which we
+use the fluid
+to represent the majority of the
+thermoparticles
+and basically we model them using
+the moments of the particles in each
+cell
+because in each cell we may have
+hundreds of particles tomorrow then we
+may
+need to provide their state at
+for each particle
+but if we model them as a fluid where we
+can only use a mean or standard
+deviation
+for
+to represent all these particles in a
+single cell then we can reduce it to a
+few numbers
+and then we can use the
+neural network to learn the evolution of
+these moments
+and for the other particles that are
+highly energetic we can still use the
+classical solvent to evolve them
+so
+by doing this uh separation we also have
+another thing that to do which is
+injection basically if test step there
+are also some particles that are
+injected from the fluid state to the
+particle state and we also learn a
+neural network to model this injection
+from the fluid state to the particle
+state
+specifically
+our model is the following
+so
+these are two time step n and plus one
+and then
+we use the
+particle in cell server to model and
+push those highly energetic particles
+from time step n to n plus one
+and then we use a cnn
+to model the
+evolution of the moments at each cell
+at this time step here
+and also we use another neural network
+which is the particle injection network
+to model the injection
+of the
+particle from the fluid state basically
+this model predicts a distribution like
+the mean and standard deviation of the
+distribution and then sample from it the
+new particles
+so here are some results
+and
+so this is the result for the fluid
+advanced network prediction
+and
+uh
+the x-axis is the position and then the
+y-axis is a time step
+from 500 to 1000
+and here we
+uh visualize the
+change of the electron density and the
+ion density
+uh ash time step and it is a single step
+prediction which means that in each time
+step we feed the ground truth and use
+and ask the model to predict one time
+step in the future
+as you can see
+the our prediction matches quite well
+with the ground tunes
+both for the electron and the ion
+and it also captures this periodic
+injection
+of the
+electrons and ions
+by the laser
+this is the fluid advanced networks and
+then we also have the particle injection
+network where it predicts and injects
+the particle at each time step
+and we can also see that the network
+prediction matches quite well with the
+ground tools
+so after having trained these models
+the hard part
+is to combine this together to achieve a
+long-term low out
+and this lonesome road uh yeah
+uh is extremely challenging especially
+for this plasma system because this
+system is highly
+chaotic
+so here are some results of its
+preliminary loans uh we still need to
+improve our model right now where we use
+our model
+uh
+we provide the ground tools and some
+kind step and we use our model
+including the fluid advance and the
+particle injection to model there
+to advance the full state
+for 20 steps
+and
+we can see that right now it
+uh
+does not do so well likely because that
+our model right now is trained yeah with
+one step
+uh but later when we change this
+multi-step maybe it can do better
+and then here it is the prediction of
+the current at 10 step 1 and time step
+where the blue curve is the ground truth
+and the orange curve is the prediction
+and we see that right now it
+matches quite well
+so in this part we have introduced
+this hybrid fluid and particle
+orientation to
+address the multi-scale challenge of the
+momentum separation of the scale
+and we use the
+fluid representation to represent the
+less dynamic thermal particles and we
+also use the
+classical silver to evolve the more
+energetic uh particles and this way we
+can combine the best of both worlds
+and the three part because we use much
+less
+number of
+values we can achieve speed up
+so
+now we have
+like
+five to ten minutes i will quickly uh go
+through the third part which is the
+inverse optimization
+and basically
+uh before the two parts is the
+we try to learn a model that can involve
+the system long term
+but after we have learned the model
+uh we are endowed with the probability
+of doing the inverse operation of octets
+in the boundary or the
+some other aspects of the system
+so basically we can use the our length
+model
+and then
+use the objective to do bad propagation
+with respect to the
+boundary or the parameter of the system
+so then we can uh optimize
+our system to optimize this objective
+so this is actually the method proposed
+by a deepmind paper this year which
+firstly they learned the physical
+simulation
+from time step 1 to maybe 100 and then
+to optimize the boundary they take the
+full gradient backward
+and then
+to
+optimize the boundary
+uh in their paper they show that it is
+able to learn a good authentication
+but
+the cons is that uh when the dimension
+is very large like millions of cells per
+time step this method is not scalable
+because we need to take the full
+gradient backward
+and then each time we update the
+parameter we need to do the forward and
+backward again
+with these millions of time steps
+uh cells over 100 timestamps
+so in a network we
+want to split this up and basically we
+introduce this latent evolution of ptes
+in which instead of uh learning the
+evolution in the input space where we
+want to create a state and input space
+we map our input into a latent space
+and
+we
+we learn a model that can evolve the
+state in the design space and only when
+it needed we decode it back into the
+input space
+so if the input space has millions of
+cells our latin space can
+be maybe 100 times a smaller number of
+dimensions
+in this way we can achieve speed up both
+in the forward and in the backward
+organization
+so basically our archer in this work is
+that we have
+an encoder that encodes the dynamics
+into sound latent
+representation v which is a single
+vector
+and then we also encode some static
+parameter p into
+some static latent state v of p
+both of which
+v and del p are some latent vectors
+and then we also learn a model g that
+involves this latent vector
+and
+the h here is the decoder
+and
+so
+in the inverse of organization what we
+want to do is maybe that we want to
+optimize the boundary of the system
+for example
+in the airplane design we may want to
+design the boundary so that it minimizes
+the drag
+and in the fluid control we may want to
+uh optimize the fluid boundary so that
+life in here the smoke can pass through
+the
+exit with some predefined
+fraction
+and
+to do this
+we can simply take
+the
+gradient backward instead from the input
+space we take the gradient backward in
+the latent space
+uh and because of the latent space has
+much less dimension
+we can
+achieve speed up by
+having this much less dimension dynamics
+so here we compare with uh our model
+like an evolution
+with
+an ablation where we don't do the latent
+evolution and we evolved the whole state
+in
+inquiry space
+we also compare with a application in
+which
+we
+use the
+uh we also compare with the state arc of
+the fourier neural operator
+model
+and as you can see here
+our model with latent evolution use much
+less time than the one in the
+using the input space evolution
+and also
+basically for the objective we want to
+optimize which is the fraction of the
+smoke that pass through some certain
+cell
+we can also achieve much less error
+so
+okay so here it is the runtime
+uh where our model here
+is able to
+use much less time
+than the other comparison
+we also show that with latent evolution
+not only can we
+model the inverse operation
+is much quicker and more accurate we are
+also able to speed up the forward
+evolution
+uh
+with much speed up with up to 15 times
+in speed and with four to a hundred
+thousand times compression of the space
+while achieving a similar accuracy
+for example in the 1d system of the
+burgers equation
+our model outperforms the statistics and
+pde learning models
+sometimes and able to achieve
+up to line of line 15 times
+compression and then 10 times speed up
+in a 2d level of stealth equation our
+motor is 8 is able to
+model the evolution of the turbulent
+flow very well and also the performance
+is similar to the state-of-the-art model
+and in a 3d navier-source equation
+our model is also able to capture
+in a reasonable way the turbulent
+dynamics
+where we have a flow through the
+cylinder
+okay so as a summary
+in this talk we aim to address the three
+questions
+of the large-scale simulation
+so to answer the first question of how
+can we learn a model
+that can faithfully evolve long-term
+we introduce this a multi-scale a
+multi-step rollout during training which
+we demonstrate that it can uh better
+evolve the mod system uh longer term
+for the question of how can we model the
+multi-step scale dynamics where one part
+of the system
+consists of very small fraction but can
+constitute a large fraction of energy
+we use a hybrid fluid and particle
+repetition to evolve it where we use the
+solver to represent and evolve the
+highly energetic particles and we use
+the neural network to model the less
+energetic
+parts where we model the evolution of
+the moment
+and to speed up the inverse operation
+instead of um
+doing it in the input space we learn a
+later immersion model in which we can
+optimize the boundary in a latent space
+and we also showed that we can achieve
+speed speed up while maintaining a good
+accuracy
+okay this is the talk and thank you and
+please ask questions
+and
+yeah thank you thank you so much for the
+wonderful talk thailand um i enjoyed it
+a lot uh we do have a uh questions
+uh in the chat room let me read it to
+you from the beginning
+the first question from the pat
+he asked
+don't data driven approaches still
+require the same engineering efforts
+to create a classical model in order to
+generate data
+right there
+i think so that was in response to one
+of the early to the early slides
+thailand where you you were passing the
+two approaches
+and you were saying that the
+that the classical approach required a
+big engineering effort and but if you if
+you're going to use them to generate
+data you still need to do that
+engineering effort do you not
+uh
+yeah the thing is the following so
+uh the data from the deep learning mode
+uh technology model it can come from
+either the engineering effort of the
+server it can also come from physical
+measurement where we don't need to
+develop the server but just mention it
+from the
+from physical measurement
+this is true in
+frankfort in many of the
+systems
+in which we might even not have a good
+classical server
+and and you get enough data that way
+uh yes it can yes
+another part is the following so
+uh one function of the data trigger
+model is not to
+replace the server it is a
+and store speed under server
+basically typically we already have a
+server that requires much engineering
+effort but they are quite quite slow
+and to augment that what we do is the
+following we can use the server to
+generate the data and then
+the customer model can learn the
+evolution
+um
+from the existing server
+but it can evolve much quicker and then
+based on this technical model it can do
+some exploration of the whole landscape
+and then
+when it finds a good candidate you can
+go back to the server to
+do a more accurate so okay thank you
+well i i guess that was what
+pat was pointing out i mean if you are
+using the the data from the the physics
+over which is expensive that
+that does require the engineering effort
+uh in some sense
+all right so that the next question is
+from me
+uh using those data
+like for example
+one of the slides said
+20k particle
+the neural network
+was able to train
+how long does it take to train right
+yeah
+so
+so in this system where it has
+one million ceos and then
+it has
+around one thousand time steps
+it takes one gpu around two days to
+change
+okay
+yeah
+and by this much more gpu we can speed
+up
+the training time with more resources
+yeah i guess
+all right so next question is by um
+chatap
+he asked
+for the self-service simulation and
+sector-based training and
+inference
+do you mean at any given time only a
+sector of the data is used to train
+at a time
+for example for a single large mesh with
+one thousand by one thousand points only
+hundred by hundred sector of that is
+used ahead of time
+yes exactly
+uh
+basically
+because of the evolution
+the pde is local this means that
+the equation that can be applied to the
+whole thing can be applied to a sector
+and we just use a small factor
+uh for example
+in the whole system this can be 100 x
+100 times 100 but then we can use like
+14 by uh like 20 by 10 by 20.
+and each time we feed the center into
+the
+model to change
+you got to connect them together
+in a consistent way by the way
+we don't have to basically it's like
+the physical process that evolves the
+whole thing is actually evolving the
+same uh same for the center because the
+other following so the gn actually here
+is modeling the local evil dynamics
+basically it models how the cl is
+evolving based on the neighbors of the
+cell
+and use the same
+model to model every node
+this means that
+um
+because it's a local model it can apply
+to any any
+location in the in the whole system
+right yeah what i meant is you know you
+know this
+the solution from the one sector
+will affect the the solution in the
+neighbor sector right oh yeah oh that's
+one part uh that
+needs to be taken care of which is the
+following because we have sectors then
+the boundary of the sector will receive
+less neighbors
+and then their prediction will not be
+accurate
+therefore we do not need we need to not
+compute the loss
+uh the objective on the boundary of the
+sector
+otherwise it will bias the laws
+uh basically
+what we do is that we have some overlap
+between sectors
+therefore each cell will be at least in
+one sector
+yeah with the with the overlay they they
+see each other
+that's the neighbor yeah okay
+the next question is by alex do you also
+remap in the other direction from
+kinetic to fluid i think it's related to
+the second topic you yeah that's very
+good question so in this work uh we do
+not remap back from the particle to the
+fluid
+because um
+this is both authentication and
+assumption we make and also because that
+once the particle is injected it will be
+highly energetic
+and very rarely it will go back into the
+fluid state with a very
+light
+like
+static and real behavior
+all right wonderful okay
+the question from pat
+some of your mit work use other
+induction methods to discover physical
+equations do you see deep neural nets as
+central to your speedup work or might
+they be replaced with other techniques
+for inducing models from data
+like does this question mean that
+we want to infer the symbolic
+equation of the
+model
+how could you clarify this question
+sure that would be fine i i don't i
+don't care it does it doesn't have to be
+an explicit equation i mean that you
+could imagine other other approaches to
+inducing models from data but certainly
+that's the one i had in mind because
+both you and i have worked on it
+could you use could you use that as a
+subroutine rather than the the deep deep
+learning stuff
+i think so
+um
+what i think is the following so
+uh
+i think the reasonable way is the
+following we can first use either gnn or
+some other neural network
+to learn
+the model very well
+where the loss is some valuable
+prediction loss
+and once we learn the model variable
+we can
+pass this
+length model
+into a symbolic regression or other
+pipeline in which we may be able to
+delve into this model and extract some
+some more insights or equations well you
+could do that i was asking whether you
+might do it directly
+is there any reason
+so
+for this uh and
+[Music]
+so what aspect what model do you have in
+mind for doing it directly well you're
+you're you're you're from the data
+simulated or observed you are basically
+building
+uh pde models uh and you can encode
+those in different ways right you can
+encode them as a as a
+uh
+as a
+deep neural network or you can encode
+them as a set of differential equations
+and if you learn the differential
+equations directly
+i mean i mean there may be something
+about this i mean certainly the where
+you go to latent space
+that's that's a another layer but even
+in the latent space you can imagine
+learning explicit symbolic equations
+and i'm the only reason to ask this
+question is because i ask this question
+often in these talks i want to tease
+apart
+what's the general principle versus
+what's the specific solution you came up
+with here um and if there are other
+approaches
+that people might prefer should you know
+should they consider them
+and we don't have to have a final answer
+here i just wanted to mostly just wanted
+to ask the question
+i think
+yeah i think this is a very good
+question right now i don't have a good
+answer i think
+as i said another way is to maybe
+um
+instead of using a generic like graph
+network or other network we can
+encode the network in a more like pde
+like where we have more explicit
+currents and then we can
+learn for example either coefficient or
+the parameter of those terms
+this may this more inductive violence
+i understand your reservation i mean if
+we learned the pdes then we're back to
+where if you built the we had the pdes
+by hand it'll be just as expensive the
+question is whether you could learn
+somehow more abstract
+more aggregate level pde models
+that would run much faster like the
+neural net that's the question i don't
+have an answer either but it's worth
+considering
+thank you thank you
+all right thank you to both um the next
+question is
+by
+quick one um hi telling it is an
+interesting talk my question is how did
+you predict a laser plasma
+interaction that has a different input
+data dimension using a previously
+learned model for example you learn
+1025 by 1025 grid to learn now we want
+to predict a 2048 by 2048 laser plasma
+interaction can the model automatically
+do that
+okay very good question so
+um
+yeah the answer to the answer is yes
+uh because here for both for the fully
+advanced network and the
+and the particle uh interesting network
+we use a cnn a convolutional network to
+model it and we know that commercial
+network basically is a local model that
+try to predict
+a sales state based on its
+field neighbors in the grid using some
+kernel
+therefore
+uh the confidence here
+is
+ignorant of
+how large your training data is
+you just care about the local
+dynamics
+therefore theoretically if we train with
+a smaller size it is able to generalize
+to a much larger size
+the same goes for the particle part
+where
+the particle in cell server is by
+definition
+able to
+advance
+like either small or large number of
+particles because it is still a local
+model that try to advance the
+particle
+and the field in a local way regardless
+of the size
+hi titan uh
+so
+uh are you saying you're using the same
+kernel size uh for different uh
+dimension of input
+and you use
+uh
+are you keeping the uh
+structure of the cnn the same or you you
+use some way to
+uh
+for you use some way to tune the
+depth of the neural network
+for different dynamics
+dimensions
+uh
+different dimensions do you mean the
+different features
+uh i mean the different uh the grid size
+uh
+when you're learning the on laser plasma
+interaction uh
+i think there is a a field field grid
+maybe your
+input so
+uh the dimension when the dimensions are
+different are you using the same uh
+kernel size yes
+but but then uh
+then so you are uh you have uh same
+same structure of the neural network and
+you can still
+recover the
+uh
+uh predict the informations in the
+plasma uh well
+uh
+so
+uh actually we haven't done this
+experiment yet where we train with a
+smaller line size and then generalize to
+a larger size
+but by definition
+of the
+like the component
+because the component actually is
+learning also a local model in which you
+just try to model for example our sales
+evolution based on the neighboring cells
+from up to
+like a radius of like
+be seven or five
+it is actually learning this local model
+for the cnn
+uh and you obviously during prediction
+it uses this kernel to scan the whole
+the whole region
+so
+therefore it can adapt to different
+impulses
+i mean also need to do this
+if not work i think that's huge because
+uh
+you can have super resolution by only
+learn uh
+learning on a low uh low resolution uh
+data set
+so
+oh actually uh here
+i want to correctly one thing which is
+the following
+when you say the different
+signs do you mean that the resolution is
+the same but you make the grid
+larger in the position or do you mean
+you will have a different resolution
+i mean i have a different resolution oh
+i see
+oh so if you have a different resolution
+then a naive convolutional network will
+not work because the analyte
+convolutional network needs to take into
+account
+uh have the same resolution and training
+and testing
+but there may be certain way to fix it
+basically during prediction we can also
+pass in
+the
+line of example the position or the
+relative position of to the input
+and you can train it on the different
+solution
+and then in this way maybe the network
+can generalize over a different
+resolution
+yeah okay thank you
+thank you
+okay sounds good the next question from
+amit i wonder if you have explored the
+pdes
+containing a non-local terms
+do you see any potential problems in
+learning such pdes using the methods you
+discussed
+okay so
+um
+we haven't explored that yet
+uh what kind of knowledge do you have in
+mind
+i mean are you there um can you give an
+example of the non-local
+i mean i i see you are there
+you can omit yourself
+oh i see the integral my integral over
+one yeah integrally i think
+yeah um yeah that's a very good question
+uh we haven't considered that um
+but i think this might be a very
+interesting thing to explore and what i
+can see the solution is that we
+for the location we can also add one
+turn
+in either the gn or the cn
+basically
+for the gn in order to model a local
+time what we can do is simply is that
+we have
+a specifically designed gln that have
+a much larger
+input
+radius
+and
+then based on that
+he used it the g n to predict since and
+then
+sum over all the prediction
+to mimic the integral over the full grid
+basically we can
+use some similar
+inductive bias
+as the integral to model this non-local
+term
+and there is also this known local cnm
+that use attention to
+address different non-local interaction
+one problem though is that it will be
+very
+uh
+costly to model because here each cell
+can be influenced by all the other cells
+potentially
+true but i think even in conventional
+methods you will still run into the
+computational cost issue
+so the question is
+whether this is doable or not
+[Music]
+using
+using something like this because often
+and i'm from quantum simulation
+background electronic structure methods
+and there are situations where you don't
+explicitly know the pde like the
+functional form of the pde
+and
+and there if you at least can learn the
+train a model to learn dpd that itself
+will be
+will be great so that is what was
+the motivation behind this question
+um let's see
+yeah i i think and also i think some of
+these
+techniques can also be used like
+sampling and other ways to make it more
+efficient
+all right sounds good
+so next question is by
+the path
+again
+he said we can ask a similar one about
+different time steps i i guess you're
+referring to this
+upscaling in the spatial grid
+yeah
+yes so you mean that we train with
+one interval but then generalize over a
+different interval yes
+okay uh
+this is also a very good question so
+actually in this work let me check
+the
+mppde paper my message passing pd paper
+and
+basically what you can
+say is the following
+in our current work we are not able to
+generalize over the different intervals
+but
+to do that there are at least two ways
+uh
+from what i thought
+one way is that
+in during training time we also
+put the time step or time t as input or
+maybe the time interval as input
+and then we train it with multiple
+different
+intervals so that the network can learn
+to generalize over this time interval
+this is one natural way
+a second way is based on a neural
+operator
+where
+a neuropathy operator
+can take as input the time t
+and directly output the prediction
+and they find that basically if you
+train with some even some fixed time
+interval
+but in an operator you can generalize
+over
+both the time and the spatial resolution
+yeah if you like you can see the paper
+which is called fourier
+neural operator
+that can do both okay thank you you can
+ignore my last comment
+okay
+all right um
+[Music]
+okay
+okay i think the the last question is by
+scott a quick question during your
+particle injection network steps you use
+a cnn to predict a mean and a sigma of
+the
+distribution doesn't this mean you are
+building a
+maxwellian-like distribution in pic
+often times you get highly nonlinear
+distribution functions once you lose
+these
+um
+so yeah basically here
+uh
+you are right there we are used as cnn
+to predict the mean and the derivation
+of the distribution
+of the injected particles
+for example in here we can see that
+this part is the thermal which is a
+gaussian
+in the momentum
+but for the injected particles in
+momentum we can also see that
+although they are highly energetic
+and each time
+each cell they
+may still
+uh be us
+likely be a single band that have a
+different mean
+uh and
+a standard deviation than the rest we
+can think of as there's a main main
+caution peak but there are some other
+outliers
+and most likely it is a um maybe a
+single um
+gaussian
+outside of the main peak
+uh this is an
+approximation we make using a single
+gaussian but
+we may also try to use a mixture of
+function
+to model
+it
+okay sounds good i i think that was the
+last questions and uh the i'm
+i mean ask about
+he missed the um almost the entire of
+your presentation he was asking about uh
+if the recording is available and i put
+the link in the chat room
+if you go to that
+webpage
+the the
+will another tailings
+the recorded video will be uploaded
+there
+not yet but it will be uploaded in the
+future near future so you can check that
+out
+uh in near future
+all right um i guess is there any other
+questions um
+i mean
+telling
+did a wonderful job answering all those
+interesting questions so
+and as well as a wonderful talk
+let's thank thailand for the wonderful
+job today
+and it was really good to have you the
+pat mentioned that
+it was nice to
+got thailand to talk in this series i i
+totally agree with that
+thank you all right thank you thank you
+so much and thank you everyone for
+joining and uh
+i don't know when is the next ddps
+seminar but maybe in two weeks there
+will be another one all right until then
+please
+be well and
+see you next time

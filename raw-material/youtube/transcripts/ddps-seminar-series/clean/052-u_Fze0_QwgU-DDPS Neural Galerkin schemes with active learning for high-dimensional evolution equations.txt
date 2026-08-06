@@ -1,0 +1,1643 @@
+okay
+welcome to the ddps seminar everyone uh
+before we introduce our invited speaker
+let's go over some rules and logistics
+first of all please mute yourself during
+the talk unless
+you have questions
+if you have questions you are welcome to
+mute and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a
+session at the end
+second today's ddps seminar is open to
+external audiences and therefore no
+classified discussion is allowed so
+please watch out finally the talk today
+will be recorded
+and uploaded in our youtube channel well
+that's about it now let me introduce our
+speaker today
+it is an honor to host uh benjamin
+pierstoffer who is an assistant
+professor at current institute of
+mathematical science since 2018
+he was a postdoctoral associate in the
+aerospace computational design
+laboratory at the massachusetts
+institute of technology working with
+professor karen wilcox
+he received his ph.d degree from the
+technical university of munich in
+germany
+benjamin's research focuses on
+computational methods for data and
+compute
+intensive
+science and engineering applications
+including scientific machine learning
+mathematics of data science model
+reductions and computational statistics
+today benjamin will talk about neural
+gauging schemes with active learning for
+high dimensional evolution equations now
+without further ado let me
+press the button to benjamin by asking
+our usual question that is what is your
+favorite things to do other than
+research
+all right so thank you very much for the
+nice introduction and
+especially thanks for the invitation to
+this really interesting seminar series
+so i will focus today on non-linear
+parameterizations for pde solutions and
+i especially want to focus on training
+aspects so how can we numerically find
+nonlinear parametrization such as deep
+networks that well approximate say our
+pde solution and i will focus on wave
+propagation problems or problems in
+higher dimensions where there's a
+coherent structure that moves through
+the spatial domain
+and what i will try to convince you is
+that active learning can really help us
+in tackling these kind of problems when
+it comes to training for wave
+propagation high dimensional problems
+transport dominated problems
+now before i start let me acknowledge my
+two collaborators on this work ashore
+and bruno and eric von and iden who are
+both
+faculty at quran as well
+okay so as i said i'm interested in the
+following in transport dominated
+problems and
+one example of transport dominated
+problems are wave propagation
+here you can see something that could be
+simulated with for example shallow water
+equations where there's a wave that is
+traveling through some spatial domain
+over time but there are many other wave
+pro many other transfer dominated
+problems for example later we will talk
+about particle systems
+what i'm showing here is the position of
+a particle one versus particle four
+versus position of particle eight so the
+more particles they are the higher
+dimensional that problem becomes
+and what we're interested in is
+understanding the density of the
+particles as it changes over time as the
+particles get attracted by the trap and
+what happens there is that at first the
+particle density is quite broad it has a
+high variance but then as the particles
+get attracted by the trap it gets more
+concentrated and then we are then we
+need to predict a high dimensional peak
+as it travels through the high
+dimensional domain
+another
+example where we have transport
+dominated phenomena that we have to
+numerically simulate is when we want to
+look at particles in plasma so one of um
+students that is working with me freddie
+law
+he is uh co-advised with antoine zephan
+who is the plasma expert and they are
+really interested in understanding how
+particles move in say fusion devices
+whether these particles are lost over
+time when they are lost what is the
+ratio that they are lost those kind of
+things
+another effort that i'm involved in is
+numerical simulations of chemical
+reacting flows and i'm showing you here
+a movie by by chang huang who has done a
+lot of work on modern reduction and also
+full models in that direction and the
+challenging transport dominated problem
+there is that there are pressure waves
+that travel through for example
+combustion chambers
+so in all those problems there's some
+transport happening and we would like to
+numerically simulate those problems for
+example many times in a row for
+different parameters over long time
+ranges or for different initial
+conditions say in a design loop or an
+uncertainty modification
+so one way we could achieve that is
+classical model reduction where the idea
+is to find some latent dynamics that can
+well describe the potentially much
+higher dimensional transport dynamics
+and to make it a little bit more precise
+let's let's formalize this and let's say
+we have given an evolution equation
+where we have here
+our time derivative and the solution q
+at time t and spatial coordinate x and
+then we have a right hand side function
+f that depends on the solution that
+depends on time and that depends on the
+spatial coordinate and the spatial
+domain is omega in the following
+now if we say we would like to find
+latent dynamics then a first step could
+be to try to understand what are the
+possible solutions that we might visit
+over time and for this the model
+reduction community is really interested
+in studying these sets of of possible
+solutions they are called solution
+manifolds which are subsets of high
+dimensional solution spaces think of
+finite element spaces or with a fine
+mesh fine grid of capital n dimension
+and then this curly m is the is a subset
+of that space that contains all possible
+solutions that are visited in a certain
+time range
+and the idea of classical model
+reduction is to say can we find a low
+dimensional subspace curly v little n so
+little n is much smaller than the
+capital n so the dimension of the
+original subspace can one find such a
+low dimensional subspace in which to
+approximate well all the elements of
+that solution manifold and the
+underlying idea is that one says if one
+would plot this high dimensional
+solution space and if it only had three
+dimensions and one would plot the
+solutions over time as dots in that
+space then they should not be scattered
+all over the solution space but they
+should form smooth low dimensional very
+low dimensional manifolds
+more from an empirical perspective we
+could say we collect snapshots snapshots
+are just the coefficients vectors of the
+representations in these high
+dimensional approximation spaces and one
+takes those snapshots and puts them as
+columns in a snapshot matrix and then
+one can observe the decay of the
+singular values of that snapshot matrix
+q and if they decay quickly then one can
+find a low dimensional space to well
+represent or well approximate the
+columns so the snapshots and if they
+decay slowly then this is this is not
+necessarily the case
+so that the overall idea is to first
+drain find a low dimensional subspace
+curly v little n that approximates well
+all elements that one can possibly find
+by solving that pde over time or
+different parameters and then this is a
+one time high cost step and then online
+or in the evaluation phase one
+approximates the high dimensional
+solution in this low dimensional space
+to construct a reduced solution q-tilde
+which has fewer degrees of freedoms and
+therefore one
+can achieve speed ups in in many
+situations so this is really classical
+material just to set the stage here and
+i'm giving you here textbooks and
+classical survey papers on that topic if
+you want to dive deeper into that into
+that literature
+okay so let's apply now this
+standard setting to uh two toy examples
+the first one is the heat equation in
+just a one-dimensional domain we have
+here the spatial domain one-dimensional
+and time and there's a nonzero right
+hand side and this is what we get um how
+this how the solution behaves over time
+for the heat equation here now i'm
+collecting snapshots so i'm over time
+i'm equidistant time i'm collecting
+snapshots and put them into my snapshot
+matrix and i'm plotting the singular
+values versus the number of modes or the
+index of the singular value here on the
+x-axis
+and i'm using
+i think 512
+grid points to discretize the heat
+equation and you can see the singular
+values indicate that with maybe 20 modes
+one can up to double precision perfectly
+represent at least the snapshots that i
+have collected so there is some kind of
+low rank low dimensional structure in
+there that classical model reduction
+could could indeed exploit
+another toy example is advection pure
+advection where one starts again here's
+the spatial domain time and one starts
+with a localized initial condition
+here for example just a gaussian bump
+and then the only thing that that linear
+advection equation is doing it
+transports that gaussian bump through
+the spatial domain so there's no
+diffusion there's not really much
+happening except that the initial
+condition is just transported to the
+left here
+if we now collect snapshots on these
+for these for this problem over time and
+we plot the singular values of the
+corresponding snapshot matrix so
+singular value versus number of modes
+then you already can see a very
+different behavior there's even a
+different rate of how these singular
+values decay and
+um you can also see that many more modes
+so much higher dimensional subspaces
+would be required to even represent the
+the snapshots that that i have collected
+here so this these two toy examples
+should just motivate that there is a
+difference or that there can be a
+difference between the type of physics
+in some sense that we would like to
+approximate whether these classical
+model reduction methods work well or
+whether there might be some issues with
+trying to find subspaces and this
+motivates now the outline of my
+presentation i would first like to
+convince you that indeed for these
+transport dominated problems we need
+some kind of nonlinear parametrization
+this could be deep networks but this
+could be other nonlinear
+parametrizations
+and that we can fairly often fairly
+easily write down normally
+parametrizations that work well but
+that's only half of the story the other
+half of the story is really numerically
+working with these nonlinear
+parametrizations
+and for this there is
+quite some work around but i will try to
+convince you that
+our proposal neuroglucan schemes
+has some benefits in the sense that it
+can be very easily coupled with an
+active learning scheme which um
+turns out in the numerical experiments
+that we did is quite a is quite uh
+important for wave propagation problems
+where there's some local dynamics that
+travel through the spatial domain which
+are exactly the problems that motivate
+us for for looking at nonlinear
+parametrizations in the first place and
+i have some numerical experiments in in
+lower dimensions but also more
+importantly in higher dimensions that um
+hopefully convince you about that
+okay so let me dive into the need for
+nonlinear parametrizations
+um and if you are more if you're
+interested in in this general topic i
+was recently invited to write a an
+educational or survey article about
+nonlinear parameterizations in model
+reduction if you are interested to dive
+a bit deeper and have some more
+references then i would encourage you to
+have a look at these this article that
+appeared in the notices of the american
+mathematical society just in this dismay
+issue
+okay so we said classical mod reduction
+is trying to approximate elements on
+this in this set of possible solutions
+the solution manifold
+and um
+one way to understand how well a space
+can approximate the elements in that in
+that set of possible solutions is via
+the kolmogorov n with there are many
+variants of how to define a kolmogorov
+and with and
+different variants of it i'm just
+showing you here one as an as an example
+this e little and curly m where the
+curly m is the set of elements we want
+to approximate and a little n is the
+dimension of the subspace in which we
+want to approximate these elements and
+what this d n curly m is doing is says
+let's pick the best space of dimension n
+the best subspace of dimension n so that
+in the worst case picking the worst
+element of the set of elements we want
+to approximate this this does best so
+it's kind of a worst case
+best selection of the of the space
+now there are some results that uh
+describe for certain classes of pdes how
+does kolmogorov end with the case with
+the dimension n it's uh typically quite
+challenging to find a space that exactly
+minimizes that chroma growth and with
+but um there are some bounds that tell
+us how this end width should decay as we
+increase the dimension of the subspace
+so these are existence results and one
+of those is for example for a symmetric
+cursive elliptic pdes from 2002 and
+there's a
+has been extended in many ways in this
+2016 paper due to similar types of of
+problems
+but these are mostly existence results
+so they tell us there exists spaces that
+achieve an exponential decay
+of this
+of this chromograph in with the the
+other side of the coin that we have to
+look at are the numerics and also for
+for that side of the coin there are
+methods there are works available that
+show that reduced spaces low dimensional
+subspaces actually can be numerically
+constructed that achieve that
+exponential error decay
+so for these kind of problems symmetric
+cursive elliptic um
+roughly speaking one can say that the
+kolmogorov end with
+decays exponentially which is a very
+good news for a classical mod reduction
+um i would even more
+fussy say for diffusion-dominated
+problems these classical mod reduction
+techniques work quite well and it also
+agrees with the numerical observation of
+the toy example that i have shown
+earlier at least the singular values
+decay quickly as well for for something
+like the integration
+okay so these are diffusion dominated
+problems now for the transport dominated
+problems kind of the other class that
+we're interested in
+here a prototypical example is the
+linear advection equation we will see
+that example a few times moving forward
+so this is the time derivative we have
+the spatial derivative of first order we
+have a left boundary condition and the
+initial condition is just a step
+function so the only thing that is
+happening here is that over the spatial
+domain this step function is transported
+over time
+and what has been shown for this
+specific setup so with this boundary
+condition and this initial condition
+obergendrav in 2016 have shown that this
+column of end with cannot decay faster
+than one over square root n
+so we have seen this exponential error
+decay for i would say diffusion
+dominated problems on the previous slide
+and now for this transfer dominated
+problems we see there cannot exist a
+space that gives us a faster error decay
+than one over square root n which is
+quite a quite limiting when you think of
+the exponential error decay the
+classical model reduction would like to
+see
+and these kind of lower bounds
+have not only be derived for exactly
+this specific setup but there are also
+other results for example for certain
+setups of the wave equation by grife and
+urban in 2020 that also show lower
+bounds of that of that type one over
+square root n in in any case much much
+slower than the exponential decay for
+diffusion dominating problems so there
+indeed is also not only on the numerical
+observation that we had made earlier but
+also on the more theoretical side one
+can really show that there is a
+difference in how these problems can
+perform with classical
+model reduction methods
+okay so this is um
+bad news but it's also in some sense
+good news so first it is bad news
+because it tells us if we want to do
+something like in classical model
+reduction then we take a linear
+approximation then the error really is
+bounded by what this chromograph end
+with
+tells us so there's this so-called
+chromograph end with barrier
+and the reason is that these are really
+linear approximations so what i mean by
+that in the following is that the
+subspace in which one approximates the
+elements of this curly m set um that
+those
+subspaces are fixed which then means
+that the linear combination that is our
+reduced solution depends on the
+parameter beta or the coefficient beta
+which changes with time and it depends
+on these basis functions phi i that only
+depend on the spatial coordinate
+so if we would write this ma more in a
+machine learning style we would get
+maybe something like this where now beta
+is our parameter that we allow to change
+that we allow to to fit based on the
+element that we want to approximate and
+that beta enters linearly in the
+approximation that we use here for as
+our reduced approximation so the beta
+transpose the dot product times say the
+basis matrix or even let's say a kernel
+matrix or something like this
+okay so this is the bad news that these
+kind of approximations really cannot
+work well in
+for these transport dominated problems
+the good news is that one can work
+around this by coming up with different
+types of approximations and the first
+direction at least from the model
+reduction perspective the first
+attempts in in terms of nonlinear
+approximations were localized methods so
+these were maybe early 2010s where the
+idea was to
+compute not only one subspace but to
+pre-compute multiple subspaces all of
+these subspaces clearly v1 the curly v j
+are spent by a different set of basis
+functions and then depending on some
+indicator one selects one of those space
+in which one wants to approximate the
+current element of the solution manifold
+so often these indicators depend on time
+so that at different time slices you
+pick a different space in which to
+approximate these indicators could also
+depend on a parameter um they could
+depend on some input they could depend
+on some
+the state variable the reduced state
+variable many many options are possible
+here the key thing is that the space in
+which one approximate changes with the
+element one wants to approximate and
+this is this is this is then gives you a
+non-linear approximation so now in some
+sense the representation in which we
+want to approximate our solution changes
+depending on which element we want to
+approximate
+and there's lots of work in that
+direction from the model reduction
+perspective it's also very closely
+related to dictionary approaches in
+compressed sensing and many other
+many many other communities so i'm just
+giving you here the model reduction
+perspective and i'm listing here several
+works that that have contributed to that
+to that literature
+okay so instead of localized one could
+say we would like to adapt spaces so now
+the space curley v n depends on time t
+which means that it is spanned by n
+basis functions that change with time
+that we allow to adapt and change with
+time
+and then we approximate our element from
+curly m our
+high dimensional solution in this
+adaptive space which is still a linear
+combination so the beta enters linearly
+but now the phi
+depends on time which also means we not
+only need to propagate forward the
+solution over time we also need to
+propagate forward the basis so one also
+needs to adapt the basis from time t to
+time t plus delta t with some update
+and in this direction of online adaptive
+model reduction there also has been
+quite some work over the last um 10 15
+years maybe especially dynamic low rank
+approximations by cork and lubic in 2007
+but also the really fundamental work by
+tme subsyst in 2009 has spawned a series
+of papers on on that topic
+there's work on on basis propagation and
+we have done some work on adapting the
+spaces from spa samples to do this in an
+online efficient way and there's also
+lots of work on enriching subspaces
+especially the work by carl berg that
+can give some guarantees on how well
+this can do
+so this this brought us from linear
+approximations having one fixed space do
+localized model reduction that has
+multiple precomputed spaces to adaptive
+model reduction where we have one space
+but we adapt it over time so we also
+have an evolution of the of the basis
+and this is actually the challenging
+part how to do the evolution of the
+bases efficiently
+now we can take a step further and say
+we not only want our
+basis functions to change with time we
+just would like that our representation
+of the solution depends on some feature
+vector alpha that we are allowed to
+adapt as well so i'm calling this alpha
+in the following the n prime many
+components say and now the
+reduced solution looks like this where
+we have here the spatial coordinate x we
+have still the parameter beta but now we
+additionally have the feature alpha the
+beta and this linearly and the feature
+can change the the basis function the
+representation in which we want to
+approximate our our high dimensional
+solution
+so this adapts the representation to the
+target q via the feature vectors alpha
+and for the purpose of this presentation
+only um this is what really what deep
+networks are about from that perspective
+so again i want to repeat from that
+perspective this is what uh what deep
+networks um yd networks are useful for
+approximating these kind of problems in
+the following there are many other good
+reasons for using the networks but for
+us here having these features and
+allowing them to change the
+representation is really what makes them
+a useful tool here
+okay so this is a fairly general
+representation or parametrization of
+course to work with these kind of things
+one has to be more concrete and and
+describe how this is parameterized um
+in machine learning speech that would be
+the network architecture um we can also
+ask the question of how well does this
+approximation do one can often fairly
+quickly show that it can do better than
+than what the kolmogorov barrier gives
+us but what really the best
+approximation error is of these kind of
+parametrizations is quite challenging to
+achieve especially in in
+for finite settings
+but what i'm interested in the following
+is modern numerics so given such a
+parametrization how can we now
+numerically compute with it how can we
+find beta and alpha such that the
+corresponding q tilde such that the
+corresponding network function is a is a
+a reasonable approximation of our pde
+solution and as you are very well aware
+and this seminar series is one example
+there's very active research um going on
+in that direction there's no hope that i
+can list even a small subset of all the
+works that relevant that's relevant here
+but by just looking through the names
+here you can already see several of the
+speakers that have talked in that in
+that seminar series here already
+okay so we would like to numerically
+work with these nonlinear
+parametrizations now and there are
+various ways of doing this and one very
+prominent one is a collocation-based
+approach
+so there let's now combine this the
+features and the coefficients paid into
+just one generic parameter theta that
+our nonlinear parametrization depends on
+so if you have a deep network this could
+be the biases and the weights
+and then one
+widely used approach that works very
+well in many situations is to say we
+would like that our network
+parameterizes our solution over time and
+space so both time and the spatial
+coordinate are inputs to the network
+to approximate the solution function and
+they depend on one large set of of
+weights and and other parameters
+and the idea then is to say one draw
+samples over the time space domain so t
+x pairs let's say m many of those based
+on some distribution
+over the time space domain and then one
+fits the parameter theta by minimizing
+the pde residual at those sampling
+points and again this has been very
+successful in in many many situations
+and and worked really well
+um in the setting of that we are
+interested in here especially wave
+propagation problems something where
+where something local coherent moving
+maybe to even a high dimensional domain
+this can be these settings this time
+space collocation methods can become
+challenging and i would like to
+demonstrate this again on on this toy
+example of the linear erection equation
+where we have only a one-dimensional
+spatial domain versus time
+and we have an initial condition that is
+very local in the spatial domain so this
+is often what we see in transport
+dominated problems and now what happens
+in in
+transport dominated problems in general
+in that in that example in particular is
+that this initial condition gets
+transported through the spatial domain
+now if we now try to fit uh our
+nonlinear parametrization based on tx
+pairs on time space collocation points
+to that solution then we have to sample
+a space that looks like this so a domain
+that looks like this this is the
+one-dimensional spatial domain of the
+problem and this is the one-dimensional
+time domain of that problem and what you
+can see is that the region where
+actually something is happening here is
+very small compared to the overall
+volume of that of that domain
+so if one just draws now in an
+uninformed way samples to fit the
+parameters then many of those samples
+for example with just a uniform
+distribution will fall in regions where
+not much as much is happening and one
+really needs to draw many many samples
+to do to to hit this local structure um
+where actually the pde shows us some
+some dynamics and in in one spatial
+domain and one time domain one might be
+able to do that but think now spatial
+domains in two in three dimensions where
+something like a peak is traveling
+through a domain then you can can
+already see that this can become
+computationally quite challenging and if
+if you even now go to higher dimensions
+where we have our particle systems that
+live in eight dimensions or even higher
+dimensions and there's a peak density
+that is traveling through the domain
+then this essentially boils down to
+trying to find with an uninformed
+sampling a peaked function in a high
+dimensional domain which which really is
+computationally quite expensive
+so based on on that observation
+this is what brings us now to
+neuroglurkin schemes which
+allow us to look at training of the
+networks from a different perspective a
+more a numerical analysis perspective
+and what's really important for us is
+that distance directly links to the
+active learning part that allows us to
+select samples at which to minimize the
+residual in a more informed way
+okay so let me let me go to do this
+neural looking scheme now so what we do
+there is that we say we still have our
+solution of our potential pde but now we
+parametrize that solution not in time
+and space together but only in the
+spatial coordinate
+and this means now that the parameter
+theta depends on time and the network
+has would if it is a network or some
+other nonlinear parametrization has this
+input only the spatial coordinate x and
+if we want to propagate forward in time
+then we have to find a different
+different parameter vector or different
+parameter function
+and again in terms of network this would
+mean the rates depend on time and we
+have to update the weights over time as
+we go through as we propagate through
+time
+so this is the setup that we would like
+to to consider now and we would like to
+solve a time dependent pde where we now
+plug in our our nonlinear
+parametrization
+here q which now depends on this
+parameter theta which itself depends on
+time and the spatial coordinate and the
+right hand side f depends on time x and
+again the solution and notice that time
+now enters only through the parameter
+theta here so the way we can push
+forward our nonlinear parametrization in
+time is by updating its parameters
+okay
+what we now would like to do is try to
+understand
+what dynamics are there on this
+parameters theta for a given pde
+so instead of fitting this theta t with
+a big optimization problem and and say
+sgd or something we would like to
+understand um if you want to numerically
+solve in some sense that we'll make
+precise in a second if you want to
+numerically solve our pde now
+what what dynamics do we have on our
+theta t how do we need to update our
+theta t over time
+and for this
+let's write down the residual this is
+the residual here i take the time
+derivative the chain rule you have here
+the gradient of the solution and then
+here that the theta dot but
+formally it's not defined yet so i just
+call it ether and here we have the right
+hand side f and then i formulate an
+objective j
+that depends on theta and eta where i
+just integrate the squared residual
+against the mesh nu t
+there are now two things that are
+interesting in that objective the first
+one is that this objective depends on
+time
+so at each point in time we get a
+different objective that we want to
+minimize
+and the measure against we integrate our
+squared residual is allowed to change
+with time as well
+and this will be critical for later
+because this already points to that we
+later need to sample from that measure
+nu t to numerically estimate that
+integral over the squared residual and
+by allowing to adapt the measure over
+time it allows us to select sampling
+points
+different sampling points over time and
+we can adapt the sampling points to
+parts of the of the spatial domain where
+actually things are happening where it
+is important to actually minimize the
+squared residual
+so this is this is really different from
+from a time space discretization
+perspective
+okay so we have our objective and now we
+would like to minimize it over all times
+so at each time point we would like to
+minimize it and get our theta dot
+and we we can achieve that in in in the
+sense of setting the gradient of our
+objective to zero and this gives us now
+equations that tell us how to theta dot
+the time derivative of the weights how
+they have to change over time and this
+is this is given by the system of odes
+here where we have this m operator that
+i will define in a second
+and where we have a right hand side f
+that depends on time that depends on the
+parameters and it is a system of odes
+for the theta dot so for the time
+derivative of the of the rates
+so in that sense if we now manage to
+push forward the rates of our network
+following these system dynamics
+then
+it means that the corresponding network
+function in the
+residual minimizing sense
+numerically solves the pde that we have
+written down earlier
+this is this is the idea so instead of
+fitting parameters say with one large
+optimization problem we have turned here
+finding the parameters to solving a
+system of odes
+and i really want to point out that
+similar things have been done in in
+various flavors in in other settings
+such as this work by do and sucky on
+evolutional dnns where they formulate a
+very similar system of odes but they
+mostly look at low dimensional problems
+without the active learning part that
+that will be quite critical for us there
+is a work by black hunger and um and
+schultz
+who have done something for more
+transformations there is some other work
+wonder on the model reduction side
+there's work by anderson and and
+collaborators on also tailored nonlinear
+parametrizations that can be used and
+for which similar systems can be derived
+so again for us this is one component it
+allows us now to update rates over time
+instead of finding weights globally over
+time and space this is this is the key
+thing for us
+okay so we ended up with this system of
+of odes and now we are back to classical
+numerical analysis in
+in some some respect namely we need to
+numerically solve now that system of
+odes so we can discretize it in time um
+we take k time steps um t 0 is is
+initial time step and t k is the final
+time step and we can have adaptive time
+step sizes so we can even adapt how the
+time step size over time and we can
+discretize this kind of system with
+implicit explicit schemes and all the
+classical numerical analysis aspects now
+apply to that to that system here as
+well and the overall picture that you
+should keep in mind is that now the
+network is strained time sliced by time
+slice over time as in the classical
+method of lines approaches that we are
+very familiar with from from scientific
+computing and from from numerical
+analysis
+okay so this m and f
+operators they are defined like this and
+you can work this out fairly easily and
+when you when you follow that the steps
+that i mentioned earlier and you find
+similar operators in in other settings
+so in when we do to explain the name
+when we look at a network that has a
+special structure for example like this
+so q is our approximation it depends on
+a on a vector of parameters it has a
+linear output layer that with weights
+beta and the
+the defy other say the units or um can
+also can also be a deeper network that
+is a standard output layer
+and the alpha are the features
+if you look at the network in that form
+then one can show that this m and f
+correspond to a galerkin projection at
+time t of the residual um against these
+phi's and their derivatives with respect
+to the smashing nu t that potentially
+changes over time so this is why we have
+chosen this neuroglurkin term here
+okay we can discretize the system of
+odes with various schemes i want to call
+out one one interesting observation and
+that is that there's a real difference
+between explicit and implicit schemes
+that we are again very familiar with
+from a scientific computing or numerical
+analysis side if we choose an explicit
+scheme so say a runge-kutta 4-5 scheme
+or just the wrong encoder for scheme or
+even forward euler as in this case here
+then at each point in time we only have
+to solve a linear regression problem or
+a linear system of equations so at each
+point in time the cost per time step is
+actually very low when you think of we
+have here nonlinear parametrization
+where we push the parameters forward
+over time
+in contrast if we take an implicit
+scheme because for example it is
+prescribed by the pde that we have
+there's some some stiffness or something
+like this then we get a system of
+nonlinear equations at each time step
+and we have to solve corresponding the
+system of nonlinear equations at each
+time step this is so the time that the
+cost per time step is more expensive but
+we potentially can take larger steps
+which is again very similar to what we
+know from from classical numerical
+analysis and at least i always feel a
+bit more comfortable when things
+can be related to something that we that
+we understand um that we understand very
+well
+okay
+so this is this this is the setup now
+again um for us the key aspect is that
+we can push forward the network
+parameters now over time based on the
+dynamics that that are described by the
+pde
+and this brings me now to the active
+learning part because so far i have not
+really mentioned how we can actually get
+this m and f
+so m and f are these two
+operators in finite dimensions they are
+matrices that define the system dynamics
+of the of the parameters theta
+and what they are are expected values
+with raspberry do not measure new t
+and
+of sum of some target function here and
+f also an expected value with respect to
+this measure nu t of some target
+function includes the right hand side of
+the of the pde here now just as in
+classical finite elements
+in certain situations by taking a
+specific network architecture by having
+a specific pde we can write down this m
+and f analytically so for the finite
+dimensional case we can analytically
+write down the entries of the of the
+matrix elements this is again
+analogous to what we see in finite
+elements where again for say the heat
+equation and linear elements we can
+write down the entries of the
+mass and stiffness matrix
+in more general settings though we have
+to do something numerically we have to
+do an estimation step or some
+approximation step and one way that one
+could approach this is via monte carlo
+so drawing samples
+of our measure nu t so new at time t
+and these samples are x one t k to x m t
+k and then taking a monte carlo
+estimator of this m and f with
+little m many samples
+and here you can see now why it's
+important that this measure nu t is
+allowed to depend on time because now
+the samples that we draw with which we
+estimate the m at time t k are allowed
+to change they are allowed to depend on
+time because they are coming from that
+measure nu t from that distribution nu t
+at time t k
+and this allows us to adapt these these
+samples to where things are happening
+where we actually need to sample and you
+can get a very similar monte carlo
+estimator for the for the f to get an f
+tilde
+okay
+so with this
+with this time dependence and because we
+we push forward the parameters the
+network parameters over time it allows
+us now to use information from say the
+previous time step to inform where to
+take samples in the next time step and
+one very easy
+i shouldn't say easy but one
+straightforward approach is to say
+to sample
+proportional to the solution at the
+previous time step squared
+so this this means samples are taken
+there where something is happening in
+the solution so where there's a
+variation in solution there we take
+samples and those that those samples we
+then ultimately want to minimize our
+residual
+and this is this is as i said quite
+important in higher dimensions where we
+cannot afford to sample globally over
+time and space in an extensive way but
+now we can sample here based for example
+on the solution at the previous time
+step sample in regions we already know
+something is is happening there
+so this neuroglurgen idea of adapting
+the parameters over time step by step
+allows us to
+allows us to combine this with this
+active learning idea of adapting where
+the samples are based on the solution of
+the previous time step so this is in
+some sense self-informed self-guided
+based on what we have seen in the past
+and what i will do in the following is
+look at one specific active learning
+scheme which is a very simple one we're
+currently working on various extensions
+to
+various extensions but they are not
+ready yet to to be presented so what i
+will do in the following is i will look
+at networks of this type when we look at
+higher dimensional problems of this type
+where we have a unit these are shallow
+networks of little and many nodes we
+have coefficients beta
+and we have a unit phi which is just an
+exponential with some some sort of an
+exponential and this then allows us to
+very quickly
+sample in regions where something is
+happening in the solution namely by
+saying we take those exponentials and
+form just a mixture of gaussians with
+equal weight
+and take that as our measure nu t at
+time t
+so that the features
+of the solution change
+the position and the bandwidth of our
+gaussian and therefore are pushed around
+in directions where the pde solution is
+and then we draw samples in that region
+by sampling from the corresponding
+mixture of gaussians with equal weights
+as well
+so a very simple approach very cheap to
+sample from that
+if we have a network architecture like
+this and i think it's not too surprising
+that
+of course certain choices of network
+architecture
+architectures make it easier for us to
+sample versus um
+versus make it harder for us to sample
+okay so this this combines these two
+components the
+looking at the problem from time slides
+to the next time slice and combining
+this with active learning so that we
+know where to minimize the residual over
+time in a self-guided way
+so let me now
+go to some numerical experiments
+um first one-dimensional ones just
+benchmarks that we usually test things
+on so for example the quad directive
+freeze equation kdv equation where we
+use periodic boundary conditions the
+room we could do 4 5 time discretization
+so we are allowed to adapt the time the
+time size
+time step size over time and because
+this is 1d i just look at a uniform
+sampling for now the higher dimensional
+problems are coming in a second we're
+looking at shallow networks for now with
+exponential units that are composed with
+a sign to make them periodic and you can
+see the solution here we have an
+analytic solution to compare to
+something so this is the solution with a
+spatial domain there are two solid ones
+they um
+we see that in a second they merge and
+then they they
+separate again
+okay and if we now um use our nonlinear
+parametrization to approximate such kind
+of a pde solution then we have first
+here the truth so against spatial domain
+versus time we have here truth because
+we have an analytic solution this is
+what a linear galerkin approach would
+give you where the features are fixed
+where you have one space in which you
+approximate
+it captures the the rough behavior but
+the occurrence is not really high and
+with neuro glucan with the same number
+of degrees of freedoms but it allows us
+to adapt the features that the solution
+is more accurate by just looking at it
+here in the eyeball node okay so this
+this is for example another benchmark
+example that i wanted to mention for for
+completeness is ellen khan which is also
+something that's looked at quite often
+we have the aquatic potential and the
+only
+semi different um thing in that setup is
+that we have a coefficient in in front
+of the the potential such that um
+that changes with time in the spatial
+coordinate x and what that means is that
+when we look at the solution over the
+spatial domain then there's this wall
+front that moves through the spatial
+domain and this is because of this of
+this coefficient
+we use here a deep network with 10h
+units and three layers
+and the results that we get uh the
+following we have here again our
+benchmark this is time versus the
+spatial domain
+and you can see at first there are three
+regimes um
+red blue and gray and over time the blue
+one fades out this is this bump that you
+have seen it gets gets faded out if you
+take a linear golurkin approach where we
+have the same number of degrees of
+freedom as in oracle we can but the
+features are fixed there um
+this uh this third regime cannot fade
+out it's not enough enough
+expressiveness here whereas the neural
+working gives a reasonable approximation
+and you can also see this when you look
+at the relative error over time that the
+green the three layer neural network
+gives a more accurate approximation than
+what a linear global approximation would
+give
+okay now these are all
+kind of benchmark examples that i don't
+want to spend too much time on really
+the thing that we are more interested in
+a higher dimensional problems and
+especially where something local is
+happening over the
+in the spatial domain
+so here what i'm looking at is a high
+dimensional advection equation where now
+the coefficient in front of the
+advection changes with time so depending
+on time
+the wave speed changes and you can see
+this when you look at the marginals of
+this five dimensional problem this is
+marginal dimension one two three four
+five and you can see depending on in
+which dimension we are because of this
+coefficient in front of it different
+things are happening and the other thing
+that you can immediately see is that the
+solution the solution is very local in
+the spatial domain so it's a very
+localized dynamics are happening here um
+in this in this five-dimensional domain
+we use runge-kutta for five time
+integration
+and we use our shallow network
+architecture with an exponential unit um
+to represent the solution so these are
+the results that we that we obtain the
+first row is the truth we again have an
+analytic solution for that example this
+is time versus dimension 1 2 3 4 5.
+the next row is what we get with a
+uniform sampling so an uninformed
+sampling the same network so the same
+expressiveness in a nonlinear
+parametrization but we are not careful
+with the training then we have here
+again time versus dimension one two
+three four five and you can see there's
+no hope with just uh looking at the
+residual at thousand sampling points in
+that five dimensional domain to to
+really capture the dynamics that
+are
+that are given by the corresponding pde
+if instead we do our active learning or
+adaptive sampling approach then with
+again a thousand samples you can see it
+can capture quite well what is going on
+here in the in the pde
+and again the reason this works here
+there is no magical so the reason that
+this works is that we draw samples and
+that we minimize the residual in in
+regions where actually things are
+happening where something is changing
+and therefore it makes sense to to look
+at the residual
+there okay another example that's a bit
+more driven by physics is this particle
+example we have now eight particles so
+this is an eight dimensional problem and
+the position of the particles are
+governed by an sde
+that chorus and the corresponding
+particles
+are attracted by a trap that moves with
+with time so you will see a behavior
+like this and i've shown this plot
+earlier this is the position of particle
+1 versus particle four versus particle
+eight and you can see at first particles
+are kind of spread out and then they get
+attracted to the trap and then oscillate
+in that time varying trap
+what we want to approximate is not only
+the position of the particles we want to
+approximate the whole density of the
+particles which is governed by the focal
+blank equations in eight dimensions in
+this case
+and the challenging part here is that at
+first the density is quite broad has a
+high variance
+and then it concentrates over time and
+we need to predict this this peak
+density and how it oscillates over time
+okay so here now
+the numerical predictions of the
+particle positions for different
+combinations of particles so i'm showing
+here the position of particle one versus
+position of particle four versus
+position of particle eight
+here particle one versus two versus
+three
+and here particle six versus seven
+versus eight
+what i have here is a benchmark solution
+for that setting what we can derive is
+the mean particle position um only the
+mean particle position so not the
+density but only the mean particle
+position
+based on an ode
+and these are the black dots so this is
+what we would like to match and let's
+first have a look at the blue one which
+is again using a network but just a
+uniform sampling for training for
+adapting the weights and you can see
+again no hope that the blue one predicts
+in any way what uh what a black what the
+black uh gives us a benchmark so again
+the training is really the the
+bottleneck here if we do our adaptive or
+active learning approach where we draw
+samples in regions where things are
+happening
+to minimize the residual then you can
+see the orange is quite close on top of
+the of the black one in all these
+situations so it gives us a reasonable
+prediction of the mean particle position
+over time
+we can also see this when we look at the
+error this is the error of the mean
+particle position versus time and you
+can see in orange the
+adaptive or active learning approach
+which gives an error of about 10 to -3
+and in blue you can see just an
+uninformed uniform sampling where the
+error relative error is is
+greater than one
+on the right you can see the
+approximation of the covariance of the
+particle density this is again time
+versus the relative error and there are
+now two regimes there is first off
+diagonal elements they give us an error
+of about 10 to the minus one and then
+there are the diagonal elements that we
+can predict with an error of about 10 or
+minus 2. so the off diagonal elements
+are quite challenging to approximate in
+that case because they are they are
+really small
+now we not only have the particle
+position now we also have the particle
+density and so we can do much more than
+just looking at particle positions
+and one thing we can do is we can
+compute multiple quantities now related
+to these particle systems for example
+the entropy
+so i'm showing you here time versus the
+entropy in black we have again for this
+harmonic trap behavior we have a
+benchmark
+orange is our adaptive active learning
+approximation which follows quite
+accurately the
+black benchmark solution
+blue is again uninformed sampling which
+has no even though there is the
+expressiveness of the network there is
+no hope of training that accurately with
+that few
+points at which to minimize the residual
+and what we also compared to is digging
+monte carlo paths and then using kde as
+density estimation and compute entropy
+based on that that is this dashed red
+curve and there you can see it kind of
+gets the trend and i really tuned the
+bandwidth of this kernel density
+estimator but i could not get a much
+better result than than than this here
+on the right now i'm showing you
+particles in an a harmonic track where
+we do not have a benchmark solution
+anymore so in that case again time
+versus entropy
+you can see in orange our neuroglurkin
+adaptive sampling solution in red you
+can see red dashed you can see what we
+get with kde and monte carlo um they
+they are kind of agree that there are
+oscillations in the entropy which we
+know from from the physics of that
+problem but um we we are not we don't
+have a benchmark to really compare in
+terms of accuracy here but what i'm
+trying to say is that the entropy we can
+get the entropy essentially for free
+because we estimate directly the density
+instead of just particle positions as
+monte carlo would do
+all right so with that let me summarize
+and and conclude so with this
+neuroglurkin idea what we really wanted
+to highlight that on the one hand we
+need nonlinear parametrizations for
+certain types of problems especially
+transport dominated ones
+to break what's sometimes referred to as
+the komogorov barrier and deep networks
+are one way to achieve such a nonlinear
+parametrization but that is really only
+one part of the story the other part of
+the story is the training and the
+numerically computing with it and here
+especially when we are interested in
+higher dimensional problems if you're
+interested in wave propagation problems
+where there's something very local
+happening in the spatial domain then i
+hope i could convince you that adaptive
+sampling active learning could be a tool
+that's that quite help that is quite
+helpful there to scale this up to higher
+dimensions to to enable long time
+predictions
+okay if you are interested in these kind
+of things have a look at our preprint
+which is available in archive um i
+mentioned this article in the notices of
+the american mathematical society um
+earlier already it's kind of an
+educational article on
+on on this overall topic and we also
+have other works on non-linear model
+reduction that are based on online
+adaptive uh basis and spaces rather than
+directly non-linear parameterizations
+via deep networks so with that um thanks
+for your attention and i'm happy to take
+questions
+thank you thank you so much for the
+wonderful talk benjamin um
+it was it was really great um let's have
+a q a sessions all right we have a
+question in chat room by faye
+what about the computational course to
+offline and online
+okay great questions thanks thanks for
+asking this so at this point there's no
+offline stage
+so what this really is um is trying to
+do is coming up with a
+more efficient full model in some sense
+there's no reduction as in a classical
+mod reduction setting we're just trying
+to describe the transport dominated
+dynamics um directly in in in in these
+nonlinear parametrizations rather than
+on on classical linear ones so what we
+really want to compete with are higher
+dimensional problems and i mentioned
+monte carlo as being one option for
+certain types of problems for example
+this focal blank equation you can use
+monte carlo but for example for really
+pure transport
+where feminine cac is not it's not
+applicable directly you can maybe get
+point values with monte carlo as ours
+approach really gives you the solution
+such as the density or the whole
+solution in the spatial domain
+all right
+andrew
+gillett asked
+what does high dimension mean in your
+opinion uh there seems to be no
+consciousness in the world yeah i i
+agree with you that there's no consensus
+what what that means so in our case um
+higher dimensions means when it becomes
+really cumbersome to do a uniform
+sampling to minimize the residual
+and this can be as low as two dimensions
+if you have a really local dynamics in
+your spatial domain
+okay sounds good
+um
+can you go back to the slide 20
+oh 20 okay
+well i don't see the slide number let me
+move that yeah right there yeah 20 over
+yeah
+so here um you have a n plus and p
+equations and unknowns so np is the
+number of unknowns and
+no and nte is the number of parameters
+right
+uh n n is the number of output
+points
+and
+p is the number of features that a unit
+depends on
+so the alpha i
+is p
+right in in the neural net context
+that's the number of parameters
+right that's the that's uh for
+right for one output function
+okay um
+all right
+okay
+does make sense so that the number of
+features
+times the the outputs
+so if you're if you're asking about how
+this grows yes this absolutely grows
+with the with the number of weights
+depending on the yeah depending on the
+neural net uh
+yeah um so what sort of
+yeah the neural net have you tried
+so we have we have really worked with
+very
+small networks so maybe
+up to
+50 nodes or something like this which
+was sufficient for the examples that we
+looked at but i think you're pointing
+out a very important um
+very important point namely how to
+efficiently solve the the corresponding
+system
+right
+this year
+if this m matrix grows bigger and bigger
+and
+i know that some people um here at grant
+i'm not necessarily involved in that
+they are looking into directions of
+having iterative solvers on not really
+assembling this m but just doing a
+matrix vector version of it um you can
+also think of more clever network
+architectures to bring down the number
+of parameters that you have so all these
+classical things that that people are
+working on on network compression can
+imprints will be applied in that setting
+as well even though we don't do that
+here there's no hyper reduction or
+anything going on because we don't
+really have a more expensive model that
+we want to reduce
+right right
+all right so so that's my next question
+is
+how does the computational cost of
+neural garlic method you propose here
+with a
+some reference solutions you have um
+compared to in numerical
+uh sections right um
+yeah so
+i i see that the accuracy is really on
+top of each other that's really good
+yeah i mean for for these 1d examples we
+did not really a cost comparison because
+there's not really
+they are not really challenging from you
+in a classical setting but for example
+for this high dimensional problems we
+looked at monte carlo runs and it
+actually gets quite expensive to have so
+many monte carlo paths that you can get
+a reasonable density estimation here and
+then you not only have to do the monte
+carlo you have to do the density
+estimation and you have to find the
+corresponding parameters so i i did not
+i cannot give you a plot now that do the
+external comparison but it is
+monte carlo in that setting to really
+compute for example the entropy is not
+just pushing through paths but you have
+to do other steps to get the quantities
+that one is interested in here
+and also qualitatively you see
+qualitatively neural um neural collagen
+is faster
+in
+i would say if there's something to make
+it faster it is in in this higher
+dimensional settings because grid-based
+approaches just are not applicable
+because of the course of dimensionality
+and training over time and space is
+challenging because you don't really
+know where to put your sampling points
+and monte carlo you might need many
+samples to get something like a density
+and density estimation high dimension is
+challenging in different aspects
+very good very good is there any other
+questions
+all
+right yeah i don't see anything from the
+chat well thank you so much for the
+wonderful talk uh
+benjamin i really enjoyed it i
+definitely
+want to go back to your paper and then
+learn more about it so
+that was good and after this meeting um
+hopefully um
+you get connected connected by um you
+know many other uh the
+folks in in lawrence liberal national
+lab so that they can
+initiate the future collaborations yeah
+awesome thank you so much benjamin thank
+you very much
+again yeah let's stay in touch bye
+okay
+let me

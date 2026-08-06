@@ -1,0 +1,2136 @@
+okay uh thanks everyone uh
+to joining uh today's seminar um
+before i formally or informally
+introduce um today's speaker uh some
+logistics
+for all of you please mute yourself
+during the seminar unless you have a
+questions and if you do have a question
+please use the chat room
+and obviously no classified discussion
+today
+and that's about it and
+otherwise just enjoy the talk
+all right let me introduce
+today's paper i'm super happy to
+have dr trijar here with us
+virtually i have known her quite a long
+time so i can introduce her somewhat
+informally
+uh dr tuzera and i went to the same
+school and the same
+program for phd that is icme
+at stanford university back then she was
+famous or somewhat notorious for her
+diligence
+and academic achievements she was
+getting
+all a plus on the courses that we were
+struggling to even pass and survive
+no need to say that we were jealous of
+she has continued her reputation until
+today without surprise
+she is now a principal member of
+technical staff at sandia national
+laboratories
+actually across the street from us she
+has
+made many great achievements so far you
+can check out them in
+our bio but just give you one great
+achievement
+in 2019 dr suzer was
+awarded the presidential early career
+over
+the scientists and engineers for
+developing new
+impactful mathematical methods and
+computer algorithms
+to enable real-time analysis control
+and decision-making on computationally
+prohibited problems
+relevant to the nuclear security mission
+and climate modeling
+without further ado let's now hear a
+great talk on the
+schwarz alternating methods as a means
+for concurrent
+multi-scale coupling in solid mechanics
+there you go arena so are you ready
+thank you youngster for the invitation
+and for the um
+you know way too flattering of an
+introduction
+i think but um it's really a pleasure to
+have the opportunity to give a talk um
+obviously i'd prefer to do it in person
+but um you know it's
+good to be able to do this virtually
+even in these um very strange times
+um so uh as young suicide i'm going to
+be talking about
+the schwarz alternating method as a
+means for concurrent multi-scale
+coupling and solid mechanics this is
+something i've been working on for about
+six years now um so i'm in the
+quantitative modeling and analysis
+department um
+at sandia california across the street
+from um from you guys
+and this is with a couple of my
+collaborators with rails department also
+in san diego california and um greg
+flippel who was a summer student we had
+um
+a few years back who's currently at msc
+software and
+at newport beach so let's um oh let's
+see
+why is this not oh here we go okay um so
+here's the the outline for the talk
+um so i'm i'm going to start by
+giving a little bit of motivation and
+background for
+why we're interested in concurrent
+multi-co-coupling methods
+and kind of why we've selected the
+schwartz
+framework as a means to achieve this
+coupling
+the main part of the talk is going to
+have two parts
+so the first part is going to focus on
+some of the earlier work we did in
+developing the method for the case of
+concurrent multi-scale coupling
+for quasi-static problems and solid
+mechanics and then the
+the second half is going to be on some
+more recent work we've been doing
+in extending the method to dynamics um
+so for each of these i'll um
+go through the formulation of the method
+i'll talk a little bit about the theory
+i'll talk about implementation of the
+method and two codes um
+albany lcm and t are solid mechanics and
+then i'll show
+numerical examples so this this talk is
+definitely heavy on the numerical
+examples um
+you know hopefully those will give you a
+sense of some of the properties of the
+method
+and
+the types of problems you can use
+domestic call
+um um so you know there should be some
+time for questions i may kind of stop
+and ask her questions in between the
+section
+um so we can kind of play that by a year
+okay
+so uh the first thing i wanted to um to
+discuss is a little bit of motivation
+and background so
+i'll start with um motivation for
+um developing and using concurrent
+multi-skill coupling
+uh methods um so essentially a lot of
+the
+the problems that are of interest to um
+sunday national labs and
+i think this is certainly true for
+lawrence as well um
+require us to simulate and understand
+the large-scale structural failure of
+engineered components um so this comes
+up a lot in some of our
+nuclear deterrence type mission spaces
+where you know the components may be
+comprising
+for instance weapons type systems um for
+uh these types of uh problems what often
+happens is a large scale structural
+failure
+frequently originates from a small scale
+phenomenon such as a defect or a micro
+crack
+which grows quickly in an unstable
+manner and can lead to the
+ultimate large-scale structural failure
+of the entire
+object or system so there's a couple of
+examples of this
+uh on the right um at the top we have a
+roof failure overblowing 737 aircraft
+that occurred due to fatigue cracks uh
+the bottom picture is more of a sandia
+application this is from gts modeling or
+gas transfer systems modeling
+there's a surface flaw in a pressure
+vessel it interacts with
+the microstructure that's present there
+and
+that interaction may or may not lead to
+to failure of the
+ultimate of the vessel and um you know
+it's really important to do this
+modeling very carefully to make sure you
+um
+you make the right prediction of whether
+or not the failure happens
+um so because of the very tightly
+coupled interaction between the small
+and the large scales
+for these types of problems what we
+found is that concurrent multi-skill
+methods are really
+essential when trying to understand and
+predict the behavior of
+these um engineered systems and so
+when i say concurrent methods i
+essentially mean
+methods that provide two-way coupling
+where you have information propagating
+back and forth concurrently between the
+multiple scales that are involved
+and so what we found is that if we don't
+use these concurrent or two-way coupled
+methods we don't always get an entirely
+correct solution so we may not be able
+to predict this failure for the
+pressure vessel example correctly for
+example
+um so uh oh how do i make this top part
+go away because you can probably
+oh okay ah there it goes okay um
+so uh this this present work is not our
+first
+foray into developing concurrent
+multiple coupling methods
+um this is a paper that was published in
+2014 by my um
+co-author alejandro moda um and his
+collaborator
+uh steve weitzman who used to be at
+sandia and currently at
+columbia university and so in this paper
+um
+stephen alejandro developed a
+three-field multi-scale coupling
+formulation
+it achieves this concurrent coupling um
+it enforces compatibility of the
+discretization weekly using lagrange
+multiplier so
+it's a mixed discretization and if you
+go through this um
+there's a really nice formulation
+there's some care to be taken to um
+you know design all the uh spaces to
+satisfy the lbb or in scoop conditions
+so obviously there's some nuances with
+that but
+um you know they have a really nice
+method that they
+they've developed with nice results um
+unfortunately
+we weren't able to make use of this
+method for our some of our production
+problems
+because it really proved to be too
+difficult to implement into some of our
+um
+existing htc codes and so that was
+really kind of the the main motivation
+for the present work which
+was aimed at developing a method that
+would achieve some of these properties
+like the concurrent
+but that would be um easier for us to
+put into
+some of the codes that um we're using
+for some of our um
+so um that brings me to um our
+list of requirements or kind of wish
+list of properties for our multi-field
+coupling method
+i already talked about the first two
+bullets so
+we want the coupling to be concurrent or
+two-way
+we want the method to be easy to
+implement into
+some of our existing massively parallel
+hpc codes
+the third bullet we want the method to
+be scalable fast and robust
+on real engineering problems that we're
+targeting so um
+you know this isn't a case where we're
+just trying to develop a method to write
+a paper on it we actually want
+the method to be impactful in our
+mission spaces so we want the method to
+go into our
+production codes for analysts to use
+them and you know for the method to
+you know either enable them to do solve
+problems faster
+or you know solve more problems and
+they're currently able to deal with
+existing methods
+um we're looking for a method that would
+provide what i'm going to call
+a plug-and-play framework that would
+simplify the task of meshing complex
+geometry so
+i'll um kind of explain this in the
+context of this picture at the bottom so
+um this is kind of representative of
+some of the problems that we're
+um we're looking at solving so a lot of
+problems that
+are held together by fasteners here we
+have these um these bolts
+and you can imagine this can be a lot
+more complicated than this picture with
+a lot more bolts all over the place lots
+more multi-scale components
+um and um when you have a very complex
+geometry like this just just meshing
+this can be incredibly challenging so
+it can take weeks to mesh one of these
+things and requires a lot of meshing
+expertise
+um and so even though the meshing
+operation is kind of a pre-processing
+step
+if you're looking to um you know study a
+lot of different design configurations
+let's say
+this can actually be a big bottleneck
+that can prevent you from doing a lot of
+analyses that you may want to do
+so we're looking for a method that would
+allow us to take a multi-scale geometry
+decompose it into
+you know the large scales and the small
+scales and then
+kind of glue them together um and allow
+you to mesh the the different components
+separately
+and it with this framework you know if
+you want to change the mesh or if you
+want to
+change slightly one of these components
+you can just um you know regenerate that
+mesh separately and kind of plug it into
+your your framework and
+redo the simulation very easily um so
+with that we want a method that would
+allow us to couple regions with
+different non-conformal meshes
+different element types different levels
+of refinement
+um also allow us to use different
+solvers and time integrators in
+different regions
+uh of course we don't want uh the
+coupling to introduce any non-physical
+artifacts
+and then ideally the method would have
+some theoretical convergence property or
+guarantee
+um so uh as the title suggests we're
+proposing to do this coupling here using
+the schwartz alternating method so
+um i would guess that most people are at
+least somewhat familiar with this method
+but let me
+kind of quickly go through how this uh
+works um so then the method uh was
+proposed in 1870 by herman schwartz for
+solving the laplace equation on
+irregular domains
+it's um i think the earliest known
+domain decomposition method
+uh it's based on a really simple idea
+namely if you want to solve a problem
+on a complex domain you decompose that
+domain into simpler
+subdomains and then you use those uh
+solutions in the simpler subdomains to
+iteratively build a solution on the more
+complex domain okay
+so towards doing this before computers
+um he was just um
+analytically trying to derive these
+solutions but um you know in the 20th
+century
+uh when computers came came about
+obviously people tried to um
+you know really make use of this method
+to eat up computation
+uh so i'll just go through kind of very
+quickly how this
+works in the context of this um
+canonical two-domain example so i'll use
+this throughout the
+presentation this is without the
+generality so you can have you know more
+sophisticated
+than you can have more than two domains
+as well but let's say we have the
+domain comprised of this circle and
+rectangle okay
+so the way the method works you're going
+to start by solving your pde in the in
+the circle we'll make a one
+you're going to use the boundary
+conditions that are prescribed on the
+outer boundary
+on this inner boundary gamma one um you
+can use arbitrary boundary conditions to
+get this started
+i then go to omega2 um you're again
+going to solve your pd and omega2
+use prescribed boundary conditions on
+the outer boundary and now on this inner
+boundary gamma 2
+you take your solution from omega 1 um
+interpolate it onto gamma 2 um and use
+that as the boundary condition
+okay and then you go back to omega 1 and
+you repeat
+now you know for number 1 you're going
+to have information from meter 2 rather
+than something arbitrary
+um and so this continues until the
+solutions match to some tolerance within
+the overlap region
+and typically the information is
+propagating through the boundary
+conditions that's formulation
+and so um not surprisingly um
+since your uh your convergence criterion
+has to do with um
+the solutions being the same in the
+overlap region the overlap region needs
+to be non-empty
+and kind of as you would expect the
+larger the overlap region the fewer
+iterations this will converge in so
+if you have 100 overlap you're going to
+converge in one iteration but you're not
+really doing
+fourths you're just solving your you
+know single domain problem twice
+basically so
+that wouldn't be something you'd want to
+do um
+there would be kind of an optimal size
+for that for a given problem for the
+overlap region
+um so where this method commonly comes
+up is in the linear solver literature
+where it's used very often as a
+preconditioner for karla iterative
+methods for solving
+linear algebraic equations um the new
+idea behind on a particular work
+um that i'm presenting today is to use
+the method
+as a discretization method for solving
+multi-scale pdes
+okay and this is something that um you
+know even though it's a very natural
+thing to try to do
+um not very many people had looked at
+this prior to kind of us starting this
+work and
+certainly not at the the scales that
+we're interested in so
+um if you like memes my
+co-author hundred likes mean so he made
+the slide um you know we're kind of
+scoffing at using that as a
+pre-conditioner and instead advocating
+using the method as a
+um sort of solver for for a couple of
+fully non-linear um
+pe okay all right so that's the the
+background
+um there's no questions in the chat so
+i'll um i'll continue to the next
+section
+um so like i said the the first kind of
+part uh
+main part of the talk is going to focus
+on um
+formulating method and discussing some
+of its properties for quasi-static
+problems and solid mechanics
+um so let me kind of jump right into it
+here um the top of the slide
+shows the algorithm for um using
+schwartz for quasi-static coupling
+so before i go through this let me kind
+of back up a little bit and
+since i don't know what everyone's
+background is online um
+uh just to kind of give a little bit of
+a background how quasi-statics work so
+this is a
+common approach in solid mechanics um
+quasi-static kind of advancement of your
+system um essentially the idea
+is um you have a steady p and you're
+going to solve a sequence of steady pds
+and
+with each new pde that you're solving
+you're going to um
+increment or augment the load that's
+being applied to the system okay
+so um you're sort of emulating dynamics
+in some sense without having a gdt term
+um in your equations and um you can um
+you know potentially uh avoid some some
+challenges that happen with dynamics
+like cfl conditions by using this as
+this type of an approach
+um so uh the the short algorithm is at
+the top here for the case of quasi
+statics
+you have an outer quad static loop
+that's going to do this um
+this uh increment incrementing of the
+load that's being applied
+and then within this loop you're going
+to have your your schwarz loop
+and so this is exactly the algorithm i
+explained a few slides back just written
+in mathematical notation
+where you're basically solving back and
+forth between the
+two or more domains you have information
+propagating through the boundaries
+and then you um uh you don't go to the
+next quasi-static step until you've
+converted
+the newton uh sorry the short step which
+is based on how much the solutions match
+in the overlap region
+um so you can imagine you know this is
+uh there's a number of advantages for
+this kind of coupling it's conceptually
+very simple
+um so you just write this down in a few
+lines um explain it in just a few
+few sentences simple to understand
+also kind of easy to put into a code um
+you just kind of stick in this extra
+loop inside your um
+quasi-static glue that you already have
+in there um it allows you to couple
+different
+uh regions with different non-conformal
+meshes different element types different
+levels of refinement
+you're getting the concurrent coupling
+because your information is
+propagating between both of the domains
+through the boundaries
+you can use different solvers in
+different regions you can use different
+material models and different regions
+under some conditions at all i'll talk
+about a little later on
+and then um this this achieves this goal
+of
+simplifying the task of measuring
+complex geometries at different scales
+since you can just mesh the different
+domain separately and kind of glue them
+together using the method
+okay so um another uh
+advantage as it turns out is that this
+is based on a very solid theoretical
+foundation
+so just a little bit of a history of
+some of the theory that's been done for
+schwartz and
+um one thing that's interesting is uh
+the the theory depends on the pde that
+you're looking at so
+kind of as you go um down this list um
+you know start with very simple linear
+problems and go go to more sophisticated
+problems with time so
+um so will posed the method for linear
+elasticity
+um 1936 proved the methods convergence
+1951 michelin
+approved convergence of the method for
+general linear elliptic bbs
+um in the 80s leone really did some kind
+of seminal work to try to get the method
+back on the map
+um including um you know applying the
+method and formulating the method for
+nonlinear problems and
+improving convergence for nonlinear
+monotone elliptic problems
+um and then uh you know if you fast
+forward a few more decades um
+we had a paper uh three or four years
+ago now
+2021 already uh in 2017 in which we
+proved convergence of the alternating
+torts method for
+finite deformation quasistatic nonlinear
+pds
+so i'll show the reference on the next
+slide these are basically
+steady mechanics problems that are
+defined by this energy functional fee so
+kind of for non-mechanics um folks out
+there um
+this is kind of defining the weak form
+of your problem and um
+you have uh here your um helpful free
+energy density and embedded in this you
+have a material model and so this can
+really vary from um simple linear
+elasticity to much more sophisticated
+models
+so um just to say a few words about the
+um the theory uh so uh
+this is a theorem that we have in our
+paper which is cited at the bottom from
+um the conditions for convergence of the
+method is that the single domain problem
+be
+well posed and that the overlap region
+be not empty
+and i'm not going to go through how we
+prove this because it takes about eight
+pages in the paper so
+that's what's in the background here but
+essentially the idea is we construct a
+sequence of solutions with the
+uh curly feet till that n um and we show
+that
+uh that if we apply the short iteration
+to the sequence
+um we're going to converge to a unique
+unique minimizer of the energy
+functional capital fee
+um and that the monitor converges okay
+um and so we we leveraged some of the
+analysis work done by it some of the
+folks here
+um you know sobel of and leon babushka
+as well
+um to to prove this okay
+uh so um let me show uh kind of towards
+showing some some examples let me talk a
+little bit about implementation um
+so like i said uh uh at the beginning we
+we've implemented this method in two
+codes um
+for the quasi-static uh case i'm only
+going to show results from one of the
+codes but we actually um
+have done all the problems that i'm
+showing in both of the codes but so
+there's really
+it's just for kind of brevity to um you
+know not not show duplicate results
+um so the first code uh that that i'll
+be showing results for is
+is called albany lcm um so let me say a
+little keywords about
+what this code um what house code works
+so this is an open source parallel
+people's plus multiphysics fine and
+element code
+it's available on github at the url you
+see here on the right
+has a number of saline features it has a
+component-based design that enables
+rapid development of new physics and
+capabilities so the components here are
+primarily trilinos libraries these are
+also open source
+developed at sandia kind of the bread
+and butter work
+for the center for computing research at
+sandia
+and then albany houses what we call lcm
+which is laboratory for computational
+mechanics
+um this is a kind of a suite that
+contains a wide variety of constitutive
+models
+that range from you know simple linear
+elasticity all the way to very
+sophisticated
+microstructure models like crystal
+plasticity um
+and so uh just in terms of the the role
+of albany so
+albany is actually both production code
+and
+kind of a sandbox code depending on the
+application so we
+have a landis model called um albany
+landis living in in this code that's
+hooked up to the doe
+energy exact scalar system model that
+some of you online may be familiar with
+so for that application it's a
+production code
+for the solid mechanics application uh
+we have another production code called
+sierra
+that i'll talk about later on so um here
+the role of albany was really the kind
+of prototype the method
+and once we um we got the method working
+well and kind of prototyped and albany
+we went ahead and put it into our
+productions with gr so
+currently it's in both of the codes um
+the last thing i wanted to say here was
+about
+the detail of the implementation so one
+of the things that's not entirely
+trivial
+in the implementation of the method is
+um
+how you would do the search and
+interpolation when you're going from
+one domain onto the boundary of the
+other subdomain and in particular this
+is not entirely trivial to do
+in in parallel and so for this we're
+relying on a library called gtk data
+transfer kit
+um this is out of oak ridge national lab
+um and this is a really nice kind of
+easy to use library that um
+uh we were able to integrate into the
+code pretty quickly and um
+that it gives us a really scalable kind
+of fast and
+implementation that i'll show some
+results for later on
+okay so uh numerical examples so i'm
+gonna i'm gonna show um four examples
+here and
+these are gonna start with um very
+simple proof of concept problems just to
+kind of verify the method
+verify some of its properties and then
+all the other production-like problems
+so the first example is really really
+simple um i call this the cuboid problem
+um we have the coupling of two cuboids
+with a square base shown at the top
+the the goal here is to look at what
+happens with the method as we change the
+um
+level of refinement in each of these
+cuboids and um we also
+we also change the size of the overlap
+region we're going to put a new hookian
+type of material model here which is a
+nonlinear elastic material model and
+we're going to pull on this from the top
+stretch um so i'll let me let me show a
+few results for this um
+the first thing i actually wanted to
+talk through is this picture at the
+bottom so it just gives you um some
+intuition about how this works the
+duration works
+so basically initially you have some
+error in the overlap region
+um and then you know as the iterations
+progress this air eventually will get
+corrected
+um so that's just kind of some intuition
+about how the iteration and the method
+works
+um so uh first result has to do with
+um looking at convergence as you change
+the overlap and
+the level of refinement in the in the
+cubewoods um
+so the the last time here um this is
+looking at convergence for uh different
+mesh sizes and a fixed
+overlap volume fraction which is the
+size of the overlap region
+um this is plotting essentially kind of
+errors into subsequent towards iteration
+um and so so that the the slope of this
+line is the convergence uh rate
+and you can see we get a um a linear
+convergence rate and that that result is
+consistent with our theoretical results
+that we derived in that
+2017 paper that i mentioned uh on the
+right we're looking at what happens as
+you
+um change the size of the overlap region
+so the overlap volume fraction
+and so um we're plotting in this in this
+plot um what we call the convergence
+factor view so it's kind of the ratio of
+errors into
+um just two subsequent iterations um
+and there's a lot of stuff happening
+here in the in the legend but
+just just to i'll just give you the main
+conclusion from this what this
+this reveals is that we get a faster
+linear convergence
+as we increase the size of the overlap
+volume fraction so you know the larger
+the overlap the fewer iterations you'll
+converge in
+that's again kind of consistent with the
+theory and with what you would
+intuitively expect to happen um we can
+also compute errors so we computed
+errors with respect to a reference
+solution and each of the cuboids
+uh displacement errors are basically a
+machine precision in the stresses the
+errors are
+10 to the minus 13 um so you're really
+not
+getting any error introduced by the the
+coupling
+so that was a really simple problem so
+let's not go to a more spirited problem
+so this is what i call the notch
+cylinder problem
+um here's our geometry and the left two
+pictures um to match
+cylinder we're gonna stretch this um
+along the axial direction from the top
+and the bottom and again it's going to
+stretch like the cube would again we use
+this new hokkien type of material model
+which is
+an elastic non-linear model so the
+natural thing to do here for our delay
+decomposition would be to make this
+middle domain uh middle middle region
+one domain um and then the the rest of
+this the
+second domain um this is actually one
+domain we we only solved the sun and
+eighth of this for
+use so much using symmetry conditions so
+uh there's any confusion there that
+that's
+the reason for this thing just one
+domain um but um
+so the natural thing you'd want to do
+here it would be to put a really fine
+mesh in the middle
+since that's where um you know all the
+conaction is expected to happen with the
+simulation
+and then we're going to put a relatively
+coarse mesh away from this middle part
+and so we're going to look at coupling
+different um
+different element types and uh so we're
+going to put uh type elements here and a
+couple
+of those two hex elements um away from
+the middle and you can see the
+resolutions are quite different from the
+meshes
+um so this is the movie um that shows
+you what happened so i have the
+displacement magnitude on the left
+um one of the koshi stress components on
+the right and
+this is a really large deformation
+problem i should mention
+um and so you can see you know you get a
+nice solution with information
+um propagating um you know correctly
+uh between the the two domains oops okay
+um so that was kind of an eyeball norm
+uh statement so we can also quantify
+this
+um this is reporting errors in the in
+the displacement the errors are about
+0.1 percent
+now um what's kind of interesting here
+uh if you visualize the errors you can
+actually see that
+most of the errors uh here are not
+coming from the coupling
+so if you look at the earth um splat
+plot in these two pictures
+okay most of the errors where you see
+the curvature in the domain
+and if you think about this it actually
+makes sense what's happening so
+this is a curved geometry our reference
+solution that we're computing errors
+with respect to is shown here
+um against the wrong side of it but but
+this is a much finer mesh so it's able
+to
+better represent this curve geometry so
+what you're seeing in most of this error
+is actually just geometric error
+that you would you would have with just
+a standard find element discretization
+so it's not really due to the coupling
+at all
+um okay so uh we also
+as i mentioned earlier we also are able
+to couple different
+material models under some conditions
+let me kind of show that on an example
+so this is the same problem or variant
+of the same problem we're going to put
+an
+elastic material model in the course
+region
+elastic plastic material model in the
+fine region we have hex meshes measured
+on but that doesn't matter for the
+illustration
+um so essentially uh what you need to do
+when you're
+doing different material models you need
+to be a little bit careful to do the
+domain decomposition so that the
+material models are consistent in the
+overlap region
+okay so this is showing two domain
+decompositions a good one on the left
+and
+a bad one on the right so in the good
+one that the overlap is far from the
+notch
+there's no plastic deformation in it so
+you get a nice smooth solution so
+you kind of get everything that the the
+course and foundations are predicting
+the same behavior and the overlap so
+everything is kind of good here
+um if you put the overlap too close to
+the notch
+um plastic deformation will spill onto
+the overlap region the the models
+predict different behavior and you can
+have an adverse effects on convergence
+um so you know you do see some artifacts
+here and
+the the theory we have assumes the same
+material model i do think that it can be
+extended if you have some compatibility
+in the overlap region but it just shows
+you that um
+you know you do need to take a little
+bit of care to sort of design the the
+domain decomposition in
+the right way especially when you're
+having different material models
+that's kind of an ongoing research area
+actually how to do that in general
+um so uh moving towards production-like
+problems example through the laser world
+problem
+so here we're looking at um a couple of
+more than two domains just to illustrate
+that that's possible to do
+um so we have three subdomains in red
+gray and green here um coupling
+isotropic elasticity with g2 plasticity
+um we're able to get about a 50
+reduction in the model size here
+relative to a single domain
+discretization
+um while keeping the air uh to the same
+tolerance
+and one of the objectives of this
+problem was also to look at the scaling
+of this to look at the scaling
+strong scaling with this parallel
+implementation that uses dtk
+so you can see we get a near ideal speed
+of linear speed up for for this problem
+for
+several different mesh resolutions that
+we were considering um
+so then the last problem is is kind of a
+our production problem or the one that i
+chose to highlight we have others as
+well that we've done
+this is a work by um some of my
+colleagues at sandia um coleman allman j
+folks dave littlewood and guy burgel and
+i think this is an interesting problem
+because
+it illustrates a really interesting use
+case of the method
+namely that the method can be used as
+part of a homogenization or upscaling
+process to bridge the gap between
+microscopic and macroscopic regions
+okay so um here's the the idea so we
+have this um temple geometry
+we're going to embed in this
+microstructure in the middle the the
+goal here is is that is to study strain
+localization within the microstructure
+um and so kind of the the motivation for
+the upscaling is basically if you can
+think of this microstructure model as a
+very detailed model
+that you're not going to be able to
+afford to use everywhere in the domain
+okay
+so um we're going to take this model
+we're going to couple it to a simpler
+model
+we're going to couple this crystal
+plasticity model for the microstructure
+to a
+j2 plasticity model for the rest of this
+that's our macro scale model
+um you're going to use this use us to do
+that coupling and we're going to try to
+inform the
+macro scale model using the
+microstructure information that's what i
+mean by um
+upscaling for those who aren't familiar
+with that um
+so uh what we're doing we're going to do
+is we um or i guess now we
+coleman did the study um he prescribed
+an ensemble of uniaxial loads to the
+structure
+um he had ten uh ensembles of this
+crystal plasticity model
+so you can see them here on this plot um
+that's showing cool plastic strain and
+stress
+and basically he just fit the the j2
+plasticity model to the set of ensemble
+to do the the upscaling so
+um this is i think a really neat kind of
+powerful um
+for the method um so with that i'll kind
+of
+end the quasi-static part so let me see
+um
+uh i don't know do we want to take a
+couple questions now or should i just
+say them all for the end
+it's up to you irina we have a two
+questions
+i believe or three or two yeah
+it's up to you i'm looking at that maybe
+i'll wait until the end because i think
+these are kind of more broad questions
+rather than
+um rather than ones that are specific to
+the quality stacks but
+let's maybe just wait until the end that
+way i'll be sure to get through
+everything and
+that sounds good okay so um so the last
+part here um
+is going to be on dynamics so
+essentially um a few years
+a few years back after we kind of got
+good results for the quasi-statics case
+we
+we moved on to extensive methods of
+dynamics and so
+um again i'll uh um kind of start with a
+little bit of a
+motivation here so we um uh
+we did a literature research when we
+started this work for dynamics um
+we uh there were some short-sized
+methods out there that we came across
+most of these were based on space-time
+discretizations
+where you basically treat time as an
+auxiliary spatial dimension
+and so um you know as with everything
+there's some advantages and some
+disadvantages
+so this lets you use um non-matching
+meshes and different time steps in
+different regions which is what we
+ultimately want to do
+um unfortunately um you know again
+our methods really are our codes aren't
+really um designed to work
+well with you know to be to allow
+space-time methods to be easily
+integrated into them so
+these kinds of this flavor methods
+really weren't feasible for us given the
+design of our codes and the size of the
+simulations that we're running
+um so that prompted us to develop kind
+of our own
+um formulation of schwartz for dynamics
+that will work from with more
+traditional
+discretizations methods where you first
+discretize in space and discretize in
+time
+um so let me kind of talk through how
+this works so
+kind of the main ingredients are as
+follows so you have your domain
+decomposition like before
+um you're going to have discretizations
+in each of these domains you're going to
+have
+discretizations in space and also in
+time and so just like the
+spatial discretizations don't need to be
+the same the temporal discretizations
+also don't need to be the same and and
+the time steps don't need to be the same
+um the last ingredients are shown in
+blue so i call this the controller time
+stepper
+and the the idea here is basically just
+define some global time steps at which
+you're going to synchronize your sub
+domains
+and this just um basically gives you a
+way to um
+you know have the the method converge
+for for a small
+relatively small time step without
+having to go all the way to the end of
+your
+simulation before checking for
+convergence and synchronizing the
+domains and
+hopefully that'll become clear as i go
+through the algorithm so um
+here's how this goes you initialize the
+first controller time step
+um you're going to um figure solution
+omega 1 you're going to advance from t0
+to mp1
+um in doing that you're going to need
+information from omega 2 on gamma
+1 and notice that this is going to need
+interpolation in
+space but but also potentially in time
+so if your omega two uses different time
+steps you're going to need to
+interpolate
+onto this boundary in time as well
+that's an important detail
+uh even go to omega2 um you're going to
+repeat again you're going to need to
+interpolate from omegle 1 to gamma
+2 in space and potentially in time
+uh when both of the domains are reached
+time t1 you're going to check for
+convergence
+and if the method is not converged you
+return to step one when you repeat
+if the method is converged you go to the
+next controller time step and you repeat
+okay and so um again i emphasize you can
+use different integrators different time
+steps within each uh domain
+um there's an important detail here that
+when we we found that when we do this
+interpolation um it was important to
+actually
+interpolate not just the displacement
+but also the velocity and the
+acceleration
+for the dynamics case um in order to
+kind of get the best results so that
+that was kind of an important
+another important detail if you're using
+different different time steps you do
+need to um
+kind of take some care to store the
+solution at different time steps and
+have the capability to interpolate the
+solution in time so
+it's another kind of important detail um
+oh i'm gonna make this go away again
+i should ah there it goes
+a little bit about theory like before so
+like for the quasi-static case
+um we're able to show convergence under
+some conditions
+um the conditions are similar we can
+show convergence if the problem single
+domain problem is well closed
+and the overlap region is not empty we
+also have some conditions on the time
+step delta t
+um so you know the details can be found
+in this paper at the bottom that we
+submitted a few months back to kumami
+um just to kind of sketch out how we
+prove this we look at the action
+functional s which is the integral
+of the lagrangian over space and time
+um we want this to be strictly convex or
+strictly concave
+and we study this by looking at the
+second variation of the action function
+and so um you know skipping all the
+details here what we're able to show is
+if we use a new mark time integration
+scheme which is the usual
+time integration scheme that's used for
+these problems um for the fully discrete
+problems here's how our
+second variation of the action function
+looks like so
+m is the mass matrix k is the stiffness
+matrix gamma and beta are new mark
+parameters and delta t is the time step
+and basically if you kind of stare at
+this for a while you can see um
+this can always be made positive if you
+choose a sufficiently small delta wt
+okay so this is something you could
+check for a given discretization
+uh and what we found in our numerical
+experiments is that usually the
+time step requirements for stability and
+accuracy will automatically lead to
+satisfaction of this bound
+so um let me let me show examples again
+so um
+uh more on implementation so i mentioned
+earlier um
+we have this other codes here solid
+mechanics that i haven't talked about
+yet so let me let me talk about that so
+um for the dynamics case i'm going to
+show results in albany lcm that i
+already covered and also the sierra code
+um so what is sierra it's a sandia
+lagrangian 3d code for the finite
+element analysis of solids and
+structures
+has a lot of different um squeeze or
+components that are shown in this
+picture we're using just a few of them
+we're using adagio and presto
+for quasi statics and impulsive explicit
+dynamics so
+like i said before we we have
+quasi-static since here i just just
+happened not to show those results in
+this presentation
+um and then the other the other piece
+that we're using is not in this picture
+um but it's in sierra
+it's called arpeggio and so arpeggio is
+a loose coupling framework that exists
+in sierra um
+it was designed for multiphysics
+coupling like um
+doing thermal mechanical coupling for
+instance um but we were able to
+to hijack this framework to do the
+schwartz implementation and what was
+really um a pleasant surprise for us is
+we actually did not have to write any
+code in sierra
+to implement schwarz so we were just
+able to use that arpeggio coupling
+and basically create input files for the
+coupling to perform all the steps of the
+of the schwarz method as i described it
+for both the quasi-statics and the
+dynamics so that was
+kind of um really a very pleasant
+surprise for us because we didn't really
+want to you know get too deep into into
+sierra which is a
+very big complex code uh
+so again examples also three this time
+um again they'll go from
+proof of concept all the way to
+production type problems
+um first problem like before it's really
+simple this is um
+elastic wave propagation problem we have
+a linear elastic clamped beam with a
+gaussian
+initial condition so this is a beam
+here's the initial condition in blue
+for the z displacement um this is going
+to kind of split into two gaussians and
+and reflect off the wall and eventually
+get this mirror image gaussian i'll show
+a movie in the next slide
+um it's a really simple problem it has
+an exact analytical solution
+but um it turns out it's a very
+stringent test for um
+discretization methods um and so we're
+going to look at two subdomains one from
+zero to 0.7514.25 to 1.
+uh we're going to use look at all kinds
+of different couplings so implicit
+explicit um hextech
+and so on so i'll just show some results
+so this is looking at a variety of
+different couplings with the same delta
+t but but different
+different time integrators and different
+discretization so there's a couple
+movies here i'll just play them as i
+talk
+um so this is showing the z displacement
+z velocity
+uh red and green are the schwarz
+solutions and then
+blue is the single domain solution and
+so as this plays you can see the
+solutions pretty much match
+the entire um time and um you know there
+there are some oscillations here and
+there but
+you see those in the single domain
+solutions and this is some dispersion
+from the time integration scheme um so
+that's that's not an artifact that comes
+out of the schwartz so
+we're not seeing any artifacts or
+pervasive and other coupling methods
+and again this is an eyeball norm
+statement we can
+make this more rigorous by computing
+errors with respect to the exact
+solution
+so these are summarized in the table for
+different couplings um
+cm is uh consistent mass lm is lumped
+mass so that's um
+uh with the lump lumping you get a
+little bit less accurate solution but
+basically these numbers are comparable
+to what you would have with um
+coupling with a single domain
+discretization having a comparable um
+time step and spatial resolution and um
+that uh
+pre-print paper has had those results i
+didn't include them here but
+i refer you to the paper if you'd like
+to um verify that
+uh so um a little bit of performance
+data even though it's a really simple
+problem um
+so this is showing a number of maximum
+and average number of short iterations
+during the run for different couplings
+with different um schwarz tolerances so
+um really i just wanted to point out
+that the schwarz tolerance is something
+that you can
+use as a knob so you know as you as you
+tighten the schwarz tolerance
+the number of iterations required to
+converge will go up as
+you would expect um you know if you
+loosen it
+it goes down so you know if you're um if
+your method is too slow you could try to
+loosen the tolerance to get it to go
+faster if you feel like it's not
+accurate enough you could tighten the
+tolerance
+that's a that's a knob that one has in
+addition to the size of the overlap
+region
+um it's kind of fun for this to look at
+how the number of iterations changes in
+time so
+you know initially um when uh kind of
+you don't really need the two domains
+just to communicate because the gaussian
+isn't just
+you know one of them uh or sorry the
+gaussian is not in the in the overlapped
+region
+you're converging in just just two
+iterations and then you know
+as the gaussian kind of hits the overlap
+region this this goes up
+um you know you're back to it back to
+two when kind of nothing is really
+happening and you don't really need the
+domains to
+communicate so much and then goes back
+up um when you get the mirror image of
+the gaussian in the overlap region
+um so that that last example i had the
+same delta t
+throughout one of the advantages of the
+method is it allows you to use different
+delta t's as well which would be
+something you may want to do if you're
+coupling implicit and explicit steppers
+since you should be able to use a much
+larger time step in the implicit domain
+than the explicit one
+so let's let's see what happens there so
+here we have an implicit
+step or recover a couple to an explicit
+stepper drastically different time steps
+so one e minus two
+and x was a domain and two minus seven
+and the sorry
+one e minus two in the implicit domain
+two e minus seven in the explicit domain
+and these are the few of the solutions
+superimposed over each other and there's
+also a single domain solution here that
+you can't see
+since everything um they're all kind of
+on top of each other so
+again you're you're not um you know
+everything is indistinguishable the
+short solutions are indistinguishable
+from the single domain and the analytic
+solution
+so um we're not seeing any artifacts
+even in the case of different
+drastically different time steps to use
+um so the last two examples are
+um kind of more more production-like
+examples so they're from our production
+code sierra
+uh this is a tension specimen problem so
+it's a little bit similar to
+um the notch cylinder uh kind of set up
+um
+we have a uniax aluminum cylindrical
+tensile specimen here
+we have now um an inelastic j2 material
+model which has a lot of these internal
+variables that need to be um
+kind of dealt with correctly that was a
+little bit of a challenge to do that
+correctly
+um within the albany implementation we
+were doing it um
+so uh we're going to decompose this into
+two subdomains that
+i'll call them the ends and the gauge um
+we're going to put a
+fine high order 10 no tetrahedral mesh
+and the gauge
+couple that to a um a hex mesh
+uh away from or in the ends as i call
+them and this um
+this this mesh that we're using here
+this is a special element we developed
+for solid mechanics that's called the
+the
+composite um uh 10 no tetrahedron
+um we're going to use implicit uh time
+stepping for this um
+we're going to put a really slight
+imperfection exactly in the middle of
+this so that when we when we pull on
+this from both ends which will be the
+um the the loading applied um we're
+this is going to neck exactly in the
+middle um so
+for the kind of non-solid mechanics
+folks this is um
+what i mean by the necking and kind of
+what we expect for the results so
+initially
+you're in this elastic strain region
+this is just gonna kind of stretch
+without having
+um kind of a noticeable deformation
+eventually you're gonna get um into this
+plastic strain region
+you're gonna see this necking behavior
+so it's gonna get very thin in the
+middle and eventually you're gonna get a
+fracture there
+so here's what we get for the simulation
+um this is y displacement on the left
+equivalent plastic strain on the right
+um you get this necking behavior in the
+middle um and we're able to
+um converge in just three short
+iterations per time step so
+it's quite um quite quite small um
+some more eye candy kind of the same
+result just um visualize differently um
+global plastic strain again
+you can see how it changes based on
+which domain you're in
+uh and then um koshi stress as well
+so um you know the stress is maximal in
+the middle so that's going to tell you
+that this is where the fracture is going
+to happen which is what you would you
+would expect
+see oh okay i'm going on time um so uh
+last example
+um so this is what i call the the
+voltage joint problem and this is where
+i kind of started and so this is where i
+wanted to um
+to end as well um so i already kind of
+presented this geometry and some of the
+motivation
+um this is really representative of some
+of the problems we want to solve so we
+have a group of folks that
+are called the fastener group and so
+they're they're interested in um
+you know modeling these these um
+geometries that have bolts and other
+fasteners kind of holding pieces
+together which are
+very relevant to some of the um the nw
+mission spaces that
+that they work on um this is the kind of
+an innocuous example of it though so
+this is our um
+uh our computational domain on the left
+is
+an example of where you might see this
+in the real world this is a lamppost
+um so we're going to decompose this into
+the small and the large scales um
+the the small scales are the bolts we're
+going to put a
+composite to 10 mesh in the bolts um
+couple that to a hex mesh in the
+remainder of this which i'll call the
+the parts um we're again using this this
+inelastic g2 material model in both of
+the domains we have
+uh the bolts are steel the the um the
+parts have a steel component and an
+aluminum component as well
+um so let's let's see what happens we're
+going to apply an
+x displacement so from left to right and
+this this to this geometry so here's
+what what happens
+um single domain solution is on the left
+just horse solution is on the right
+single domain solution is on an all
+composite type 10 mesh because you
+actually can't mesh this with the texas
+um if it's if you're not doing the you
+know something like schwartz
+because of the the bolts being so kind
+of detailed um
+and so i call this the um backing into a
+pole problem
+so uh supposed to be a joke but can't
+tell online if
+people are laughing but especially i i
+came came across this deformed
+configuration of san francisco parking
+garage so
+um uh you know someone someone did this
+experiment
+uh it wasn't me for the record i was
+quite happy that i could compare to some
+um experimental
+uh you know quote experimental results
+i'm sure they they weren't quite so
+happy when they did this to their car
+but
+uh in any case you can see you know some
+of this behavior like the lifting of the
+you know this part in this part you
+actually see that in the in this
+instruction and the
+single domain and tour solutions are um
+essentially the same
+uh you can also look at equivalent
+plastic strain in the bowls um
+so you know you can see these things are
+kind of getting sheared and i think
+eventually the top part would probably
+pop off if we continue this
+um very much of interest is some some
+some results about sort of convergence
+and performance so
+um convergence rate for this problem so
+we plotted errors into subsequent
+iterations
+we get a linear convergence rate for
+this which is comparable to what we had
+for
+the um quasi-static uh case that i
+showed
+and then um i think this is very
+interesting this is some data about
+performance so
+we had um four different uh
+discretizations here so
+the first two have the single domain
+schwartz they have a comparable number
+of
+uh elements in the bolts and then the
+second two also have a comparable number
+of elements in the
+in the bolts and the meshes are finer
+here essentially for the bulb
+so um there's some interesting results
+here so first if you look at the first
+two lines
+you can see excuse me that even though
+the schwarz method is iterative
+it can actually be faster than the
+single domain run um
+for example having a comparable number
+of elements in the bolts
+and that's actually kind of surprising
+because it is an iterative method so you
+would think that it would be slower
+but i think what's happening here is
+basically your single domain problems
+are easier to solve than your
+coupled problem and then that together
+with the fact that we're not
+converting very many iterations causes
+us to be more
+um fit to be faster um the story is
+different if you look at the second two
+lines here so
+here um schwartz kind of loses it's
+lower than the single domain problem
+um but i emphasize that um you know the
+method may still be preferred for its
+ability to rapidly change and evaluate a
+variety of engineering designs which is
+our typical
+use case at sandia and we're actually
+still trying to kind of understand
+you know when the method quote-unquote
+wins versus not what kinds of problems
+with the help of some of these analysts
+that i mentioned who
+are running these um voltage joint type
+problems
+um the other thing i already alluded to
+so this is converging in a very small
+number of iterations
+between two and four that's actually a
+little bit surprising because the
+overlapping here is really tiny so i
+didn't show it before but it's just this
+region around the bolts
+so that was a little bit curious that
+it's still so fast even though
+the overlap is so small um so that's uh
+again how do i make this top of uh i
+don't know how to make this go away uh
+okay well i guess it's okay uh let's see
+so so let me um let me kind of wrap up
+um so
+i i talked about the schwartz method
+and its development at sandia for
+concurrent multi-scale coupling in
+quasi-statics and dynamics
+i've talked about implementation of the
+method in two codes albany lcms
+are solid mechanics we get all of these
+requirements that i mentioned at the
+beginning so the concurrent coupling
+ease of implementation skill method
+being scalable fast and robust um
+creating a plug-and-play framework with
+the method that simplifies task emission
+complex geometries um numerical
+artifacts and
+theoretical convergence properties um so
+i just wanted to end by saying a few
+words about what we're still doing with
+the method so
+we're still very much involved in this
+work so current
+current work is is centered on um
+continuing to apply the method to
+problems of interest to production using
+mostly sierra solid mechanics at this
+point within sandia
+um i i would invite um so i i believe
+i'm not sure if
+lawrence livermore folks can use sierra
+but certainly the albany sam
+implementation is open first so
+if anyone is interested in um giving
+that a try
+um you know we're definitely willing to
+work with you guys to help you
+you know set up the code and set up the
+types of problems that you want to
+um to run you know to hopefully make use
+of the method to to simply to
+help some of your computations as well
+um where uh
+we've done a little bit of work on
+trying to advance the method to couple
+structural elements to continuum
+elements so the structural elements
+would be like um
+shell elements for instance um and then
+the big
+task as of this fiscal year is
+we're developing a schwarz-like
+algorithm for simulating contact
+to address some of the well-known
+challenges in numerical simulation of
+context so
+things like um content constraint
+enforcement the multiple scales that are
+involved
+and just to give you some flavor for
+this we're looking at a non-overlapping
+formulation
+kind of like this and so for that you
+need to change the transmission
+conditions you need either
+alternating duraclean neumann or rob and
+robin type of conditions
+um and so a big part of this research is
+going to be kind of
+understanding what are the optimal
+conditions to use in this
+non-overlapping framework for the for
+the contact application
+um and then this is just kind of a
+further down the line so it's a little
+bit of kind of my vision for this
+ultimately um so i i think um
+you know developing a multi-physics
+coupling framework first
+would be um very interesting and useful
+where you could do
+um you can imagine different kinds of
+multi-focus coupling you could do
+things with total overlap like thermal
+mechanical coupling or no overlap like
+um
+fluid structure interaction um and i
+think uh this picture really kind of
+summarizes the vision where
+um ultimately the method can also be
+used to
+provide a rigorous coupling framework
+for conventional and data-driven models
+so
+i would imagine you know coupling
+find it element and finite volume type
+models let's say with um
+reduced models or even neural networks
+so projection-based reducer models are
+things like physics and form neural
+networks where you have
+potentially different models or
+different physics and different
+sub-domains
+and you have this fourth glue kind of
+holding everything together
+um so obviously for this you know these
+transmission conditions are going to
+change and so i think there will be a
+lot of work in trying to
+come up with um how to do those
+conditions for the various types of
+models
+um we're trying to get some funding for
+this sort of work right now so hopefully
+we'll
+be able to pursue it in the near near
+future um so that's the
+pretty much the end um here are
+references um the last two are
+are the references that i alluded to
+that that that we've um
+we've published or submitted and if
+you're interested in the preprint of the
+dynamic paper this is um available on my
+website which is shown here
+um so i'll i'll stop here um let's see
+uh oh wow okay last time i thought but
+i'm happy to take questions sorry that
+it's a little
+longer than i expected but um i think
+we have a list of questions in the chat
+room if you can
+go over that and quickly answer them
+that would be nice
+i do okay so one from henry u
+uh i do facial modeling in my work
+wherein irregular domains are handled by
+a mask function one within and zero
+outside defined on the grid
+i wonder what is the advantage of
+schwartz over this
+masking method
+okay so i i would have to maybe
+know more about the um
+the the method um does the method a lot
+i mean it sounds like
+you would have the same mesh for both of
+the questions
+um maybe maybe that's not right uh
+i guess i don't know if people can can
+speak during the seminar or not but
+it sounds to me like maybe with this
+method you wouldn't you wouldn't be able
+to
+mesh the two parts separately but i
+could be wrong
+um so so i i would think that that might
+be one advantage
+that chords would allow you to use
+different meshes and you they would not
+need to be conformal um
+so i think maybe that's something that
+we would
+talk about more offline so i don't know
+henry if you want to send me an email or
+we definitely check more about it
+offline but some of the details
+of what what your method actually does
+because i i i think i need to
+need to know a little bit more about
+about how it works um
+what are advantages over of this method
+over
+time slide surfaces um
+so i guess okay i'm not sure what you
+mean by are you
+are you referring is this referring to
+sort of tied contact
+uh yes yes oh tied contest uh
+well so okay so i guess i i i'm also
+so the the contact part we haven't done
+with with the method
+um the contact is something we're
+tackling uh now
+um i think so i mean
+i guess when i think of sort of tie
+contact or contact i think of that as a
+non-overlapping framework where this
+framework is overlapping
+um i think you you actually could
+formulate
+so we started looking at the
+non-overlapping version of this now for
+contacts
+um you do need to change the
+transmission conditions for that
+you you could actually there are kind of
+non-overlapping versions of
+of the well i guess already said this
+was the method with with different
+conditions
+we haven't actually looked at we haven't
+compared
+the overlapping version to the
+non-overlapping version for the purpose
+of
+multi-scale coupling um that's something
+that we
+are starting to look at now so so that
+may be something that
+um that comes up there but um i think
+the conditions would have to change
+um within the schwartz coupling if
+you're going to have it the
+non-overlapping like it's
+like what i'm thinking of when you're
+when you mentioned the the tide slide
+surfaces
+um let's see uh okay that one our answer
+in time interpolation does this mean
+that you will need to extrapolate from
+the course
+to fine time step um
+so you may need to do some ex well
+okay i guess it depends on let me go to
+the slide
+so what i mean oh where is it
+too many slides here all right
+so um essentially what what i mean by by
+interpolation is
+so let's say um let's say that you're
+you're you're in the second domain which
+has a smaller time step
+you're going to need to so in your in
+your first domain you only had
+the the solution here and here and
+you're going to need to somehow
+get it at this time so
+i guess i i don't really call that
+extrapolation
+i would still you're you're not going to
+go to some
+like well i guess it depends on how you
+define extrapolation but but you're
+my concern was the next green line so
+when you go back to the green domain
+at the third time step so how
+are you going to then project are you
+going to do
+the third time step of red and then
+interpolate back to the to the green or
+does the green like i guess it's just
+the coupling is because it's a question
+because
+you have you know four lines for the
+green and three for the red
+so these lines are meant to be the time
+step right
+the third time step of the green how
+where did that boundary condition come
+from is an interpolation of having
+finished the red
+well so okay it is from the red but the
+red will have already gotten to t1
+so it will take this guy and this guy
+okay that was it that was a simple yeah
+yeah yeah so i don't i don't consider it
+extrapolation because
+that's that's the kind of the idea yeah
+thanks for clarifying
+of this controller time step because one
+domain will have reached this before you
+go to the
+next one so it's it's not really
+extrapolation in that sense
+but yeah that's that's kind of this is a
+little bit of a nuance in detail with
+how you do that but
+yeah good good question the question
+though but it seems to me then i don't
+know how you interpolate from the two
+the second and third green time step
+back to the second time step in the red
+which i think you have is arrows in um
+your next so there is presumably at the
+red you have interpolated from two of
+the green but you know
+but you haven't gotten the third green
+time step because you haven't
+completed all of the red time steps i
+guess it was just confusing from the
+schematic and maybe i'm just like
+yeah well so i think the idea is that
+the green
+when you're doing this the green has
+already made it to t1
+so you would use these two
+for the red the second time that makes
+sense
+yeah no worries it may be we spent a
+while on this animation it was supposed
+to make it easier but there may be some
+some confusion with it so i apologize
+for that um
+let's see um ah
+okay that one i answered william
+sorry the next question is william elmer
+yeah is there a limit oh i'm not reading
+who's advancing i'm sorry about that um
+william elmer is there a limit where the
+overlap is so small that the stability
+limit showed it dominates over those
+the individual domains and is so is that
+is that limit more than an element width
+of the fine mesh
+so um i think you're talking about the
+the stability limit for for for this
+you mean the dynamic one this one here i
+assume is that
+is that what you're referring to um
+so i mean the smaller the overlap the
+more iterations the method will converge
+in and i think if it's
+if it's getting really really small then
+you may have some issues
+kind of with um the boundary conditions
+not being the right ones
+we we haven't really um we haven't done
+this limiting case
+because um i guess our our aim mostly uh
+has been sort of to come up with
+decompositions that would be
+that would make sense for the problems
+that our analysts are running so
+um the the case i showed with the the
+voltage joint the overlap is very small
+there it's not in this limit
+but um we just we haven't had a need to
+look at that that limit case
+practically because in practice people
+aren't usually going to do a domain
+decomposition like this so they haven't
+had to
+um it would be interesting to look at
+that like to do maybe a more thorough
+numerical study to go along with the
+theory certainly so that may be
+something to
+look at um i i think
+you're right that there probably would
+be something something you know there
+may be some issues if you get to really
+small
+very tiny overlaps like you say um
+henry you uh again so if it seems the
+goal of schwartz method is to handle
+differently matched regions find both
+course not just a regular shape
+is that correct yes that is correct yeah
+so one of the motivations
+is to simplify the task of matching
+these complex geometries and to let you
+basically
+um kind of plug and play with different
+pieces so that you can um
+you know mesh different parts separately
+and if you want to sketch them a little
+bit and swap them out for other pieces
+you can um
+you can um easily do that with the
+coupling framework
+could this method handle subtractive
+geometry
+chris golas so what do you mean by
+subtractive geometry
+if you wanted to make a hole in a piece
+like you have been showing
+oh that's so you're saying like one
+geometry is embedded in the other is
+that
+or in a negative way
+um i guess i so
+the the the embedded part i think we've
+been asked this before
+i think you can do that we haven't tried
+it i guess i don't i don't know
+how what what you mean by i mean you
+wouldn't if it's if it's subtracted you
+wouldn't have a pde in it right
+so i don't i don't know if i understand
+the
+practical use case of that but um
+i i you can you can fully embed the
+geometry that's that's actually a really
+good question we haven't tried it but
+but we've thought about that i think you
+should be able to do that with the
+method
+but um yeah i guess subtractive i i
+don't quite because i mean the method
+requires you to have different pdes and
+so if you're just
+cutting out a piece then that would just
+change your geometry i mean you wouldn't
+you wouldn't have a
+you know you just wouldn't have anything
+in the subtracted
+region i would think so i guess i'm not
+i'm not sure i
+know when that would be kind of useful
+but um
+non-overlapping would be directly to
+neumann schwartz yes i agree so
+um there are directly yeah so directly
+to neumann there's a lot of different
+formulations here um
+gander has looked a lot of this a lot of
+different leones has looked a lot of
+that at this um
+you can do either rob and robin
+conditions you can do um also
+alternating you know jericho annoying
+and your clinium and that type of thing
+and
+there are a lot of regularization
+parameters that you may want to kind of
+tweak in that so
+um so there's lots lots to like to do
+there for the non-overlapping
+um oh 542 i guess
+okay i think i think that we're probably
+way over time now and um
+just pretty much cover everything i
+think so irena
+well let's thank you so much for the
+great talk and great
+uh the research uh it's really exciting
+to see your
+awesome work uh and yeah it's been
+reached out to me if people have more
+questions or if people are interested
+feel free to email me um
+or we can set up another spread meeting
+to talk more if you'd like more
+information
+exactly exactly well thank you thank you
+so much for staying
+over time both irina you and the
+audiences
+but i think some of the the folks who
+asked the question on the chat room they
+actually left because they
+have other things to do and so some of
+them
+couldn't probably hear your answers i
+will try to
+i will try to connect the the the person
+who asked the question and
+with with you irina email so that you
+can be connected
+and then continue the discussion but
+otherwise uh thank you so much
+and both irina you and the audiences and
+and i think it was a great talk thank
+you thank you
+thank you all right well next
+next seminar will be the january 21st
+and until then stay safe and stay
+healthy
+all right bye everyone

@@ -1,0 +1,2845 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:02.070 --> 00:00:07.350
+All right. Welcome to the to the
+DDPS seminar everyone. Before we
+
+00:00:07.350 --> 00:00:10.560
+introduce our invited speaker,
+let's go over some rules as
+
+00:00:10.560 --> 00:00:14.910
+usual. First of all, please mute
+yourself during the talk. If you
+
+00:00:14.910 --> 00:00:17.910
+have immediate questions, you're
+welcome to unmute and ask.
+
+00:00:18.450 --> 00:00:21.390
+Otherwise, please use the chat
+room to post your questions so
+
+00:00:21.390 --> 00:00:25.470
+that we will address them in the
+q&amp;a session at the end. So
+
+00:00:25.470 --> 00:00:28.770
+again, today's seminar is open
+to external audience, so no
+
+00:00:28.770 --> 00:00:32.730
+classified discussion is
+allowed. Finally, the talk will
+
+00:00:32.730 --> 00:00:37.410
+be recorded and uploaded to our
+YouTube channel. Now please, let
+
+00:00:37.410 --> 00:00:41.850
+me introduce our speaker. It is
+an honor as your host, Professor
+
+00:00:41.850 --> 00:00:44.820
+Liu Liu, who is currently an
+assistant professor in the
+
+00:00:44.820 --> 00:00:48.330
+Department of statistics and
+data science at Yale University.
+
+00:00:49.200 --> 00:00:52.950
+Before joining Yale, he was a
+assistant professor in the
+
+00:00:52.950 --> 00:00:57.000
+Department of Chemical and
+Biomolecular Engineering at the
+
+00:00:57.000 --> 00:01:02.910
+University of Pennsylvania from
+2021 to 2023, and an applied
+
+00:01:02.940 --> 00:01:06.450
+mathematics instructor in the
+Department of Mathematics at MIT
+
+00:01:06.450 --> 00:01:12.660
+from 2020 to 2001. In 2020, he
+obtained his PhD degree in
+
+00:01:12.660 --> 00:01:16.440
+applied mathematics, master's
+degrees in engineering Applied
+
+00:01:16.440 --> 00:01:20.250
+Mathematics and Computer Science
+at Brown University, while he
+
+00:01:20.250 --> 00:01:23.760
+received his bachelor degrees in
+mechanical engineering,
+
+00:01:23.790 --> 00:01:28.500
+economics and computer science
+at Shanghai University in 2013.
+
+00:01:29.370 --> 00:01:32.100
+His current research lies in
+scientific machine learning
+
+00:01:32.100 --> 00:01:37.290
+including theory, our firms and
+software's and its applications
+
+00:01:37.290 --> 00:01:41.460
+to engineering physical and
+biological problems. His broad
+
+00:01:41.490 --> 00:01:44.730
+research interests focus on
+multiscale modeling and high
+
+00:01:44.730 --> 00:01:47.670
+performance computing for
+physical and biological systems.
+
+00:01:48.210 --> 00:01:53.400
+He has received the 2022 the oh
+ye Early Career Award and Tony
+
+00:01:53.400 --> 00:01:57.360
+Tony Schakowsky Family
+Foundation Outstanding
+
+00:01:57.360 --> 00:02:01.500
+Dissertation Award of Brown
+University. Today, he will talk
+
+00:02:01.500 --> 00:02:05.580
+about new operators with
+reliable extrapolation from
+
+00:02:05.580 --> 00:02:09.720
+multi physics, multi scale and
+multi fatality problems, please
+
+00:02:09.720 --> 00:02:13.260
+enjoy the wonderful talk. Now,
+without further ado, let me hand
+
+00:02:13.260 --> 00:02:14.430
+it over to Lou.
+
+00:02:15.780 --> 00:02:19.140
+Thank you for the nice
+introduction. So, in this talk
+
+00:02:19.170 --> 00:02:23.220
+at front panel, you may see that
+many discuss our original works
+
+00:02:23.250 --> 00:02:27.750
+of deep neural operators. So, I
+will not go to too much the
+
+00:02:27.750 --> 00:02:32.400
+background introduction, but let
+me just give you one page brief
+
+00:02:32.760 --> 00:02:36.480
+background showing here the
+usually when we consider a deep
+
+00:02:36.510 --> 00:02:39.570
+neural networks, we try to use a
+neural network to learn a
+
+00:02:39.570 --> 00:02:42.810
+mapping of functions. So, from
+one finite dimension of the one
+
+00:02:42.840 --> 00:02:47.160
+tonight if I find that machine D
+two. So, this is the accuracy on
+
+00:02:47.190 --> 00:02:51.180
+opposition error is guaranteed
+by the universal approximation
+
+00:02:51.300 --> 00:02:56.760
+theorem for functions, which was
+proved a long time ago in 1989.
+
+00:02:57.900 --> 00:03:00.210
+So, along this line, many
+different methods have been
+
+00:03:00.210 --> 00:03:03.720
+developed or many different
+algorithms have been developed
+
+00:03:03.720 --> 00:03:05.790
+to achieve will accuracy. For
+example, for image
+
+00:03:05.790 --> 00:03:11.700
+classification, the input image
+could be 20 by 20 pixels, which
+
+00:03:11.700 --> 00:03:17.430
+is 400 dimensions, then output
+is a scalar or vector. Also, the
+
+00:03:17.430 --> 00:03:20.550
+development of physics informed
+in our walks, which is also
+
+00:03:20.550 --> 00:03:25.440
+yours to learn the solution is a
+single solution of a PDE which
+
+00:03:25.440 --> 00:03:31.830
+is the function mapping. But in
+this talk, I will copy
+
+00:03:31.830 --> 00:03:34.770
+understanding the function
+learning to operator learning.
+
+00:03:35.340 --> 00:03:40.260
+So, the operator here I referred
+is a mapping from one function
+
+00:03:40.290 --> 00:03:44.250
+to another function. So instead
+of from one final dimension
+
+00:03:44.250 --> 00:03:51.240
+value to another value, so one
+single case, I in calculus, have
+
+00:03:51.240 --> 00:03:54.690
+an operator either to do to
+operator, so if our input is x
+
+00:03:54.690 --> 00:04:00.030
+t, then our output is the
+derivative of x t x prime t. So
+
+00:04:00.030 --> 00:04:03.900
+this is one simple operator or
+we can also consider another
+
+00:04:03.900 --> 00:04:08.460
+simple operator with integral
+for input x t, then we'll
+
+00:04:08.460 --> 00:04:14.580
+compute the integral of f t with
+respect to occur now okay, this
+
+00:04:14.580 --> 00:04:19.560
+also maps from one function to
+another function. But in this
+
+00:04:19.560 --> 00:04:25.770
+talk, I will mainly consider the
+system or PDE saw ODS, the input
+
+00:04:25.800 --> 00:04:30.090
+could be the boundary condition,
+initial condition of force in
+
+00:04:30.090 --> 00:04:33.630
+terms of the PDE then output
+will be the solutions over the
+
+00:04:33.630 --> 00:04:39.210
+PDE. But a more broadly this
+kind of framework can be applied
+
+00:04:39.240 --> 00:04:46.710
+to other systems biological
+system or even social system. So
+
+00:04:46.710 --> 00:04:50.550
+when we go from functional
+learning to operator learning,
+
+00:04:50.940 --> 00:04:55.980
+then a target question is
+whether we can see or learn
+
+00:04:56.010 --> 00:05:00.780
+operators by using neural
+networks. So at first Whether
+
+00:05:00.780 --> 00:05:06.420
+this exists a similar theory of
+universal approximation theory
+
+00:05:06.420 --> 00:05:12.600
+for functions planning
+operational setup. So, let me
+
+00:05:12.660 --> 00:05:17.400
+first introduce a few notations
+here, which were also used in
+
+00:05:17.400 --> 00:05:21.720
+this talk. So, our protocol we
+are learning is denoted by this
+
+00:05:22.290 --> 00:05:27.660
+square root g and the input a
+function is denoted by u, then
+
+00:05:27.660 --> 00:05:32.400
+output is another function where
+they do so, to yield energy you
+
+00:05:32.400 --> 00:05:38.940
+are both functions LTO is a
+function, let's consider why in
+
+00:05:38.940 --> 00:05:44.790
+a single location or point your
+domain of geo then geo Why is
+
+00:05:44.790 --> 00:05:49.230
+the value of function geo
+evaluated at this specific
+
+00:05:49.230 --> 00:05:56.520
+location? Why is that the answer
+to my previous question actually
+
+00:05:56.520 --> 00:06:02.280
+is true. So, as shown in this
+theory here, so, we can prove
+
+00:06:02.280 --> 00:06:06.810
+that the the new inner works,
+so, actually it's very powerful
+
+00:06:06.990 --> 00:06:13.500
+to approximate nonlinear
+operators, but, but definitely
+
+00:06:13.500 --> 00:06:17.310
+giving you some assumptions. So,
+the main assumption is that the
+
+00:06:17.310 --> 00:06:21.120
+spirit should be compared and
+its apology can or should be
+
+00:06:21.120 --> 00:06:27.030
+continuous giving this too many
+assumptions, then, the theorem
+
+00:06:27.060 --> 00:06:31.560
+is paper shows that for
+arbitrary operator G, an
+
+00:06:31.590 --> 00:06:35.730
+arbitrary input function yield
+and a location why they always
+
+00:06:35.760 --> 00:06:41.430
+exist a neural network in this
+form such that the error due to
+
+00:06:41.430 --> 00:06:45.270
+the current use of energy and
+the prediction from the new
+
+00:06:45.270 --> 00:06:51.180
+network can be arbitrarily small
+that n is zero. So, basically
+
+00:06:51.300 --> 00:06:56.220
+this is a one extension of the
+standard approximation theorem
+
+00:06:56.280 --> 00:07:01.560
+of functions or when our neural
+networks for functions extended
+
+00:07:01.560 --> 00:07:06.930
+to operators. So, I will not go
+into details into the theory
+
+00:07:06.930 --> 00:07:10.710
+part and in this talk I will
+mainly consider the methodology
+
+00:07:10.710 --> 00:07:14.910
+how can we implement the new
+network to achieve a good
+
+00:07:14.910 --> 00:07:24.840
+accuracy and efficiency. So,
+when you try to design an analog
+
+00:07:25.050 --> 00:07:31.440
+I knew and analog to learn
+output geo from input a Yo, then
+
+00:07:31.440 --> 00:07:36.360
+if we consider an analog is to a
+black box, let's take a look at
+
+00:07:36.390 --> 00:07:41.670
+what's the inputs and outputs of
+an analog. So, first the our
+
+00:07:41.730 --> 00:07:45.600
+input must have the input of
+function u. So, u is one input
+
+00:07:46.110 --> 00:07:50.370
+however, the function u is in
+the infinite dimensional space,
+
+00:07:50.760 --> 00:07:54.780
+we cannot directly input this
+function into this neural
+
+00:07:54.780 --> 00:07:59.370
+network when a neural network in
+our computers can only take a
+
+00:07:59.370 --> 00:08:05.520
+finite dimensional input. So,
+this the first step is to
+
+00:08:05.520 --> 00:08:09.390
+convert to have even imagined
+space function you to have five
+
+00:08:09.390 --> 00:08:14.160
+dimension voucher there are
+different ways to do this and it
+
+00:08:14.160 --> 00:08:19.500
+is crucial here I just show you
+one simple way let's consider we
+
+00:08:19.500 --> 00:08:27.420
+have a dense mash up or dense
+locations of x 1x two and x m in
+
+00:08:27.420 --> 00:08:32.010
+the location of the domain of
+your data values or function yo
+
+00:08:32.220 --> 00:08:37.260
+in this locations your x one you
+have to ensure you x m can be
+
+00:08:37.260 --> 00:08:41.880
+used to represent the input file
+show your evidence this location
+
+00:08:41.880 --> 00:08:46.170
+is a dense enough. So, this is
+the finite dimensional
+
+00:08:46.200 --> 00:08:50.190
+approximation of the input then
+this can be used as a network
+
+00:08:50.220 --> 00:08:57.180
+input. Similarly, for the output
+of network, still we tried to
+
+00:08:57.180 --> 00:09:01.500
+predict a function geo instead
+of a finite dimensional version.
+
+00:09:02.850 --> 00:09:07.980
+We can we can do a similar trick
+that is the only predate the
+
+00:09:07.980 --> 00:09:13.080
+function you're at a finite
+schedule locations. However,
+
+00:09:13.170 --> 00:09:18.060
+this in this case, in this talk,
+we try to avoid any kind of
+
+00:09:18.120 --> 00:09:23.400
+discrimination for the operator
+function yo. So the way we do
+
+00:09:23.400 --> 00:09:26.850
+this is as follows. So yeah,
+addition to the input function,
+
+00:09:26.850 --> 00:09:33.480
+yo, we also have another input
+of location why that's giving
+
+00:09:33.480 --> 00:09:37.890
+the input value and why the
+output will be the function to
+
+00:09:37.980 --> 00:09:42.570
+evaluate at this location. Why
+this is kind of similar to the
+
+00:09:42.570 --> 00:09:45.750
+physics IF formula works. So in
+physics, the formula works
+
+00:09:45.750 --> 00:09:50.760
+opinions, the input is the
+coordinates, output is a
+
+00:09:50.760 --> 00:09:54.450
+function of value added to the
+specific coordinate. We do
+
+00:09:54.450 --> 00:09:57.960
+simply say here, y is a
+coordinate the output it is
+
+00:09:57.960 --> 00:10:02.850
+function Geo and this recipient
+coordinate why, but this
+
+00:10:02.850 --> 00:10:05.790
+function depends on the input
+function it depends on the input
+
+00:10:05.790 --> 00:10:10.680
+function. So, this this approach
+would be measured free and also
+
+00:10:10.680 --> 00:10:14.490
+this condition free, it can be
+used to unstructured and
+
+00:10:14.490 --> 00:10:19.110
+arbitrary data locations. So,
+this is what is the one age and
+
+00:10:19.110 --> 00:10:23.670
+other 100 Is that what we
+consider PDS is how to compute
+
+00:10:23.940 --> 00:10:31.320
+the derivatives of an alpha NGO
+with respect with y that by
+
+00:10:31.320 --> 00:10:35.220
+using this approach of here just
+the ratio can be directly
+
+00:10:35.220 --> 00:10:39.930
+computed Biothane automatic
+differentiation the same as
+
+00:10:39.930 --> 00:10:44.460
+pigs. So, this is no
+dissertation error. So, this is
+
+00:10:44.490 --> 00:10:50.850
+inputs and outputs of the neural
+network now, let's look at the
+
+00:10:50.850 --> 00:10:54.990
+network architecture. So, we
+could apply and in no
+
+00:10:54.990 --> 00:11:00.150
+architecture to this kind of
+setup, but because here we have
+
+00:11:00.150 --> 00:11:04.350
+two inputs, so, we can see the
+split the entire network into
+
+00:11:04.350 --> 00:11:09.300
+two or two components. On the
+top we have one analog branch
+
+00:11:09.300 --> 00:11:14.700
+net takes the you as input and
+outputs a hidden relative at
+
+00:11:14.700 --> 00:11:19.020
+both and here we have a NAS
+network to terminate takes y as
+
+00:11:19.020 --> 00:11:22.950
+input and outputs another
+kilometre, then we compute the
+
+00:11:22.950 --> 00:11:27.750
+final output the GU y as a total
+potage between these two values
+
+00:11:27.870 --> 00:11:33.810
+all as shown in equation here.
+So, the basic idea is is that
+
+00:11:34.110 --> 00:11:39.810
+so, g of y is a function of a
+you however, is conditioning on
+
+00:11:39.900 --> 00:11:45.060
+us or is function of y by
+conditioning on you that in this
+
+00:11:45.060 --> 00:11:50.310
+formula here to tk y can be
+viewed as a basis function Y and
+
+00:11:50.310 --> 00:11:55.140
+BK yo basically the coefficients
+depends on the yo so in the
+
+00:11:55.140 --> 00:11:59.640
+coordinate view the Tron net to
+learn was optimal basis function
+
+00:11:59.670 --> 00:12:03.690
+for this machine with PD
+temperatures net learns was the
+
+00:12:03.690 --> 00:12:07.380
+coefficients in front of the
+basis function for arbitrary
+
+00:12:07.380 --> 00:12:07.920
+input.
+
+00:12:11.909 --> 00:12:15.389
+So, this is a thing called a
+test case a testing problem on
+
+00:12:15.389 --> 00:12:19.199
+your triangle domain with a
+notch. So, the PDE is simple,
+
+00:12:19.379 --> 00:12:23.129
+but in this problem, the
+geometry is complex and assuring
+
+00:12:23.129 --> 00:12:28.949
+the future here. So, we tried to
+predict the solution of this PDE
+
+00:12:29.009 --> 00:12:34.859
+found the boundary conditions
+and other training this is a one
+
+00:12:34.859 --> 00:12:39.509
+case the case over the
+prediction. So, we have ground
+
+00:12:39.509 --> 00:12:43.259
+truth and the prediction over
+depot net and the front arrow
+
+00:12:43.259 --> 00:12:51.689
+here you can see is roughly two
+plus wall 2%. So, this is the
+
+00:12:51.689 --> 00:12:55.259
+first version of vanilla version
+of the opponent, but after our
+
+00:12:55.259 --> 00:12:58.619
+first walk we have developed
+many different extensions or
+
+00:12:58.619 --> 00:13:03.269
+deeper net in order to improve
+the accuracy or improve the
+
+00:13:03.269 --> 00:13:07.949
+efficiency or extend as a
+capability to diverse scenarios.
+
+00:13:10.109 --> 00:13:13.649
+So, as I mentioned, for the
+branch net, we have input
+
+00:13:13.649 --> 00:13:16.619
+function you may need to convert
+the input function yield to a
+
+00:13:16.619 --> 00:13:20.249
+finite dimension approximation
+or representation representation
+
+00:13:21.269 --> 00:13:24.689
+we can apply the evaluation as
+we looked at it before or we
+
+00:13:24.689 --> 00:13:29.309
+could project the input function
+v into a basis function, then we
+
+00:13:29.309 --> 00:13:32.699
+can use the coefficients of the
+basis function as the
+
+00:13:32.699 --> 00:13:38.849
+dissertation also another deep
+not extension we have developed
+
+00:13:38.849 --> 00:13:43.379
+a call a pod deploy net. So as
+we as I mentioned, for the
+
+00:13:43.379 --> 00:13:47.069
+branch net is used to up to
+learn what's automobilia
+
+00:13:47.069 --> 00:13:51.629
+function. However, in scientific
+computing, there are many good
+
+00:13:51.629 --> 00:13:56.339
+measures to compute the basic
+function. So, one simple but
+
+00:13:56.339 --> 00:13:59.099
+good but efficient most
+efficient method is called pod
+
+00:13:59.369 --> 00:14:05.069
+proper orthogonal decomposition.
+Then we can further compute the
+
+00:14:05.069 --> 00:14:09.989
+pod modes from the training data
+set, then for the trauma
+
+00:14:09.989 --> 00:14:14.879
+network. In addition to a
+standard analog, we also apply
+
+00:14:14.879 --> 00:14:20.579
+the pre computed basis from pod.
+So, this is a hybrid method of
+
+00:14:20.579 --> 00:14:24.929
+the new network and the standard
+traditional new members so by
+
+00:14:24.929 --> 00:14:30.869
+using pod so by doing this, so
+first of all, instead of
+
+00:14:30.869 --> 00:14:34.379
+learning instead of learning
+everything from scratch by using
+
+00:14:34.379 --> 00:14:38.339
+a network, we have a good
+starting point over the pod
+
+00:14:38.339 --> 00:14:44.549
+modes. And also we so this will
+be increased our tuning
+
+00:14:44.579 --> 00:14:48.539
+efficiency and also as an end
+user we can also achieve higher
+
+00:14:48.539 --> 00:14:55.079
+accuracy. So this is the same
+problem that I see problem. And
+
+00:14:55.139 --> 00:14:58.619
+in the last column here we show
+the performance of the pod
+
+00:14:58.619 --> 00:15:02.399
+deploy net so compared to the
+standard deploy net bios in the
+
+00:15:02.399 --> 00:15:07.529
+pod patient function, we can
+achieve even better accuracy.
+
+00:15:13.230 --> 00:15:18.240
+So, so, this is the standard
+deploy net and if you are the
+
+00:15:18.240 --> 00:15:22.680
+extension by union pod, but in
+all these two examples, as we
+
+00:15:22.680 --> 00:15:27.750
+can see, we only consider a
+single input operator. So, which
+
+00:15:27.750 --> 00:15:32.490
+means our input a function, it
+is a single function in the
+
+00:15:32.490 --> 00:15:36.690
+previous previous example is a
+boundary condition and also in
+
+00:15:36.690 --> 00:15:41.100
+the theory I have showed the
+theory can only be applied to
+
+00:15:41.100 --> 00:15:47.190
+the input to a single function
+input. But if in general or in
+
+00:15:47.190 --> 00:15:51.840
+many cases, we try to create the
+PDE solutions for different
+
+00:15:51.840 --> 00:15:55.020
+initial condition boundary
+condition or for sentence
+
+00:15:55.050 --> 00:16:00.660
+simultaneously. So, which means
+our input is not a single input,
+
+00:16:00.870 --> 00:16:09.060
+but it is a multiple input
+operator. So, specifically,
+
+00:16:09.420 --> 00:16:15.060
+let's consider our input
+expenses in total have owned
+
+00:16:15.060 --> 00:16:21.360
+bioservices x 1x, two xn or
+equivalent we have an input
+
+00:16:21.360 --> 00:16:27.390
+function it's V one v two and
+your VM now, we try to have a
+
+00:16:27.390 --> 00:16:33.480
+new network takes all these own
+functions add input and outputs
+
+00:16:33.570 --> 00:16:38.700
+a corresponding odd function for
+each more PDE solution. So,
+
+00:16:38.700 --> 00:16:43.680
+before we go to the implement
+implementation, or first in
+
+00:16:43.740 --> 00:16:47.610
+first step, we should always
+approve that the neural network
+
+00:16:47.670 --> 00:16:53.610
+is still universal approximator
+in this scenario, so, this one
+
+00:16:53.610 --> 00:16:58.620
+wouldn't be shown in this in the
+paper as shown here. So,
+
+00:16:58.650 --> 00:17:02.340
+actually in the neural network
+can also be used to approximate
+
+00:17:02.730 --> 00:17:08.460
+multiple input operators. So,
+without getting into too much
+
+00:17:08.490 --> 00:17:14.190
+details, the key idea when we
+when we prove the theory is as
+
+00:17:14.190 --> 00:17:19.890
+follows. So, we construct the
+neural network in by showing you
+
+00:17:19.890 --> 00:17:24.120
+this Euclidean here. So, yeah
+addition to a single branch net
+
+00:17:24.510 --> 00:17:28.200
+we consider we have our own
+branch and as their each branch
+
+00:17:28.200 --> 00:17:36.150
+net takes one function as input
+then there is an outputs and
+
+00:17:36.150 --> 00:17:40.200
+validators will be we have
+become our own dimension test,
+
+00:17:40.590 --> 00:17:44.910
+then for the Tron airwalk
+instead of other people pushing
+
+00:17:45.240 --> 00:17:49.500
+a doubt one dimension validator
+deliver output another dimension
+
+00:17:49.500 --> 00:17:55.260
+tensor, then we compute the
+tensor tensor product to compute
+
+00:17:55.290 --> 00:17:59.520
+the corresponding output. So,
+this is okay for the proof by
+
+00:17:59.520 --> 00:18:04.770
+this tensor a tensor product is
+too expensive in practice, then
+
+00:18:04.770 --> 00:18:09.090
+we can further apply a low rank
+tensor approximation to reduce
+
+00:18:09.090 --> 00:18:14.670
+the cost. So, the further format
+is that will predict high
+
+00:18:14.670 --> 00:18:19.650
+dimensional tensor we also
+output for one dimension value
+
+00:18:20.670 --> 00:18:25.140
+then we have into the own past
+one voters, then we compute the
+
+00:18:25.140 --> 00:18:30.000
+element wise product of all this
+matters, then compute the sum of
+
+00:18:30.000 --> 00:18:34.950
+all the elements in the manager.
+So, this is architecture of the
+
+00:18:34.950 --> 00:18:38.130
+network we call the mu net it
+can be viewed as a
+
+00:18:38.130 --> 00:18:41.790
+straightforward extension of
+Drupal net from a single panel
+
+00:18:41.790 --> 00:18:49.380
+space or sorry from a single
+branch net to own branch net. A
+
+00:18:49.380 --> 00:18:53.370
+simple test case showing here is
+a diversion diffusion equation.
+
+00:18:54.810 --> 00:18:58.800
+So, if you tried to predict the
+solution yo from different
+
+00:18:58.920 --> 00:19:03.180
+initial condition Yujiro and
+also different diffusion
+
+00:19:03.240 --> 00:19:07.440
+coefficients, and here we assume
+to defeat acoustic conditions is
+
+00:19:07.440 --> 00:19:12.540
+also a space dependent. So, this
+is one test case of the
+
+00:19:12.540 --> 00:19:20.010
+training. So, it can shave a
+small error. So, this confirms
+
+00:19:20.190 --> 00:19:25.230
+to you what is the neural net
+the meal net is indeed in Warsaw
+
+00:19:25.260 --> 00:19:31.860
+approximated then we have a
+further apart this kind of idea
+
+00:19:32.070 --> 00:19:36.210
+to more realistic problems
+instead of the previous two
+
+00:19:36.210 --> 00:19:40.170
+simple cases. So, why
+application was tested is called
+
+00:19:40.200 --> 00:19:46.200
+a stage in geoscience geologic
+carbon filtration. So, in this
+
+00:19:46.200 --> 00:19:51.360
+application, so, we inject the
+co2 into the under underground,
+
+00:19:52.140 --> 00:19:55.620
+then whatever you're trying to
+do is to predict what's the
+
+00:19:56.040 --> 00:20:01.650
+saturation or the pressure of
+the co2 in the Following our 30
+
+00:20:01.650 --> 00:20:07.770
+years so, this cobra can be
+modeled by the multi phase flow
+
+00:20:07.830 --> 00:20:12.480
+in the porous media. So, this is
+the equation shown here, and
+
+00:20:12.510 --> 00:20:18.210
+lots of variables. So from this
+equation in order to solve it by
+
+00:20:18.210 --> 00:20:22.560
+using traditional neural
+methods, the challenge is that
+
+00:20:22.680 --> 00:20:26.820
+is too expensive. So, first of
+all the problem is multi physics
+
+00:20:26.850 --> 00:20:31.740
+and the minor scale. And also we
+try to solve the problem in a
+
+00:20:31.740 --> 00:20:36.000
+really large domain. So, your
+largest spatial scale and also a
+
+00:20:36.000 --> 00:20:39.000
+larger temporal scale. So, the
+further spatial scale we
+
+00:20:39.000 --> 00:20:44.250
+consider is from a few 100
+meters, or 10 meters to 200
+
+00:20:44.250 --> 00:20:50.730
+meters by a million meters to a
+millimeter in length, and 200
+
+00:20:50.730 --> 00:20:55.980
+meter depth. And as mentioned in
+Chapter pretied, there's the
+
+00:20:55.980 --> 00:21:02.010
+solution with a PDE for 30
+years. So, is that too expensive
+
+00:21:02.610 --> 00:21:08.160
+of the treasurer measures that
+you apply a neural network to
+
+00:21:08.160 --> 00:21:13.380
+learn a solution for different
+inputs. So, it will enable
+
+00:21:13.380 --> 00:21:19.170
+faster prediction and the for
+the for the data set and make
+
+00:21:19.170 --> 00:21:23.100
+sure you're what's the input and
+it was output. So, we have many
+
+00:21:23.100 --> 00:21:26.700
+different inputs. So, there are
+three inputs, there are
+
+00:21:26.700 --> 00:21:31.320
+functions of the of the spatial
+coordinates, so equalling
+
+00:21:31.350 --> 00:21:34.290
+horizontal permeability,
+vertical permeability and
+
+00:21:34.290 --> 00:21:38.640
+porosity, these are three
+functions that any addition to
+
+00:21:38.640 --> 00:21:43.620
+these three fields, we also have
+seven scalar inputs, for example
+
+00:21:43.620 --> 00:21:49.560
+was the injection rate, the
+temperature initial pressure for
+
+00:21:49.560 --> 00:21:57.600
+it also was the location of
+formation. So, given all these
+
+00:21:57.630 --> 00:22:02.640
+inputs, given all these
+conditions, that we can compute
+
+00:22:02.850 --> 00:22:07.080
+what's corresponding PDE
+solution of gas saturation and
+
+00:22:07.080 --> 00:22:14.610
+also pressure. So, showing here
+is just a one specific case. So,
+
+00:22:14.610 --> 00:22:21.150
+this is injection location, then
+the co2 will go from left to
+
+00:22:21.150 --> 00:22:30.390
+right. So, for this problem, we
+can either apply the standard
+
+00:22:30.390 --> 00:22:35.070
+analog for example, this is just
+a 3d problem today in space one
+
+00:22:35.070 --> 00:22:40.530
+the time then we may apply a
+ceiling network, but in 3d
+
+00:22:40.560 --> 00:22:45.300
+photowall 3d unit or we can play
+some other networks for example,
+
+00:22:45.300 --> 00:22:50.370
+we can learning the free space,
+which is the method of FMO. So,
+
+00:22:50.370 --> 00:22:55.920
+in this paper showing here, so,
+they combine the 3d Your net and
+
+00:22:55.920 --> 00:23:00.690
+a 3d FMO into a single network
+in order to achieve good
+
+00:23:00.690 --> 00:23:05.250
+accuracy of prediction. So, this
+is an architecture. So,
+
+00:23:05.670 --> 00:23:09.240
+initially, this is a one three
+layer and also one convolution
+
+00:23:09.240 --> 00:23:15.000
+layer that was a unit layer.
+However, this is again the tweet
+
+00:23:15.000 --> 00:23:21.090
+extensive of the training and
+also prediction by but, but as I
+
+00:23:21.090 --> 00:23:25.350
+mentioned, we have another tool
+Omeo net, if we apply a new
+
+00:23:25.350 --> 00:23:29.940
+natural to to this case, then we
+will have many different branch
+
+00:23:29.940 --> 00:23:34.980
+nets and a single trauma net for
+the branch nets, each branch net
+
+00:23:35.010 --> 00:23:38.910
+will take a single input,
+because we have a group of
+
+00:23:38.910 --> 00:23:43.530
+inputs as shown here, then we
+have a torn edge. So the input
+
+00:23:43.560 --> 00:23:49.440
+or terminate will be x y and t
+or the spatial and temporal
+
+00:23:49.440 --> 00:23:54.960
+coordinates then our output is a
+sin which is just a scalar
+
+00:23:55.170 --> 00:23:59.850
+basically a solution for the
+more saturation at this specific
+
+00:23:59.910 --> 00:24:07.170
+x y t. In this approach, the
+cost is really low instead of
+
+00:24:07.170 --> 00:24:13.410
+ordering 30 inputs and outputs
+outputs is a scalar however, by
+
+00:24:13.410 --> 00:24:18.300
+using this simple thought pulled
+out a merge operation, if I go
+
+00:24:18.300 --> 00:24:22.410
+to here to all depression as an
+uptrend as they are merged
+
+00:24:22.470 --> 00:24:26.280
+together by a single simple
+element wise product and the
+
+00:24:26.280 --> 00:24:32.640
+sun. So this simple operation is
+hard to learn the details
+
+00:24:32.700 --> 00:24:38.490
+structure in space as shown in
+this example here. So it cannot
+
+00:24:38.490 --> 00:24:42.810
+capture all these details.
+Although the accuracy in general
+
+00:24:42.810 --> 00:24:48.360
+is okay five signs that when we
+do a we try to combine the two
+
+00:24:48.360 --> 00:24:53.970
+approaches together in order to
+achieve the prediction accuracy
+
+00:24:54.030 --> 00:24:59.700
+and also narrow trading
+efficiency. So this nanowall
+
+00:24:59.700 --> 00:25:03.240
+committee Tiny is called a
+Fourier meal net. So the general
+
+00:25:03.240 --> 00:25:07.890
+framework of this network is, is
+mu net. So again, a branch and a
+
+00:25:07.890 --> 00:25:12.090
+trunk. However, for the merge
+operation, instead of using a
+
+00:25:12.090 --> 00:25:16.680
+standard at all for that, we
+apply a Fourier layer or a unit
+
+00:25:16.800 --> 00:25:17.700
+or unit engineer,
+
+00:25:18.990 --> 00:25:25.890
+by the competitor previous
+version of this standard UFO. In
+
+00:25:25.890 --> 00:25:32.070
+this case, we only need to the
+unit and a 2d airfoil. Because
+
+00:25:32.280 --> 00:25:37.380
+we still have a tonnage of a
+Tron that will have a time t as
+
+00:25:37.380 --> 00:25:43.890
+input, then our output is not a
+scalar, but is not a 3d is our
+
+00:25:43.890 --> 00:25:48.570
+2d solution of the 2d pdf
+solution at arbitrary specific
+
+00:25:48.600 --> 00:25:53.280
+attempt t. So basically, we
+still need temporal and spatial
+
+00:25:53.760 --> 00:26:00.570
+to handle them differently. So
+this approach can still achieve
+
+00:26:00.780 --> 00:26:05.820
+good accuracy as showing in this
+four examples here. So in these
+
+00:26:05.820 --> 00:26:10.080
+four examples, we have different
+cases of different patterns of
+
+00:26:10.080 --> 00:26:16.740
+the solution. So you can see
+that our total is 0.99, almost
+
+00:26:17.130 --> 00:26:23.310
+almost equal to one. But more
+importantly, but when we still
+
+00:26:23.310 --> 00:26:29.610
+keep the good accuracy, we can
+have modular screening costs, as
+
+00:26:29.610 --> 00:26:33.930
+showing in the second table
+here. So for you FMO, it has
+
+00:26:33.930 --> 00:26:38.340
+more than 33 million parameters.
+But for the free immune edge, we
+
+00:26:38.340 --> 00:26:42.660
+only have around 3 million
+parameters for the CPU memory,
+
+00:26:42.750 --> 00:26:46.620
+which can reduce from more than
+100 gigabytes to 15 gigabytes
+
+00:26:47.100 --> 00:26:52.560
+for GPU memory, reduced from 16
+gigabytes to six gigabytes. And
+
+00:26:52.560 --> 00:26:58.500
+the training time can be reduced
+from 42 hours to 12 hours. So
+
+00:26:58.500 --> 00:27:05.130
+it's much more conditional
+efficient. And more importantly,
+
+00:27:05.370 --> 00:27:09.900
+by using this approach, we can
+have the prediction even for
+
+00:27:09.900 --> 00:27:15.270
+unseen time. So let me show you
+what I mean here by an unseen
+
+00:27:15.270 --> 00:27:18.750
+time. So before because we were
+trying to predict the solution
+
+00:27:18.780 --> 00:27:23.070
+for the following 30 years. But
+in practice, the data set we
+
+00:27:23.070 --> 00:27:30.330
+have we have you heard of 24
+snapshots in this 30 years. So
+
+00:27:30.330 --> 00:27:34.380
+would he if we only train to
+Nana walk by using just natural
+
+00:27:34.380 --> 00:27:38.910
+one, snapshot three stamps, or
+five, seven, by which we try to
+
+00:27:38.910 --> 00:27:43.500
+predict for all the snapshots.
+If you look at the standard
+
+00:27:43.500 --> 00:27:50.400
+performance of the UFO, for the
+location with the training time
+
+00:27:50.520 --> 00:27:54.150
+is this good accuracy. But for
+the location, for example, for
+
+00:27:54.150 --> 00:27:57.270
+step two, because there's no
+training data set for central
+
+00:27:57.270 --> 00:28:02.820
+tool down during the production,
+the accuracy would be really
+
+00:28:02.820 --> 00:28:07.680
+low. But for the free immune
+net, we are still maintaining a
+
+00:28:07.680 --> 00:28:14.580
+good accuracy, even for unseen
+snapshots. So, it's a good
+
+00:28:14.700 --> 00:28:19.320
+foundation for us in time. So,
+the reason is that so, we put
+
+00:28:19.620 --> 00:28:25.380
+the term t as a terminal input,
+then the network would
+
+00:28:25.380 --> 00:28:30.240
+automatically satisfy the
+property that is the solution
+
+00:28:30.270 --> 00:28:35.550
+will be continuous over time to
+basically obtain a base the
+
+00:28:36.120 --> 00:28:41.190
+underlying physics are the
+continuity over time. So, we can
+
+00:28:41.190 --> 00:28:46.890
+even use only 25 snapshots for
+training. So, this will be very,
+
+00:28:47.100 --> 00:28:52.110
+very useful when we try to
+collect the data set in our real
+
+00:28:52.110 --> 00:28:57.030
+life, because every single
+snapshot data creation is is
+
+00:28:57.030 --> 00:29:04.830
+expensive. So, this is one
+application in geoscience here
+
+00:29:04.830 --> 00:29:07.530
+then you shoot another
+application also in geoscience
+
+00:29:07.710 --> 00:29:14.250
+to for waveform inversion F wi.
+So, in this application, we aim
+
+00:29:14.250 --> 00:29:20.130
+to infer the subsurface
+structure see, to see the
+
+00:29:20.130 --> 00:29:26.580
+velocity map of the underlying
+subsurface structure thrown the
+
+00:29:26.580 --> 00:29:32.250
+assessment waveform data well
+waveform data is p pressure.
+
+00:29:33.180 --> 00:29:37.290
+Specifically, let's consider we
+have a 2d domain to the
+
+00:29:37.290 --> 00:29:41.970
+subsurface domain. Then, if we
+have a source in the location A
+
+00:29:44.310 --> 00:29:48.210
+then the source will generate a
+wave propagates in the in this
+
+00:29:48.210 --> 00:29:54.510
+domain name you'll have many
+different receivers placed on
+
+00:29:54.510 --> 00:29:59.970
+the surface at this proper
+location, top surface here then
+
+00:30:00.000 --> 00:30:03.840
+You still face this you still
+receive us we are received the
+
+00:30:03.840 --> 00:30:10.230
+wave from the sauce propagates
+to through the subsurface for
+
+00:30:10.230 --> 00:30:18.240
+example for the first picture
+shown here, so, this is the our
+
+00:30:18.270 --> 00:30:22.320
+what the receiver received for
+the source aid. So, if we have
+
+00:30:22.320 --> 00:30:27.720
+source at this location that for
+the receivers receivers as a top
+
+00:30:28.350 --> 00:30:32.820
+jet, we receive these kinds of
+signals. So, this is for F
+
+00:30:32.820 --> 00:30:36.420
+different location and over a
+different time, if we have
+
+00:30:36.420 --> 00:30:42.090
+source at a location B, then
+this is the signal received at a
+
+00:30:42.090 --> 00:30:48.090
+different receivers because we
+only have the information at the
+
+00:30:48.090 --> 00:30:51.870
+surface, we cannot do the
+prediction of this velocity map
+
+00:30:52.140 --> 00:30:55.500
+from a single source. So, in
+this case we consider we have
+
+00:30:55.500 --> 00:31:00.900
+five different sources
+allocation ABCD that the task is
+
+00:31:00.990 --> 00:31:05.490
+that we will try to predict that
+will also the map of the
+
+00:31:05.490 --> 00:31:13.920
+subsurface from these five
+signals signal could be a clean
+
+00:31:13.920 --> 00:31:18.630
+signal or it could be the signal
+plus some noise or some missing
+
+00:31:18.630 --> 00:31:25.560
+traces. And for the for the
+equation is an acoustic wave
+
+00:31:25.560 --> 00:31:29.700
+equation and showing here and
+therefore, the source so, as
+
+00:31:29.700 --> 00:31:33.510
+here we can see that there is a
+pot of sauce in the location A
+
+00:31:33.540 --> 00:31:37.110
+or the Option B or the TNC. So,
+it's a pot of sauce and the
+
+00:31:37.110 --> 00:31:43.260
+generating of by the wavelength
+showing in a picture here. And
+
+00:31:43.260 --> 00:31:49.260
+here the frequency f can control
+the shape of the wavelength
+
+00:31:51.900 --> 00:31:56.010
+steel we applied a network of
+the Freer depot net the same
+
+00:31:56.010 --> 00:32:00.690
+than a walk architecture. So,
+after the training, this is a
+
+00:32:00.690 --> 00:32:04.830
+few different test cases. So,
+this is ground truth. So, first
+
+00:32:04.830 --> 00:32:09.420
+of all we try to see what our
+network can have the good
+
+00:32:09.450 --> 00:32:13.410
+prediction for different source
+locations and at different
+
+00:32:13.440 --> 00:32:18.540
+frequencies of the source. So,
+it is the source locations and
+
+00:32:18.540 --> 00:32:23.610
+the fridges and this is the
+three different predictions for
+
+00:32:23.610 --> 00:32:28.620
+different data inputs, different
+frequencies and a different
+
+00:32:28.860 --> 00:32:36.870
+source locations. So, the
+accuracy is good for here i i
+
+00:32:36.870 --> 00:32:42.600
+try to emphasize the robustness
+of the network architecture. So
+
+00:32:42.600 --> 00:32:47.160
+during the training, all this
+data set is clean data set. But
+
+00:32:47.340 --> 00:32:51.810
+during the testing or production
+case, we add a Gaussian noise to
+
+00:32:51.810 --> 00:32:57.180
+the input of an analog. Now
+we'll try to see whether our
+
+00:32:57.180 --> 00:33:01.650
+nanawall prediction as to be
+accurate given the noisy input.
+
+00:33:03.300 --> 00:33:08.010
+Now, we do not do any fine
+tuning or post processing. So
+
+00:33:08.310 --> 00:33:12.840
+clean data cleaning clean data
+set for training, but noisy data
+
+00:33:12.840 --> 00:33:18.870
+for testing. So, for our test
+case, we have four different
+
+00:33:18.900 --> 00:33:26.160
+patterns of The GroundTruth. But
+in this in this example, here I
+
+00:33:26.160 --> 00:33:32.010
+only show the prediction for s
+FVb pattern and a CVA pattern.
+
+00:33:32.730 --> 00:33:39.090
+So on the left in the Panel B so
+this is the different levels of
+
+00:33:39.090 --> 00:33:44.670
+the noise. So you can see we add
+higher and higher noise level to
+
+00:33:44.670 --> 00:33:51.510
+our input data set to the input
+of the network, but for the
+
+00:33:51.540 --> 00:33:55.080
+production of the fridge
+opponent, it is still accurate
+
+00:33:55.290 --> 00:34:01.710
+is can produce the same pattern
+and at the ground truth however,
+
+00:34:02.730 --> 00:34:06.450
+we compare with other networks
+for example, the version that I
+
+00:34:06.480 --> 00:34:10.620
+have lost it again, these are
+two baselines for the F wi
+
+00:34:10.620 --> 00:34:14.070
+application. There are also
+network based approaches.
+
+00:34:14.460 --> 00:34:20.070
+However, for these two networks,
+they cannot tolerate the noise
+
+00:34:20.100 --> 00:34:26.340
+in the input. So this is another
+prediction case for the CVA
+
+00:34:26.940 --> 00:34:32.340
+ground truth. You're gonna see
+even by adding a really high
+
+00:34:32.340 --> 00:34:36.420
+noise level, we still have good
+prediction compared to the
+
+00:34:36.420 --> 00:34:39.660
+controls, but the prediction
+from other networks for
+
+00:34:39.690 --> 00:34:45.870
+evolutionary almost again is
+totally off. So this is one test
+
+00:34:45.870 --> 00:34:50.550
+case and here this is another
+robust test by point of view
+
+00:34:50.550 --> 00:34:57.030
+consider the source noise.
+Variability consider the noise
+
+00:34:57.030 --> 00:35:01.680
+has as a source has the noise
+instead of the input. So, which
+
+00:35:01.680 --> 00:35:05.580
+means, if you consider during
+the producing or testing case,
+
+00:35:06.420 --> 00:35:09.810
+our data set the test in the
+test case
+
+00:35:11.130 --> 00:35:15.840
+the wavelet is not a perfect
+wavelet but it has some noise
+
+00:35:16.110 --> 00:35:24.120
+for each period here, it has a
+really high noise level. So, we
+
+00:35:24.120 --> 00:35:31.500
+do not see this kind of wavelet
+er training data set, but you
+
+00:35:31.500 --> 00:35:36.480
+will for this case by a pilot
+freed up on edge, we are still
+
+00:35:36.480 --> 00:35:40.800
+have a very good prediction
+accuracy compared to controls,
+
+00:35:41.040 --> 00:35:50.190
+but again for other networks
+that accuracy is is bad. Another
+
+00:35:50.220 --> 00:35:54.660
+robustness test we consider is
+the missing traces. So, during
+
+00:35:54.660 --> 00:35:59.580
+the training, our input is
+always clean data, but what if
+
+00:35:59.820 --> 00:36:04.080
+doing a prediction case or
+prediction stage for the input
+
+00:36:04.230 --> 00:36:08.580
+there are many traces or many
+signals they are missing. For
+
+00:36:08.580 --> 00:36:11.220
+example, in this case, there are
+many signals they are just
+
+00:36:11.250 --> 00:36:18.840
+missing zero by using a free
+diplomat, because to have good
+
+00:36:18.840 --> 00:36:25.230
+accuracy, so, this is the test
+case for the CFA in verse NMAP
+
+00:36:25.230 --> 00:36:30.870
+and STA. So, you can see on
+Friday the opponent prediction
+
+00:36:31.080 --> 00:36:37.260
+for these two cases they do a
+very accurate compared to other
+
+00:36:37.260 --> 00:36:42.870
+networks. So, again, so, we
+never seen this kind of yes and
+
+00:36:42.870 --> 00:36:47.430
+during the training, so they are
+all based on their own
+
+00:36:47.490 --> 00:36:53.370
+explanation. depot net, a
+department of radio Panet they
+
+00:36:53.370 --> 00:36:58.530
+are really the past against all
+this noise or missing traces.
+
+00:37:01.740 --> 00:37:06.330
+Okay, I have a showing several
+examples are the former's or
+
+00:37:06.330 --> 00:37:09.960
+depot net or extensions of
+Jupiter net. But in all these
+
+00:37:09.960 --> 00:37:14.130
+cases, we still need a data set
+usually a large data set for
+
+00:37:14.130 --> 00:37:19.050
+training. However, in practice,
+it could be difficult to obtain
+
+00:37:19.560 --> 00:37:25.740
+a large high fidelity asset.
+Now, why dia tools, technology,
+
+00:37:25.740 --> 00:37:29.610
+the problem is called multi
+figure learning. So in modify
+
+00:37:29.610 --> 00:37:34.770
+their learning, we have two data
+sets, one is called high
+
+00:37:34.770 --> 00:37:40.230
+fidelity asset and the other one
+is called low fidelity asset. So
+
+00:37:40.230 --> 00:37:45.090
+for high fidelity asset, it's
+high accurate, but it's my data
+
+00:37:45.090 --> 00:37:48.420
+is small, but for the low
+fidelity is different. So it's
+
+00:37:48.420 --> 00:37:52.770
+low accuracy, but this data is
+large. So, here are two
+
+00:37:52.770 --> 00:37:55.890
+examples. So on the left, we can
+see example with aircraft
+
+00:37:55.890 --> 00:37:59.970
+design. So we can collect the
+data set for them or for
+
+00:37:59.970 --> 00:38:03.150
+instruments. So, this is
+accurate, but is a really
+
+00:38:03.150 --> 00:38:08.040
+expensive to generate a large to
+asset or we can run a
+
+00:38:08.040 --> 00:38:12.810
+simulations FTM simulations is
+less accurate, but we can have a
+
+00:38:12.810 --> 00:38:19.050
+lot. So, this is another example
+of the sea surface temperature
+
+00:38:19.050 --> 00:38:21.990
+prediction. So, this is the
+location of the Boston Harbor.
+
+00:38:23.070 --> 00:38:28.800
+Now, we try to predict the
+temperature in this sea surface.
+
+00:38:29.910 --> 00:38:34.350
+So the data set that we have
+could be the measurement from
+
+00:38:34.350 --> 00:38:38.040
+all these sensors as shown by
+thoughts here. So these are
+
+00:38:38.040 --> 00:38:43.620
+senses in the seas of bass. So
+it's a very accurate, but is is
+
+00:38:43.680 --> 00:38:48.360
+sparse or we can have the
+measurement from the satellite,
+
+00:38:49.200 --> 00:38:56.190
+it's less accurate or we can
+have a lot So, the the mighty
+
+00:38:56.190 --> 00:39:01.320
+Fidel learning try to integrate
+the data set of different levels
+
+00:39:01.380 --> 00:39:07.800
+together to achieve a good
+accuracy. So, we apply the idea
+
+00:39:07.800 --> 00:39:12.750
+on what the fair learning into
+Aquila learning and development
+
+00:39:13.050 --> 00:39:19.350
+Marty fidelity depot net. So
+imagine forget depot net. So,
+
+00:39:19.350 --> 00:39:23.850
+first of all, we have one depot
+net for depot net low. So deeper
+
+00:39:23.880 --> 00:39:30.600
+deeper than low takes the inputs
+for example V or QC then
+
+00:39:30.630 --> 00:39:36.900
+generates output prediction GL.
+So because we assume we have a
+
+00:39:36.900 --> 00:39:40.500
+large data set or low fidelity,
+then this deeper and deeper net
+
+00:39:40.500 --> 00:39:44.880
+low can be treated well without
+any problem. Then the question
+
+00:39:44.880 --> 00:39:51.360
+is how can we have the
+production of high fidelity? So
+
+00:39:51.360 --> 00:39:57.450
+why idea is that we we aim to
+learn the Reggio our question
+
+00:39:57.630 --> 00:40:02.820
+between low and high fidelity is
+Basically we write down the G G
+
+00:40:02.820 --> 00:40:06.600
+high to high failure prediction
+is equal to the low failure
+
+00:40:06.600 --> 00:40:12.180
+prediction, pass a crash engine,
+then we apply network deep on
+
+00:40:12.180 --> 00:40:19.620
+that high to learn this crash
+engine. Also, in many cases,
+
+00:40:19.740 --> 00:40:23.460
+there is always a high
+correlation between low and high
+
+00:40:23.460 --> 00:40:28.110
+Fidelity's, then we also aim to
+lose this correlation by using
+
+00:40:28.110 --> 00:40:32.580
+component high. So specifically,
+for people that are high, we
+
+00:40:32.580 --> 00:40:36.450
+also in addition to the inputs,
+or the function less function v,
+
+00:40:36.690 --> 00:40:40.860
+we also put the low fidelity
+prodution CI low as another
+
+00:40:40.860 --> 00:40:45.660
+input of a deployment high, then
+the jump on a high we will learn
+
+00:40:45.660 --> 00:40:51.120
+is the correlation between CI
+low energy high. So this is a
+
+00:40:51.120 --> 00:40:57.810
+final architecture and Chris
+morning equations. So this is
+
+00:40:57.840 --> 00:41:01.920
+one test case, or the board's
+main transport equation for
+
+00:41:01.950 --> 00:41:10.110
+nanostructured material. So this
+equation is not too complex. But
+
+00:41:10.170 --> 00:41:14.460
+this is not a single equation,
+part of the equation, assistant
+
+00:41:14.610 --> 00:41:20.580
+of 24,000 Chapala PDS because we
+have this index meal, which is
+
+00:41:20.610 --> 00:41:24.510
+the index of the way of value,
+and this is quite Asian in this
+
+00:41:24.900 --> 00:41:29.910
+bit a bit bosmere transport
+ingredients. So it's Livescore
+
+00:41:29.970 --> 00:41:33.870
+PDS system. And for this case,
+we can see that our computer
+
+00:41:33.870 --> 00:41:37.740
+domain is a square domain. But
+in this square domain, we have
+
+00:41:37.740 --> 00:41:43.080
+five by five squares in this
+blue color. And each blue color
+
+00:41:43.230 --> 00:41:48.090
+can be a poor without a
+material. For example, this is
+
+00:41:48.090 --> 00:41:52.530
+one spreadsheet with all these
+locations, they are pause there,
+
+00:41:52.530 --> 00:41:56.400
+if you solve the big equation in
+the geometry, this is a Chris
+
+00:41:56.400 --> 00:41:59.970
+volume solution. And if you have
+different materials with
+
+00:41:59.970 --> 00:42:03.450
+different location, I'll pause
+we have a different solution.
+
+00:42:04.710 --> 00:42:10.560
+So, we aim to learn the operator
+G mapping found the geometry to
+
+00:42:10.560 --> 00:42:13.860
+the solution, but here we are
+not interested in a specific
+
+00:42:14.100 --> 00:42:19.380
+solution f mu, we are interested
+in the heat flux, the GMU the J
+
+00:42:19.920 --> 00:42:28.350
+as a weighted summation of F mu.
+So also this is a complex
+
+00:42:28.350 --> 00:42:31.830
+geometry. Also, different
+training cases have different
+
+00:42:31.830 --> 00:42:34.800
+geometry, but the point that it
+can handle it can be applied
+
+00:42:35.040 --> 00:42:39.810
+without any modification,
+because it's mesh free. So we
+
+00:42:39.810 --> 00:42:44.940
+have so first we have a low
+fidelity set of slides 10,000.
+
+00:42:45.480 --> 00:42:48.600
+And its accuracy is showing in
+the dashed line here. So you can
+
+00:42:48.600 --> 00:42:51.360
+see the mean square error
+compared to the high fidelity
+
+00:42:51.360 --> 00:42:57.210
+solution with almost 1092. So
+it's really a low fidelity
+
+00:42:57.210 --> 00:43:02.190
+solution. Or if we truly a
+diplomat only using high
+
+00:43:02.190 --> 00:43:06.810
+fidelity solution, we can
+increase the dataset size from
+
+00:43:06.840 --> 00:43:13.230
+10 to a few 1000. If we have
+more data set, the error will
+
+00:43:13.230 --> 00:43:18.660
+decrease. But even if we have
+5000 the accuracy is still not
+
+00:43:18.660 --> 00:43:24.780
+good enough. But by integrating
+the low and high the assets
+
+00:43:24.840 --> 00:43:30.690
+together and using our affiliate
+multifidus deponent, they have a
+
+00:43:30.690 --> 00:43:33.930
+much better accuracy. So one
+audio manual, one order of
+
+00:43:33.930 --> 00:43:38.940
+magnitude smaller than the high
+fidelity only, I assure you in
+
+00:43:38.940 --> 00:43:45.900
+the red line here. So from this
+point, we can say it's really
+
+00:43:45.900 --> 00:43:50.640
+efficient by using mighty
+fidelity learning for small
+
+00:43:50.640 --> 00:43:58.620
+businesses. Okay, I have shown
+many cool examples of machine
+
+00:43:58.620 --> 00:44:02.100
+learning, especially deep on
+that however, all these examples
+
+00:44:02.640 --> 00:44:05.550
+are actually all the machine
+most of the machine learning
+
+00:44:05.580 --> 00:44:10.350
+models, they are limited to
+interpolation. But in practice,
+
+00:44:10.620 --> 00:44:15.540
+we always has explanation. So
+the robustness test I shouldn't
+
+00:44:15.540 --> 00:44:21.270
+be for for the Fw application is
+expiration, but is only adding
+
+00:44:21.270 --> 00:44:29.250
+noises It's not that's why needs
+to be kept as patient more than
+
+00:44:29.250 --> 00:44:34.260
+that. Then how can we hand out
+the explanation? So this is the
+
+00:44:34.260 --> 00:44:40.470
+last part of my talk. Still we
+consider the explanation is
+
+00:44:40.470 --> 00:44:45.990
+operator learning setup. So we
+try to learn an operator G with
+
+00:44:45.990 --> 00:44:50.580
+inputs you are input is V or
+politics yo, if you can see the
+
+00:44:50.580 --> 00:44:56.220
+V is sampled from a space of
+Gaussian random Fiat with mean
+
+00:44:56.220 --> 00:44:59.640
+zero function and covariance
+kernel KL
+
+00:45:00.900 --> 00:45:04.080
+For example, it could be a
+squared exponential already a
+
+00:45:04.080 --> 00:45:08.760
+base boundary kernel showing you
+here, in this kernel, this
+
+00:45:08.760 --> 00:45:14.280
+apparent parameter L. So if L is
+large, let's say 1.0, then the
+
+00:45:14.280 --> 00:45:18.030
+functions in this space, they
+are all smooth, showing you the
+
+00:45:18.030 --> 00:45:23.370
+plot, if owl is more than a
+function is, will become more
+
+00:45:23.370 --> 00:45:30.150
+oxygenated and flush aerated. So
+what if we train an airlock by
+
+00:45:30.150 --> 00:45:34.290
+using all the functions in this
+space, there are first
+
+00:45:34.290 --> 00:45:38.070
+functions. But what if we try to
+predict it for the function is
+
+00:45:38.100 --> 00:45:42.150
+visit conditional as you can
+probably walk there intuitively,
+
+00:45:42.360 --> 00:45:46.950
+the error must be large, because
+it's the expiration, we have
+
+00:45:46.950 --> 00:45:50.970
+never seen this kind of complex
+function important during the
+
+00:45:50.970 --> 00:45:57.330
+training. So let me show you two
+specific example of the edge
+
+00:45:57.330 --> 00:46:02.040
+patient in this optimal learning
+setup. So on the left, we have a
+
+00:46:02.040 --> 00:46:09.840
+simple OD, DOD is equal to V V,
+V M to learn the G, mapping from
+
+00:46:09.840 --> 00:46:15.990
+V, the right hand side of OD to
+the solution of OD, then we
+
+00:46:15.990 --> 00:46:19.410
+generate different trading
+assets and different attesting
+
+00:46:19.410 --> 00:46:24.930
+the asset. So the x axis here is
+plot is a quarter last for
+
+00:46:24.930 --> 00:46:30.930
+training. And the y axis here is
+coalition's for testing, that in
+
+00:46:30.930 --> 00:46:37.050
+this plot your diagonal line to
+the training and testing spaces,
+
+00:46:37.500 --> 00:46:43.200
+they are the same space, the
+same correlation class. So our
+
+00:46:43.230 --> 00:46:47.610
+training equal to our test. So
+this is integration. And we know
+
+00:46:47.670 --> 00:46:53.070
+that we can do well for the
+Indonesia. And let's look at the
+
+00:46:53.070 --> 00:46:56.280
+arbitrage and go over these
+domain. So in this domain to
+
+00:46:56.280 --> 00:47:00.840
+collect less for training, it's
+smaller than the calendulas for
+
+00:47:00.840 --> 00:47:06.000
+testing. So in this case, is
+belongs to Azure. However, if we
+
+00:47:06.000 --> 00:47:10.500
+look at the error here, so the
+color is error, you can still
+
+00:47:11.220 --> 00:47:16.740
+have a small error. So in this
+case, we call this as an
+
+00:47:17.130 --> 00:47:21.690
+aspiration minus, so it's
+aspiration, but it's still a
+
+00:47:22.680 --> 00:47:27.210
+small error, but for the Boolean
+triangle of this domain. So, in
+
+00:47:27.210 --> 00:47:31.260
+this case, the correlation is
+for tuning is larger than the
+
+00:47:31.260 --> 00:47:35.220
+correlation for testing. So
+which means between the network
+
+00:47:35.430 --> 00:47:39.390
+using smooth functions and a
+test using now suppose
+
+00:47:39.390 --> 00:47:43.020
+functions. So in this case, we
+have a large arrow. So this is
+
+00:47:43.020 --> 00:47:48.420
+expectation, VM to address as
+tribulation paths are about to
+
+00:47:48.420 --> 00:47:53.400
+unfold, especially miners. So in
+this case, it means the trains
+
+00:47:53.430 --> 00:47:58.590
+network using complex functions,
+but a test using smooth
+
+00:47:58.590 --> 00:48:04.920
+functions, so the network can
+handle it. The same phenomena,
+
+00:48:04.920 --> 00:48:08.670
+we have observed the many other
+examples, for example, defeater
+
+00:48:08.670 --> 00:48:13.710
+you actually recursion and many
+more. Okay, we have to address
+
+00:48:13.950 --> 00:48:19.470
+this issue of ash patient our
+past. But before we designed the
+
+00:48:19.500 --> 00:48:22.470
+algorithm, so let's first in the
+first step, let's try to
+
+00:48:22.470 --> 00:48:26.970
+quantify the complexity of an
+equation. So, if we do we have
+
+00:48:27.000 --> 00:48:32.490
+two spaces F two quadrillion
+fields a form space and F F two
+
+00:48:32.490 --> 00:48:38.190
+space. So, we try to measure the
+distance between these two
+
+00:48:38.190 --> 00:48:42.930
+spaces. So, one way to do to
+measure this is by using a W two
+
+00:48:42.930 --> 00:48:50.850
+metric actually the current
+here. So, back here, I what I
+
+00:48:50.850 --> 00:48:55.020
+tried to show is that the W
+metric cannot be only used to
+
+00:48:55.020 --> 00:48:58.320
+measure the distance between
+these two spaces, it can also be
+
+00:48:58.320 --> 00:49:03.270
+used to quantify or to indicate
+the complexity of attribution
+
+00:49:04.230 --> 00:49:11.700
+again for the OD example, we are
+testing and four different space
+
+00:49:11.730 --> 00:49:18.450
+of a compatible train training.
+And in this plot, so, the x axis
+
+00:49:18.510 --> 00:49:21.570
+is the WHO distance between the
+training space and the testing
+
+00:49:21.570 --> 00:49:27.120
+space, the y axis is the ash ash
+patient error. So, you can see
+
+00:49:27.930 --> 00:49:32.850
+the log log scale the expedition
+error error as a linear scaling
+
+00:49:32.970 --> 00:49:39.780
+versus W distance. So, which
+means we can use Tableau to
+
+00:49:39.780 --> 00:49:46.740
+distance to infer or to indicate
+how the complexity of the edge
+
+00:49:46.740 --> 00:49:53.010
+patient for a new input. Then
+based on this, we design this a
+
+00:49:53.010 --> 00:49:58.200
+framework of flowchart for
+reliable explanation. So first
+
+00:49:58.200 --> 00:50:02.610
+step is do we have SSTO We have
+a pre trained deployment, or
+
+00:50:02.640 --> 00:50:06.390
+predefined data set we're going
+to do now is pre training.
+
+00:50:07.680 --> 00:50:12.840
+Therefore a new input input
+function V. The first use apply
+
+00:50:12.840 --> 00:50:16.470
+our pre trained upon that do the
+prediction. Let's say I'll
+
+00:50:16.470 --> 00:50:22.710
+provision your tiada then we can
+quantify whether this huge
+
+00:50:22.710 --> 00:50:25.890
+theater or whether this input
+function v belongs to
+
+00:50:25.890 --> 00:50:31.050
+interpolation, or attribution
+manners or exploration past. If
+
+00:50:31.050 --> 00:50:34.350
+is interpolation or
+extrapolation miners, then we
+
+00:50:34.350 --> 00:50:39.450
+know, we can have a good
+accuracy by directly returning
+
+00:50:39.600 --> 00:50:44.880
+to a prediction of your tiara.
+If ash patient minus a plus,
+
+00:50:45.060 --> 00:50:54.150
+then the Utah would have a large
+error, then we have to improve
+
+00:50:54.180 --> 00:50:58.890
+or Colorado or Utah, but we
+can't wait about a year to do
+
+00:50:58.890 --> 00:51:02.130
+this will require some
+additional information. So the
+
+00:51:02.130 --> 00:51:06.180
+additional information through
+some physics or some new data
+
+00:51:06.180 --> 00:51:13.110
+set. So the field is clear,
+usually I refer is the governing
+
+00:51:13.110 --> 00:51:16.950
+equations. So if we have the
+county equation, then we can do
+
+00:51:16.950 --> 00:51:22.350
+the fine tuning over the pre
+trainer report net in order to
+
+00:51:22.350 --> 00:51:27.780
+prove improve accuracy. If it's
+a new data set, first of all,
+
+00:51:28.080 --> 00:51:32.220
+the new data set definitely is
+small, right if you have already
+
+00:51:32.220 --> 00:51:37.050
+a large asset for our for
+Newspace, then we can target the
+
+00:51:37.050 --> 00:51:41.580
+opponent for that. So, if we
+assume we have we only have a
+
+00:51:41.580 --> 00:51:49.050
+small asset for the for new
+cases, then we can still do fine
+
+00:51:49.050 --> 00:51:56.610
+tuning by using the new spouse
+the asset or we can also apply
+
+00:51:56.730 --> 00:52:01.440
+the multi fidelity idea I have
+discussed. So our producer, your
+
+00:52:01.440 --> 00:52:04.380
+Ciana, although is less
+accurate, but it can be your
+
+00:52:04.380 --> 00:52:08.910
+channel for arbitrary input and
+arbitrary location. And a new
+
+00:52:08.910 --> 00:52:13.380
+data set is more police accurate
+event which is can be viewed as
+
+00:52:13.380 --> 00:52:19.020
+high fidelity, VA primary fear
+learning so integrated to so in
+
+00:52:19.020 --> 00:52:24.510
+our paper, we have developed
+many different versions of how
+
+00:52:24.510 --> 00:52:29.340
+do we do the fine tuning How are
+how we perform the Marty Fidel
+
+00:52:29.340 --> 00:52:34.770
+learning. So have you noticed
+here, there are many different
+
+00:52:34.800 --> 00:52:40.380
+approaches. But let's look at
+one example of this global
+
+00:52:40.380 --> 00:52:45.750
+climate change. So GSR data set
+of the daily surface, air
+
+00:52:45.750 --> 00:52:52.500
+temperature, TX and also
+pressure px from the ES 1950 to
+
+00:52:52.500 --> 00:52:57.120
+2021. And this is one example of
+the temperature and the pressure
+
+00:52:57.210 --> 00:53:05.580
+of the earth filthiest on the
+date of January 1 2021. And we
+
+00:53:05.580 --> 00:53:09.570
+aim to learn ophthalmology
+mapping from the temperature to
+
+00:53:09.570 --> 00:53:16.680
+the pressure. However, we only
+train our Diplomat using the
+
+00:53:16.680 --> 00:53:23.250
+data set from 1950 to 1955,
+which is the first five years
+
+00:53:23.250 --> 00:53:26.790
+for training, then we'll try to
+do the prediction for all the
+
+00:53:26.790 --> 00:53:32.190
+remaining years. And he's a
+pilot here in SC four liter Yes,
+
+00:53:32.460 --> 00:53:37.860
+we will have a larger aspiration
+error. Because we have a global
+
+00:53:37.920 --> 00:53:41.490
+climate change pattern or the
+correlation between temperature
+
+00:53:42.090 --> 00:53:47.310
+and pressure. They are not
+fixed. They change over time.
+
+00:53:49.740 --> 00:53:52.980
+Okay, then you also improve the
+prediction accuracy, let's say
+
+00:53:52.980 --> 00:53:58.950
+for this date, January 1 2021.
+Let's consider we have one we
+
+00:53:58.950 --> 00:54:04.740
+have extra the asset at 100
+Weather locations I assure you
+
+00:54:04.770 --> 00:54:10.590
+all the pie the black dots here
+so we have 100 spots
+
+00:54:10.590 --> 00:54:15.030
+measurements on the Earth's
+surface, then by using this
+
+00:54:15.630 --> 00:54:19.050
+actual measurement, you can
+improve the accuracy of our
+
+00:54:19.050 --> 00:54:24.540
+prediction because this is a
+final error, it's been turned
+
+00:54:24.540 --> 00:54:36.480
+off of all areas is below 0.7%.
+It is it what I tried to present
+
+00:54:36.480 --> 00:54:41.010
+today, so basically we have
+developed a family of deponents
+
+00:54:41.640 --> 00:54:45.870
+strategy, cornet mill net, a
+purely deployment of 3d Point
+
+00:54:45.870 --> 00:54:48.540
+edge, and many different other
+versions
+
+00:54:49.829 --> 00:54:54.089
+on and we have applied our
+network to many, many different
+
+00:54:54.089 --> 00:54:57.569
+applications multiphysics
+multiscale applications. I
+
+00:54:57.569 --> 00:55:01.139
+didn't present all of them, but
+you can funded some references
+
+00:55:01.139 --> 00:55:06.749
+here and also in our website. So
+on the last page, I let me
+
+00:55:06.749 --> 00:55:10.019
+briefly introduce our software
+called defense D. So this is
+
+00:55:10.019 --> 00:55:13.079
+open source software for
+scientific and machine learning
+
+00:55:13.109 --> 00:55:16.589
+and all the physics informed
+learning. It implements many
+
+00:55:16.589 --> 00:55:19.259
+different methods. For example,
+all the deep corners are
+
+00:55:19.259 --> 00:55:21.929
+different versions, I am
+presented a and other physicists
+
+00:55:21.929 --> 00:55:29.129
+informed nanowalls and some
+other networks. Nowadays, we
+
+00:55:29.129 --> 00:55:34.589
+have a more than 50 contributors
+around the world, adding a
+
+00:55:34.589 --> 00:55:38.759
+frequent delay to contribute new
+features and a new code to the
+
+00:55:38.759 --> 00:55:43.559
+library. And he can get up Yeah,
+free, feel free to use the
+
+00:55:43.559 --> 00:55:50.249
+library, or modify elaborate to
+implement a new method. With
+
+00:55:50.249 --> 00:55:57.359
+that, thank you very much for
+your attention. Yeah, thanks.
+
+00:55:57.480 --> 00:56:01.410
+Thanks for the wonderful talk do
+so now we'll have the q&amp;a
+
+00:56:01.410 --> 00:56:11.940
+section. Oh, Harry, US in the
+early stage. Um, so he asked us
+
+00:56:11.940 --> 00:56:16.440
+the theory talking about how
+many there are parameters we
+
+00:56:16.440 --> 00:56:20.070
+need to use to successfully
+approximate the operator?
+
+00:56:20.969 --> 00:56:24.329
+Yeah, that's a cool question. So
+in the theory here, and also in
+
+00:56:24.329 --> 00:56:29.969
+the second theory, I should have
+here it's only a theory of the
+
+00:56:29.969 --> 00:56:32.939
+universe or possible
+approximation. So which means
+
+00:56:32.969 --> 00:56:38.309
+the guarantee is there exists an
+outcome, that good enough party
+
+00:56:38.429 --> 00:56:41.579
+does not provide us more
+information, for example, what
+
+00:56:41.579 --> 00:56:45.569
+should what an outsider should
+be? But you know, another paper,
+
+00:56:45.629 --> 00:56:52.649
+at least in the end. In this
+paper, we did more analysis over
+
+00:56:52.649 --> 00:56:56.039
+the narrower size. For example,
+if we try to achieve if some
+
+00:56:56.039 --> 00:57:01.379
+error was generic, essentially,
+if you're interested in
+
+00:57:01.379 --> 00:57:05.039
+different you can refer to this
+at this paper. However, this
+
+00:57:05.039 --> 00:57:09.989
+paper still has a limitation, we
+only consider a very specific a
+
+00:57:09.989 --> 00:57:16.499
+few rpds of form more complex
+PDS is the downside is too
+
+00:57:16.499 --> 00:57:17.009
+annoying.
+
+00:57:17.909 --> 00:57:24.239
+Okay. So Raven, ask, what are
+the branch and chunkiness inputs
+
+00:57:24.239 --> 00:57:28.289
+respectively for the PD examples
+like the dassie and the
+
+00:57:28.349 --> 00:57:29.699
+affection diffusion
+
+00:57:29.699 --> 00:57:34.079
+problems? Yes. So for the
+network showing here, for the
+
+00:57:34.079 --> 00:57:38.189
+terminate the inputs is the
+coordinates is the same as
+
+00:57:38.189 --> 00:57:42.269
+pings. So for example, the
+spatial coordinate x y g, if a
+
+00:57:42.269 --> 00:57:47.519
+temporal coordinate energy for
+the branch net, the input is the
+
+00:57:47.519 --> 00:57:50.999
+specific condition or the PDE,
+you're trying to solve, for
+
+00:57:50.999 --> 00:57:53.939
+example, in this case, for the
+trauma net, the input is
+
+00:57:53.939 --> 00:57:57.899
+boundary condition. Then for
+other cases, for example, in
+
+00:57:57.899 --> 00:58:02.519
+this innovation diffusion case,
+the input is a diffusion
+
+00:58:02.519 --> 00:58:07.259
+coefficient, R DX, and also
+initial condition your Gen X.
+
+00:58:10.139 --> 00:58:18.209
+C, so I don't see any, any more
+questions, maybe I can ask one
+
+00:58:18.209 --> 00:58:24.029
+more, or the extrapolation part.
+So on page 39.
+
+00:58:26.369 --> 00:58:27.359
+So
+
+00:58:27.659 --> 00:58:33.779
+I see you use this additional
+information to correct the
+
+00:58:33.839 --> 00:58:39.329
+original tibone as a preventable
+net output. So you use kind of
+
+00:58:39.329 --> 00:58:44.039
+like physics and new data. So
+what kind of physics? Are you? I
+
+00:58:44.039 --> 00:58:47.759
+mean, assuming like in the
+complicated example, that you
+
+00:58:47.759 --> 00:58:51.179
+show the climate change? So are
+you assuming full physics?
+
+00:58:51.209 --> 00:58:55.499
+Exactly. I mean, you know,
+everything about the PDF and
+
+00:58:55.499 --> 00:58:56.729
+everything about the domain?
+
+00:58:57.480 --> 00:59:00.210
+Oh, yeah, good question. You
+know, people, what they did is
+
+00:59:00.210 --> 00:59:06.330
+we assume we know the PDS for
+this example. In this example of
+
+00:59:06.330 --> 00:59:09.960
+it to know those three things.
+So we only test the case of a
+
+00:59:09.960 --> 00:59:13.680
+new data set, because it's the
+fetus is too complex, as is
+
+00:59:13.680 --> 00:59:18.300
+unknown. I see. Nearby in our
+other cases, your favorite TV
+
+00:59:18.300 --> 00:59:23.010
+shows, if we know the physics
+right now is now a distorted
+
+00:59:23.010 --> 00:59:28.350
+version. And then you can play
+it for fine tuning. See?
+
+00:59:29.219 --> 00:59:34.619
+So if there are no more
+questions, let's thank you again
+
+00:59:34.619 --> 00:59:39.419
+for sharing his excellent
+research with us. Thank you
+

@@ -1,0 +1,1062 @@
+Uh thank you Tony for the very kind
+introduction and uh thank you for
+joining me today. And the topic I'm
+going to introduce today is uh how we're
+going to use generative model for data
+assimilation task in our subsurface flow
+system. Uh so before oops yeah so before
+um I'm going to dive into some technical
+detail I want to motivate the research a
+little bit. I know this is a very broad
+community on the datadriven modeling uh
+but my domain is specifically on
+subsurface flow. So why we want to study
+subsurface? Uh subsurface is very
+important for providing different type
+of resources. uh for example
+approximately 80% of US energy and 40%
+of water come from subsurface and there
+are many many uh important applications
+uh on the energy sides uh we have the
+hydrocarbon uh geothermal and for our
+net zero energy future we need to store
+carbon in the deep subsurface we also
+want to get groundwater from subsurface
+and also many other including like a
+critical mineral uh natural hazard
+investigation for the subsurface system.
+So one of the key question we want to
+work on for the subsurface system is we
+want to understand and also predict what
+happens in the large scale system. So um
+it's quite straightforward when we want
+to understand and predict we need to do
+modeling and uh here I'm using the flow
+model simulation as an example. Uh we
+started from the geological parameters,
+geological models as our input and we
+solve the numerical simulations for
+multiase flow in porous media and get
+the dynamic states like say pressure
+saturation for the whole reservoir and
+uh the example for the equation is we
+solve the diversity flow process. We saw
+the mass conservation and uh uh the
+numerical simulation for subsurface flow
+is actually quite challenging because we
+need to consider very complicated
+geological models and we need to model
+the nonlinear dynamics. Uh it's often a
+multiscale uh from poor scale to field
+scale and also a multifysics problem. uh
+we have a flow problem, we have thermal
+uh chemical uh mechanical problem for
+the whole system. And another more
+challenging issue is we don't actually
+really have all these informations on
+the equations and the parameters uh
+subsurface is very deep is a unseen word
+to us. So when we do all these forward
+simulation, forward modeling, we want to
+have a full understanding of all these
+rock properties. Uh here I'm presenting
+one example of a layer system with a
+font in the middle. Uh so we can see uh
+the color is different everywhere, which
+means the raw property is different
+everywhere. Uh so that's basically what
+we want for numerical simulation. But
+what we actually have is just very
+limited experiment near the well for
+subsurface because we need to drill the
+well to like thousands of meters. These
+wells are generally very expensive. We
+can only do experiment around the well.
+So most of the area are kind of unknown
+to us. We have lots of question mark and
+uh nowadays we have lots of monitoring
+techniques but all this information are
+kind of incomplete. Um we may have like
+the borehole data we may have geoysical
+or remote sensing data but these data
+generally are indirect sparse and very
+expensive.
+So the uncertainty is a big issue for
+subsurface is kind of a inherent
+problem. Um so with all these question
+mark when we do the modeling we first
+develop our geological model. uh here
+I'm using a gausian model as an example
+uh where we have a different guess prior
+gas of what's the geological model look
+like and here I'm presenting three
+different realizations and then we
+conduct numerical simulation on that to
+get the dynamic states and here I'm
+using CO2 injection as an example on the
+right is basically the CO2 saturation we
+can see with different geological models
+because the CO2 goes in very different
+ways. Uh the size, the shape, the
+orientation, they are all different. So,
+uh extensive monitoring with data
+assimilation is kind of essential for us
+uh to quantify and then further reduce
+the uncertainty uh in our domain or I
+also refer the data assimilation as
+history matching. So, uh in general, how
+do we do that for subsurface flow? um we
+use Bashian's uh framework or we use BA
+Bashian framework to solve this problem.
+So uh which means we start from ensemble
+of prior models. We may have like a
+thousands millions of gas was a
+geological model look like and we
+conduct numerical simulation to get all
+these prior data as show in the gray
+curve. It shows a saturation change with
+time. So we have multiple realizations.
+We can see quite a large uncertainty of
+that. And after we collect observation
+data as show in all the red dots, uh we
+can kind of use data simulation basian
+inversion to calibrate our geological
+models to match all these observations
+and further conduct numerical simulation
+to generate the posterior prediction as
+show in the blue curve. And then we can
+achieve the uncertainty reduction goal
+and we can also get a better
+understanding a better inference of the
+geological model. And uh so let's put it
+into the basia framework. So basically
+the posterior distribution uh is
+generated from the prior distribution
+and the likelihood and then we use
+numerical simulation to get our
+posterior predictions of the dynamic
+state. This process is still quite
+challenging as many other science and
+engineering task uh because first we
+need to calibrate very complicated
+geological models. uh here I'm showing a
+example of a fracture and 40 system we
+have been collaborating with Chevron
+years ago and uh it's a really high
+dimensional non-galion system if we want
+to calibrate all these fractures and uh
+the following task is since we want to
+uncertain quantification we generally
+need iterative simulation runs to get
+the distribution of no matter prior or
+posterior. So uh generative model these
+days actually provide us opportunities
+to generate all this distribution. Uh
+the idea of generative model is we want
+to learn the target distribution from
+the training data and generate new
+samples from the learn distribution. Uh
+so two uh very kind of a standard
+example these days for computer vision
+is we can generate image from gausian
+noise uh different dog image cat image
+and we can also generate image videos
+from different prompts from different
+text uh here we can generate uh leaf and
+with different orientations.
+uh but um how we're going to use it for
+our more serious scientific question is
+uh generates the conditional posterior
+probability of the model parameters and
+then uh further predicts our future. So
+uh the generative image is can be used
+for our prior distribution in the
+framework. It can help us generate the
+model and also generates the data. And
+another use similar to the generate
+image from task from text is generating
+the uh posterior distribution condition
+on some guidance on some observations.
+So the goal of this talk is uh we want
+to apply generative model to conduct a
+very efficient subsurface data
+simulation and uh I will introduce three
+recent work on how we are going to use
+generative model to generate prior uh
+prior of geological model or prior of
+the uh dynamic states for direct
+forecasting and in the end I will
+introduce a unified framework for a joy
+inference of both the model parameter
+and the state variables. So let's look
+at the first task on how are we going to
+generate the geological models. Uh so
+the case study I'm going to use here is
+for inhouse geothermal system. uh
+in-house geothermal is very important
+these days because it provide us uh
+renewable and reliable energy resources.
+Uh so the idea of inhouse geothermal is
+we want to uh inject cold water into our
+deep subsurface. We want to create a
+fracture in the subsurface uh uh
+basically to have the high permeability
+pathways to extracts the heat from the
+deep rock and uh to produce the hot
+water from the subsurface system. So uh
+the fracture really matters fracture
+network really matters in the inhouse
+geothermal system it's kind of control
+the flow and thermal behaviors but there
+still exist significant uncertainties uh
+here I'm presenting to different
+fracture network and after we do
+simulation we can see the temperature
+distribution can be very different so
+the goal of the first task is convey
+generate different fracture network and
+then further calibrate this fracture
+network condition on the observation we
+have. Um so back to the BA framework um
+the first task is we want to generate
+the fracture network and once we have
+the fracture network the likelihood is
+actually easy to calculate. we can apply
+numerical simulation on that and
+calculate the data mismatch and then get
+the likelihood. Once we get the prior
+get the likelihood then we can get the
+posterior. So for the prior generation
+uh the framework we use is the latent
+diffusion framework to generate the new
+fracture network that follow the same
+distribution as in our training data.
+So uh a little bit detail on this latent
+diffusion uh model. So the first step is
+we want to map the original fracture
+network into a latent space using
+variational autoenccoder. So why we want
+to do everything in the lat space? Uh
+because for subsurface flow uh when we
+want to infer the fracture geometry we
+may have thousands of fractures. Each
+fracture we need at least like four uh
+parameter to quantify the location, the
+orientation and the size and then we may
+have like a lot thousands to millions of
+parameters we need to calibrate. Uh it's
+going to have the curse of
+dimensionality problem. So uh the first
+is we basically want to parameterize the
+geological model and map it into the
+latent space. then it's going to be easy
+for us to sample and to calibrate. So we
+use wee to map it into the lat space. So
+the idea of a is we want to reconstruct
+the fracture and also at the same time
+we add some k diverges to uh make sure
+the latent is approximately gausian and
+uh uh the second component of the latent
+diffusion model is we use uh the
+diffusion model. So uh the idea of the
+diffusion model is a very popular
+architecture these days. The idea of it
+is we have the forward noising process.
+We gradually adding noise into that and
+to make it follow gian distribution by
+the and after multiple steps and uh then
+we want to generate new realization we
+use dising um process to basically get
+rid of all this noise. So uh we train an
+unit in the den noising process to learn
+basically the noise and to help us
+generate the fracture realizations. Uh
+so after we have this latent diffusion
+model we can combine that into our data
+assimilation framework. Uh we start from
+the gausian distributed latent variable.
+We apply the uh latent diffusion model
+to generate new fracture realizations.
+We conduct numerical simulation to get
+all different dynamic states and once
+the observation come in we can calibrate
+these latent variables to get the post
+zero prediction for the dynamic states.
+So the latent variable basically are
+updated for the whole framework. And
+then some of the model uh modeling
+techniques we use is uh for the
+parameterization we use latent diffusion
+model and for numerical simulation we
+use embedded discrete fracture models uh
+to basically modeling the coupled flow
+and the thermal process. And then for
+the data assimilation we use ensemble
+smoother based method. Uh what we use is
+ensemble smoother with multiple data
+simulation. Uh the idea is we calculate
+the mismatch we use the coarus and the
+information gain to update our latent
+variable and once we get our posterior
+latent variable and we can further use
+the latent diffusion model and the EDFM
+to get our posterior predictions. Uh so
+let's look at the case study we have.
+I'm not going to presenting all these
+details but basically what we want to
+work on is a 2D DF framework. Um here we
+specify we want to generate 20 fracture
+in total. We want to tune the fracture
+network to actually match the
+observation we have. And uh for the
+training data we use power law
+distribution to generate all these
+fractures. And uh uh then we conduct
+numerical simulation on that. Uh since
+the main uh target for this project is
+we want to know the geometry, we set all
+the other parameter to be homogeneous.
+Uh we inject cold water into the system
+and we produce hot water and we compare
+two data simulation setup. So one is we
+have one monitor at producer and the
+other is we have additional four
+monitors in the middle for this field.
+Um and we want to u measure the data
+using the tracer and the temperature
+measurement from the first few years and
+to predict what's going to happen in the
+future. So first let's look at what's
+the generative model give us. It give us
+the prior distribution the fracture
+network. The first row shows the
+training samples the MRST realization we
+use and the second row shows the LDM
+generative realization. So um I would
+say the fracture generation is actually
+very challenging task uh because the
+fracture is very thin but LDM still
+doing a very good job to generate. we
+can clearly see the fractures and also
+see the connection of the fractures and
+then we do some uh fracture statistics.
+Uh we use a method called a
+probabilistic half transform to detect
+the fracture line and then we calculate
+the statistics and comp uh compare with
+the training. Uh so we uh check the
+fracture list the angle the midpoint
+location it all looks good. Um the a
+little bit issue with the number of
+fracture since in this case we specify
+we only want to have 20 fractures but no
+matter for the training image or for the
+generated image they don't capture the
+fracture very well it's kind of related
+to the way we are using for the fracture
+detection but I would say overall it
+still provide a very promising fracture
+realization and we further validate with
+our flow statistics
+uh we conduct numerical simulation onset
+to get the 10% 50% and 90% of the flow
+statistics for temperature and for the
+uh tracer and we can still see like in
+the prior with a lot of uncertainty and
+uh the generative result is kind of have
+a very good match with our training
+simulation runs
+and then we further use it for our data
+assimilation task. So we have two set of
+uh uh monitoring data. The first uh the
+the first uh uh column is the result. We
+use one monitor. Um I would say the
+fracture geometry calibration is a very
+challenging task. So even though we have
+some observation, it's still really hard
+to give us enough information to capture
+what a fracture look like. But when we
+get more and more data here like say
+five monitor in total uh we observe
+significant uncertainty reduction as
+show in all the blue curve compare the
+gray shaded area as our prior. So uh
+this give us a um strong signal that um
+in this case we may need more
+observation data in the future. And uh a
+little bit on the fracture network
+tuning and we can see the true we have
+very clear fracture geometry the network
+and the connectivity. And if we look at
+the mean of the prior we basically see
+nothing. And when we have one monitor,
+it shows a pattern a little bit, but
+still not much information. And then
+when we check the posterior with five
+monitors, it's kind of give us a clearer
+pattern, especially near the producer.
+So for this case, um one main challenge
+for the uh subsurface task is the
+geological model can be really
+complicated. The geometry sometimes can
+be really hard to tune to calibrate and
+we need lots of observations.
+So that's one of the application of
+generative model for what we call the
+very traditional model based inversion.
+We want to infer the uh geometry. We
+want to infer the geological model and
+then run simulation to get our posterior
+predictions.
+The challenges still remain like say for
+this case if we have thousands of
+geological realism the generative model
+may have difficulty to generate all
+these fractures and uh also sometime we
+may have lot of unknown uncertainty
+source for the model inversion only if
+we know what parameter we want to tune
+we can tune that but what if so this
+system we have many many unknown and uh
+uncertainties resource from um multiple
+parameters. How are we going to deal
+with that? So a complement framework
+what we developed for years is called a
+data space inversion. So the idea is we
+want to directly use our observations to
+predict the future. We just want to skip
+and avoid all this model calibration. Uh
+so let's come to the second topic. How
+are we going to use generative model in
+this data space inversion for a direct
+forecasting?
+So uh back to the bashian framework when
+we want to generate the post zero
+prediction of our future condition on
+observation we still need likelihood and
+we still need prior distribution. But
+let's look at first what we have in our
+data vector D. So it's basically
+includes two component. The first is the
+monitoring data. We have pressure
+saturation stream data and the second
+component is the future we want to
+predict. It's not only the dynamic
+states of the current step but more or
+less on the future after 10 20 50 years.
+So we put some of the forecast in our
+data vector and then once we put
+everything in the data vector the
+calculation of likelihood is also quite
+straightforward. We just need a
+extraction matrix to get the observation
+from it. And then um the task is gonna
+just transform it to be how do we
+generate the prior distribution of the
+whole uh spatial temper data and uh
+since we consider the spatial temper
+data for very large scale 3D system
+parameterization is still very
+important. we want to conduct everything
+still in the latent space. So by
+parameterization uh we want to map the
+highdimensional non-gausian spatial
+temporal dynamics into our latent
+variable low dimension and gausian
+distribution and uh also ideally we hope
+the generator can preserve all these
+dynamics all these physics into the
+generated data. So this is a um very
+simple illustration. We want to start
+from the steel gausian noise use
+generator to generate the spatial
+distribution for different time step and
+uh then in that case once we have
+observations we can directly extract
+from the full data vector D and use it
+for calibration. uh so we have been
+working on the whole idea for years and
+we have lots of different architecture
+uh here I'm going to present youing one
+architecture we used recently for the
+spatial temper for the 3D spatial temper
+distribution and uh the input is we have
+a time series of all these spatial
+distribution and we apply the encoder um
+which is a 3D convolutional LSTM to map
+it in the latent variable and uh then
+the decoder is applied on the latent
+variable uh to map it back to
+reconstruct the original spatial
+temporal distribution. And uh the
+adversary part is we add a discriminator
+to basically force everything to be gion
+in the latent space then which enable us
+to do the direct sampling. And after we
+have this generative model, we can use
+the decoder as the generator when we do
+the calibration. And we can further
+transfer the conditions probability of
+data vector to the condition posterior
+probability of our latent variables. And
+uh then we combine uh we still use ESMDA
+here to generate the post theory
+distribution but we can also couple that
+uh with like say MCMC more time
+consuming more rigorous algorithm since
+the decoder part is super fast we can
+achieve everything just in second
+and uh let's look at the case study we
+have for this data space inversion
+The application we use is a geological
+carbon storage. Uh the idea of
+geological carbon storage is we want to
+inject CO2 into deep subsurface thousand
+of meters. We want to permanently store
+all this CO2 in subsurface. So after we
+inject the CO2 question we actually want
+to answer for the reservoir scale is
+first we want to confirm the
+performance. We want to see what's where
+the CO2 goes after the injection. We
+want to see how much is the pressure
+gonna increase for the whole system. And
+the second is there might be some
+potential risk associated with a CO2
+injection uh cause poor pressure
+increase going to trigger earthquake if
+in the 40 system. So we also want to
+know like what's the uh probability of
+any uh induced seasmicity. So uh in this
+case uh we are going to introduce two
+case study. The first is we use
+horizontal injection for a 3D system. Um
+we have four injector rails and eight
+monitors. I'm not going to introduce all
+the details for the setup but one thing
+I want to mention is for this geological
+model uh we consider the uncertainty
+from two source. First is we consider
+multiple geological scenarios which
+means uh we kind of parameterize use
+some global parameters like say the mean
+the standard deviation of permeability
+parocity correlationless and anisotropic
+angles. So these are the global
+parameters which define the geological
+scenarios and uh at the same time we
+also consider the hydrogenarity of the
+distribution which means the spatial
+distribution for every single
+realization is different. So with the
+traditional data assimilation task uh
+this type of task is generally very
+difficult to uh calibrate. uh we usually
+use some hierarchical architecture to
+first find the best scenario and then
+further um tune the hydrogenerity the
+geological model but with the data space
+inversion framework we don't actually
+care about all these parameters we just
+work based on the data we want to use
+our history to predict our future so uh
+the result for this application is um we
+and observe the CO2 saturation after 20
+years. The first row shows the prior
+realization. Uh we select everything
+using uh clustering and uh select the
+representative samples and uh the bottom
+shows the true result of the saturation.
+We can see basically based on the prior
+u none of the realization looks like the
+true realization. But after we apply the
+generative model and data space
+inversion for the post theory in the
+middle um all of the five of them they
+show very clear pattern of the
+orientation and they show equivalent
+size of the CO2 plume. We observe
+significant uncertainty reduction for
+the size and the shape
+and we also calculate some quantity of
+interest. For example, we are interested
+in the average saturation for different
+layer. We are interested in the average
+pressure and uh if we use the generative
+model to just generate the prior as show
+in the gray area still lots of
+uncertainty but after applying the
+calibration data space inversion we
+observe significant uncertainty
+reduction for that. And uh uh one thing
+I want to mention a little bit is if we
+do everything using numerical simulation
+um every simulation take five minutes we
+need to run like more than 1,000
+simulations. So one data simulation task
+may take days but when we use generative
+model directly work on the data. So once
+we finish the training process, the
+inferris is going to only happen in four
+minutes with one GPU. It's basically
+super fast. And since we have all this
+special temporal distribution in this
+data space, it's also very flexible in
+monitoring location and the arrow setup.
+So which means every time when we want
+to change monitor, we just modify the
+extraction matrix. we don't need to
+rerun all the simulation again and again
+to calibrate the models and generate
+posterior predictions.
+So another case is for the 3D port
+system with couple flow and geom
+mechanics and uh in that case we
+consider two fort in the 3D system we
+want to see we have three injector in
+the middle after we inject the CO2 was
+the response of the sleep tendency for
+this fort and uh we also consider um m
+multiple geological scenario here uh for
+example for the four properties. Um we
+change the uh permeability multiplier,
+we change the young modulus pose ratio
+and we also consider the spatial
+distribution for all these matrix. Um
+and we generate 1,000 realization to
+train this generative model in total. So
+uh for this DSI task, what we want to
+know is just the sleep tendency of this
+fort. So the observation we use is a
+pressure stream data from the floor
+monitors near the floor and near the
+injectors and uh we use generative model
+to generate the prior distribution of
+pressure strain uh effective normal
+stress shear stress together and after
+we get all these quantities we can
+predict the foot slip tendency.
+So uh similar observations for our post
+theory result uh for prior loss of
+uncertainty and after we apply DSI uh
+the post theory we see very clear
+pattern very close to our true
+observations and uh in this case since
+we consider a couple flow and geom
+mechanics problem the computational cost
+is higher is one hour compared with five
+minutes before and uh by using DSI
+everything can be done in four minutes.
+So it saves us a lot of time if we want
+to change the monitoring location or any
+of the measurement arrow setup. And uh
+similar for the sheer stress for the
+prior loss of uncertainty and for the
+post area we can observe a very clear
+uncertainty reduction for it. And then
+uh we calculate the quantity of interest
+for our task. Um uh we use the ratio
+between the uh share stress with the
+effective normal stress and we compare
+we calculate the uh mean value of that
+we compare it with our prior we still
+observe significant uncertainty
+reduction on the sleep tendency.
+So um with the generative model we can
+efficiently generate the prior of the
+geological model and also prior of all
+these datas. So can we actually combine
+everything together to uh have a unified
+framework to do a joint inference of the
+geological models and the state
+variables using generative model. So
+um how are we going to generate the
+posterior distribution directly based on
+our observations
+and and the idea is still um I do like
+the latent data assimilation idea. So
+for the joint model and data space we
+want basically have multiple encoder and
+decoder to map everything in the latent
+space and then we add additional layer
+to kind of capture the nonlinear
+correlation between the model and the
+dynamic state and then we only need to
+work on the latent space using
+generative model. It can save us a lot
+of time on something the large domain
+and also the encoder decoder net setup
+can help us capture all these
+correlations and then once we have the
+latent space we apply the scorebased
+diffusion model to map the latent space
+into gausian space. So for the forward
+diffusion similar to the latent
+diffusion before uh we gradually adding
+noise and we use the forward stoastic
+differential equations and then for the
+sampling process we use the uh reverse
+SD to get rid of all these noise and to
+generate the joint geological model and
+data variables. So uh one very important
+component for the reverse SDE is the
+score function. So basically here it's
+learn the prior and uh we're just going
+to use the gausian noise with the learn
+prior to generate the original
+highdimensional distribution and then if
+we don't do any conditioning it's just
+similar as the latent diffusion for
+previously for the geological model and
+how are we going to use it to directly
+generate the conditional probability. Uh
+the key idea is we combine the Bashian
+framework with the score function. Uh we
+just add the likelihoods into the term
+and since in this case we have all this
+data variable in the uh input space. So
+basically when we do the observation
+generation we can directly extract it
+from the input space and uh it's
+differentiable it's good and we can
+directly calculate the posterior score
+function and then use it to instruct us
+to do the posterior something. So with
+this framework, we still test it for a
+geological carbon storage task. And in
+this case, we have one injector in the
+middle and we first set four monitors
+around the injector. And we also
+consider a case what if we have like the
+whole saturation map uh illustrated from
+some 4D seesmic data. What's the effect
+of more measurements can provide us?
+So let's first look at the posterior
+data with the prior data. Here the gray
+shaded arrow still presents the P 10%
+90% of the prior generated by the
+diffusion very large uncertainty and uh
+after we provide some guidance using our
+observation data and using the
+likelihood we can clearly observe the
+uncertainty reduction the posterior are
+show in all these black curve as uh have
+a much smaller uncertainty compared to
+the prior. And uh so that's just the on
+the left is just the data from four
+monitors and on the right if we can have
+the whole map more sees data. So we can
+further constrain give us uh strong
+constraint and strong guidance on uh
+what's the posterior what's data should
+look like in the future and uh uh we
+also use it to predict the posterior
+saturation after 30 years. Uh here is
+the spatial distribution. Um the first
+row uh is the top layer. So this is a 3D
+model. I kind of um use different layer
+and different cross-section to show the
+result. And on the left is the true
+distribution. We can clearly see the
+pattern of the CO2 plume. And if we
+check the prior mean, so we basically
+don't see anything. We don't see the
+pattern. And after we have uh four
+monitors uh we calibrate the uh future
+prediction a little bit and the mean is
+kind of a look more like the true
+response we should have. And if when we
+have more and more seesmic data we have
+the spatial distribution we can further
+calibrate give us a more reliable
+posterior predictions. is looks much
+more like the uh true response and so
+that's for the data part and uh at the
+same time it can also uh generate all
+these model parameters uh simultaneously
+and uh in this case we assume is gausian
+distribution uh on the left is still the
+true result and uh um we can first guess
+the prior mean and since this is gausian
+basically
+Um the property everywhere is just the
+same. And when we have one monitor since
+the monitor are very close to the
+injector, we only observe the
+uncertainty reduction in the middle of
+the whole region and also like near the
+injectors. So uh for example like in the
+middle we kind of see a little bit of
+the pattern of the permeability
+distribution but after we get more and
+more observations
+uh we can further calibrate it and then
+now we have a clearer pattern of the
+permeability distribution no matter from
+the uh top layer of from the excess
+crosssections. So um this results kind
+of demonstrate the power of generative
+model for us to directly do um condition
+uh generating of the post serial
+probabilities and we can generate the
+model parameter generates a dynamic data
+simultaneously. We don't need to have
+any simulation runs even though these
+days we may have lots of s modeling it
+may help but this method is still enable
+us to um generate everything together
+and capture the correlation of all these
+stuff. So uh so um let me uh summarize
+the uh project I introduced today. So uh
+we first consider to use generative
+model to generate just the prior
+distribution. Uh we see the geological
+model the fracture network and we also
+see the application for the state
+variables and once we get the prior we
+can calculate the likelihood either from
+simulation or from um the extraction
+matrix and we use it for data
+assimilation. And the second is uh we
+develop a unifi framework to use latent
+scorebased diffusion to jointly update
+the parameters and also the future
+predictions. So um while reflection for
+the subsurface domain is uh since
+subsurface is very deep getting
+observation is really hard. So we
+generally only have like one point or
+only several point of direct observation
+of dynamic states. So one important task
+is is also what we are doing now is uh
+we want to incorporate multimodel
+observations
+um not only the incitual well
+measurements but also a lot of the
+indirect geohysical survey remote
+sensing data to use it to further
+constrain our model and to further
+calibrate our understanding. And uh
+another extension we are working on is
+sys either DSI or with a latence or base
+diffusion. It's very efficient. It can
+be directly used for the monitoring plan
+optimization. We can calculate the
+information gain based on all these
+realistic case uh to find the best
+location to put our expensive sensors.
+So um a little bit high level uh
+introduction on the research my team is
+working on these days. So uh the
+generative model and data simulation is
+only one component of the big picture.
+The goal is eventually we want to use AI
+to revolutionizing the subsurface flow
+modeling study. We want to use it to
+have real time predictions on certainty
+quantification and decision making for
+different earth environmental and energy
+systems. So um one of the idea is we
+want to have digital twins for different
+subsurface system and uh it's kind of
+built on the traditional what we call
+the closed loop management. We have
+monitoring, we have operation, we
+collect the data, we do modeling, we do
+data assimilation and then we make
+decision. Um and then using the decision
+is further guiding us to uh do the next
+step action. And uh so my plan or what
+my group is doing is we are trying to
+integrate the physics and AI in this
+very traditional closed loop management
+process to get a very efficient
+management for um lots of subsurface
+system and uh yeah in the end I want to
+uh acknowledge and thank the student and
+also my PhD advisor and also CMU for
+providing all this computational
+resource.
+Yeah, that's basically all of my talk
+today. Uh, thank you. Thank you for
+joining me and I'm open to questions.
+>> Thanks for the wonderful talk. Uh, it's
+very inspiring and interesting. So, now
+is the Q&A section. Uh, if the audience
+you have a question, please feel free to
+unmute yourself or raise your hand.
+Okay. Um while we wait for the audience
+for their inputs, I myself have several
+questions out of my curiosity.
+So uh I'll probably start with uh
+something on page 19 about uh the
+generation of the discrete fracture
+models.
+>> Yeah, page 19.
+>> Yep.
+>> Yeah. as you as you mentioned like
+making sure all these decoded images are
+looking like the description models are
+are difficult. I can totally understand
+that.
+>> Yeah.
+>> But uh I want I'm I'm wondering uh the
+unconditional generation sometimes
+actually non-physical and nonrealistic
+say they are blurred or broken. Do you
+see that in your
+Okay. So can you come on like do uh any
+specific techniques to like picking
+kinds of uh more realistic generations
+to to start with your uh in your like
+the UK process or uh making the whole
+model generate better images at all?
+>> Yeah, this is a very important area. We
+are also considering to have some
+improvement because we can clearly
+observe some like broken fracture here.
+And uh uh one strategy we are
+considering is uh the fracture network
+is not just like visually the image we
+need to use it for the following
+simulation. So we are trying to combine
+with the simulation input because for
+simulation when we do the embedded
+fracture we need the uh distance of the
+fracture uh to the center of the grid we
+also need the orientation of that and
+then it's provide us lots of
+implementation on like what the fracture
+should look like. So we are trying to
+see whether we can add some additional
+parameters not just only like say this
+that image into this training process
+and uh we we are also trying to see
+whether we can introduce some additional
+loss for the geometry informed because
+we know if everything is on one fracture
+then the orientation should be the same
+the angle should be the same. So one uh
+thing I'm we are considering is can we
+add some loss into that to have some
+soft constraint on that. Uh so um
+another issue for the fracture
+generation is probably the 30,000 may
+not be enough. We may need like more
+samples since it's quite challenging. We
+need to capture all these edge very
+clear and uh we may also want to do some
+like refinements or postprocessing based
+on these fractures. Yeah, thanks for the
+question.
+>> Yeah, sounds good. Uh so Joseph uh
+please take your question.
+>> Hi. Yeah, thanks for the talk. Um I'm
+wondering so in in your results towards
+the end it looks like
+the results might be a little bit biased
+maybe towards the prior. So I'm
+wondering if
+>> you've maybe tried like updating the
+prior with the posterior and then doing
+some sort of iteration and
+>> you know if you tried it like does it
+work and if not why not?
+>> Uhhuh. Uh are you referring like say the
+geometry or like overall the comparison
+of for example we have some uh uh like
+say here the prior very different but
+for the posterior.
+>> Yeah. Yeah. For example those. Yeah.
+>> Uh yeah. So um yeah let me use let me
+see if I have that.
+Yeah, I should probably have some like a
+prior and posterior. Yeah, for example,
+uh like say here when we do the prior
+assumption, so we kind of make it a very
+broad assumption have a very a lot of
+uncertainty. So when we do the synthetic
+case when we select the true model is
+kind of fall in the prior assumption we
+have. Uh so currently even though it may
+look like the post theory is very
+different from the prior but it's still
+always in the same assumption. So that's
+kind of one thing and the other thing is
+uh we actually have similar work if the
+two model is kind of biased. It's really
+outside of the prior distribution. We
+also have some techniques to instruct
+how are we gonna modify our prior. We
+want to redesign our prior and we often
+call that type has the model error. So
+we want to design a new prior that it
+may have a better understanding. So um
+that's also like the results the data
+simulation can give us not only just the
+posterior prediction but also some of
+the indication instructions for the
+future prior calibration.
+Yeah thanks. Yeah that's a very good
+question. Yeah. Um yeah, I I do think we
+have one paper um back to probably years
+ago on investigating the treatment of
+model error. Well, um in the data
+simulation process
+um
+any more questions from the audience?
+Um I can actually ask one more. So on
+maybe on page 33
+uh
+>> oh yeah so yeah this this results looks
+very promising and f fantastic but I
+want to make sure if I'm understanding
+correctly that the say the multi motive
+phase flow physics loss is actually not
+incorporated in the likelihood and the
+posterior in the generation
+um it has not been incorporated yet. So
+we just use the observation to calculate
+the likelihood. So I would say for now
+all the methods are purely datadriven.
+We don't have any like PD residuals or
+physics loss into that.
+>> I see. Yeah. It was a concern for me
+because seems like it it might give up
+some guarantee of physics cont
+consistency but yeah it's great.
+>> Yeah.
+>> Yeah. So that's also something we are
+planning for the scorebased diffusion
+because when we design the score
+function we can add the likelihood from
+observation but at the same time we can
+also add some physics constra as a
+guidance when we generate the post
+theory. So prior probably not
+necessarily you follow oh prior we can
+still add set but we just don't have all
+these observation that's just the other
+term u for the score function design
+>> yeah and ultimately do you plan to
+incorporate like different levels of
+data I I think you have like a the
+history I mean the lo history and the
+seismic data so like make it a whole
+integrated framework.
+Yeah, that's what we are currently
+working on. So, um sesmic data is a
+little bit different because um for all
+these state data, we can directly use it
+from the data vector but sesmic data is
+generally like indirect data. So, we
+still need to basically connect our
+either geological model or dynamic state
+to the sesmic data like say the
+velocity.
+Yeah, I see.
+Yeah, thanks for the answers. Um, so are
+there more questions from the audience?
+So, if not, let's thank you again for
+her awesome research. Um, yeah, thanks
+for the wonderful talk.

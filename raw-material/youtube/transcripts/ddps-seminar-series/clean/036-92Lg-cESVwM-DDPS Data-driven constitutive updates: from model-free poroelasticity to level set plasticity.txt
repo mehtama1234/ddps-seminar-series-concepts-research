@@ -1,0 +1,1791 @@
+all right
+um hi everyone welcome to the ddps
+seminar uh before we introduce our
+invited speaker let's go over some
+rules and resist logistics first of all
+please mute yourself during the talk
+unless you have questions if you have
+questions you are welcome to admit and
+ask
+otherwise please use chat room to post
+your questions so that we can address
+them in qna session at the end
+second today's tdp seminar is open to
+external audiences therefore
+no classified discussion is allowed so
+please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it
+uh now let me introduce our speaker
+today it is an honor to host steve sun
+who is an associate professor at
+columbia university since
+2014 he obtained his phd from
+northwestern in 2011 and worked as a
+senior member of technical staff at
+sandia national lab
+from 2011 and 2013 it was actually
+across the street from lawrence
+livermore national lab so it was very
+close
+and his research focuses on theoretical
+computational and data-driven mechanics
+or multi-phase materials with complex
+micro structures he is the recipient of
+several awards including the ias
+iacm john
+agrees a word ice
+gnqa
+with a medal uh prize and the asce
+emi and da vince awards the nsf career
+award young investigator award from the
+army research office and air force
+office of scientific research
+okay today steve will talk about
+data-driven constitutive uh updates from
+model-free pro-elasticity to levels of
+plasticity trained by neural networks
+which is very interesting topic so
+please enjoy and expect a wonderful talk
+now without further ado let me pass the
+button to steve by asking one random
+question as usual today's random
+question is
+what is your favorite things to do other
+than research
+uh
+yeah i would say spend time with
+our my children
+students
+my children are you as well
+my student is also my academic children
+but
+if i have time i will spend
+time with my biological tutors
+how many do you have
+i have two so you have two okay so you
+have a plane all right the stage is
+yours thank you steve
+okay so yeah so so uh yanzo thank you
+very much for the
+introductions and the invitations to
+give the talk
+i bring back my memory uh the time i
+leave livermore uh lots of wonderful
+memory um so today i would like to talk
+about
+um
+i would like to talk about our recent
+work related to
+using machine learning or data-driven
+techniques
+to create a constitutive response for
+computer simulations in particular for
+porous media and for solid
+that actually
+have a path dependence uh
+constituted response
+okay so before i get into the details i
+will let you first give
+the credit to the
+to the hero who actually
+done the majority of their work and all
+of the implementations are
+nicholas awareness my former student and
+my current postdoc that worked on the
+level set pacificity and
+bahadur
+bamini's that are actually working on
+the model v pro mechanics so
+uh roughly speaking i will talk about
+the model 3 pro mechanics in the first
+half of the talk and i will talk about
+the level set positivity
+so before i get into the details i would
+like to talk a little bit about the
+history of
+of the
+um
+rather unconventional way to write
+constituted law which is something that
+uh which is actually related to the
+to the ai and machine learning
+um
+so we did a literature review i i think
+that uh we can actually at least chase
+back the first new network
+constitutional to the in the 1988
+um
+where we we know that
+there is a
+attempt on training new network uh to
+create a constituted law for congress by
+that time there are not yet any
+recurring new network yet so the
+approach is to include a multiple
+previous time step and then using it to
+actually represent a path dependent
+behavior
+then there are more work related to the
+deal with the various uh improvement on
+the new network concentrated model
+but um in 2016 actually the first offer
+is in the audience
+then there is also another approach on
+introducing model-free approach um
+that enable a computer simulation to be
+done with our constitutional law
+uh and then there are many many other
+work that are actually related also to
+the
+so-called deep data revolutions and then
+um
+so um
+i guess a little bit of personal history
+i think that when i was um
+a phd student or postdoc we are still
+not yet in the ai spring so-called so i
+also
+tried to write the type of the data
+resolutions and i learned i graduated in
+2011 so a little bit before that and so
+um
+so the the talk i'm going to talk about
+in a sense is the summary of my own
+perspective on
+or or based on my own experience on work
+working uh
+in trying to cons using the machine
+learning ai technique to generate a
+constitutive law
+uh so i will first
+talk a little bit about the different
+approach uh maybe a little bit of survey
+on the difficult
+on the various approach that uh we can
+find in the literature and then
+one thing that we actually
+want to achieve in using the ai and
+machine learning degree constituted law
+is that we want something very easy to
+interpret but we also want something
+that work well with the limit data
+so in a sense we can uh in the
+literature we can find neural network
+that are only used or material
+parameter identifications in this sense
+the model will be very easy to interpret
+because
+with the algorithm and with the theory
+is really easy to interpret
+a given constituted model but then the
+problem is that it lacked the ability to
+discover new mechanism
+um and then
+uh and then there are symbolic
+regressions and recurrent neural network
+that actually have different attributes
+symbolic regression for example can
+actually
+allow us to create a mathematical
+equation based on the data but it's
+really hard to use in high dimension
+simply because the parametric space is
+so so large there's so many ways to
+write equations
+and then there are recurrent neural
+networks that are actually hard to
+interpret the results at least not
+directly
+and then there are model free approach
+that doesn't have a model at all but it
+requires a large amount of the data
+so how do we get there is something that
+i initially think about so how do we
+actually write a model that does doesn't
+require a large amount of data and yet
+being
+able to capture the physics
+but then there are another thing that
+are important to consider and that is
+when we have a very complicated physical
+phenomena and then it's really hard to
+um
+a write a model so when we train a
+constituted law uh it involves a large
+amount of computational power um
+um maybe produce a lot of greenhouse gas
+along the way but uh but also uh
+training uh conservative law or creating
+a constituted law is not easy
+um in in this case uh
+in a recurring neural network for
+example we need to
+in additional to formulating the problem
+we also need to tune the hyper parameter
+on the other hand the model 3 approach
+has a great advantage in the sense that
+uh if we have enough data so we we don't
+actually need to spend any time on
+creating a model uh we just need to
+actually create a mechanism to search
+uh for the material data and so there's
+no uh we and we so what in this talk
+what we actually want to focus on
+is actually uh two situations
+the one situation is that uh we have um
+we have enough data
+and then in this case we can actually
+adequately using uh um
+a model-free approach to actually
+complete the computer simulations
+or when we actually have a model or we
+actually gathering the data in which
+case a deterministic model are actually
+insufficient or or or very difficult to
+capture the physics um this is actually
+commonly encountered in uh
+for example in hydraulic simulations
+where the permeability
+velocity relationship has very high in
+variance in which case uh the pawn of
+writing a deterministic model that
+capture the mean behavior
+uh is less meaningful
+because you simply cannot matching the
+experimental observations
+another case that we want we need to
+deal with is that
+in general
+unlike the other field where the big
+data
+assumptions
+is actually can be taken for granted
+experimental data for solid or for
+hydraulic data are usually expensive
+so when the data is actually limited the
+the model-free approach because of the
+lack of the model
+may not actually functions as good as we
+would hope to be in this case
+uh we want to switch to a machine
+learning model that actually allow us to
+predict the future events without a loss
+of data
+without demanding a lot of data
+and then what we actually also want to
+explore is the interface between the two
+when is it possible that we can mix this
+uh
+uh these two strategy to create the best
+computer simulations depends on what
+data we can get
+and this is actually the
+a problem that we constantly think in
+our research group
+so roughly speaking the model uh the
+machine learning model are done by my
+postdoc nicholas awareness and then the
+model 3 approach are actually done by
+bahadur who's in the audience
+so uh
+here we basically extend the
+the idea that a previous uh
+um
+from a influential paper from the
+uh from the um
+from the caltech group
+uh we're basically trying to solve the
+we have a computer um
+uh simulations that are governed by the
+balance principle
+uh for the pause pole mechanics problem
+we have the balance of linear momentum
+and we have a balance of mass that are
+actually function as the physical
+constraint
+okay so in these
+two
+problem there are two constituted law
+that are actually um
+that will actually require experimental
+data to complete the model one is
+actually the relationship between the
+string
+and the effective stress
+another one is actually the relationship
+between the pressure gradient
+and the diastasis velocity
+so if you look at the data pair we
+actually have a string
+pair and then we have a passive gradient
+and velocity pair
+and in a typical way uh when we actually
+want to uh create a pole
+elasticity model we would actually
+conduct tests to obtain the stress
+string relationships with under
+different pole pressure and we would
+actually try to conduct hydraulic tests
+to obtain the
+uh the relationship between passive
+gradient and velocity
+now here
+one thing to notice uh what to notice is
+that in general the solar mechanics and
+the
+hydraulic data have different uh level
+of uh variants
+you can see that for example in this uh
+digital work physics paper and that
+published in 2013 the bug modulus uh
+discrepancy are actually
+within 10 to 20 order but the hydraulic
+uh
+constituted response are actually within
+one order in the in the log scale
+so um
+so the data in uh inherently have
+different amount of
+variance or noise
+and uh and so the the treatment uh to
+have to combine these two constituted
+law together is actually not actually
+task in particular in the model-free
+approach
+so uh here we did not actually need
+anything new compared to the classical
+model fee approach uh the only
+difference
+is that we actually add uh additional
+concentrated law and a new company
+equations
+so long story short the idea is that uh
+we would actually have a solution space
+that are actually uh
+sorry sorry about
+the moving of the slide so we would
+actually have a
+constant we will actually have a
+metaphor
+that actually uh um uh collect all the
+admissible solutions from the physical
+constraint and we actually also have a
+material manifold that are coming from
+the data
+the key point unlike the classical
+problem is actually not to create a
+smooth
+uh constitutive law that actually allow
+us to put the two model together to
+yield a unique solutions but we want to
+actually find out what is the closest
+pawn in the material database that
+actually minimize the distance of the
+physical constraint so in this case this
+would involve uh
+optimizations that are both continuous
+in the sense we want to actually
+find out the way to minimizing the the
+distance from the manifold of the
+physical constraint but we also need to
+select the particular material pawn in
+the database that allow us to minimize
+the discrepancy
+so the extensions of the
+pause media problem uh is actually um
+is not a
+particular difficult um what we actually
+need to do is actually to minimize the
+discrepancy between the
+um the the material pawn data and also
+the constitutive uh
+uh and also the constituted law so here
+the important thing that we need to
+invest here our invent here however is
+the notions of the distance
+and this we will talk about it later
+later on
+but long story short um in the single uh
+combination in the single physics case
+what we actually want to introduce is
+actually a norm for a
+product norm for the string and stress
+and the stress space we want to
+introduce the notion so that we can
+measure how close the stress strength uh
+uh uh data from the material data are
+actually to uh
+uh from the from the from the pawn of
+the
+of the constituted manifold
+okay so here
+the idea is you use the product norm in
+the sense that um
+we would define a vector space uh we
+will consider the coefficients of the we
+will consider the component of the
+string and stress
+as a six dimensional component so
+together the stress string would have 12
+um would have would constitute a
+12 dimension vector space and equipped
+with a norm that actually resembles any
+genome so uh s
+and c are actually um
+c uh so as here the s tensor here is
+actually the inverse of the c tensor so
+in this case this provide us a measure
+of the distance
+between the um the constitutive data and
+we can
+expand that idea into the
+uh pole mechanics data as well so in the
+in the case of the multi-physics we
+would actually solve the minimization
+problem for the solid
+and also for the or for the fullest um
+but then the questions that uh we need
+to ask is that um
+how do we define this c and then the s c
+and also these are two norms
+okay so
+you can see that the string and stress
+are actually of different order uh they
+have different units so it makes sense
+to actually re-scaling them uh to make
+the notion of the
+distance actually um
+uh more clear
+but then the thing is that the the
+constituted response are not necessarily
+linear
+so if we actually introduce
+a product norm to actually measure the
+distance is it the best way so this is
+something that we are currently
+investigating
+sorry i think some problem with the
+okay
+so the problem um the
+optimization problem uh including
+two-step
+and the interesting thing is that one of
+them is actually continuous we want to
+actually fix the uh material data
+uh pawn that we idealize and we actually
+want to find the physical fields such
+that it minimize the discrepancy
+of the data and and the physics field
+and then
+and then this could be a
+differentiable optimizations because the
+residual are actually um
+uh
+a smooth but on the other hand we also
+have a local step
+this is actually uh in a sense uh
+um the replacement of the constituted
+law we actually want to i identify the
+material pawn that actually on the
+database that are actually minimizing
+the distance
+in so the
+in this approach in the modal v approach
+the
+most difficult part
+or the one of the most major challenge
+is to solve the descript optimization
+problem where we don't rely on the
+gradient but rely on the search and
+ranking to determine which pawn is
+actually
+the best well fit uh the optimum pawn to
+actually fulfill the
+closest to the physical constraint
+okay so the continuous problem are
+actually uh the metaphor are simply uh
+the specific uh um
+a quantitative response that fulfill the
+the balance equations
+for the linear momentum and the
+and the mass
+so in this case we can actually
+introduce a lagrangian we can use the
+lagrangian multiplier approach to
+enforce the particular data set uh
+uh
+to to actually formulate the
+optimization problem this is actually
+very similar to the original data
+different paper the only thing that we
+knew we add again is the new additional
+equation for the balance of linear
+momentum and then the introduction of
+the time
+so but then the thing that we want to
+address is the following as we see
+earlier
+we have data of different variants
+and we actually also
+the data also have a discrepancy in the
+sense that obtaining
+in general obtaining the hydraulic data
+could be more expensive
+than obtaining a stress strain curve so
+how do we address this discrepancy of
+the data availability issues and the way
+we propose is use a hybridized approach
+uh the idea is actually again very
+simple we don't actually
+need to use the
+uh the the data driven approach for both
+constituted law we can actually choose
+one of them and in this case we can
+actually minimize we can actually
+simplify the search problem
+if you have enough data on a particular
+constituted law or if the constituted
+law are too hard to generate then we
+actually switch from a model based
+approach to a model 3 approach
+if we actually if the motor base
+approach is actually suitable then we
+will simply
+use the modal base approach this is
+actually two additional of this variance
+formulations of the hybrid
+hybridized or pole mechanics
+formulations
+in one case the solid model is actually
+based on the constituted law
+uh but then the full
+model is based on the data on the other
+case the reverse is actually true
+so this is actually the just
+comparisons um of the two approach
+obviously a model based approach if it's
+actually calibrated correctly would
+demand less data and not only that it
+can also save time uh in this case in
+the brief force approach if you look at
+the hybridized uh approach in both
+hybridized approach it's actually
+a function faster
+when we have uh whenever we have more
+data point
+um
+so so this hybridized approach in that
+sense could actually help us save some
+time
+but another important issues we want to
+deal with is the descript optimization
+search so we don't have a model but the
+price replaced is that in the database
+we need to identify the the optimum data
+point that help us fulfill the physical
+constraint
+uh and this is actually classically done
+by the nearest neighborhood search but
+here we'll try to do something
+differently um
+so first we will try to our approach is
+to try to use the kdg search
+and uh we basically do a simple check
+here if you actually have the if you
+have this um
+product norm that looks like an energy
+norm okay so c can actually split into
+two parts
+uh based on the uh chelsea
+factorizations
+and in this case we can actually rewrite
+the material space in uh
+you and then we can minimizing it using
+the l2 norm instead of using an energy
+norm after the factorizations we
+basically will store the data using the
+the factorized uh uh
+material database
+and we can use the and we can use the
+kdg search to speed up the search
+so you can think about it if you have
+the brute force way uh to search the
+data point what we basically have is
+that we have uh we basically need to
+measure the distance between the
+um
+the manifold the uh the physical
+constraint metaphor to the particular
+material pawn and we actually need to
+minimizing the distance and then rank
+them
+so in the kdc search we can save a lot
+of time by identified by pre-petitioning
+the domain and then find out the and
+then use the partitions to actually
+saving the search time to identify the
+pawn
+sorry about it
+so one thing that we actually did is
+that we partitioned the data space
+into subspace and then using the kdc
+search to identify the particular
+partitions of the data and then in the
+last level
+we would actually just use the needles
+label research to identify the material
+of the particular material data
+uh so the result is actually
+uh the benefit is quite obvious so we
+try to do the classical
+of brute force research and in in this
+case when we increase the number of data
+we actually the model fee
+accuracy is increasing but then the time
+is actually the search time also
+increased because now we have to compare
+more pawn
+versus in the kdc search because in each
+time of the partitions we actually would
+only
+uh um select half of the data pawn we
+can actually uh
+have uh the the surf speed for the
+discrete problem i actually increased
+much slower
+in a much slower way so that could
+actually help us to obtain the
+to continue the computer simulations uh
+even when we have a lot of data pawn to
+compare
+uh this is actually more uh comparisons
+uh for the for another problem as you
+can see out the more it doesn't the
+whether you use the kdg search or the
+root force approach is is actually
+uh doesn't matter much when we don't
+have enough data point but when the data
+pawn are actually increasing then the
+then the speed uh become our important
+uh issues and the kdc search can
+impossibly
+help us uh continue the model fee
+simulation without uh suffering from a
+very slow uh consultative update
+so we compare first with the linear
+problem which obviously doesn't require
+a model-free approach this is just to
+check the model is correct whether we
+use the model free or using a fully data
+defense when we are given enough data
+pawn
+uh this is actually the details of the
+uh console td response predictions as
+you can see
+one thing we can observe is that when we
+don't have enough data pawn um the
+constituted response that are actually
+obtained turn to
+uh tend to lack smoothness over time
+this is actually simply because of the
+fact that when the database actually
+when when the pawn crowd in the
+constitutive
+manifold are more spa then the the
+choice of the data we have is actually
+less and hence you can see that
+artificial oscillations which supposedly
+can be resolved by adding more data pawn
+uh so so this is actually in a in a
+sense illustrate the fact that and this
+by the way is just a 1d problem so it
+illustrate the fact that the model 3
+approach could work but then um
+when we don't have enough data then uh
+then the then the
+we need i also need to you need to deal
+with the fact that some of the con the
+lack of the data would actually lead to
+a
+model respond that are less moved than
+expected
+uh this is actually another comparisons
+in the stress relaxations
+so our goal is to simulate a pulse media
+so a pause media when compressed
+even though the solid respawn have no
+path dependent behavior because of the
+diffusions of the prophylact it will
+lead to a stress relaxation
+so here we first again generate a linear
+database where we simply compare
+and check the correctness of the
+implementations and then we actually
+compare
+uh the the algorithm we check the
+algorithm rather it functions on the
+non-linear um
+model so in this case we use the file
+element as the benchmark and we generate
+the data from a model to create a point
+cloud and then we actually examine
+the concentrated response
+as you can see here when the data when
+sufficient data are available
+um the model can converge correctly
+uh this is actually uh another
+simulation for the model 3 approach in
+which case we use a real um data
+of the of a sandstone data
+so as you can see here the porosity
+permeability relationships are actually
+in a prawn crowd that are naturally not
+uh that will be very high in variance in
+which case we can actually use the
+kossini common to get the meat behavior
+but the meat behavior doesn't
+necessarily capture the physics or even
+the training of the constituted law
+for that reason
+it actually makes sense to try the model
+3 approach where we simply map the
+concentrated pawn into the available
+data point
+and this is actually a fully coupled
+problem where we apply the displacement
+with no flux boundary and we see how the
+pole pressure build up and how does the
+water moving inside the domain
+in this case we use a hybridized
+formulations in the sense that the soil
+mechanics are actually coming from a
+model only the hydraulic part are
+actually coming from the using the data
+different approach the reason is that
+the solid concentrity response we can
+get a reasonable
+stress ring curve that doesn't have the
+high invariance with reasonable accuracy
+uh i mean particular um
+from the classical triaxial compaction
+test data
+so um and this is actually the response
+we will get the domain are actually uh
+heterogeneous with uh porosity
+fluctuated in the space and we can
+actually run the calculates the long the
+calculations and compute the co-passer
+so if you look at one particular
+constitution
+one quadrature pawn in the
+in the domain
+what you will see here is actually that
+the the data as we actually run the
+selection it choosing different data
+points on the material data on the
+material database instead of trying to
+uh is that from trying to make a
+predictions inside a smooth predictions
+so this
+could make sense when we actually could
+not write um
+a good constituted law that actually
+able to capture all the pawn or in this
+case deal with the high intelligence
+you can see the analogues this is
+actually very close to a case where the
+data in a new network training where the
+wear is all very overfeeding in a sense
+we will probably get a very similar
+behavior
+so uh there are some ongoing work uh
+actually my
+student told me not to
+not to show all the steps so i'll just
+show the results um
+but here is actually the idea
+if you think about it the material
+constituted response is not linear so
+the tools to using uh
+to to assuming that the data is actually
+in the equilibrium record space is not
+necessarily the best approach
+uh the reason is the notion of distance
+so if you think about it if you want to
+model the distance be on a flat surface
+it makes sense to use the norm to give
+us a sense of distance but if you
+actually try to measure the distance of
+on earth like the distance between paris
+to japan
+um the data itself of the surface is not
+a flat line so the notion of distance
+using the norm as a replacement of the
+distance doesn't apply so we need to
+think about uh a different way to
+actually minimizing the distance
+by thinking about where
+what is the metaphor of the of the data
+that they live in
+so here uh without all the details but i
+hope that we will finish the paper by
+december this is one numerical
+experiment in which case we have a
+database but then we actually taking out
+some data
+okay and then um
+the the upper result is actually the
+metaphor
+calculations we use we construct a
+constitutive metaphor and then using the
+the correspond at the right matrix to
+actually measure the distance and then
+solve the same model-free problem
+you can see that even in this case where
+there's a big hole in the database we
+can get a response a good result versus
+the classical um
+a distance search will actually lead to
+oscillations in the string field uh this
+is also another uh ongoing work is to
+deal with the model fee problem when we
+don't have enough data
+again uh you can compare um
+the two approach
+in this particular case we simply try to
+shear uh we try to apply the
+constitutive law in uh on the trust
+system one interesting thing we find is
+that when we don't have uh
+uh in this particular case if you don't
+have enough data the even though the
+material is completely elastic it's
+non-linear elastic we may actually
+create a
+seemingly path-dependent behavior just
+because of the
+due to the artifact uh uh um
+due to the artificial effect of the
+search and also the lack of the data
+bond but when we actually um
+consider the metaphor approach we may
+actually get a smooth respawn
+so here the the key thing we
+we try to convey is that we will try to
+think about
+uh
+the right approach uh when we deal with
+different amount of the data how do we
+switch the strategy and also how do we
+measure so one thing that um
+in this research we find in particular
+exciting is is not just given the amount
+of the data how do we generate the model
+but how do we properly measure uh the
+the notion of distance
+so uh and then this will go to the
+i think i'm a little bit running out of
+time so maybe i would
+uh how many times should i
+you're okay uh we have a 10 let's let me
+know if i'm actually running out time
+yeah yeah so
+so the
+another strategy we want to talk about
+is uh working for basicity
+so at this point we haven't
+we know that some literature that
+dealing with um
+model-free uh possibility
+but um
+i think that right now um
+for the positive data because the
+behavior is path dependent we want to go
+back to something that uh that are more
+model based just to
+uh uh overcoming the demands of the data
+so uh here we were actually for the
+positivity we were actually using um a
+new network's uh strategy
+so i want to talk a little bit about the
+history of the constituted law hand
+crafting a constitutive law as we all
+know is a very time consuming process
+you can see in this figure
+it takes almost 100 years from
+what mises j2 plasticity
+into a sand model but then how many 100
+years do we need to wait when we have a
+when we have so many new material that
+getting design or metal material that
+are getting designed
+so there is a demand on try to
+automate this process in some sense and
+try to
+take advantage of the model also to
+to improve the data collection process
+um so
+the classical approach
+by classic i mean a few years ago that
+getting started is to use the recurrent
+neural network to generate a
+constitutive model for the path
+dependent behavior
+but then there is a problem in this
+approach in the sense that
+when we actually use the strength
+history to predict the stress
+uh it's really difficult to
+access the
+um
+the thermodynamics or the admissibility
+of the constituted law for example
+without the speed of the elastic and
+plastic string is up to analyzing what
+energy getting stored what is the energy
+dissipations
+so we use alternative way where we would
+actually cut the whole learning process
+into two steps
+the training of the elastic energy
+functional and the chaining of the
+u-surface in particular the training of
+elastic energy functional have been
+talked about in the literature quite
+often but here our focus would be on how
+to train the the new surface
+okay so in particular
+if we actually just simply trying to
+parametric find out the optimum
+parameter of the use surface we won't be
+able to discover anything new
+so how do we actually retain the general
+fee uh how do you make the learning
+problem as general as possible and not
+making it too difficult that is actually
+one of our goal in this research
+uh so for the lack of time i probably
+would go over this a little bit faster
+so
+the elastic part we can actually
+generate energy functional by actually
+the constitutive law by training the
+energy functional
+so here the idea is that instead of
+training
+generating a supervised learning that
+link the strength to the stress we try
+to create a more label by actually uh
+using both the energy the strength uh
+sorry the energy the stress and the
+stiffness all as the output
+and we actually have this data in the
+experiment we're just not using it
+in the classical machine learning
+training
+the advantage of including the stiffness
+and the energy is that when we increase
+the energy we can check the physical
+property of the energy
+for example we can enforce complexity
+and the good thing about study in
+incorporated stiffness is that it is
+similar we can also check
+the
+ellipticity and then the stability of
+the energy functional
+uh so this is actually some of the
+response that we can get in the training
+of elastic energies functional we
+actually found out that uh using a high
+order objective functions actually held
+not only on generating a better
+steepness but also on generating better
+stress and energy even though the
+minimizations include a free term
+instead of just the energy term
+and this
+uh
+method have not only applied on our
+direct remarkable summations for the
+final element it has also been applied
+in our recent work on simulating uh hmx
+crystal uh injecting material uh for
+finite strength problem
+in this case we actually doesn't have
+the
+energy data the hybrid elastic energy
+data but we actually have a stress data
+and then we use the initial point of the
+energy to change the concentrated law
+for this poly crystal we can see that um
+even with a without a very sophisticated
+multi-layer perceptron we can actually
+create a very good
+uh match in the concentric response on
+the stress string curve
+but more importantly is that
+we can also introduce uh the physics
+through our transfer learning strategy
+so here we basically uh try to enforce
+two things the material frame in
+difference and then the symmetry
+we actually introduced a test where the
+rotation tensor are put into the
+deformation gradient and we actually
+check whether we can get the same energy
+when we change the observer orientations
+and we also check whether for the
+symmetry rotations rather we can
+maintain the same concentrated response
+um
+and another thing that we can also do is
+to check the acoustic cancer behavior so
+when we compute the tangents we
+for a given orientation and
+we we obtain acoustic tensor and then
+the eigenvalue of the acoustic cancer
+gives us the wave speed of the material
+in this particular case we can actually
+find out what is the minimum um
+of the
+wave speed and we can actually ensure
+that the constituted law actually lead
+to a stable result by ensuring that the
+wave speed is actually not going
+negative
+uh
+i think for the second time we don't
+have time to
+go through that but i also want to
+saying that the tuning of the hyper
+parameter we also make a attempt on
+training it
+uh with the reinforcement learning and
+we can find the optimum set of the data
+so uh
+and also
+for the level set training approach that
+we introduced one of the important
+important thing is that it demands the
+degree of continuity
+so in
+but then the
+while we can actually choose the hybrid
+tangents
+activation function to enable that i've
+what we actually found out at least in
+critically is that um
+using the ielu
+uh seems to be a good choice if we can
+actually introduce additional multiple
+layer to increase the degree of
+continuity so the idea is very simple uh
+we have uh
+ielu
+activation functions
+you see that corner here if you take the
+derivative you'll get a jump so it
+doesn't have enough continuity for us to
+take the second derivative to obtain the
+tangent
+however we can introduce a multiple
+layer so that the layer add itself times
+itself together and that would actually
+increase the defensive ability uh
+and then we can actually control the
+degree of our differential uh the
+continuity
+uh such that we can actually obtain a
+smooth tangent
+so this is just some small trick
+uh and in that particular case uh this
+technique is a pie on identifying the u
+surface uh permission signing the u
+surface
+so you can think about that um the most
+chewy way to call to channel to generate
+a constituted law is to create a
+learning problem where we actually have
+a string history to particular stress
+however if we actually incorporate the
+positive framework what we actually
+want to do is that
+what if if we know the elasticity the
+positivity constituted law could be
+complete if we know how the use surface
+involved
+in the stress space
+with that uh with that assumptions then
+we can actually consider the
+constitutive law motoring problem as a
+geometry problem we simply want to
+evolve a level set in the parametric
+space in this case uh for isotropic
+material that would be just the
+principal stress
+so
+with the direct numerical simulations we
+can actually run simulations that are
+purely elastic and then compared with
+the dns that activate the plastic
+positivity portions and from that we can
+actually obtain the data that
+that identifies the plastic string and
+from that we can constitute a new
+surface
+so there appears work on using the
+nerves to identify the use surface for
+perfect plasticity the problem is that
+when material show a plastic behavior
+the use surface can be evolved in any
+opportunity way possible
+if we actually from a solid mechanics
+background if you unders uh if you study
+j2 percentage we all know that the new
+service can enlarge in the stress space
+or move
+in the stress space but in general uh
+the material of the the symmetry of the
+used stress can also change it can also
+rotate
+so one of the most generalized way to
+represent that stress string behavior is
+actually uh create a
+parameterization of the new surface
+along with the cumulative plastic string
+so in this case we were formulating the
+u-surface revolutions as uh as a as a
+hamilton jacobi equations you can think
+about this very similar to training a
+pin problem where we actually uh try to
+solve that uh hamilton jacobi problem
+with the with the u surface
+corresponding to the principle stress
+and the accumulated plastic string
+the only difference here is that
+we only need to train the
+the this pin problem once and this could
+be it and then the result would be a
+constituted law that can be reused many
+many times as a replacement of the
+classical return constituted law
+uh so i think i'm about running out of
+time so i would just talk about the
+basic idea um we can get a in this
+particular case we can in this
+particular paper we can actually obtain
+the u surface and then use it and then
+if we continue to load the material we
+can observe what is the plastic string
+and from that we can actually record the
+involvement
+and then substitute and then adding the
+data and then the physical cons
+and the physics and the gathering law of
+the hampton jacobi equations we can
+actually change
+we can all and we can actually change uh
+uh use surface that are actually getting
+evolved with the activity plastic string
+or the any internal variable
+so here to simplify the training again
+we want to leverage the we want to
+generate the constituted law that are as
+moved as possible uh to overcome the
+oscillation we may sometimes observe in
+the recurrent neural network
+so the way to do it is the following
+when we generating the data we would
+only
+observe the yielding pawn
+uh but then this will be just a pawn in
+the it will be just be a surface in the
+parametric space however we can make
+assumptions that the u surface is a
+scientist functions in this case then we
+will generate a lot we can generate
+as many data as we want in the principal
+stress space in addition to the hamilton
+jacobi equation to change the model
+so in this particular case uh with the
+assumption that the u front surface is
+also a scientist and functions we can
+actually the experimental data can help
+us capture how does the u surface
+involve uh in time uh
+and then and then the the resultant
+constantly the law are actually
+in this particular case can be put into
+a classical return mapping algorithm
+we can also use the plastic string
+increment to introduce associative flow
+view as this example show we we don't
+necessarily need to change a plastic
+potential we can but we can also compare
+the rotations between the uh
+the stress gradient and the parasito
+direction to generate a non-associative
+route
+uh this is actually the difference
+between simply training a new surface
+and assuming then the u surface is
+actually a scientific functions and the
+implementations is actually very simple
+this is also one of the attractive form
+of the level set plasticity model in the
+sense that
+if you have a production code or
+constituted law that already have a
+return mapping in the string space you
+simply need to replace the classical uh
+elastic energy functional and then the
+yield functions with the chain functions
+the elastic
+neural network training uh the the new
+network that predicts the stress respond
+and then the new network
+that actually solved the hamilton jacobi
+problem will be put in here and here
+respectively
+and it can actually reproduce a lot of
+different plasticity model with
+various type of
+southerning
+this is actually exciting because
+instead of hand crafting different type
+of concentrated model each time we can
+merge all the effort into the into one
+meta model and given different data it
+can manifest different type of hardening
+different type of new servers that uh
+that in the history of time i actually
+handcraft one by one and it's uh in a
+very time consuming manner so this is
+some response that actually we see uh we
+actually
+uh identified uh something very close to
+um
+to a camcait positive but it can
+actually have a very complicated
+hardening or softening mechanism in
+different uh
+loading path
+so we can compare this with the rnn even
+with the limit data because in this case
+we don't need to use the
+uh the the um the recurrent neural
+network what we actually need to do is
+to use the um
+uh the multi-layer perception the
+training is much easier and because
+we don't actually need we would actually
+impose a memory through a kkd conditions
+rather than through the memory gate we
+don't see the oscillation that could be
+occurred in lstm or indicated recurrent
+neural network
+this is more response as you can see the
+the nice thing is not only we get a more
+stable response but you can clearly see
+that we increase the interval ability of
+the concentrated law here we know how
+does the new surface evolve and that
+tells us something about the anaesthetic
+involvement of the youth surface and
+also we can check whether the yield
+surfaces are thermodynamically
+admissible by check simply checking
+whether it's actually have the capacity
+required
+for a stable or physical
+compatible model
+so uh we're using this uh to replace the
+classical fe square approach in this
+case fft final element approach in which
+we have a poly crystal and then we train
+it with the new network and then we
+replacing it with the fe square approach
+as you can see we can actually run the
+polycrystal stimulation without actually
+associating each gaseous pump with
+expensive fft simulations and not only
+that we can discover a microscopic model
+that actually have interesting physics
+in it
+so this is the comparisons between the
+two fft simulations with the circuit
+model as you can see the results are
+recently closed
+we also think about how to expand this
+research in particular what we haven't
+talked about is the way to incorporate
+the internal variable
+internal variable represent
+representation of the memory
+and one of the reason that the material
+demonstrate path dependent behavior is
+because of the memory effect due to the
+particle internal rearrangement change
+and this could be very effectively
+represent in a graph the microstructure
+can be represented by a graph
+and there could be a way to capture how
+does the graph evolving in the during
+the constituted law during the past uh
+positivity loading and we can actually
+connected with the physics
+so um
+uh in this case instead of use
+handcrafting your fiber cancer or
+porosity
+or whatever um
+a physical internal wearable to
+constitute a positive a constituted law
+we will directly generate a low
+dimensional representation of the graph
+uh and then using it using the
+revolutions of the input feature vector
+uh to actually uh uh incorporate into
+the constituted law uh respawn um uh in
+so we can see some comparison this one
+is still ongoing work and this is first
+benchmark against a recurrent neural
+network um but you can see that it can
+be predict pretty complicated uh
+cyclic behavior
+another thing that we have uh been doing
+is to introduce the variational
+plasticity in energy with energetic
+approach where we actually simply change
+the elastic energy functional and then
+the plastic energy functional
+uh and this is actually compared again
+the j2 um positive
+case and also finally one ongoing work
+is not only on the upscaling of the
+constituted law but on the dam scaling
+so if we actually have fe square
+simulations at some point um we want to
+actually continue the simulation not
+using the new network but directly
+uh converge it back into the
+microstructure can we do that so in this
+particular case the final elements uh
+notes are actually represent as a graph
+and we actually
+found out what is a low dimensional
+feature of of the of the nokway graph
+evolved and then we're using that uh
+look wave to action we actually using
+the low dimensional representations of
+the enco feature vector
+we predict the revolution of the input
+feature vector and then using a decoctor
+to get back the field data
+uh so with that i think i already said
+too much running out of time so i will
+say the following um
+we have uh in the constitutive law
+problem we more or less deal with
+different amount of the data what we can
+control is a string and a hyper
+parameter and then the method but one
+thing i think that uh
+at least based on my personal experience
+that are very important is not
+necessarily
+finding what is the most uh latest
+gadgets for the new network uh that
+architecture that can solve the problem
+but to think about how to formulate the
+problem properly uh and i think that in
+this case uh i think i show a few
+examples where we are giving the same
+amount of the data but it depends on how
+we use those data to make the
+predictions we can get a very diverse
+uh
+response of different quality and
+robustness
+so with that i want to um
+i want to thank all the audience for
+their patience uh to listen to my talk i
+want to
+friend my sponsor for their continuous
+uh support i want to thank my student
+again nick and bahadur for um
+working very hard on getting this thing
+done and uh we can you can find more
+information from our research group
+webpage uh www.promechanix.org
+and thank you
+thank you thank you so much steve for
+the wonderful talk um i i didn't want to
+stop you because um
+i i hope i wanted everyone to get um you
+know full material from you uh although
+it's it's going over time because it's
+it's recording people can check um the
+recorded video
+next time um
+so that i i didn't want to stop you all
+right great thank you so much for the
+great talk i'd like to have a q a
+session um
+maybe for fall
+briefly um
+if you have any questions please unmute
+yourself and then ask questions
+uh have a quick one if that's all right
+your talk so the uh the data or the
+model free the data driven approach
+where you're looking for the closest
+point
+in your solution space
+you showed
+the points that were selected by a
+single
+single gas point in your simulation have
+you looked simulation wide at the
+statistics to see if you are
+giving all points at a given say
+porosity even treatment or if you tend
+to localize within regions as a solution
+space
+and so say you know you have some
+some statistical variability in your
+data set
+you tend to
+over estimate the variability based on
+your sampling or capture uniformly i
+mean
+are all the points been equally weighted
+or are the ones at the surface of a
+cloud of points or the internal interior
+of the cloud points
+tend to be weighted more heavily
+for example uh
+so right now uh uh
+so
+if i understand the question correctly
+um
+right now
+the pawn doesn't have a different way so
+we treat uh equally but that being said
+um
+the energy norm
+the c and s parameter that you choose in
+a sense also affect the indirectly
+affecting the importance of how you pc
+vp sections of
+of a distance
+and i think there are some work from the
+from the french group lauren steiner
+that actually uh study how does the
+choice of the sea he's solving his own
+mechanics problem how does it affecting
+the
+the convergence um yeah so to answer the
+questions uh
+my understanding and my student bahadur
+is in audience he can also jump in my
+understanding is that the date how does
+the data distribute does matter uh here
+we in the most example the data is quite
+equally distributed uh but then again um
+if you actually have a data that
+concentrates in some parametric domain
+and very small in other domain that
+could cause the issues if you're
+simulating in the region that have very
+small data right because you you even
+the closest pawn you can actually map to
+is still very far away
+from uh from the
+from the from the ideal situation where
+you have the actual data
+so yeah
+i don't i guess i don't mean are you
+purposefully applying weights to the
+data points i mean does the algorithm
+tend to
+um bias some points more than others
+because of whether they're in the middle
+or the edge of a cloud that's like if
+you
+sample the number of times each point
+was selected as the nearest point in the
+simulation
+i don't
+i don't think so although strictly
+speaking if you're a la nina concert did
+you uh respond then because you compel a
+sort of layer artificial energy uh from
+that energy norm maybe i can show that
+energy
+thing so big because so you do you would
+actually
+if your material is actually la nina
+and then your your norm is actually your
+c is actually constant you do have a
+perception that would buy us uh
+that would actually buy us two words uh
+um at some point over the other but it's
+not inherently there uh this is just
+because of the norm uh
+this is just because of the norm you
+choose again if the data obviously is
+linear then you then then every pawn is
+treated equally
+it can think about it so um
+you can think about it it's like if you
+have a curve and then you want to
+measure the distance if you're actually
+very far away you can actually use the
+curve length to measure the distance or
+you can use a straight line so if you
+use the norm it's equivalent to use a
+straight line so that would affect your
+perceptions uh they will set affect your
+perception a little bit
+so you it could be you can think about
+it it's like what is that called um in
+the 1d case like a differential one form
+where your form is actually just a
+constant throw um i don't know but
+explain it properly but yeah uh but
+yeah and actually chanting may also
+yeah
+what i'm talking about so
+at least when i've tried to do
+similar things when you have noisy data
+like this is that sometimes the the
+minimum distance formulation can
+preferentially select outliers
+but it also depends on how you're
+randomly selecting your original data
+set
+um
+and so one of the questions that i had
+actually in your plot of the migration
+of the single integration point if you
+could go to that slide
+which is in the neighborhood of this
+where was it it was a little bit farther
+down where you showed the actual
+migration that he had referred to the
+migrations so yeah this one
+yeah so one of the things that i noticed
+here is that there's kind of a direction
+to the migration
+and so what i was curious is is this
+coming out of
+because the sometimes i've noticed that
+the data points will kind of equilibrate
+a little bit because of your uh
+constraint set and so
+you depend it depends on your data set
+and your initial selections but it's
+believable to me that you would migrate
+to similar portions of the domain
+if everything is well conditioned but i
+was curious if this is under like a
+linear ramping and so it's kind of
+updating boundary conditions and that's
+why it's pushing you in a direction or
+the algorithm is itself
+migrating like this
+so
+i would say
+i think that this question are probably
+bahadur are you can you answer that
+yeah hi uh actually uh
+because here we had like uh
+we had like porosity is also a feature
+for us
+so we have like porosity permeability
+sorry porosity pressure gradient and uh
+velocity
+so uh
+and for each procedure we have a
+different data set
+so
+our data set is in a sense has one more
+dimension uh
+than classical sounds
+so based on the porosity we just choose
+like uh the closest process
+from that data update for for example if
+your porosity at this point of
+simulation is 0.2
+uh first i decide uh
+find those closest porosity data sets
+and then search inside those
+those data sets which in which each one
+has like so many data points right
+yeah so that's that's that's the
+hierarchy we do in the actual simulation
+for this particular problem because we
+wanted to keep track of the porosity
+evolution and our datasets are generated
+based on that process
+okay
+so
+and so the question i was asking related
+to the fact that you kind of seem to
+have there's
+there's pretty much a rightward trend in
+the data like you kind of have a general
+direction and my question is through
+yeah that's true because of if uh
+professor sun go back to the previous
+slide you see orally the domain is like
+in the compression mode right yep
+so because of that compression
+compression we expect uh
+yeah
+the reduction in the porosity and that's
+why
+you see that trend
+okay my cure my question actually was um
+are the boundary conditions sometimes in
+a non-linear problem very often will
+lamp ramp
+certain boundary conditions right
+and i was curious if that was
+what that was or if that was just merely
+the constraints kind of cinching in on
+the correct data point
+in that migration
+so the algorithms find that like it's
+we don't like we don't assume how to do
+that so
+the algorithms find the the
+the closest data and just substituting
+the equations that's that's why
+so over the course of that migration
+your boundary conditions are constant
+in here if i remember correctly for this
+i think i increased the boundary that
+that displacement is increasing so the
+the lateral compression is fixed but
+that view is increasing during the time
+okay so that makes sense so basically
+what we're seeing what so that was kind
+of my internal question is i have seen
+migrations of data points under fixed oh
+yeah definitely this is this is a
+transient problem so i usually i
+gradually increase the compression
+yeah so because yeah it's a problem x
+problem so it has multiple time step um
+well
+yeah i might my question was mostly
+whether it was at a single instant in
+time or whether this was over over the
+entire simulation from the beginning to
+the end yeah
+cool
+and then um
+i did have one other question about your
+discretization so when you add time to
+your constraint equations
+uh which is
+uh
+well we don't necessarily need the exact
+one so in the past when i've done that i
+needed to make a specific
+uh numerical approximation
+to set up that constraint did you guys
+have to do that or
+was there a different space you were
+able to make that constraint in
+actually we used the idea so in the
+optimization sense we could do uh first
+in discreting time and then space or
+first in space and then time
+so
+we what we did is like first in time
+because when i make it first in time it
+would be easier for the distance
+minimization to do the optimization on
+the space that's why you see that delta
+t in the norm
+if professor sun goes back one slide
+yeah i think that that id also come from
+i mean on
+relay work i think that
+professor ortiz we are with also with
+uh i've done some work on that
+equivalence what is that called if yeah
+static thing it descriptive in time and
+have uh
+lagrangian and then find the minimizer
+so yeah so if we look at the paper we
+basically uh
+follow that idea just just for
+convenience more than anything
+just to make a make it
+descript in time uh in each in each
+time instant you kind of solving a local
+uh cause i static problem and then we
+upgrade it to the next step
+okay
+yeah i just i didn't have could you go
+back to the equation just one more step
+or i think he said in your slides
+oh there it is okay
+so yeah you can see here that looks like
+actually one more actually one more
+previous
+i think one is like previous than this
+one
+and also more go back to this process
+more sorry
+here you see the next one here you see
+that delta t multi multiply the next one
+this one
+yeah
+so
+yeah the pro mechanics the pro mechanics
+metric is the first equation uh below
+than the proposed known for per
+elasticity
+yeah that delta t is coming because of
+the
+first discretizing in time yeah yeah
+yeah
+yeah just to make it consistent because
+because that one would have the unit of
+a power and this one would have energy
+[Music]
+right sounds good i think
+is there any other question i think it's
+a time to wrap up by the way
+um
+i think we're 15 minutes past wrap up
+but that's good i mean that's good
+there are many interesting
+in the professor's son's work uh
+presenting today yeah very interesting
+yeah wonderful wonderful all right um i
+guess with that we can conclude the
+seminar let's thank the our speaker um
+the steve son thank you thank you so
+much
+and
+hopefully um um you know this becomes a
+tends to uh do the future collaboration
+uh with uh yeah i hope so yeah i i may i
+may one day receive lawyers
+so yeah i mean don't just do the
+collaboration with the sandia please
+collaborate with uh lawrence livermore
+too okay
+yeah yeah
+all right thank you
+okay let's end the uh and the meeting
+thank you everyone for joining thank you

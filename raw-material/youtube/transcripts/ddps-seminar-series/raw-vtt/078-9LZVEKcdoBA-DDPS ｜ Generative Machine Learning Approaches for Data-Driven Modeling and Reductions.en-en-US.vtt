@@ -1,0 +1,3351 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.000 --> 00:00:02.940
+Welcome to the DDPS seminar, everyone. It is an honor to your host, Paul Atzberger, who is currently a professor at the Department of Mathematics of University of California, Santa Barbara. All right, thank you, like thank the organizers for this opportunity to talk today, I thought I would share a little bit of work that we've been doing on leveraging recent developments in generative modeling, and particular machine learning approaches that have been emerging, especially in the deep learning community, for the purposes of developing multiscale models, reductions and other types of representations for nonlinear dynamical systems have larger scientific simulations, you know, so fluid mechanics, materials, modeling, and so on. So I'm going to talk about a rather sort of small piece of the work that we're doing. And this is relatively recent work. And I'd be very happy to continue discussions offline about various directions and applications. So just to set a little bit, the context in which I'm motivated in developing these data driven methods, is, what we're really after are ways that we can utilize observations either taken from experiment or higher fidelity computational simulations, and really use data driven perspectives to essentially learn representations, which we can use as a simulator either to predict future behaviors of the system, or in the context of a much larger calculation where perhaps the part of the model that we're interested in replacing is very computationally expensive to compute at a high level of detail. But for the purposes of larger scale phenomena that we're interested in a much sort of coarsened or simplified model would potentially do the trick. But it might be very difficult to arrive at that through kind of traditional asymptotic techniques. And so what I'm also interested in is in doing this in the context, not only of deterministic systems, but stochastic systems. And that's primarily what I'll talk about today, I feel like again, to build some context, I need to say a little bit about techniques that are out there and have been successfully applied for this type of problem. So they can kind of compare a little bit and contrast some of the objectives of the techniques that we're developing. And so there's been a lot of work done over the years, of course, a data driven modeling of dynamics, probably one of the most notable one is this proper orthogonal decomposition. This is essentially a form of principal component analysis, where the basic strategy to build up your dynamical model, I'm here, I'm just showing a fluid mechanics model on the upper right would be to look at the modes in the system, essentially, that vary the most. So essentially, you would take your flow field create this very high dimensional point cloud, and effectively you're doing principal component and on that a really nice development in the direction of incorporating dynamics within this kind of linear frameworks is the dynamic mode decomposition, introduced by Schmid in 2010. And lots of developments by by various groups and communities, including Bronto, and Coots, in various directions. And again, this is a linear based model. Again, that's there's a lot of advantages. Having linear base models, they're much more straightforward to build theory for and, you know, potentially computationally efficient, that more efficient than training, let's say, deep neural networks. And so the basic idea in things like dynamic mode decomposition is you're basically going to take dynamical information into account by saying, well, which modes are sort of most indicative of that prediction of what's going to happen in the future over some set of snapshots. So you're basically looking for, again, the sort of best linear model and kind of the best basis in order to try to align your your linear predictor with the underlying data observations. There has also been really nice work done on using symbolic approaches, essentially, l one regression things like the lawsuit combined with the symbolic dictionaries, and that's a way that you can overcome some of the issues that I mentioned in these previous linear models. And again, lots of successes and nice applications of these techniques. And but you know, this has the drawback that you do need an sufficiently expressive library so that you can have coverage over the space of potential dynamic representations that are relevant for your system. So my main point of mentioning these approaches, I just want to give kind of some context of what's out there. And it kind of just helps set a little bit, the the overarching environment in which we're trying to develop these data driven techniques, I'm also gonna incorporate noise. So they'll also be a generative component that I'll be talking about in detail. And so the objective is, try to not just recapitulate the behavior that you're seeing in the training set, but really learn for intrinsic model, so that you can make either longer term predictions, or ideally, in the context of a lot of these scientific computing applications, be able to replace one of your more expensive models with one that's much cheaper by a longtime simulator. And so that poses a lot of challenges from the data driven modeling perspective, because, you know, depending on how you go about this, your model class might not have certain intrinsic properties that we're used to when we design into our numerical methods, you know, such as things like stability, which obviously be very important for longtime prediction. Also, another challenge is incorporating prior knowledge to the extent that we can, we often know a lot about, you know, the physics of the system or other mathematical structure in a system. And so we'd also like ways of including that as inductive biases in our data driven methods. So we'll talk a little bit about where I think there are opportunities to do that as well, in some of these nonlinear approximation approaches, as I said, these developments in the neural networks community in particular generative models, and I'll kind of put it in a little bit larger, probabilistic context. And and there's a lot of interesting directions, I think that this can be pursued for for a lot of the applications that I showed on the previous slides. But going beyond, again, that sort of linear approximations to that incorporate various types of nonlinear approximation classes. So as to motivate the examples, and I'll come back and I'll give some results for these. One of which is, you know, basically systems identification, or extracting state information, which is important in many different problems, including things like control. And the objective here basically, is to learn key parameters, from observations of the dynamics. These things go by, you know, many different names, depending on the community this. Now what we're trying to utilize here, as I showed in the upper right, just a little animation, if I'm trying to learn, for example, in this Orenstein lindbeck process, you can think of it intuitively from the mechanics point of view, as a bead spring system, where I'm trying to learn simultaneously, the stiffness, the damping and the temperature of the system, you know, what we want to do is somehow probe the dynamics in a way that would be indicative of those different properties. So there's going to be an interesting challenge, whenever you're trying to estimate a model from the dynamics that you may, you have to be careful basically, that you're probing the dynamics on the appropriate timescales, and that you have sufficient coverage over the response range that would be sensitive to those particular parameters. But the overall objective here is to try to learn dynamical representations from observations, sample trajectories. Also in reductions and course grading. I'll show an example where, you know, we're trying to learn essentially unknown force laws. And so how that can be done again, for this general perspective. In this case, this would be a nonparametric estimation problem where we want to learn an unknown force law, for example, in something like lunch, Yvonne dynamics, and so problems analogous to this come up in a lot of different contexts, in developing again, reductions, so that you can simulate things on larger timescales to overcome, for example, sources of stiffness, or in coarse grained modeling, of course, which is very popular, for example, in the material sciences community. So some of the interesting things that you could potentially do if you had good nonlinear estimation methods is, you know, not have to handcraft your estimators for things like the the force law. So one of the common ways you might try to go about doing this is to use something like maximum likelihood estimation. But of course, the immediate challenge you run into in the setting of these dynamic representations is that you have to specify likelihood functions, you have to compute those potentially on very high dimensional probability spaces. And so I'm going to show some alternatives to that approach. Alright, so I just wanted to give some of the kind of key key motivations here and context of where we're trying to develop these techniques just to give a, a sort of overview of some of the issues that arise. And I think there's a lot of potentially interesting ways, again, to leverage a lot of the recent developments in the machine learning community. In the case of stochastic dynamics, in some sense, we're trying to learn an entire ensemble. And so there'll be some interesting issues that arise there, given the roles that noise plays in stochastic phenomena. And then, of course, as I said before, we'd like to do all of this to obtain robust representations that are stable for the purposes of either longtime prediction or simulation. Alright, so I think I've said, you know, enough at the sort of the high level, and I'll start getting into some of the more details of the techniques that we're going to leverage and did further develop. So if you're not familiar with generative adversarial networks, I'm just gonna go through really quick, what these techniques are these recent developments in the machine learning community, closely related to generative modeling statistics. And so what I'm going to do is just go through perspective on generative adversarial networks. This is basically a way for us to train a simulator or an implicit generative model, that is this function that I'm showing here, which is g of z. And g of z basically has some noise source. And what it's going to do is generate a sort of collection of samples. And the objective here is to take our training data and take our implicit generator and have some way of comparing the samples that we get from the the training set with the samples that were produced by the generator. Now as I mentioned before, you know One way that this is traditionally be done, if you know a lot analytically about the generator is you could use things like maximum likelihood estimation. But if you do that, right, this requires the specification of likelihood functions requires you to go and perform those calculations during the training loop, which could potentially be quite quite challenging. The appeal of doing this adversarial training approach is instead of relying on a sort of pre specified likelihood function, what we're going to do is simultaneously train another model. This could potentially as well be a neural network, but can be taken from any model class you like. And I'll show a little bit about that in a minute. And basically, the job of this discriminator is to characterize how closely the samples that were produced by the generator differ. And so the discriminator, you can think of as playing a role analogous to a classifier. And if I have this collection of samples, its job is to say, Well, did those samples come from the training set or the generator, if they can distinguish that readily, then your you know, your generator needs to be improved, you can think of this as kind of like a two player game, where if I had a classifier loss, for example, the discriminator would be aiming to minimize the loss, while the generator would be aiming to maximize that loss for the discriminator. And so by making different choices of the discriminator, we can actually realize different divergences and metrics for comparing the empirical measures of the samples of generator with with that of the training data distribution. Alright, so that's a quick overview of of GaNS. So you have a generator G, what's different from some of the other modeling approaches is, we're not actually going to write down ever the probability distribution or measure directly, we're simply going to have an algorithm that generates from some random input samples, and then we're gonna tune essentially that algorithm, so that it produces high quality samples that agree with the training set, and then discriminator, the simplest case would be a binary classifier, which I'll use for illustration, and then I'll, I'll show how we can extend that. And for the purposes of these learning of dynamics, if it were a binary classifier, basically, the idea would be it would give us a number, maybe between zero and one telling us the probability that it thinks it was produced by the data distribution versus produced by the the implicit generator. So I'm going to write these probability densities down for the purposes of having a theoretical perspective. But in practice, you're only going to be working with samples from G and D will only be operating on sample sets from from G and the in the training set. So basically, you can think about a little bit like a it's like a little game where G is kind of acting like a counterfeiter, D is kind of a classifier, seeing whether this is real or fake. And your job is to create such good samples again, that the discriminator can't can't tell. Alright, and well, we'll see what that how that plays out mathematically, in a little bit. And, and that'll inform our choices for the discriminator model classes. All right, so the way that we're going to typically play this game is what we'll do is we'll have a synthetic data set, which is a mixture of samples that are taken from the generator samples that are taking from the from the training set, and those get mixed together. And we put label one on everything from the training set, and we put labels zero on everything from the implicit generator, and now in leverage results from the classification theory to create a loss function for the discriminator Model D. And so they score of the discriminator is basically going to be, you know, the 01 loss for assigning the correct labels to those sample points. Now, if we look at it from, you know, point of view of let's say, the Bayesian classifier, you can see that if d of x is interpreted as a probability, the ideal way to try to classify would be for D to estimate the probability that the label is one given that sample point because you know, you could have that both the generator and the data distribution produce the exact same sample, of course, in practice, there'll be a little bit of smoothness that needs to come into the problem, you know, where you want this for x's that are close that they have the appropriate probability assigned. And then one minus d is basically the probability of the label y was assigned. So of course, the Bayes classifier would be to just take the arg max of that conditional probability, what we're basically trying to do is develop an algorithm to find effectively that Bayesian classifier for this mixed synthetic data set which which is acting in for the class of ours point of view is effectively like a training set. But I call it synthetic training or synthetic label data, just not just to distinguish the original data from this synthetic one that we're using for the purposes of the GaNS. And so if we mixed together one half probability, the things from the generator and one half probability from the the original training data, this would be the gist distribution that we're training the discriminator over. And the Bayes classifier actually can be worked out analytically to be this. So it'll essentially just be the probability of the data distribution generating that sample over the sum of the probabilities of the data in the model distributions having generated that probability. So you can see that the optimal if we were to actually perform all of our optimization perfectly, the best discriminator, the one that would minimize the loss, the 01 loss would be given by this analytic expression here. Of course, in practice, we don't get that. But some interesting outcomes you see is that if I had that the data is crucial in the model attribution lined up perfectly, I would have that this d of x is one half. And that kind of means that the discriminator was maximally confused, didn't know whether it should assign a label of zero or one is the way you can intuitively interpret that. So if you now go and you get a little more mathematical about what we're actually computing, here, we have this objective function, the theta d, here are the parameters for the model class of the discriminator. And the theta g, here are the parameters of the model class of the generator, what we're basically minimizing in the loss function is this expectation of the log label probability here, this is the usual 01 loss, this is what that that amounts to. And now if you break it down for what we have, for the synthetic set dataset, you'll see that it breaks into these two parts. And this is the typical loss that would be used for discriminator. In something like, again, now we're gonna see, there's some drawbacks to this. And I'm gonna have to reformulate the GaNS for the purposes of learning these stochastic systems. But I wanted to kind of show you the sort of standard and original formulation before I do those modifications. So at the end of the day, what you'd be doing is trying to find an ARG min of this objective function to get your discriminator. Basically, you're trying to have the best classifier possible given that synthetic data set, and then the generators job is basically to try to mess up the discriminators ability to achieve a low loss. In other words, make your sample so good looking that the discriminator really can't tell between the samples it's producing, and those of the data distribution. So that's sort of the underlying strategy. And this is how it plays out mathematically, I've used a little bit of a modified objective here just to avoid some issues with vanishing gradients. But nonetheless, that's what this objective is ultimately achieving, when you arg max it with respect to the generators, parameters, you know, very prone to oscillations if you use kind of this alternative descent asset. But anyway, I just wanted to mention what the typical training objective is. And we're going to use some analytic techniques to work around that issue of oscillations that arises, I'm just showing an example with learning something which is relatively simple, which is a Gaussian. But the key point I really want to make here is you don't know in advance, typically, what is a good noise noise source. And so the real sort of issue here is the noise source I took to be a uniform distribution, I want to compute something like a Gaussian, you'll see that even trying to train a model that's this simple, GaNS runs into some and you see immediately that you get a lot of oscillations during training. And really what's going on here is it's very difficult often in ganz to to resolve the tails, especially if you don't have a decaying noise source. But you know, you could replace this obviously, with a Gaussian noise source, and you'd very readily be able to learn the model. But this is really the scenario that you often encounter in practice is the noise source often needs to undergo some pretty radical transformations in order to realize the target probability distribution. So we want to be very careful about the the objectives that we're using to train the GaNS. And there's this issue of oscillations if we use simply this relaxation, this gradient descent for discriminator, great asset for the generators. And so what we've done is introduced a way to modify the standard formulation of GaNS to incorporate some additional features to deal with some of those issues related to oscillations to deal with some of the issues related to the noise that I mentioned, as well as the the high dimensionality. And so we refer to this as stochastic dynamic GaNS. So the basic objective, again, is to learn implicit generator, a generative model GMC here, x would now be the trajectories and we'd like to be again, sample bass, so we'll use this setup with discriminators. Now, if you observe stochastic trajectories, the reason why I can't just use the standard GaNS formulation is the dynamic trajectories would be very, very high dimensional random variables. And so you can imagine it being very prone to not having good sample coverage. In fact, if you do the standard against formulation that I showed before, you can show that that loss that you ultimately get is based on callback leibler divergence, you have to be very careful about probability distributions being absolutely continuous with respect to the other. And so as a consequence, getting coverage in the sample space would be quite challenging when you go to very high dimensions. And so we're We're gonna do is we're going to use the probabilistic structure that we often know in advance about dynamical systems, for example, you know, if we're looking at something like longevity dynamics, we know that the new state is likely to depend on some previous number of states, in that case, two states. And so what I'm gonna do is I'm going to develop my learning methods over the class of general M step, stochastic integrators. And that's going to be the model class, essentially, for my implicit generators. And by doing that, I can sort of build in various inductive biases, including a learning within, let's say, the framework of numerical methods, which are known to be stable, at least for sufficiently small time steps. And, and basically, from that, I can then learn my representations in a way where I have a viable candidate simulator in hand. So from the modeling point of view, or probabilistic point of view, you can think about us learning over essentially, probabilistic graphical models, where we're going to allow for state k, there to be a dependence on the previous steps. Okay, so that's going to be the basic way that we deal with some of these high dimensionality issues. And then I'll talk about how that probabilistic structure, not only can we use for the full trajectory, but we also can look at trajectory fragments, as the signatures that we use in the discriminator to drive the generator towards the data distribution samples. So the key idea here is really we want to, we want to be completely sample based, so we can avoid having to specify likelihood functions. So throughout, there will be no likelihood function. So you can think about these as being methods that are alternatives to maximum likelihood estimation. Alright, so learn representations I'm going to use as my model class stochastic M step methods. So just to get some notation specified. This is just saying that voting this probabilistic graphical structure I'm showing here on the right, we'll have that state j depends on the previous M states, you can think of SY j minus one as the update from time step, or step j minus one to J, omega j, here will be the sample point because we're dealing with a stochastic process. And then the P here will be whatever parameters we have of the system. So these could be your weights of neural networks, or they could be parameters of the physical system that you'd like to learn from your trajectory observations also allow the parameters to influence the the initial conditions, where you could think about that is coming from some ensemble for the initial conditions of the system. Alright, so that's the basic setup in the model class that we're going to use for our implicit generators. And this provides all kinds of ways to incorporate prior knowledge, physical principles, we can sort of design into this update all kinds of features, I'm going to replace the standard kind of Jenson Shannon divergence approach of the original GaNS formulation with another approach that's kernel based. And that will also provide some other ways to incorporate inductive biases. And then as I said before, this encodes essentially these probabilistic dependencies. So we're not learning over the general space of you know, our n times d random variables, we're really learning over this class of graphical models. Now, once you do that, there's also a way to introduce different training protocols realize you can train this quite effectively, not just using the full trajectory data, but also using things like conditional distributions, or even just marginal distributions. And this allows for potentially big reductions in the number of dimensions you have to deal with during the training process, because you can utilize trajectory fragments. And so I'll show some results there, as well as downsampling by using different timescales tab. So the overall objective then is going to be to develop appropriate discriminators and critics for this sort of dynamic scenario. Currently, what we're developing are methods within the context of generalized moment methods or maximum mean discrepancy. And, and we found in practice, this seems to lead to some nice results with respect to avoiding some of those oscillations like I showed you in the standard GaNS formulation. Alright, so those three training protocols, I'll just say a little bit about them briefly, because they'll kind of come back when I develop some of the algorithms. So in the full trajectory case, essentially, what we're going to think of as the implicit generators distribution would just be essentially the sequence of snapshots of the dynamic trajectory. And of course, that's going to be very high dimensional. And that's not very desirable in training. Because, you know, again, getting sample coverage in a high dimensional space is, is quite challenging. So you need rather large batches to get meaningful comparisons. So what we're going to do often is downselect in two different ways, delta t here that I mentioning, doesn't necessarily have to be the time step of the M step generator. This could be much larger time step so that you're only sampling at you know, select times and that way you can get sensitivity to the dynamic responses on large timescales, but the underlying Numerix is using a much smaller or substep. And so that's the strategy we will typically use with these full trajectory approaches. And that's what's being denoted here by this tau that you're seeing there. And so the conditional methods, as the name implies, this will be where we'll use a trajectory fragments, this would be most appropriate where we're able to generate entries of the training set from something like a high fidelity simulation. So these would start off with like the same local initial conditions and then evolve for some period of time, it's kind of like a little local burst, if you like, of trajectories. And then of course, you're learning these probability distributions, which are conditionals, on those different samples for the initial conditions, and that that has, obviously training benefits. Again, if you have some control over initializing the training data set data, and then the marginals don't require that the marginal simply just take a fragment of the trajectories. And essentially, you're just trying to learn marginal distributions for some specified ranges, you can either do it as kind of like a sliding window, or you could have it at one specific time. So the main point I really want to make is there's all kinds of interesting variations and combinations of what I've specified here, that can be used to greatly improve potentially training when you're trying to learn these stochastic dynamical models. And so I'll focus on these kind of three standard cases. Alright, so for the generator loss, I'm going to reformulate it. So I'm not simply using a 01 classifier, and this is with the objective of trying to get a little bit more information about the dynamical track trajectories that can be used as a learning signal in the gradient of the generator. And so what I'm going to do is, instead of using just a sort of binary classifier, I'm instead going to learn a critic or a discriminator. That is essentially a function, which is going to aim to distinguish between the two probability distributions. So you can think about this function as basically being like a signature that tells me how different these two random variables are, where the function is restricted to come from some range of features or functional forms. And I'll get into that in more detail. From the probability and statistics literature. This is what's known as an integral probability metric. Depending how you choose this model class fancy if you're you can get all kinds of interesting metrics, including the Kentaro vix metric associated with optimal transport, like the Wasserstein metric, for example, that would be the one Lipschitz functions for its constant less than or equal to one, you can make other choices to get other well known metrics and divergences, the choice that we're going to make here and again, the whole purpose of this is to compare the empirical distribution of the generator and the training set, we're going to use a reproducing kernel Hilbert space for F, for f here, and we're looking at all of the functions that have norm in that space less than or equal to one. So there's a number of nice things that happen if we use that depending on our choice of kernel. This, of course, can give us rather rich ability to distinguish between probability distributions, while at the same time having some other structure which we can utilize for the purposes of training from these finite sample sets. A lot of what will happen here is, it'll be similar to doing something like a kernel density estimate of the two distributions and kind of comparing their difference. But of course, what currently you choose will affect what's being emphasized in those comparisons. So the key property that I'm going to use for that kernel for now, I'll just leave the kernel generic. And I'll say a little bit more about what we use, when I get into the examples is we'll use the fact that if we're going to reproducing kernel Hilbert space, then we can evaluate the function f at a particular value x, by simply taking the inner product of f with the kernel. Now using that property, if I substitute that in above here, it actually can be, I can simplify the form of this optimization problem that I need to solve. I'll use the notation up, you can think about this as an embedding of the first probability distribution, and mu Q as an embedding of the second probability distribution into the reproducing kernel Hilbert space, I can use that along with this kernel property to basically commute the the inner product with the expectation. And if I do that, then this integral probability metric that I get can be expressed in this form. This is what's known as maximum mean discrepancy. And you can see readily now that optimizing over all norm one functions would be given by simply taking the direction of that second vector or that second function. And that's simply given by the difference between the embeddings over the norm of the embeddings. And so when you work it all out, you know, again, going back and using this property of kernels, you can express this as the sum of kernel expectations. Now, all that looks great. The one drawback of course of this is that these are second order statistics and we'll talk about how we'll deal with that in a little bit. And so this provides us then from A sample based point of view, this would provide us with a loss function for our generator, in particular, we can take this expectation quantity, let's just square it to get rid of the square root. Since at the end of the day, we're interested in doing optimization minimizing and and then we can use this unbiased estimator here, which would then give us a sample based estimate of the MMD. And so that's what we're going to use for our generator loss. This is basically a way of determining the discriminator analytically, so I don't have to go through a separate training or optimization problem, like I did in the standard GaNS formulation. So now that takes the discriminator optimization part out of the problem. And now I can focus on simply minimizing or minimizing the objective for the implicit generator. And so that'll boil down to this loss function, which I'm showing here, which will amount to essentially the the the empirical estimator for the MMD that I'm showing in the upper right. And this is just computing NMD, the unbiased estimator for effectively those empirical distributions of G and D. Alright, so that's going to be the overall loss that I'm going to use in my generative formulation. Now, it boils down to how do I actually compute this in practice for performing training using things like Stochastic gradient descent, and so what's really crucial here is that I'd be able to compute gradients of that loss function efficiently. And it turns out that if I use just standard back propagation methods of the computational collagraphs, it should become prohibitively large for backprop. So I'm going to make use of more mathematical structure of this loss function. And so the first observation is just to note that we have to do these double sums over the samples not very computationally efficient, again, if we were to use sort of direct backprop on the computed expressions, but we have a lot of probabilistic dependency or that we know in advance, we know that the sample points, for example, come from those M step updates, we know a lot about the structure of the objective function coming from the the kernel evaluations that I showed you before. And so, you know, again, high dimensions, having to deal with these second order statistics. And that's what I'm going to address next. So the basic approach that we're going to take is closely related to Agile methods. And we're going to use that in a judicious way, both for computing aspects of the second order statistics, as well as the dependence on the stochastic trajectories. And in this way, then we'll have a viable training protocol for learning over those M step methods with these MMD losses. So just to give a quick overview of those techniques, what we're doing is, we're ultimately trying to compute gradients of an expectation. And so the way that we'll look at this from a mathematical perspective is we'll build all of the dependencies into the parameters p that we're trying to learn into the random variable. So we'll assume there's some base measure, I call that omega, you can view then the expectation, on our case, it's the MMD, that we're taking expectations of the stochastic trajectories are being generated by an implicit generator that has some parameters p. So the random variable is what has the P dependence, not the base measure. And in that case, then we can compute taking gradients in the expected quantity with taking expectations of the gradient of the random variable, essentially. So that's just the key assumption that we're going to make an our notation, essentially, or formulation. And of course, what we're doing here is a discrete approximation of that expectation and follows, as shown here on the right to effectively being able to compute gradients of the sample terms. Okay. So now if you look at the gradients of the sample terms, the problematic part is having to create gradients in the stochastic trajectory components. And if you were to go through again, and kind of do this in a straightforward way, using the chain rule, this becomes rather expensive, because you would compute gradients and all the different stochastic trajectories, and then ultimately contract them with these partials x and v. And so it turns out, and this is an insight that's used in Agile approaches, control theory and other areas, it turns out that because you're doing this contraction, there's actually an alternative formulation of the contribution of this term. And I'll walk you through how that plays out in the context of, of our methods. So the challenge is to compute efficiently the contributions of those gradients in p of the sample set. So as you adjust the parameters of the stochastic model, right, that's going to affect all of the samples that are produced. And that's what we need to deal with. So the alternative approach that we're going to take is going to be based on an Agilent formulation. And really, what we're going to utilize is the fact that if you look at the solution to that M step method, you see that it solves this implicit equation here. And so we're F has these components. And if we do that this implicit formulation allows us to utilize the implicit function theorem, which basically says that if we take a derivative in the parameters, we can express it in this way using the total derivative, and we can actually solve for XP in terms of derivatives of f. So we've kind of shifted everything off to the Let's hit function f, instead of having to compute in terms of x p directly, and that has a bunch of nice properties, as you'll see, because now what I can do is I can contract this expression quite readily. And often I'll get a problem that's much easier to solve than if I had constructed all of those explicit gradients. Alright, so then x p can be expressed in terms of the G Cobian. In this way, in terms of derivatives of the implicit function, f. Alright, so I've just copied that over here on the left. And the Agilent approach is to compute them the full derivative by plugging in this expression for x p, and then just rearranging the order in which you're going to do the contractions. And if you do that, then you can show that this whole expression will boil down to essentially contracting a vector r with F p, where r satisfies this equation. So the real challenge, then I would say, is to come up with an efficient way to compute each of the steps in this gradient computation, which is to compute g x f x, that gets you the G Cobian. Have an efficient solver for our then compute GP FP. And then now you get your full gradient through combining those terms with that solution, or it's really the computation of our that's typically the part that that can get computationally expensive. I'll show you in the context of these M step methods, we actually can get very efficient algorithms, in fact, a solver which amounts to solving a system of recurrence equations to construct that vector. Alright, so that's the objective, and an old that will be used to compute the gradients of these empirical estimators of the expectation. Alright, so just to get through that the second order statistics, I don't want to say too much about that, you can basically use the chain rule. And again, if you judiciously look at what you get, it turns out that you can reduce things to essentially doing an adjoint method on this linear function. I won't say very much about it, but you can use the technique that I showed you on the previous slide, to construct them derivatives of the overarching loss. So the real challenge then comes up to having effective adjuvant methods for the stochastic trajectories. And so I'll focus on that just in the interest of time. And so up there on the upper left is the gradient method. This is the implicit formulation, including the initial conditions, I'll go through this rather quick because I do want to have sufficient time to talk about results, you can look at our paper for a lot of the details, but just some notation, f j, D will be the the implicit equation for the J step and DT component. And then when I take the derivative, I'll just put that second index there. So putting all these pieces together, what you basically have to compute is for these implicit equations, you have to compute the following two Cobian, that's done rather straightforwardly using these FJD f k, d prime terms. And you take the transpose, this gives you a set of linear systems, I'm going to break the our vector down into components corresponding to this steps at the end of the directory all the way back to the beginning. So what I'm really utilizing here is that probabilistic dependency that I have, in particular, the form of these updates, and so if I do that, I can first compute R n, then use that to compute r n minus one all the way down to R zero, put all those together composite that will get me R. And I can use that in my gradient calculation to get the updates. So that's the strategy here, I realize I'm going a little quick, but I just in the interest of time, want to go through this briefly. And I'll refer you to the paper for a more in depth discussion. So at the end step, you basically have this particular equation for the RN components, you can solve that outright in terms of derivatives of fee. Now you have that if you go to step n minus one and minus two, and so on back, you can again solve directly for our k d, you put everything here on the right hand side, notice those indexes are plus one, plus L, so you have those in hand from the previous step. And then of course, if you're more than m steps away from the end point, then you get this generic formula that, again, allows you to solve for RK in terms of the previous iterates that you already have in hand. So this gives you a very efficient solver now to get our and that's sort of the key component in our gradient calculations for doing Stochastic gradient descent of this this generative modeling approach. Alright, I'll refer you to the papers again, for details there. And I've already said a lot about the training protocols. And these can be obviously adapted and applied quite readily within each of these contexts. Alright, so let me in the remaining conference, talk a bit about some of our early results with these methods. As I mentioned, it's pretty recent and ongoing work. So the first problem I mentioned was learning parameters of mechanical systems. And in particular, we're going to look over the model class of longin dynamics, these will be inertial Orenstein lindback processes. So you think about that bead spring system. And the objective here is from observations of the trajectories, essentially to learn the stiffness, damping, and the fluctuation related terms and I'd like to do that simultaneously using this generative approach. The challenge of course, with that is dimensionality. These are basically what the A observables are I don't have a lot of time to go into detail here. But you can see that there are different timescales at which those different parameters are sensitive. And that does play a role in how you ultimately formulate those, those training protocols that I was referring to. And I'll refer to the paper again for some more in depth discussion of that and be happy to talk offline. So I just want to point that out qualitatively, you see that the way that will manifest is when we're observing and doing our training, if we use, for example, the conditionals. And the marginal distributions, we're essentially trading over observations that are analogous to what I'm showing here on the right. All of this is done for a three dimensional system, we're using Rational quadratic kernels, I should mention. And there's an important role at this timescale tau that we subsample on plays in the training protocols. So here's some quantitative results, I'll just start with the stiffness. You can see as we vary tau, we're able to get this quite accurately estimated. We estimate its stiffness, temperature damping simultaneously, something interesting happens in the training and that just like with maximum likelihood estimation, there's a tendency to get pulled towards a local minimizer, where if you make the temperature very large, of course, that will make the training data quite plausible on your model, but in a suboptimal sense, one of the nice things about the MMD that we noticed is that once the stiffness seems to get within the right ballpark, it gets pulled away from that kind of local minimizer towards then the correct temperature, as you're seeing here in this particular training run. And similarly with the with the damping, um, so you can see that there's also interesting sensitivity on the timescales here and just comparing the different protocols full conditional marginals for a relatively large sampling timescale versus a small sampling timescale, you can see that that plays significant role in the accuracy of the result, especially when we look at something like the conditionals, we get very good accuracy for large timescales, because there's sufficient sensitivity to stiffness, whereas if we go to a very small timescales, essentially, that learning signal that you would get for determining stiffness parameter is getting washed out by other things like the thermal fluctuations and the damping. So so these are important hyper parameters to keep in mind when when training on these stochastic systems, this dish shows we get a very accurate result for stiffness, we similarly did a study with temperature, this is all all the parameters are changed, train find simultaneously, we're finding temperatures are much more challenging for him to pin down in detail, partly because it can make up some of the discrepancy between the models by simply increasing the noise. So if we don't have perfect overlap between the training samples and the generated samples, it can kind of make those things line up and agree. So it might be picking up simply on the sampling error. And that's something we're currently investigating. For many training runs, we'll see the behavior that we're seeing in terms of epochs here, but for some of them, they fail for the reasons that I've limited. Similarly, we can estimate the damping parameter. And again, you see some sensitivity there on the timescales at which the dynamics are probed. And so we see that each case is different pros and cons to those different training protocols. But the SD, again, you can mix and match are choose between those approaches, as well as tuning that timescale tab. This is just showing real quickly some results for learning models where there's unknown force laws. And so in this case, we have observations of a particle system. And we're going to learn over the modeling class, again, inertial launch have on dynamics. And really the objective here is to learn neural network representation for the unknown force law. Here, I'll assume for now in this study that the damping and the thermal parameters are known. But you also could try to learn those simultaneously as well. But again, you have that challenge of these very sort of high dimensional probability spaces. But that graphical model structure will be utilized to exploit that those dependencies. So here on the left is showing the kinds of observations we have, obviously many more than just these three or four samples. But just to show you what the datasets look like that we're training from, essentially an ensemble of trajectories of that nature, you'd be learning from observing those dynamics and the right learning over chattery fragments. So do that with the conditional and the marginals. So this is just showing some results. This is the case of we're doing a radial symmetric, double, well, potential. This is showing the force law that we're targeting. We're using a neural network representation for this neural network. So we're training, again, using the back custom back propagation approach, as I showed before, and this is showing the model that we learned. And really, I think the advantage of these approaches is that we're not reliant on things like the system having Aquila grated, which would be required for for techniques that make use of sort of a priori knowledge of the marginals, we also can deal with systems that are potentially not in equilibrium, because the primary driver of the statistics that we're trying to align are the the intrinsic launch Yvonne dynamics and so on the right is just showing training the double well potential. And then the way we're going to characterize this is in terms of the L one error of the radial distribution function. This is not something that was used in the training, which is to have on reliable test errors, which would govern a lot of the statistics ultimately of that model that you've learned. And I'll just show some quick results for that. This is just showing on the left the the learned model. So you can see that we get viable long time simulators. And on the right is, is showing the other training dataset. And again, this is just showing some quantitative results. And again, we did some studies, as we vary the temporal sampling parameter. So I won't go into a lot of detail there, which is to show that yeah, we're able to learn nonlinear force laws. And we're kind of pushing this in a number of directions to improve both the dimensionality and the complexity of the problems that we can deal with. But I hope this gives kind of a proof of concept of some of the recent work that we've been doing. I'd be happy to talk more about that offline. I'll refer you to the papers. So thanks again for having me. Look forward to continuing discussions.
+
+
+00:00:02.940 --> 00:00:06.150
+ 
+
+
+00:00:06.150 --> 00:00:09.630
+ 
+
+
+00:00:09.630 --> 00:00:11.100
+
+
+00:00:11.670 --> 00:00:14.640
+ 
+
+
+00:00:14.640 --> 00:00:17.760
+ 
+
+
+00:00:17.760 --> 00:00:21.390
+ 
+
+
+00:00:21.390 --> 00:00:24.780
+ 
+
+
+00:00:24.780 --> 00:00:27.450
+ 
+
+
+00:00:27.450 --> 00:00:31.500
+ 
+
+
+00:00:31.500 --> 00:00:34.740
+ 
+
+
+00:00:34.770 --> 00:00:39.570
+ 
+
+
+00:00:39.570 --> 00:00:42.150
+ 
+
+
+00:00:42.390 --> 00:00:45.120
+ 
+
+
+00:00:45.120 --> 00:00:48.330
+ 
+
+
+00:00:48.360 --> 00:00:51.330
+ 
+
+
+00:00:51.330 --> 00:00:55.380
+ 
+
+
+00:00:55.380 --> 00:00:59.790
+ 
+
+
+00:00:59.790 --> 00:01:03.450
+ 
+
+
+00:01:03.630 --> 00:01:07.920
+ 
+
+
+00:01:07.920 --> 00:01:11.730
+ 
+
+
+00:01:11.730 --> 00:01:16.170
+ 
+
+
+00:01:16.200 --> 00:01:19.020
+ 
+
+
+00:01:19.020 --> 00:01:23.100
+ 
+
+
+00:01:23.100 --> 00:01:26.850
+ 
+
+
+00:01:26.940 --> 00:01:29.370
+ 
+
+
+00:01:29.370 --> 00:01:31.830
+ 
+
+
+00:01:31.830 --> 00:01:35.220
+ 
+
+
+00:01:35.220 --> 00:01:38.460
+ 
+
+
+00:01:38.460 --> 00:01:43.200
+ 
+
+
+00:01:43.200 --> 00:01:45.990
+ 
+
+
+00:01:45.990 --> 00:01:49.950
+ 
+
+
+00:01:49.950 --> 00:01:52.680
+ 
+
+
+00:01:52.680 --> 00:01:55.920
+ 
+
+
+00:01:55.920 --> 00:01:59.940
+ 
+
+
+00:02:00.000 --> 00:02:02.040
+ 
+
+
+00:02:02.040 --> 00:02:04.530
+ 
+
+
+00:02:04.530 --> 00:02:06.630
+ 
+
+
+00:02:06.630 --> 00:02:10.080
+ 
+
+
+00:02:10.110 --> 00:02:13.440
+ 
+
+
+00:02:13.440 --> 00:02:16.140
+ 
+
+
+00:02:16.410 --> 00:02:20.430
+ 
+
+
+00:02:20.610 --> 00:02:23.100
+ 
+
+
+00:02:23.100 --> 00:02:26.940
+ 
+
+
+00:02:26.940 --> 00:02:30.420
+ 
+
+
+00:02:30.420 --> 00:02:33.120
+ 
+
+
+00:02:33.120 --> 00:02:36.030
+ 
+
+
+00:02:36.030 --> 00:02:37.890
+ 
+
+
+00:02:37.890 --> 00:02:41.010
+ 
+
+
+00:02:41.010 --> 00:02:43.470
+ 
+
+
+00:02:43.590 --> 00:02:46.200
+ 
+
+
+00:02:46.200 --> 00:02:49.590
+ 
+
+
+00:02:49.590 --> 00:02:54.600
+ 
+
+
+00:02:54.600 --> 00:02:57.780
+ 
+
+
+00:02:57.780 --> 00:03:01.920
+ 
+
+
+00:03:01.920 --> 00:03:05.340
+ 
+
+
+00:03:05.340 --> 00:03:08.160
+ 
+
+
+00:03:08.160 --> 00:03:11.130
+ 
+
+
+00:03:11.130 --> 00:03:13.770
+ 
+
+
+00:03:13.770 --> 00:03:17.040
+ 
+
+
+00:03:17.040 --> 00:03:20.100
+ 
+
+
+00:03:20.100 --> 00:03:22.410
+ 
+
+
+00:03:22.410 --> 00:03:26.250
+ 
+
+
+00:03:26.250 --> 00:03:28.590
+ 
+
+
+00:03:28.590 --> 00:03:31.470
+ 
+
+
+00:03:31.470 --> 00:03:34.890
+ 
+
+
+00:03:34.890 --> 00:03:38.610
+ 
+
+
+00:03:38.640 --> 00:03:41.520
+ 
+
+
+00:03:41.550 --> 00:03:45.990
+ 
+
+
+00:03:45.990 --> 00:03:49.830
+ 
+
+
+00:03:49.830 --> 00:03:51.990
+ 
+
+
+00:03:51.990 --> 00:03:54.810
+ 
+
+
+00:03:54.810 --> 00:03:57.750
+ 
+
+
+00:03:57.750 --> 00:04:01.050
+ 
+
+
+00:04:01.050 --> 00:04:03.630
+ 
+
+
+00:04:03.630 --> 00:04:06.840
+ 
+
+
+00:04:06.840 --> 00:04:09.840
+ 
+
+
+00:04:09.840 --> 00:04:12.540
+ 
+
+
+00:04:12.540 --> 00:04:14.970
+ 
+
+
+00:04:14.970 --> 00:04:18.630
+ 
+
+
+00:04:18.720 --> 00:04:21.330
+ 
+
+
+00:04:21.330 --> 00:04:23.910
+ 
+
+
+00:04:23.940 --> 00:04:26.940
+ 
+
+
+00:04:26.940 --> 00:04:31.410
+ 
+
+
+00:04:31.410 --> 00:04:33.930
+ 
+
+
+00:04:33.930 --> 00:04:37.350
+ 
+
+
+00:04:37.350 --> 00:04:40.350
+ 
+
+
+00:04:40.350 --> 00:04:43.200
+ 
+
+
+00:04:43.230 --> 00:04:45.960
+ 
+
+
+00:04:45.960 --> 00:04:49.830
+ 
+
+
+00:04:49.890 --> 00:04:53.040
+ 
+
+
+00:04:53.280 --> 00:04:56.760
+ 
+
+
+00:04:56.760 --> 00:04:59.340
+ 
+
+
+00:04:59.340 --> 00:05:01.560
+ 
+
+
+00:05:01.560 --> 00:05:04.740
+ 
+
+
+00:05:04.740 --> 00:05:07.890
+ 
+
+
+00:05:07.890 --> 00:05:11.430
+ 
+
+
+00:05:11.430 --> 00:05:14.130
+ 
+
+
+00:05:14.130 --> 00:05:17.610
+ 
+
+
+00:05:17.610 --> 00:05:21.270
+ 
+
+
+00:05:21.270 --> 00:05:24.600
+ 
+
+
+00:05:24.600 --> 00:05:26.940
+ 
+
+
+00:05:26.940 --> 00:05:29.640
+ 
+
+
+00:05:29.640 --> 00:05:32.730
+ 
+
+
+00:05:32.730 --> 00:05:34.710
+ 
+
+
+00:05:34.710 --> 00:05:38.790
+ 
+
+
+00:05:38.790 --> 00:05:42.900
+ 
+
+
+00:05:42.900 --> 00:05:45.090
+ 
+
+
+00:05:45.240 --> 00:05:49.290
+ 
+
+
+00:05:49.290 --> 00:05:52.650
+ 
+
+
+00:05:52.650 --> 00:05:55.800
+ 
+
+
+00:05:55.800 --> 00:05:58.680
+ 
+
+
+00:05:58.680 --> 00:06:02.070
+ 
+
+
+00:06:02.070 --> 00:06:04.440
+ 
+
+
+00:06:04.470 --> 00:06:08.460
+ 
+
+
+00:06:08.460 --> 00:06:12.000
+ 
+
+
+00:06:12.000 --> 00:06:15.000
+ 
+
+
+00:06:15.000 --> 00:06:17.790
+ 
+
+
+00:06:17.820 --> 00:06:19.920
+ 
+
+
+00:06:19.920 --> 00:06:22.530
+ 
+
+
+00:06:22.530 --> 00:06:26.010
+ 
+
+
+00:06:26.010 --> 00:06:29.190
+ 
+
+
+00:06:29.370 --> 00:06:31.860
+ 
+
+
+00:06:31.860 --> 00:06:35.940
+ 
+
+
+00:06:35.940 --> 00:06:39.690
+ 
+
+
+00:06:39.690 --> 00:06:42.270
+ 
+
+
+00:06:42.270 --> 00:06:44.160
+ 
+
+
+00:06:44.160 --> 00:06:47.790
+ 
+
+
+00:06:47.790 --> 00:06:50.640
+ 
+
+
+00:06:50.880 --> 00:06:53.940
+ 
+
+
+00:06:53.940 --> 00:06:58.740
+ 
+
+
+00:06:58.770 --> 00:07:01.560
+ 
+
+
+00:07:01.560 --> 00:07:04.050
+ 
+
+
+00:07:04.380 --> 00:07:08.610
+ 
+
+
+00:07:08.610 --> 00:07:12.270
+ 
+
+
+00:07:12.270 --> 00:07:14.670
+ 
+
+
+00:07:14.670 --> 00:07:17.640
+ 
+
+
+00:07:17.640 --> 00:07:20.970
+ 
+
+
+00:07:20.970 --> 00:07:23.880
+ 
+
+
+00:07:23.940 --> 00:07:27.660
+ 
+
+
+00:07:27.660 --> 00:07:30.930
+ 
+
+
+00:07:30.930 --> 00:07:35.100
+ 
+
+
+00:07:35.190 --> 00:07:38.250
+ 
+
+
+00:07:38.250 --> 00:07:41.700
+ 
+
+
+00:07:41.700 --> 00:07:44.790
+ 
+
+
+00:07:45.090 --> 00:07:46.710
+ 
+
+
+00:07:46.710 --> 00:07:51.120
+ 
+
+
+00:07:51.300 --> 00:07:54.330
+ 
+
+
+00:07:54.360 --> 00:07:57.330
+ 
+
+
+00:07:57.330 --> 00:07:59.310
+ 
+
+
+00:07:59.310 --> 00:08:01.920
+ 
+
+
+00:08:01.920 --> 00:08:05.940
+ 
+
+
+00:08:06.840 --> 00:08:09.330
+ 
+
+
+00:08:09.330 --> 00:08:11.640
+ 
+
+
+00:08:11.880 --> 00:08:15.570
+ 
+
+
+00:08:15.810 --> 00:08:18.660
+ 
+
+
+00:08:18.660 --> 00:08:22.380
+ 
+
+
+00:08:22.380 --> 00:08:25.710
+ 
+
+
+00:08:25.710 --> 00:08:28.470
+ 
+
+
+00:08:28.470 --> 00:08:30.780
+ 
+
+
+00:08:30.780 --> 00:08:33.900
+ 
+
+
+00:08:33.900 --> 00:08:37.530
+ 
+
+
+00:08:37.530 --> 00:08:40.680
+ 
+
+
+00:08:40.680 --> 00:08:43.530
+ 
+
+
+00:08:43.530 --> 00:08:46.920
+ 
+
+
+00:08:46.980 --> 00:08:51.000
+ 
+
+
+00:08:51.030 --> 00:08:53.640
+ 
+
+
+00:08:53.640 --> 00:08:56.670
+ 
+
+
+00:08:56.670 --> 00:08:58.980
+ 
+
+
+00:08:58.980 --> 00:09:03.630
+ 
+
+
+00:09:03.630 --> 00:09:06.180
+ 
+
+
+00:09:06.180 --> 00:09:08.640
+ 
+
+
+00:09:08.640 --> 00:09:11.190
+ 
+
+
+00:09:11.730 --> 00:09:14.520
+ 
+
+
+00:09:14.550 --> 00:09:17.790
+ 
+
+
+00:09:17.790 --> 00:09:20.700
+ 
+
+
+00:09:20.700 --> 00:09:23.400
+ 
+
+
+00:09:23.400 --> 00:09:29.340
+ 
+
+
+00:09:29.340 --> 00:09:32.820
+ 
+
+
+00:09:32.820 --> 00:09:38.370
+ 
+
+
+00:09:38.370 --> 00:09:42.000
+ 
+
+
+00:09:42.000 --> 00:09:46.020
+ 
+
+
+00:09:46.020 --> 00:09:50.160
+ 
+
+
+00:09:50.160 --> 00:09:53.820
+ 
+
+
+00:09:53.850 --> 00:09:57.720
+ 
+
+
+00:09:57.720 --> 00:10:00.450
+ 
+
+
+00:10:00.450 --> 00:10:02.940
+ 
+
+
+00:10:02.940 --> 00:10:05.700
+ 
+
+
+00:10:05.700 --> 00:10:08.850
+ 
+
+
+00:10:08.880 --> 00:10:11.730
+ 
+
+
+00:10:11.940 --> 00:10:15.750
+ 
+
+
+00:10:15.750 --> 00:10:19.680
+ 
+
+
+00:10:19.680 --> 00:10:23.370
+ 
+
+
+00:10:23.370 --> 00:10:27.060
+ 
+
+
+00:10:27.240 --> 00:10:29.850
+ 
+
+
+00:10:29.850 --> 00:10:32.970
+ 
+
+
+00:10:33.000 --> 00:10:35.730
+ 
+
+
+00:10:35.730 --> 00:10:38.880
+ 
+
+
+00:10:38.880 --> 00:10:43.230
+ 
+
+
+00:10:43.230 --> 00:10:47.970
+ 
+
+
+00:10:47.970 --> 00:10:51.120
+ 
+
+
+00:10:51.120 --> 00:10:55.320
+ 
+
+
+00:10:55.320 --> 00:10:57.270
+ 
+
+
+00:10:57.270 --> 00:10:59.850
+ 
+
+
+00:11:00.150 --> 00:11:03.240
+ 
+
+
+00:11:03.510 --> 00:11:06.330
+ 
+
+
+00:11:06.330 --> 00:11:09.570
+ 
+
+
+00:11:09.570 --> 00:11:12.990
+ 
+
+
+00:11:13.020 --> 00:11:16.770
+ 
+
+
+00:11:16.770 --> 00:11:19.080
+ 
+
+
+00:11:19.080 --> 00:11:23.820
+ 
+
+
+00:11:23.820 --> 00:11:27.750
+ 
+
+
+00:11:27.750 --> 00:11:30.510
+ 
+
+
+00:11:30.510 --> 00:11:34.680
+ 
+
+
+00:11:34.680 --> 00:11:37.710
+ 
+
+
+00:11:37.710 --> 00:11:40.710
+ 
+
+
+00:11:40.710 --> 00:11:43.560
+ 
+
+
+00:11:43.560 --> 00:11:48.390
+ 
+
+
+00:11:48.420 --> 00:11:50.850
+ 
+
+
+00:11:50.850 --> 00:11:54.060
+ 
+
+
+00:11:54.060 --> 00:11:56.910
+ 
+
+
+00:11:56.910 --> 00:11:59.520
+ 
+
+
+00:11:59.520 --> 00:12:02.970
+ 
+
+
+00:12:02.970 --> 00:12:07.080
+ 
+
+
+00:12:07.080 --> 00:12:10.440
+ 
+
+
+00:12:10.440 --> 00:12:13.740
+ 
+
+
+00:12:13.740 --> 00:12:16.740
+ 
+
+
+00:12:16.740 --> 00:12:21.210
+ 
+
+
+00:12:21.210 --> 00:12:23.910
+ 
+
+
+00:12:23.910 --> 00:12:27.270
+ 
+
+
+00:12:27.270 --> 00:12:32.160
+ 
+
+
+00:12:32.190 --> 00:12:38.220
+ 
+
+
+00:12:38.250 --> 00:12:40.680
+ 
+
+
+00:12:40.680 --> 00:12:44.400
+ 
+
+
+00:12:44.400 --> 00:12:47.670
+ 
+
+
+00:12:47.670 --> 00:12:50.550
+ 
+
+
+00:12:50.550 --> 00:12:53.610
+ 
+
+
+00:12:53.610 --> 00:12:58.080
+ 
+
+
+00:12:58.350 --> 00:13:01.590
+ 
+
+
+00:13:01.590 --> 00:13:04.140
+ 
+
+
+00:13:04.170 --> 00:13:07.950
+ 
+
+
+00:13:07.950 --> 00:13:11.040
+ 
+
+
+00:13:11.040 --> 00:13:16.080
+ 
+
+
+00:13:16.080 --> 00:13:20.190
+ 
+
+
+00:13:20.190 --> 00:13:22.740
+ 
+
+
+00:13:22.740 --> 00:13:28.140
+ 
+
+
+00:13:28.140 --> 00:13:33.570
+ 
+
+
+00:13:33.600 --> 00:13:38.010
+ 
+
+
+00:13:38.010 --> 00:13:41.610
+ 
+
+
+00:13:41.610 --> 00:13:45.570
+ 
+
+
+00:13:45.570 --> 00:13:48.420
+ 
+
+
+00:13:48.420 --> 00:13:52.230
+ 
+
+
+00:13:52.230 --> 00:13:55.350
+ 
+
+
+00:13:55.350 --> 00:13:58.950
+ 
+
+
+00:13:59.160 --> 00:14:01.710
+ 
+
+
+00:14:01.710 --> 00:14:04.110
+ 
+
+
+00:14:04.110 --> 00:14:06.690
+ 
+
+
+00:14:06.690 --> 00:14:08.760
+ 
+
+
+00:14:08.760 --> 00:14:12.480
+ 
+
+
+00:14:12.480 --> 00:14:14.970
+ 
+
+
+00:14:14.970 --> 00:14:17.850
+ 
+
+
+00:14:17.850 --> 00:14:21.030
+ 
+
+
+00:14:21.030 --> 00:14:23.790
+ 
+
+
+00:14:23.940 --> 00:14:27.510
+ 
+
+
+00:14:27.510 --> 00:14:31.350
+ 
+
+
+00:14:31.350 --> 00:14:36.090
+ 
+
+
+00:14:36.090 --> 00:14:38.340
+ 
+
+
+00:14:38.340 --> 00:14:42.270
+ 
+
+
+00:14:42.300 --> 00:14:45.810
+ 
+
+
+00:14:45.810 --> 00:14:48.480
+ 
+
+
+00:14:48.480 --> 00:14:53.280
+ 
+
+
+00:14:53.280 --> 00:14:56.190
+ 
+
+
+00:14:56.190 --> 00:14:59.610
+ 
+
+
+00:14:59.610 --> 00:15:02.040
+ 
+
+
+00:15:02.040 --> 00:15:05.100
+ 
+
+
+00:15:05.100 --> 00:15:08.100
+ 
+
+
+00:15:08.100 --> 00:15:12.630
+ 
+
+
+00:15:12.630 --> 00:15:15.750
+ 
+
+
+00:15:15.750 --> 00:15:20.190
+ 
+
+
+00:15:20.220 --> 00:15:24.120
+ 
+
+
+00:15:24.120 --> 00:15:28.290
+ 
+
+
+00:15:28.290 --> 00:15:31.560
+ 
+
+
+00:15:31.560 --> 00:15:35.160
+ 
+
+
+00:15:35.160 --> 00:15:37.980
+ 
+
+
+00:15:37.980 --> 00:15:40.590
+ 
+
+
+00:15:40.590 --> 00:15:43.740
+ 
+
+
+00:15:43.740 --> 00:15:46.320
+ 
+
+
+00:15:46.350 --> 00:15:50.550
+ 
+
+
+00:15:50.550 --> 00:15:53.400
+ 
+
+
+00:15:53.400 --> 00:15:55.710
+ 
+
+
+00:15:55.710 --> 00:15:58.710
+ 
+
+
+00:15:58.710 --> 00:16:02.340
+ 
+
+
+00:16:02.340 --> 00:16:05.640
+ 
+
+
+00:16:05.760 --> 00:16:08.370
+ 
+
+
+00:16:08.400 --> 00:16:12.930
+ 
+
+
+00:16:12.960 --> 00:16:17.670
+ 
+
+
+00:16:17.670 --> 00:16:21.570
+ 
+
+
+00:16:21.570 --> 00:16:24.360
+ 
+
+
+00:16:24.360 --> 00:16:27.870
+ 
+
+
+00:16:27.870 --> 00:16:30.450
+ 
+
+
+00:16:30.450 --> 00:16:32.820
+ 
+
+
+00:16:32.820 --> 00:16:35.880
+ 
+
+
+00:16:35.910 --> 00:16:38.940
+ 
+
+
+00:16:38.940 --> 00:16:42.780
+ 
+
+
+00:16:42.780 --> 00:16:45.450
+ 
+
+
+00:16:45.450 --> 00:16:49.110
+ 
+
+
+00:16:49.110 --> 00:16:52.440
+ 
+
+
+00:16:52.470 --> 00:16:55.980
+ 
+
+
+00:16:55.980 --> 00:16:58.920
+ 
+
+
+00:16:58.920 --> 00:17:01.800
+ 
+
+
+00:17:01.800 --> 00:17:05.670
+ 
+
+
+00:17:05.670 --> 00:17:09.180
+ 
+
+
+00:17:09.180 --> 00:17:12.330
+ 
+
+
+00:17:12.330 --> 00:17:15.000
+ 
+
+
+00:17:15.000 --> 00:17:17.670
+ 
+
+
+00:17:17.670 --> 00:17:20.610
+ 
+
+
+00:17:20.610 --> 00:17:23.550
+ 
+
+
+00:17:23.580 --> 00:17:27.270
+ 
+
+
+00:17:27.270 --> 00:17:30.150
+ 
+
+
+00:17:30.180 --> 00:17:33.570
+ 
+
+
+00:17:33.570 --> 00:17:35.760
+ 
+
+
+00:17:35.760 --> 00:17:39.870
+ 
+
+
+00:17:39.870 --> 00:17:43.590
+ 
+
+
+00:17:43.890 --> 00:17:46.200
+ 
+
+
+00:17:46.200 --> 00:17:49.350
+ 
+
+
+00:17:49.350 --> 00:17:52.620
+ 
+
+
+00:17:52.650 --> 00:17:56.820
+ 
+
+
+00:17:56.820 --> 00:17:59.460
+ 
+
+
+00:17:59.460 --> 00:18:02.790
+ 
+
+
+00:18:02.790 --> 00:18:06.570
+ 
+
+
+00:18:06.570 --> 00:18:09.390
+ 
+
+
+00:18:09.390 --> 00:18:12.060
+ 
+
+
+00:18:12.060 --> 00:18:16.140
+ 
+
+
+00:18:16.140 --> 00:18:19.620
+ 
+
+
+00:18:19.620 --> 00:18:22.290
+ 
+
+
+00:18:22.290 --> 00:18:25.320
+ 
+
+
+00:18:25.320 --> 00:18:27.510
+ 
+
+
+00:18:27.510 --> 00:18:31.410
+ 
+
+
+00:18:31.410 --> 00:18:35.340
+ 
+
+
+00:18:35.700 --> 00:18:39.480
+ 
+
+
+00:18:39.480 --> 00:18:42.270
+ 
+
+
+00:18:42.270 --> 00:18:46.200
+ 
+
+
+00:18:46.200 --> 00:18:48.900
+ 
+
+
+00:18:48.900 --> 00:18:52.380
+ 
+
+
+00:18:52.380 --> 00:18:56.460
+ 
+
+
+00:18:56.460 --> 00:18:59.160
+ 
+
+
+00:18:59.160 --> 00:19:02.280
+ 
+
+
+00:19:02.280 --> 00:19:05.490
+ 
+
+
+00:19:05.490 --> 00:19:08.670
+ 
+
+
+00:19:08.670 --> 00:19:13.020
+ 
+
+
+00:19:13.020 --> 00:19:17.910
+ 
+
+
+00:19:17.910 --> 00:19:20.550
+ 
+
+
+00:19:20.760 --> 00:19:24.690
+ 
+
+
+00:19:24.720 --> 00:19:27.810
+ 
+
+
+00:19:27.810 --> 00:19:31.770
+ 
+
+
+00:19:31.890 --> 00:19:34.110
+ 
+
+
+00:19:34.110 --> 00:19:37.050
+ 
+
+
+00:19:37.050 --> 00:19:40.170
+ 
+
+
+00:19:40.230 --> 00:19:43.350
+ 
+
+
+00:19:43.890 --> 00:19:46.830
+ 
+
+
+00:19:46.830 --> 00:19:49.050
+ 
+
+
+00:19:49.050 --> 00:19:52.560
+ 
+
+
+00:19:52.560 --> 00:19:56.250
+ 
+
+
+00:19:56.250 --> 00:19:58.860
+ 
+
+
+00:19:58.860 --> 00:20:00.870
+ 
+
+
+00:20:00.870 --> 00:20:04.590
+ 
+
+
+00:20:04.590 --> 00:20:07.680
+ 
+
+
+00:20:07.680 --> 00:20:11.250
+ 
+
+
+00:20:11.250 --> 00:20:15.060
+ 
+
+
+00:20:15.060 --> 00:20:17.850
+ 
+
+
+00:20:17.850 --> 00:20:21.570
+ 
+
+
+00:20:21.570 --> 00:20:25.140
+ 
+
+
+00:20:25.140 --> 00:20:27.840
+ 
+
+
+00:20:27.840 --> 00:20:30.660
+ 
+
+
+00:20:30.810 --> 00:20:34.350
+ 
+
+
+00:20:34.350 --> 00:20:36.870
+ 
+
+
+00:20:36.870 --> 00:20:40.830
+ 
+
+
+00:20:40.830 --> 00:20:43.530
+ 
+
+
+00:20:43.530 --> 00:20:48.210
+ 
+
+
+00:20:48.240 --> 00:20:50.460
+ 
+
+
+00:20:50.460 --> 00:20:53.940
+ 
+
+
+00:20:53.940 --> 00:20:57.870
+ 
+
+
+00:20:57.930 --> 00:21:02.400
+ 
+
+
+00:21:02.400 --> 00:21:04.740
+ 
+
+
+00:21:04.740 --> 00:21:07.260
+ 
+
+
+00:21:07.260 --> 00:21:10.230
+ 
+
+
+00:21:10.230 --> 00:21:14.370
+ 
+
+
+00:21:14.370 --> 00:21:17.160
+ 
+
+
+00:21:17.160 --> 00:21:20.580
+ 
+
+
+00:21:20.580 --> 00:21:23.130
+ 
+
+
+00:21:23.130 --> 00:21:26.910
+ 
+
+
+00:21:26.910 --> 00:21:29.460
+ 
+
+
+00:21:29.460 --> 00:21:32.070
+ 
+
+
+00:21:32.070 --> 00:21:33.900
+ 
+
+
+00:21:33.900 --> 00:21:37.140
+ 
+
+
+00:21:37.140 --> 00:21:43.110
+ 
+
+
+00:21:43.110 --> 00:21:46.710
+ 
+
+
+00:21:46.710 --> 00:21:49.560
+ 
+
+
+00:21:49.590 --> 00:21:54.660
+ 
+
+
+00:21:54.690 --> 00:21:59.370
+ 
+
+
+00:21:59.370 --> 00:22:03.690
+ 
+
+
+00:22:03.690 --> 00:22:06.180
+ 
+
+
+00:22:06.180 --> 00:22:09.360
+ 
+
+
+00:22:09.360 --> 00:22:12.270
+ 
+
+
+00:22:12.420 --> 00:22:15.060
+ 
+
+
+00:22:15.060 --> 00:22:17.460
+ 
+
+
+00:22:17.460 --> 00:22:20.670
+ 
+
+
+00:22:20.670 --> 00:22:24.810
+ 
+
+
+00:22:24.840 --> 00:22:26.790
+ 
+
+
+00:22:26.790 --> 00:22:29.340
+ 
+
+
+00:22:29.340 --> 00:22:32.820
+ 
+
+
+00:22:32.820 --> 00:22:35.850
+ 
+
+
+00:22:35.850 --> 00:22:39.000
+ 
+
+
+00:22:39.000 --> 00:22:42.780
+ 
+
+
+00:22:42.780 --> 00:22:45.000
+ 
+
+
+00:22:45.000 --> 00:22:47.400
+ 
+
+
+00:22:47.400 --> 00:22:50.400
+ 
+
+
+00:22:50.400 --> 00:22:53.490
+ 
+
+
+00:22:53.490 --> 00:22:57.510
+ 
+
+
+00:22:57.540 --> 00:23:00.900
+ 
+
+
+00:23:00.900 --> 00:23:05.520
+ 
+
+
+00:23:05.520 --> 00:23:08.880
+ 
+
+
+00:23:08.880 --> 00:23:12.150
+ 
+
+
+00:23:12.150 --> 00:23:15.360
+ 
+
+
+00:23:15.360 --> 00:23:17.910
+ 
+
+
+00:23:17.910 --> 00:23:21.360
+ 
+
+
+00:23:21.570 --> 00:23:23.580
+ 
+
+
+00:23:23.580 --> 00:23:26.490
+ 
+
+
+00:23:26.490 --> 00:23:30.060
+ 
+
+
+00:23:30.060 --> 00:23:35.190
+ 
+
+
+00:23:35.730 --> 00:23:39.180
+ 
+
+
+00:23:39.210 --> 00:23:43.170
+ 
+
+
+00:23:43.470 --> 00:23:46.620
+ 
+
+
+00:23:46.650 --> 00:23:51.270
+ 
+
+
+00:23:51.300 --> 00:23:54.000
+ 
+
+
+00:23:54.000 --> 00:23:57.150
+ 
+
+
+00:23:57.150 --> 00:24:00.540
+ 
+
+
+00:24:00.540 --> 00:24:03.600
+ 
+
+
+00:24:03.600 --> 00:24:05.790
+ 
+
+
+00:24:05.790 --> 00:24:09.480
+ 
+
+
+00:24:09.480 --> 00:24:13.650
+ 
+
+
+00:24:13.890 --> 00:24:18.630
+ 
+
+
+00:24:18.660 --> 00:24:22.620
+ 
+
+
+00:24:22.620 --> 00:24:25.110
+ 
+
+
+00:24:25.110 --> 00:24:28.530
+ 
+
+
+00:24:28.530 --> 00:24:31.830
+ 
+
+
+00:24:31.830 --> 00:24:36.120
+ 
+
+
+00:24:36.360 --> 00:24:40.500
+ 
+
+
+00:24:40.500 --> 00:24:44.160
+ 
+
+
+00:24:44.160 --> 00:24:47.400
+ 
+
+
+00:24:47.400 --> 00:24:50.700
+ 
+
+
+00:24:50.700 --> 00:24:54.270
+ 
+
+
+00:24:54.270 --> 00:24:57.360
+ 
+
+
+00:24:57.360 --> 00:25:02.070
+ 
+
+
+00:25:02.070 --> 00:25:04.500
+ 
+
+
+00:25:04.500 --> 00:25:07.800
+ 
+
+
+00:25:07.800 --> 00:25:11.010
+ 
+
+
+00:25:11.010 --> 00:25:13.650
+ 
+
+
+00:25:13.650 --> 00:25:16.260
+ 
+
+
+00:25:16.260 --> 00:25:20.760
+ 
+
+
+00:25:20.760 --> 00:25:23.070
+ 
+
+
+00:25:23.070 --> 00:25:26.370
+ 
+
+
+00:25:26.370 --> 00:25:28.770
+ 
+
+
+00:25:29.070 --> 00:25:32.610
+ 
+
+
+00:25:32.610 --> 00:25:36.090
+ 
+
+
+00:25:36.090 --> 00:25:38.820
+ 
+
+
+00:25:38.820 --> 00:25:42.450
+ 
+
+
+00:25:42.450 --> 00:25:46.650
+ 
+
+
+00:25:46.650 --> 00:25:49.650
+ 
+
+
+00:25:49.650 --> 00:25:54.150
+ 
+
+
+00:25:54.150 --> 00:25:57.600
+ 
+
+
+00:25:57.600 --> 00:26:00.870
+ 
+
+
+00:26:00.870 --> 00:26:04.560
+ 
+
+
+00:26:04.560 --> 00:26:06.810
+ 
+
+
+00:26:07.320 --> 00:26:10.770
+ 
+
+
+00:26:10.770 --> 00:26:13.980
+ 
+
+
+00:26:13.980 --> 00:26:16.680
+ 
+
+
+00:26:16.830 --> 00:26:20.460
+ 
+
+
+00:26:20.460 --> 00:26:22.980
+ 
+
+
+00:26:22.980 --> 00:26:26.520
+ 
+
+
+00:26:26.520 --> 00:26:28.920
+ 
+
+
+00:26:28.920 --> 00:26:33.090
+ 
+
+
+00:26:33.090 --> 00:26:35.790
+ 
+
+
+00:26:35.790 --> 00:26:39.690
+ 
+
+
+00:26:39.690 --> 00:26:44.040
+ 
+
+
+00:26:44.280 --> 00:26:50.310
+ 
+
+
+00:26:50.310 --> 00:26:52.530
+ 
+
+
+00:26:52.530 --> 00:26:56.700
+ 
+
+
+00:26:56.700 --> 00:27:01.260
+ 
+
+
+00:27:01.260 --> 00:27:05.340
+ 
+
+
+00:27:05.340 --> 00:27:09.180
+ 
+
+
+00:27:09.180 --> 00:27:11.730
+ 
+
+
+00:27:11.730 --> 00:27:14.550
+ 
+
+
+00:27:14.550 --> 00:27:18.330
+ 
+
+
+00:27:18.330 --> 00:27:21.030
+ 
+
+
+00:27:21.030 --> 00:27:24.780
+ 
+
+
+00:27:24.780 --> 00:27:27.870
+ 
+
+
+00:27:27.900 --> 00:27:31.200
+ 
+
+
+00:27:31.200 --> 00:27:35.940
+ 
+
+
+00:27:35.940 --> 00:27:38.070
+ 
+
+
+00:27:38.070 --> 00:27:40.350
+ 
+
+
+00:27:40.350 --> 00:27:43.560
+ 
+
+
+00:27:43.830 --> 00:27:48.930
+ 
+
+
+00:27:48.930 --> 00:27:52.200
+ 
+
+
+00:27:52.200 --> 00:27:54.450
+ 
+
+
+00:27:54.450 --> 00:27:57.300
+ 
+
+
+00:27:57.300 --> 00:28:02.160
+ 
+
+
+00:28:02.160 --> 00:28:06.630
+ 
+
+
+00:28:06.630 --> 00:28:09.480
+ 
+
+
+00:28:09.480 --> 00:28:12.990
+ 
+
+
+00:28:12.990 --> 00:28:16.140
+ 
+
+
+00:28:16.140 --> 00:28:19.530
+ 
+
+
+00:28:19.530 --> 00:28:21.720
+ 
+
+
+00:28:21.720 --> 00:28:25.620
+ 
+
+
+00:28:25.620 --> 00:28:29.160
+ 
+
+
+00:28:29.160 --> 00:28:32.190
+ 
+
+
+00:28:32.190 --> 00:28:34.290
+ 
+
+
+00:28:34.290 --> 00:28:36.510
+ 
+
+
+00:28:36.510 --> 00:28:39.960
+ 
+
+
+00:28:39.960 --> 00:28:44.430
+ 
+
+
+00:28:44.430 --> 00:28:48.330
+ 
+
+
+00:28:48.330 --> 00:28:52.200
+ 
+
+
+00:28:52.200 --> 00:28:55.920
+ 
+
+
+00:28:55.920 --> 00:28:59.850
+ 
+
+
+00:28:59.850 --> 00:29:02.790
+ 
+
+
+00:29:02.790 --> 00:29:05.400
+ 
+
+
+00:29:05.400 --> 00:29:10.170
+ 
+
+
+00:29:10.170 --> 00:29:13.920
+ 
+
+
+00:29:13.920 --> 00:29:17.130
+ 
+
+
+00:29:17.130 --> 00:29:19.920
+ 
+
+
+00:29:19.920 --> 00:29:23.880
+ 
+
+
+00:29:23.880 --> 00:29:28.590
+ 
+
+
+00:29:29.130 --> 00:29:32.730
+ 
+
+
+00:29:32.730 --> 00:29:35.610
+ 
+
+
+00:29:35.670 --> 00:29:38.790
+ 
+
+
+00:29:38.790 --> 00:29:42.150
+ 
+
+
+00:29:42.150 --> 00:29:44.730
+ 
+
+
+00:29:44.850 --> 00:29:50.820
+ 
+
+
+00:29:50.820 --> 00:29:53.370
+ 
+
+
+00:29:53.370 --> 00:29:56.160
+ 
+
+
+00:29:56.160 --> 00:29:58.470
+ 
+
+
+00:29:58.470 --> 00:30:01.410
+ 
+
+
+00:30:01.410 --> 00:30:06.060
+ 
+
+
+00:30:06.060 --> 00:30:10.800
+ 
+
+
+00:30:10.830 --> 00:30:13.620
+ 
+
+
+00:30:13.620 --> 00:30:17.220
+ 
+
+
+00:30:17.550 --> 00:30:20.910
+ 
+
+
+00:30:20.910 --> 00:30:24.660
+ 
+
+
+00:30:24.660 --> 00:30:27.600
+ 
+
+
+00:30:27.600 --> 00:30:31.110
+ 
+
+
+00:30:31.110 --> 00:30:34.410
+ 
+
+
+00:30:34.680 --> 00:30:37.680
+ 
+
+
+00:30:37.680 --> 00:30:41.250
+ 
+
+
+00:30:41.250 --> 00:30:44.910
+ 
+
+
+00:30:45.090 --> 00:30:49.200
+ 
+
+
+00:30:49.200 --> 00:30:51.720
+ 
+
+
+00:30:51.720 --> 00:30:55.710
+ 
+
+
+00:30:55.740 --> 00:30:59.070
+ 
+
+
+00:30:59.070 --> 00:31:02.820
+ 
+
+
+00:31:02.820 --> 00:31:06.870
+ 
+
+
+00:31:06.870 --> 00:31:09.720
+ 
+
+
+00:31:09.720 --> 00:31:13.650
+ 
+
+
+00:31:13.650 --> 00:31:17.280
+ 
+
+
+00:31:17.460 --> 00:31:20.280
+ 
+
+
+00:31:20.280 --> 00:31:22.680
+ 
+
+
+00:31:22.680 --> 00:31:25.320
+ 
+
+
+00:31:25.320 --> 00:31:28.110
+ 
+
+
+00:31:28.110 --> 00:31:30.180
+ 
+
+
+00:31:30.180 --> 00:31:34.020
+ 
+
+
+00:31:34.020 --> 00:31:37.800
+ 
+
+
+00:31:37.800 --> 00:31:40.140
+ 
+
+
+00:31:40.140 --> 00:31:43.680
+ 
+
+
+00:31:43.680 --> 00:31:47.670
+ 
+
+
+00:31:47.670 --> 00:31:50.280
+ 
+
+
+00:31:50.280 --> 00:31:53.340
+ 
+
+
+00:31:53.340 --> 00:31:57.900
+ 
+
+
+00:31:57.900 --> 00:32:00.540
+ 
+
+
+00:32:00.540 --> 00:32:04.410
+ 
+
+
+00:32:04.620 --> 00:32:07.650
+ 
+
+
+00:32:07.650 --> 00:32:09.750
+ 
+
+
+00:32:09.750 --> 00:32:13.740
+ 
+
+
+00:32:13.740 --> 00:32:18.930
+ 
+
+
+00:32:18.930 --> 00:32:22.380
+ 
+
+
+00:32:22.380 --> 00:32:25.050
+ 
+
+
+00:32:25.050 --> 00:32:28.890
+ 
+
+
+00:32:28.890 --> 00:32:33.600
+ 
+
+
+00:32:33.600 --> 00:32:37.380
+ 
+
+
+00:32:37.410 --> 00:32:41.130
+ 
+
+
+00:32:41.130 --> 00:32:43.470
+ 
+
+
+00:32:43.470 --> 00:32:45.900
+ 
+
+
+00:32:45.900 --> 00:32:48.660
+ 
+
+
+00:32:48.660 --> 00:32:52.320
+ 
+
+
+00:32:52.320 --> 00:32:56.040
+ 
+
+
+00:32:56.040 --> 00:32:59.370
+ 
+
+
+00:32:59.370 --> 00:33:02.100
+ 
+
+
+00:33:02.100 --> 00:33:05.430
+ 
+
+
+00:33:05.430 --> 00:33:08.100
+ 
+
+
+00:33:08.310 --> 00:33:12.990
+ 
+
+
+00:33:12.990 --> 00:33:16.740
+ 
+
+
+00:33:16.740 --> 00:33:19.200
+ 
+
+
+00:33:19.200 --> 00:33:22.380
+ 
+
+
+00:33:22.380 --> 00:33:25.800
+ 
+
+
+00:33:25.950 --> 00:33:30.600
+ 
+
+
+00:33:30.600 --> 00:33:33.210
+ 
+
+
+00:33:33.210 --> 00:33:35.550
+ 
+
+
+00:33:35.550 --> 00:33:39.090
+ 
+
+
+00:33:39.090 --> 00:33:42.690
+ 
+
+
+00:33:42.690 --> 00:33:45.000
+ 
+
+
+00:33:45.000 --> 00:33:47.160
+ 
+
+
+00:33:47.160 --> 00:33:50.460
+ 
+
+
+00:33:50.460 --> 00:33:53.580
+ 
+
+
+00:33:53.700 --> 00:33:57.000
+ 
+
+
+00:33:57.000 --> 00:34:01.140
+ 
+
+
+00:34:01.140 --> 00:34:04.320
+ 
+
+
+00:34:04.320 --> 00:34:08.520
+ 
+
+
+00:34:08.520 --> 00:34:11.880
+ 
+
+
+00:34:11.880 --> 00:34:15.360
+ 
+
+
+00:34:15.360 --> 00:34:17.790
+ 
+
+
+00:34:17.790 --> 00:34:22.260
+ 
+
+
+00:34:22.260 --> 00:34:24.900
+ 
+
+
+00:34:24.930 --> 00:34:27.060
+ 
+
+
+00:34:27.060 --> 00:34:28.560
+ 
+
+
+00:34:28.560 --> 00:34:31.500
+ 
+
+
+00:34:31.500 --> 00:34:34.650
+ 
+
+
+00:34:34.650 --> 00:34:37.530
+ 
+
+
+00:34:37.530 --> 00:34:41.370
+ 
+
+
+00:34:41.430 --> 00:34:45.120
+ 
+
+
+00:34:45.120 --> 00:34:48.600
+ 
+
+
+00:34:48.600 --> 00:34:51.600
+ 
+
+
+00:34:51.600 --> 00:34:54.360
+ 
+
+
+00:34:54.360 --> 00:34:57.960
+ 
+
+
+00:34:57.960 --> 00:35:01.830
+ 
+
+
+00:35:01.830 --> 00:35:05.670
+ 
+
+
+00:35:05.670 --> 00:35:08.880
+ 
+
+
+00:35:08.880 --> 00:35:12.600
+ 
+
+
+00:35:12.600 --> 00:35:15.090
+ 
+
+
+00:35:15.090 --> 00:35:17.730
+ 
+
+
+00:35:17.730 --> 00:35:20.880
+ 
+
+
+00:35:20.880 --> 00:35:25.230
+ 
+
+
+00:35:25.320 --> 00:35:28.170
+ 
+
+
+00:35:28.200 --> 00:35:31.080
+ 
+
+
+00:35:31.320 --> 00:35:35.550
+ 
+
+
+00:35:35.550 --> 00:35:38.790
+ 
+
+
+00:35:38.790 --> 00:35:42.150
+ 
+
+
+00:35:42.300 --> 00:35:45.630
+ 
+
+
+00:35:45.630 --> 00:35:50.760
+ 
+
+
+00:35:50.760 --> 00:35:53.130
+ 
+
+
+00:35:53.130 --> 00:35:56.010
+ 
+
+
+00:35:56.010 --> 00:36:00.060
+ 
+
+
+00:36:00.060 --> 00:36:05.160
+ 
+
+
+00:36:05.160 --> 00:36:07.980
+ 
+
+
+00:36:07.980 --> 00:36:11.730
+ 
+
+
+00:36:11.760 --> 00:36:15.090
+ 
+
+
+00:36:15.090 --> 00:36:17.610
+ 
+
+
+00:36:17.610 --> 00:36:20.130
+ 
+
+
+00:36:20.130 --> 00:36:23.850
+ 
+
+
+00:36:23.850 --> 00:36:27.210
+ 
+
+
+00:36:27.210 --> 00:36:31.680
+ 
+
+
+00:36:31.740 --> 00:36:34.800
+ 
+
+
+00:36:34.890 --> 00:36:37.530
+ 
+
+
+00:36:37.530 --> 00:36:39.900
+ 
+
+
+00:36:40.050 --> 00:36:42.510
+ 
+
+
+00:36:42.510 --> 00:36:45.360
+ 
+
+
+00:36:45.360 --> 00:36:49.920
+ 
+
+
+00:36:50.250 --> 00:36:52.800
+ 
+
+
+00:36:52.800 --> 00:36:55.170
+ 
+
+
+00:36:55.170 --> 00:36:59.040
+ 
+
+
+00:36:59.040 --> 00:37:02.010
+ 
+
+
+00:37:02.010 --> 00:37:05.310
+ 
+
+
+00:37:05.310 --> 00:37:08.610
+ 
+
+
+00:37:08.610 --> 00:37:11.130
+ 
+
+
+00:37:11.130 --> 00:37:13.920
+ 
+
+
+00:37:13.920 --> 00:37:15.750
+ 
+
+
+00:37:15.780 --> 00:37:18.270
+ 
+
+
+00:37:18.270 --> 00:37:22.080
+ 
+
+
+00:37:22.080 --> 00:37:26.490
+ 
+
+
+00:37:26.490 --> 00:37:29.250
+ 
+
+
+00:37:29.250 --> 00:37:32.280
+ 
+
+
+00:37:32.280 --> 00:37:36.390
+ 
+
+
+00:37:36.390 --> 00:37:39.870
+ 
+
+
+00:37:39.870 --> 00:37:43.380
+ 
+
+
+00:37:43.380 --> 00:37:48.390
+ 
+
+
+00:37:48.390 --> 00:37:51.600
+ 
+
+
+00:37:51.600 --> 00:37:55.200
+ 
+
+
+00:37:55.200 --> 00:37:57.330
+ 
+
+
+00:37:57.330 --> 00:38:00.000
+ 
+
+
+00:38:00.000 --> 00:38:03.360
+ 
+
+
+00:38:03.360 --> 00:38:07.470
+ 
+
+
+00:38:07.470 --> 00:38:10.560
+ 
+
+
+00:38:10.560 --> 00:38:13.530
+ 
+
+
+00:38:13.530 --> 00:38:16.530
+ 
+
+
+00:38:16.530 --> 00:38:18.690
+ 
+
+
+00:38:18.690 --> 00:38:22.260
+ 
+
+
+00:38:22.290 --> 00:38:26.280
+ 
+
+
+00:38:26.280 --> 00:38:30.690
+ 
+
+
+00:38:30.690 --> 00:38:33.660
+ 
+
+
+00:38:33.660 --> 00:38:37.440
+ 
+
+
+00:38:37.440 --> 00:38:41.340
+ 
+
+
+00:38:41.400 --> 00:38:44.820
+ 
+
+
+00:38:44.820 --> 00:38:48.510
+ 
+
+
+00:38:48.510 --> 00:38:51.000
+ 
+
+
+00:38:51.000 --> 00:38:53.820
+ 
+
+
+00:38:54.000 --> 00:38:57.300
+ 
+
+
+00:38:57.300 --> 00:39:00.420
+ 
+
+
+00:39:00.420 --> 00:39:02.460
+ 
+
+
+00:39:02.460 --> 00:39:05.850
+ 
+
+
+00:39:05.970 --> 00:39:09.780
+ 
+
+
+00:39:09.780 --> 00:39:12.630
+ 
+
+
+00:39:12.630 --> 00:39:14.490
+ 
+
+
+00:39:14.790 --> 00:39:16.800
+ 
+
+
+00:39:16.800 --> 00:39:20.040
+ 
+
+
+00:39:20.040 --> 00:39:22.800
+ 
+
+
+00:39:22.800 --> 00:39:24.840
+ 
+
+
+00:39:24.840 --> 00:39:27.360
+ 
+
+
+00:39:27.450 --> 00:39:30.210
+ 
+
+
+00:39:30.240 --> 00:39:33.960
+ 
+
+
+00:39:34.320 --> 00:39:37.710
+ 
+
+
+00:39:37.890 --> 00:39:41.730
+ 
+
+
+00:39:41.730 --> 00:39:44.760
+ 
+
+
+00:39:44.760 --> 00:39:47.400
+ 
+
+
+00:39:47.400 --> 00:39:51.240
+ 
+
+
+00:39:51.240 --> 00:39:54.600
+ 
+
+
+00:39:54.600 --> 00:39:57.180
+ 
+
+
+00:39:57.210 --> 00:40:01.050
+ 
+
+
+00:40:01.050 --> 00:40:03.270
+ 
+
+
+00:40:03.270 --> 00:40:05.610
+ 
+
+
+00:40:05.670 --> 00:40:08.850
+ 
+
+
+00:40:08.850 --> 00:40:12.270
+ 
+
+
+00:40:12.300 --> 00:40:15.540
+ 
+
+
+00:40:15.540 --> 00:40:18.540
+ 
+
+
+00:40:18.540 --> 00:40:21.090
+ 
+
+
+00:40:21.090 --> 00:40:24.630
+ 
+
+
+00:40:24.660 --> 00:40:26.730
+ 
+
+
+00:40:26.730 --> 00:40:30.570
+ 
+
+
+00:40:30.570 --> 00:40:33.360
+ 
+
+
+00:40:33.360 --> 00:40:36.300
+ 
+
+
+00:40:36.300 --> 00:40:39.900
+ 
+
+
+00:40:39.900 --> 00:40:42.810
+ 
+
+
+00:40:42.810 --> 00:40:46.590
+ 
+
+
+00:40:46.590 --> 00:40:48.900
+ 
+
+
+00:40:48.900 --> 00:40:52.650
+ 
+
+
+00:40:52.680 --> 00:40:55.770
+ 
+
+
+00:40:55.770 --> 00:40:58.380
+ 
+
+
+00:40:58.380 --> 00:41:00.780
+ 
+
+
+00:41:00.810 --> 00:41:03.960
+ 
+
+
+00:41:03.960 --> 00:41:06.210
+ 
+
+
+00:41:06.210 --> 00:41:10.050
+ 
+
+
+00:41:10.050 --> 00:41:13.380
+ 
+
+
+00:41:13.380 --> 00:41:16.080
+ 
+
+
+00:41:16.080 --> 00:41:18.630
+ 
+
+
+00:41:18.630 --> 00:41:23.010
+ 
+
+
+00:41:23.010 --> 00:41:25.050
+ 
+
+
+00:41:25.050 --> 00:41:28.830
+ 
+
+
+00:41:28.830 --> 00:41:31.110
+ 
+
+
+00:41:31.110 --> 00:41:33.270
+ 
+
+
+00:41:33.300 --> 00:41:36.870
+ 
+
+
+00:41:36.870 --> 00:41:40.980
+ 
+
+
+00:41:40.980 --> 00:41:43.350
+ 
+
+
+00:41:43.350 --> 00:41:45.120
+ 
+
+
+00:41:45.120 --> 00:41:49.440
+ 
+
+
+00:41:49.440 --> 00:41:51.810
+ 
+
+
+00:41:52.050 --> 00:41:55.320
+ 
+
+
+00:41:55.320 --> 00:41:57.510
+ 
+
+
+00:41:57.510 --> 00:42:00.210
+ 
+
+
+00:42:00.210 --> 00:42:03.210
+ 
+
+
+00:42:03.210 --> 00:42:05.400
+ 
+
+
+00:42:05.400 --> 00:42:08.940
+ 
+
+
+00:42:08.940 --> 00:42:11.940
+ 
+
+
+00:42:11.940 --> 00:42:14.700
+ 
+
+
+00:42:14.700 --> 00:42:17.160
+ 
+
+
+00:42:17.160 --> 00:42:20.640
+ 
+
+
+00:42:20.640 --> 00:42:24.150
+ 
+
+
+00:42:24.240 --> 00:42:26.610
+ 
+
+
+00:42:26.610 --> 00:42:29.430
+ 
+
+
+00:42:29.430 --> 00:42:32.550
+ 
+
+
+00:42:32.700 --> 00:42:35.430
+ 
+
+
+00:42:35.430 --> 00:42:38.280
+ 
+
+
+00:42:38.280 --> 00:42:40.860
+ 
+
+
+00:42:40.860 --> 00:42:43.410
+ 
+
+
+00:42:43.530 --> 00:42:47.250
+ 
+
+
+00:42:47.250 --> 00:42:50.730
+ 
+
+
+00:42:50.730 --> 00:42:54.060
+ 
+
+
+00:42:54.060 --> 00:42:56.430
+ 
+
+
+00:42:56.430 --> 00:43:01.020
+ 
+
+
+00:43:01.020 --> 00:43:04.440
+ 
+
+
+00:43:04.440 --> 00:43:07.590
+ 
+
+
+00:43:07.620 --> 00:43:11.250
+ 
+
+
+00:43:11.250 --> 00:43:14.850
+ 
+
+
+00:43:14.850 --> 00:43:18.420
+ 
+
+
+00:43:18.420 --> 00:43:21.150
+ 
+
+
+00:43:21.330 --> 00:43:25.920
+ 
+
+
+00:43:25.950 --> 00:43:28.890
+ 
+
+
+00:43:28.890 --> 00:43:32.340
+ 
+
+
+00:43:32.340 --> 00:43:34.440
+ 
+
+
+00:43:34.440 --> 00:43:37.230
+ 
+
+
+00:43:37.230 --> 00:43:41.490
+ 
+
+
+00:43:41.580 --> 00:43:45.690
+ 
+
+
+00:43:45.840 --> 00:43:48.600
+ 
+
+
+00:43:48.780 --> 00:43:52.290
+ 
+
+
+00:43:52.290 --> 00:43:55.290
+ 
+
+
+00:43:55.290 --> 00:43:59.220
+ 
+
+
+00:43:59.250 --> 00:44:02.550
+ 
+
+
+00:44:02.550 --> 00:44:04.890
+ 
+
+
+00:44:04.890 --> 00:44:07.590
+ 
+
+
+00:44:07.590 --> 00:44:11.280
+ 
+
+
+00:44:11.340 --> 00:44:14.970
+ 
+
+
+00:44:15.210 --> 00:44:18.390
+ 
+
+
+00:44:18.390 --> 00:44:21.210
+ 
+
+
+00:44:21.210 --> 00:44:24.150
+ 
+
+
+00:44:24.150 --> 00:44:26.970
+ 
+
+
+00:44:26.970 --> 00:44:30.930
+ 
+
+
+00:44:30.930 --> 00:44:34.440
+ 
+
+
+00:44:34.440 --> 00:44:37.830
+ 
+
+
+00:44:37.830 --> 00:44:40.410
+ 
+
+
+00:44:40.410 --> 00:44:44.550
+ 
+
+
+00:44:44.550 --> 00:44:47.880
+ 
+
+
+00:44:48.120 --> 00:44:50.760
+ 
+
+
+00:44:50.760 --> 00:44:53.340
+ 
+
+
+00:44:53.340 --> 00:44:55.920
+ 
+
+
+00:44:55.920 --> 00:44:57.750
+ 
+
+
+00:44:57.750 --> 00:45:00.750
+ 
+
+
+00:45:00.750 --> 00:45:03.420
+ 
+
+
+00:45:03.420 --> 00:45:05.970
+ 
+
+
+00:45:05.970 --> 00:45:08.910
+ 
+
+
+00:45:08.910 --> 00:45:12.060
+ 
+
+
+00:45:12.060 --> 00:45:18.060
+ 
+
+
+00:45:18.060 --> 00:45:23.730
+ 
+
+
+00:45:23.730 --> 00:45:27.570
+ 
+
+
+00:45:27.570 --> 00:45:31.020
+ 
+
+
+00:45:31.020 --> 00:45:33.480
+ 
+
+
+00:45:33.480 --> 00:45:37.200
+ 
+
+
+00:45:37.200 --> 00:45:40.740
+ 
+
+
+00:45:40.740 --> 00:45:43.020
+ 
+
+
+00:45:43.020 --> 00:45:46.050
+ 
+
+
+00:45:46.050 --> 00:45:48.840
+ 
+
+
+00:45:48.900 --> 00:45:52.080
+ 
+
+
+00:45:52.080 --> 00:45:54.480
+ 
+
+

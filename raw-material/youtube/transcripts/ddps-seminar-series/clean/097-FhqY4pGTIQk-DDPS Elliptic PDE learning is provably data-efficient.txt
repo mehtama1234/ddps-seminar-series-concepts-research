@@ -1,0 +1,1298 @@
+all right everyone uh welcome to the
+tdps seminar uh before we introduce our
+invited speakers let's go over some
+rules and Logistics first of all please
+mute yourself during the talk but uh if
+you have question you can unmute and ask
+questions of course uh or you can use
+chat room to post your questions so that
+we can address them in Q&A session at
+the end uh second today's um ddps
+seminar is open to external audiences uh
+so no classify discussion okay and
+finally The Talk today will be recorded
+and uploaded in our YouTube channel um
+all right that's about it let me briefly
+introduce our speaker today it is an
+honor to host Dr Nicholas B who is a
+researcher fellow in mathematics at the
+University of Cambridge he obtained a
+PhD in numerical analysis in 20 2022 at
+the University of Oxford under the
+supervision of Patrick barell and Alex
+Thomson his research focuses on the
+intersection between numerical analysis
+and deep learning with a specific
+emphasis on learning physical models
+from data particularly in the context of
+partial differential equation uh he was
+awarded a LLY Fox prize in 2021 for his
+theoretical work on pde learning today
+Nicholas will give an exciting talk on
+elliptic pde learning that
+is pro um provably data efficient before
+I pass the button to Nicholas let me ask
+a couple of question to Nicholas just to
+get to know him better and make this
+seminar somewhat informal um so Nicholas
+I'm going to ask you couple of question
+if that is okay all right uh the first
+question goes you seem to be um very
+passionate about data driven pde
+learning and data approaches in general
+is there any moment in your life when
+you realize that wow this is it this is
+the field I would like to commit my
+career yeah well so I started to work on
+uh numerical solvers for PDS and uh I
+saw the rec like excitement about AI
+machine learning uh mhm five years ago
+and Bally the the lawnmark paper by
+Kanis and hiss and physics inform
+networks as well that we're first trying
+to manage the field of machine learning
+and and PD so I found it was very
+exciting and started to work on these
+questions as well okay good sounds good
+the second question is would you tell us
+one good thing about where you are right
+now the University of Cambridge um well
+I think good thing that is like the the
+the great amount of researchers in uh
+like the related areas that we have like
+we have lots of people working on invest
+problems and classes fre free Dynamics
+and so it's always uh very interesting
+to see and discuss with like such a wide
+variety of of researchers here in the in
+the University awesome well the floor is
+yours
+Nicholas yeah great so thanks for the
+introduction and and thanks a lot for
+the invitation to speak today so I'm
+going to talk about uh PD learning and
+this talk is based on a recent work with
+my collaborators Di lias and Alex
+Johnson who was my former PhD
+supervisor and so before I thought I
+would just give a very brief
+introduction to the field of scientific
+machine learning and so basically so you
+you all aware of the like past and
+recent successes of deep learning and
+machine learning to various scientific
+Fields uh like uh natural language
+processing image
+classification uh speech recognition and
+so in the past few years so researchers
+from numerical started to uh exploit and
+work toward exploiting this B these
+techniques from Deep planning and
+combine them with uh natur uh with
+numeric and and physics and so the idea
+behind being that if we collect enough
+data from physics experiment then we
+might want to either simulate numerical
+solvers or or learn mathematical models
+for
+experiments uh and so there's a a great
+uh review paper by canakis and his qu Us
+in these topics in in nature review
+physics and physics information learning
+and so in this talk we'll be focusing on
+PD learning so there so I like to think
+as uh scientific machine learnings as
+being the combination of three main
+research areas uh that are inzing uh
+machine learning and partial
+differential equations of pdes so the
+first one is PD solvers then we have PD
+Discovery and PD learning and so all of
+them are different flavor of scientific
+machine learning which are addressing
+different problems so typically PD
+solvers is aimed to construct uh M de
+planning algorithms to solve unnown PDS
+using data PD discovered is a try to U
+find coefficient to discover
+coefficients of a PD assuming that we
+have a certain prior on the form of the
+PD using for
+instance the cind technique and finally
+PD learning aims to discover
+mathematical models from data with very
+little prior knowledge of the physics
+that simulates the
+data and so the for instance of PD
+discoveries I just want to illustrate an
+example of potential application so this
+is showing a picture extract from a
+video of a surgery that people have done
+on a p brain and for so from this type
+of data we would typically like to
+extract some bi iCal tissue properties
+without having to perform expensive and
+uh difficult
+invo surgery and so this is typically
+the field belongs to the field of invest
+problems where from uh in undirect
+measurements of phenomenon we would like
+to extract some properties of tissue
+Properties or if you are more from the
+PD Community some coefficient like
+diffusion coefficients happening in the
+of the in the PD
+another field is the another example for
+another field for PD solvers is uh
+that's a paper from K and in Canal in
+2021 which shows the a f flow of npress
+cup and so in this paper the authors
+only have access to snapshots of the
+temperature measurements of the fluid
+above the espresso cup and from that uh
+assuming that we know the underlying
+equation that govern the data we would
+like to infer all variables like the
+flood velocity and the pressure and so
+this is a great example of application
+of the of the technique of a technique
+called physics inform NE Network which
+aim to train new networks to fit or to
+approximate the solution to a given
+known
+PD and finally the last field which I'm
+which is a field where I'm focusing on
+is the field of PD learning or open
+learning where we don't necessarily know
+what the model is and we try to infer
+the model so approximate the the action
+of the model on some input data so
+typically in this example we have a I'm
+showing you a picture extract from a
+simulation a fleet flow simulation where
+the fle is coming a jet flow simulation
+the fle is coming from the left at high
+velocity and traveling to the right and
+so if we are interested in applications
+like material designs or
+optimizations or fast simulations we
+might want so we might want to build a
+reduced order model of this system to F
+just map the incoming boundary flid at
+the left to the outcoming flu velocity
+on the right without simulating the flu
+the food model which might be very
+expensive and so we might want to build
+reduced a model using PD learning uh to
+examp to speed up numerical solvers but
+there are also occasions where we don't
+know what the underlying physics is we
+might just acquire data from from
+physical experiments and try to build a
+mathematical model using machine
+learning and so in this talk we're going
+to focus on PD learning and so in
+particular we want to learn solution
+operator associated with partial
+differential equations of the form L of
+U L you can think of L as a linear PD
+where U is the solution and F is a
+source St that excite the model so
+typically what we have is we have
+observation data so we f is like our
+input to the system so it's like a
+parameter that we can vary the function
+that we can adjust we we send this
+function to the system and then either
+we perform a numerical simulation or we
+perform a physics experiment and we
+measure we acquire this underlying
+solution so the response of the system
+to our input F you and so the response
+is dened as you that's the underlying
+solution of the P that we assume to be
+on
+one and so the main contributions that I
+will describe in this talk is first a
+theoretical results that
+quantify how many training data fnu are
+needed for uh training those
+systems and the second contrib in the in
+the second part of the talk will be a
+practical deep learning approach to
+learn greens functions which are an
+example of solution
+operator and the key ideas behind our
+our results will be based on numerical
+linear algebra in particular randomized
+numerical in algebra result concerning
+regularity of GRE functions and rational
+neur networks which I will disc
+later and so there are several standard
+approaches for PD learning
+so typically so we aim to approximate
+solution operators that are denoted by L
+minus one which are operators between
+functions and so the classical approach
+is that we select we sample random
+functions
+F and then we acquire Sol Associated
+Solutions U and from this pairs F and U
+we want to approximate the operator that
+takes in any function f and return the
+following solution and so the way
+researchers are doing that now is that
+they approximate they build a new
+network model to that approximate this
+operator and the ne Network model is
+called a new Operator by analogy of
+being a new network in infinite
+Dimensions so mapping between functions
+instead of mapping between real values
+and so while it's expensive to train
+these networks the idea is that once the
+network is trained then it's extremely
+fast to evaluate often faster than
+standard numerical
+solers and so the classical approaches
+for doing that are the Deon the for NE
+or the Deep green and there are also
+lots of recent papers and proposing
+different techniques for building
+neur and so essentially all these
+approaches def by the type of neural
+network architecture that is being used
+so the Depon net is based on two fully
+connected new network the fre neur
+operator is based on convolutions and
+the fre trans fast transform while the
+Deep green approach is based on auto
+encod and so depending on the prior
+physics that you have on the operator
+you might want to prefer using one one
+approach or another but all of these
+approaches are essentially trying to
+approximate the solution operator with
+different PRI the type of architectures
+that they
+use and so there are different
+challenges right now that we see in PD
+learning so first is uh the lack of
+theoretical results so there are
+different uh questions that we I want to
+uh to look at which are for instance
+what type of training data and how much
+training data is needed to train these
+neur operators getting rigorous
+performance guarantees with reg s bonds
+understanding what type of ne arit new
+network AR are better than others so
+these are typically approximation the
+questions or whether these approaches
+are robust toward noise
+peration there are also some practical U
+ISS practical challenges uh related to
+the uh interpretability of the model so
+the approach that I mentioned are
+essentially blackbox in the sense that
+these new networks object are very
+complex and so it's very difficult to uh
+get some interpretations once we have
+training model because since those are
+related to physics application we might
+be interested in uh we might be
+interested in extracting physics
+Knowledge from a model such as dominant
+modes governing the system Behavior the
+symmetries conservation law Satisfied by
+the system all singularities shocks
+location and
+Etc and so in this work we'll focus on
+understanding uh trying to understand
+how much data do we need uh to learn
+solution
+operators and so in this so I I just
+first want to show you this experiments
+that I did where I train three type of
+neur operators to approximate the
+solution operator of plus equation so
+that's a very simple model just like a
+to model on in in in two Dimensions uh
+just to to test the behavior of these
+models and so what I'm doing is I I
+Generate random sour SS F to laan U
+equals F and then I uh simulate the
+solution I solve the PD the associated
+equation to get the solution you I train
+the different models for different size
+of the training data set for for
+different numbers of training data and I
+about the testing error that we get the
+relative testing
+error so typically we we see see like a
+sharp decrease in the testing error as
+the size of the training data set
+increased towards 50 and then U kind of
+a the stagnation of the of the eror
+towards 5% relative
+error and so here this is a kind of a
+very interesting observation in the
+sense that we don't need that much data
+here we need like something like a 100
+or 50 source and for for Sy them to
+approximate solution operator well with
+5% error or 2% error and so this
+constract with the vast amount of data
+that is being used to train traditional
+uh applications of De planning such as
+for image class classification or
+natural language processing so I have a
+question Nicholas here when you generate
+the data the sampling procedure is also
+a um
+factor of this performance measure yeah
+whether you use the uniform sampling
+light and hyp Cube sampling yeah I'll
+talk about that a bit Yeah it depends on
+how you what kind of distribution you
+use to sample the The Source temp for
+sure okay okay so yeah so key question
+is to understand how much train data do
+we need to learn a PD and so there are
+several Works uh recently that have been
+studying this kind of behavior as as
+well and so first here we'll focus on uh
+to to try to understand this question
+we'll focus on linear differential
+equations of the form L of U equals F
+where we know that there exist we know
+the form of the solution operator so we
+know that the solution
+operator is an integral against Green
+against an object called the green
+function and so we know that if you if
+you know the green function here then
+you can express the solution operator as
+the solution to the PD as U equals
+integral of G * and G is basically
+represent the solution operator to the
+PD so if we know G then we know the
+solution
+operator so as an example if we look at
+the pon equation with homogeneous
+directly upon a condition then we have
+this GRE function below and so it's
+interesting so we from the green
+function we can read certain physical
+properties of the underlying equation
+such as the symmetries are related to
+the Symmetry to the fact that the the PD
+is s joint or the boundary conditions
+can also be red on the green function
+and this is the same for a more slightly
+more complicated example which is Helm
+equation in 1D where we can read the H
+mod frequency on the wave length of the
+green function as
+well and so in our case we'll consider
+elliptic equations in three dimensions
+of this form so diffusion type models
+where a of X here is a matrix of
+coefficients and uh so we don't know
+what the coefficient functions is and
+from uh this equations we would like to
+learn uh the corresponding solution
+operator or the green function so we uh
+excite the system with different Source
+term F we read the solution U and then
+from that we would like to approxim IM
+derive an algorithm to approximate the
+greens
+function and so our main
+theem states that uh there exist a
+randomized algorithm so men construct a
+randomized algorithm which converges
+exponentially fast to the greens
+function with respect to the number of
+uh training data that we use and so the
+the algorithm is random because we used
+a random Source term sample from a
+certain go process that we
+characterize and we also because it's
+ROM as so we we get a bond a cical bond
+with a certain probability of success
+and we show that the probability that
+the bond fails is ex exceptionally small
+so it decrease exponentially fast as
+well as you uh increase your amount of
+training data and so the proof that I
+will describe later on the slides
+combines different techniques from
+numis and generalize them to infinite
+Dimensions so it combines randomiz
+single value DEC composition archical
+matrices and
+ping so now we'll go through the proof
+so through the different aspect of the
+proof to construct the algorithm that
+converges to the gra
+function so first we'll go through
+randomiz algebra so if we have so we'll
+come back to finite Dimensions first and
+then explore how we can extend these
+results to infinite dimensions and Ling
+grein functions so first if we have a
+matrix a then we know that we can write
+down its singular value
+decomposition and that the aarum theorem
+tells us that the best onek
+approximation to a is given by the
+truncation to the case singular value
+and the error is given by this Epsilon K
+here is given by the tail of the
+singular
+values and so a laark paper by hco
+Martinson and chop in 2011 called the
+randomiz
+SVD tells us that if we have a blackbox
+matrix a that we can only access through
+ma Matrix Vector product then uh we can
+construct construct a low rank
+approximation to a from random input
+vectors and in the paper the auor con so
+so describ this algorithm and also prove
+rigorous uh convergence uh rigorous
+results uh to guarantee that the that
+the algorithm converges and in
+particular it shows that the probability
+that uh the U the approximation is close
+to a is very large and the bond depend
+on the best FR approximation error
+Epsilon K and if you compare again the
+best approximation the basically the
+randomized SVD algorithm performs on
+slightly worse than the best FR
+approximation so in blue it's a r m SVD
+to approximate low Matrix and in black
+is the best approximation as I increase
+the number of sample
+vectors and so the uh so in
+traditionally in the randomiz VD the
+random input vectors are sample from a
+gan distribution and here we're
+interested in externing these results to
+correlated Cent vectors so that we can
+later extend them to infinite dimensions
+and so that's what we did in our you
+know in a paper with with Alex Johnson
+two years one a year
+ago where we essentially extend the
+bonds from the paper by Al chop so that
+we allow the ROM asvd to work when we
+have a correlation between the in
+between the entries of the input vectors
+so we have essentially the same type of
+C except that we have a factor here beta
+K gamma k that depends on how correlated
+the input vectors
+are and
+uh a nice feature about this
+construction is that this additional
+Factor here the fact that we allow this
+additional flexibility so the fact that
+we allow for correlation between the
+input vectors in the ROM MD allow us to
+enforce prior knowledge of the Matrix a
+that we want to approximate into the
+design of the Coan Matrix from which we
+sample the random input vectors and so
+if we have some prior knowledge on a we
+can basically enforce that into a
+construction for the random vectors and
+in some uh in some occasions we can get
+better approximation error than the ROM
+that's what the plot shows on the right
+on the on the right where we normalized
+the error by the best approximation
+error and in some cases using a
+carefully constructed random vectors we
+can get four 40 to 50% better
+performance compared to the random
+SVD and so now that we have this
+generalization we can basically extend
+it to infinite dimensions and to
+operators and so we'll consider he M
+operators which are bonded operators
+between Banner spaces with finite norm
+and so the essentially what we uh the
+idea is that the H met operator are the
+natural generalization of matrices two
+infinite dimensions in the sense that
+they enjoy the same property so the H
+bit Norm for an operator is equivalant
+to the fous norm of matri so it's the
+square root of the trace of a St
+a
+and so they can be seen as integral
+operators if you want so instead of
+having Matrix Vector product we can have
+integral of G of XY * F of Y and the two
+behave in a similar
+way and so they have nice property so if
+you have like ANM integral operator then
+the HB Norm is the norm of the kernel G
+is L2 normal is equal to the can normal
+the canal
+G we also have a singular value
+decomposition for H
+met and we also have an mem which St
+that if we trun the
+SVD we also obtain the best
+approximation in the he bit n which
+which is the analog of the
+F and so essentially what we have here
+is that we have all the ingredients for
+extending the that we have for the
+randomized SBD for matrices two Infinity
+Dimensions with f b m operators so now
+instead of of
+approximating computing a low low rank
+approximation to blackbox Matrix a from
+uh random from Matrix Vector products
+with random input
+vectors we can uh compute low rank
+approximation to can G from integral
+against random functions F sample for
+ation process and the idea is that
+because we have this nice theoretical
+setup all the algorithm and the the
+extends really very naturally to
+infinite
+dimensions and so now we have instead of
+having coal Matrix we have a covalence
+canel from which we can sample random
+functions from the associated gion
+process and the choice of the Coan
+kernel will influence the distribution
+of the random functions and the
+approximation error rate that we observe
+at the
+end and so that's our theem then so if
+we have a canel g then we can construct
+an
+approximation using a certain number of
+random input functions sample fromion
+process
+that's basically satisfy this error Bond
+where Epsilon K here which is the main
+error Factor depends on the best onek
+approximation to G so it depends on how
+F the singular values of GDK and this
+gamma K Factor here uh is basically
+determined by the choice of the coant
+Kel so how appropriate is the coant Kel
+for learning the dominant singular
+vectors of the kernel G
+and so this is uh showing an application
+of the random SVD for H me operator so
+on the top left we have the exact canel
+that we want to
+approximate and on the bottom right this
+one is a learned canel from the ROM
+SSV and so in this example I'm using
+random functions sample from the squ
+exponential canal with different length
+scale parameter so in left in red I'm
+using a very small length scale
+parameter and in blue blue and green I'm
+increasing the length scale parameter
+and as I vary the length scale parameter
+we see that we obtain different relative
+error and that a small length scale
+parameter here is better for learning
+this canel because it's not the agon
+values of the cence canal will Decay
+more slowly and so we are able to
+generate a larger finite dimensional
+Vector space of ROM functions for
+approximating the
+Canon but if we choose the length scale
+parameter correctly we can approximate
+this complicated canel to nearly machine
+Precision with the
+RVD and so now that we have this
+generalization of the
+RVD we can apply to learn a grein
+function and to construct an algorithm
+for learning grein functions so we have
+this grein function here uh we uh use
+the romd we compute integral against the
+random functions that we sample and then
+we apply the bond that we der where we
+have to characterize what this Epsilon K
+Factor here in other sense we have to
+understand what half the singular values
+of the green function
+DK the problem that we observe here is
+that the GRE functions are not smooth
+near the diagonal so in 1D there is a
+discontinuity in the derivative and in
+higher Dimensions so in three dimensions
+green function are take even infinite
+values along the diagonal which is
+problematic in this case so this
+basically the fact that the GRE function
+are not analytic and they're not smooth
+tells us that this Epsilon K theyes very
+slowly with K so in particular Epsilon
+KES algebraically with K while we want
+to reach an exponential convergence rate
+to match what we observed in the deing
+experiment that I showed
+earlier so how do we solve this so we're
+going to explore
+regularity results about the green
+function and so in particular we go back
+to a paper by bof and H bush 20 years
+ago that show that even though green
+function are not smooth and they're not
+low rank on the global on the entire
+domain they admit a low rank structure
+on well separated subdomains so if I'm
+taking green function here the on the
+cube in
+3D if I if I restrict it to two
+subdomains that are well separated such
+as the green and blue domain then we
+know that on the cross product of this
+subdomain the green function is smooth
+globally smooth and will be low rank but
+if I take two domains that are attached
+to each other such as the green the blue
+and red domains so these two domains are
+touching each other here the green
+function is not smooth so these are
+domains that are Li along the diagonal
+of the tons product Omega cos
+Omega and so if we look at a
+onedimensional picture here so this is a
+GRE function for 1D equation so the GRE
+function is a two-dimensional
+object this is in this case I'm coling
+domains that are well separated so I'm
+doing what's called the hierarchical
+refinement so if I take two domains that
+are well separated I color them in green
+and if they're not well separated I can
+do a division a subdivision of domains
+and look at whether the children are
+well separated or not so if we we start
+from away from the diagonal and then and
+then we progressively ref find the
+domain as they go smaller and smaller
+towards the diagonal to capture the
+different low rank domains of the green
+function and so now that we have that
+now that we have this retical
+construction the idea is that we can
+look at each green domains where the
+green function is low so because it is
+low it's well approximated by a low
+function and this tells us that this the
+singular values the tail of the singular
+value so this Epsilon K here is smaller
+than Epsilon and DEC extremely fast with
+respect to K so this the singular values
+DEC exponentially fast with respect to
+the rank K
+here and so in particular this tells us
+that we can apply the randomiz singular
+value DEC composition on each thir
+domain and get a very good approximation
+to the green function with a low number
+of one of training
+data and so what we do now is that we do
+it in a gical way in the sense that we
+first learn the higher the larger
+domains first and then we progressively
+ref find go down to the YY go down the
+YY and we'll find the results towards
+the
+diagonal so we have a we we use a clever
+algorithm called the peeling algorithm
+that have been proposed by like singing
+and collaborators and Martinson as well
+about 10 years ago that allows us to
+reuse as much training data for the
+random SVD as possible to exploit the
+yal structure of the domain and don't
+and limit the number of data that we are
+using in our
+algorithm and so now that we have that
+we just have to deal with the case of
+the diagonal so we just have to deal
+with the red subdomains here now that we
+have approximated the green function on
+each green domain with the one is
+V and so what we are doing now is that
+we we look at uh characteristics of the
+green function so how the green function
+Decay away from the diagonal to
+characterize the the magnitude of the
+green function on this red domains here
+and here we explored another result from
+elliptic PD Theory from G and vidman in
+1982 which tells us that the green
+function are smooth and the decay of the
+diagonal with a certain rate one / xus Y
+and so if we integrate over this area of
+the
+subdomains then we can basically
+essentially construct yal structure
+refine along the diagonal until the
+green function
+becomes in magnitude becomes smaller
+Epsilon and this case we truncate and
+approximate the F by zero and make
+Epsilon and so this procedure andure
+that we basically make Epsilon on each
+subdomain so when we reconstruct the
+green function we make Global L
+Epsilon and so in summary we we show
+that our algorithm achieves exponential
+convergence rate with respect to the
+amount of training data so it doesn't it
+doesn't require a lot of training data
+which match uh the experimental behavior
+that we observed before and so this tell
+us that the if we consider the class of
+elliptic partial differential equations
+in in the form that I should diverence
+form this class is data efficient in the
+sense that we can construct a regor
+algorithm that achieve exponential
+convergence for learning any greens
+function associated with this class from
+input and output
+data and so our construction exploits
+the random ssvd and generalize it to
+infinite dimensions and as well as uh
+properties elliptic properties elliptic
+regularity properties of the of a grid
+function such as its gical low
+structure and uh something interesting
+to mention is that some of the
+techniques that I described earlier so
+the randomiz VD and the
+archical
+approximation naturally extend to other
+type of equation such as time dependent
+PDS of this form so you can think of it
+as heat like equations so we have a
+recent paper that describe how we can
+EXT this technique next to them
+dependent PDS as
+well and so now in the second part of
+this
+talk I want to talk a bit about uh deep
+learning application so where we use uh
+this type of uh greens function learning
+to design algorithm an algorithm a deep
+practical deep learning algorithm for
+learning the green function in
+practice and so what we do is that
+we first uh start with the point a here
+where we select
+a Coan Kel so typically squ exponential
+Kel withle random functions that we use
+to excite our system in b and c and
+observe or measure the corresponding
+solution so we typically do it by
+numerical simulations but you could also
+do it on and practical data that you
+acquire and then we formulate our loss
+function that basically has an object
+that is going to learn the green
+function so in the in the L function the
+NG here object is a neon Network that
+ends to approximate the underlying green
+function and so we consider with this
+method simpler PD than the ones
+considered by Depon
+Oro but where we want to learn a
+physical object so we consider simpler
+PD but we want to extract more physical
+uh understanding from this uh from the
+model and so in this case we have a
+network for learning both the homog
+homogenized solution which captur the
+bond recognitions
+and the greens function as well which is
+essentially the solution
+operator and the idea is that once we
+have learned the greens function then
+you can extract a lot of pictures about
+the underlying P so you can look at
+potential symmetries of the green
+function which are related to symmetries
+of the underlying PD or conservation
+laws of the
+PD we can perform a signal value de
+composition to extract the dominant
+values and dominant modes are these are
+related to the ones of the the underl PD
+as
+well or look at Singularity location and
+so this last Point here is related to
+the type of new network that we use to
+learn green function so as I said
+earlier green function are can be
+singular and are in general singular
+along the diagonal of the domain and so
+in
+particular um we can't really use
+traditional neon Network to approximate
+GRE function because these neon networks
+B on on the r function
+are bonded and so we found that using a
+different type of new network called
+rational NE networks which are NE
+networks with rational adaptive
+activation functions yet better
+approximation result when train in this
+setting and so these new network can
+have poles so in particular they can
+take infinite arbitrary large values
+which is ideal for learning GRE function
+which are un bonded object and also the
+support fure instruction in the sense
+that you can visualize ize the poles of
+the underlying rational functions of the
+underlying rational networks to estimate
+whether there's a shock or Singularity
+happening in the model I'll show you an
+example in the next
+slide so as an example if we consider
+the 1D adion diffusion equation where
+I'm turning on adion only on the right
+part of the domain so I'm considering
+this equation on the interval minus one
+one I'm turning on the adicction part
+with this blue term here only on the
+right half of the domain I'm
+training manual Network to approximate
+the underlying greens function from
+pairs of source F and solution
+Z and so what I observe is obtain this
+green function object here and so first
+there are interesting things to consider
+here so if we look at the green function
+and we restrict it to uh the bottom half
+of the domain the left bottom left part
+of the domain then we recognize the
+behavior green function that is
+characteristic of diffusion of the
+diffusion equation so we can tell that
+there's a diffusion phenomenon happening
+on this part of the do on the other hand
+if we look at the upper right part of
+the domain we can tell that this is
+adion dominated as a function is has
+larger values than the upper half of the
+domain uh if we now look at the
+homogeneous solution so first you can
+see that there's a really good
+correlation between the exact solution
+and the one that we learn through by our
+new network and now if we plot the Ral
+functions that that approximate the
+homogeneous Solution on the complex
+plane so we even though it's a it's a
+real function we evaluate the we can
+evaluate the rational neon networks on
+complex plane and we get this face
+portrait on the on the right Bel on the
+right and this face portrait tells us
+that the the POS of the Ral functions
+tend to Cluster towards zero so these
+like dots these color dots that we see
+these are represent the pose of the
+underlying rational functions they tend
+to Cluster toward zero where there's a
+discontinuity happening in the
+homogeneous solution and so this can by
+looking at how far the P are clustering
+we can identify some physical properties
+of the underline
+function so as the last example I'll
+just uh
+want to consider the stocks flow example
+in a len cavities it's a a
+two-dimensional Vector
+example where on the top left first uh
+I'm showing the exact homogenized
+solution velocity field so this is the
+magnitude of the
+velocity and the bottom left is the
+Learned homogeneous Solution by the on
+network so we see that we have a very
+good agreement even though we are using
+a course grid for training on network
+between the length and exact velocity
+field and then on the right I I'm
+plotting the greens function associated
+with this system with the stock flow so
+what I'm taking as input here is the X
+and Y component of the source stem of
+the body Force St and I'm trying to
+learn the operator that Tes in the left
+and right component FX and FY and output
+the left and the the first X and Y
+component of the of the underlying
+solution velocity
+fi and so in this case because we have a
+system that takes in two functions and
+output two functions we have a what's
+called a matrix of green functions which
+uh basically takes these two components
+and after convolutions output the two
+components of the Velocity field these
+are the G11 g12 g21 and
+G22 and the interesting part is that by
+looking at the system at the Green
+function and the symmetries we can
+understand first symmetries of the
+system and how the X and Y component of
+the Velocity are correlated with the X
+and Y component of the source and how
+the
+system correlates and Co corate those
+components and so to conclude so uh in
+this talk I described a Ser for loading
+greens functions so we we show that we
+can achieve exponential convergence when
+learning wind function which is in
+agreement with uh with
+stateoftheart numerical simulations de
+planing simulations that have been
+performed in the past few
+years then we constructed the
+generalization of the one Mass singular
+value de composition to infinite
+dimensions and he me
+operators and also I descried the Deep
+learning approach we have a a package
+available in tlow for learning green
+function that use questional your
+networks and so with that I'll conclude
+and thank you for your attention and I'm
+happy to take any question thank you
+thank you so much for the wonderful talk
+Nicholas um let's have a Q&A
+sessions awesome um I don't see any
+question in chat room for now but that
+doesn't mean you don't you don't you
+cannot um ask questions let me start
+with my questions so is it uh only
+applicable to linear elliptic problem
+for now or can it be yeah so uh so this
+main that I disc discovered is for
+linear elliptic problems because uh we
+need some underlying results on
+regularity C that is done for tic
+problems and can also be extended to
+parabolic systems so the equations like
+are similar to the heat
+equation uh a key question of course is
+to a key challenge for the future is to
+extend these techniques to hyperbolic PD
+which would be very challenging and also
+nonlinear problem so that's that's the
+key open questions for the Futures to
+get some theoretical Rael to
+quantify sample complexity of PDs for
+yeah hyperbolic systems and non nonar
+PDS as
+well okay um and also I have a
+impression that this only works for the
+uniform
+mesh uh no uh no so actually um or the
+cian No No so in in the in the last
+function here I have this integral
+operation so we have this green function
+that takes X and Y as input uh you can
+disti uh you can take any quad as you
+want so you can Discord your mesh your
+domain as you want take any quad your R
+and that that that would work so if you
+if you don't have any strong appr on the
+domain you can use like a multe
+approximation and take ROM points in
+domain but you can you can also look use
+more like high order and more fancy qu
+you would see if if you have access
+to
+okay awesome um can you tell us about
+what kind of like speed up you you
+obtain yeah so the the yeah so the
+theoretical we that we have is uh is not
+meant to be applicable in practice so we
+uh because uh constructing the the
+archical scheme could be constructing
+the yo structure could be quite
+challenging if you have complex domains
+so it's mostly there so we we mostly try
+to
+understand what type of distributions of
+source terms are interesting in
+applications and try to justify give a
+regor guarantees for existing
+state-of-the-art deing
+techniques uh as for the speed up so
+it's it's still an ongoing uh ongoing
+works right now to really evaluate those
+techniques again classical solver so I'm
+I'm not really advocating that we we
+should use these techniques to speed up
+numerical solvers but I'm more confident
+in the in their utility where we don't
+know we don't have a model for them so
+I'm I'm I prefer to to I prefer to use
+neurer techniques for cases when we
+don't have any model like for instance
+there are recent applications in the
+team by in by Deep mind and in Caltech
+as well to wether forting where we don't
+necessarily have a good model for for
+weather forecasting and they and they in
+this case they achieve some huge speed
+up compared to existing
+techniques a awesome awesome okay so for
+example weather forting if you want to
+use this method um probably the data we
+collect is hu yeah so if you can talk
+about the scalability of this this
+method as the data uh size
+increases the cost of you know learning
+those greens functions as it scale larly
+or uh yeah so I believe here uh it's h
+yeah I mean yeah I believe this uh would
+scale linearly yeah I mean uh the the
+training of the new network yeah I
+believe this would scale linearly and
+the world point is that uh because we
+have like such in this case prior
+information you don't need much training
+data as well because the idea is that
+because the PD and the solution operator
+has a lot of structure in practice you
+don't need much training data to train
+them so the experiment I showed
+here uh Tod with stock flow we are only
+using like a 100 source and solution
+terms
+well I I don't think the the neural net
+training cost is scale linearly with the
+data size you have to solve a non
+optimization
+problem
+um
+well well because you uh if you do like
+batch uh F like batch batches like batch
+optimization I think the at each Epoch
+uh the number of iterations that you do
+over your badge set is increase linearly
+with respect to
+the uh the underlying data set size so
+all the updates that you are doing like
+stent updates is fixed and doesn't
+doesn't uh depend on the data set size
+and then each patch each uh yeah in this
+case this will this will SC this would
+scale L with respect to the the size of
+the training
+data yeah the problem is you know when
+you increase the data size you know the
+the parameter you have to introduce
+weights and biases in the neural network
+it
+increases yeah well so the number of
+unknowns in your nonlinear optimization
+problem is increasing and yeah sure but
+um yeah uh but yeah I'm not saying that
+uh I'm not saying that this method
+should uh compete like are trying to
+replace standard classical numerical
+solvers that have been heavily optimized
+I think these methods are interesting in
+the case where we don't have any
+alternative we don't know what the model
+is I we need to discover some we want to
+discover some Physics that that's really
+my my point on this on this class of yes
+I mean yeah in that sense this method is
+very promising um okay
+um any questions from audience me unmute
+yourself and ask your
+question oh I asked a question in the
+chat oh you did yeah I I did not I don't
+see any oh oh sorry about that I missed
+that um
+yeah um well question about question
+from ruie he asked Can you comment on
+the relation of your method to
+F yeah um okay
+so um yeah that that's a great question
+so the fno in a
+sense uh is also trying to learn like a
+can like a GRE function in you want if
+you want but it's uh doing several
+layers so it's it's like a
+it's if you want our method can be seen
+maybe as like a one layer F where we
+don't do extra so in the do extra
+approximation extra simplification the
+type of Kernel that they use using the
+for convolution so our method does is a
+more simpler than f it only works for
+it's much more limited because it only
+works for linear PS but then we allow
+for learning a much more diverse uh a
+much more diverse class of Kels so
+because we construct an object to learn
+the green function here the advantage is
+that we can really visualize the object
+that we get while the feno is kind of a
+more like a blackbox new network arure
+so it's much more difficult to extract
+some
+understanding so yeah our approach is
+more like a a one layer can be seen
+maybe as a one layer fre operator where
+you replace the convolutions by by uh
+this your network G
+here awesome related related to that um
+how about um you know compared to the
+like the cind um yeah so yeah that's
+yeah another great question so the so
+the Cindy approach is basically so you
+remember the the beginning of the
+talk uh where
+show this figure
+here MH so uh
+fonet and and our approach are in PD
+learning on the PD learning
+side uh pins is in the PD solver so
+physics from neur neur Network and the
+cind approach is more on PD Discovery so
+they have some knowledge of the type of
+equations that they want to recover and
+they try to learn coefficients of the
+equation so the cind approach in a sense
+is complementary to the PD learning
+approach so they have stronger prior dat
+stronger prior on the type of physics
+that they learn but they try to recover
+different information so these are these
+two are complimentary
+approaches okay um I mean I I I would
+view it like
+Cindy as a you know OD learning or the
+PD learning
+as well um well it does give you some
+differential equation form of yeah
+exactly so I call it PD Discovery in the
+sense that you are trying to solve the
+inverse problems while learning you
+learn the forward problems with the
+solution operator but the form is not PD
+right it's a no it's not a PD but uh if
+if you train if you uh use a CD approach
+and you learn the PD you still have to
+solve it afterwards sure sure but but
+but both of both of them are you know
+once the training is done like the
+discovery is done you can use those
+model to replace the
+or um you can use that as a model to
+find out the new Solutions and yeah you
+you still need to solve the equation
+exactly but the P Lear okay so your
+point is for the PD learning yeah are
+exactly so those are really
+complimentary uh they will give you
+different type of information about the
+PD the cind approach gives you more
+physics information because it really
+gives you the coefficients of the PD
+while the uh operator learning or PD
+learning approach like fno gives you
+more like a fast server which may be
+very useful for optimization uh task
+Downstream for instance got you got
+you well thank you ni plus is there any
+other question
+question I have a question regarding the
+linearity of these PD problems I'm Tony
+uh so just to make sure I understand
+what you mean by linear problem suppose
+you have two forcings A and B and then
+you have a new forcing that's a linear
+combination of A and B um do you expect
+the response to be the same linear
+combination of the response that came
+from A and B respect
+L yeah okay then in that case if you
+collected enough forcing and response
+payers and your goal is to solve for a
+new forcing um can you somehow just find
+the best linear combination from the
+data like you use a linear combination
+of the forcing from the data to
+approximate the new case and the same
+linear combination of the response we
+just gave you the best of the response
+am I thinking about that problem
+correctly uh yeah possibly but I guess
+if you do that uh I'm guessing that
+that's possibly equivalent to finding a
+low rank approximation to your to your
+problem and so that will uh converge
+quite slow so there might be better ways
+than just uh trying to find a low like a
+small uh a small number of functions in
+your data set that desb your data there
+may be better ways
+of to to compute the solution than just
+comput an approximation on this on this
+small
+subset I see and is is the is learning
+the gra function uh a way to impose
+constraints yeah
+so yeah exactly so if you uh so what
+what we do here is that in our algorithm
+we enforce theal uh structure of this of
+the green function and so there are
+different approaches so all the operator
+learning approaches that have been
+proposed recently like the F dionets uh
+in a way they are all related to Green
+function and they all enforce different
+type of structure on the on the model so
+if you if you know the type of structure
+of the green function like it is low
+rank it is it has a yo structure it
+decays away from the diagonal you can
+select your new network architectures to
+enforce this constraint uh strongly when
+you train your
+network okay thank
+you thank you Nicholas is there any
+other
+question well if not let's thank our
+speaker Nicholas for the wonderful talk
+and um nice discussion in in Q&A
+sessions and yeah thank you so much
+Nicholas yeah wonderful um let
+[Music]
+me stop the recording

@@ -1,0 +1,2845 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:02.070 --> 00:00:07.350
+All right. Welcome to the to the DDPS seminar everyone. Before we introduce our invited speaker, let's go over some rules as usual. First of all, please mute yourself during the talk. If you have immediate questions, you're welcome to unmute and ask. Otherwise, please use the chat room to post your questions so that we will address them in the q&amp;a session at the end. So again, today's seminar is open to external audience, so no classified discussion is allowed. Finally, the talk will be recorded and uploaded to our YouTube channel. Now please, let me introduce our speaker. It is an honor as your host, Professor Liu Liu, who is currently an assistant professor in the Department of statistics and data science at Yale University. Before joining Yale, he was a assistant professor in the Department of Chemical and Biomolecular Engineering at the University of Pennsylvania from 2021 to 2023, and an applied mathematics instructor in the Department of Mathematics at MIT from 2020 to 2001. In 2020, he obtained his PhD degree in applied mathematics, master's degrees in engineering Applied Mathematics and Computer Science at Brown University, while he received his bachelor degrees in mechanical engineering, economics and computer science at Shanghai University in 2013. His current research lies in scientific machine learning including theory, our firms and software's and its applications to engineering physical and biological problems. His broad research interests focus on multiscale modeling and high performance computing for physical and biological systems. He has received the 2022 the oh ye Early Career Award and Tony Tony Schakowsky Family Foundation Outstanding Dissertation Award of Brown University. Today, he will talk about new operators with reliable extrapolation from multi physics, multi scale and multi fatality problems, please enjoy the wonderful talk. Now, without further ado, let me hand it over to Lou. Thank you for the nice introduction. So, in this talk at front panel, you may see that many discuss our original works of deep neural operators. So, I will not go to too much the background introduction, but let me just give you one page brief background showing here the usually when we consider a deep neural networks, we try to use a neural network to learn a mapping of functions. So, from one finite dimension of the one tonight if I find that machine D two. So, this is the accuracy on opposition error is guaranteed by the universal approximation theorem for functions, which was proved a long time ago in 1989. So, along this line, many different methods have been developed or many different algorithms have been developed to achieve will accuracy. For example, for image classification, the input image could be 20 by 20 pixels, which is 400 dimensions, then output is a scalar or vector. Also, the development of physics informed in our walks, which is also yours to learn the solution is a single solution of a PDE which is the function mapping. But in this talk, I will copy understanding the function learning to operator learning. So, the operator here I referred is a mapping from one function to another function. So instead of from one final dimension value to another value, so one single case, I in calculus, have an operator either to do to operator, so if our input is x t, then our output is the derivative of x t x prime t. So this is one simple operator or we can also consider another simple operator with integral for input x t, then we'll compute the integral of f t with respect to occur now okay, this also maps from one function to another function. But in this talk, I will mainly consider the system or PDE saw ODS, the input could be the boundary condition, initial condition of force in terms of the PDE then output will be the solutions over the PDE. But a more broadly this kind of framework can be applied to other systems biological system or even social system. So when we go from functional learning to operator learning, then a target question is whether we can see or learn operators by using neural networks. So at first Whether this exists a similar theory of universal approximation theory for functions planning operational setup. So, let me first introduce a few notations here, which were also used in this talk. So, our protocol we are learning is denoted by this square root g and the input a function is denoted by u, then output is another function where they do so, to yield energy you are both functions LTO is a function, let's consider why in a single location or point your domain of geo then geo Why is the value of function geo evaluated at this specific location? Why is that the answer to my previous question actually is true. So, as shown in this theory here, so, we can prove that the the new inner works, so, actually it's very powerful to approximate nonlinear operators, but, but definitely giving you some assumptions. So, the main assumption is that the spirit should be compared and its apology can or should be continuous giving this too many assumptions, then, the theorem is paper shows that for arbitrary operator G, an arbitrary input function yield and a location why they always exist a neural network in this form such that the error due to the current use of energy and the prediction from the new network can be arbitrarily small that n is zero. So, basically this is a one extension of the standard approximation theorem of functions or when our neural networks for functions extended to operators. So, I will not go into details into the theory part and in this talk I will mainly consider the methodology how can we implement the new network to achieve a good accuracy and efficiency. So, when you try to design an analog I knew and analog to learn output geo from input a Yo, then if we consider an analog is to a black box, let's take a look at what's the inputs and outputs of an analog. So, first the our input must have the input of function u. So, u is one input however, the function u is in the infinite dimensional space, we cannot directly input this function into this neural network when a neural network in our computers can only take a finite dimensional input. So, this the first step is to convert to have even imagined space function you to have five dimension voucher there are different ways to do this and it is crucial here I just show you one simple way let's consider we have a dense mash up or dense locations of x 1x two and x m in the location of the domain of your data values or function yo in this locations your x one you have to ensure you x m can be used to represent the input file show your evidence this location is a dense enough. So, this is the finite dimensional approximation of the input then this can be used as a network input. Similarly, for the output of network, still we tried to predict a function geo instead of a finite dimensional version. We can we can do a similar trick that is the only predate the function you're at a finite schedule locations. However, this in this case, in this talk, we try to avoid any kind of discrimination for the operator function yo. So the way we do this is as follows. So yeah, addition to the input function, yo, we also have another input of location why that's giving the input value and why the output will be the function to evaluate at this location. Why this is kind of similar to the physics IF formula works. So in physics, the formula works opinions, the input is the coordinates, output is a function of value added to the specific coordinate. We do simply say here, y is a coordinate the output it is function Geo and this recipient coordinate why, but this function depends on the input function it depends on the input function. So, this this approach would be measured free and also this condition free, it can be used to unstructured and arbitrary data locations. So, this is what is the one age and other 100 Is that what we consider PDS is how to compute the derivatives of an alpha NGO with respect with y that by using this approach of here just the ratio can be directly computed Biothane automatic differentiation the same as pigs. So, this is no dissertation error. So, this is inputs and outputs of the neural network now, let's look at the network architecture. So, we could apply and in no architecture to this kind of setup, but because here we have two inputs, so, we can see the split the entire network into two or two components. On the top we have one analog branch net takes the you as input and outputs a hidden relative at both and here we have a NAS network to terminate takes y as input and outputs another kilometre, then we compute the final output the GU y as a total potage between these two values all as shown in equation here. So, the basic idea is is that so, g of y is a function of a you however, is conditioning on us or is function of y by conditioning on you that in this formula here to tk y can be viewed as a basis function Y and BK yo basically the coefficients depends on the yo so in the coordinate view the Tron net to learn was optimal basis function for this machine with PD temperatures net learns was the coefficients in front of the basis function for arbitrary input. So, this is a thing called a test case a testing problem on your triangle domain with a notch. So, the PDE is simple, but in this problem, the geometry is complex and assuring the future here. So, we tried to predict the solution of this PDE found the boundary conditions and other training this is a one case the case over the prediction. So, we have ground truth and the prediction over depot net and the front arrow here you can see is roughly two plus wall 2%. So, this is the first version of vanilla version of the opponent, but after our first walk we have developed many different extensions or deeper net in order to improve the accuracy or improve the efficiency or extend as a capability to diverse scenarios. So, as I mentioned, for the branch net, we have input function you may need to convert the input function yield to a finite dimension approximation or representation representation we can apply the evaluation as we looked at it before or we could project the input function v into a basis function, then we can use the coefficients of the basis function as the dissertation also another deep not extension we have developed a call a pod deploy net. So as we as I mentioned, for the branch net is used to up to learn what's automobilia function. However, in scientific computing, there are many good measures to compute the basic function. So, one simple but good but efficient most efficient method is called pod proper orthogonal decomposition. Then we can further compute the pod modes from the training data set, then for the trauma network. In addition to a standard analog, we also apply the pre computed basis from pod. So, this is a hybrid method of the new network and the standard traditional new members so by using pod so by doing this, so first of all, instead of learning instead of learning everything from scratch by using a network, we have a good starting point over the pod modes. And also we so this will be increased our tuning efficiency and also as an end user we can also achieve higher accuracy. So this is the same problem that I see problem. And in the last column here we show the performance of the pod deploy net so compared to the standard deploy net bios in the pod patient function, we can achieve even better accuracy. So, so, this is the standard deploy net and if you are the extension by union pod, but in all these two examples, as we can see, we only consider a single input operator. So, which means our input a function, it is a single function in the previous previous example is a boundary condition and also in the theory I have showed the theory can only be applied to the input to a single function input. But if in general or in many cases, we try to create the PDE solutions for different initial condition boundary condition or for sentence simultaneously. So, which means our input is not a single input, but it is a multiple input operator. So, specifically, let's consider our input expenses in total have owned bioservices x 1x, two xn or equivalent we have an input function it's V one v two and your VM now, we try to have a new network takes all these own functions add input and outputs a corresponding odd function for each more PDE solution. So, before we go to the implement implementation, or first in first step, we should always approve that the neural network is still universal approximator in this scenario, so, this one wouldn't be shown in this in the paper as shown here. So, actually in the neural network can also be used to approximate multiple input operators. So, without getting into too much details, the key idea when we when we prove the theory is as follows. So, we construct the neural network in by showing you this Euclidean here. So, yeah addition to a single branch net we consider we have our own branch and as their each branch net takes one function as input then there is an outputs and validators will be we have become our own dimension test, then for the Tron airwalk instead of other people pushing a doubt one dimension validator deliver output another dimension tensor, then we compute the tensor tensor product to compute the corresponding output. So, this is okay for the proof by this tensor a tensor product is too expensive in practice, then we can further apply a low rank tensor approximation to reduce the cost. So, the further format is that will predict high dimensional tensor we also output for one dimension value then we have into the own past one voters, then we compute the element wise product of all this matters, then compute the sum of all the elements in the manager. So, this is architecture of the network we call the mu net it can be viewed as a straightforward extension of Drupal net from a single panel space or sorry from a single branch net to own branch net. A simple test case showing here is a diversion diffusion equation. So, if you tried to predict the solution yo from different initial condition Yujiro and also different diffusion coefficients, and here we assume to defeat acoustic conditions is also a space dependent. So, this is one test case of the training. So, it can shave a small error. So, this confirms to you what is the neural net the meal net is indeed in Warsaw approximated then we have a further apart this kind of idea to more realistic problems instead of the previous two simple cases. So, why application was tested is called a stage in geoscience geologic carbon filtration. So, in this application, so, we inject the co2 into the under underground, then whatever you're trying to do is to predict what's the saturation or the pressure of the co2 in the Following our 30 years so, this cobra can be modeled by the multi phase flow in the porous media. So, this is the equation shown here, and lots of variables. So from this equation in order to solve it by using traditional neural methods, the challenge is that is too expensive. So, first of all the problem is multi physics and the minor scale. And also we try to solve the problem in a really large domain. So, your largest spatial scale and also a larger temporal scale. So, the further spatial scale we consider is from a few 100 meters, or 10 meters to 200 meters by a million meters to a millimeter in length, and 200 meter depth. And as mentioned in Chapter pretied, there's the solution with a PDE for 30 years. So, is that too expensive of the treasurer measures that you apply a neural network to learn a solution for different inputs. So, it will enable faster prediction and the for the for the data set and make sure you're what's the input and it was output. So, we have many different inputs. So, there are three inputs, there are functions of the of the spatial coordinates, so equalling horizontal permeability, vertical permeability and porosity, these are three functions that any addition to these three fields, we also have seven scalar inputs, for example was the injection rate, the temperature initial pressure for it also was the location of formation. So, given all these inputs, given all these conditions, that we can compute what's corresponding PDE solution of gas saturation and also pressure. So, showing here is just a one specific case. So, this is injection location, then the co2 will go from left to right. So, for this problem, we can either apply the standard analog for example, this is just a 3d problem today in space one the time then we may apply a ceiling network, but in 3d photowall 3d unit or we can play some other networks for example, we can learning the free space, which is the method of FMO. So, in this paper showing here, so, they combine the 3d Your net and a 3d FMO into a single network in order to achieve good accuracy of prediction. So, this is an architecture. So, initially, this is a one three layer and also one convolution layer that was a unit layer. However, this is again the tweet extensive of the training and also prediction by but, but as I mentioned, we have another tool Omeo net, if we apply a new natural to to this case, then we will have many different branch nets and a single trauma net for the branch nets, each branch net will take a single input, because we have a group of inputs as shown here, then we have a torn edge. So the input or terminate will be x y and t or the spatial and temporal coordinates then our output is a sin which is just a scalar basically a solution for the more saturation at this specific x y t. In this approach, the cost is really low instead of ordering 30 inputs and outputs outputs is a scalar however, by using this simple thought pulled out a merge operation, if I go to here to all depression as an uptrend as they are merged together by a single simple element wise product and the sun. So this simple operation is hard to learn the details structure in space as shown in this example here. So it cannot capture all these details. Although the accuracy in general is okay five signs that when we do a we try to combine the two approaches together in order to achieve the prediction accuracy and also narrow trading efficiency. So this nanowall committee Tiny is called a Fourier meal net. So the general framework of this network is, is mu net. So again, a branch and a trunk. However, for the merge operation, instead of using a standard at all for that, we apply a Fourier layer or a unit or unit engineer, by the competitor previous version of this standard UFO. In this case, we only need to the unit and a 2d airfoil. Because we still have a tonnage of a Tron that will have a time t as input, then our output is not a scalar, but is not a 3d is our 2d solution of the 2d pdf solution at arbitrary specific attempt t. So basically, we still need temporal and spatial to handle them differently. So this approach can still achieve good accuracy as showing in this four examples here. So in these four examples, we have different cases of different patterns of the solution. So you can see that our total is 0.99, almost almost equal to one. But more importantly, but when we still keep the good accuracy, we can have modular screening costs, as showing in the second table here. So for you FMO, it has more than 33 million parameters. But for the free immune edge, we only have around 3 million parameters for the CPU memory, which can reduce from more than 100 gigabytes to 15 gigabytes for GPU memory, reduced from 16 gigabytes to six gigabytes. And the training time can be reduced from 42 hours to 12 hours. So it's much more conditional efficient. And more importantly, by using this approach, we can have the prediction even for unseen time. So let me show you what I mean here by an unseen time. So before because we were trying to predict the solution for the following 30 years. But in practice, the data set we have we have you heard of 24 snapshots in this 30 years. So would he if we only train to Nana walk by using just natural one, snapshot three stamps, or five, seven, by which we try to predict for all the snapshots. If you look at the standard performance of the UFO, for the location with the training time is this good accuracy. But for the location, for example, for step two, because there's no training data set for central tool down during the production, the accuracy would be really low. But for the free immune net, we are still maintaining a good accuracy, even for unseen snapshots. So, it's a good foundation for us in time. So, the reason is that so, we put the term t as a terminal input, then the network would automatically satisfy the property that is the solution will be continuous over time to basically obtain a base the underlying physics are the continuity over time. So, we can even use only 25 snapshots for training. So, this will be very, very useful when we try to collect the data set in our real life, because every single snapshot data creation is is expensive. So, this is one application in geoscience here then you shoot another application also in geoscience to for waveform inversion F wi. So, in this application, we aim to infer the subsurface structure see, to see the velocity map of the underlying subsurface structure thrown the assessment waveform data well waveform data is p pressure. Specifically, let's consider we have a 2d domain to the subsurface domain. Then, if we have a source in the location A then the source will generate a wave propagates in the in this domain name you'll have many different receivers placed on the surface at this proper location, top surface here then You still face this you still receive us we are received the wave from the sauce propagates to through the subsurface for example for the first picture shown here, so, this is the our what the receiver received for the source aid. So, if we have source at this location that for the receivers receivers as a top jet, we receive these kinds of signals. So, this is for F different location and over a different time, if we have source at a location B, then this is the signal received at a different receivers because we only have the information at the surface, we cannot do the prediction of this velocity map from a single source. So, in this case we consider we have five different sources allocation ABCD that the task is that we will try to predict that will also the map of the subsurface from these five signals signal could be a clean signal or it could be the signal plus some noise or some missing traces. And for the for the equation is an acoustic wave equation and showing here and therefore, the source so, as here we can see that there is a pot of sauce in the location A or the Option B or the TNC. So, it's a pot of sauce and the generating of by the wavelength showing in a picture here. And here the frequency f can control the shape of the wavelength steel we applied a network of the Freer depot net the same than a walk architecture. So, after the training, this is a few different test cases. So, this is ground truth. So, first of all we try to see what our network can have the good prediction for different source locations and at different frequencies of the source. So, it is the source locations and the fridges and this is the three different predictions for different data inputs, different frequencies and a different source locations. So, the accuracy is good for here i i try to emphasize the robustness of the network architecture. So during the training, all this data set is clean data set. But during the testing or production case, we add a Gaussian noise to the input of an analog. Now we'll try to see whether our nanawall prediction as to be accurate given the noisy input. Now, we do not do any fine tuning or post processing. So clean data cleaning clean data set for training, but noisy data for testing. So, for our test case, we have four different patterns of The GroundTruth. But in this in this example, here I only show the prediction for s FVb pattern and a CVA pattern. So on the left in the Panel B so this is the different levels of the noise. So you can see we add higher and higher noise level to our input data set to the input of the network, but for the production of the fridge opponent, it is still accurate is can produce the same pattern and at the ground truth however, we compare with other networks for example, the version that I have lost it again, these are two baselines for the F wi application. There are also network based approaches. However, for these two networks, they cannot tolerate the noise in the input. So this is another prediction case for the CVA ground truth. You're gonna see even by adding a really high noise level, we still have good prediction compared to the controls, but the prediction from other networks for evolutionary almost again is totally off. So this is one test case and here this is another robust test by point of view consider the source noise. Variability consider the noise has as a source has the noise instead of the input. So, which means, if you consider during the producing or testing case, our data set the test in the test case the wavelet is not a perfect wavelet but it has some noise for each period here, it has a really high noise level. So, we do not see this kind of wavelet er training data set, but you will for this case by a pilot freed up on edge, we are still have a very good prediction accuracy compared to controls, but again for other networks that accuracy is is bad. Another robustness test we consider is the missing traces. So, during the training, our input is always clean data, but what if doing a prediction case or prediction stage for the input there are many traces or many signals they are missing. For example, in this case, there are many signals they are just missing zero by using a free diplomat, because to have good accuracy, so, this is the test case for the CFA in verse NMAP and STA. So, you can see on Friday the opponent prediction for these two cases they do a very accurate compared to other networks. So, again, so, we never seen this kind of yes and during the training, so they are all based on their own explanation. depot net, a department of radio Panet they are really the past against all this noise or missing traces. Okay, I have a showing several examples are the former's or depot net or extensions of Jupiter net. But in all these cases, we still need a data set usually a large data set for training. However, in practice, it could be difficult to obtain a large high fidelity asset. Now, why dia tools, technology, the problem is called multi figure learning. So in modify their learning, we have two data sets, one is called high fidelity asset and the other one is called low fidelity asset. So for high fidelity asset, it's high accurate, but it's my data is small, but for the low fidelity is different. So it's low accuracy, but this data is large. So, here are two examples. So on the left, we can see example with aircraft design. So we can collect the data set for them or for instruments. So, this is accurate, but is a really expensive to generate a large to asset or we can run a simulations FTM simulations is less accurate, but we can have a lot. So, this is another example of the sea surface temperature prediction. So, this is the location of the Boston Harbor. Now, we try to predict the temperature in this sea surface. So the data set that we have could be the measurement from all these sensors as shown by thoughts here. So these are senses in the seas of bass. So it's a very accurate, but is is sparse or we can have the measurement from the satellite, it's less accurate or we can have a lot So, the the mighty Fidel learning try to integrate the data set of different levels together to achieve a good accuracy. So, we apply the idea on what the fair learning into Aquila learning and development Marty fidelity depot net. So imagine forget depot net. So, first of all, we have one depot net for depot net low. So deeper deeper than low takes the inputs for example V or QC then generates output prediction GL. So because we assume we have a large data set or low fidelity, then this deeper and deeper net low can be treated well without any problem. Then the question is how can we have the production of high fidelity? So why idea is that we we aim to learn the Reggio our question between low and high fidelity is Basically we write down the G G high to high failure prediction is equal to the low failure prediction, pass a crash engine, then we apply network deep on that high to learn this crash engine. Also, in many cases, there is always a high correlation between low and high Fidelity's, then we also aim to lose this correlation by using component high. So specifically, for people that are high, we also in addition to the inputs, or the function less function v, we also put the low fidelity prodution CI low as another input of a deployment high, then the jump on a high we will learn is the correlation between CI low energy high. So this is a final architecture and Chris morning equations. So this is one test case, or the board's main transport equation for nanostructured material. So this equation is not too complex. But this is not a single equation, part of the equation, assistant of 24,000 Chapala PDS because we have this index meal, which is the index of the way of value, and this is quite Asian in this bit a bit bosmere transport ingredients. So it's Livescore PDS system. And for this case, we can see that our computer domain is a square domain. But in this square domain, we have five by five squares in this blue color. And each blue color can be a poor without a material. For example, this is one spreadsheet with all these locations, they are pause there, if you solve the big equation in the geometry, this is a Chris volume solution. And if you have different materials with different location, I'll pause we have a different solution. So, we aim to learn the operator G mapping found the geometry to the solution, but here we are not interested in a specific solution f mu, we are interested in the heat flux, the GMU the J as a weighted summation of F mu. So also this is a complex geometry. Also, different training cases have different geometry, but the point that it can handle it can be applied without any modification, because it's mesh free. So we have so first we have a low fidelity set of slides 10,000. And its accuracy is showing in the dashed line here. So you can see the mean square error compared to the high fidelity solution with almost 1092. So it's really a low fidelity solution. Or if we truly a diplomat only using high fidelity solution, we can increase the dataset size from 10 to a few 1000. If we have more data set, the error will decrease. But even if we have 5000 the accuracy is still not good enough. But by integrating the low and high the assets together and using our affiliate multifidus deponent, they have a much better accuracy. So one audio manual, one order of magnitude smaller than the high fidelity only, I assure you in the red line here. So from this point, we can say it's really efficient by using mighty fidelity learning for small businesses. Okay, I have shown many cool examples of machine learning, especially deep on that however, all these examples are actually all the machine most of the machine learning models, they are limited to interpolation. But in practice, we always has explanation. So the robustness test I shouldn't be for for the Fw application is expiration, but is only adding noises It's not that's why needs to be kept as patient more than that. Then how can we hand out the explanation? So this is the last part of my talk. Still we consider the explanation is operator learning setup. So we try to learn an operator G with inputs you are input is V or politics yo, if you can see the V is sampled from a space of Gaussian random Fiat with mean zero function and covariance kernel KL For example, it could be a squared exponential already a base boundary kernel showing you here, in this kernel, this apparent parameter L. So if L is large, let's say 1.0, then the functions in this space, they are all smooth, showing you the plot, if owl is more than a function is, will become more oxygenated and flush aerated. So what if we train an airlock by using all the functions in this space, there are first functions. But what if we try to predict it for the function is visit conditional as you can probably walk there intuitively, the error must be large, because it's the expiration, we have never seen this kind of complex function important during the training. So let me show you two specific example of the edge patient in this optimal learning setup. So on the left, we have a simple OD, DOD is equal to V V, V M to learn the G, mapping from V, the right hand side of OD to the solution of OD, then we generate different trading assets and different attesting the asset. So the x axis here is plot is a quarter last for training. And the y axis here is coalition's for testing, that in this plot your diagonal line to the training and testing spaces, they are the same space, the same correlation class. So our training equal to our test. So this is integration. And we know that we can do well for the Indonesia. And let's look at the arbitrage and go over these domain. So in this domain to collect less for training, it's smaller than the calendulas for testing. So in this case, is belongs to Azure. However, if we look at the error here, so the color is error, you can still have a small error. So in this case, we call this as an aspiration minus, so it's aspiration, but it's still a small error, but for the Boolean triangle of this domain. So, in this case, the correlation is for tuning is larger than the correlation for testing. So which means between the network using smooth functions and a test using now suppose functions. So in this case, we have a large arrow. So this is expectation, VM to address as tribulation paths are about to unfold, especially miners. So in this case, it means the trains network using complex functions, but a test using smooth functions, so the network can handle it. The same phenomena, we have observed the many other examples, for example, defeater you actually recursion and many more. Okay, we have to address this issue of ash patient our past. But before we designed the algorithm, so let's first in the first step, let's try to quantify the complexity of an equation. So, if we do we have two spaces F two quadrillion fields a form space and F F two space. So, we try to measure the distance between these two spaces. So, one way to do to measure this is by using a W two metric actually the current here. So, back here, I what I tried to show is that the W metric cannot be only used to measure the distance between these two spaces, it can also be used to quantify or to indicate the complexity of attribution again for the OD example, we are testing and four different space of a compatible train training. And in this plot, so, the x axis is the WHO distance between the training space and the testing space, the y axis is the ash ash patient error. So, you can see the log log scale the expedition error error as a linear scaling versus W distance. So, which means we can use Tableau to distance to infer or to indicate how the complexity of the edge patient for a new input. Then based on this, we design this a framework of flowchart for reliable explanation. So first step is do we have SSTO We have a pre trained deployment, or predefined data set we're going to do now is pre training. Therefore a new input input function V. The first use apply our pre trained upon that do the prediction. Let's say I'll provision your tiada then we can quantify whether this huge theater or whether this input function v belongs to interpolation, or attribution manners or exploration past. If is interpolation or extrapolation miners, then we know, we can have a good accuracy by directly returning to a prediction of your tiara. If ash patient minus a plus, then the Utah would have a large error, then we have to improve or Colorado or Utah, but we can't wait about a year to do this will require some additional information. So the additional information through some physics or some new data set. So the field is clear, usually I refer is the governing equations. So if we have the county equation, then we can do the fine tuning over the pre trainer report net in order to prove improve accuracy. If it's a new data set, first of all, the new data set definitely is small, right if you have already a large asset for our for Newspace, then we can target the opponent for that. So, if we assume we have we only have a small asset for the for new cases, then we can still do fine tuning by using the new spouse the asset or we can also apply the multi fidelity idea I have discussed. So our producer, your Ciana, although is less accurate, but it can be your channel for arbitrary input and arbitrary location. And a new data set is more police accurate event which is can be viewed as high fidelity, VA primary fear learning so integrated to so in our paper, we have developed many different versions of how do we do the fine tuning How are how we perform the Marty Fidel learning. So have you noticed here, there are many different approaches. But let's look at one example of this global climate change. So GSR data set of the daily surface, air temperature, TX and also pressure px from the ES 1950 to 2021. And this is one example of the temperature and the pressure of the earth filthiest on the date of January 1 2021. And we aim to learn ophthalmology mapping from the temperature to the pressure. However, we only train our Diplomat using the data set from 1950 to 1955, which is the first five years for training, then we'll try to do the prediction for all the remaining years. And he's a pilot here in SC four liter Yes, we will have a larger aspiration error. Because we have a global climate change pattern or the correlation between temperature and pressure. They are not fixed. They change over time. Okay, then you also improve the prediction accuracy, let's say for this date, January 1 2021. Let's consider we have one we have extra the asset at 100 Weather locations I assure you all the pie the black dots here so we have 100 spots measurements on the Earth's surface, then by using this actual measurement, you can improve the accuracy of our prediction because this is a final error, it's been turned off of all areas is below 0.7%. It is it what I tried to present today, so basically we have developed a family of deponents strategy, cornet mill net, a purely deployment of 3d Point edge, and many different other versions on and we have applied our network to many, many different applications multiphysics multiscale applications. I didn't present all of them, but you can funded some references here and also in our website. So on the last page, I let me briefly introduce our software called defense D. So this is open source software for scientific and machine learning and all the physics informed learning. It implements many different methods. For example, all the deep corners are different versions, I am presented a and other physicists informed nanowalls and some other networks. Nowadays, we have a more than 50 contributors around the world, adding a frequent delay to contribute new features and a new code to the library. And he can get up Yeah, free, feel free to use the library, or modify elaborate to implement a new method. With that, thank you very much for your attention. Yeah, thanks. Thanks for the wonderful talk do so now we'll have the q&amp;a section. Oh, Harry, US in the early stage. Um, so he asked us the theory talking about how many there are parameters we need to use to successfully approximate the operator? Yeah, that's a cool question. So in the theory here, and also in the second theory, I should have here it's only a theory of the universe or possible approximation. So which means the guarantee is there exists an outcome, that good enough party does not provide us more information, for example, what should what an outsider should be? But you know, another paper, at least in the end. In this paper, we did more analysis over the narrower size. For example, if we try to achieve if some error was generic, essentially, if you're interested in different you can refer to this at this paper. However, this paper still has a limitation, we only consider a very specific a few rpds of form more complex PDS is the downside is too annoying. Okay. So Raven, ask, what are the branch and chunkiness inputs respectively for the PD examples like the dassie and the affection diffusion problems? Yes. So for the network showing here, for the terminate the inputs is the coordinates is the same as pings. So for example, the spatial coordinate x y g, if a temporal coordinate energy for the branch net, the input is the specific condition or the PDE, you're trying to solve, for example, in this case, for the trauma net, the input is boundary condition. Then for other cases, for example, in this innovation diffusion case, the input is a diffusion coefficient, R DX, and also initial condition your Gen X. C, so I don't see any, any more questions, maybe I can ask one more, or the extrapolation part. So on page 39. So I see you use this additional information to correct the original tibone as a preventable net output. So you use kind of like physics and new data. So what kind of physics? Are you? I mean, assuming like in the complicated example, that you show the climate change? So are you assuming full physics? Exactly. I mean, you know, everything about the PDF and everything about the domain? Oh, yeah, good question. You know, people, what they did is we assume we know the PDS for this example. In this example of it to know those three things. So we only test the case of a new data set, because it's the fetus is too complex, as is unknown. I see. Nearby in our other cases, your favorite TV shows, if we know the physics right now is now a distorted version. And then you can play it for fine tuning. See? So if there are no more questions, let's thank you again for sharing his excellent research with us. Thank you
+
+
+00:00:07.350 --> 00:00:10.560
+ 
+
+
+00:00:10.560 --> 00:00:14.910
+ 
+
+
+00:00:14.910 --> 00:00:17.910
+ 
+
+
+00:00:18.450 --> 00:00:21.390
+ 
+
+
+00:00:21.390 --> 00:00:25.470
+ 
+
+
+00:00:25.470 --> 00:00:28.770
+ 
+
+
+00:00:28.770 --> 00:00:32.730
+ 
+
+
+00:00:32.730 --> 00:00:37.410
+ 
+
+
+00:00:37.410 --> 00:00:41.850
+ 
+
+
+00:00:41.850 --> 00:00:44.820
+ 
+
+
+00:00:44.820 --> 00:00:48.330
+ 
+
+
+00:00:49.200 --> 00:00:52.950
+ 
+
+
+00:00:52.950 --> 00:00:57.000
+ 
+
+
+00:00:57.000 --> 00:01:02.910
+ 
+
+
+00:01:02.940 --> 00:01:06.450
+ 
+
+
+00:01:06.450 --> 00:01:12.660
+ 
+
+
+00:01:12.660 --> 00:01:16.440
+ 
+
+
+00:01:16.440 --> 00:01:20.250
+ 
+
+
+00:01:20.250 --> 00:01:23.760
+ 
+
+
+00:01:23.790 --> 00:01:28.500
+ 
+
+
+00:01:29.370 --> 00:01:32.100
+ 
+
+
+00:01:32.100 --> 00:01:37.290
+ 
+
+
+00:01:37.290 --> 00:01:41.460
+ 
+
+
+00:01:41.490 --> 00:01:44.730
+ 
+
+
+00:01:44.730 --> 00:01:47.670
+ 
+
+
+00:01:48.210 --> 00:01:53.400
+ 
+
+
+00:01:53.400 --> 00:01:57.360
+ 
+
+
+00:01:57.360 --> 00:02:01.500
+ 
+
+
+00:02:01.500 --> 00:02:05.580
+ 
+
+
+00:02:05.580 --> 00:02:09.720
+ 
+
+
+00:02:09.720 --> 00:02:13.260
+ 
+
+
+00:02:13.260 --> 00:02:14.430
+
+
+00:02:15.780 --> 00:02:19.140
+ 
+
+
+00:02:19.170 --> 00:02:23.220
+ 
+
+
+00:02:23.250 --> 00:02:27.750
+ 
+
+
+00:02:27.750 --> 00:02:32.400
+ 
+
+
+00:02:32.760 --> 00:02:36.480
+ 
+
+
+00:02:36.510 --> 00:02:39.570
+ 
+
+
+00:02:39.570 --> 00:02:42.810
+ 
+
+
+00:02:42.840 --> 00:02:47.160
+ 
+
+
+00:02:47.190 --> 00:02:51.180
+ 
+
+
+00:02:51.300 --> 00:02:56.760
+ 
+
+
+00:02:57.900 --> 00:03:00.210
+ 
+
+
+00:03:00.210 --> 00:03:03.720
+ 
+
+
+00:03:03.720 --> 00:03:05.790
+ 
+
+
+00:03:05.790 --> 00:03:11.700
+ 
+
+
+00:03:11.700 --> 00:03:17.430
+ 
+
+
+00:03:17.430 --> 00:03:20.550
+ 
+
+
+00:03:20.550 --> 00:03:25.440
+ 
+
+
+00:03:25.440 --> 00:03:31.830
+ 
+
+
+00:03:31.830 --> 00:03:34.770
+ 
+
+
+00:03:35.340 --> 00:03:40.260
+ 
+
+
+00:03:40.290 --> 00:03:44.250
+ 
+
+
+00:03:44.250 --> 00:03:51.240
+ 
+
+
+00:03:51.240 --> 00:03:54.690
+ 
+
+
+00:03:54.690 --> 00:04:00.030
+ 
+
+
+00:04:00.030 --> 00:04:03.900
+ 
+
+
+00:04:03.900 --> 00:04:08.460
+ 
+
+
+00:04:08.460 --> 00:04:14.580
+ 
+
+
+00:04:14.580 --> 00:04:19.560
+ 
+
+
+00:04:19.560 --> 00:04:25.770
+ 
+
+
+00:04:25.800 --> 00:04:30.090
+ 
+
+
+00:04:30.090 --> 00:04:33.630
+ 
+
+
+00:04:33.630 --> 00:04:39.210
+ 
+
+
+00:04:39.240 --> 00:04:46.710
+ 
+
+
+00:04:46.710 --> 00:04:50.550
+ 
+
+
+00:04:50.940 --> 00:04:55.980
+ 
+
+
+00:04:56.010 --> 00:05:00.780
+ 
+
+
+00:05:00.780 --> 00:05:06.420
+ 
+
+
+00:05:06.420 --> 00:05:12.600
+ 
+
+
+00:05:12.660 --> 00:05:17.400
+ 
+
+
+00:05:17.400 --> 00:05:21.720
+ 
+
+
+00:05:22.290 --> 00:05:27.660
+ 
+
+
+00:05:27.660 --> 00:05:32.400
+ 
+
+
+00:05:32.400 --> 00:05:38.940
+ 
+
+
+00:05:38.940 --> 00:05:44.790
+ 
+
+
+00:05:44.790 --> 00:05:49.230
+ 
+
+
+00:05:49.230 --> 00:05:56.520
+ 
+
+
+00:05:56.520 --> 00:06:02.280
+ 
+
+
+00:06:02.280 --> 00:06:06.810
+ 
+
+
+00:06:06.990 --> 00:06:13.500
+ 
+
+
+00:06:13.500 --> 00:06:17.310
+ 
+
+
+00:06:17.310 --> 00:06:21.120
+ 
+
+
+00:06:21.120 --> 00:06:27.030
+ 
+
+
+00:06:27.060 --> 00:06:31.560
+ 
+
+
+00:06:31.590 --> 00:06:35.730
+ 
+
+
+00:06:35.760 --> 00:06:41.430
+ 
+
+
+00:06:41.430 --> 00:06:45.270
+ 
+
+
+00:06:45.270 --> 00:06:51.180
+ 
+
+
+00:06:51.300 --> 00:06:56.220
+ 
+
+
+00:06:56.280 --> 00:07:01.560
+ 
+
+
+00:07:01.560 --> 00:07:06.930
+ 
+
+
+00:07:06.930 --> 00:07:10.710
+ 
+
+
+00:07:10.710 --> 00:07:14.910
+ 
+
+
+00:07:14.910 --> 00:07:24.840
+ 
+
+
+00:07:25.050 --> 00:07:31.440
+ 
+
+
+00:07:31.440 --> 00:07:36.360
+ 
+
+
+00:07:36.390 --> 00:07:41.670
+ 
+
+
+00:07:41.730 --> 00:07:45.600
+ 
+
+
+00:07:46.110 --> 00:07:50.370
+ 
+
+
+00:07:50.760 --> 00:07:54.780
+ 
+
+
+00:07:54.780 --> 00:07:59.370
+ 
+
+
+00:07:59.370 --> 00:08:05.520
+ 
+
+
+00:08:05.520 --> 00:08:09.390
+ 
+
+
+00:08:09.390 --> 00:08:14.160
+ 
+
+
+00:08:14.160 --> 00:08:19.500
+ 
+
+
+00:08:19.500 --> 00:08:27.420
+ 
+
+
+00:08:27.420 --> 00:08:32.010
+ 
+
+
+00:08:32.220 --> 00:08:37.260
+ 
+
+
+00:08:37.260 --> 00:08:41.880
+ 
+
+
+00:08:41.880 --> 00:08:46.170
+ 
+
+
+00:08:46.200 --> 00:08:50.190
+ 
+
+
+00:08:50.220 --> 00:08:57.180
+ 
+
+
+00:08:57.180 --> 00:09:01.500
+ 
+
+
+00:09:02.850 --> 00:09:07.980
+ 
+
+
+00:09:07.980 --> 00:09:13.080
+ 
+
+
+00:09:13.170 --> 00:09:18.060
+ 
+
+
+00:09:18.120 --> 00:09:23.400
+ 
+
+
+00:09:23.400 --> 00:09:26.850
+ 
+
+
+00:09:26.850 --> 00:09:33.480
+ 
+
+
+00:09:33.480 --> 00:09:37.890
+ 
+
+
+00:09:37.980 --> 00:09:42.570
+ 
+
+
+00:09:42.570 --> 00:09:45.750
+ 
+
+
+00:09:45.750 --> 00:09:50.760
+ 
+
+
+00:09:50.760 --> 00:09:54.450
+ 
+
+
+00:09:54.450 --> 00:09:57.960
+ 
+
+
+00:09:57.960 --> 00:10:02.850
+ 
+
+
+00:10:02.850 --> 00:10:05.790
+ 
+
+
+00:10:05.790 --> 00:10:10.680
+ 
+
+
+00:10:10.680 --> 00:10:14.490
+ 
+
+
+00:10:14.490 --> 00:10:19.110
+ 
+
+
+00:10:19.110 --> 00:10:23.670
+ 
+
+
+00:10:23.940 --> 00:10:31.320
+ 
+
+
+00:10:31.320 --> 00:10:35.220
+ 
+
+
+00:10:35.220 --> 00:10:39.930
+ 
+
+
+00:10:39.930 --> 00:10:44.460
+ 
+
+
+00:10:44.490 --> 00:10:50.850
+ 
+
+
+00:10:50.850 --> 00:10:54.990
+ 
+
+
+00:10:54.990 --> 00:11:00.150
+ 
+
+
+00:11:00.150 --> 00:11:04.350
+ 
+
+
+00:11:04.350 --> 00:11:09.300
+ 
+
+
+00:11:09.300 --> 00:11:14.700
+ 
+
+
+00:11:14.700 --> 00:11:19.020
+ 
+
+
+00:11:19.020 --> 00:11:22.950
+ 
+
+
+00:11:22.950 --> 00:11:27.750
+ 
+
+
+00:11:27.870 --> 00:11:33.810
+ 
+
+
+00:11:34.110 --> 00:11:39.810
+ 
+
+
+00:11:39.900 --> 00:11:45.060
+ 
+
+
+00:11:45.060 --> 00:11:50.310
+ 
+
+
+00:11:50.310 --> 00:11:55.140
+ 
+
+
+00:11:55.140 --> 00:11:59.640
+ 
+
+
+00:11:59.670 --> 00:12:03.690
+ 
+
+
+00:12:03.690 --> 00:12:07.380
+ 
+
+
+00:12:07.380 --> 00:12:07.920
+
+
+00:12:11.909 --> 00:12:15.389
+ 
+
+
+00:12:15.389 --> 00:12:19.199
+ 
+
+
+00:12:19.379 --> 00:12:23.129
+ 
+
+
+00:12:23.129 --> 00:12:28.949
+ 
+
+
+00:12:29.009 --> 00:12:34.859
+ 
+
+
+00:12:34.859 --> 00:12:39.509
+ 
+
+
+00:12:39.509 --> 00:12:43.259
+ 
+
+
+00:12:43.259 --> 00:12:51.689
+ 
+
+
+00:12:51.689 --> 00:12:55.259
+ 
+
+
+00:12:55.259 --> 00:12:58.619
+ 
+
+
+00:12:58.619 --> 00:13:03.269
+ 
+
+
+00:13:03.269 --> 00:13:07.949
+ 
+
+
+00:13:10.109 --> 00:13:13.649
+ 
+
+
+00:13:13.649 --> 00:13:16.619
+ 
+
+
+00:13:16.619 --> 00:13:20.249
+ 
+
+
+00:13:21.269 --> 00:13:24.689
+ 
+
+
+00:13:24.689 --> 00:13:29.309
+ 
+
+
+00:13:29.309 --> 00:13:32.699
+ 
+
+
+00:13:32.699 --> 00:13:38.849
+ 
+
+
+00:13:38.849 --> 00:13:43.379
+ 
+
+
+00:13:43.379 --> 00:13:47.069
+ 
+
+
+00:13:47.069 --> 00:13:51.629
+ 
+
+
+00:13:51.629 --> 00:13:56.339
+ 
+
+
+00:13:56.339 --> 00:13:59.099
+ 
+
+
+00:13:59.369 --> 00:14:05.069
+ 
+
+
+00:14:05.069 --> 00:14:09.989
+ 
+
+
+00:14:09.989 --> 00:14:14.879
+ 
+
+
+00:14:14.879 --> 00:14:20.579
+ 
+
+
+00:14:20.579 --> 00:14:24.929
+ 
+
+
+00:14:24.929 --> 00:14:30.869
+ 
+
+
+00:14:30.869 --> 00:14:34.379
+ 
+
+
+00:14:34.379 --> 00:14:38.339
+ 
+
+
+00:14:38.339 --> 00:14:44.549
+ 
+
+
+00:14:44.579 --> 00:14:48.539
+ 
+
+
+00:14:48.539 --> 00:14:55.079
+ 
+
+
+00:14:55.139 --> 00:14:58.619
+ 
+
+
+00:14:58.619 --> 00:15:02.399
+ 
+
+
+00:15:02.399 --> 00:15:07.529
+ 
+
+
+00:15:13.230 --> 00:15:18.240
+ 
+
+
+00:15:18.240 --> 00:15:22.680
+ 
+
+
+00:15:22.680 --> 00:15:27.750
+ 
+
+
+00:15:27.750 --> 00:15:32.490
+ 
+
+
+00:15:32.490 --> 00:15:36.690
+ 
+
+
+00:15:36.690 --> 00:15:41.100
+ 
+
+
+00:15:41.100 --> 00:15:47.190
+ 
+
+
+00:15:47.190 --> 00:15:51.840
+ 
+
+
+00:15:51.840 --> 00:15:55.020
+ 
+
+
+00:15:55.050 --> 00:16:00.660
+ 
+
+
+00:16:00.870 --> 00:16:09.060
+ 
+
+
+00:16:09.420 --> 00:16:15.060
+ 
+
+
+00:16:15.060 --> 00:16:21.360
+ 
+
+
+00:16:21.360 --> 00:16:27.390
+ 
+
+
+00:16:27.390 --> 00:16:33.480
+ 
+
+
+00:16:33.570 --> 00:16:38.700
+ 
+
+
+00:16:38.700 --> 00:16:43.680
+ 
+
+
+00:16:43.740 --> 00:16:47.610
+ 
+
+
+00:16:47.670 --> 00:16:53.610
+ 
+
+
+00:16:53.610 --> 00:16:58.620
+ 
+
+
+00:16:58.650 --> 00:17:02.340
+ 
+
+
+00:17:02.730 --> 00:17:08.460
+ 
+
+
+00:17:08.490 --> 00:17:14.190
+ 
+
+
+00:17:14.190 --> 00:17:19.890
+ 
+
+
+00:17:19.890 --> 00:17:24.120
+ 
+
+
+00:17:24.510 --> 00:17:28.200
+ 
+
+
+00:17:28.200 --> 00:17:36.150
+ 
+
+
+00:17:36.150 --> 00:17:40.200
+ 
+
+
+00:17:40.590 --> 00:17:44.910
+ 
+
+
+00:17:45.240 --> 00:17:49.500
+ 
+
+
+00:17:49.500 --> 00:17:55.260
+ 
+
+
+00:17:55.290 --> 00:17:59.520
+ 
+
+
+00:17:59.520 --> 00:18:04.770
+ 
+
+
+00:18:04.770 --> 00:18:09.090
+ 
+
+
+00:18:09.090 --> 00:18:14.670
+ 
+
+
+00:18:14.670 --> 00:18:19.650
+ 
+
+
+00:18:20.670 --> 00:18:25.140
+ 
+
+
+00:18:25.140 --> 00:18:30.000
+ 
+
+
+00:18:30.000 --> 00:18:34.950
+ 
+
+
+00:18:34.950 --> 00:18:38.130
+ 
+
+
+00:18:38.130 --> 00:18:41.790
+ 
+
+
+00:18:41.790 --> 00:18:49.380
+ 
+
+
+00:18:49.380 --> 00:18:53.370
+ 
+
+
+00:18:54.810 --> 00:18:58.800
+ 
+
+
+00:18:58.920 --> 00:19:03.180
+ 
+
+
+00:19:03.240 --> 00:19:07.440
+ 
+
+
+00:19:07.440 --> 00:19:12.540
+ 
+
+
+00:19:12.540 --> 00:19:20.010
+ 
+
+
+00:19:20.190 --> 00:19:25.230
+ 
+
+
+00:19:25.260 --> 00:19:31.860
+ 
+
+
+00:19:32.070 --> 00:19:36.210
+ 
+
+
+00:19:36.210 --> 00:19:40.170
+ 
+
+
+00:19:40.200 --> 00:19:46.200
+ 
+
+
+00:19:46.200 --> 00:19:51.360
+ 
+
+
+00:19:52.140 --> 00:19:55.620
+ 
+
+
+00:19:56.040 --> 00:20:01.650
+ 
+
+
+00:20:01.650 --> 00:20:07.770
+ 
+
+
+00:20:07.830 --> 00:20:12.480
+ 
+
+
+00:20:12.510 --> 00:20:18.210
+ 
+
+
+00:20:18.210 --> 00:20:22.560
+ 
+
+
+00:20:22.680 --> 00:20:26.820
+ 
+
+
+00:20:26.850 --> 00:20:31.740
+ 
+
+
+00:20:31.740 --> 00:20:36.000
+ 
+
+
+00:20:36.000 --> 00:20:39.000
+ 
+
+
+00:20:39.000 --> 00:20:44.250
+ 
+
+
+00:20:44.250 --> 00:20:50.730
+ 
+
+
+00:20:50.730 --> 00:20:55.980
+ 
+
+
+00:20:55.980 --> 00:21:02.010
+ 
+
+
+00:21:02.610 --> 00:21:08.160
+ 
+
+
+00:21:08.160 --> 00:21:13.380
+ 
+
+
+00:21:13.380 --> 00:21:19.170
+ 
+
+
+00:21:19.170 --> 00:21:23.100
+ 
+
+
+00:21:23.100 --> 00:21:26.700
+ 
+
+
+00:21:26.700 --> 00:21:31.320
+ 
+
+
+00:21:31.350 --> 00:21:34.290
+ 
+
+
+00:21:34.290 --> 00:21:38.640
+ 
+
+
+00:21:38.640 --> 00:21:43.620
+ 
+
+
+00:21:43.620 --> 00:21:49.560
+ 
+
+
+00:21:49.560 --> 00:21:57.600
+ 
+
+
+00:21:57.630 --> 00:22:02.640
+ 
+
+
+00:22:02.850 --> 00:22:07.080
+ 
+
+
+00:22:07.080 --> 00:22:14.610
+ 
+
+
+00:22:14.610 --> 00:22:21.150
+ 
+
+
+00:22:21.150 --> 00:22:30.390
+ 
+
+
+00:22:30.390 --> 00:22:35.070
+ 
+
+
+00:22:35.070 --> 00:22:40.530
+ 
+
+
+00:22:40.560 --> 00:22:45.300
+ 
+
+
+00:22:45.300 --> 00:22:50.370
+ 
+
+
+00:22:50.370 --> 00:22:55.920
+ 
+
+
+00:22:55.920 --> 00:23:00.690
+ 
+
+
+00:23:00.690 --> 00:23:05.250
+ 
+
+
+00:23:05.670 --> 00:23:09.240
+ 
+
+
+00:23:09.240 --> 00:23:15.000
+ 
+
+
+00:23:15.000 --> 00:23:21.090
+ 
+
+
+00:23:21.090 --> 00:23:25.350
+ 
+
+
+00:23:25.350 --> 00:23:29.940
+ 
+
+
+00:23:29.940 --> 00:23:34.980
+ 
+
+
+00:23:35.010 --> 00:23:38.910
+ 
+
+
+00:23:38.910 --> 00:23:43.530
+ 
+
+
+00:23:43.560 --> 00:23:49.440
+ 
+
+
+00:23:49.440 --> 00:23:54.960
+ 
+
+
+00:23:55.170 --> 00:23:59.850
+ 
+
+
+00:23:59.910 --> 00:24:07.170
+ 
+
+
+00:24:07.170 --> 00:24:13.410
+ 
+
+
+00:24:13.410 --> 00:24:18.300
+ 
+
+
+00:24:18.300 --> 00:24:22.410
+ 
+
+
+00:24:22.470 --> 00:24:26.280
+ 
+
+
+00:24:26.280 --> 00:24:32.640
+ 
+
+
+00:24:32.700 --> 00:24:38.490
+ 
+
+
+00:24:38.490 --> 00:24:42.810
+ 
+
+
+00:24:42.810 --> 00:24:48.360
+ 
+
+
+00:24:48.360 --> 00:24:53.970
+ 
+
+
+00:24:54.030 --> 00:24:59.700
+ 
+
+
+00:24:59.700 --> 00:25:03.240
+ 
+
+
+00:25:03.240 --> 00:25:07.890
+ 
+
+
+00:25:07.890 --> 00:25:12.090
+ 
+
+
+00:25:12.090 --> 00:25:16.680
+ 
+
+
+00:25:16.800 --> 00:25:17.700
+
+
+00:25:18.990 --> 00:25:25.890
+ 
+
+
+00:25:25.890 --> 00:25:32.070
+ 
+
+
+00:25:32.280 --> 00:25:37.380
+ 
+
+
+00:25:37.380 --> 00:25:43.890
+ 
+
+
+00:25:43.890 --> 00:25:48.570
+ 
+
+
+00:25:48.600 --> 00:25:53.280
+ 
+
+
+00:25:53.760 --> 00:26:00.570
+ 
+
+
+00:26:00.780 --> 00:26:05.820
+ 
+
+
+00:26:05.820 --> 00:26:10.080
+ 
+
+
+00:26:10.080 --> 00:26:16.740
+ 
+
+
+00:26:17.130 --> 00:26:23.310
+ 
+
+
+00:26:23.310 --> 00:26:29.610
+ 
+
+
+00:26:29.610 --> 00:26:33.930
+ 
+
+
+00:26:33.930 --> 00:26:38.340
+ 
+
+
+00:26:38.340 --> 00:26:42.660
+ 
+
+
+00:26:42.750 --> 00:26:46.620
+ 
+
+
+00:26:47.100 --> 00:26:52.560
+ 
+
+
+00:26:52.560 --> 00:26:58.500
+ 
+
+
+00:26:58.500 --> 00:27:05.130
+ 
+
+
+00:27:05.370 --> 00:27:09.900
+ 
+
+
+00:27:09.900 --> 00:27:15.270
+ 
+
+
+00:27:15.270 --> 00:27:18.750
+ 
+
+
+00:27:18.780 --> 00:27:23.070
+ 
+
+
+00:27:23.070 --> 00:27:30.330
+ 
+
+
+00:27:30.330 --> 00:27:34.380
+ 
+
+
+00:27:34.380 --> 00:27:38.910
+ 
+
+
+00:27:38.910 --> 00:27:43.500
+ 
+
+
+00:27:43.500 --> 00:27:50.400
+ 
+
+
+00:27:50.520 --> 00:27:54.150
+ 
+
+
+00:27:54.150 --> 00:27:57.270
+ 
+
+
+00:27:57.270 --> 00:28:02.820
+ 
+
+
+00:28:02.820 --> 00:28:07.680
+ 
+
+
+00:28:07.680 --> 00:28:14.580
+ 
+
+
+00:28:14.700 --> 00:28:19.320
+ 
+
+
+00:28:19.620 --> 00:28:25.380
+ 
+
+
+00:28:25.380 --> 00:28:30.240
+ 
+
+
+00:28:30.270 --> 00:28:35.550
+ 
+
+
+00:28:36.120 --> 00:28:41.190
+ 
+
+
+00:28:41.190 --> 00:28:46.890
+ 
+
+
+00:28:47.100 --> 00:28:52.110
+ 
+
+
+00:28:52.110 --> 00:28:57.030
+ 
+
+
+00:28:57.030 --> 00:29:04.830
+ 
+
+
+00:29:04.830 --> 00:29:07.530
+ 
+
+
+00:29:07.710 --> 00:29:14.250
+ 
+
+
+00:29:14.250 --> 00:29:20.130
+ 
+
+
+00:29:20.130 --> 00:29:26.580
+ 
+
+
+00:29:26.580 --> 00:29:32.250
+ 
+
+
+00:29:33.180 --> 00:29:37.290
+ 
+
+
+00:29:37.290 --> 00:29:41.970
+ 
+
+
+00:29:44.310 --> 00:29:48.210
+ 
+
+
+00:29:48.210 --> 00:29:54.510
+ 
+
+
+00:29:54.510 --> 00:29:59.970
+ 
+
+
+00:30:00.000 --> 00:30:03.840
+ 
+
+
+00:30:03.840 --> 00:30:10.230
+ 
+
+
+00:30:10.230 --> 00:30:18.240
+ 
+
+
+00:30:18.270 --> 00:30:22.320
+ 
+
+
+00:30:22.320 --> 00:30:27.720
+ 
+
+
+00:30:28.350 --> 00:30:32.820
+ 
+
+
+00:30:32.820 --> 00:30:36.420
+ 
+
+
+00:30:36.420 --> 00:30:42.090
+ 
+
+
+00:30:42.090 --> 00:30:48.090
+ 
+
+
+00:30:48.090 --> 00:30:51.870
+ 
+
+
+00:30:52.140 --> 00:30:55.500
+ 
+
+
+00:30:55.500 --> 00:31:00.900
+ 
+
+
+00:31:00.990 --> 00:31:05.490
+ 
+
+
+00:31:05.490 --> 00:31:13.920
+ 
+
+
+00:31:13.920 --> 00:31:18.630
+ 
+
+
+00:31:18.630 --> 00:31:25.560
+ 
+
+
+00:31:25.560 --> 00:31:29.700
+ 
+
+
+00:31:29.700 --> 00:31:33.510
+ 
+
+
+00:31:33.540 --> 00:31:37.110
+ 
+
+
+00:31:37.110 --> 00:31:43.260
+ 
+
+
+00:31:43.260 --> 00:31:49.260
+ 
+
+
+00:31:51.900 --> 00:31:56.010
+ 
+
+
+00:31:56.010 --> 00:32:00.690
+ 
+
+
+00:32:00.690 --> 00:32:04.830
+ 
+
+
+00:32:04.830 --> 00:32:09.420
+ 
+
+
+00:32:09.450 --> 00:32:13.410
+ 
+
+
+00:32:13.440 --> 00:32:18.540
+ 
+
+
+00:32:18.540 --> 00:32:23.610
+ 
+
+
+00:32:23.610 --> 00:32:28.620
+ 
+
+
+00:32:28.860 --> 00:32:36.870
+ 
+
+
+00:32:36.870 --> 00:32:42.600
+ 
+
+
+00:32:42.600 --> 00:32:47.160
+ 
+
+
+00:32:47.340 --> 00:32:51.810
+ 
+
+
+00:32:51.810 --> 00:32:57.180
+ 
+
+
+00:32:57.180 --> 00:33:01.650
+ 
+
+
+00:33:03.300 --> 00:33:08.010
+ 
+
+
+00:33:08.310 --> 00:33:12.840
+ 
+
+
+00:33:12.840 --> 00:33:18.870
+ 
+
+
+00:33:18.900 --> 00:33:26.160
+ 
+
+
+00:33:26.160 --> 00:33:32.010
+ 
+
+
+00:33:32.730 --> 00:33:39.090
+ 
+
+
+00:33:39.090 --> 00:33:44.670
+ 
+
+
+00:33:44.670 --> 00:33:51.510
+ 
+
+
+00:33:51.540 --> 00:33:55.080
+ 
+
+
+00:33:55.290 --> 00:34:01.710
+ 
+
+
+00:34:02.730 --> 00:34:06.450
+ 
+
+
+00:34:06.480 --> 00:34:10.620
+ 
+
+
+00:34:10.620 --> 00:34:14.070
+ 
+
+
+00:34:14.460 --> 00:34:20.070
+ 
+
+
+00:34:20.100 --> 00:34:26.340
+ 
+
+
+00:34:26.940 --> 00:34:32.340
+ 
+
+
+00:34:32.340 --> 00:34:36.420
+ 
+
+
+00:34:36.420 --> 00:34:39.660
+ 
+
+
+00:34:39.690 --> 00:34:45.870
+ 
+
+
+00:34:45.870 --> 00:34:50.550
+ 
+
+
+00:34:50.550 --> 00:34:57.030
+ 
+
+
+00:34:57.030 --> 00:35:01.680
+ 
+
+
+00:35:01.680 --> 00:35:05.580
+ 
+
+
+00:35:06.420 --> 00:35:09.810
+ 
+
+
+00:35:11.130 --> 00:35:15.840
+ 
+
+
+00:35:16.110 --> 00:35:24.120
+ 
+
+
+00:35:24.120 --> 00:35:31.500
+ 
+
+
+00:35:31.500 --> 00:35:36.480
+ 
+
+
+00:35:36.480 --> 00:35:40.800
+ 
+
+
+00:35:41.040 --> 00:35:50.190
+ 
+
+
+00:35:50.220 --> 00:35:54.660
+ 
+
+
+00:35:54.660 --> 00:35:59.580
+ 
+
+
+00:35:59.820 --> 00:36:04.080
+ 
+
+
+00:36:04.230 --> 00:36:08.580
+ 
+
+
+00:36:08.580 --> 00:36:11.220
+ 
+
+
+00:36:11.250 --> 00:36:18.840
+ 
+
+
+00:36:18.840 --> 00:36:25.230
+ 
+
+
+00:36:25.230 --> 00:36:30.870
+ 
+
+
+00:36:31.080 --> 00:36:37.260
+ 
+
+
+00:36:37.260 --> 00:36:42.870
+ 
+
+
+00:36:42.870 --> 00:36:47.430
+ 
+
+
+00:36:47.490 --> 00:36:53.370
+ 
+
+
+00:36:53.370 --> 00:36:58.530
+ 
+
+
+00:37:01.740 --> 00:37:06.330
+ 
+
+
+00:37:06.330 --> 00:37:09.960
+ 
+
+
+00:37:09.960 --> 00:37:14.130
+ 
+
+
+00:37:14.130 --> 00:37:19.050
+ 
+
+
+00:37:19.560 --> 00:37:25.740
+ 
+
+
+00:37:25.740 --> 00:37:29.610
+ 
+
+
+00:37:29.610 --> 00:37:34.770
+ 
+
+
+00:37:34.770 --> 00:37:40.230
+ 
+
+
+00:37:40.230 --> 00:37:45.090
+ 
+
+
+00:37:45.090 --> 00:37:48.420
+ 
+
+
+00:37:48.420 --> 00:37:52.770
+ 
+
+
+00:37:52.770 --> 00:37:55.890
+ 
+
+
+00:37:55.890 --> 00:37:59.970
+ 
+
+
+00:37:59.970 --> 00:38:03.150
+ 
+
+
+00:38:03.150 --> 00:38:08.040
+ 
+
+
+00:38:08.040 --> 00:38:12.810
+ 
+
+
+00:38:12.810 --> 00:38:19.050
+ 
+
+
+00:38:19.050 --> 00:38:21.990
+ 
+
+
+00:38:23.070 --> 00:38:28.800
+ 
+
+
+00:38:29.910 --> 00:38:34.350
+ 
+
+
+00:38:34.350 --> 00:38:38.040
+ 
+
+
+00:38:38.040 --> 00:38:43.620
+ 
+
+
+00:38:43.680 --> 00:38:48.360
+ 
+
+
+00:38:49.200 --> 00:38:56.190
+ 
+
+
+00:38:56.190 --> 00:39:01.320
+ 
+
+
+00:39:01.380 --> 00:39:07.800
+ 
+
+
+00:39:07.800 --> 00:39:12.750
+ 
+
+
+00:39:13.050 --> 00:39:19.350
+ 
+
+
+00:39:19.350 --> 00:39:23.850
+ 
+
+
+00:39:23.880 --> 00:39:30.600
+ 
+
+
+00:39:30.630 --> 00:39:36.900
+ 
+
+
+00:39:36.900 --> 00:39:40.500
+ 
+
+
+00:39:40.500 --> 00:39:44.880
+ 
+
+
+00:39:44.880 --> 00:39:51.360
+ 
+
+
+00:39:51.360 --> 00:39:57.450
+ 
+
+
+00:39:57.630 --> 00:40:02.820
+ 
+
+
+00:40:02.820 --> 00:40:06.600
+ 
+
+
+00:40:06.600 --> 00:40:12.180
+ 
+
+
+00:40:12.180 --> 00:40:19.620
+ 
+
+
+00:40:19.740 --> 00:40:23.460
+ 
+
+
+00:40:23.460 --> 00:40:28.110
+ 
+
+
+00:40:28.110 --> 00:40:32.580
+ 
+
+
+00:40:32.580 --> 00:40:36.450
+ 
+
+
+00:40:36.690 --> 00:40:40.860
+ 
+
+
+00:40:40.860 --> 00:40:45.660
+ 
+
+
+00:40:45.660 --> 00:40:51.120
+ 
+
+
+00:40:51.120 --> 00:40:57.810
+ 
+
+
+00:40:57.840 --> 00:41:01.920
+ 
+
+
+00:41:01.950 --> 00:41:10.110
+ 
+
+
+00:41:10.170 --> 00:41:14.460
+ 
+
+
+00:41:14.610 --> 00:41:20.580
+ 
+
+
+00:41:20.610 --> 00:41:24.510
+ 
+
+
+00:41:24.900 --> 00:41:29.910
+ 
+
+
+00:41:29.970 --> 00:41:33.870
+ 
+
+
+00:41:33.870 --> 00:41:37.740
+ 
+
+
+00:41:37.740 --> 00:41:43.080
+ 
+
+
+00:41:43.230 --> 00:41:48.090
+ 
+
+
+00:41:48.090 --> 00:41:52.530
+ 
+
+
+00:41:52.530 --> 00:41:56.400
+ 
+
+
+00:41:56.400 --> 00:41:59.970
+ 
+
+
+00:41:59.970 --> 00:42:03.450
+ 
+
+
+00:42:04.710 --> 00:42:10.560
+ 
+
+
+00:42:10.560 --> 00:42:13.860
+ 
+
+
+00:42:14.100 --> 00:42:19.380
+ 
+
+
+00:42:19.920 --> 00:42:28.350
+ 
+
+
+00:42:28.350 --> 00:42:31.830
+ 
+
+
+00:42:31.830 --> 00:42:34.800
+ 
+
+
+00:42:35.040 --> 00:42:39.810
+ 
+
+
+00:42:39.810 --> 00:42:44.940
+ 
+
+
+00:42:45.480 --> 00:42:48.600
+ 
+
+
+00:42:48.600 --> 00:42:51.360
+ 
+
+
+00:42:51.360 --> 00:42:57.210
+ 
+
+
+00:42:57.210 --> 00:43:02.190
+ 
+
+
+00:43:02.190 --> 00:43:06.810
+ 
+
+
+00:43:06.840 --> 00:43:13.230
+ 
+
+
+00:43:13.230 --> 00:43:18.660
+ 
+
+
+00:43:18.660 --> 00:43:24.780
+ 
+
+
+00:43:24.840 --> 00:43:30.690
+ 
+
+
+00:43:30.690 --> 00:43:33.930
+ 
+
+
+00:43:33.930 --> 00:43:38.940
+ 
+
+
+00:43:38.940 --> 00:43:45.900
+ 
+
+
+00:43:45.900 --> 00:43:50.640
+ 
+
+
+00:43:50.640 --> 00:43:58.620
+ 
+
+
+00:43:58.620 --> 00:44:02.100
+ 
+
+
+00:44:02.640 --> 00:44:05.550
+ 
+
+
+00:44:05.580 --> 00:44:10.350
+ 
+
+
+00:44:10.620 --> 00:44:15.540
+ 
+
+
+00:44:15.540 --> 00:44:21.270
+ 
+
+
+00:44:21.270 --> 00:44:29.250
+ 
+
+
+00:44:29.250 --> 00:44:34.260
+ 
+
+
+00:44:34.260 --> 00:44:40.470
+ 
+
+
+00:44:40.470 --> 00:44:45.990
+ 
+
+
+00:44:45.990 --> 00:44:50.580
+ 
+
+
+00:44:50.580 --> 00:44:56.220
+ 
+
+
+00:44:56.220 --> 00:44:59.640
+ 
+
+
+00:45:00.900 --> 00:45:04.080
+ 
+
+
+00:45:04.080 --> 00:45:08.760
+ 
+
+
+00:45:08.760 --> 00:45:14.280
+ 
+
+
+00:45:14.280 --> 00:45:18.030
+ 
+
+
+00:45:18.030 --> 00:45:23.370
+ 
+
+
+00:45:23.370 --> 00:45:30.150
+ 
+
+
+00:45:30.150 --> 00:45:34.290
+ 
+
+
+00:45:34.290 --> 00:45:38.070
+ 
+
+
+00:45:38.100 --> 00:45:42.150
+ 
+
+
+00:45:42.360 --> 00:45:46.950
+ 
+
+
+00:45:46.950 --> 00:45:50.970
+ 
+
+
+00:45:50.970 --> 00:45:57.330
+ 
+
+
+00:45:57.330 --> 00:46:02.040
+ 
+
+
+00:46:02.040 --> 00:46:09.840
+ 
+
+
+00:46:09.840 --> 00:46:15.990
+ 
+
+
+00:46:15.990 --> 00:46:19.410
+ 
+
+
+00:46:19.410 --> 00:46:24.930
+ 
+
+
+00:46:24.930 --> 00:46:30.930
+ 
+
+
+00:46:30.930 --> 00:46:37.050
+ 
+
+
+00:46:37.500 --> 00:46:43.200
+ 
+
+
+00:46:43.230 --> 00:46:47.610
+ 
+
+
+00:46:47.670 --> 00:46:53.070
+ 
+
+
+00:46:53.070 --> 00:46:56.280
+ 
+
+
+00:46:56.280 --> 00:47:00.840
+ 
+
+
+00:47:00.840 --> 00:47:06.000
+ 
+
+
+00:47:06.000 --> 00:47:10.500
+ 
+
+
+00:47:11.220 --> 00:47:16.740
+ 
+
+
+00:47:17.130 --> 00:47:21.690
+ 
+
+
+00:47:22.680 --> 00:47:27.210
+ 
+
+
+00:47:27.210 --> 00:47:31.260
+ 
+
+
+00:47:31.260 --> 00:47:35.220
+ 
+
+
+00:47:35.430 --> 00:47:39.390
+ 
+
+
+00:47:39.390 --> 00:47:43.020
+ 
+
+
+00:47:43.020 --> 00:47:48.420
+ 
+
+
+00:47:48.420 --> 00:47:53.400
+ 
+
+
+00:47:53.430 --> 00:47:58.590
+ 
+
+
+00:47:58.590 --> 00:48:04.920
+ 
+
+
+00:48:04.920 --> 00:48:08.670
+ 
+
+
+00:48:08.670 --> 00:48:13.710
+ 
+
+
+00:48:13.950 --> 00:48:19.470
+ 
+
+
+00:48:19.500 --> 00:48:22.470
+ 
+
+
+00:48:22.470 --> 00:48:26.970
+ 
+
+
+00:48:27.000 --> 00:48:32.490
+ 
+
+
+00:48:32.490 --> 00:48:38.190
+ 
+
+
+00:48:38.190 --> 00:48:42.930
+ 
+
+
+00:48:42.930 --> 00:48:50.850
+ 
+
+
+00:48:50.850 --> 00:48:55.020
+ 
+
+
+00:48:55.020 --> 00:48:58.320
+ 
+
+
+00:48:58.320 --> 00:49:03.270
+ 
+
+
+00:49:04.230 --> 00:49:11.700
+ 
+
+
+00:49:11.730 --> 00:49:18.450
+ 
+
+
+00:49:18.510 --> 00:49:21.570
+ 
+
+
+00:49:21.570 --> 00:49:27.120
+ 
+
+
+00:49:27.930 --> 00:49:32.850
+ 
+
+
+00:49:32.970 --> 00:49:39.780
+ 
+
+
+00:49:39.780 --> 00:49:46.740
+ 
+
+
+00:49:46.740 --> 00:49:53.010
+ 
+
+
+00:49:53.010 --> 00:49:58.200
+ 
+
+
+00:49:58.200 --> 00:50:02.610
+ 
+
+
+00:50:02.640 --> 00:50:06.390
+ 
+
+
+00:50:07.680 --> 00:50:12.840
+ 
+
+
+00:50:12.840 --> 00:50:16.470
+ 
+
+
+00:50:16.470 --> 00:50:22.710
+ 
+
+
+00:50:22.710 --> 00:50:25.890
+ 
+
+
+00:50:25.890 --> 00:50:31.050
+ 
+
+
+00:50:31.050 --> 00:50:34.350
+ 
+
+
+00:50:34.350 --> 00:50:39.450
+ 
+
+
+00:50:39.600 --> 00:50:44.880
+ 
+
+
+00:50:45.060 --> 00:50:54.150
+ 
+
+
+00:50:54.180 --> 00:50:58.890
+ 
+
+
+00:50:58.890 --> 00:51:02.130
+ 
+
+
+00:51:02.130 --> 00:51:06.180
+ 
+
+
+00:51:06.180 --> 00:51:13.110
+ 
+
+
+00:51:13.110 --> 00:51:16.950
+ 
+
+
+00:51:16.950 --> 00:51:22.350
+ 
+
+
+00:51:22.350 --> 00:51:27.780
+ 
+
+
+00:51:28.080 --> 00:51:32.220
+ 
+
+
+00:51:32.220 --> 00:51:37.050
+ 
+
+
+00:51:37.050 --> 00:51:41.580
+ 
+
+
+00:51:41.580 --> 00:51:49.050
+ 
+
+
+00:51:49.050 --> 00:51:56.610
+ 
+
+
+00:51:56.730 --> 00:52:01.440
+ 
+
+
+00:52:01.440 --> 00:52:04.380
+ 
+
+
+00:52:04.380 --> 00:52:08.910
+ 
+
+
+00:52:08.910 --> 00:52:13.380
+ 
+
+
+00:52:13.380 --> 00:52:19.020
+ 
+
+
+00:52:19.020 --> 00:52:24.510
+ 
+
+
+00:52:24.510 --> 00:52:29.340
+ 
+
+
+00:52:29.340 --> 00:52:34.770
+ 
+
+
+00:52:34.800 --> 00:52:40.380
+ 
+
+
+00:52:40.380 --> 00:52:45.750
+ 
+
+
+00:52:45.750 --> 00:52:52.500
+ 
+
+
+00:52:52.500 --> 00:52:57.120
+ 
+
+
+00:52:57.210 --> 00:53:05.580
+ 
+
+
+00:53:05.580 --> 00:53:09.570
+ 
+
+
+00:53:09.570 --> 00:53:16.680
+ 
+
+
+00:53:16.680 --> 00:53:23.250
+ 
+
+
+00:53:23.250 --> 00:53:26.790
+ 
+
+
+00:53:26.790 --> 00:53:32.190
+ 
+
+
+00:53:32.460 --> 00:53:37.860
+ 
+
+
+00:53:37.920 --> 00:53:41.490
+ 
+
+
+00:53:42.090 --> 00:53:47.310
+ 
+
+
+00:53:49.740 --> 00:53:52.980
+ 
+
+
+00:53:52.980 --> 00:53:58.950
+ 
+
+
+00:53:58.950 --> 00:54:04.740
+ 
+
+
+00:54:04.770 --> 00:54:10.590
+ 
+
+
+00:54:10.590 --> 00:54:15.030
+ 
+
+
+00:54:15.630 --> 00:54:19.050
+ 
+
+
+00:54:19.050 --> 00:54:24.540
+ 
+
+
+00:54:24.540 --> 00:54:36.480
+ 
+
+
+00:54:36.480 --> 00:54:41.010
+ 
+
+
+00:54:41.640 --> 00:54:45.870
+ 
+
+
+00:54:45.870 --> 00:54:48.540
+ 
+
+
+00:54:49.829 --> 00:54:54.089
+ 
+
+
+00:54:54.089 --> 00:54:57.569
+ 
+
+
+00:54:57.569 --> 00:55:01.139
+ 
+
+
+00:55:01.139 --> 00:55:06.749
+ 
+
+
+00:55:06.749 --> 00:55:10.019
+ 
+
+
+00:55:10.019 --> 00:55:13.079
+ 
+
+
+00:55:13.109 --> 00:55:16.589
+ 
+
+
+00:55:16.589 --> 00:55:19.259
+ 
+
+
+00:55:19.259 --> 00:55:21.929
+ 
+
+
+00:55:21.929 --> 00:55:29.129
+ 
+
+
+00:55:29.129 --> 00:55:34.589
+ 
+
+
+00:55:34.589 --> 00:55:38.759
+ 
+
+
+00:55:38.759 --> 00:55:43.559
+ 
+
+
+00:55:43.559 --> 00:55:50.249
+ 
+
+
+00:55:50.249 --> 00:55:57.359
+ 
+
+
+00:55:57.480 --> 00:56:01.410
+ 
+
+
+00:56:01.410 --> 00:56:11.940
+ 
+
+
+00:56:11.940 --> 00:56:16.440
+ 
+
+
+00:56:16.440 --> 00:56:20.070
+ 
+
+
+00:56:20.969 --> 00:56:24.329
+ 
+
+
+00:56:24.329 --> 00:56:29.969
+ 
+
+
+00:56:29.969 --> 00:56:32.939
+ 
+
+
+00:56:32.969 --> 00:56:38.309
+ 
+
+
+00:56:38.429 --> 00:56:41.579
+ 
+
+
+00:56:41.579 --> 00:56:45.569
+ 
+
+
+00:56:45.629 --> 00:56:52.649
+ 
+
+
+00:56:52.649 --> 00:56:56.039
+ 
+
+
+00:56:56.039 --> 00:57:01.379
+ 
+
+
+00:57:01.379 --> 00:57:05.039
+ 
+
+
+00:57:05.039 --> 00:57:09.989
+ 
+
+
+00:57:09.989 --> 00:57:16.499
+ 
+
+
+00:57:16.499 --> 00:57:17.009
+
+
+00:57:17.909 --> 00:57:24.239
+ 
+
+
+00:57:24.239 --> 00:57:28.289
+ 
+
+
+00:57:28.349 --> 00:57:29.699
+
+
+00:57:29.699 --> 00:57:34.079
+ 
+
+
+00:57:34.079 --> 00:57:38.189
+ 
+
+
+00:57:38.189 --> 00:57:42.269
+ 
+
+
+00:57:42.269 --> 00:57:47.519
+ 
+
+
+00:57:47.519 --> 00:57:50.999
+ 
+
+
+00:57:50.999 --> 00:57:53.939
+ 
+
+
+00:57:53.939 --> 00:57:57.899
+ 
+
+
+00:57:57.899 --> 00:58:02.519
+ 
+
+
+00:58:02.519 --> 00:58:07.259
+ 
+
+
+00:58:10.139 --> 00:58:18.209
+ 
+
+
+00:58:18.209 --> 00:58:24.029
+ 
+
+
+00:58:26.369 --> 00:58:27.359
+
+
+00:58:27.659 --> 00:58:33.779
+ 
+
+
+00:58:33.839 --> 00:58:39.329
+ 
+
+
+00:58:39.329 --> 00:58:44.039
+ 
+
+
+00:58:44.039 --> 00:58:47.759
+ 
+
+
+00:58:47.759 --> 00:58:51.179
+ 
+
+
+00:58:51.209 --> 00:58:55.499
+ 
+
+
+00:58:55.499 --> 00:58:56.729
+
+
+00:58:57.480 --> 00:59:00.210
+ 
+
+
+00:59:00.210 --> 00:59:06.330
+ 
+
+
+00:59:06.330 --> 00:59:09.960
+ 
+
+
+00:59:09.960 --> 00:59:13.680
+ 
+
+
+00:59:13.680 --> 00:59:18.300
+ 
+
+
+00:59:18.300 --> 00:59:23.010
+ 
+
+
+00:59:23.010 --> 00:59:28.350
+ 
+
+
+00:59:29.219 --> 00:59:34.619
+ 
+
+
+00:59:34.619 --> 00:59:39.419
+ 
+
+

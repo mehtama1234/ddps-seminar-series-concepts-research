@@ -1,0 +1,2130 @@
+all right um
+welcome everyone to the ddps seminar
+today before we introduce our invited
+speaker let's go over some rules and
+logistics as usual
+first of all please mute yourself during
+the talk
+unless you have questions and if you do
+have questions
+you're welcome to unmute yourself and
+ask those questions
+otherwise please use chat room to post
+your questions so that
+we can address them in q a sessions at
+the end
+and second today's abps
+seminar is open to external
+audiences therefore no classified
+discussion is allowed of course so
+please watch out
+and finally the talk today will be
+recorded and
+uploaded in our youtube channel so
+um so please stay tuned for that info
+uh okay that's about it now let me
+introduce our speaker today
+it is um very great honor to host dr
+ramit malik who is an assistant
+computational scientist at mathematics
+and computer science division in argon
+national lab
+before he joined the argonne he obtained
+a phd
+in mechanical and aerospace engineering
+at
+oklahoma state university through work
+on the development of
+data-driven sub-grid models for the
+large ad simulation
+of high aspect ratio flows relevant to
+geo
+physical fluid dynamics he continues to
+work on
+data-driven physical simulations since
+then
+his research interests include physics
+machine learning algorithms numerical
+methods turbulence modeling
+model order reduction high performance
+computing
+okay today uh dr uh demolish i will
+present neural architecture search for
+surrogate modeling which is a very
+interesting topic
+so please enjoy and expect a wonderful
+talk from
+ramit now without further ado let me
+pass the button to ramy by asking one
+random question
+just to set the stage somewhat informal
+for both
+speakers and audience today's random
+question is
+what did you want to be
+when you were young was it a
+computational scientist at argon
+national lab
+what's your dream job oh
+my my dream job was to be a train
+driver a locomotive uh driver
+so wow but but i i suppose it it
+fluctuated
+according to you know what age you're
+talking about yeah
+early early teens maybe i wanted to be a
+detective
+and then maybe in college i wanted to be
+a musician
+but you know it's a stochastic process
+right so
+okay okay all right so yeah thank you
+for that
+uh wonderful introduction um and thank
+you for the invitation to speak over
+here um
+always very excited to reach out to
+colleagues in
+different national labs for some reason
+i have not been able to collaborate a
+lot with people at lawrence livermore
+hope that changes
+after this and uh yeah and i
+i hope you enjoy the talk and uh yeah
+feel free to reach out to me feel free
+to interrupt me at any time for
+any anything that doesn't make sense uh
+and or if there's any jargon you don't
+understand
+uh happy to explain in further detail
+any particular concept okay so today i'm
+going to be talking about some work that
+i've been doing
+uh with some some great collaborators
+here at argonne
+across multiple divisions although i do
+belong to
+mathematics and computer science with a
+joint appointment at the
+leadership computing facility but
+this work is in no way as i'm sure you
+know being national lab employees
+limited to only only uh sort of a subset
+of all the scientists that work here
+all right so today oh sorry i'm going to
+be talking about neural architecture
+search which is very interesting topic
+like uh like young
+said so uh the outline for our topic
+is uh is here so we're going to be
+talking about
+uh i'm going to be introducing you to
+how we do neural architecture search
+firstly i'm going to tell you what
+neural architecture search is if you're
+not familiar
+and then finally and then secondly i
+will be looking at using neural
+architecture search as a tool
+to construct better reduced order models
+right and the idea of reduced order
+modeling will also be motivated
+and and what we are trying to uh to use
+it for
+right uh because we are a doa facility
+with a significant emphasis on
+um on science
+and and not uh and not say very
+canonical problems
+we will be choosing a you know a certain
+set of off nominal
+tasks for doing forecasting so uh
+we're going to be looking at forecasting
+for geophysical applications
+and finally we'll be giving you uh some
+updates on recent developments which we
+are quite excited about
+and how we can uh you know take this
+forward for
+various other problems okay
+all right so the let me let me motivate
+you a little with
+uh with what uh you know application
+uh we are looking at so we're going to
+be looking at geophysical surrogate
+modeling so
+the i'm sure you know all of you
+have in some form or the other heard
+about surrogate modeling because
+that's the talk of town nowadays right
+every every
+funding call every every paper has
+surrogates in
+some form or the other if you're talking
+about scientific machine learning uh
+because you know we're in the digital
+age right and so we are not different
+over here what we will be trying to do
+is we are going to be trying to build
+surrogate models
+for for applications related to the
+weather and climate
+so i'm not sure if you're familiar about
+the the new ai for earth system
+predictability drive that is being
+organized through the doa
+i forget which officer was it ber i
+think it's br
+or bs and and
+and the idea in that drive is to use
+various elements of ai for data
+understanding
+for surrogate modeling uh for uh
+and and so we are going to take uh the
+expertise
+that a bunch of members in our in our
+group have in surrogate modeling for a
+multitude of applications fusion
+aerospace combustion
+and then uh we are going to see how well
+we can do
+on these pressing problems that climate
+and whether
+scientists have when it comes to
+forecasting right
+and so in this talk i'll first take you
+through the formulation of our surrogate
+and you know
+how we how we sort of model the problem
+in such a way that
+a surrogate can be built and then how we
+can
+integrate neural architecture search
+within that formulation so
+to come up with uh accurate circuits
+right
+okay so uh and the problem that we're
+looking at today as you can see from the
+figure on the right
+is related to temperature forecasting of
+the sea surface or
+well the global ocean actually right and
+the
+applications that we'll be targeting
+actually depend very much
+uh on the lead time of your forecast
+right and also on how
+temporally resolved your forecast is so
+if i were to predict the weather
+tomorrow
+there'd be a certain set of people who
+were who it would benefit who might it
+benefit people who want to
+know whether they want to you know carry
+an umbrella to work for example right
+but if i were to predict the weather
+eight weeks from now
+it would probably benefit people who are
+planning uh for example
+in the context of the ocean uh fishing
+routes right
+or if i were to predict the weather a
+year away from now that would probably
+affect people who are
+uh in invested in the agriculture sector
+uh making forecasts for ten years again
+would go into
+climate and public policy so uh so uh
+forecasting is a very loaded word and so
+the application that we're looking at
+has to be seen in the context of
+what the window of the forecast is and
+we'll get to that in the future okay
+all right so uh before we go into neural
+architecture search and you know how
+we were able to uh set up this target
+model
+uh i'm sure a lot of people in the
+audience certainly
+yongsao is very familiar with this so i
+call this
+the slide that is almost inevitably in
+every talk of mine i haven't modified
+this in
+ages uh but this is a slide that
+actually
+uh tells you um
+or about a tool that has become
+instrumental in all sorts of surrogate
+models
+whether as a benchmark or actually as an
+active component for
+for many uh studies so this is the slide
+called the proper orthogonal
+decomposition
+you know depending on your background
+you might call it principal components
+you might call it the kernel and lower
+decomposition
+and and the idea here is that you want
+to
+basically look at snapshots of your data
+uh which are which are resolved
+in time using a certain temporal
+resolution
+and use that information to construct a
+no
+to construct a coordinate transformation
+where your
+data can be compressed linearly right so
+we have
+slides in you know later on in the talk
+where we look at the non-linear aspect
+of things
+okay so over here let's say you have
+snapshots from
+from data which you stack together into
+a large matrix so what does this large
+matrix look like so you would have
+the rows of the matrix correspond to the
+different
+uh degrees of freedom in your snapshot
+so if it's data for for example flow
+around the flat plate at an inclined
+angle of attack
+it would be all the points in that
+domain that would be the rows and the
+columns would be the snapshots of this
+of this process and performing something
+like a singular value decomposition
+of this snapshot matrix would give you
+you know your decomposition where the
+left singular vectors would actually
+form an orthonormal basis for you to
+project your snapshots onto right
+the interesting thing about this problem
+is that the the singular vectors that
+you get from the snapshot matrix
+are actually uh capturing coherent
+structures in your flow field
+uh ordered by the amount of energetic
+contributions they have or the variance
+they have right so
+so over here we could choose to project
+our flow field so our project our data
+matrix onto only a subset of the
+singular vectors
+and call this a truncated svd or a
+truncated pod
+and then get a a reconstruction of your
+flow field which is
+not quite perfect but maybe for your
+application
+more than enough right what is the
+benefit of this
+you have actually reduced the
+dimensionality of your data set quite
+significantly
+there are caveats to this depending on
+the type of data set that you have and
+we will look at that
+in a while for now let's just say that
+our data set satisfies the cont
+satisfy the need uh or you know
+satisfies the
+the nature of actually obtaining
+a decent amount of truncation by
+performing this
+reduction all right so why do we like
+this particular
+uh technique for for obtaining a new
+basis you might have a question why
+don't we use a fourier basis right
+and that's a perfectly valid question
+and you could get away with using a
+fourier basis for many problems
+as you can see for example if you have
+you know
+all applied mathematicians favorite the
+1d viscous burgers equation
+if you take snapshots of this in time
+time is the axis where my
+pointer is you can construct basis
+functions
+that are optimal in the variance of the
+data set
+that look like this and so the pod
+or the basis that you get from pod
+actually add
+that little bit of interpretability that
+you get
+uh in the sense of actually capturing
+spectral content
+in your flow field so like you can see
+over here the left plot shows you the
+fourier basis and as you go from red to
+blue to
+red to green to blue you begin capturing
+more and more
+uh frequencies in your flow field a
+similar behavior also happens when you
+use the pod basis
+but it's just that the frequencies are
+captured in in you know in an l to
+optimal way
+uh construct from the covariance matrix
+of your snapshots
+okay so now that we have the pure d out
+of the way
+we we've realized something we've
+actually obtained a
+low dimensional representation of your
+data set
+on this basis that optimally spans
+our our data matrix right uh our
+optimism
+spans our dynamics now uh in that space
+we have a couple of options to actually
+then
+emulate our dynamics or or to construct
+a circuit for our dynamics right
+so one option is that you can project
+your
+partial differential equations to that
+basis and then obtain what is called a
+pod gallery and type formulation uh jung
+so has worked extensively on
+other variants of this where you know
+you could use a petrov galerkin type
+projection to to obtain another set of
+equations which are
+uh which are more in the line of
+implicit time stepping
+uh what we do over here and i'll tell
+you why
+is to uh to to avoid clerking
+projections
+uh for for our differential equations
+but instead to use
+uh deep learning methods uh for example
+the use of something like a long
+short-term memory
+neural network to emulate the dynamics
+on the space of you know expand by these
+pod components that we decide to retain
+so over here a lot of this this math
+is is maybe confusing but people who are
+uninitiated
+uh what we are doing over here is we are
+evolving a
+which is the representation of our
+dynamics on the pod basis
+right and what is happening in
+comparison to something like a simple
+neural network which is just
+a linear operations on our state vector
+composed with each other
+is that we add a a concept
+of of information flow in time so if n
+is our time index over here instead of
+just
+evolving n to n plus 1 by looking at the
+current
+current state so you know markov type
+process
+you can actually embed operations that
+have
+a recurrent loop in it so you can think
+of this as a neural network that is
+connected to itself uh
+in a non-linear manner it's not just an
+additive connection so over here
+we call this concept a state of a
+recurrent neural network or a long
+shorter memory neural network
+where the current solution actually
+affects
+the solution in the future uh and the
+nature of correlation over time is
+actually something that is
+learned through uh through the data
+implicitly okay
+and and this this paper is absorbed so i
+should move this guy so
+this paper is absolutely uh seminal and
+you know it was
+it has been uh out there for a long
+amount of time way before
+all this crazy hype about deep learning
+uh and and really it's
+pretty much the go-to for everyone for
+for doing
+uh machine learning of time series data
+of course more recently there have been
+much more uh
+uh much more attractive tools that have
+built on the lstm but
+it's always a good step to start okay
+all right so uh now let me start warming
+up
+uh the you know that part of my talk was
+deals with neural architecture search so
+i'm not sure how many of you are
+familiar with the dpivo project petro
+certainly is in the audience
+so deeper is a is a is a software that
+is developed here at argonne in the
+maths and computer science as well as
+leadership computing facility
+uh divisions and uh and then you know
+it's it's been around for about three to
+four years
+uh deep fiber tries to
+address one of the most severe
+limitations of using neural networks for
+any particular application
+for people in the audience who are
+graduate students i know i empathize
+with you whenever
+your advisor asks you to fit a neural
+network for a particular problem
+i'm sure uh you are uh
+you know excited at first but when you
+realize how many times you have to train
+you have to change your hyper parameters
+or your architecture to
+to get that extra five percent of
+accuracy i know
+how much you will feel like tearing your
+head out so
+one of the motivations of the deep hyper
+project is to actually automate
+the construction of neural networks and
+the optimization of its hyper parameters
+right and
+in that sense it's a very general tool
+it's not just
+applicable for say lstms which is what
+i'll be talking about today
+but it can work with pretty much every
+sort of neural architecture that is out
+there and so we have
+if you look at the number of papers that
+have that have been
+published using the piper you can see a
+wide spread of
+applications i'll be talking about
+geophysical target modeling but the
+original paper worked up our cancer drug
+responses so how to predict
+how two types of
+drugs how combinations of drugs lead to
+patient
+outcomes which is a apparently a very
+very
+pressing issue in the pharmaceutical
+business
+uh it's also been used to optimize
+uh neuromorphic architectures and
+it's also been used for optimizing
+nuclear physics problems again i'm not
+i'm not an expert on those
+but i do know that there are there are
+applications for which deeper has been
+used extensively
+so in this particular study what we have
+done is we've we've actually
+uh pushed the limits of b piper which
+which is a
+of course a paralyzed software because
+you know this is the
+this is the doe and uh we've
+hooked it up to surrogate modeling for
+geophysical flows
+and uh more interestingly this uh
+i'm going to be talking about some
+unpublished work where we actually use
+the piper
+to also quantify the uncertainty of the
+architecture that we used
+uh uh and you know uncertainty
+quantification and deep learning is a
+big issue so that's also something that
+the piper now has the ability to do
+right
+all right so this is the the sort of the
+overall schematic of this
+talk right so and so the question
+you know you might have is okay the pod
+lstm sounds like a very obvious choice
+for a surrogate model why exactly
+should we care it's a good question
+right so the
+the way our surrogate modeling strategy
+is different
+from from many people out there is that
+the data set that we look at or the or
+the assumptions that we make when we
+start our surrogate modeling strategy
+are actually that we do not have any
+information about the underlying
+governing laws right
+so if you're building a surrogate model
+where you know that your data set
+has been generated by a certain
+numerical solver uh
+you actually uh are starting off at a
+pretty good position because you know
+that you know these are the equations if
+it's navier stokes or if it's
+compressible
+uh navier stokes or or maybe it's the
+euler equations
+uh and so on and so forth and then by
+knowing those equations you can actually
+um for example
+do these galerkin projection and petrol
+galcon projection type ideas that i was
+talking about
+in which case deep learning is maybe not
+the best approach
+if you have equations you should
+definitely leverage them maybe deep
+learning should be used as a corrector
+approach and there's work that i've done
+in that direction as well you can you
+can learn closures
+for uh galerkin projection type models
+using deep learning but that's a
+different topic right over here what
+we're assuming is
+the data is coming from something like a
+satellite so the data set which i'll be
+introducing in in the next slide is
+actually
+um something that we assume we have no
+idea about when it comes to the
+the governing laws right and that puts
+us at a pretty severe handicap
+right so so that's the first thing the
+second thing is
+uh for data sets like these and um
+you you have to use some sort of data
+driven modeling approach
+and that is where deep hyper comes in
+and then finds these off
+nominal architectures for example this
+guy over here that you can see
+uh with all its bells and whistles to
+actually
+extract that extra bit of accuracy
+compared to say a manual tuning and also
+save time in general right okay
+but there has to be a cost benefit
+analysis and we will be doing that as
+well
+okay so what data set are we looking at
+right so this is an open source data set
+that we decided to do some surrogate
+modeling of this data set is called the
+optimum interpolation c surface data set
+and it's available
+at the noaa website uh
+and the link is down here right so this
+is a very
+uh nice data data set to start
+your reduced order modeling studies with
+for geophysical flows because um
+it's not super high dimensional in the
+sense of it's not
+if you if you do visualize a video of
+the data so it doesn't look like you're
+looking at say
+you know uh you know turbulent flow in a
+channel or something it doesn't have
+extreme scale separation uh so and
+because of that reason it's it's a good
+sort of flow to start surrogate modeling
+with
+but also it has some uh some um dynamics
+at uh at periodic time scales so you
+know the
+the seasons of of the planet cause the
+temperatures to change it gets warmer in
+the summer in the northern hemisphere
+and
+and vice versa in the southern in the
+winter so
+uh you you should um
+so you do need to capture these periodic
+dynamics but we also have these
+long-term patterns
+that show up that are associated with
+some of nominal weather events for
+example el nino
+or la lina or the madden junior
+oscillation
+uh which uh in the in the north atlantic
+which actually
+uh require some predictive power so
+and so that is something that we are
+really interested in
+here at argonne more interestingly this
+data set was com
+was collected from ship observations and
+uh from composites of ship observations
+and satellite
+imagery uh since uh the
+late 80s and
+and so it it represents pretty much like
+a target application of
+surrogate modeling where you know you
+really don't have any equations so you
+do need to use data
+okay all right so this is the fun part
+of
+of my talk today right so today we're
+going to be looking at uh
+how you can configure a neural
+architecture search or what you need to
+do from a
+representational perspective before you
+can start searching for neural
+architectures right
+so um now if for example
+uh you know i ask someone to search for
+an
+architecture right how would you do that
+assuming you know how to import
+tensorflow and import pytorch into your
+python scripts you would probably go in
+there and change the number of hidden
+layers you might change the number of
+neurons right you might
+try to add skips and remove skips right
+now we want to automate this entire
+process
+right but we also want to bound the
+search space
+where we can search for combinations of
+these of these operations
+and one way to do that is actually
+represent the neural network as a
+directed acyclic graph
+right so once you've represented your
+neural network
+as such the nodes of the graph
+actually represent potential operations
+for example over here you can think of
+adding an identity layer is a particular
+operation
+adding a layer an identity layer would
+mean do nothing basically right
+adding a layer with a certain number of
+neurons performing a dropout operation
+adding a skip connection
+uh changing the shape of the tensor as
+is passing through that
+particular node these are all possible
+operations that can be performed at
+nodes
+and at edges you have connections
+for information to flow in your neural
+network right you could also
+fix some con nodes to be constant so you
+could say that oh
+at this particular location in my
+network i want
+my tensor to be um
+you know 10 by one and i want a
+particular type of activation function
+and i'm not going to
+i'm not going to vary on that right so
+that's possible as well
+but variable notes basically increase
+the number of choices your search agent
+can make
+when you're actually uh constructing new
+architectures right
+okay so so uh so and
+if you actually go to our github
+repository and look at our tutorials
+you'll see that constructing this
+particular type of
+directed acyclic graph is absolutely
+trivial
+and that's one of the things that i
+really like about the piper
+uh is that the way we actually develop
+the
+uh develop the the representation of the
+director basically graph is that it
+boils down to
+basically a list of numbers a list of
+integers or real value numbers
+where each element of that list or that
+array corresponds to a particular
+operation at a particular variable node
+so over here
+you you would just use our api to
+for example define a search space where
+for
+various stages in that search space you
+would choose to add a variable node or
+choose to add a skip connection between
+nodes
+uh and or choose to add a constant node
+right and and as a result of that
+you within say 10 to 15 lines of python
+you can uh generate some insanely
+difficult or different sorry not
+difficult different architectures
+which coming up as a human uh is
+something definitely i i don't think
+that is easy
+so you could for example randomly
+initialize all the
+operations in your search space and
+and the same search space can give you
+wildly different numbers of parameters
+widely different numbers of skip
+connections and as such
+you really allow for
+varying degrees of you know function
+approximation prowess
+from the same spot space okay so for
+this particular search space as you can
+see
+we we added multiple variable nodes and
+at these variable nodes we said
+uh the options at these nodes are lstm
+cells
+right so we have combinations of lstms
+and they would have a certain number of
+hidden layer neurons
+uh and uh in addition to that we would
+also connect
+cells arbitrarily uh and the connection
+itself was also a variable operation
+okay now you might be thinking okay so
+we have this really large search space
+and we have the ability to generate
+architectures uh you know pretty much at
+random
+how do we leverage this fact and also
+the fact that we have a really large
+machine on campus to
+to to train these architectures or train
+these neural networks
+right so over here we uh we leverage
+you know doe hpc resources to
+actually parallelize the evaluation of
+neural networks so
+let's say i choose 128 nodes on theta or
+theta gpu
+and i i tell each node
+i'm going to give you one architecture
+and you can evaluate it and you can tell
+me how good it does on a validation
+data set okay depending on that
+how good it does on the validation data
+set metric i can decide to
+ignore that metric and just randomly
+keep searching for architectures
+or i can choose to use that in an
+intelligent fashion and construct
+better and better architectures right
+and so over here that's what we did
+right so we we used an
+an algorithm called the uh
+differential evolution oh sorry this is
+called the aging evolution algorithm
+differential evolution is something else
+sorry
+the aging evolution algorithm actually
+interprets
+the construction or the search for
+neural networks as a
+genetic algorithm so you remember i told
+you that
+any neural network in that search space
+that we've constructed can be
+represented as a
+as an area of numbers right now if you
+interpret that area to actually be
+a genome you open yourself up to the
+possibility of using all these
+age-old methods of um of
+using genetic algorithms for for
+optimizing
+a particular function so over here what
+we want to do is we want to maximize the
+validation accuracy or minimize the
+validation loss
+given that metric what can we do we can
+after initializing randomly a bunch of
+different architectures and evaluating
+their metrics
+we could uh find the
+the best architectures in in that
+population
+and actually perform mutations or
+crossovers
+here this algorithm does not perform
+crossover but it only performs mutations
+and you can perform mutations to use
+evolutionary pressure to keep the best
+architectures in our uh
+are you know uh sort of our kitty of
+uh viable models and get rid of the
+uh the models that are not performing so
+well okay
+does this work uh if you look at the
+numbers
+it does so over here what we did for
+this particular problem was that we
+searched for
+um a surrogate lstm for that particular
+problem that i'm talking about which was
+uh which was basically trying to uh
+you know forecast the sea surface
+temperature i'll give you specifics on
+that in a while
+uh and and you can see very quickly i
+mean
+within a few minutes you went up to very
+high validation
+uh accuracy and then if you ran it for
+about an
+hour more you were able to get even
+better uh
+r squares for this particular task uh
+the shaded out area that you're seeing
+over here is basically multiple studies
+that we
+performed to make sure that you know
+this this result that we're getting is
+not a fluke
+so it does seem to be that no matter
+what your random seed choice
+the architecture search does converge on
+a pretty high validation r square
+now one thing is important when we are
+evaluating these neural architectures
+we are not training them for um
+the till convergence so you can choose
+to do that but
+as you know we there is a trade-off that
+we have to make over here
+some architectures can be extremely
+big so if you remember this architecture
+over here has a 300 000 parameters
+to have an architecture that's extremely
+big and allow it to
+run till convergence you may end up
+actually
+having significant imbalance in how
+architectures are being evaluated
+but if you have these results were
+performed on
+knights landing nodes and not really on
+gpus but if you have access to gpus
+where this
+gap you know the the high throughput
+nature of the of the computing actually
+helps you out
+you can actually perform a complete
+training on your
+on your training data set until
+convergence before you choose your
+architecture
+okay so since we were only
+training our networks for a few number
+of epochs we collected the top hundred
+and then we post train the top hundred
+for uh
+the full duration on a separate resource
+and we ended up with the best model that
+you can see over here
+it's definitely off nominal i could not
+have come up with this myself
+okay all right now you might be
+wondering over here all right so is it
+worth the cost right if you've done a
+lot of
+uh you've spent a lot of quarter hours
+you've
+increased your carbon footprint
+dramatically is it worth
+the cost to actually use this procedure
+to obtain
+an lstm well the answer to that as
+is many things in life is it depends
+over here
+what we did was we compared it to a
+bunch of
+uh linear methods so you know
+uh auto aggressive moving average or
+vector auto regressive moving average
+methods that have traditionally been
+used for
+time series forecasting as well as some
+you know like standard uh
+machine learning methods such as you
+know tree based methods for forecasting
+and of course we handsomely outperformed
+them but when you compare it to
+an lstm that is naively chosen again
+is it impossible for a uh for a
+for for someone with a lot of time and
+money on their hands to actually
+manually tune in lstm to improve on what
+we did
+perhaps but it probably takes too long
+for me to find out
+so by by choosing randomly
+lstns with different numbers of layers
+and different numbers of neurons
+you can see we do better than the linear
+methods that is expected
+but in general both for training and
+testing we're getting uh
+about 10 percent if not more improvement
+in accuracy
+uh in comparison to to these guys okay
+so if that 10 is worth it you know
+this is something that you should be
+looking into but if you're okay with
+uh you know more broadband error perhaps
+not
+so how do we do uh uh in in terms of our
+application going back to our
+application the plots that you see on
+this
+uh on this uh slide over here
+on the left side show training
+performance
+so what we're doing over here is we're
+actually making predictions
+on the space of our purity mode so if
+you look at the coefficients
+of these bases uh you can see that mode
+one has a very
+uh very nice sinusoidal sort of
+component
+uh which basically corresponds to the
+seasonal fluctuation
+uh in the sea surface temperature right
+and uh i have to mention something
+over here the lstm
+as is uh you know common with many deep
+learning methods
+is not a system of odes so
+because it is not a system of 4ds well
+it can be framed as a system of ods but
+it
+doesn't really do any time integration
+uh
+there is a limitation to a long term
+forecasting using such methods so for
+example if i were to start off my
+forecast at time t equal to zero and
+then let it go
+over time the non-linear nature of the
+forecast and the fact that
+it is actually uh you know using
+uh the the the the
+optimization was performed only on one
+step forecasting
+uh causes it to diverge over time so
+what we have over here are results where
+uh the in the the x-axis on this label
+is basically weeks and what we are
+making predictions of
+is eight weeks of input
+and then eight weeks of output okay so
+the
+the lstm is only evaluated
+multiple times uh or eight times and not
+more than that because otherwise you get
+divergence so uh on the left you have
+training which which is good as as you'd
+expect
+on the right you have testing the
+results
+at least in this frame of reference look
+okay of course this is not very
+meaningful at this moment
+but one thing i would like to highlight
+over here is that
+when the results that the comparisons
+that we'll be making from now on the
+slide and the next
+are are with some really high fidelity
+pd models
+uh for example uh over here we we
+compare to
+the us department of defense forecast
+model called high com
+hicom is run uh daily or
+at least uh the reference that i pulled
+it out of said it's around daily maybe
+they've moved on to something else now
+and it requires 800 code hours per day i
+uh
+ironically of a cray xc40 machine our
+our
+[Music]
+neural architecture search was also
+performed on an xc40
+uh but for one day of forecast whereas
+what we are making is eight weeks of
+forecast in the future
+secondly we compare it to the community
+earth system model so this is
+a massive community
+climate modeling effort
+that required huge amounts of computing
+on yellowstone and nanocar hpc resource
+for each of 30 different modeling
+members in the ensemble so each model
+had a slightly different set of
+governing laws
+and then they and the result they were
+all averaged of course
+in in the eyeball norm you know these
+pictures look pretty because they're of
+the planet
+but uh when we actually went ahead and
+made comparisons of
+uh of uh you know more quantitative
+metrics for example
+the uh in the eastern pacific where
+the el nino effect actually happens
+within uh
+this particular set of dates
+we were able to see that the the pod
+lstm that we actually obtained uh
+outperformed csm and high com in in just
+the raw matrix the root means quite
+error
+for the cells for the you know the sea
+surface temperature
+in celsius now
+despite the numbers in this table i um
+i would definitely like to emphasize
+that we do not claim
+to bypass the requirement of pd based
+models
+like csm hycom and whatever application
+that must be in your mind at this moment
+uh we are what we are trying to do is we
+are trying to say that these circuit
+modeling strategies are competitive
+alternatives for downstream consumption
+in things like optimization
+or sensitivity analysis or data
+simulation
+so uh and and this is kind of observable
+because if you actually
+probe certain locations in your flow
+field
+you may have certain locations where a
+certain modeling strategy outperforms
+the other
+even though the aggregate metrics
+indicate that
+uh our results were better right so
+uh one thing that you should know about
+geophysical applications is that all
+models are wrong
+okay uh because what you're doing is
+you're just trying to
+come up with some uh some
+uh you know first principles based
+uh explanation for the phenomenon that
+you're observing but you're not really
+observing everything right there's a lot
+of hidden
+physics that you're missing out because
+of just the difference in scales
+and so there is an innate need for any
+modeling strategy to be corrected
+after the forecast is performed and the
+correction is usually
+you know performed by some sort of data
+fusion or model fusion
+uh through observations from satellites
+and then ships for example
+so since your model has this
+broadband error anyway and there is an
+infrastructure out there which actually
+corrects models as they are splitting
+out results
+surrogate models are very attractive uh
+you know
+possibility in this domain okay so just
+to make sure that you know
+what we obtained wasn't uh wasn't a
+complete fluke
+we took that particular model uh
+and froze its architecture right and we
+looked at another data set which is
+called the nasa damage data set this is
+hosted by oakridge on
+one of their online archives
+it's a really really well resolved data
+set so it's available
+on a one kilometer square grid so the
+previous data set that i was looking at
+was a one degree latitude grid so you
+know it had a 180 by 360 snapshot this
+had a 4000 by 4000 snapshot
+and this was resolved daily of course to
+fit everything on the gpu was a massive
+task so we had to
+course and everything uh by by two
+orders of magnitude so
+by one uh and uh
+and then uh and this this is an
+opportunity for another conversation
+about how deep learning
+hardware and deep learning software have
+to adapt themselves to deal with
+the simulation tasks that you know that
+could truly benefit from scientific
+machine learning but that's a different
+topic
+so over here what we did had we what we
+did was we took uh
+three uh uh years of data for this for
+the
+surface temperature and we then
+predicted for 2018
+uh and uh again over here what we did
+was we used the same
+architecture uh and we did some
+retraining with this new data
+and using this new architecture and this
+is work that is still underway
+we were able to perform a similar type
+of forecast problem
+where we were able to and you can see
+the purity coefficients don't look
+all that fine anymore as compared to the
+previous results
+uh they're not that smooth anymore
+because this is a much more stochastic
+problem the daytime maximum temperature
+over
+land is is a lot more stochastic so um
+and you can see in terms of again like
+ensemble metrics
+uh what i'm plotting over here is the
+weekly average temperature
+for uh for this
+region in the midwest over here which
+actually encompasses
+argon and you can see we are we are able
+to get
+a good agreement in at least the trend
+so
+this is still work that's underway but
+uh promising signs
+okay now uh there may be many people in
+the audience who
+who just like me have made a career on
+hating on the pod because of course the
+pod has its limitations
+and i am i have several papers
+that have actually tried to address the
+limitations of pod by using
+other forms of
+compression instead of say the linear
+singular value decomposition based
+compression so over here you can see
+what issues the pod actually faces
+even for something as simple as a 1d
+viscous burgers equation which is a
+transport dominator phenomenon
+you'll see that the convergence to the
+true solution
+when you're using the purity set of
+bases is slow because
+uh you know the pods
+when you have an adjective type of
+solution the kolmogorov width of the
+problem is high and then
+uh you run into all sorts of trouble
+so our goal is to
+not just get good forecasts
+in a particular in a particular set of
+coordinates but to also
+reduce the dimensionality of the
+coordinates more efficiently so we can
+get smaller models right
+so so this is some work that we have
+done recently on actually
+addressing this issue so instead of
+using a pod based
+uh approach and over here i do use a
+pure d gallery in type projection
+uh we were able to use a convolutional
+autoencoder
+for a simple shallow water problem which
+had noticed patients it was an
+advection-dominated problem and a
+convolutional autoencoder was able to
+perform like a
+was able to extract like an embedding on
+which
+the information of of the high order
+data was
+was preserved quite nicely in comparison
+to say what the purity was able to do so
+over here you have a
+like a gaussian pulse in your flow field
+that's advected
+uh over time and it's a classic example
+of an advection-dominant problem and you
+know peod
+has a tough time in reconstructing that
+solution but the cae
+and the lstm was able to to do a much
+better job so you can see that in this
+reference over here
+i bring that up because uh
+the next part of my talk actually deals
+with
+using neural architecture search to not
+just
+perform the forecast which we
+just talked about using an lstm but also
+to find
+and you know the optimal embedding of
+our dynamics
+on a reduced space so before i proceed
+you know i want to have some audience
+engagement i i want to ask people
+if they can spot what is common among
+all these images and maybe we can have a
+friendly competition
+at argonne i was able to get an
+answer in about about a minute or so
+let's see how lawrence livermore does
+what's what's common among all these
+images they're all auto encoders they're
+all scraped from
+images.google.com i just typed auto
+encoder in there
+right and they're all from various
+sources that import all the references
+down but
+there's something that's common okay
+so brenda says bottleneck layer you're
+getting close
+but there's something it's symmetric
+wow that's great so mikhail
+dharma you you win the prize yes
+symmetry
+exactly so this is something that
+um that really bothers me i think it's
+because
+as humans we are uh so
+very um
+you know we we like symmetry like the
+human face is symmetric and so on and so
+forth
+uh symmetric people are considered more
+attractive etc so uh when
+so auto encoders whether by design in
+in in your applications or on
+on paper in your in your schematics are
+always designed to be symmetric
+and this is something that we wanted to
+question we wanted to use neural
+architecture search
+for these problems and see is cemetery
+really the best
+approach for our problem and so
+uh for uh for the problem that
+uh problems that we looked at for for
+example
+you know the the shallow water equation
+that i was just
+showing you so so this guy over here for
+example we realized that by
+losing the restriction of symmetry our
+auto encoders were actually able to get
+far better performance and of course
+over here what you are seeing
+is the uh the performance of an
+individual auto encoder just being
+plotted over here
+but you can see symmetric autoencoders
+where we just
+allow the uh the number of
+uh you know the the activations to
+change the filter sizes to change
+but the size of the image itself to
+remain constant
+on both sides not the size of the image
+but the the nature of the image being
+down sampled so you can think of it this
+way
+if you allow the the the size of
+this layer to to be fixed
+but uh but change the uh because it's a
+convolutional auto encoder but you allow
+the number of channels that it has to
+to vary uh you actually get a much
+better performance by
+allowing you know both encoder and
+decoder to have
+no reflector symmetry and and we see
+this
+for uh for multiple applications and so
+this is something that's very
+interesting to us and and something that
+we really want to
+uh explore more so um
+so that's just a little sidebar that i
+wanted to to show you guys
+um and then something that that really
+hammers on the point that you know
+frameworks like
+neural architecture search can force you
+to challenge you know
+your own beliefs about what
+architectures are best for a particular
+task
+okay so uh what else can deep hyper do
+so
+uh some of the things that we are
+working on right now are
+related to uncertainty quantification
+for deep learning as i'm sure
+uh you may have heard from talking to
+uh skeptics of scientific machine
+learning uh
+and and they really raise good points
+one of the biggest
+sources of skepticism for deep learning
+is that the
+you know it's black box right and and
+the black box uh doesn't really tell you
+a lot about why a particular prediction
+is made
+and so there is a significant amount of
+research that is underway both in the
+computer science and the
+applied math community and of course of
+course everybody's doing machine
+learning now but
+a lot of communities to try and quantify
+the uncertainty of the neural networks
+so you may have come across schematics
+like this
+uh where uh instead of having uh
+point estimates of weights and neurons
+in uh
+in in your point estimates of weights
+and biases in your neural network for
+the prediction of a certain task
+you assume that they are sampled from
+some distributions
+that generally converts your problem
+into a very very difficult
+posterior inference type of
+problem to simplify these things what
+people generally do is they assume that
+they assume what is called the mean
+field approximation where each weight
+is assumed to be represented by a
+gaussian distribution
+a unimodal gaussian distribution with a
+certain mean and a certain variance so
+you just double the number of parameters
+in your deep learning framework
+and you perform like a maximum
+likelihood estimation of those
+parameters right but it's costly
+another method that you may have come
+across is something called monte carlo
+dropout
+where during the process of training and
+inference random
+neurons in your neural network are
+switched off and switched on
+and as a result of that you get a
+slightly different
+prediction every time for the same
+network uh
+you can histogram all these predictions
+together you can bin them and then get
+some sort of uh information about the
+posterior right
+so this idea is
+almost somewhat childish uh you know to
+uh to obtain uh you know histograms of
+outputs given inputs by perturbing your
+model
+uh slightly but this paper where this
+was published
+has now been cited something like twenty
+thousand times it's absolutely
+ridiculous so that's that's like two
+careers of mine right
+so and this guy just recently graduated
+from his phd
+fantastic okay so moving on uh so so
+the third approach uh that that has
+become really popular recently something
+called deep ensembles what deep
+ensembles does is uh uh it's
+again going back to analogies that my
+phd advisor made
+uh do the same thing ten times and come
+back to me if it's giving the same thing
+right so
+what deep ensembles does is it'll take
+the same network right it'll initialize
+the network from slightly different
+starting locations by changing the
+random seed and it will get predictions
+say if you choose an ensemble of size 10
+you'll get 10 predictions
+and then you can compute estimates for
+the mean and
+the standard deviation for example for
+each uh
+by by looking at each member of the
+ensemble so
+so this uh is available at this
+reference over here this was put out by
+by people at google and so uh
+by looking at all these ideas we thought
+of
+uh actually integrating a deep ensemble
+uncertainty quantification approach
+within our neural architecture search
+because you'll remember that our neural
+architecture search is actually
+obtaining many many hundreds of
+thousands of architectures
+during the process of finding the best
+one so if you choose for example
+using a greedy selection the top hundred
+or the top 200 architectures
+uh which have been performing good or
+well for you
+you could not just
+do an ensemble sampling across
+architectures
+but you could also change the nature of
+the architecture at each
+uh eat each member of the ensemble
+and and this kind of is the schematic
+that shows what we are doing
+over here we basically have this nested
+problem where
+where while previous people were just
+searching for the best weights and were
+not able to perform any uncertainty
+quantification
+what we are doing is we are kind of
+searching for
+best topology so different types of
+neural architectures
+the hyper parameters in each neural
+architecture are also being varied
+during the process of the search
+and finally by constructing an ensemble
+where
+you have different architectures
+different hyper parameters and their
+associated weights were able to
+construct a very
+diverse ensemble uh for our
+uq problem so this is the um
+the algorithm that we actually use for
+our neural search ensemble it's a it's
+still a variant of aging evolution but
+over here we are actually
+also modifying the hyperparameters so
+the hyperparameter
+is something like the learning rate or
+the
+or for example the batch size and these
+are also encoded as choices into the
+string
+which was our gene previously just for
+the architecture
+and in order to actually make this work
+to to capture both data and model form
+uncertainty
+we had to embed the ability to use
+tensorflow probability
+in d piper so tensorflow probability is
+this add-on that google has put out
+that sits on top of tensorflow to allow
+for
+for example you know approximations like
+this where you can have
+the mean field approximation or it
+allows you to have
+the choice of a certain type of
+likelihood so that you are not just
+minimizing a loss function but you're
+also optimizing for the output data
+distribution
+uh and so or that is predicted or
+you're you're optimizing for the mean
+and variance of
+the output as is being predicted by the
+by the model and so your likelihood is
+kind of not just
+uh a mean squared error but it's also
+got the variance term in it
+okay so with that
+this is work that is still underway we
+actually
+picked up these benchmark regression
+problems so now this talk is turning
+into a slightly more cs type talk
+we picked up a bunch of these regression
+problems that are available in
+uh in the machine learning literature so
+and they are used to actually
+uh quantify uncertainty and accuracy uh
+of of your framework so
+uh so you can see over here uh we
+compared it to the probabilistic back
+propagation which is just choose
+one architecture and these numbers were
+lifted straight out of other people's
+papers so we haven't fiddled with them
+uh the the monte carlo drop out of the
+same architecture deep ensembles which
+takes the same architecture and just
+retrains it many times and then
+our neural architecture search method
+which also updates the architecture
+in parallel and you can see in general
+we are able to do a pretty good job of
+of of uh
+performing both in terms of accuracy and
+in terms of the negative log likelihood
+which is
+a metric for quantifying uncertainty
+okay now going back to our problem which
+is
+uh finding good coordinates for
+embedding our dynamics
+you can see as you look at scientific
+data these uh
+these benchmark regression problems
+which are all simple
+uh say for example you know
+ten inputs to one output or eight inputs
+to one output type
+uh challenges uh you know the results
+are much more skewed in our favor over
+here so for example the neural
+architecture surge based
+uh reconstruction of our true flow field
+is much closer is is much better than
+something
+like a deep ensembles and the metrics
+reflect the same
+uh not just for for the reconstruction
+but also for the negative log likelihood
+so the neural statistics search
+gives us physically sensible uh
+contour plots for where there are
+regions of high uncertainty this is the
+flow field
+and so these are the regions of high
+uncertainty
+whereas the deep ensemble just utterly
+fails and providing
+it just gives us this entire region to
+be uncertain so
+so that's good okay so i i will stop
+here
+uh because uh uh how much time do i have
+in so uh uh well zero time technically
+okay okay great so that's a great place
+to stop so i just like to leave up some
+acknowledgements over here and
+thank you for your um thank you for your
+uh
+for listening and uh yeah feel free to
+ask questions
+well thank you so much for the great
+talk i i i mean
+indeed i i really loved it um okay so
+let's
+have a q a session uh okay um
+the brenda asked are there any
+surprising arts
+that nas last can came up with
+uh that offered new insights i i
+frequently get that question right so
+this is something that we're looking
+into
+one of the insights that we got was yes
+symmetry is definitely
+not the best approach when it comes to
+encoding architectures
+but we haven't been able to get insights
+that are very
+very very fine so in the sense we are
+getting high level insights for example
+we are seeing that
+if you for example
+perform many architecture trainings in
+parallel in the neural architecture
+search
+the architectures that you end up with
+are
+biased by the fact that faster training
+gives you a faster reward right
+so we end up in comparison to
+other um manually constructed baseline
+architectures for the same problem
+we end up getting more lightweight
+architectures so that is something that
+we have seen so
+so implicitly by because
+you know this is an evolutionary process
+uh
+offspring which which are generated
+faster
+are are sort of you know through
+evolutionary pressure are selected so we
+get lesser parameters in our networks
+uh compared to baselines but match them
+in accuracy so that's a high level
+you know inside that we have got another
+thing that
+we have planned for
+sort of future work is to actually um
+change the metrics right now the metrics
+that we were using for actually
+searching our architecture were very
+um were very goal oriented so it was
+just okay maximize your r square
+maximize your accuracy right if it's
+classification
+uh but you could for example say things
+like i want
+to not have so many parameters or i want
+to have a certain type of
+uh you know like for example uh prior
+like i i want my output to satisfy a
+constraint for example
+how will these change the types of
+architectures that are we found
+so that that's a very interesting area
+up for
+uh research uh and we will definitely
+look into it okay i think i think you
+follow up on this right you're asking
+are you thinking about adding more
+physics based layers into the nas
+framework yeah
+that's that's exactly what i was talking
+about uh we have started some work
+recently on embedding say
+loss functions into our into our
+so pd based loss functions you know the
+the pin work that
+that dr karnadakis does into our output
+layers
+uh but for this particular task we
+didn't really know what the pd's were so
+we couldn't embed any loss function
+but uh but yeah there's a bunch of
+things that we can definitely look at in
+that
+uh that thing okay so
+i think there was a question from ryan
+ryan can you unmute yourself and ask
+your question
+yeah first off i just want to say that
+was a great talk um
+very interesting ideas um so so i was
+very
+interested in the in the in you know you
+sort of have
+uh this group of different competing
+architectures and you want to
+decide which one is is the best by some
+metric let's say
+so so i'm curious uh
+do you actually have to evaluate the
+neural network for each one of them to
+be able to compare them yes
+so they're evaluated from the validation
+data set
+i see so that that could be
+computationally
+expensive yeah that could be tough could
+it yeah
+so you just got bolted on that you just
+kind of like generate all these
+architectures and
+and and just try to find which one's the
+best
+pretty much yeah so what we do is uh
+what we try what we try to do is we um
+we try to we don't try to for example we
+don't try to take the entire data set if
+you're dealing with extreme scale data
+sets
+uh you know you might end up uh
+for example um taking a long time to
+train as well as test these
+architectures
+so in that sense you've lost a lot of
+the benefits of neural architecture so
+what we do is
+we we do we can do a couple of things
+one one is that we can
+we can choose a subset of the data and
+perform this entire experiment
+right that that makes it computationally
+efficient the other thing that we do
+and we haven't compared these rigorously
+so we don't know which one is better
+is we take a random subset of the data
+for actually performing the evaluation
+so
+maybe there are connections over here
+with federated and edge learning i don't
+know but
+the algorithms if this is not edge
+learning but uh but there is a there is
+a
+um there is a root
+or an option or flag or something in the
+air in the
+in the software that lets us you know
+randomly
+select a subset of the data perform a
+validation return that reward instead of
+validating on the entire data set
+so so i'm curious when you actually do
+this how many uh
+how many architectures do you do you
+create
+hundreds thousands millions probably not
+millions
+so the reason the results that i showed
+you over here were for 128 nodes for
+three hours and in that time we were
+able to generate about
+30 000 architectures wow that's
+impressive
+wow so you actually you you solve those
+30 000
+uh ml problems and then sort of take
+the top 10 for example top 100 top 10
+yeah
+we don't well solve with an aesthetics
+right the asterix is that
+if it uh we we train them only for
+let's say we don't train them to
+convergence all of them we train them
+for
+say 20 epochs again this is another
+option for you to
+um to play around with okay so
+if for example you bound your search
+space to have
+very few parameters right you could
+train them all to convergence
+right so so there's a lot of dimensions
+where
+you could uh you could end up
+not being able to search for so many
+architectures uh
+or many more potentially so
+yeah okay uh
+let's move on to the question by
+mikhail uh when you do the epistemic uq
+how is the objective in the neural
+architecture optimization change
+how is the objective yes objective
+changes from
+uh from something like
+a mean squared error to a negative log
+likelihood
+so the negative log likelihood i mean in
+basically it's kind of like the mean
+squared error itself but what we do now
+is
+when we have multiple members of an
+ensemble we can calculate the mean of
+the ensemble
+as well as the standard deviation of the
+ensample and that goes into like a
+like a sort of like a objective function
+and that is what we put down in in that
+in that table so um
+what we have for both epistemic and
+aliatoric
+uncertainty quantification is that each
+member of the ensemble also predicts a
+mean and a standard deviation
+because you assume that the output is a
+gaussian likelihood
+and so then you have to use a excuse me
+you have to use a formula like
+something like this
+something like this where the mu and
+sigma for each member of the ensemble is
+combined to get an
+overall ensemble of the overall ensemble
+mean and oral ensemble
+variants and that is what goes into
+computing like the overall
+negative log likelihood which you can
+compare with other people's work
+does that answer your question yeah yeah
+definitely yeah thanks yeah i mean so so
+the uh
+uq always confuses me the epistemic
+illiterate people use different
+words for different things so yeah
+that's always a good thing to clarify
+yeah can i ask another question please
+go ahead
+yeah i was wondering for like um for the
+neural architecture shirt phase
+you talk about like genetic programming
+i was wondering whether you
+to try something else like uh
+reinforcement learning with uh
+oh yes we have so so i just didn't want
+to talk about too many things and
+confuse people but if you go to our
+reference over here
+so we actually compared reinforcement
+learning for um
+searching for architectures and we
+compared it to the genetic
+programming uh but the reinforcement
+learning is good
+when you're
+when you're for example trying to do a
+lot more exploration than exploitation
+so
+in this particular problem we did not
+require to explore a lot in this search
+space so the
+genetic algorithm you know got the
+better result
+but d fiber also comes with
+reinforcement learning based things it's
+just that the scalability of
+reinforcement learning is not really
+good
+uh you you end up having to wait as
+batches of
+results come in and aggregate you know
+the gradients from those batches and uh
+so what ends up happening is that as you
+go higher and higher like let's say 500
+nodes for example
+you will end up having very low node
+utilization and as you know in the
+leadership computing facilities we don't
+like that
+but uh evolutionary optimization they
+have very high node utilization you can
+stay up in the
+high point nines even at
+500 or 1000 nodes but reinforcement
+learning we we end up
+by you know paying a big price over
+there
+okay thanks nice
+okay any other questions from audience
+uh on brenda uh on uq
+have fox looked at dl surrogate for
+polynomial chaos
+okay so i i know about polynomial chaos
+so um uh
+you maybe i don't understand the
+question so you're
+thinking about using dl as a surrogate
+for polynomial chaos is that the
+question
+well okay yeah let me clarify so
+essentially in your talk
+you talked about using lstm as a circuit
+for galerkin projection
+yes yeah so just kind of curious since
+um
+you're interested in uq and i know that
+you know in the community some folks
+use polynomial chaos as you know another
+way to
+kind of understand uncertainties in a
+dynamical system so
+um since i haven't worked on you know pc
+polynomial ks for a while
+and i figured you're probably more um
+you know
+aware of the field just kind of curious
+whether folks are you know also looking
+into
+deep learning surrogates um in order to
+learn these you know specific kind of
+projections to better understand
+uncertainties
+uh short answer yes they have they have
+looked at
+uh um so i i i believe i interviewed a
+candidate once a postdoc candidate who
+actually compared
+uh like a deep learning surrogate and a
+polynomial chaos surrogate for
+uh for uq and
+i believe his results were in favor of
+the former
+but i haven't personally looked at it
+yet i i i i was under the impression
+and i am by no means a pc person i've
+never published anything never written
+any code on it i've read some papers
+that's all
+uh is that you have to make some
+assumptions about
+the nature of your uh of your
+data in the sense of what distributions
+the inputs are coming from what
+distributions the outputs are
+coming from and i think
+what dl lets you do is it lets you relax
+some of them but you pay the
+price of you know getting this black box
+alien technology
+instead of like something that's more
+more better understood like pc
+so yeah yeah thank you so much
+okay any other questions um well besides
+ryan ryan wants to
+talk to you i can stick around if the
+webex is still up yeah
+yeah webex will yeah one definitely
+indefinitely
+all right that's good uh okay so i have
+a i mean
+i'm really um interested in
+you guys uh um putting some efforts of
+you know making the uh that algorithm
+you developed in deep
+hyper um and introduce a another
+criteria of sparsifying the
+neural neural network like use the
+as small number of hidden nodes as
+possible
+for example that's a good point and that
+in principle that
+can be arranged for because
+we basically would need to
+add like a
+yeah we with that there are these
+methods uh
+called flip out type operations
+where you can or or even dropout type
+operations where you can switch off
+neurons
+and uh so i think it should be possible
+so one way we
+sort of implicitly get what you're
+asking is we
+uh we can add a reward function that
+penalizes
+uh too much parameters so we we can say
+uh my reward is accuracy
+right plus the ratio
+of number of parameters
+or minus the ratio of number parameters
+by some baseline number of parameters
+yeah
+so if i if that grows a lot you know
+the the agent will realize hey
+i should not be um
+by be selecting these types of
+architectures because these are getting
+heavier and heavier
+so that is something that is yeah
+trivially implementable
+and on top of that i think if you can uh
+actually put some heart constraint on
+the oscar
+uh sure you know some desirable accuracy
+sure yeah so so yeah one one interesting
+thing about deeper is that it sits
+basically on top of tensorflow
+so any model you can construct using
+tensorflow operations
+uh so even if you use like tensorflow
+conditional
+operations like if else etc uh you can
+search around it using d
+piper so you can uh it's it's actually
+quite uh
+easy to you know construct really uh
+really crazy types of
+combinations of architectures and
+sparsity can definitely be in introduced
+that way so right right well i'm i'm i'm
+super interested in that sparse neural
+network
+from deep hyper because you know the
+non-linear manifold video studio
+that we have uh recently developed it's
+super relying on that sparse
+structure yeah because you can't do
+hyper reduction right
+exactly yeah production like you know
+just a hundred percent you know
+depending on the sparsity okay
+so so if the deep hyper can you know
+give
+us such a sparse neural network this is
+this is great yeah we should check more
+about
+yeah awesome awesome okay looking
+forward to it
+all right um
+okay brenda
+okay all right um so maybe
+we can um you know wrap up the
+the seminar i mean okay from like 80
+something
+audiences to 17 now
+but that doesn't mean um you know your
+talk was bad
+i i really enjoyed your talk and thank
+you so much for the
+great help let's let's officially wrap
+up the
+seminar here yeah yeah feel free to
+email me everyone
+yeah exactly but um as
+ryan uh you know wish and also
+probably brenda also um you know any
+any folks who wants to stay and uh to
+chat with ramit further uh
+you know you're welcome to do so um
+otherwise
+um you know thank you so much
+again
+yeah all right bye bye happy weekend
+so should i stay around uh yeah exactly

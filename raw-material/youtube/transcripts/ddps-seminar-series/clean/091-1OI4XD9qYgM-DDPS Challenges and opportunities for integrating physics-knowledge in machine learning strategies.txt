@@ -1,0 +1,1925 @@
+All right.
+Welcome to the TDPS seminar, everyone.
+Before we introduce our invited speaker,
+let's go over some rules as usual.
+First of all, please unmute yourself
+during the talk. If you have immediate
+questions, you're welcome to unmute and
+ask. Or otherwise, please use the chat
+room to post your questions so that we
+can address them in the Q&A session at
+the end.
+Second, today's seminar is open to
+external audience, so no classified
+discussion is allowed.
+Finally, the talk will be record and
+upload to our YouTube channel.
+Now, let me introduce our speaker.
+It is an honor to host Alice Cicirello,
+um who is now a faculty member in the
+engineering department of University of
+Cambridge.
+She is the founder and the head of the
+data, vibration, and uncertainty group
+and currently holds the Alexander von
+Humboldt Foundation Research Fellowship
+for experienced researchers.
+Alice obtained her PhD from the
+University of Cambridge in 2013.
+Prior to her current position, she was
+an associate professor and the head of
+the section of mechanics and physics of
+structures
+in the engineering structures department
+at TU Delft.
+Her research interests span from
+fundamental to applied research.
+Her technical expertise covers
+uncertainty quantification, machine
+learning applied to measurements, tests,
+and physics-based models, advanced
+physics-based modeling and of nonlinear
+systems,
+and dynamic experimental testing and
+monitoring of components, systems,
+structures, and materials.
+Today, she will talk about challenges
+and opportunities in integrating physics
+knowledge in machine learning strategies
+with friction identification as case
+study. Please enjoy the wonderful talk.
+Now, without further ado, let me hand it
+over to
+Thank you so much, Si Boon. And thank
+you all for being here. It's really
+great to be able to talk to you about
+this very, very exciting research that
+has been going on in the data vibration
+and uncertainty group.
+To start with, let's see if my slides
+actually flip. Yeah, I'm going to
+describe
+a general problem. So, if you consider
+all of these type of structure that are
+represented from satellite
+to bridges
+to actually friction brakes. And what
+we're trying to do is what we do usually
+is to try to model this system. And
+what they have in common is that they
+are subject to broadband type of
+loading. They are complex structures
+made of different components.
+And what we try to do, apart from
+modeling at design stage, is usually
+also monitoring the structure to collect
+the information. And once we have this
+information, we also want to collect
+other type of information that are
+coming from, for instance, inspection
+report, failure reports. And we have all
+of these in a nutshell that is
+describing what is happening to
+engineering type of structure.
+But what we have what we are facing all
+the time with this type of broad range
+of structure are actually three
+engineering grand challenges. The first
+one comes from the fact that we are
+dealing with the design of this complex
+system. And we are often often dealing
+with uncertainty and nonlinearities.
+Also, when we are trying to predict the
+remaining useful life of this type of
+structure during operating condition, we
+have to deal with uncertainty,
+nonlinearity, and sparse noise data. And
+the other challenge, which is another of
+the biggest one that we have at the
+moment, is actually to apply machine
+learning strategy
+in engineering by developing these
+techniques further developing them in a
+way in which they can be explainable and
+interpretable.
+And uh what we try to do and our
+ambition in the data vibration and
+uncertainty lab is actually to use an
+integrated approach to tackle these
+three grand challenges. And the way
+which we do so is to going from
+laboratory experiments and physics-based
+model to information extraction
+techniques development to integrating
+data measurements and model and also
+developing uncertainty quantification.
+And we try to do all of these with the
+goal of guiding decision-making at the
+design stage and also guiding
+decision-making in operating condition
+with the aim of reducing uh um
+basically unexpected failure and
+performance issues.
+So, what we do within uh the group is
+actually develop techniques that enable
+us to perform these uh innovative
+design exploration under uncertainties
+and nonlinearity to assess the uh
+remaining useful life of the structure
+and extract this information from
+different type of data that can come as
+you I was saying to you before from
+inspection data of the measurements,
+historical data, images, and models.
+Okay, this was to give you a general
+idea of the challenges that we are
+targeting. During this talk, I will talk
+about uh there will be four main parts.
+The first part is about
+physics-enhancing machine learning. Why
+we do this and how can we do that?
+Then I'm going to focus on a specific
+problem that we have in engineering that
+is actually the identification of
+friction. I will tell you about the
+challenges and therefore and afterwards
+I will tell you about the strategy that
+we are implementing to solve this
+challenge. And at the end I will talk
+about challenges and opportunities in
+physics-informed machine learning and
+what are the steps going forward. And I
+hope that many researchers will join me
+in tackling these challenges.
+So, probably the best place to start is
+to say, "Okay, what are the application
+of data driven techniques?" And
+especially if we focus on
+applied solid mechanics.
+Well, there are three main branches in
+which we can apply data driven
+techniques. One is extracting
+information, and the other one is
+reducing computational cost. But of
+course, we can use it also to improve
+modeling and forecasting. And you can
+see here are some example of how we can
+extract information, how we can improve
+the model, but also how we can reduce
+the computational cost. And I mean, the
+application is quite broad, and they've
+been successfully used for many systems.
+But what's the catch? Why we need
+physics?
+So, one of the thing to remember is that
+that data is not enough.
+Because data must be transformed in
+information. And actually, we are making
+a some inherent assumption when we talk
+about the data that we are handling. And
+uh
+we are assuming that machine learning at
+the end I'm going to just do this.
+Sorry.
+The inherent assumption that we are
+making are that the data that we have is
+informative.
+That means can we actually distinguish
+what are the sources that are generating
+that type of data? What is the data that
+we need? What do we monitor, when and
+where we monitor?
+We say that it's accurate, which means
+that we are assuming that the
+measurements that we are having are
+actually close to the true value that
+we're going to have. So, there is no no
+noise or very low.
+But also, we are assuming that the data
+is reliable. What it means is that if
+you repeat the measurements, we should
+in the same condition, exactly the same,
+we should get exactly the same behavior
+even after a long period. Most of the
+end, this is not the case. And indeed,
+machine learning models are always as
+good as the data.
+And the data
+first of all, most of the time doesn't
+satisfy these inherent assumption that
+we make. But also, we are not able to
+observe all the conditions that we would
+like to observe in the data.
+And data can also come from different
+completely different sources that have
+different frequency and
+spatial
+uh resolution. And as a result of that,
+what is happening is that we have to
+deal with a complexity of data, and we
+possibly noisy and missing data as well.
+Now,
+even if we have the, you know, the
+perfect data set, and we are dealing
+with this kind of problem,
+there is actually a need, and there is a
+big need to deal with physics and to
+introduce physics in machine learning
+strategies. And the reason uh probably
+can be explained effectively by using
+this sort of two-dimensional graph. On
+the x-axis, you see that is displayed
+the physics knowledge, while on the
+y-axis, we have the data availability.
+And again, data that is informative, not
+just data for the sake of data.
+And what we can do is that we can
+distinguish nine areas with low, medium,
+and high physics knowledge, and
+correspondingly with informative data
+availability. Now,
+if we have lots of data, and we have
+very, very little knowledge, machine
+learning seems to be the way to go.
+But most of the time
+for engineering system, we actually have
+physics knowledge. And if we have
+physics knowledge, but we have very
+little data, then definitely physics
+modeling is the only thing that we can
+do.
+Most of the time, actually, we are in
+between these two sort of extreme. We
+are having some physics knowledge, and
+we have access to data.
+Now, the main challenge that we have in
+engineering is that the volume of the
+useful experimental data is actually
+usually limited. We cannot collect much
+information, it's difficult to place
+sensors, costs is expensive, and it's
+difficult to understand what to measure
+and when to measure unless you know
+exactly what you're looking for. And in
+complex structure or large dimension,
+this become a very big challenge.
+Moreover, what's the big challenge? The
+big challenge is that we we will need
+anyway physics knowledge in order to be
+able to generalize
+our results in a regime that is actually
+above the small medium data. And because
+we want to also enforce physics with
+large data, because there's always the
+risk that we are not
+then be able to account for physics.
+What do I mean by that?
+The meaning of of what I'm trying to say
+is that machine learning is great, but
+we should
+take it
+a cautious look at it when we use it as
+a data-driven technique.
+Because if we apply it as it is without
+accounting for any physics constraints
+or any physics knowledge, we might see
+some poor generalization performance and
+extrapolation and observational biases.
+And we might also get physically
+inconsistent or impossible prediction.
+The reason why this occurs
+it could be that, as I was telling you,
+the data is very important and the
+information that it carries. So, we can
+have, for instance, corrupted
+measurements, but also when we do
+data-driven technique, what we observe
+are actually correlation and association
+and evidence. We don't see and we don't
+have directly with the data-driven only
+technique causal relationship, and we
+cannot distinguish, unless we do
+something about it,
+their confounding sources.
+As a result of that, using data-driven
+techniques can lead to very accurate,
+but very wrong prediction. So, that's
+the reason why we always have to watch
+out for only data-driven and why it is
+important to also include physics if we
+know, of course, the physics.
+And uh in applied mechanics, uh you
+know, an application related to applied
+mechanics is actually it will
+incorporate the physics knowledge.
+So, what is the main reason? The main
+reason is that differently to other
+companies that maybe with the
+data-driven techniques are giving
+suggestion to watch something or to
+listen to something or to buy something,
+here we are actually supporting
+decision-making. And this
+decision-making can affect the behavior
+of structure and can actually compromise
+lives and
+and can compromise performance as well
+and cause problem. So, what we are
+aiming at is actually
+be able to guide decision-making. And
+going beyond that black boxes. Because
+what we would like to do is having
+something that is both interpretable and
+explainable. And what I mean by that uh
+is the following. Interpretability will
+respond to the answer how was a
+prediction made. While explainability
+will respond to can we communicate the
+prediction to support decision-making.
+Now, the key thing with the
+interpretability and model being
+interpretable is that we would like to
+understand when it succeed or fail. We
+would like to understand why that
+happened. And the main reason is that at
+the end humans will always trust more
+prediction that are coming from
+something that they can understand when
+it fails and when it actually succeed.
+The explainability actually it's related
+to the fact that the prediction must be
+comprehensible and capable also of
+quantifying any remaining uncertainties
+in the prediction. And the main reason
+why this is so important is that at the
+end the critical decision must be taken
+by human and understandable
+understandable actually should be
+understandable by human because they
+must be communicated to other humans.
+So, because of this
+we actually the way I see the problem is
+that physics-informed machine learning,
+scientific machine learning, physics
+analysis machine learning, as you want
+to like it, becomes an integration
+challenge.
+And and it is an integration challenge
+for the reason that I'm going to explain
+to you. And
+I'm going to try to divide the problem
+into. I'm going to talk first about
+modeling and forecasting, and then I'm
+going to talk about the inverse problem.
+If you look at the
+modeling and forecasting, we look at the
+applied solid mechanics challenges, you
+can see on the left a list of the things
+that we are still dealing with. And that
+makes
+doing modeling and forecasting very
+complex for multi-physics and
+multi-scale system.
+What we have to remember is that we want
+to also integrate heterogeneous noise
+data and domain knowledge that might be
+available. But also we have to deal with
+uncertainties.
+If we look instead at the inverse
+problem, in which we basically have some
+data, some information, and we want to
+go back
+to
+model.
+What we usually deal with is what you
+see on the right. Those are the
+challenges. We might have an unknown
+physical parameter, unknown physical
+laws, unknown material constitutive law,
+but we might have also a gap in noisy
+boundary condition, and partially
+unknown governing equation.
+What it makes it even more complex is
+that we are often dealing with small and
+heterogeneous data. We have
+multi-fidelity data. And we have
+compounding influences that affect the
+results.
+And of course, if you think about the
+model, we may have a high-dimensional
+problem and computational cost become
+very important. All of these sees also
+uncertainties as another challenge.
+So, to me, physics-informed machine
+learning is actually this integration
+challenge that goes beyond just saying
+we have data and data-driven model and
+physics-based model. It's actually
+something that says we have mathematical
+models, we have this data, but we have
+also this multi-fidelity data challenge.
+This non-informative data that might be
+there and we might want to get rid of it
+because maybe it's affecting the
+results, it's biasing the results. The
+corrupted data.
+We also want to account for domain
+knowledge, physical laws, prior
+knowledge, and appropriate biases
+actually that we can implement. And of
+course, all of this comes with the
+challenge of interpretability and
+explainability of the results.
+And accounting for the uncertainty. It's
+a different level. Uncertainty in the
+physics knowledge, uncertainty in the
+data, and also in the learning model
+that we're using.
+Okay, so I hope that this makes sense so
+far about the general context about what
+is physics physics in machine learning
+of physics enhanced machine learning and
+the integration challenge. But now we
+can think about how can we incorporate
+physics to enhance machine learning
+strategies? They are so powerful,
+they're already so widespread. How can
+we take make the most out of them? And
+there are four ways in which we can
+integrate
+knowledge and they can be all combined
+to accelerate training and enhance
+generalization.
+The first one is to look at
+observational biases. We can introduce
+data that is actually extracted from
+different forces sources that embody the
+physics that we want to capture. And
+therefore, we can augment our data set.
+Another thing that we can do is to
+introduce an inductive bias. So we can
+incorporate any prior assumption about
+the physical constraints, but also about
+for instance, boundaries, conservative
+laws, symmetries, and we can embed these
+in the architecture of the learning
+algorithm. So they are explicitly there.
+Another way that we can look at the
+problem is to look at the way in which
+we construct our learning algorithm. So
+how we define the loss function, the
+regularization constraints, and what
+inference learning algorithm we select.
+And finally, of course, another bias
+that we can incorporate is what we know
+about the physics. If we know partially
+the equation, we know the model form, or
+we know the discrepancy bias, some term
+of the equation, we can actually
+introduce them.
+And those are the general four ways in
+which we can do this. And one way to see
+this probably in a very nice and neat
+way is to look at a general example of a
+neural network architecture in which we
+can include the physics knowledge. So,
+I'm going to just go very briefly
+through it to give you an idea. So, what
+we have by this neural network
+architecture in which we have some input
+layers and one output layers. And what
+you see inside is these hidden layers.
+We have a number of nodes per layer. It
+doesn't matter that much. They can be
+fully connected or not. It's just for
+the sake of understanding what is
+happening. What we can do is that we can
+have we can use this neural network
+architecture actually to understand and
+to derive a partial differential
+equation. And what we can do is to we
+can actually enforce some of the other
+constraints on the output of the neural
+network that we're learning. And what we
+can do then is feed this information, a
+partially known governing equation. As a
+result, what is happening then, we can
+look at the loss between the output
+layer and the results obtained with the
+governing equation. And then we can
+update our knowledge. What you see here
+are the different ways in which in which
+we can introduce the bias. We can
+introduce the observational bias that
+act only on the input layer, for
+instance. We can do we can introduce the
+inductive bias in the way we actually
+put the architecture together. For
+instance, we could use CNN or any other
+architecture. Then we have a learning
+bias in the way that we define the loss
+function of our problem. And finally,
+the discrepancy a is the fact that we
+are already embedding these results
+within partially known governing
+equation. So, I hope that again this
+makes sense and now it's clearer for the
+audience
+the ways in which the forum biases and
+how we can introduce it.
+But
+what is the physics informed machine
+learning strategy? It's not just neural
+networks. And actually, there is no
+one-size-fits-all. There is not just one
+strategy. There is not just one way of
+doing it. It really depends on the
+complexity of the system, on the amount
+of informative data, and the purpose.
+What's the reason why we are doing all
+of this? And depending on that, we might
+use a completely different technique and
+a different way of biasing the
+information. So, the way in which I I
+will try then to explain how we can
+implement this in general is to show you
+four main path for formulating physics
+enhanced machine learning. And of
+course, this is very much biased towards
+application in applied mechanics, and
+I'm not
+claiming that I'm going to tell you all
+the possible ways of doing it. But one
+main way for doing it is that our goal
+is say there is to learn unknown physics
+terms or learning the equation. And we
+start from interpretable observable
+variables. So, the path that will lead
+us to learn these unknown terms of the
+equation is usually to collect data to
+formulate some physics using dictionary
+of operators on inputs or or part of the
+equation, and then we can apply learning
+algorithm with or without physics
+constraint. That's actually what we can
+do in general. And one of these examples
+is of course PINs, but also sparse
+system identification strategy can
+actually
+fall into this category because we can
+possibly also include some explicit
+constraint there.
+Another way of seeing the problem of
+formulating a physics enhanced machine
+learning strategy is to look at learning
+useful from informative rules on our
+reduced order model. And uh the way the
+path that it leads to us is to start
+again from data observation, and maybe
+we want to apply some manifold learning
+autoencoders, and we want to determine
+this reduced
+reduced latent space that then will give
+us these informative rules or this
+reduced order model. And uh the way one
+very simple way to I mean explain this
+is to think about having an input layer
+and then going into a latent space or
+code. Again, we can have a neural
+network architecture, and then basically
+we have we want to go back to an output
+layer. So, we have an encoder phase, and
+then we have a decoder phase. You can
+see how the slides I've got to I've put
+like reference to say see some papers
+from these groups because many groups
+have been working on this, and it would
+be too long to put all the relevant
+references.
+Another path to formulating physics
+enhanced machine learning is actually
+quantifying the uncertainties in the
+parameters terms of a non-physics based
+model. And there we can start from a
+non-physics based model with uncertain
+input parameters. And what we can do is
+collect noisy data, and then apply some
+learning algorithm with or without the
+physical constraints. And a very simple
+example is probabilistic machine
+learning strategy with a non-physics
+model, in which we have a non-physics
+and noisy for instance dynamic response
+measurements that are combined together
+to define the likelihood that is the
+discrepancy between what we observe and
+the model prediction, and combining with
+the prior distribution that represent
+our prior knowledge. Now, the reason to
+do that is that by knowing the prior and
+the likelihood, we can then calculate
+what is called the posterior
+distribution, therefore updating our
+knowledge.
+Then, finally that we have the fourth
+path, and again they are not
+all exclusive. The fourth path to
+physics enhanced machine learning is to
+quantify uncertainties in the parameter
+term of a partially known physics-based
+model. And there we start from this
+partially known physics-based model that
+has an uncertain with
+with an uncertain functional form. It
+means that we don't know actually which
+is the functional form of the term that
+we would like to obtain. And again, we
+can collect noisy data, and we can apply
+some learning algorithm with physics
+constraints.
+For example, the Gaussian process later
+force model or the physics analysis
+sparse identification actually do that
+by introducing a discrepancy bias and
+then learning something about the
+system.
+Okay. So, I hope that this was a gentle
+introduction to the problem and that
+you're all still with me following
+because now I would like to talk about
+the identification of friction and which
+are the challenges and why we need
+physics in machine learning to solve
+this.
+Okay. So,
+this is a very nice example, I believe,
+because friction
+is actually something that we see every
+time in our life. And basically, it's
+this force that is resisting the
+relative motion of surfaces sliding
+against each other. And friction is the
+reason why when you're walking, you
+actually don't fall and you don't slide
+like crazy, but you can walk actually on
+different surfaces.
+And
+there are some pros and cons of having
+friction in structural engineering,
+especially in joint structure. The pro
+is, of course, that it is a very good
+way of dissipating energy and reducing
+vibrational amplitude. But there are
+actually also some drawbacks like it can
+cause wear, noise, large acceleration.
+And especially, stick-slip phenomena.
+And I'm going to show you a video later
+on to explain what is stick-slip for the
+people that don't know about it. But all
+of these phenomena actually can reduce
+the remaining useful life of structure
+and then lead to sudden failures.
+And the main problem with friction is
+that it cannot be directly measured. If
+you have Imagine you have a joint and
+you want to measure the friction, the
+force between two parts, if you open it,
+then there's no more friction, of
+course. And if you put a sensor, you're
+changing the way in which the joint
+behave. And of course, if you put a
+sensor, then
+probably
+there will be aging of sensor and of the
+equipment. And so, you don't want
+actually, first of all, to change the
+joint, but second of all, you don't want
+to start having measurements that might
+be wrong. Even if you could.
+So, what we would like to do then is to
+basically to go towards what is a
+real-time
+monitoring of a frictional force
+evolution. And the idea is not to
+measure friction where it happens, but
+to measure the response. And from the
+response, go back and actually
+characterize friction.
+What you see here is basically the work
+that I've been doing with Luca and in a
+nutshell with Dr. Luca Marinò. And this
+representing in a nutshell. And he start
+He started with a problem that was given
+by an engineering company in which they
+were
+basically problem once the joint of the
+after root of a gas turbine blade was
+changed. And there Therefore, there we
+understood that friction was a problem
+that we didn't understand properly, and
+we started doing very simple, you know,
+single degrees of freedom analysis,
+building an experimental setup. And what
+we discovered that it was very
+interesting is that the similarly to
+what we see in viscous problem, there is
+a sort of magic point in the frequency
+ratio. And you can see it actually here.
+And what this magic voice tells you is
+that uh
+if you increase friction, you usually
+reduce the amplitude that is motion that
+is transmitted. But there is this magic
+point above which, above this frequency
+ratio, you increase friction, and
+instead of reducing motion, you're
+actually amplifying it. And therefore,
+this can be something very interesting
+and to account when we have also our
+physics
+in form model.
+And we just we
+understood this numerically,
+analytically, but also we tested this
+with the experimental setup.
+And we did the lots of investigation
+that enabled us to understand so so much
+better the physics of the problem. The
+then it felt natural to actually include
+this in a machine learning architecture.
+And
+what I'm going to do to try to explain
+the problem of friction possibly in a
+better way is to explain to you what is
+this test setup. And this test setup is
+actually a very simple system in which
+we have a base plate that is the things
+that you see here. There is this
+mechanism here that actually through a
+motor is making these things move up and
+down using an harmonic kind of
+excitation. And you can see here that
+there are these sort of bars. And these
+bars are the same that actually connect
+the base plate with the top plate. And
+this is an aluminum plate at the top.
+And what you can see as well is that we
+are adding a a contact balance system.
+And here we have basically this mass
+that is sitting on top. So this distance
+that is sitting on top of the top plate.
+And that is where friction the friction
+force actually occur.
+This is a brass
+element that is in contact with this
+aluminum
+plate.
+And
+what you see
+here basically
+is
+is going to be this video in which I'm
+going to show you what is happening when
+we have stick slip. So we are focusing
+our attention in this area over here.
+And we are exciting the system by making
+this move up and down basically.
+And what you will see are different ways
+in which the
+disk mass here, this top plate will
+start moving because of the contacts.
+Okay.
+So,
+see if the video works.
+It say that cannot play the the media.
+Great then.
+Okay. So, if the video was working
+because before it was working, you would
+have seen a continuous motion and then
+the stick slip. So, the mass within a
+cycle of motion will be sticking and
+then sleeping and then going backwards
+in a sort of symmetric way.
+Sorry for this.
+Things like this happen all the time,
+unfortunately.
+Um what we have understood by this
+problem
+by investigating the physics of this
+type of problem and thanks also to the
+experimental setup is that the most
+robust feature that actually can enable
+us to understand what is the friction
+force and to characterize actually the
+friction problem is actually the
+friction versus velocity.
+And the challenges that we are facing I
+I will spare you all the description of
+how we came up to this conclusion, but I
+can tell you that there are several
+papers investigating this phenomenon.
+The challenge there is how to obtain the
+friction force versus velocity graph
+from experiments in which we are
+actually obtaining measurements. And
+these measurements are not at the
+contact away from the contact as the
+master is moving. And especially when
+this phenomenon of stick and then slip
+occurs. And every time there is a stick
+and then slip, there is a sudden release
+of energy and then we go back and forth.
+So, our strategy is actually to use
+physics informed machine learning. And
+of course, we use
+uh we use three machine learning
+strategy. And I'm going to describe
+these three different physics informed
+machine learning strategy to do so.
+And I'm going to build up
+in complexity and
+will be very happy to take any question
+you might have at any point. So, please
+start writing if you want.
+So, the first strategy is to build up on
+the sparse system identification. And
+basically what we did was looking at the
+extended sparse system, developing
+actually the extended sparse system
+identification. What we did there was
+actually introducing two biases, one
+observational bias and one inductive
+bias.
+The first bias consists of partitioning
+the data in stick and then sleep data
+motion. And the inductive bias instead
+is looking at the dictionary of function
+and exploiting stick sleep and temporal
+constraint.
+So, you see on the right some results,
+but I'm going to explain to you which
+are the steps. And what I would like to
+stress is that this work was led by
+Saurabh Marjan. And you can find more
+information about this approach in the
+paper listed there.
+So, how does it work? So, there is Cindy
+and I'm going to explain you in a second
+what it is. And Cindy has been developed
+by Brunton and collaborators. So, you
+can see there the
+main paper.
+So, basically you take some
+measurements, you select some candidate
+features, and you obtain some sparse
+governing equation. But let me unwrap to
+you for you what does what does this
+mean? Say that you have a set of
+governing equation that is represented
+in this form, in general form. And you
+actually don't know which is this
+relationship. And that's what we want to
+obtain. What we can do is to make an
+approximation. So, we have a set of
+candidate function theta and then
+multiply by a coefficient.
+And what we can then say is that okay,
+this looks very much like I mean you
+remember what we do with finite element
+methods, we have the base function and
+we multiply that
+basically
+to obtain at the end this
+approximation. And what we do there is
+to say "Okay, we have an adaptive bias
+because we have a
+library of candidate function that the
+user can give us input."
+And then we have this sparse
+coefficient, and those are the
+coefficient that we want to find. So,
+basically it's like saying the
+approximation is going to be made of all
+of these possible function, each of them
+multiplied by this sparse coefficient,
+and depending on the value of this
+sparse coefficient, some of these terms
+will be dropped. Some other terms will
+remain. So, that's actually what is
+happening with sparse system
+identification.
+And the way in which this is done is to
+solve actually this
+this type of problem in which we are
+minimizing what we are measuring with
+respect to what we are predicting. And
+we have this threshold this emotional
+threshold 3 squared approach in which
+alpha is actually
+a parameter that is given by the user,
+and that determines how much we're going
+to retain, and which is the lowest value
+that we're going to retain.
+And Cindy's greatest been applied to
+many plastic type of problem, but it
+might be sensitive to a noise level, and
+there is an automatic differentiation
+inside of it that will make the the
+problem becoming unstable.
+And what we have observed, especially
+for friction in which you have
+discontinuous behavior, is that we we
+basically have poor performance that
+will lead to no smooth response.
+This is due to the fact that when we
+have this friction force, we have this
+discontinuity basically in the behavior
+that leads to this stick motion this
+sticking and then sudden motion. And
+what we then developed is this extended
+Cindy. And the way in which it works is
+pretty straightforward. Based on the
+fact that we have either mass motion and
+mass sticking, so either we have
+something that is stuck there or mass
+moving, and this happen in time
+basically. It can happen and we can have
+multiple stops.
+What we we going to do is to segregate
+the data based on the velocity condition
+into mass motion and mass sticking.
+That's the first step.
+Then what we can do is to apply SINDy
+directly to the mass motion data.
+The reason why we want to do that is to
+get the correct equation of motion.
+However, we will get the wrong
+coefficient.
+The reason for this is that uh it's not
+still capable to It doesn't It doesn't
+have already all the information, all
+the data. And the fact that it's
+assuming that there is not a data
+obtained during sticking is actually
+giving us a wrong uh
+a wrong result.
+Then what we can do is to apply some
+constraints that are based on our
+physics knowledge and about what
+happened when we have mass motion and
+mass sticking. And by doing this, what
+we can get at the end are these two
+surfaces, the lower bound and the upper
+bound. The lower bound will represent
+the stick and the upper bound is that is
+looking at the stick condition. Finally,
+what we can do is to find the parameters
+of the model, the correct ones. So then
+now we can identify the system. And
+basically, what this figure is showing
+is are these lower bound and upper bound
+surfaces that you will see in terms of
+the friction behavior. And what we are
+looking for is exploring this domain in
+order to find the parameter K and C. In
+this case, for a single degrees of
+freedom system with spring stiffness K
+and C as the damper. And we were
+interested in looking at this minimum
+distance and therefore finding what
+would be then the value of the system.
+What's the goal with extended SINDy? At
+the end, we get out of it
+this governing equation. And once you
+have the governing equation, in
+principle, we are fully generalizable
+because then we can investigate
+whichever problem. So from measurements,
+we want to go to the governing equation
+by applying some physical strains
+knowledge. And of course, going through
+this data segregation.
+Okay. So what you see now here to the
+left is what happened when we have
+continuous motion, when we have a two
+stop or a four stop within a cycle. So,
+within a cycle of the base moving, we
+can have at the top either two stops or
+four stops or no stops.
+Now, the extended Cindy, when of course
+there are no stops, it falls back to
+Cindy because at the end we don't need
+to segregate the data. So, what is
+happening is that it's going to be
+continuous motion and what you see here
+are actually the results that we will
+get by applying Cindy. And if we
+consider the RMSE error compared to the
+actual solution, we will see that it's
+actually very small. And what we see is
+that
+our governing equation are actually very
+good at capturing the behavior. But of
+course, what we see is that there is a
+sort of degradation as soon as we go
+higher in terms of number of stops and
+this is because of the discontinuity
+that is coming. And in fact, the Cindy
+applied to even if we consider the
+motion
+part only, Cindy might perform poorly
+for this kind of problem because of the
+small data set.
+And what we see then is that the two
+stop and the four stop problem, the
+governing equation and the difference
+between Cindy and extended Cindy. And
+what we notice with this
+that is very important, especially for
+the four stop, is that Cindy might
+completely mislead the results and then
+generate a governing equation that
+doesn't see these multiple stops.
+While the extended Cindy can.
+But still, the problem is that this kind
+of approach is sensitive to noise level
+because it's requiring an automatic
+differentiation. And we have observed
+that there is still not a great
+performance as the number of stops
+increases.
+And of course, it would be nice to
+account also for uncertainties in the
+results and at the moment we cannot do.
+So, this was the first way which we
+introduced some knowledge
+of the system by
+basically doing this extended Cindy and
+and showing what is the potential and
+what is the need especially when we are
+dealing with the multiple stops. And you
+see especially here what is happening to
+the problem to the case under
+investigation.
+Um
+I'm not going to There are other two
+techniques and what I'm going to focus
+now is
+another approach that we developed. And
+this strategy is based on a switching
+partial latent force model.
+In this case, we are assuming that we
+know also the model. Before, we didn't
+say that we knew the model of the
+system. We didn't know anything about
+the partial governing equation. We
+wanted to obtain the full function.
+Now, we have the discrepancy bias and we
+say that we have a set of latent forces.
+We say that because we know that we have
+a stick and slip, we're going to have
+our latent forces going to be
+representing stick, another one that is
+going to represent slip, and then we're
+going to have also the set mode.
+And then
+we can embed also the stick slip
+constraint. So, we can add some
+inductive bias.
+Of course, our system, our learning
+algorithm will be also affected by the
+stick slip behavior and we're going to
+have a learning bias also introduced.
+The key things here
+is that we have no knowledge of the
+functional form. We are not making any
+assumption. We don't have a dictionary
+of function that might actually help
+guess what is going to happen to the
+system. And because we have no knowledge
+of the functional form, what it means is
+that we are trying to get something like
+the result shown in the right. We would
+like to get from the data set. Remember,
+we are not measuring friction force
+versus velocity. We are measuring
+displacement actually. And what we want
+to do is to get back to this
+relationship. And the way in which we
+can do that is to combine what we know
+and what we don't know. And so basically
+we have the physics model, the dynamics
+response measurement, and we also
+measure the input
+given to the system.
+What we apply then is a Gaussian process
+latent force model. And the way in which
+it works is similarly to this and bear
+with me with the some very simple
+equation. We have a two degrees of
+freedom system
+characterized by a mass m, by a dashpot
+c, and by a stiffness k. And we have
+this force that is actually the unknown
+term, this f, and this is actually our
+frictional force that we would like to
+characterize. For it we don't know
+anything
+any form or nothing.
+And we know the input measurement u g
+that is given to the system. What we do
+is to consider a Gaussian process model
+with a stationary kernel. And this is a
+zero mean Gaussian process.
+If we apply
+just as it is the Gaussian process
+latent
+What we see
+is that we can predict
+the displacement is what we measure and
+so our model then is still getting very
+well the displacement, but if we look at
+the nonlinear force versus time
+evolution or the nonlinear force versus
+velocity evolution, you can see some
+striking features. We have uncertainties
+now. We can look at the bounds of the
+uncertainties.
+But we have all the time smoothed at the
+response. And this is because it's the
+Gaussian process that is dealing
+actually,
+uh, with smooth
+um, function type.
+And what is happening, uh, that is
+especially important is that if we look,
+uh, here at these results,
+uh, when we look at the normalized force
+versus velocity, we see that there is an
+incorrect, uh, frictional force
+description when the velocity is zero.
+This is particularly challenging because
+then if we want to use this model to
+generalize and to be applied in
+different system, we going to see and
+especially for more stick-slip kind of
+phenomena, it's going to actually give
+us much more problems.
+Okay, so what was the solution to this?
+The solution is to not just consider
+Gaussian process later force model, but
+a switching Gaussian process later force
+model.
+So, basically we're going to have a set
+of of zero mean GP prior.
+And basically what we then try to
+calculate with this approach is the
+posterior distribution by Kalman
+filtering smoothing.
+The switching model as I was telling you
+are considering the state of the system
+that we know will happen. No matter how
+many stick-slip phenomena we will have,
+we can have either a sliding condition,
+a sticking condition, or we can go in
+what is called a resetting mode. And the
+resetting mode is for accounting
+for taking into account discontinuities
+in the latent friction model.
+So, what we got to do is to build
+actually a sequence of linear Gaussian
+state space model. And we're going to
+build it by using this type of equation
+that are exemplified here.
+And basically in a nutshell, what is
+happening is that we start with these
+noise measurements with these driving
+force and the system parameters.
+We have to set up what is the kernel of
+our Gaussian
+process basically, the number of the
+linear Gaussian state model that we're
+going to use, the number of Gaussian
+that we're going to consider in our
+assumed density field and in our
+expectation correction.
+And what you see then, this is the sort
+of architecture that is happening within
+the the switching GPLVM. This is much
+more complex than looking of course into
+a sparse system identification kind of
+approach because we have to calculate
+the GPLVM parameters by using some
+sampling technique. And we try to do
+that using what is called the
+variational base Monte Carlo to reduce
+computational cost. But we have also
+applied some filtering and smoothing.
+Uh
+At the end of these results, we actually
+got the nonlinear force and the motion
+regime transition and discontinuity.
+This approach is very powerful and this
+is actually shown in these results in
+which you can see what is happening in
+terms of the displacement,
+velocity, acceleration, force, but also
+model. The model as I was saying there
+are three model. There's stick, the
+slip, and the reset model. And actually
+automatically is able to distinguish,
+thanks to a Markov model,
+um what is actually the condition that
+will release the correct model. And what
+you see here is that we are able to also
+detect and capture what is happening in
+terms of the um very difficult and sharp
+corner of the response. And these are
+the final results that we got that it's
+uh telling us that we are
+confidently then obtaining the friction
+force, the velocity, but also the
+uncertainty bounds in our prediction.
+The main challenge with this type of
+approach that we
+There's still things that needs to be
+done is that at the moment can be only
+applied for one type of nonlinearity.
+And of course we are facing the
+dimensionality issue that comes with the
+Gaussian process which is great, but if
+we are looking at the dimension that are
+higher than 20, then we start to have
+problems with it.
+So we then try to look at at the best of
+two worlds of what we have seen so far.
+And one of these is then then we come up
+with this physics-enhanced sparse
+identification.
+And with this
+kind of approach, we actually want to
+have the partial model as we have in the
+previous approach that I described to
+you,
+but we want to leverage on Cindy as well
+and on especially on what is called
+archive or the so we want to account for
+the longitudinal scheme
+in order to reduce the space of the
+possible solution. So we want to have a
+discrepancy bias and inductive bias and
+a learning bias.
+And what is shown just to give you a
+feeling for what we mean by having also
+this event condition or this
+information about the stick and slip
+having embedded it the physics knowledge
+not where it happened but just a
+condition that we need to that
+happening. You can see on the right what
+is happening in terms of displacement in
+the top and velocity versus time. And
+again this is a single degrees of
+freedom just for the purpose of showing
+showcase some results. And this is when
+we apply Cindy
+with an event condition
+without an event condition and what is
+the ground truth. You can see that even
+if we have the right information and the
+right model
+not including the event condition
+creates lots of problem in terms of
+really capturing the displacement and
+the velocity behavior of the system.
+And of course the governing equation.
+That's what you can see with condition
+and without condition. It seem trivial
+seem just a small difference but this is
+then affecting completely the results
+and how generalizable these results are.
+You can find more information about this
+in this relevant paper.
+So how does this active forcing the
+works and how can we get out of it
+generalizable generalizable non-linear
+differential equation?
+So we imagine that we have
+a
+basically a a system of a equation of a
+sort of differential equation.
+And we can imagine that basically we
+know the unknown functional we know
+basically part of the results. So we
+know the discrepancy bias.
+But
+so we know part of the equation but we
+don't know a functional form of one
+term.
+And what we're trying to do there is to
+say, "Okay, we start from a time series
+of noisy and sparsely collected
+measurement, and we want to obtain out
+of it uh basically the governing
+equation, and especially this part of
+the unknown functional form."
+The way in which this work is again to
+consider basically this uh sparse system
+identification in which we approximate
+half as the product of these candidate
+function and these sparse coefficient.
+But now we are changing the way in which
+we are making the prediction, and which
+uh we are calculating the prediction. In
+fact, we are going through a step that
+is the RK4, so the Runge-Kutta scheme.
+This was introduced in 2022
+by Goyal and Benner. And what we've done
+there is actually introducing within the
+RK4 uh changing the learning algorithm.
+We added some constraint, and we added
+part of the knowledge of the function
+that we have. What it means is that we
+are having basically a learning bias
+directly embedded in the system. We have
+an inducted bias in terms of the
+candidate function, and what we want to
+obtain again are these sparse
+coefficient.
+The
+the key warning here every time when we
+work with
+this kind of sparse system
+identification is that measurements can
+be always be fitted with uh just
+polynomials. So, we have to be careful
+about the inductive bias that we give in
+terms of the library of candidate
+function.
+And uh of course the equations are
+generalizable only if the candidate
+function are the correct candidate
+function are used. But the advantage of
+this type of approach is that the RK4 uh
+and all the constraints and physical
+constraints are actually limiting the
+space of possible solution, and
+therefore are helping the identification
+of a sparse solution that is the correct
+one.
+So, one thing that is very important to
+stress is the importance of including
+the correct physics in the problem
+description. And again, I'm going to use
+a very simple single degrees of freedom
+system which we have this governing
+equation. And as a measurement
+available, we have the top plate
+displacement and the base plate
+displacement. And we have a discrepancy
+bias because we know part of the model
+and we want to focus on the friction
+term that we don't know.
+Now, we have a list of library boundary
+function that can include polynomials,
+signum function, cosine at different
+frequency. And we are actually deciding
+on purpose to include only first order
+polynomials. I will be clear in a second
+why this.
+And we're going to consider three cases.
+When the measurements of the base
+excitation are provided, when we don't
+have base of the excitation, and
+basically um
+we we don't know what it is and we have
+to learn all of it. And when we assume
+actually that we have a perfect harmonic
+base excitation. There is actually a
+wrong physics because the system is not
+able to actually give a perfect harmonic
+base excitation.
+What we see here are the results. Let me
+walk you through this. So again, the
+black line is with measurement of base
+uh excitation.
+The green line is no base excitation and
+it's not a driven and we see no
+convergence and this is also because we
+are using first order polynomial. And
+you can see in terms of the results that
+actually is not able to really
+uh produce some credible results. But
+also, if we assume that we have a
+perfect harmonic results, so we have the
+wrong physics,
+we actually get the correct displacement
+and velocity. But then, when we look at
+the question C and we compare it to the
+ground truth, you can see that is very
+very different. And this is affecting
+then how generalizable is the system.
+And in fact, we are missing the signum
+term. There is actually the friction
+term. So we are not able to actually
+identify correctly the problem if we
+make some uh some wrong physics
+assumption. This is something very
+important to underline.
+And uh
+one of the challenges that we have
+tackled with this approach, with this
+physics and non-sparse identification,
+is actually embedding as much physics as
+we can and understanding which are the
+limit of the physics that we can embed.
+And one important uh problem that we
+have is actually when we have friction
+law, that might be undistinguishable in
+certain parameter range. So, without
+going into many details, we have the
+Coulomb friction law and the DR friction
+law. And in some parameter space, and
+these parameters are representing
+actually the DR law, in some parameter
+space Coulomb and DR are exactly the
+same. You cannot distinguish them when
+you look at the mass displacement versus
+force signal of the input base.
+And this is interesting because this
+poses a very difficult problem for the
+inverse where we are trying to identify
+the friction force.
+And what we looked at is exactly this
+case in which both the DR and Coulomb
+actually give this displacement versus
+forcing
+uh that is pretty much the same.
+So, what we did was considering this
+candidate this set of candidate function
+because we assume that we know what is
+basically the friction behind the the I
+mean, we assume that we know that there
+is a friction problem. We don't know
+what it is.
+And uh and then and then what we trying
+to do basically is to um apply Ising
+with all the constraints that I
+described to you with all the biases to
+identify the correct governing equation.
+And in case A, the ground truth is
+Coulomb
+and what you can see is that Ising is
+able to identify correctly
+uh the results. And in the second case,
+the ground truth is actually generated
+by looking at this and of course we have
+noisy measurement.
+Uh it's not perfect data. And you can
+see that Ising is able to actually
+identify correctly the governing
+equation.
+And this is exciting because it shows
+that actually even in our parameter
+space in which everything was pretty
+much the same. And uh it's very
+difficult for any type of system
+identification technique to distinguish
+between the two.
+Even just by looking at the data and by
+applying that physical constraints, we
+are able to uh with the
+physics in the to actually go back to
+the correct governing equation. The main
+challenge here is that we still don't
+actually account for uncertainty
+quantification. That's actually the next
+step of
+what we're working on at the moment.
+Okay. So, this concludes the case
+studies and the three strategies about
+the friction identification. We are
+actually have applied We actually have
+applied also physics-informed machine
+learning for other problems like
+accounting for special and temporal
+measurement correlation when we are
+doing Bayesian system identification.
+And we apply this for a bridge case
+study. But also we have looked at
+virtual sensing for wind turbine's
+problem. And we are looking at way in
+which we are actually able to calculate
+what is happening below the mud line
+when we are measuring only at the top
+tower. So, please have a look at the
+paper if you want to know more about
+this.
+And this concludes almost concludes my
+talk because now we'd like to talk about
+the challenges and opportunities for
+IML. Of course, I show you some
+techniques and some approaches and what
+we have done to address those
+challenges. But there are still many
+more
+There are important like into account.
+Um one is the data biases. And I
+mentioned this at the very beginning and
+I would like to stress again that if you
+have data that is not accurate, you will
+get
+accurate but wrong prediction. And this
+is again because we don't have causal
+relationship and that's difficult to
+distinguish confounding influence when
+we are looking just at data and we don't
+account for physics.
+And of course, we have to account for
+the fact that the data set can be not
+complete and corrupted.
+What it means is that there is still a
+lot that needs to be done to be able to
+remove inappropriate data biases like
+corrupted data from the data set that we
+use.
+And there are challenges as well in
+integrating information of different
+quality, but also in defining metrics
+that assess the information quality,
+especially that coming from data.
+Another thing that I mentioned and I'll
+show you to you especially
+one case study is what happened if we
+embed the wrong physics bias. And in
+that case we said, "Okay, we know that
+input the input is harmonic." And it
+wasn't. And again we get very accurate
+but completely wrong prediction. And the
+main reason to explain this visually is
+that if we imagine a solution space in
+the 2D, it's like we are saying, "Okay,
+this is the physics." So we are
+constraining our search space in that
+area there.
+And we can get an approximate solution,
+but this is completely far off from the
+correct solution.
+And again, embedding physics is very
+important, but we have to make sure that
+the physics that we embed is actually
+constraining correctly the problem. So
+there are challenges and opportunities
+in improving physics model and
+knowledge, but also detecting and
+removing inappropriate biases that
+otherwise will not help us exploring
+completely the solution space. And of
+course incorporating multiple physics
+model.
+Finally, there are many more challenges
+in physics and also machine learning,
+especially in applied like solid
+mechanics. And of course this is again a
+biased view because this is my view on
+the problem. But I think that there are
+many of these challenges related to
+explainability and interpretability. The
+fact that maybe we are using different
+algorithms that return the same
+performance on training data. But we
+actually
+we have to validate that and validation
+is one of the biggest challenges that we
+are having. And also understanding what
+is the balance between the physics that
+we want to embed and the data that we
+want to use for general in session.
+Many more that are listed here
+as challenges and many more that are not
+listed and that many researchers in the
+world are working on. And with this I
+would like to conclude my presentation
+and thank you all for your for the
+attention and if you want to know more
+about the research we are doing or read
+the paper, I would strongly encourage
+you to look at the website
+here. So, thank you so much.
+Thank you for the wonderful talk, Alice.
+Now, we are maybe a little time for the
+Q&A section. So, right now we don't have
+any questions yet in the chat room. So,
+if the audience have any questions,
+please feel free to unmute yourself.
+So, probably I can kick off, but I must
+say that I have very limited knowledge
+about the frictional models. So, my
+question is maybe very fundamental.
+So,
+my first question is like is the library
+used in the extended Cindy the same as
+the original Cindy?
+Yes, the library is the same. So, what
+we are assuming is that we have the same
+level of knowledge
+to avoid
+any sort of additional bias because even
+in Cindy you have already that bias
+there inductive bias that you can
+introduce and actually you should.
+It's it's literally the only difference
+with the with the Cindy the pure Cindy
+is given by applying these constraints
+that can separate the data basically.
+The data during motion and during stick.
+And again, Cindy is very powerful, but
+the problem is that we have this uh
+uh discontinuous non-linearity in the
+problem that actually affect the data
+set. So, it's like having a system that
+is always continuously motion, a system
+that is always like stuck and Cindy is
+trying to get something that is in
+between basically. So that's the reason
+why it's not able to to get fully I mean
+very simplistic way to imagine what is
+happening and it is because continuously
+the system is changing state is changing
+from one state to the other.
+I see. So I I feel like the sign
+function appears in both of your
+libraries and like difficulties is like
+identifying the coefficients for that
+function particularly. So
+Yes. Is that correct?
+Yes.
+Finding that coefficient is one of the
+challenges but actually what we observed
+is that that is not the only challenge
+because if we apply Cindy as it is
+without physics knowledge then for a
+system for a mass spring system you will
+still have the answer I mean you still
+not know precisely the mass of the
+stiffness and actually if you apply
+Cindy as it is also those coefficient
+will be wrong. It will be actually
+because it's trying to compensate. It
+doesn't understand what is happening.
+The data set is not fully giving the
+information that Cindy needs and
+therefore what is happening is that
+they're going to be mistakes both in M K
+but also on the friction. So that's
+actually what we have observed
+with the approach.
+I see.
+So
+maybe I can ask one more. So maybe some
+particular details of the algorithm that
+I am interested in like can you go back
+to page 27 if I remember correctly about
+the
+uh
+you list a workflow about the extended
+Cindy. Yes.
+So
+maybe yeah I I know it is not
+appropriate to like add all the details
+in in the slide but
+uh
+So I want to know what exactly is the
+extra cost if I won't like use this
+extra
+instead of Cindy like is it more
+expensive to identify the system there?
+Thank you for asking this question. This
+is very interesting. So we are using
+Cindy in the second step. So the
+computational cost that is Cindy pretty
+much. There's nothing else.
+But we have to do the data segregation
+that is very fast because you take
+basically a time series analysis and you
+just say motion of motion. So you have a
+velocity condition. So that's super
+fast.
+And the application of the constraints
+and actually the minimization of this
+distance between this blue and orange
+surface is actually not computationally
+expensive because although it's looking
+at C and K and it seems that it's
+sweeping through all different dynamic
+analysis. Actually it's looking at the
+constraint function. So what it means is
+that is not re-running any analysis.
+It's actually just looking for the
+solution in this space. So
+computationally is pretty much the same
+as
+of Cindy. Okay. But as I mentioned this
+type of approach is still only
+applicable to very simplified system to
+a single degrees of freedom. When we
+scale up or when we look at multiple
+discontinuities
+we start seeing deterioration. That's
+why we went for the physics in form.
+What we realized was that without
+embedding even more physics it was very
+difficult then to obtain accurate
+results that are then generalizable in
+terms of having an equation that can be
+applied into different condition.
+I see. So when I look at this workflow
+again more closely I believe
+that really means the lasso or the
+sequential thresholding least squares
+still applies here, right? Yes.
+I see. Okay. Yes, exactly. Yeah. And in
+fact as I told you
+as I mentioned sorry, it goes into this
+step. So it's when you apply Cindy that
+actually you have to basically
+do that and then here is just a
+correction for the coefficient. As you
+were saying that you would get
+signal coefficient that is wrong then
+there would be the mass and stiffness
+that is wrong. So by adopting the mass
+and stiffness then you know part of it
+and therefore you can update also the
+signal coefficient. So that's that's
+exactly what is happening. I see.
+So
+I guess I'm surprised that the audience
+doesn't have question. I I thought that
+I was saying even controversial stuff
+but Yeah, I mean yeah sometimes yeah, go
+ahead.
+So it's interesting.
+Sorry sorry go ahead please go ahead
+Constantinos please please go ahead.
+Just a quick one regarding the case
+where essentially you have a library of
+functions that are unknown but it could
+be that essentially you have an unknown
+operator. It just doesn't have to be
+functions. It can be differential
+operators in there and the variety of
+what you can have is
+mind-boggling. I mean you can have
+fourth order linear
+ones etc. I mean
+in the end if you don't have some
+physical intuition on what could be
+there
+you can just throw the kitchen sink sink
+at it. I don't know how
+Yeah. helpful you can be.
+I mean and and you know what? I think
+that
+the way in which I see it is that if you
+don't know the physics
+then basically Cindy will give you a
+sort of set of polynomial. It will give
+you a regressor. It will give you
+something, right?
+But of course the results will not be
+generalizable. So that's the issue. And
+and so I think that
+Cindy is very powerful. It's
+computationally very fast compared to
+other routines or compared to other
+strategy for nonlinear system
+identification.
+But of course it comes also with a price
+in terms of knowledge.
+And and indeed it might be that
+physics-informed neural network or other
+strategies even by using a GP for
+representing those latent
+force model is actually the best way to
+go at.
+Did you have Did you have in mind
+something or something else that was
+different or maybe No, I mean in in my
+mind it's always been part of of
+how when we have unknown
+functional forms
+or at least
+completely open space, any approach
+that's based on on training any form of
+machine learning approach, whether it's
+a neural network or anything else,
+is deficient. I mean it may show really
+nice results within the training space
+Exactly.
+beyond it, but I don't think that
+if you change the parameters or even if
+you just extend it long enough in time,
+you're not going to see the pay the
+price.
+I I agree with you. I agree fully. And
+that's the reason why we were interested
+then to apply this type of approach in
+which we used a GP and say, you know, we
+don't know the functional form, we know
+nothing.
+And
+again, though it's still
+limited limited applicability. There is
+so much that can be done. I am
+I think that it's exciting to work in
+this field because there is
+lots of problems as you were saying,
+Constantinos.
+We have still work to do. Let's put it
+this way.
+I I essentially missed most of your
+answer for some reason because my WebEx
+croaked, but I guess I'll hear I'll hear
+the recording. There's no need for you
+to repeat. Thank you.
+Okay. Thank you so much, Constantinos.
+Yeah, Philip, what do you want? Yeah,
+please go ahead for your question. Thank
+you. Thank you, Alice, for the amazing
+presentation. And uh yeah, I
+like would like to say that I'm not
+definitely an expert on uh physical
+information learning, so my question can
+be quite basic. Uh when I you were
+talking about the general structure or
+of a neural network in which you embed
+the physical model, I saw that there was
+a discrepancy bias, which was like the
+end part, which is the part in which you
+embedded the physical model itself. I
+was wondering could that that like part,
+that bias, must be always defined in a
+closed-form analytical form, or can be
+like also a finite element model that uh
+in other reason another surrogate model
+that we can run?
+It can be whatever surrogate model you
+want to um to use. And again, the point
+is uh
+about what you're trying to achieve. If
+you want to get at the end of it uh the
+partial differential equation, maybe and
+you want to have something that is
+generalizable, that can be applied in in
+different uh settings, for different
+input condition, for different initial
+condition, then it's better to have
+actually
+information about the physics rather
+than a reduced-order model that might
+not map correctly. But in principle, you
+can use anything there, indeed.
+Okay, so if I'm looking more at a
+specific case, I can even use a finite
+element model, for example, of the
+structure that I'm analyzing to draw
+some physi- like to enhance the neural
+network itself?
+Yes. Uh the thing that will happen
+though is uh how you write the this
+architecture, considering that you have
+this partial knowledge of the finite
+element. So, what is then your input and
+your output layer, basically? And what
+are the operators
+doing to the rest? So,
+that's the only thing that you should
+watch out there. Okay.
+If I may just
+sort of comment on this, the advantage
+of putting the
+government governing equations as we
+know them in the loss function is that
+within the usual at least neural network
+frameworks
+you get differentiation as a something
+that comes in
+easily
+and you can just put the differential
+form of the equations in the loss
+function and calculate it as is
+quite nicely. That was one of the nice
+things about PINNs when they first
+appeared. So,
+there's a certain advantage to not
+having to put in another finite element
+model in there
+when you have equations that you can
+differentiate.
+I think that Philip really was applying
+it with a finite element. That's why I
+was giving the sort of political
+response that if you want you can but
+then you have to change everything else.
+Okay, that's perfect. Okay, that's good.

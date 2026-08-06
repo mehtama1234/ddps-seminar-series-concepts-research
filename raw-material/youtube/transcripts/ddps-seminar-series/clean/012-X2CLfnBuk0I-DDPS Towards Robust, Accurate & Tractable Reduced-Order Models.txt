@@ -1,0 +1,1564 @@
+okay
+let's start um welcome to the ddps
+seminar today before we introduce
+today's speaker let's go over some rules
+and logistics uh first of all
+please mute yourself during the talk
+unless you have questions
+so that our speaker can talk without
+unnecessary interruption
+if you have um clear clarification
+questions you are welcome to mute
+yourself and ask those questions
+otherwise please you use chat room to
+post your questions so that we can
+address them in
+q a session at the end second no
+classified
+discussion is allowed here so watch out
+finally the talk today will be recorded
+and uploaded in
+our youtube channel all right that's
+about it
+now let me introduce our speaker today
+uh it is an
+honor to host today's speaker professor
+to
+dress who is an associate professor of
+aerospace engineering and the director
+of the center
+for data-driven computational physics at
+the university of
+michigan ann arbor he holds a phd in
+aerospace engineering and a
+master's degree in applied mathematics
+from the university of maryland his
+research interests
+are in various aspects of computational
+modeling including data driven
+and video studio modeling status
+statistical inference
+numerical methods and physics based
+modeling
+he is also a founder and chief scientist
+of the silicon valley based
+startup which is geminus
+ai which is focused on developing
+digital twins
+for industrial processes today
+professor durasami will present tours
+robots accurate and tractable reduced
+auto models for multi-scale
+multi-physics problems which is aligned
+with our
+core interest here at our lab so we
+expect a great talk today
+now without further ado let me post pass
+the button to
+uh karthik here you go it's all yours
+thank you yang su thank you for the
+introduction and for the opportunity to
+uh you know talk about uh release adam
+modeling with you today
+so before i get started let me
+acknowledge uh
+my so co-authors so to speak um in fact
+these guys did almost all of the work so
+chiang wang who is a
+research scientist in my group and two
+pesticide
+and david zoo and i also want to
+acknowledge that
+what i'm going to be talking about today
+is part of a center of excellence that
+is funded by the air force
+and so it's a four university project
+um so along with units of michigan we
+have university of texas at austin
+perdue university and nyu
+all right so reduce our models i mean
+people are becoming more familiar with
+it as days go by
+uh generally speaking uh the the words
+reduce
+order modeling uh what i mean by them
+is taking a certain set of governing
+equations
+and then developing mathematically
+formal reduced order models
+to try to solve the same equations but
+on some lower dimensional manifold
+okay and this idea is not new
+uh it's been around for quite a while
+and
+if you actually see um the usage of
+reduced auto models
+in many fields um we have production
+ready
+uh software here i'm showing
+a software by the name of from the
+company called
+axelos so they
+take very very complex systems at least
+in terms of
+geometry like a ship
+and they built these component-based
+reduced order models
+and then uh in very very quick time
+you can build these models and you can
+execute them almost in real time right
+so that's like the dream
+but if you look at where
+roms have been most successful so far
+it's mostly been in linear problems
+mildly non-linear problems elliptic
+problems and highly viscous problems
+of course there's a lot of research
+happening in more complex physics
+but in terms of production ready
+software
+this field is still restricted to these
+kind of regimes
+and so what we want to do is
+extend these types of reducer models
+for use in extremely complex multi-scale
+multiphysics problems
+uh as one example here um i'm showing
+uh a rocket combustor right so what is
+shown on the right
+in this figure is is a rocket engine
+and uh if you take if you zoom
+in close to the injector flow field and
+you zoom in you see that
+the flow field is quite complex because
+you know you have
+oxidizer coming in here fuel fuel coming
+in here
+there is mixing happening there is very
+small scales
+but then because of the confinement you
+have acoustics
+uh so you have multiphysics processes
+and multiscale phenomena so even if you
+want to simulate the flow field around
+one injector
+it takes about a million cpu hours
+now if you want to do a real engine the
+problem is there are hundreds of such
+injectors right so this is probably
+going to take the largest computer in
+the world right now and then
+it's going to be running for a long time
+even in some of the most powerful
+machines right so
+practically full-scale computations for
+something as complex as rocket engine is
+not even feasible
+and even if it's feasible to do design
+studies
+it's pretty much intractable right so we
+want to build roms of
+problems that are as complex as what i'm
+showing here
+so let me take a few minutes to
+introduce to you
+um the basic setting in which we develop
+reduced data models
+so so let's say we start with
+the reacting navier-stokes equations
+which govern
+flows like this okay and then
+let's say we you we have spatially
+discretized equations we have the
+continuous full outer model
+so this would be a high dimensional set
+of ordinary differential equations
+where the number of degrees of freedom
+for even
+one injector here could be order of the
+order of 100 million
+so it's a very large dynamical system
+all right
+so when we solve the full order model
+typically
+we use some kind of a time integration
+scheme so this is the discrete full auto
+model
+so the most basic thing one would do in
+reduced data models
+is to do a linear decomposition
+so you have a linear set of basis
+functions you have a set of basis
+coefficients
+and then you have some scaling and then
+you have a reference state
+but the key thing here is the number of
+unknowns
+reduces from this n to k
+okay so you're just solving for the
+basis coefficients instead of the full
+set of degrees of freedom and while
+capital n could be of the order of
+hundred million
+k could be of the order of hundred or
+thousand which is what we're going to be
+seeing today
+and once you have defined a manifold or
+a subspace
+in which you want to work with
+then there are various options in which
+by which you can
+project either the continuous full order
+model or the discrete full auto model
+to the subspace if you use the galerkin
+projection which is the most commonly
+used
+uh projection technique where the test
+uh space is the same as the trial space
+then you get this kind of uh
+uh equation uh reduced model equation
+but rather um if you
+while garcin techniques work very well
+for elliptic problems and even for
+hyperbolic problems in in certain
+regimes
+for many problems stability
+is is a major issue so we tend to use
+petroglyphing techniques and
+petroglyphic techniques
+uh come in various forms and one such
+vector of gulking technique that we will
+follow a lot uh is the least choice
+projection
+so effectively you're taking the
+discrete residual and then
+you are introducing your trial space and
+then you're trying to minimize
+the least choir uh residual
+so this will result in a petroclean
+wrong
+so
+so so what i want to say is the most
+basic
+uh galler kinron has
+some appealing properties in the
+continuous setting um
+the the least squares or the petroglyph
+in roms have some
+properties that are favorable in the
+discrete setting
+but fundamentally uh the one of the main
+reasons we want to
+pursue these petroglyphs and runs is
+that galakin drums can be unstable
+so um we have uh
+this paper on the archive where you can
+find um
+this the following proof so this is
+somewhat uh
+illustrative for the kind of things
+we're going to see
+so again let's now restrict the problem
+to be linear
+right so you have a linear continuous
+full auto model
+if you maybe discretize it using a
+backward euler
+in time you get a discrete full auto
+model
+and then if you do a least quest
+projection
+we can actually prove that if the
+discrete full odd model
+is asymptotically stable in this sense
+then the associated least squares based
+rom
+is also asymptotically stable with no
+further assumptions required
+okay so um if you're from the finite
+element community they should not be
+surprising
+but i would still maybe uh encourage you
+to look at the proof here because we've
+gone through a linear algebra
+end-to-end linear algebra proof rather
+than a functional analytic proof so
+basically this establishes the property
+that
+lee squares runs help stability it's not
+a
+new idea as i said pilot element people
+have been doing it for a long time
+one other interesting proof in the same
+paper
+is that we show that um even when you
+use
+a galerkin uh discretization or or
+regulation sort of model
+you can show that the resulting radius
+on the model
+is conditionally stable okay so it is
+not as if
+even if you have very strong multiscale
+multiphysics phenomena
+it is not necessary that the gelatin rom
+is always stable
+always unstable there are certain
+conditions by which
+under which this can be stable and one
+of them of course is if you have a
+symmetric problem
+but even if you don't have a symmetric
+problem uh
+even pure hyperbolic equations you can
+actually get the necessary stability
+okay so
+so the reason why i spent some time
+introducing these to you is this is the
+most
+uh commonly used radius r models and
+i just wanted to anchor the presentation
+there
+however all of that said when we take
+either
+the galaxy rom or the least squares
+galactic iran
+and we applied the problems as complex
+as the one that i showed earlier
+they immediately break okay so the
+gulkin doesn't even get off
+the first few time steps and the at
+least squires petroglyn ram also blows
+up
+fairly quickly and the reason is many
+and i don't want to say that all of the
+developments i'm showing
+is for combustion problems but
+much of the development has been
+motivated by combustion problems
+so these are equally applicable to other
+problems like hypersonics plasmas etc
+but if you take combustion as an example
+as i said earlier
+there are many different interactions
+that happen at many different scales
+the reaction regions are extremely
+intense if you look
+at the numbers here these are extremely
+large
+but then they may be spread over one or
+two cells they may
+be under resolved and
+the other main problem that
+roms face when we apply them to these
+types of problems is that
+when something small changes at the
+inlet the flow topology can drastically
+change
+and later in the talk i'll actually show
+you what we do to address these types of
+problems
+okay so um
+high level these are the three things uh
+that uh you know you
+i want you to take away okay first i
+already spoke about
+many of the challenges uh the flow
+physics
+itself brings right like extreme
+stiffness distributed
+flame fronts uh multi-scale nature so in
+the first part of the talk i'll focus on
+how to keep these kinds of rom stable
+and accurate
+okay the second part of the talk i'm
+actually going to show how we can be
+adaptive right so
+i mentioned that if you change something
+in the inlet
+the entire float topology changes so how
+do roms handle that
+but even more so uh even more
+challenging than that
+so what i'm showing here is the
+pod uh purple orthogonal decomposition
+of a 2d shear layer okay and
+so basically if i use say
+0.167 milliseconds of training data i
+don't remember how many snapshots it was
+and then i do an svd
+this is how the spectrum decays okay
+then i use some more this is how the
+spectrum decays
+okay so i use more data this is how the
+spectrum decays
+so basically when you get into a chaotic
+flow situation
+you cannot handle the the amount of
+information
+in a very efficient way if you are
+sticking to a
+static set of bases whether you're a
+linear manifold or a non-linear manifold
+it becomes
+very hard and the third thing i'm going
+to talk about today
+is the fact that when i started my
+presentation
+i mentioned that you can't even do one
+full order model for the system but then
+we want to build
+a reduced order model for that system
+and the way we do that
+is by breaking up the domain into
+component roms
+and then combine those component roms
+with the full order model
+so that the full system simulations are
+possible okay
+so i'll go into this in more detail in
+each of the three parts of the talk
+but here is how it's spelt out right
+first part is on robustness and accuracy
+basically this part the second part of
+the talk is
+adaptivity how to handle things like
+chaotic flows and
+big parameter changes and the third part
+of the talk
+is on tractability meaning how do we
+enable
+simulations of complex systems where you
+can't even afford one
+full auto model okay so that's the plan
+of action today
+and after each part i will give a brief
+pause so if you have any questions you
+can ask so that
+it doesn't become one uh 45 minute or 50
+minute talk that
+be too boring all right so let's focus
+on the first part
+and as i said almost all of what i'm
+going to talk about
+in the first part is in this paper i'll
+also reference the end of the paper
+so um so i mentioned to you that
+um petroglycan basis
+or a petroglycan projection is
+beneficial
+but at the same time there are some
+additional things that we have to do
+okay and the ideas for
+this approach come from various
+different viewpoints so the inspirations
+come from various different viewpoints
+and i cover all of them in the paper
+that i
+i just referenced i'll just walk you
+through
+what we do okay so let's say we start
+with the discretized
+full order model equations i'm using
+backward euler as an example
+so the first thing we do is we
+do a variable transformation okay from
+the original set of variables q to
+another set of variables
+s and s should also be complete okay and
+and the many reasons why we do this
+variable transformation
+um it is for stability purposes it is
+for
+convenience purposes for instance in in
+combustion problems
+even though we want to solve the
+governing equations in conservation
+conservative variables um we can
+transform them to primitive variables
+but still retain
+the conservation properties and the way
+we maintain
+conservation is by introducing
+these um transform variables
+in a dual time stepping setting right so
+now
+um this this capita this this n
+represents physical
+time steps and p represents pseudo time
+steps
+okay so we're still solving the
+equations in conservation form
+but then the unknowns now become the
+uh transform set of variables s
+and now in serial time i can do a
+linearization
+and i can write the fully discrete
+residual in serial time
+and as long as i am driving this
+residual to zero
+i will be solving in the s variables but
+i'll still be conservative
+okay so we still haven't done any
+reduced order model
+and we started modeling yet but this is
+just the transformation step
+okay so this is where we were in the
+last slide and then we can do a
+decomposition
+so this decomposition can be to a linear
+manifold or to a non-linear manifold as
+as youngsu does i'll mostly talk about
+the linear manifold maybe i'll show one
+slide on the non-linear
+so then we do a decomposition just like
+i showed earlier
+we built a reconstruction of
+the transformed variables in terms of
+a linear basis in this slide and basis
+coefficients and
+additional scaling matrix and then
+before we do
+a least squares projection we introduce
+another level of scaling
+okay so after we do that
+uh scaling and then we do a little bit
+of algebra
+you would finally get a radius out of
+model that looks like this
+in the pseudo time okay so again these
+sr
+are the basis coefficients that we are
+solving for p
+represents the zero time sub iterations
+and w represents your
+uh effective petroleum basis petroglycan
+test basis so um
+so basically we did a bunch of things so
+what do we get
+so first we get discrete consistency at
+the sub iteration level
+second even though the system is not the
+full auto model is not symmetric
+the reduced order model is symmetrized
+and so it inherits the stability
+properties that i
+talked about earlier and at the same
+time we are not losing conservation
+we also in the paper if you look at it
+we also add some local stability
+promoting techniques
+and we also show that you can extend it
+to explicit schemes as well
+okay so these are some desirable
+properties um
+so that's the for
+that's the reduced order model but as
+anyone who does
+uh non-linear reduce other models knows
+this by itself does not reduce to does
+not result in a
+significant cost reduction so to achieve
+more uh significant cost reduction you
+have to do what is called as hyper
+reduction
+which is ensuring that the residual is
+only evaluated
+at a few points and
+so we introduced an additional set of
+bases to represent the residual
+and do an interpolation but end of the
+day
+we go from reducing the complexity
+computational complexity from order n
+which was
+let's say 100 million to order of the
+number of samples which tends to be
+about you know a few thousand in our
+problems
+so again i'm skipping some details here
+but
+if you look at this paper we go into
+some additional details on how exactly
+to do this hyper-reduction
+carefully and in in a scalable fashion
+so there are some multiple there are a
+few different ways in which you have to
+do sampling
+um we initially start with uh qr
+pivoting to find out what the best
+samples are but
+when you are in a really complex
+multi-scale setting
+and you have say 100 basis functions
+100 sample points won't cut it right we
+need a lot more
+so in addition to what the qr
+gives um we do some additional
+oversampling
+okay so so in this paper uh
+chris goes into a lot of detail on how
+to do that efficiently
+and some of the results that you would
+see in the paper is for
+um you know this test combustor which
+has about 15 million degrees of freedom
+you can actually get about four orders
+of magnetic reduction in computational
+time
+for reasonably for reasonably low errors
+um and one more interesting thing that
+we show here is
+so if you do not use any hyper reduction
+you get a speed up of
+10 compared to the full order model at a
+certain level of error
+but if you do the over sampling
+carefully and the hyper reduction
+carefully
+you can maintain the almost the same
+error as the
+unsampled rom and be much faster
+okay and again very quickly
+walking you through a tour of the
+results so again
+we are doing we're demonstrating this
+technique
+on this this rocket injector rocket
+injector configuration
+um you know if so as i said this work is
+part of
+part of the center of excellence and
+when we started about two years ago we
+would never be able to run
+a calculation like this um with any
+level of robustness
+um but now um
+you know with this additional robustness
+that i robustness
+improving techniques that i just spoke
+about
+we can do a good reconstruction we can
+do a reasonable
+future state prediction we can keep the
+error low
+and in fact so this is the full order
+model snapshot of the temperature
+um you can get stable solutions at 20
+mode 60 modes in fact we can go in up to
+seven or eight modes or even four modes
+it won't be as accurate but still
+robustness is there
+okay so
+yeah overall as i mentioned we can get
+about three to four orders of magnitude
+in cost reduction
+maintain reasonable level very good
+accuracy during the reconstruction stage
+we obviously lose some accuracy in the
+in the in the prediction stage
+but it is possible to do these reduced
+models
+and a lot of this has been done in as
+part of a scalable interface
+so even if we have a separate different
+cfd solver
+or a multiphysic solver a lot of what
+we've done
+can actually be leveraged but of course
+there has to be some level of
+interaction with the solver
+okay so all of that was good news but so
+what do we have to improve uh if we zoom
+into the results
+and this is also something that all of
+us in the reduced
+model community have to come out and be
+more self-critical of our work
+you know inside the training interval
+everything
+works reasonably well so i have three
+curves here
+so the black line is the absolute best
+the roms can do because
+this actually represents projection
+error
+and then the the blue and the red is the
+wrong with them without sampling
+so things are quite okay in the
+training stage so i mean visually you
+you don't see much of a difference
+in fact even in the prediction stage
+visually you may not see much of a
+difference but when you examine the
+errors
+you can clearly see that the error jumps
+when you are doing
+your when you're doing true future state
+prediction
+and for certain quantities the error
+jumps more so than the others
+and if you see there is nothing that the
+projection
+nothing that the uh
+petrol king can do because the
+projection error itself is is high
+okay so um this is one of the
+limitations of linear manifolds so one
+thing that you can do
+you know this is something that young
+zoo also works on
+is to replace the linear basis
+representation with a non-linear basis
+representation so now again you have
+you're solving for this latent space
+variables sr it is still of dimension k
+but instead of a linear basis you go to
+a non-linear manifold
+you can apply the same procedure that i
+just spoke about
+and you can still get a symmetrized rom
+that inherits many of the properties
+that i
+spoke about earlier okay so
+i just had a science talk where i went
+into some results but i just wanted to
+say that
+you know what i just presented
+is applicable not just to linear
+problems
+linear manifolds but also nonlinear
+manifolds
+and nonlinear manifolds do certainly
+help
+reduce the error in
+the future state predictions and
+parametric predictions
+but i think one ongoing area of research
+is
+how to efficiently do hyper reduction
+right so
+i walked you through i at least hinted
+that hyper reduction is critical
+and
+for linear for linear manifold roms
+hyper reduction and sparse sampling is
+very well developed
+but for non-linear manifolds it is not
+and it continues to be
+a research area right now
+okay so i'll just show this one slide
+and then
+see if anyone has questions but
+the reason why i want to show this slide
+is i just wanted to place this work in
+the context of other things that we're
+doing
+so in our center we are
+of course calling the the static pod
+with dime with
+lee squires and gherkin petroglyn as the
+baseline reducer models and to that
+to the baseline roms we are adding a lot
+more features and what i just spoke
+about
+is in this green box and i just hinted
+about this other green box
+but there's a lot of other work going on
+and the rest of the presentation i'm
+going to talk about
+how we can get much better accuracy
+and how we can enable those
+intractable problems but i'll stop here
+and see if there are some questions uh
+that anyone has in the first part of the
+talk
+i'll be happy to take them and then move
+on to the second part
+um actually there's a two questions from
+mark miller
+in chat room the first question is
+for any given full load of model can you
+create a
+progression of roms of decreasing
+fidelity and then
+use solutions on smaller roms to prime
+the solution
+on the next bigger one and continue this
+all the way back up to significantly
+accelerate the flow of model
+yes i think that's uh you know like a
+multi-scale coarse graining idea
+the answer is yes except i don't
+understand what you mean by priming
+um if priming means preconditioning or
+providing an initial guess then
+absolutely i think it can be done in
+fact
+at the same conference i saw a paper
+from nathan kutz's group
+where they were doing non-intrusive roms
+but
+yeah they were going scale by scale yeah
+it's certainly possible
+and next question is are reduced to the
+models being considered
+and or would they be useful for purpose
+of populating data set for machine
+learning
+or ass yes certainly i mean
+certainly as a surrogate to populate the
+data space suddenly being used
+all right so uh let me move on to the
+second part which is
+so as i mentioned the motivation for the
+second part comes
+here right so uh when you're in problems
+with strong convection
+and chaoticity um
+linear manifolds break down and even
+nonlinear manifolds cannot handle
+parametric changes so how can we
+get past that okay so
+again it starts with a question i mean
+we can always show these nice results
+using reduced order models but there's
+always this nagging question
+are they truly predictive or have we
+just done a glorified interpolation
+okay glorified interpolation
+is also useful i don't want to downplay
+it but for many problems we actually
+want the roms to be predictive right so
+that's why we need to move past
+static spaces and i already mentioned
+this
+even if you have a linear conv linear
+advection of a pulse like this
+and you do a linear basis
+you'll see that you would need to keep
+almost all of the basis functions
+right so it's it's not it's not very
+efficient
+and of course parametric roms when when
+when
+the parameters change and you stick to
+static uh basis whether it's linear or
+non-linear you get into
+you may need too much data okay
+so our solution is to use adaptive
+spaces the same kind of
+setting similar type of setting that i
+showed earlier except now
+the test basis and the trial basis will
+change in time
+and it would basically follow the
+solution manifold okay
+so it's basically doing a local low rank
+structure and time
+and you know we work on uh local
+residuals in space
+and as i'll show you this is very
+naturally suited for parametric roms but
+one of the big advantages if we have
+good adaptive roms you
+actually can start with very little data
+and we'll show you what veritable data
+means
+okay so again this is generally the idea
+so if you have a 3d space and you want
+to go to a line
+if your static basis is the best you can
+do but then if you use adaptive basis
+you can build a local linear space
+around each of these points
+so this is the petroglyn rom that i
+showed earlier
+um the v is your test trial basis w is
+your test basis
+now the idea of adaptive rom is to
+change the basis functions as the
+solution manifold evolves
+and we i'm going to more or less follow
+um this paper that i've
+shown here it's it's i'm journaling
+trying to be computing from last year
+we have some new things but that's
+a detail that i want to get into i don't
+want to get into
+so effectively what we do here
+is that every time step or every few
+time steps
+we take the old basis and then we do a
+rank one update
+and that rank one update comes from a
+solution of a problem like this which
+basically
+depends on the system residual okay
+that's a high level picture
+and so let's see what this buys us
+okay so here i have a problem that looks
+like it's simple but
+in the online setting it's very hard so
+you have a moving laminar flame
+okay so first of all the motion itself
+is a
+challenge but second if you run it
+online there has to be a lot of the
+things that the rom has to get correctly
+otherwise it's going to blow up
+okay so
+if i just use very little data okay so
+the rom starts when the flame is here
+and then for the adaptive basis i get
+data from here to here
+and then i start running the rom
+um in truly predictive mode and then if
+i am
+doing the static basis i'm going to take
+a lot of data
+okay um so
+so that's step one right so i'm
+comparing it 20 more
+rom based on adaptive basis to 120 more
+rom based on a static basis and
+turns out that the 20 mode wrong with
+adaptive basis
+can be truly predictive whereas the uh
+the static basis rom is only
+good in the reconstruction phase and
+immediately falls apart
+okay uh and that we kind of knew and it
+should not be
+surprising but the real thing that we
+want to examine here
+is are these roms truly predictive okay
+so here is how we quantify productivity
+so i take the rom that i shown
+shown in the previous in this slide
+so this is the training data when the
+flame starts here and the flame
+moves until here that's my training data
+for the adaptive basis rom
+and there are no external perturbations
+here okay
+now i want to take that ready starter
+model and now i'm
+applying it in a problem where i
+introduce strong downstream
+perturbations okay
+but i'm forcing the flame at 100
+kilohertz
+at some five percent amplitude and we
+can still
+see that the the adaptive base is rom
+not only stays stable but it can
+actually predict what is going on in
+tree
+okay whereas the uh the blue is the
+static basis from it completely falls
+apart because
+it has not seen any of this before of
+course the adaptive basis struggles a
+bit towards the end of the domain but
+um again for different forcing
+frequencies
+it does work well right so this is one
+measure of of predictivity
+a slightly harder test case so here we
+have a non-reacting mixing layer
+your your stream comes your streams come
+at different
+speeds and the this
+mixing layer forms and the flow actually
+turns chaotic we put a probe and you
+look at the velocity
+look at the pressure this is how it
+looks like it's not repeatable
+and this is the picture i showed earlier
+if you
+use a static basis static linear basis
+and even if you cover one acoustic cycle
+this is how the
+singular values look like you get more
+data
+it just expands right so more data is
+not going to solve this problem
+right so when you choose static basis
+you are
+you immediately like set yourselves up
+for failure
+and again the the adaptive basis works
+quite well here
+so again um uh
+even if we use the static basis that is
+trained
+from here to here okay so this is the
+training period for the
+adaptive basis and
+the rest of the prediction
+the rest of the time the adaptive basis
+rom is in true prediction mode
+whereas the static basis rom fails so
+again one other additional thing
+and now we are doing parametric
+prediction we are changing the
+velocities and
+still evaluating whether um the
+adaptive basis rom can do the job and it
+can okay so
+so everything seems to work very well
+there are a lot more tests here
+i don't want to belabor the point um we
+can of course break the adaptive basis
+at when we add some really crazy amount
+of perturbations but
+by and large it's very robust and works
+very well
+and in the interest of time i will skip
+this example
+it also works for this this combustion
+problem
+but the point i want to make here is not
+that
+adaptive basis is the solution to
+everything
+but rather that the adaptive basis works
+extremely well
+and it can be predictive but then there
+are still some
+um open research items here
+you know in the first part of the
+presentation i was bragging a lot about
+how efficient my roms were
+the adaptive basis roms are not as
+efficient it's still an
+ongoing area of research and the reason
+why it's not efficient is not because of
+the updates that we make
+it's because it is hard to get a good
+set of sampling points the hyper
+reduction step is
+all is a little more complicated so
+that's a research area for us
+um um okay so that's the
+second part i kind of went through that
+quickly
+because i wanted to save time for the
+last part and also
+have a discussion at the end but i want
+to quickly ask if there are questions
+on the adaptive basis part again i went
+through that quickly but
+the details are in the paper and
+the key idea is we basically make a rank
+one update to the
+test and trial basis
+and that update is based on evaluation
+of the residual
+is that a quick question i can take
+all right if not let's move to the last
+part right so remember
+again reminding you the last part is can
+we enable ready sort of models of
+systems that are not tractable
+okay of the full order model
+and here we are breaking this
+typical paradigm of roms where
+we have a full order model of a system
+and then we have some data from that
+system and we want to create a
+parametric rom
+okay so we are scratching that and we
+are saying okay
+what we want to do is we want to create
+roms of a class of systems where
+the full order model is not available at
+the system level okay
+for example we want to do
+systems like this okay so
+let's say i have an engine like this so
+i have many injectors
+where all this complicated reactions
+happen and then i have a region where
+i'm dominated by the acoustics can i
+simulate can i build
+a reduced data model by training these
+component roms okay so i'm going to take
+one part of the domain
+it's somewhat repeatable
+and then i want to force that truncated
+domain ready sort of
+truncated domain uh when you when it's
+being trained
+i want to force it via many different
+frequencies and i want to add so many
+pertinations
+such that i can recreate some of the
+conditions that the
+rom would see when it's integrated as
+part of the full system okay
+so first we start with training a
+component rom and once that rom is
+trained i want to assemble those ready
+starter models together
+and say okay can i uh use that
+ready starter model to examine
+the dynamics of this engine this engine
+and this engine
+okay so there are more injectors in each
+engine
+and then sometimes the combustion
+chamber shape
+can change okay and i can still use it
+again the reason why we use reduced
+models here is this is the physics
+intensive part this is where 98
+or 99 percent of the computational cost
+goes
+and this is the geometrically changing
+part right so the
+we can still do a full outer model here
+because the physics is
+basically long wavelength acoustics
+whereas here there is a lot more
+complicated things and then of course we
+can also do parametric things
+so the key idea is to train these roms
+in the truncated domain setting and then
+assemble them together
+so i want to show this in a 1d example
+to tell you why this is important and
+how we are doing it
+maybe i'll start from the beginning so
+here is a
+one-dimensional combustor
+now because of the way uh rocket
+combustion
+works if the length of the
+combustion chamber is small
+is how the solution evolves okay so this
+is pressure at some point
+sorry this is pressure in the entire
+domain
+uh changing in time and this is
+basically the pressure at one point
+okay so what this figure shows is when
+the combustion chamber is long
+the flow becomes unstable but when the
+combustion chamber is small
+the flow is stable okay so now i want to
+be able to build a reducer
+model that is applicable to both
+combustors or
+even combustors of any arbitrary length
+okay so that's the challenge that i have
+so what we end up doing is
+i want to isolate the part of the domain
+that is common to all the combustors
+which is
+say the the front part of the or the
+injection region
+okay so i want to isolate that part
+and then i want to build a reduced order
+model
+of just that part and when building the
+reduce data model of that part
+i want to give it all kinds of forcing
+so that when it's actually integrated as
+part of a
+system the ron will have seen the kind
+of things it expects to see
+okay so that's the idea so we isolate
+the domain
+build a full ladder model and then we
+force the full order model in many
+different ways
+and then we build a reduced order model
+of
+this truncated domain and then
+we couple it with the full order model
+okay so y
+are some kind of a flux interface okay
+so even though this example is
+somewhat simplistic the message here is
+this part is the physics intensive part
+and
+this part is the part where the geometry
+changes
+so i have obtained a reduction of the
+physics intensive part
+and i'm going to be changing the the the
+geometry in the other part
+this part takes a much less time to
+compute than this okay so that's
+that's the multi-fidelity aspect here
+and uh again so that is
+this paper um david's paper
+in awa journal where we go through this
+and we actually show that by just
+training the truncated domain
+we can actually get the dynamics of many
+different
+combustors um of course you need to be
+forcing the truncated domain draw a full
+auto model at
+a certain level of frequencies but
+once you do that we can actually build
+ready startup models for the full system
+and we can we are basically almost free
+of the geometry right so
+however long the combustion chamber
+length is
+um the fact that i trained the full auto
+model in a certain way
+helps and
+we did the same kind of verification in
+a more complicated case but
+the message is the same we would just
+basically train
+these individual injected domains and
+then force them in the training
+and then we stitch them together to
+create a reduced order model of a system
+but the roms were basically based on
+these mode like these unit problems
+all right so um
+i just wanted to keep to keep the time
+but
+again i'll summarize the three three
+main
+parts of the talk right so the three
+questions
+that i addressed first i said um
+you know we want to build roms for
+problems that are
+very complex so we want to address the
+stiffness non-linearity and multi-scale
+nature
+okay for that i presented
+this
+transformation to secondary variables i
+scaled i added a dual time step i scaled
+again
+and then i used the least squares that
+led to these discretely discretely
+symmetrized
+structure preserving roms second i said
+static and linear manifolds
+are not very useful if we want to do
+true predictions
+and for that we can use adaptive basis
+and non-linear manifolds i specifically
+covered adaptive basis
+and the way it helps is it breaks the
+so-called kolmogorov end with
+and the local low rank projections are
+very useful
+and then the third part was can we do
+roms of systems for which
+the full order model is unaffordable and
+for that i said okay
+we can take these truncated domains
+train them with various levels of
+forcing and then we can integrate them
+together to get the full system
+prediction going okay so those are the
+three parts i covered
+if you ask me what are the most
+important uh research
+areas as far as projection based roms go
+i already mentioned this uh sampling
+right so the hyper reduction
+for adaptive and non-linear manifolds is
+incredibly uh
+important and the second part which i
+didn't talk about but
+we have a lot of work going on in our
+center and other people are also working
+on it is
+um this question of intrusive is
+non-intrusive right so everything i
+spoke about today is an intrusive wrong
+which means i take the system of
+equations and i
+retain that system and then i i work
+with that system of equations
+but there are other approaches where
+people are
+being purely data-driven of course
+data-driven means
+you need more data but you actually
+inherit less of these
+stability and stiffness issues if you do
+that
+and of course there is a hybrid you can
+use inclusive and non-intrusive
+combinations of them mixing and matching
+so these are some of the areas that i
+think
+require a lot more research and
+this is my last slide i'll just say that
+i spoke about
+three separate aspects of what we're
+doing in the center but
+you can visit our website and check out
+a lot more that we're doing
+okay but then i'll stop talking and uh
+take questions
+well thank you so much for the great
+talk um
+karthik um it was super interesting
+uh at least to me i think it's super
+interesting
+to many people here also um so we do
+have
+questions um the first question is i can
+see the questions so
+i can say for the time of reading and
+comment right
+so the question from fadi on comment on
+enforcing conservation laws
+for these adaptive roms very good
+question um
+so there is uh some good work coming out
+of uh collaboration between kevin
+kahlberg and the group and notre dame
+about
+enforcing conservation and stiffness and
+other
+other properties for static basis roms
+and maybe even for
+for linear and non-linear but we have
+not enforced
+conservation in the adaptive realms
+especially when we use sampling so
+that's
+perhaps an area that i in fact that's a
+good point i would probably add
+uh imposition of additional properties
+as
+a as a research area i should have
+mentioned that as well
+yeah so we have not done it for adaptive
+roms but we do it for static roms
+and the second question is uh a bit
+about non-intrusive roms
+so we are pursuing two classes of
+non-intrusive roms
+one um which is led by um
+professor karen wilcox's group um out of
+uh
+texas austin so they look at the liv
+what they call as a lift and learn
+approach where they take
+our set of variables they argument them
+and then this is called a lifting
+transformation
+and then they prescribe the structure of
+the rom to be quadratic
+so that's one approach the other
+approach that we
+um pursue in in our group again you can
+find some of the publications in this
+page
+is we directly use convolutional
+autoencoders we
+the special thing we do is we do
+convolutional encoders in space
+as well as in time and then in the
+in the space-time reduced latent space
+we
+we apply regressors so those are two
+approaches that we pursue we also have a
+cookman-based approach
+but you can find all the papers here
+and then the next question from harley
+is is the raw model optimized for
+particular observables
+uh good question now one paper in our 33
+or 34 that we have in the center
+we're looking at goal oriented runs but
+generally everything that i showed today
+we're going for full state
+but yes focusing on specific observables
+would certainly be
+a good direction to work in and i would
+say that's one of the strengths of
+non-intrusive roms
+because non-intrusive roms are so
+flexible right you can pretty much
+throw anything at it you can throw any
+set of variables
+you can go after anything you want
+you're not bound by completeness and
+conservation doesn't mean anything so in
+a sense they are maybe too flexible but
+i think goal oriented roms
+i would say non-intrusive methods may be
+better suited but there are also people
+who are working on goal-oriented
+intrusive roms but yeah so far
+we've just worked on full state and
+we're not optimizing for any specific
+observable
+thank you thank you so much for the
+answers
+um is there any other questions from
+audience
+now i do have a question for the um
+you know the third topics you
+presented um very quickly but yes
+go ahead in order to uh train the
+so-called component rom yeah right uh
+you apply some boundary conditions okay
+the the second
+from the top yeah what what sort of
+boundary concern
+i think it's kind of crucial exactly
+those quality of boundary conditions you
+apply yeah i i glossed over it but
+um they have to be kind of relevant
+to the flow that you're looking at okay
+so in these problems
+um you know these are
+yeah these are the full auto models so
+basically the
+the driving physics here at the
+interface
+is an acoustic wave okay
+so in this case the only input that we
+gave was
+a signal with a bunch of sinusoidal
+frequencies
+okay i don't think i showed it but
+yeah so we basically chose a range of
+frequencies and we just input a
+sinusoidal wave
+and that was enough
+but of course when we go to a problem
+like this there is a lot more
+right so here we did a little bit of
+cheating
+because we said okay even though we are
+training this individual roms
+we're actually giving it the conditions
+that it
+is expected to see um but yeah
+in a more general case um
+you have to be somewhat careful about
+how you force it so our approach is
+let's say you have 100 injectors right
+you can just take
+say four or five injectors put them
+together
+and then you can put up them a long wave
+and short wave
+but but generally you're right
+especially if we are not using adaptive
+roms
+how you train the truncated domain roms
+becomes
+very critical right back to roms are
+less
+prone to less sensitive to the training
+right i mean i'm sure you're probably
+familiar with the
+um antonio patera's uh you know
+yeah the component we do still model for
+linear problems
+exactly that's the very first slide that
+i showed it's actually from his company
+yeah exactly and there they use
+they use pairwise training so you you
+use
+two different components attach them
+together and apply
+some boundary condition in the ports and
+um collect the snapshots at the bottom
+you know the interface yeah and
+that sort of methodology
+can be applicable to your problem
+methodology
+also yes yeah i think tony patera and a
+few others
+especially there are things called these
+port hamiltonian roms and a few others
+yeah so they're able to do things very
+rigorously
+and uh it's excellent work and we can
+get a lot of inspiration from that
+type of work but it's not directly
+applicable because our problem
+these problems are non-linear yeah
+non-linearity is probably okay but
+multi-scale and transport makes it much
+harder but
+absolutely there are there is
+inspiration we can get from those
+approaches
+and in in science csc there were
+quite a few talks along the lines of
+what he just mentioned
+awesome um i guess uh this
+davis sue the paper ai double a
+yeah is talking about that okay awesome
+yeah
+yeah away we just have the 1d example
+this picture is actually from that paper
+on and all of the 1d results are from
+that
+paper so i would encourage you to take a
+look it was actually even predictive
+even for frequencies that we did not
+include in the forcing it was still
+able to do a reasonable job but of
+course it's a simple problem
+and simple physics because it's 1d but
+yeah the goal is to be able to do these
+things reliably for
+you know really complex problems right
+right
+yeah yeah that's what we all aiming to
+achieve okay uh any other questions
+from audience
+yeah thanks for um yeah
+sticking around i know it's i went
+through the last
+one and a half parts fairly quickly but
+i wanted to give you the high level
+picture and motivations and
+what we're doing and you will find a lot
+more details
+in in the papers that i pointed out and
+i'm always
+happy to pursue a conversation over zoom
+or email
+or whatever um mode of communication
+you're interested in
+exactly so i mean this is like the like
+the starting point and
+exactly the people who listen to your
+presentations
+definitely can directly contact you
+and ask questions and even
+you know if we can do the future
+collaboration
+together that would be wonderful and
+perfect
+okay if there's no other uh questions we
+will
+wrap up let's thank our speaker
+kathy for the wonderful talk and it was
+very
+informal and yeah and i i think it's
+it's very exciting topic he has
+presented today
+thank you thank you thank you very much
+all for for listening and young sue for
+your uh
+invitation no problem thank you so much
+for
+accepting the invitation thank you very
+much okay
+thank you bye bye

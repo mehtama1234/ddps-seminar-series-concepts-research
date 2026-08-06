@@ -1,0 +1,2627 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:02.000 --> 00:00:05.840
+Welcome to the DDPS seminar, everyone.&nbsp;
+Before we introduce our invited speaker,&nbsp;&nbsp;
+
+00:00:05.840 --> 00:00:10.920
+let's go over some rules and logistics. First&nbsp;
+of all, please mute yourself during the talk,&nbsp;&nbsp;
+
+00:00:10.920 --> 00:00:17.160
+but if you have questions, you can unmute and ask&nbsp;
+questions or use chat room to post your questions&nbsp;&nbsp;
+
+00:00:17.160 --> 00:00:24.160
+so that we can address them in Q A session at&nbsp;
+the end second, today's DDPS seminar is open to&nbsp;&nbsp;
+
+00:00:24.160 --> 00:00:29.640
+external audience, therefore no classified&nbsp;
+discussion is allowed, so please watch up.&nbsp;&nbsp;
+
+00:00:29.640 --> 00:00:35.200
+And finally, the talk today will be recorded and&nbsp;
+uploaded in our YouTube channel. That's about it&nbsp;&nbsp;
+
+00:00:35.200 --> 00:00:42.880
+now. Let me briefly introduce our speaker today.&nbsp;
+It is an honor to host Dr Aditi Krishna priyan,&nbsp;&nbsp;
+
+00:00:42.880 --> 00:00:50.840
+who is an assistant professor at UC Berkeley,&nbsp;
+where she is a member of Berkeley AI research&nbsp;&nbsp;
+
+00:00:50.840 --> 00:00:56.840
+electrical engineering and computer science and&nbsp;
+chemical engineering. Her research interests&nbsp;&nbsp;
+
+00:00:56.840 --> 00:01:03.920
+include physics inspired machine learning&nbsp;
+methods, geometric deep learning, inverse problems&nbsp;&nbsp;
+
+00:01:03.920 --> 00:01:10.480
+and development of machine learning methods&nbsp;
+informed by physical sciences applications,&nbsp;&nbsp;
+
+00:01:10.480 --> 00:01:16.400
+including including molecular dynamics and&nbsp;
+fluid mechanics. A former doe computational&nbsp;&nbsp;
+
+00:01:16.400 --> 00:01:26.360
+science graduate fellow, she holds a PhD from&nbsp;
+Stanford University and in and in 2022 2022
+
+00:01:26.360 --> 00:01:34.600
+was the Louis Alvarez fellow in computing sciences&nbsp;
+at Lawrence Berkeley National Laboratory. Today,&nbsp;&nbsp;
+
+00:01:34.600 --> 00:01:41.600
+adity will talk about reaching numerical methods&nbsp;
+and deep learning with physics constraint&nbsp;&nbsp;
+
+00:01:41.600 --> 00:01:48.880
+differential solvers. I'm sure she's going to&nbsp;
+give us a a fantastic talk. So please have a&nbsp;&nbsp;
+
+00:01:48.880 --> 00:01:56.040
+high expectations. But before I pass the button&nbsp;
+to Aditi, let me ask a you know, one questions as&nbsp;&nbsp;
+
+00:01:56.040 --> 00:02:04.600
+usual, as a tradition of this DDPS center. So my&nbsp;
+question is, for you, Aditi, is I happen to know&nbsp;&nbsp;
+
+00:02:04.600 --> 00:02:13.920
+one of your hobby is translating your language&nbsp;
+from one language to another language. How
+
+00:02:13.920 --> 00:02:21.880
+my why is that hobby? That's my question. And what&nbsp;
+kind of language do you usually translate from,&nbsp;&nbsp;
+
+00:02:21.880 --> 00:02:29.200
+you know, to you know, what other languages?&nbsp;
+Yes. Oh, yeah. I'm just generally interested in&nbsp;&nbsp;
+
+00:02:29.200 --> 00:02:34.000
+different language families and bridges between&nbsp;
+different language families, which tend to also&nbsp;&nbsp;
+
+00:02:34.000 --> 00:02:39.360
+be informed by migration patterns. So looking&nbsp;
+at completely different areas of the world and&nbsp;&nbsp;
+
+00:02:39.360 --> 00:02:45.920
+seeing what the overlaps are in language families&nbsp;
+is just a fun hobby to work on. It's gotten quite&nbsp;&nbsp;
+
+00:02:45.920 --> 00:02:51.360
+interesting now, especially with some of&nbsp;
+the llms and a lot of the improvement in in&nbsp;&nbsp;
+
+00:02:51.360 --> 00:02:59.360
+translation. Oh, that's awesome. And that's kind&nbsp;
+of related to your the title of your talk today,
+
+00:02:59.360 --> 00:03:04.960
+reaching numerical methods and the deep&nbsp;
+learning. Yes, so you like, you like to preach
+
+00:03:04.960 --> 00:03:13.880
+store as stage is yours good? Yeah, thanks a&nbsp;
+lot for the invitation and the introduction.&nbsp;&nbsp;
+
+00:03:13.880 --> 00:03:19.160
+I was looking forward to giving this talk&nbsp;
+because I think a lot of the themes here,&nbsp;&nbsp;
+
+00:03:19.160 --> 00:03:24.960
+my impression is that they're going to overlap&nbsp;
+a lot with the backgrounds of people in the&nbsp;&nbsp;
+
+00:03:24.960 --> 00:03:30.240
+audience, which could be a mix of Applied&nbsp;
+Math, machine learning, physics and so on.&nbsp;&nbsp;
+
+00:03:30.240 --> 00:03:36.480
+And so this is going to just be a general&nbsp;
+overview of what we can get from numerical&nbsp;&nbsp;
+
+00:03:36.480 --> 00:03:42.360
+methods that we've known for a long time&nbsp;
+and a lot of the more modern machinery and&nbsp;&nbsp;
+
+00:03:42.360 --> 00:03:52.200
+deep learning that has obviously seen a lot of&nbsp;
+success, especially in the last decade or so.
+
+00:03:52.200 --> 00:03:57.880
+So a lot of this talk and a lot of the research&nbsp;
+that we work on is really motivated by this big&nbsp;&nbsp;
+
+00:03:57.880 --> 00:04:03.120
+question of machine learning potential&nbsp;
+and modeling scientific systems, and more&nbsp;&nbsp;
+
+00:04:03.120 --> 00:04:08.120
+specifically, a lot of these problems, I think,&nbsp;
+come down to how well you can model spatial and&nbsp;&nbsp;
+
+00:04:08.120 --> 00:04:15.480
+temporal behavior. So whether it's something like&nbsp;
+modeling fluid dynamics or some type of weather&nbsp;&nbsp;
+
+00:04:15.480 --> 00:04:21.040
+patterns, or even when you're looking at molecular&nbsp;
+systems, how did the atoms move over time. These&nbsp;&nbsp;
+
+00:04:21.040 --> 00:04:29.200
+are really all underlying represented by modeling&nbsp;
+spatial and temporal behavior of those systems.
+
+00:04:29.200 --> 00:04:36.000
+And I think there's so many applications where&nbsp;
+this is actually a pretty challenging task,&nbsp;&nbsp;
+
+00:04:36.000 --> 00:04:39.960
+where we have some really complex&nbsp;
+phenomena, we want to really&nbsp;&nbsp;
+
+00:04:39.960 --> 00:04:45.080
+understand all of the intricacies of that&nbsp;
+spatiotemporal behavior, and by doing so,&nbsp;&nbsp;
+
+00:04:45.080 --> 00:04:52.560
+I think this really unlocks a lot of insights&nbsp;
+in many, many different fields of science.
+
+00:04:52.560 --> 00:04:56.160
+So I'll briefly talk about&nbsp;
+what I think are some of the&nbsp;&nbsp;
+
+00:04:56.160 --> 00:04:59.640
+advantages that neural networks&nbsp;
+can offer for physical modeling.
+
+00:05:00.240 --> 00:05:05.400
+I think these can be a powerful&nbsp;
+tool to assist us in this task,&nbsp;&nbsp;
+
+00:05:05.400 --> 00:05:09.200
+while also keeping in mind some of the&nbsp;
+limitations, or some of the things that&nbsp;&nbsp;
+
+00:05:09.200 --> 00:05:16.240
+we have to just know a priori or account a&nbsp;
+priori when we're developing these methods.
+
+00:05:16.240 --> 00:05:22.960
+So the first point, and one of the big advantages&nbsp;
+here is after you train a neural network,&nbsp;&nbsp;
+
+00:05:22.960 --> 00:05:27.160
+when you actually go and test it or do&nbsp;
+inference on new problems. This is quite&nbsp;&nbsp;
+
+00:05:27.160 --> 00:05:31.280
+cheap because you've amortized&nbsp;
+the computation during training.
+
+00:05:31.280 --> 00:05:35.920
+And neural networks, as we as we've seen&nbsp;
+time and time and again, they're really,&nbsp;&nbsp;
+
+00:05:35.920 --> 00:05:40.960
+really good at approximating high dimensional&nbsp;
+functions, and this starts to become really&nbsp;&nbsp;
+
+00:05:40.960 --> 00:05:45.720
+nice when we're trying to solve these scientific&nbsp;
+problems that are very high dimensional problems&nbsp;&nbsp;
+
+00:05:45.720 --> 00:05:52.080
+and may have complicated solutions or&nbsp;
+ways to get to complicated solutions
+
+00:05:52.080 --> 00:05:55.920
+at the same time. I think there's&nbsp;
+also some things to keep in mind,&nbsp;&nbsp;
+
+00:05:55.920 --> 00:06:00.120
+particularly with neural networks in&nbsp;
+the context of scientific computing.&nbsp;&nbsp;
+
+00:06:00.120 --> 00:06:06.160
+So how do they actually compare to these current&nbsp;
+mechanistic models or even experiments in a lab?&nbsp;&nbsp;
+
+00:06:06.160 --> 00:06:10.760
+So there's always going to be this cost&nbsp;
+of training, this cost of data generation,&nbsp;&nbsp;
+
+00:06:10.760 --> 00:06:16.600
+and because we have these nice models we've&nbsp;
+developed for many, many decades that came&nbsp;&nbsp;
+
+00:06:16.600 --> 00:06:21.440
+before neural networks, I think it's important&nbsp;
+to keep in mind these models themselves at the&nbsp;&nbsp;
+
+00:06:21.440 --> 00:06:28.120
+same time as we're developing new methods that are&nbsp;
+going to bring in this idea of machine learning.
+
+00:06:28.120 --> 00:06:32.760
+And the other point here, another thing&nbsp;
+to keep in mind is the accuracy point. So&nbsp;&nbsp;
+
+00:06:32.760 --> 00:06:36.840
+it's not very useful if a neural network&nbsp;
+is really fast, but it converges quickly&nbsp;&nbsp;
+
+00:06:36.840 --> 00:06:41.080
+to the wrong answers. Since this is again,&nbsp;
+something really important for scientific&nbsp;&nbsp;
+
+00:06:41.080 --> 00:06:45.160
+modeling that we want something that&nbsp;
+is going to be in a decent ballpark,&nbsp;&nbsp;
+
+00:06:45.160 --> 00:06:50.400
+that's going to be at least a good initial&nbsp;
+guess to getting us to the right solutions.
+
+00:06:50.400 --> 00:06:55.680
+And then finally, I think this other point,&nbsp;
+again, important for scientific modeling is&nbsp;&nbsp;
+
+00:06:55.680 --> 00:07:00.200
+this idea of reliability and methods.&nbsp;
+So a lot of the numerical methods that&nbsp;&nbsp;
+
+00:07:00.200 --> 00:07:05.680
+have been developed over the decades have&nbsp;
+really very strict reliability criteria,&nbsp;&nbsp;
+
+00:07:05.680 --> 00:07:10.720
+or have been really stress tested to ensure some&nbsp;
+level of reliability. And so can we actually&nbsp;&nbsp;
+
+00:07:10.720 --> 00:07:18.480
+keep that in mind when we're bringing in this&nbsp;
+component of machine learning into these problems?
+
+00:07:18.480 --> 00:07:24.040
+And so I'll start with a really example, common&nbsp;
+scenario. And this is really going to be the basis&nbsp;&nbsp;
+
+00:07:24.040 --> 00:07:29.080
+of the rest of this talk, as I describe some of&nbsp;
+the methods that we've been working on now that&nbsp;&nbsp;
+
+00:07:29.080 --> 00:07:35.800
+go beyond some of these common scenarios or some&nbsp;
+of these more toy examples. And in this example,&nbsp;&nbsp;
+
+00:07:35.800 --> 00:07:41.320
+this is some type of damping pendulum, so&nbsp;
+you might have some training data in the&nbsp;&nbsp;
+
+00:07:41.320 --> 00:07:46.400
+early part of this trajectory, and your&nbsp;
+goal is to predict the later dynamics of&nbsp;&nbsp;
+
+00:07:46.400 --> 00:07:53.720
+this system. And this could be governed by this&nbsp;
+very simple PDE. So this is a really toy example.
+
+00:07:53.720 --> 00:07:58.360
+So if you train a neural network on predicting&nbsp;
+only the points in your training data,&nbsp;&nbsp;
+
+00:07:58.360 --> 00:08:02.800
+so you train it by minimizing this loss&nbsp;
+function to match those training data points,&nbsp;&nbsp;
+
+00:08:02.800 --> 00:08:07.400
+you can see that it doesn't do very well when&nbsp;
+it's trying to predict the later time steps, even&nbsp;&nbsp;
+
+00:08:07.400 --> 00:08:14.200
+though it gets the early time steps that it's seen&nbsp;
+before, quite well, which is what we would expect.
+
+00:08:14.200 --> 00:08:20.080
+But one approach here that I think many of&nbsp;
+you will be very, very familiar with is this&nbsp;&nbsp;
+
+00:08:20.080 --> 00:08:26.080
+idea that you could add that underlying ODE, or&nbsp;
+possibly an underlying PDE as a soft constraint&nbsp;&nbsp;
+
+00:08:26.080 --> 00:08:31.280
+to the neural network loss function, and you&nbsp;
+essentially optimize over this so you have that&nbsp;&nbsp;
+
+00:08:31.280 --> 00:08:36.200
+training data. But then you, since you have some&nbsp;
+form of the differential equation, this could be&nbsp;&nbsp;
+
+00:08:36.200 --> 00:08:42.000
+some type of conservation law, you add that to&nbsp;
+the loss function, and you essentially enforce&nbsp;&nbsp;
+
+00:08:42.000 --> 00:08:46.800
+that over all of the later points in the domain.&nbsp;
+And when you train with both of these objectives,&nbsp;&nbsp;
+
+00:08:46.800 --> 00:08:51.560
+you can see that in this case, it seems like it's&nbsp;
+actually fitting the later dynamics, because you&nbsp;&nbsp;
+
+00:08:51.560 --> 00:08:58.000
+were giving some implicit information, some self&nbsp;
+supervisor auxiliary information about the later&nbsp;&nbsp;
+
+00:08:58.000 --> 00:09:03.760
+time steps. And this is very colloquially known as&nbsp;
+this physics informed neural network loss, where&nbsp;&nbsp;
+
+00:09:03.760 --> 00:09:12.000
+you have these physical laws that are enforced&nbsp;
+over points in the domain, so some discretization.
+
+00:09:12.000 --> 00:09:17.280
+So the one thing about this type of approach,&nbsp;
+on one hand, it's potentially a way to deal&nbsp;&nbsp;
+
+00:09:17.280 --> 00:09:22.560
+with limited data, or if you have some type&nbsp;
+of conservation laws you'd like to enforce,&nbsp;&nbsp;
+
+00:09:22.560 --> 00:09:27.840
+it's potentially one way to try to add in that&nbsp;
+type of information. But I think in as maybe many&nbsp;&nbsp;
+
+00:09:27.840 --> 00:09:32.960
+of you have dealt with if you've trained some&nbsp;
+of these models, adding the physical laws this&nbsp;&nbsp;
+
+00:09:32.960 --> 00:09:39.200
+way doesn't necessarily guarantee the convergence&nbsp;
+or correct solution or enforcement of those laws,&nbsp;&nbsp;
+
+00:09:39.200 --> 00:09:44.400
+and often it takes a lot more beyond that&nbsp;
+to actually get some type of convergence&nbsp;&nbsp;
+
+00:09:44.400 --> 00:09:52.000
+property. And this is just a simple example of a&nbsp;
+convection problem where you have just this 1d PD,&nbsp;&nbsp;
+
+00:09:52.000 --> 00:09:56.200
+as you increase this wave speed parameter,&nbsp;
+you can see that this type of training&nbsp;&nbsp;
+
+00:09:56.200 --> 00:10:00.120
+doesn't converge very well to the later&nbsp;
+time steps. So the left hand side is the.
+
+00:10:00.120 --> 00:10:02.640
+Actual solution in the right hand side is what&nbsp;&nbsp;
+
+00:10:02.640 --> 00:10:08.600
+would happen when you train the model&nbsp;
+and then predict with this solution.
+
+00:10:08.600 --> 00:10:14.280
+So that brings, yeah, there is a&nbsp;
+question on Slide seven. Do you&nbsp;&nbsp;
+
+00:10:14.280 --> 00:10:19.760
+want to answer that first? Oh, sure,&nbsp;
+I actually can't see this screen.
+
+00:10:20.880 --> 00:10:23.040
+So So what
+
+00:10:23.040 --> 00:10:28.760
+Pearson asked? What would happen if you&nbsp;
+only gave the first data point but then&nbsp;&nbsp;
+
+00:10:28.760 --> 00:10:33.560
+enforce the PDE constraint? Would&nbsp;
+you solve the PDE? Yeah. So if you&nbsp;&nbsp;
+
+00:10:33.560 --> 00:10:39.320
+only gave this initial condition up here&nbsp;
+and then predicted the rest of the PDE,
+
+00:10:39.320 --> 00:10:44.760
+yeah, yeah. I think it really depends on the&nbsp;
+problem setting. I think in a very simple problem&nbsp;&nbsp;
+
+00:10:44.760 --> 00:10:48.960
+setting like this one, I think that would work&nbsp;
+fine if you just gave the initial condition and&nbsp;&nbsp;
+
+00:10:48.960 --> 00:10:54.280
+then just optimized over the rest of the PD, so&nbsp;
+you might not even need those training data points&nbsp;&nbsp;
+
+00:10:54.280 --> 00:11:01.840
+in the first place. But this setting doesn't do&nbsp;
+super well when you go to harder problem settings&nbsp;&nbsp;
+
+00:11:01.840 --> 00:11:09.320
+if you just do this kind of ad hoc approach. And&nbsp;
+so one example here is that in this case, only&nbsp;&nbsp;
+
+00:11:09.320 --> 00:11:13.200
+the training was done by only giving the initial&nbsp;
+condition and the boundary conditions and then&nbsp;&nbsp;
+
+00:11:13.200 --> 00:11:18.960
+predicting a solution over the rest of the domain.&nbsp;
+And as you can see, in this case, especially&nbsp;&nbsp;
+
+00:11:18.960 --> 00:11:24.720
+when you have very sharp features in your&nbsp;
+solution, this becomes a lot harder to capture.
+
+00:11:25.760 --> 00:11:32.080
+I hope that answered Pearson's&nbsp;
+questions. If not Pearson, speak up
+
+00:11:32.080 --> 00:11:39.600
+or let's move on. Great. Then feel free&nbsp;
+to ask questions throughout the talk.
+
+00:11:39.600 --> 00:11:46.320
+So that brings me to one of the main idea&nbsp;
+of this talk, which is really this idea of,&nbsp;&nbsp;
+
+00:11:46.320 --> 00:11:51.800
+how do we resolve some of these underlying&nbsp;
+issues when we try to solve PDS with machine&nbsp;&nbsp;
+
+00:11:51.800 --> 00:11:58.400
+learning? And there's a few key points&nbsp;
+here, I think, to keep in mind. So one&nbsp;&nbsp;
+
+00:11:58.400 --> 00:12:05.480
+of those points is that this idea of physical&nbsp;
+consistency or having an accurate solution,&nbsp;&nbsp;
+
+00:12:05.480 --> 00:12:10.640
+this is especially important at inference.&nbsp;
+So at test time, when we actually want to go&nbsp;&nbsp;
+
+00:12:10.640 --> 00:12:16.640
+use the neural network for some type of task or&nbsp;
+deploy it for some type of task, and the current&nbsp;&nbsp;
+
+00:12:16.640 --> 00:12:22.720
+approaches that I've mentioned, whether it's data&nbsp;
+driven or you add this self supervised PDE loss,&nbsp;&nbsp;
+
+00:12:22.720 --> 00:12:28.000
+there's no guarantee of those physical laws&nbsp;
+being obeyed at test time in particular,&nbsp;&nbsp;
+
+00:12:28.000 --> 00:12:34.440
+and so that's potentially posing a problem for&nbsp;
+how you would actually reliably deploy this.
+
+00:12:34.440 --> 00:12:42.680
+The other point is that these so far are all grid&nbsp;
+based methods, so this means that your solution&nbsp;&nbsp;
+
+00:12:42.680 --> 00:12:48.720
+is over some type of discretized domain, and that&nbsp;
+means that you could have some type of error that&nbsp;&nbsp;
+
+00:12:48.720 --> 00:12:54.480
+comes up because there's some inherent error in&nbsp;
+that discretization. And it can also be expensive,&nbsp;&nbsp;
+
+00:12:54.480 --> 00:13:00.280
+because, especially if you're training with some&nbsp;
+type of PDE loss, it requires differentiating back&nbsp;&nbsp;
+
+00:13:00.280 --> 00:13:03.480
+through that if you're going to take derivatives,&nbsp;
+if you have higher order derivatives than your&nbsp;&nbsp;
+
+00:13:03.480 --> 00:13:10.600
+loss and if your architecture is more complicated,&nbsp;
+that can start to get expensive to train.
+
+00:13:10.600 --> 00:13:16.560
+And there's also some other points here. So&nbsp;
+sometimes, if you have some type of physical law,&nbsp;&nbsp;
+
+00:13:16.560 --> 00:13:21.960
+and it's only approximately enforced, so the soft&nbsp;
+constraint added to the loss function, this can&nbsp;&nbsp;
+
+00:13:21.960 --> 00:13:27.520
+sometimes be hard to optimize over and tricky to&nbsp;
+actually get to converge. And again, you have that&nbsp;&nbsp;
+
+00:13:27.520 --> 00:13:33.600
+first issue that this type of approach doesn't&nbsp;
+guarantee any convergence at test time. And all of&nbsp;&nbsp;
+
+00:13:33.600 --> 00:13:39.200
+these issues all become particularly noticeable in&nbsp;
+limited data settings when you don't have a lot of&nbsp;&nbsp;
+
+00:13:39.200 --> 00:13:47.920
+data, each of these issues really comes up again&nbsp;
+and again and becomes a bigger and bigger problem.
+
+00:13:47.920 --> 00:13:53.440
+So the general theme of this talk is really going&nbsp;
+to be about this idea of numerical methods that&nbsp;&nbsp;
+
+00:13:53.440 --> 00:13:58.680
+have been really successful historically at&nbsp;
+modeling complex systems and machine learning&nbsp;&nbsp;
+
+00:13:58.680 --> 00:14:04.920
+that's been very fast and successful at these&nbsp;
+prediction tasks in a lot of different areas.&nbsp;&nbsp;
+
+00:14:04.920 --> 00:14:10.600
+How do we take both of these and get the best&nbsp;
+of both worlds when we develop the next set of&nbsp;&nbsp;
+
+00:14:10.600 --> 00:14:16.680
+methods for scientific modeling problems? And both&nbsp;
+of these have their limitations too. So numerical&nbsp;&nbsp;
+
+00:14:16.680 --> 00:14:23.680
+methods can be quite slow. Machine learning can&nbsp;
+be hard to get accurate or hard to generalize&nbsp;&nbsp;
+
+00:14:23.680 --> 00:14:28.480
+to new problems. And so we're hoping that by&nbsp;
+taking the best of both worlds, we can also&nbsp;&nbsp;
+
+00:14:28.480 --> 00:14:34.880
+limit the actual limitations of both of these&nbsp;
+approaches, and by combining both, the goal is&nbsp;&nbsp;
+
+00:14:34.880 --> 00:14:41.440
+perhaps we can get better accuracy with less data,&nbsp;
+as well as more robust methods downstream. And so&nbsp;&nbsp;
+
+00:14:41.440 --> 00:14:45.520
+the approaches that I'll talk about are some&nbsp;
+of the things that we've been thinking about&nbsp;&nbsp;
+
+00:14:45.520 --> 00:14:53.720
+and working on for exploring this intersection&nbsp;
+between numerical methods and neural networks.
+
+00:14:53.720 --> 00:14:57.720
+So the in for most of this talk, the&nbsp;
+problem setting that I'll talk about,&nbsp;&nbsp;
+
+00:14:57.720 --> 00:14:59.940
+is solving PDS that represent.
+
+00:14:59.940 --> 00:15:04.960
+And some type of complex system. So in this&nbsp;
+case, this is an example of navier stokes&nbsp;&nbsp;
+
+00:15:04.960 --> 00:15:09.280
+equations. You might have some initial&nbsp;
+conditions, like an initial vorticity,&nbsp;&nbsp;
+
+00:15:09.280 --> 00:15:15.320
+and your goal is to predict the spatiotemporal&nbsp;
+behavior of the system over time. And in these&nbsp;&nbsp;
+
+00:15:15.320 --> 00:15:20.680
+cases, because these are spatiotemporal&nbsp;
+phenomena or fluid problems that we know&nbsp;&nbsp;
+
+00:15:20.680 --> 00:15:24.240
+a little bit about. We can sometimes&nbsp;
+know that this might have some type&nbsp;&nbsp;
+
+00:15:24.240 --> 00:15:28.960
+of conservation of momentum, it might have&nbsp;
+some type of conservation of mass, and so on.
+
+00:15:32.440 --> 00:15:39.560
+So the first issue I talked about was this idea&nbsp;
+that physical laws are not imposed at test time,&nbsp;&nbsp;
+
+00:15:39.560 --> 00:15:44.640
+and this can be when it matters most to have&nbsp;
+that physical consistency. And this can also be,&nbsp;&nbsp;
+
+00:15:44.640 --> 00:15:48.320
+sometimes be useful to enforce&nbsp;
+these laws at training time,&nbsp;&nbsp;
+
+00:15:48.320 --> 00:15:52.440
+because that ends up actually improving&nbsp;
+convergence. This ends up helping a lot,&nbsp;&nbsp;
+
+00:15:52.440 --> 00:15:57.920
+especially in limited data settings. And so the&nbsp;
+first solution I'll talk about is implementing&nbsp;&nbsp;
+
+00:15:57.920 --> 00:16:06.440
+PDE constrained optimization as a layer in a&nbsp;
+neural network to tackle some of these issues.
+
+00:16:06.440 --> 00:16:11.040
+So before the neural network setup looked&nbsp;
+something like this, where you have some&nbsp;&nbsp;
+
+00:16:11.040 --> 00:16:16.360
+spatial temporal points in your domain, you&nbsp;
+use a neural network to predict the solution,&nbsp;&nbsp;
+
+00:16:16.360 --> 00:16:22.800
+and you could train to either matching the&nbsp;
+solution loss over your domain. You could also&nbsp;&nbsp;
+
+00:16:22.800 --> 00:16:28.960
+add this differential equation loss for the PDE so&nbsp;
+this soft constraint approach, and then to train a&nbsp;&nbsp;
+
+00:16:28.960 --> 00:16:33.440
+neural network, we would back propagate through&nbsp;
+this loss function with respect to the weights&nbsp;&nbsp;
+
+00:16:33.440 --> 00:16:39.960
+of the neural network. And after we train the&nbsp;
+neural network, we can go test it on new problems.
+
+00:16:39.960 --> 00:16:46.800
+As mentioned before, there are some potential&nbsp;
+issues with this approach, and so the thing&nbsp;&nbsp;
+
+00:16:46.800 --> 00:16:53.080
+that we try to do instead is actually look at,&nbsp;
+can we have more control over these physical&nbsp;&nbsp;
+
+00:16:53.080 --> 00:16:59.120
+laws and enforcing these physical laws? And&nbsp;
+to do so, we develop this framework to add&nbsp;&nbsp;
+
+00:16:59.120 --> 00:17:04.120
+a PD constraint optimization layer to a&nbsp;
+neural network architecture. So this is a&nbsp;&nbsp;
+
+00:17:04.120 --> 00:17:11.000
+high level overview, but I'll go into some of the&nbsp;
+important pieces and details. And in this case,&nbsp;&nbsp;
+
+00:17:11.000 --> 00:17:19.560
+this PDE constrained optimization layer can be&nbsp;
+added on top of any neural network architecture.
+
+00:17:19.560 --> 00:17:24.760
+So the problem setting here is essentially&nbsp;
+differential operator learning, where we're trying&nbsp;&nbsp;
+
+00:17:24.760 --> 00:17:31.960
+to find some operator that maps some parameters&nbsp;
+here to some solutions u, such that that&nbsp;&nbsp;
+
+00:17:31.960 --> 00:17:35.960
+conservation law or that operator is enforced,&nbsp;
+and we know that it's going to be equal to
+
+00:17:35.960 --> 00:17:41.000
+zero. So what we do here is we&nbsp;
+take a neural network. So this&nbsp;&nbsp;
+
+00:17:41.000 --> 00:17:44.240
+is a neural network F, parametrized by some theta,&nbsp;&nbsp;
+
+00:17:44.240 --> 00:17:49.480
+and we want to map the neural network the&nbsp;
+parameters of your physical system to B,&nbsp;&nbsp;
+
+00:17:49.480 --> 00:17:56.520
+which is a set of n basis functions. So our neural&nbsp;
+network is trying to do this parameter mapping,
+
+00:17:56.520 --> 00:18:01.920
+and we formulate this instead as we want to&nbsp;
+find some omega such that when you take this&nbsp;&nbsp;
+
+00:18:01.920 --> 00:18:07.200
+product of those basis functions with respect&nbsp;
+to omega, this is going to satisfy whatever&nbsp;&nbsp;
+
+00:18:07.200 --> 00:18:16.240
+your conservation law is. So this equivalency is&nbsp;
+trying to make an approximation to your solution u
+
+00:18:16.240 --> 00:18:21.560
+and so what we do is we solve for this&nbsp;
+omega value using some type of iterative,&nbsp;&nbsp;
+
+00:18:21.560 --> 00:18:27.360
+nonlinear least squares solver. So this could be&nbsp;
+LM, it could be gauss Newton, or whatever your&nbsp;&nbsp;
+
+00:18:27.360 --> 00:18:33.280
+favorite solver is. And this is done by sampling&nbsp;
+a set of spatiotemporal points on your domain.
+
+00:18:33.280 --> 00:18:38.720
+And after we solve this problem, the final&nbsp;
+solution operator prediction is reconstructed,&nbsp;&nbsp;
+
+00:18:38.720 --> 00:18:45.960
+together with having solved for a reasonable value&nbsp;
+of omega with your numerical solver, and so you're&nbsp;&nbsp;
+
+00:18:45.960 --> 00:18:50.720
+then having some approximation for the solution&nbsp;
+using this approach instead. So this is giving you&nbsp;&nbsp;
+
+00:18:50.720 --> 00:18:56.040
+a bit more precise control over actually enforcing&nbsp;
+this conservation law, because you're explicitly&nbsp;&nbsp;
+
+00:18:56.040 --> 00:19:04.000
+using a solver to try to actually approximate&nbsp;
+that PDE constrained optimization problem.
+
+00:19:04.000 --> 00:19:08.720
+So when you look at this setting, I went through&nbsp;
+essentially what's a forward pass of the neural&nbsp;&nbsp;
+
+00:19:08.720 --> 00:19:14.480
+network. But the issue is that when you run that&nbsp;
+solver, so you project your outputs of the neural&nbsp;&nbsp;
+
+00:19:14.480 --> 00:19:21.760
+network onto some solver, and that's the solver&nbsp;
+that you're running to now actually learn the PDEs&nbsp;&nbsp;
+
+00:19:21.760 --> 00:19:27.520
+more precisely. The issue is that when you take&nbsp;
+all of these steps of your solver, you still have&nbsp;&nbsp;
+
+00:19:27.520 --> 00:19:32.600
+to train the neural network somehow. And doing&nbsp;
+standard backpropagation, where you differentiate&nbsp;&nbsp;
+
+00:19:32.600 --> 00:19:37.640
+back through all of those steps, is really&nbsp;
+expensive. It's actually usually impossible,&nbsp;&nbsp;
+
+00:19:37.640 --> 00:19:43.640
+because you run out of memory very quickly. And&nbsp;
+so to get around this issue, what we did instead&nbsp;&nbsp;
+
+00:19:43.640 --> 00:19:50.480
+is some so we looked at this problem, and we see&nbsp;
+that what we want to do is the solver is run after&nbsp;&nbsp;
+
+00:19:50.480 --> 00:19:55.440
+the neural network to come to a solution. And&nbsp;
+if we want to actually train the neural network,&nbsp;&nbsp;
+
+00:19:55.440 --> 00:20:00.240
+we need to differentiate back, and we need&nbsp;
+to do some type of gradient descent on theta.
+
+00:20:00.240 --> 00:20:03.240
+Our neural network parameters to&nbsp;
+learn what the correct solution&nbsp;&nbsp;
+
+00:20:03.240 --> 00:20:08.640
+is. And so we use implicit function&nbsp;
+theorem and implicit differentiation,&nbsp;&nbsp;
+
+00:20:08.640 --> 00:20:13.280
+which I think is a really powerful tool when&nbsp;
+you're doing anything with combining numerical&nbsp;&nbsp;
+
+00:20:13.280 --> 00:20:19.360
+methods and neural networks. And what that does&nbsp;
+is you can formulate this differentiation problem&nbsp;&nbsp;
+
+00:20:19.360 --> 00:20:24.480
+in an implicit way. So what that means is that&nbsp;
+you don't need to differentiate back through all&nbsp;&nbsp;
+
+00:20:24.480 --> 00:20:28.800
+the steps of your solver. So you don't have to&nbsp;
+back propagate through the whole computational&nbsp;&nbsp;
+
+00:20:28.800 --> 00:20:34.120
+graph that got you to that final point. You can&nbsp;
+just differentiate the last step and bypass all&nbsp;&nbsp;
+
+00:20:34.120 --> 00:20:40.080
+of those intermediate steps. And a lot of&nbsp;
+the details, you can check out the paper for&nbsp;&nbsp;
+
+00:20:40.080 --> 00:20:45.200
+a lot of the details on the full framework&nbsp;
+and the exact problem that you're solving,&nbsp;&nbsp;
+
+00:20:45.200 --> 00:20:51.960
+but this is essentially the trick that makes it&nbsp;
+possible to combine these two things together.
+
+00:20:51.960 --> 00:20:56.560
+So coming back to this and the full&nbsp;
+problem setup. So now we have this&nbsp;&nbsp;
+
+00:20:56.560 --> 00:21:01.360
+neural network architecture we project onto&nbsp;
+this PDE constrained optimization layer,&nbsp;&nbsp;
+
+00:21:01.360 --> 00:21:06.360
+which solves the optimization problem, more&nbsp;
+precisely, that represents our conservation&nbsp;&nbsp;
+
+00:21:06.360 --> 00:21:11.600
+laws. We use implicit differentiation to train&nbsp;
+the model. So what it means is that the forward&nbsp;&nbsp;
+
+00:21:11.600 --> 00:21:16.000
+pass of the neural network is decoupled from&nbsp;
+the backward pass of the neural network, and&nbsp;&nbsp;
+
+00:21:16.000 --> 00:21:21.320
+that allows us to train this whole thing, end to&nbsp;
+end, with both the neural network and the solver,&nbsp;&nbsp;
+
+00:21:21.320 --> 00:21:25.160
+and this means that the neural network is&nbsp;
+able to get direct feedback from the solver,&nbsp;&nbsp;
+
+00:21:25.160 --> 00:21:30.560
+so the weights can update based on this exact&nbsp;
+solve that happens in the PDE constrained&nbsp;&nbsp;
+
+00:21:30.560 --> 00:21:36.040
+optimization layer. And then at test time, we&nbsp;
+can go ahead and run this neural network on a&nbsp;&nbsp;
+
+00:21:36.040 --> 00:21:41.880
+new problem. And because the forward pass of the&nbsp;
+neural network still goes through this layer here,&nbsp;&nbsp;
+
+00:21:41.880 --> 00:21:48.600
+it means that those constraints are more&nbsp;
+precisely enforced at test time as well.
+
+00:21:48.600 --> 00:21:54.800
+So here's a very simple example of when we first&nbsp;
+tried this out. So this was for a Darcy flow&nbsp;&nbsp;
+
+00:21:54.800 --> 00:22:01.080
+problem, very simple PDE, where you have some PDE&nbsp;
+parameters, in this case, diffusion coefficients,&nbsp;&nbsp;
+
+00:22:01.080 --> 00:22:07.600
+and you want to learn what the PDE solution is.&nbsp;
+And so we ran this with a baseline of we just add&nbsp;&nbsp;
+
+00:22:07.600 --> 00:22:13.280
+the conservation laws to the loss function. This&nbsp;
+soft constraint approach, which does, does okay,&nbsp;&nbsp;
+
+00:22:13.280 --> 00:22:20.840
+but doesn't really converge that well, and it&nbsp;
+sort of plateaus at this point. And our new model,&nbsp;&nbsp;
+
+00:22:20.840 --> 00:22:25.040
+where we implement this new layer, which&nbsp;
+is acts more like a hard constraint,&nbsp;&nbsp;
+
+00:22:25.040 --> 00:22:30.080
+and you can see that it starts at a much&nbsp;
+lower point and then continues to go down.&nbsp;&nbsp;
+
+00:22:30.080 --> 00:22:34.200
+And this is on some unseen test set, so&nbsp;
+we just track how well it's doing during&nbsp;&nbsp;
+
+00:22:34.200 --> 00:22:40.600
+training on this test set. So it does tend to&nbsp;
+converge more quickly for a problem like this.
+
+00:22:40.600 --> 00:22:46.920
+But that being said, I mentioned that during&nbsp;
+training, you're going through this new layer&nbsp;&nbsp;
+
+00:22:46.920 --> 00:22:50.760
+and differentiating it, but also during test&nbsp;
+time, you also have to go through that new&nbsp;&nbsp;
+
+00:22:50.760 --> 00:22:58.200
+layer. And what that means is that as you enforce&nbsp;
+this layer and this whole setup on more and more&nbsp;&nbsp;
+
+00:22:58.200 --> 00:23:04.120
+points which can happen or is quite necessary&nbsp;
+when your problem gets quite hard, that also&nbsp;&nbsp;
+
+00:23:04.120 --> 00:23:10.120
+means that your computational expense and memory&nbsp;
+cost increases. So this is an example of solving&nbsp;&nbsp;
+
+00:23:10.120 --> 00:23:16.800
+the 2d navier stokes equations. So as we increase&nbsp;
+the number of sampled points, it's likely that the&nbsp;&nbsp;
+
+00:23:16.800 --> 00:23:23.280
+model does better, because it's able to solve&nbsp;
+for a larger domain and force whatever physical&nbsp;&nbsp;
+
+00:23:23.280 --> 00:23:29.480
+laws over a larger domain. But the issue is that&nbsp;
+as you increase these points, both your training&nbsp;&nbsp;
+
+00:23:29.480 --> 00:23:34.720
+and your inference time get larger and larger.&nbsp;
+So there's this limitation of the computational&nbsp;&nbsp;
+
+00:23:34.720 --> 00:23:40.320
+trade off. And if you sample more points in this&nbsp;
+setup, you often need to have a lower batch size&nbsp;&nbsp;
+
+00:23:40.320 --> 00:23:44.000
+because of the memory costs, and that ends up&nbsp;
+actually hurting training stability. So for&nbsp;&nbsp;
+
+00:23:44.000 --> 00:23:52.200
+some of these much harder problems, it becomes&nbsp;
+very difficult to solve with this current setup.
+
+00:23:52.200 --> 00:23:58.440
+So to get around that setting, we used a mixture&nbsp;
+of experts approach to actually scale this&nbsp;&nbsp;
+
+00:23:58.960 --> 00:24:04.920
+full architecture, and mixture of experts&nbsp;
+really has made it possible to scale a lot&nbsp;&nbsp;
+
+00:24:04.920 --> 00:24:11.080
+of very large models in many other fields&nbsp;
+of machine learning, like NLP and vision,&nbsp;&nbsp;
+
+00:24:11.080 --> 00:24:15.000
+and it's this nice way of actually increasing&nbsp;
+the capacity of the neural network,&nbsp;&nbsp;
+
+00:24:15.000 --> 00:24:20.080
+but still balancing the computational expense&nbsp;
+where now you split the computation over a&nbsp;&nbsp;
+
+00:24:20.080 --> 00:24:25.880
+bunch of different experts that solve&nbsp;
+these different sub domain problems,&nbsp;&nbsp;
+
+00:24:25.880 --> 00:24:30.920
+and so we wanted to see if we could actually&nbsp;
+bring this idea of mixture of experts to our&nbsp;&nbsp;
+
+00:24:30.920 --> 00:24:37.560
+physical modeling problem and actually be&nbsp;
+able to scale it to much harder systems.
+
+00:24:37.560 --> 00:24:44.080
+So we frame this PDA constrained optimization&nbsp;
+problem in our neural network as a mixture of&nbsp;&nbsp;
+
+00:24:44.080 --> 00:24:48.440
+experts instead. And the main difference&nbsp;
+is, before we had this neural network,&nbsp;&nbsp;
+
+00:24:48.440 --> 00:24:54.920
+this f of theta, and we would go ahead and go&nbsp;
+straight to the end here and run our solver,&nbsp;&nbsp;
+
+00:24:54.920 --> 00:24:59.920
+do our prediction, and this time,&nbsp;
+we actually split our our domain.
+
+00:24:59.920 --> 00:25:06.720
+Into a bunch of different subdomains and use an&nbsp;
+expert to solve the problem along each subdomain.
+
+00:25:06.720 --> 00:25:11.080
+So what that fully looks like is you have&nbsp;
+some type of neural network. Here. We use&nbsp;&nbsp;
+
+00:25:11.080 --> 00:25:17.920
+a neural operator for this type of problem.&nbsp;
+It doesn't matter which architecture you use,&nbsp;&nbsp;
+
+00:25:17.920 --> 00:25:22.600
+though, it could be your favorite one. And&nbsp;
+this whole part here is our PE constrained&nbsp;&nbsp;
+
+00:25:22.600 --> 00:25:28.480
+optimization layer. And to scale it up, we&nbsp;
+do this domain decomposition where we have&nbsp;&nbsp;
+
+00:25:28.480 --> 00:25:33.880
+a bunch of different subdomains, and we enforce&nbsp;
+this constrained optimization problem over each&nbsp;&nbsp;
+
+00:25:33.880 --> 00:25:38.880
+subdomain. So these are the hard constraints&nbsp;
+that are enforced over these subdomains by&nbsp;&nbsp;
+
+00:25:38.880 --> 00:25:43.960
+the different experts. And so this makes those&nbsp;
+constraints localized, and it's split across&nbsp;&nbsp;
+
+00:25:43.960 --> 00:25:50.720
+multiple experts here, so it's not just&nbsp;
+one single one, but many different ones.
+
+00:25:50.720 --> 00:25:53.960
+And the advantage of this is that now&nbsp;
+we've actually decomposed our domain,&nbsp;&nbsp;
+
+00:25:53.960 --> 00:25:57.920
+and we can actually solve this problem&nbsp;
+in parallel. So when we put it all&nbsp;&nbsp;
+
+00:25:57.920 --> 00:26:03.120
+together, if we have some PDE domain, I've&nbsp;
+kept it very simple here, just a 2d problem,&nbsp;&nbsp;
+
+00:26:03.120 --> 00:26:10.120
+but we also do this on 3d and 40 settings. You&nbsp;
+can give this PD domain to the neural network,&nbsp;&nbsp;
+
+00:26:10.120 --> 00:26:15.720
+and it'll go through this whole process of&nbsp;
+you have these learnable basis functions here.
+
+00:26:15.720 --> 00:26:21.120
+You evaluate and partition them over your&nbsp;
+sub domains. You have this mixture of expert&nbsp;&nbsp;
+
+00:26:21.120 --> 00:26:25.760
+setting, where each expert locally solves the&nbsp;
+problem. And so it looks something like this,&nbsp;&nbsp;
+
+00:26:25.760 --> 00:26:33.040
+where within each expert you're still doing that&nbsp;
+same task of finding a set of omega that satisfies&nbsp;&nbsp;
+
+00:26:33.040 --> 00:26:38.320
+this product here and actually satisfies the&nbsp;
+PDE of interest. So it's the local constraint&nbsp;&nbsp;
+
+00:26:38.320 --> 00:26:44.840
+over each subdomain. And then you can go ahead and&nbsp;
+reassemble your full predicted solution together,&nbsp;&nbsp;
+
+00:26:44.840 --> 00:26:50.520
+and then putting it all together, you go ahead&nbsp;
+and differentiate your output, and then you use&nbsp;&nbsp;
+
+00:26:50.520 --> 00:26:55.800
+implicit function theorem to actually train the&nbsp;
+full model end to end. And when you do this,&nbsp;&nbsp;
+
+00:26:55.800 --> 00:27:02.520
+that means that each expert is both being used in&nbsp;
+the forward pass, but also in the backwards pass&nbsp;&nbsp;
+
+00:27:02.520 --> 00:27:08.160
+through this implicit differentiation technique.&nbsp;
+So this allows you to actually scale the model and&nbsp;&nbsp;
+
+00:27:08.160 --> 00:27:15.040
+train it over a lot of different problems, because&nbsp;
+everything can also be done in parallel now.
+
+00:27:15.040 --> 00:27:19.520
+So as an example of what that looks like,&nbsp;
+this is, this is a problem, diffusion sorption&nbsp;&nbsp;
+
+00:27:19.520 --> 00:27:26.000
+problem. It's a tricky problem, actually, because&nbsp;
+it has a singularity at a certain point here, and&nbsp;&nbsp;
+
+00:27:26.000 --> 00:27:31.400
+this is what the numerical solver solution would&nbsp;
+look like. And if you're using a soft constraint&nbsp;&nbsp;
+
+00:27:31.400 --> 00:27:36.400
+approach, because of some of those difficulties,&nbsp;
+you can see here that in a lot of cases, it's not&nbsp;&nbsp;
+
+00:27:36.400 --> 00:27:43.640
+really able to converge to any solution. So when&nbsp;
+we use our initial approach where we just have&nbsp;&nbsp;
+
+00:27:43.640 --> 00:27:48.720
+a hard constraint, we start to do a little bit&nbsp;
+better. But I think it's limited to some extent,&nbsp;&nbsp;
+
+00:27:48.720 --> 00:27:52.960
+because you need to sample a lot of points for&nbsp;
+this problem, and because we can't fit all of&nbsp;&nbsp;
+
+00:27:52.960 --> 00:27:58.440
+those points, we often have to use a lower batch&nbsp;
+size, so it actually hurts our training stability.&nbsp;&nbsp;
+
+00:27:58.440 --> 00:28:03.920
+But when we go ahead and scale this with this new&nbsp;
+mixture of experts approach, we get a lot closer&nbsp;&nbsp;
+
+00:28:03.920 --> 00:28:10.400
+to what the true solution should be, so it starts&nbsp;
+to match the numerical solution pretty well.
+
+00:28:10.400 --> 00:28:16.280
+Another advantage is this idea of lacking&nbsp;
+training stability. So when we actually&nbsp;&nbsp;
+
+00:28:16.280 --> 00:28:23.160
+train with our regular layer, with no mixture&nbsp;
+of experts, it's not doing super well because&nbsp;&nbsp;
+
+00:28:23.160 --> 00:28:28.480
+of the fact that during training it's unstable.&nbsp;
+And it's not just because of this limitation&nbsp;&nbsp;
+
+00:28:28.480 --> 00:28:33.240
+that it can't sample enough points&nbsp;
+because of computational expense,
+
+00:28:33.240 --> 00:28:41.240
+but when you actually then train with this&nbsp;
+Moe setting, this is another sample that was&nbsp;&nbsp;
+
+00:28:41.240 --> 00:28:46.360
+pulled out of the system. So we had a test set&nbsp;
+of a few 100 samples. In this case, when you&nbsp;&nbsp;
+
+00:28:46.360 --> 00:28:51.840
+actually train with that Moe setting, you're&nbsp;
+a lot more stable and predictable when you're&nbsp;&nbsp;
+
+00:28:51.840 --> 00:29:00.160
+doing the training. So it's converging slowly&nbsp;
+to the right solution in a more stable way. And
+
+00:29:00.160 --> 00:29:06.160
+then when we come back to this plot where we saw&nbsp;
+that one of the limitations before was that as you&nbsp;&nbsp;
+
+00:29:06.160 --> 00:29:11.040
+increase the number of points, your training&nbsp;
+and inference time gets slower and slower. In&nbsp;&nbsp;
+
+00:29:11.040 --> 00:29:16.480
+this case, now, when you increase the number of&nbsp;
+points, this scale sub linearly. So this is a lot&nbsp;&nbsp;
+
+00:29:16.480 --> 00:29:20.800
+more efficient. I think this is quite important,&nbsp;
+because as we get to the whole point of neural&nbsp;&nbsp;
+
+00:29:20.800 --> 00:29:27.520
+networks is to be faster than numerical solvers,&nbsp;
+and at inference time. In particular, if running a&nbsp;&nbsp;
+
+00:29:27.520 --> 00:29:32.520
+neural network is slower than running a numerical&nbsp;
+solver, there's not really much of an advantage&nbsp;&nbsp;
+
+00:29:32.520 --> 00:29:38.400
+to the neural network approach. So getting this&nbsp;
+down to some level of computational efficiency and&nbsp;&nbsp;
+
+00:29:38.400 --> 00:29:46.120
+speed, I think, is very important for actually&nbsp;
+the whole purpose of using neural networks.
+
+00:29:46.120 --> 00:29:51.600
+So we'll come back to some of these&nbsp;
+underlying issues that we looked at&nbsp;&nbsp;
+
+00:29:51.600 --> 00:29:57.440
+earlier about resolving solving PDS with&nbsp;
+machine learning. And the second issue I&nbsp;&nbsp;
+
+00:29:57.440 --> 00:30:00.100
+had mentioned was this idea that grid based meth.
+
+00:30:00.100 --> 00:30:06.080
+Methods introduce errors. So when you solve for a&nbsp;
+solution over a discretized domain, that's going&nbsp;&nbsp;
+
+00:30:06.080 --> 00:30:12.840
+to inherently introduce some errors. And so one&nbsp;
+solution that we thought of when we looked at this&nbsp;&nbsp;
+
+00:30:12.840 --> 00:30:19.120
+problem was, again, an idea of taking spectral&nbsp;
+methods, which have been really successful,&nbsp;&nbsp;
+
+00:30:19.120 --> 00:30:24.400
+used quite well in applied mathematics and&nbsp;
+scientific computing, and seeing if we could take&nbsp;&nbsp;
+
+00:30:24.400 --> 00:30:31.080
+the advantages of spectral methods and combine&nbsp;
+that with the advantages of neural networks.
+
+00:30:31.080 --> 00:30:35.320
+So coming back to this setting of this&nbsp;
+physics and form neural network loss,&nbsp;&nbsp;
+
+00:30:35.320 --> 00:30:41.960
+so this would be like a self supervised setting&nbsp;
+for solving PDS. So when you optimize over this PD&nbsp;&nbsp;
+
+00:30:41.960 --> 00:30:47.200
+residual in the loss function, there's this first&nbsp;
+point that you're optimizing over physical points&nbsp;&nbsp;
+
+00:30:47.200 --> 00:30:52.840
+in your domain. So those grid based methods&nbsp;
+introduce errors. It can also require a large&nbsp;&nbsp;
+
+00:30:52.840 --> 00:30:58.160
+number of sampled points. So if your problem is&nbsp;
+hard, you may need a lot of points to optimize&nbsp;&nbsp;
+
+00:30:58.160 --> 00:31:06.080
+over. And so this approach also just has issues&nbsp;
+with scaling to large grid sizes. And finally,&nbsp;&nbsp;
+
+00:31:06.080 --> 00:31:11.720
+if you're looking at this setting where you're&nbsp;
+using a neural operator and then optimizing over&nbsp;&nbsp;
+
+00:31:11.720 --> 00:31:17.200
+it with some type of PDE loss, this can be&nbsp;
+expensive to differentiate back through the&nbsp;&nbsp;
+
+00:31:17.200 --> 00:31:23.280
+architecture, especially for more complicated&nbsp;
+architectures like the Fourier neural operator,&nbsp;&nbsp;
+
+00:31:23.280 --> 00:31:26.960
+it means that some of the scaling&nbsp;
+actually doesn't do super well,&nbsp;&nbsp;
+
+00:31:26.960 --> 00:31:32.880
+especially if you have higher order&nbsp;
+derivatives that you're trying to enforce.
+
+00:31:32.880 --> 00:31:39.560
+So spectral methods have been very powerful for&nbsp;
+solving PDEs. So these basis function expansions,&nbsp;&nbsp;
+
+00:31:39.560 --> 00:31:45.040
+you could use Chebyshev polynomials. As one&nbsp;
+example, you could use la gendre polynomials.&nbsp;&nbsp;
+
+00:31:45.040 --> 00:31:50.560
+They can be quite powerful and efficient, and&nbsp;
+when you're learning PDS in in this spectral&nbsp;&nbsp;
+
+00:31:50.560 --> 00:31:57.240
+representation, you can really do accurate&nbsp;
+approximations of differentiation and integration,&nbsp;&nbsp;
+
+00:31:57.240 --> 00:32:04.640
+or you can really do accurate approximations of&nbsp;
+algebraic operations going out to a certain when&nbsp;&nbsp;
+
+00:32:04.640 --> 00:32:09.560
+you go out to a certain number of terms when&nbsp;
+you do that basis expansion. And so I think&nbsp;&nbsp;
+
+00:32:09.560 --> 00:32:15.080
+these have a lot of potential to also think about&nbsp;
+how they can be integrated with neural networks,&nbsp;&nbsp;
+
+00:32:15.080 --> 00:32:21.880
+because there are so many advantages of these&nbsp;
+methods in the scientific computing setting.
+
+00:32:21.880 --> 00:32:27.440
+And so to take the ideas from spectral&nbsp;
+methods and neural networks and really&nbsp;&nbsp;
+
+00:32:27.440 --> 00:32:34.200
+get the best of both worlds, we came up with&nbsp;
+this neural spectral methods approach where&nbsp;&nbsp;
+
+00:32:34.200 --> 00:32:39.640
+we have in our base architecture some type of&nbsp;
+spectral based neural operator. It's not just&nbsp;&nbsp;
+
+00:32:39.640 --> 00:32:45.640
+limited to Fourier basis. So you can actually use&nbsp;
+Chebyshev polynomials or Legendre polynomials,&nbsp;&nbsp;
+
+00:32:45.640 --> 00:32:49.920
+so really any spectral basis function, and we&nbsp;
+actually find that for a lot of the problems&nbsp;&nbsp;
+
+00:32:49.920 --> 00:32:55.080
+we look at, using Chebyshev basis actually&nbsp;
+works a lot better than a Fourier basis,&nbsp;&nbsp;
+
+00:32:55.080 --> 00:32:59.120
+particularly in cases where you don't&nbsp;
+have periodic boundary conditions,&nbsp;&nbsp;
+
+00:32:59.120 --> 00:33:06.120
+as what you would expect for when you see how&nbsp;
+where they're used in scientific computing.&nbsp;&nbsp;
+
+00:33:06.120 --> 00:33:11.480
+And we also have this spectral loss function,&nbsp;
+and I'll go through each of these. And this is&nbsp;&nbsp;
+
+00:33:11.480 --> 00:33:16.640
+in contrast this idea of physical space learning&nbsp;
+that had some of the limitations mentioned before,&nbsp;&nbsp;
+
+00:33:16.640 --> 00:33:22.400
+that it could be harder to learn, and&nbsp;
+you have these grid size limitations.
+
+00:33:22.400 --> 00:33:27.560
+So we start, in this case, in our base&nbsp;
+architecture by having we have parameters&nbsp;&nbsp;
+
+00:33:27.560 --> 00:33:31.360
+to solutions. This is the same setting&nbsp;
+that we want to learn. And we look at the&nbsp;&nbsp;
+
+00:33:31.360 --> 00:33:36.720
+spectral representation of our parameters.&nbsp;
+We do these spectral transformations. So&nbsp;&nbsp;
+
+00:33:36.720 --> 00:33:42.080
+this is where we're deciding what basis&nbsp;
+functions we want to use, in this case,&nbsp;&nbsp;
+
+00:33:42.080 --> 00:33:48.960
+Chebyshev polynomials tend to be the&nbsp;
+ones that end up working quite well.
+
+00:33:48.960 --> 00:33:53.600
+And then, for last point, we use&nbsp;
+the spectral training procedure&nbsp;&nbsp;
+
+00:33:53.600 --> 00:33:58.040
+where we can actually use parsevals&nbsp;
+identity to come up with an equivalency&nbsp;&nbsp;
+
+00:33:58.040 --> 00:34:03.920
+between some type of PDE loss in your physical&nbsp;
+domain. And what that spectral representation is,&nbsp;&nbsp;
+
+00:34:03.920 --> 00:34:09.360
+because you can have this equivalency through the&nbsp;
+sum of the square of your spectral coefficients,&nbsp;&nbsp;
+
+00:34:09.360 --> 00:34:14.320
+and that essentially gives you a very good&nbsp;
+approximation for what the PE residual of the&nbsp;&nbsp;
+
+00:34:14.320 --> 00:34:20.840
+problem is. And what that means is that you can&nbsp;
+actually not just project to spectral space and do&nbsp;&nbsp;
+
+00:34:20.840 --> 00:34:26.560
+all of your architecture transformations in this&nbsp;
+part of the architecture. You can then train the&nbsp;&nbsp;
+
+00:34:26.560 --> 00:34:33.000
+whole model fully in spectral space by using this&nbsp;
+spectral loss function, and that allows you to&nbsp;&nbsp;
+
+00:34:33.000 --> 00:34:39.080
+just do everything in the spectral domain, which&nbsp;
+will have some advantages, as I'll talk about now.
+
+00:34:39.080 --> 00:34:42.880
+But just a quick note is that this&nbsp;
+is in contrast to training in the&nbsp;&nbsp;
+
+00:34:42.880 --> 00:34:47.920
+physical domain. If you have some grid based&nbsp;
+neural operator and you have this PDE loss,&nbsp;&nbsp;
+
+00:34:47.920 --> 00:34:50.520
+or this physics informed neural network loss,&nbsp;&nbsp;
+
+00:34:50.520 --> 00:34:57.640
+so this would be so the top part is the spectral&nbsp;
+approach, in contrast to this physical approach.
+
+00:34:58.280 --> 00:34:59.960
+So here's one example.
+
+00:34:59.960 --> 00:35:02.960
+Where we looked at a reaction&nbsp;
+diffusion system. So in this case,&nbsp;&nbsp;
+
+00:35:02.960 --> 00:35:07.840
+we have, this is just a 2d problem. You&nbsp;
+have some temporal dimension and some&nbsp;&nbsp;
+
+00:35:07.840 --> 00:35:14.240
+spatial dimension. And we ran a numerical&nbsp;
+solver on this so you see that it behaves&nbsp;&nbsp;
+
+00:35:14.240 --> 00:35:21.160
+very predictably. As you increase the resolution&nbsp;
+of your domain, the error gets lower and lower,&nbsp;&nbsp;
+
+00:35:21.160 --> 00:35:25.320
+and this error is relative to a very fine&nbsp;
+discretization. So we generated a really&nbsp;&nbsp;
+
+00:35:25.320 --> 00:35:31.480
+fine solution, and then we sub sampled it to&nbsp;
+represent all of these different grid points.
+
+00:35:31.480 --> 00:35:38.640
+So if you use this approach of a standard grid&nbsp;
+based neural operator, and you add and then you&nbsp;&nbsp;
+
+00:35:38.640 --> 00:35:44.840
+add some type of PDE loss to that. So this would&nbsp;
+be training only in physical space. You can see&nbsp;&nbsp;
+
+00:35:44.840 --> 00:35:51.280
+that it doesn't quite match up super well, so&nbsp;
+it's slower with a finer discretization. And&nbsp;&nbsp;
+
+00:35:51.280 --> 00:35:55.320
+one thing is that you can see that it actually&nbsp;
+overfits a little bit to the training grid that&nbsp;&nbsp;
+
+00:35:55.320 --> 00:36:00.560
+it was trained on. So it actually sometimes&nbsp;
+will do worse for higher training grids,&nbsp;&nbsp;
+
+00:36:00.560 --> 00:36:05.800
+rather than decrease continuously, like this&nbsp;
+standard numerical solver. So this would be&nbsp;&nbsp;
+
+00:36:05.800 --> 00:36:11.960
+like the grid based approaches. And in contrast,&nbsp;
+when you do this all in the spectral domain,&nbsp;&nbsp;
+
+00:36:11.960 --> 00:36:16.840
+so you use the approach I talked about, where&nbsp;
+you have this neural network, you train it&nbsp;&nbsp;
+
+00:36:16.840 --> 00:36:23.560
+with a spectral loss, you end up down here for&nbsp;
+all of your grid sizes, because now the grid&nbsp;&nbsp;
+
+00:36:23.560 --> 00:36:28.840
+no longer matters, because your computational&nbsp;
+cost is constant regardless of the grid size,&nbsp;&nbsp;
+
+00:36:28.840 --> 00:36:33.200
+because you're naturally not expressing your&nbsp;
+loss function in terms of the grid itself. So&nbsp;&nbsp;
+
+00:36:33.200 --> 00:36:38.160
+there's no sampling issue here, and you can see&nbsp;
+that it maintains accuracy. So when you compare&nbsp;&nbsp;
+
+00:36:38.160 --> 00:36:44.680
+it to the standard numerical solver, it's faster&nbsp;
+for the same level of accuracy, which I think is&nbsp;&nbsp;
+
+00:36:44.680 --> 00:36:53.960
+the comparison that we should be doing for all new&nbsp;
+neural net work methods in this ml for PDE space.
+
+00:36:53.960 --> 00:36:59.120
+We also went and looked at different forms of the&nbsp;
+Navier stokes equations. So this is an example&nbsp;&nbsp;
+
+00:36:59.120 --> 00:37:04.080
+where we're looking at unforced navier stokes&nbsp;
+equations, where the top row is our numerical&nbsp;&nbsp;
+
+00:37:04.080 --> 00:37:09.280
+solver, the middle row is our method, and the&nbsp;
+bottom row is when you train only in physical&nbsp;&nbsp;
+
+00:37:09.280 --> 00:37:14.360
+space. So this is actually an animation, but&nbsp;
+we converge pretty quickly with this spectral&nbsp;&nbsp;
+
+00:37:14.360 --> 00:37:19.200
+approach, whereas when you look at the bottom&nbsp;
+row, there's a lot of features here that just&nbsp;&nbsp;
+
+00:37:19.200 --> 00:37:25.840
+don't converge to what the numerical solver looks&nbsp;
+like, and these are somewhat hard to resolve.
+
+00:37:25.840 --> 00:37:30.800
+And this is another example where now we look at&nbsp;
+force navier stokes equations. So we have this&nbsp;&nbsp;
+
+00:37:30.800 --> 00:37:36.960
+numerical solver we train only in physical&nbsp;
+space, and this actually blows up over long&nbsp;&nbsp;
+
+00:37:36.960 --> 00:37:42.320
+time scales. So the error gets really high as&nbsp;
+you get further and further away in time, and&nbsp;&nbsp;
+
+00:37:42.320 --> 00:37:48.800
+when you do this approach with spectral methods,&nbsp;
+it's a lot more well behaved. So over time, the&nbsp;&nbsp;
+
+00:37:48.800 --> 00:37:55.840
+total relative error ends up being a lot lower.&nbsp;
+And I didn't plot the computational speed here,&nbsp;&nbsp;
+
+00:37:55.840 --> 00:37:59.760
+but that's also a very big advantage of&nbsp;
+this approach, that it's a lot faster,&nbsp;&nbsp;
+
+00:37:59.760 --> 00:38:08.120
+both during training, but also when you&nbsp;
+actually go and use this model during inference.
+
+00:38:08.120 --> 00:38:13.920
+So the last thing I'll talk about is, so far&nbsp;
+I've talked about this idea of inspiration&nbsp;&nbsp;
+
+00:38:13.920 --> 00:38:19.800
+for numerical methods and neural networks in&nbsp;
+the context of solving PDS, so fluid dynamics&nbsp;&nbsp;
+
+00:38:19.800 --> 00:38:25.400
+problems or other general types of PDs. But I&nbsp;
+think these simulation in the loop ideas can&nbsp;&nbsp;
+
+00:38:25.400 --> 00:38:31.720
+also be really relevant for other problems like&nbsp;
+molecular systems or things at the atomistic&nbsp;&nbsp;
+
+00:38:31.720 --> 00:38:39.840
+scale and running molecular dynamics. So this is&nbsp;
+an approach here, where the way you train models&nbsp;&nbsp;
+
+00:38:39.840 --> 00:38:45.400
+for molecular dynamics, a very common approach is&nbsp;
+that you try to approximate the potential energy&nbsp;&nbsp;
+
+00:38:45.400 --> 00:38:50.920
+surface of these systems, and if you have a good&nbsp;
+approximation for the energies and the forces,&nbsp;&nbsp;
+
+00:38:50.920 --> 00:38:56.520
+you can then run these simulations over&nbsp;
+time by using Numerical Integrator. And&nbsp;&nbsp;
+
+00:38:56.520 --> 00:39:01.200
+hopefully you can run it for very long time&nbsp;
+scales without it running into instabilities,&nbsp;&nbsp;
+
+00:39:01.200 --> 00:39:06.120
+because then you can study the system better.&nbsp;
+You can compute observables about the system&nbsp;&nbsp;
+
+00:39:06.120 --> 00:39:10.800
+from that type of simulation. But there&nbsp;
+are also some challenges here. So this is&nbsp;&nbsp;
+
+00:39:10.800 --> 00:39:16.200
+an example of a neural network trained for&nbsp;
+these molecular simulators. And we go ahead&nbsp;&nbsp;
+
+00:39:16.200 --> 00:39:23.120
+and run this over in time, so we simulate&nbsp;
+the system over, ideally long time steps.
+
+00:39:23.120 --> 00:39:27.080
+And initially it seems okay, but&nbsp;
+as you simulate the system larger,&nbsp;&nbsp;
+
+00:39:27.080 --> 00:39:32.560
+longer and longer, you see that there's this&nbsp;
+very clear, unphysical thing happening where&nbsp;&nbsp;
+
+00:39:32.560 --> 00:39:39.160
+there's this bond stretching that results&nbsp;
+in a very unstable structure. And both,&nbsp;&nbsp;
+
+00:39:39.160 --> 00:39:42.040
+what that means is that so you&nbsp;
+can't really trust the simulation,&nbsp;&nbsp;
+
+00:39:42.040 --> 00:39:46.960
+because there are these instabilities coming up.&nbsp;
+But any types of properties that you then want to&nbsp;&nbsp;
+
+00:39:46.960 --> 00:39:51.000
+compute from that simulation are probably&nbsp;
+going to be very inaccurate, because the&nbsp;&nbsp;
+
+00:39:51.000 --> 00:39:57.320
+simulation is just not stable enough to get to&nbsp;
+the point of where you can do those computations.
+
+00:39:59.000 --> 00:39:59.960
+So coming back.
+
+00:39:59.960 --> 00:40:04.800
+Back to the idea of simulation in the loop,&nbsp;
+there's a lot of learning signal that you can get&nbsp;&nbsp;
+
+00:40:04.800 --> 00:40:11.400
+from the molecular simulation itself. So in this&nbsp;
+case, this approach to slightly different problem&nbsp;&nbsp;
+
+00:40:11.400 --> 00:40:16.360
+setting in that you might have some atomistic&nbsp;
+system, some molecular system, you give it to&nbsp;&nbsp;
+
+00:40:16.360 --> 00:40:21.080
+a neural network, and you predict the energies&nbsp;
+and the forces of that system. And once you have&nbsp;&nbsp;
+
+00:40:21.080 --> 00:40:26.520
+the forces, you can use numerical integration to&nbsp;
+get to your next time step. And this is how you&nbsp;&nbsp;
+
+00:40:26.520 --> 00:40:33.680
+would run the simulation over time. And as you run&nbsp;
+this MD simulation over time, and keep running it,&nbsp;&nbsp;
+
+00:40:33.680 --> 00:40:38.840
+you can compute system observables about&nbsp;
+that system, so something about that system,&nbsp;&nbsp;
+
+00:40:38.840 --> 00:40:44.640
+or multiple properties of that system. And&nbsp;
+so typically, the common approach to train&nbsp;&nbsp;
+
+00:40:44.640 --> 00:40:49.760
+these models is to train this neural network to&nbsp;
+adjust the energies and forces. But in this case,&nbsp;&nbsp;
+
+00:40:49.760 --> 00:40:55.320
+we wanted to actually train the neural network&nbsp;
+to the simulation itself. So actually use all of&nbsp;&nbsp;
+
+00:40:55.320 --> 00:41:00.000
+this information of the simulation and build&nbsp;
+that into the training procedure somehow,&nbsp;&nbsp;
+
+00:41:00.000 --> 00:41:04.480
+because that would also then allow us to train&nbsp;
+to more than just energies and forces. We could&nbsp;&nbsp;
+
+00:41:04.480 --> 00:41:09.920
+actually train to observables of the system.&nbsp;
+Maybe those observables come from experiment.&nbsp;&nbsp;
+
+00:41:09.920 --> 00:41:16.240
+So this could be actually a way to bridge&nbsp;
+some type of theory experiment gap as well.
+
+00:41:16.240 --> 00:41:21.680
+And so the same idea here is when we go&nbsp;
+and train to these observables over MD&nbsp;&nbsp;
+
+00:41:21.680 --> 00:41:26.600
+simulation. So we run the MD simulation, we&nbsp;
+query the neural network, run the integrator,&nbsp;&nbsp;
+
+00:41:26.600 --> 00:41:32.960
+we compute system observables, and we take a loss&nbsp;
+function on the observables. Now we come into the&nbsp;&nbsp;
+
+00:41:32.960 --> 00:41:38.400
+same issue that we had before, where you can't&nbsp;
+differentiate back through all of the steps of&nbsp;&nbsp;
+
+00:41:38.400 --> 00:41:42.640
+your MD simulation, because it means that you're&nbsp;
+going to differentiate through all of the steps&nbsp;&nbsp;
+
+00:41:42.640 --> 00:41:47.960
+of your Numerical Integrator. And so instead,&nbsp;
+here we can do the same thing. We can train the&nbsp;&nbsp;
+
+00:41:47.960 --> 00:41:53.880
+neural network with implicit differentiation. So&nbsp;
+there's actually a way. It's a different approach&nbsp;&nbsp;
+
+00:41:53.880 --> 00:41:58.480
+to formulate this implicit differentiation&nbsp;
+problem than the previous approach I talked&nbsp;&nbsp;
+
+00:41:58.480 --> 00:42:02.680
+about, because this is actually a stochastic&nbsp;
+setting, so you're actually doing implicit&nbsp;&nbsp;
+
+00:42:02.680 --> 00:42:08.920
+differentiation over a distribution. But&nbsp;
+the key idea here is that you can formulate,
+
+00:42:09.560 --> 00:42:14.000
+taking the gradients this way. And the&nbsp;
+key insight is really that you separate,&nbsp;&nbsp;
+
+00:42:14.000 --> 00:42:19.000
+getting the out the neural network output&nbsp;
+from the rest of the neural network itself,&nbsp;&nbsp;
+
+00:42:19.000 --> 00:42:24.560
+so you don't have to back, propagate back through&nbsp;
+all of the steps of the solver to get there.
+
+00:42:24.560 --> 00:42:30.000
+And so this ends up also being quite powerful in&nbsp;
+the context of molecular dynamics. So this is an&nbsp;&nbsp;
+
+00:42:30.000 --> 00:42:37.160
+example of a water system, and there's a local&nbsp;
+instability that comes up. So the full simulation&nbsp;&nbsp;
+
+00:42:37.160 --> 00:42:42.120
+in the loop method and the differentiation&nbsp;
+technique, we call this Boltzmann estimator,&nbsp;&nbsp;
+
+00:42:42.120 --> 00:42:47.400
+because we formulate the implicit differentiation&nbsp;
+problem based on the fact that we know that the&nbsp;&nbsp;
+
+00:42:47.400 --> 00:42:52.360
+underlying system obeys a Boltzmann distribution.&nbsp;
+And this is how you can actually formulate what&nbsp;&nbsp;
+
+00:42:52.360 --> 00:42:58.840
+the differentiation task should be. And so&nbsp;
+before training, when you use standard training,&nbsp;&nbsp;
+
+00:42:58.840 --> 00:43:05.160
+so the approach over here, where you just&nbsp;
+train it with these energies and forces.
+
+00:43:05.160 --> 00:43:11.480
+When you run this system over time, over all of&nbsp;
+these picoseconds, all of the trajectories become&nbsp;&nbsp;
+
+00:43:11.480 --> 00:43:18.160
+unstable relatively quickly, so often too quickly&nbsp;
+before you can actually compute things that are of&nbsp;&nbsp;
+
+00:43:18.160 --> 00:43:22.400
+interest, so observables of interest about the&nbsp;
+system. But when you actually now train it in&nbsp;&nbsp;
+
+00:43:22.400 --> 00:43:28.320
+this simulation, in the loop style, after we do&nbsp;
+our training procedure, we can actually simulate&nbsp;&nbsp;
+
+00:43:28.320 --> 00:43:34.800
+this system for we went although we went up to one&nbsp;
+nanosecond, but you can also go further than that,&nbsp;&nbsp;
+
+00:43:34.800 --> 00:43:41.680
+then you can see that the system no longer&nbsp;
+has the same instability problems as before.
+
+00:43:41.680 --> 00:43:47.880
+And the way that this nicely manifests is that&nbsp;
+if we then want to go and actually compute things&nbsp;&nbsp;
+
+00:43:47.880 --> 00:43:53.520
+from the system. So in this case, we don't train&nbsp;
+it on anything about the diffusivity coefficient,&nbsp;&nbsp;
+
+00:43:53.520 --> 00:43:57.840
+so it doesn't see anything about this.&nbsp;
+But after we train it with this procedure,&nbsp;&nbsp;
+
+00:43:57.840 --> 00:44:03.720
+and we go run it at test time, and we compute&nbsp;
+the diffusivity coefficient of the system,&nbsp;&nbsp;
+
+00:44:03.720 --> 00:44:09.080
+we end up being a lot closer to what the true&nbsp;
+coefficient is. So this black line here represents&nbsp;&nbsp;
+
+00:44:09.080 --> 00:44:15.040
+the reference. And before training, all of these&nbsp;
+before our training, the trajectories were not&nbsp;&nbsp;
+
+00:44:15.040 --> 00:44:20.480
+really getting any close to those reference&nbsp;
+observables. And after our training, we're a lot&nbsp;&nbsp;
+
+00:44:20.480 --> 00:44:25.920
+more in the ballpark or in the general range of&nbsp;
+what that true diffusivity coefficient should be.&nbsp;&nbsp;
+
+00:44:25.920 --> 00:44:32.000
+And so I think this type of procedure is powerful&nbsp;
+for both bridging this theory and experiment gap,&nbsp;&nbsp;
+
+00:44:32.000 --> 00:44:37.400
+but also the fact that by doing this procedure,&nbsp;
+you can improve both the stability and performance&nbsp;&nbsp;
+
+00:44:37.400 --> 00:44:43.560
+on new systems or new observables, and actually&nbsp;
+have some level of hopefully more reliability in&nbsp;&nbsp;
+
+00:44:43.560 --> 00:44:50.000
+running those molecular simulations downstream.&nbsp;
+And the very high level general idea of reading&nbsp;&nbsp;
+
+00:44:50.000 --> 00:44:57.040
+numerical simulations with neural networks is&nbsp;
+still generally true here in this setting as well.
+
+00:44:58.360 --> 00:45:00.160
+So in summary, I think.
+
+00:45:00.160 --> 00:45:05.520
+Think neural networks do have a lot of&nbsp;
+potential for these physical modeling problems,&nbsp;&nbsp;
+
+00:45:05.520 --> 00:45:10.640
+but at the same time, we really need to keep in&nbsp;
+mind this idea that we need accurate and rigorous&nbsp;&nbsp;
+
+00:45:10.640 --> 00:45:16.040
+methods that are going to be able to give us&nbsp;
+reliable, physically consistent answers when&nbsp;&nbsp;
+
+00:45:16.040 --> 00:45:21.480
+we go run that method in a simulation, or&nbsp;
+go run that neural network in a simulation,&nbsp;&nbsp;
+
+00:45:21.480 --> 00:45:25.840
+and this idea of also having trust during&nbsp;
+deployment. So after we train a model,&nbsp;&nbsp;
+
+00:45:25.840 --> 00:45:31.080
+we would like to trust it when we actually go use&nbsp;
+it for a lot of different downstream tasks. And&nbsp;&nbsp;
+
+00:45:31.080 --> 00:45:37.320
+so here I talked about a few different examples&nbsp;
+of the best of both worlds. So taking numerical&nbsp;&nbsp;
+
+00:45:37.320 --> 00:45:42.400
+methods and deep learning and putting these&nbsp;
+together with this idea of differentiable solvers,&nbsp;&nbsp;
+
+00:45:42.400 --> 00:45:48.360
+so ways to actually come up with differentiation&nbsp;
+techniques that let you train these two things&nbsp;&nbsp;
+
+00:45:48.360 --> 00:45:53.760
+together. So whether that's through this idea of&nbsp;
+a PDE constrained optimization layer in the neural&nbsp;&nbsp;
+
+00:45:53.760 --> 00:46:00.840
+network, or taking neural networks and combining&nbsp;
+them with spectral methods, ideas, as well as the&nbsp;&nbsp;
+
+00:46:00.840 --> 00:46:06.600
+fact that these simulation in the loop. Ideas also&nbsp;
+extend to problems like molecular dynamics, where&nbsp;&nbsp;
+
+00:46:06.600 --> 00:46:11.360
+it's a bit of a different setting because you have&nbsp;
+a stochastic setting, but you can still formulate&nbsp;&nbsp;
+
+00:46:11.360 --> 00:46:18.680
+the same differentiation approaches and train this&nbsp;
+model to the output of a simulation itself, and&nbsp;&nbsp;
+
+00:46:18.680 --> 00:46:23.600
+ideally improve the simulation stability as well&nbsp;
+as the accuracy of the properties that you compute&nbsp;&nbsp;
+
+00:46:23.600 --> 00:46:30.960
+from that simulation. And the papers with all the&nbsp;
+code available for everything I talked about are&nbsp;&nbsp;
+
+00:46:30.960 --> 00:46:38.200
+all down here, so you can definitely go check it&nbsp;
+out and let us know if you have any questions.
+
+00:46:38.200 --> 00:46:43.400
+And finally, I'd like to thank a lot of&nbsp;
+the great students that I get to work&nbsp;&nbsp;
+
+00:46:43.400 --> 00:46:48.280
+with. So a lot of the work I talked about&nbsp;
+here was with yihang Nitin and Sanjeev on&nbsp;&nbsp;
+
+00:46:48.280 --> 00:46:54.200
+all of these different areas. And I'll go&nbsp;
+ahead and come back to this summary slide,&nbsp;&nbsp;
+
+00:46:54.200 --> 00:46:58.640
+and happy to take any more questions as&nbsp;
+well. Thanks, awesome, awesome. Thank&nbsp;&nbsp;
+
+00:46:58.640 --> 00:47:05.560
+thank you so much for the wonderful talk.&nbsp;
+Very nice. Okay, there there were questions
+
+00:47:06.680 --> 00:47:13.200
+during your talk. So the first&nbsp;
+question is by GI Joe. She wants&nbsp;&nbsp;
+
+00:47:13.200 --> 00:47:23.960
+to know about what kind of neural network&nbsp;
+you used in Slide eight. Oh, sure, yeah.
+
+00:47:23.960 --> 00:47:26.840
+I think that's when you talk about the pins.&nbsp;&nbsp;
+
+00:47:27.840 --> 00:47:32.520
+Oh, yeah. I think slide eight, yeah,&nbsp;
+that was just the toy example setting
+
+00:47:33.600 --> 00:47:41.200
+in. In that setting, it was just a simple&nbsp;
+MLP for that problem. But in some of the&nbsp;&nbsp;
+
+00:47:41.200 --> 00:47:47.800
+later methods settings I showed, we used a few&nbsp;
+different types of neural operator architectures,&nbsp;&nbsp;
+
+00:47:47.800 --> 00:47:53.560
+but the methods I was talking about, a lot of them&nbsp;
+are agnostic to the underlying architecture. But&nbsp;&nbsp;
+
+00:47:53.560 --> 00:47:59.200
+in in that toy example, it was just a just&nbsp;
+a regular, fully connected neural network.
+
+00:48:00.720 --> 00:48:07.480
+And second question is by Betty in slide 45 and 46
+
+00:48:07.480 --> 00:48:15.440
+how would the spectral methods work when the&nbsp;
+flow has discontinuities? For example? Yeah,&nbsp;&nbsp;
+
+00:48:15.440 --> 00:48:20.000
+that's a really good question. So how would you&nbsp;
+solve a problem if there's any discontinuities?&nbsp;&nbsp;
+
+00:48:20.000 --> 00:48:25.800
+That's actually exactly what we're working on&nbsp;
+right now. So we have some ideas that there are&nbsp;&nbsp;
+
+00:48:25.800 --> 00:48:31.320
+potentially ways that you could parameterize&nbsp;
+your domain with maybe like using something&nbsp;&nbsp;
+
+00:48:31.320 --> 00:48:36.400
+analogous to finite element methods, and that&nbsp;
+would at least help with the fact that you would&nbsp;&nbsp;
+
+00:48:36.400 --> 00:48:41.920
+have discontinuities in your domain. I think&nbsp;
+it's a really good and very important problem,&nbsp;&nbsp;
+
+00:48:41.920 --> 00:48:48.080
+especially if you're looking at systems&nbsp;
+with complex or varying geometries.
+
+00:48:48.080 --> 00:48:51.400
+Okay. Next question is by Sakhar.
+
+00:48:52.320 --> 00:48:56.840
+He has a bunch of questions.&nbsp;
+Do you mind Sakhar? Unmute&nbsp;&nbsp;
+
+00:48:56.840 --> 00:49:04.040
+yourself and then ask that question yourself. I
+
+00:49:04.040 --> 00:49:09.920
+If not, I can ask, okay, his first question&nbsp;
+is, is there a reference for implicit different&nbsp;&nbsp;
+
+00:49:09.920 --> 00:49:16.080
+differentiation applied to these applications,&nbsp;
+the neural net, plus the numerical solver? That's&nbsp;&nbsp;
+
+00:49:16.080 --> 00:49:24.400
+his first question, yeah, for these areas.&nbsp;
+So some of the earlier work in this area,&nbsp;&nbsp;
+
+00:49:24.400 --> 00:49:30.920
+there was this idea of OPT net or optimization&nbsp;
+as a layer, which was this very general approach&nbsp;&nbsp;
+
+00:49:30.920 --> 00:49:36.880
+that maybe you could incorporate some type&nbsp;
+of optimization problem into neural networks.&nbsp;&nbsp;
+
+00:49:36.880 --> 00:49:42.840
+And there's also been approaches like using the&nbsp;
+adjoint method, though, that's not, I think, quite&nbsp;&nbsp;
+
+00:49:42.840 --> 00:49:47.240
+in the same flavor as a lot of the work that I&nbsp;
+talked about here. And the adjoint method actually&nbsp;&nbsp;
+
+00:49:47.240 --> 00:49:53.480
+can have numerical instability problems that don't&nbsp;
+come up in the same way for in the settings that I&nbsp;&nbsp;
+
+00:49:53.480 --> 00:49:59.960
+talked about here, for, in the context of&nbsp;
+using implicit differentiation for, for.
+
+00:49:59.960 --> 00:50:05.680
+Example solving PDE problems. I think&nbsp;
+the reference would really be like some&nbsp;&nbsp;
+
+00:50:05.680 --> 00:50:10.360
+of our work here, where we in this first&nbsp;
+paper, we actually formulated doing this&nbsp;&nbsp;
+
+00:50:10.360 --> 00:50:17.160
+as a PDE constraint optimization problem&nbsp;
+and then extended it to the MOE setting.
+
+00:50:17.160 --> 00:50:22.760
+Okay. And his second question is, can the&nbsp;
+computation by each expert in the MOE method be&nbsp;&nbsp;
+
+00:50:22.760 --> 00:50:29.280
+parallel? Yeah, exactly. Yeah. It can definitely&nbsp;
+be parallelized. So that's one of the big&nbsp;&nbsp;
+
+00:50:29.280 --> 00:50:34.360
+advantages, that you're not just splitting solving&nbsp;
+the problem on a bunch of different subdomains,&nbsp;&nbsp;
+
+00:50:34.360 --> 00:50:38.040
+but you can do that computation on the&nbsp;
+all of those subdomains in parallel. So&nbsp;&nbsp;
+
+00:50:38.040 --> 00:50:44.760
+that's also one of the reasons there's a big&nbsp;
+speed up in doing it with the MOE setting.
+
+00:50:44.760 --> 00:50:52.240
+Okay, the last question by Sakhar is, how much&nbsp;
+faster, slower is the method Moe compared to a&nbsp;&nbsp;
+
+00:50:52.240 --> 00:50:58.120
+numerical solver for inference, yeah, compared to&nbsp;
+a numerical solver for inference for the settings&nbsp;&nbsp;
+
+00:50:58.120 --> 00:51:02.840
+that we looked at. So we started looking at a&nbsp;
+few different settings, diffusion, sorption,&nbsp;&nbsp;
+
+00:51:02.840 --> 00:51:08.640
+reaction, diffusion problems, navier stokes&nbsp;
+problems. With the MOE setting, we are faster&nbsp;&nbsp;
+
+00:51:08.640 --> 00:51:14.960
+than a numerical solver. In the original setting&nbsp;
+that we had, where we didn't use the MOE, we were&nbsp;&nbsp;
+
+00:51:14.960 --> 00:51:19.640
+about equal with a numerical solver at the&nbsp;
+time. So the MOE was actually quite crucial&nbsp;&nbsp;
+
+00:51:19.640 --> 00:51:26.840
+to being faster. That being said, when we first&nbsp;
+did this there actually wasn't super optimized&nbsp;&nbsp;
+
+00:51:26.840 --> 00:51:35.800
+to run these iterative solvers on GPUs. That&nbsp;
+operation was actually not super well optimized&nbsp;&nbsp;
+
+00:51:35.800 --> 00:51:41.120
+for the in this context of actually trying to&nbsp;
+do optimization directly there, because you&nbsp;&nbsp;
+
+00:51:41.120 --> 00:51:45.680
+have to do it on the GPUs if you want to train it&nbsp;
+with a neural network. Since then, there's been&nbsp;&nbsp;
+
+00:51:45.680 --> 00:51:51.320
+a lot of improvements. So I think actually,&nbsp;
+at this point, even without the MOE setting,&nbsp;&nbsp;
+
+00:51:51.320 --> 00:51:57.080
+I think we actually would be faster than a the&nbsp;
+numerical solver for a lot of problems, but you&nbsp;&nbsp;
+
+00:51:57.080 --> 00:52:03.360
+get a much bigger speed up. And the more practical&nbsp;
+version of this is to do it in the MOE setting.
+
+00:52:03.360 --> 00:52:08.000
+Okay. Next question is by Mike, is there&nbsp;
+a communication in the parallel solve at&nbsp;&nbsp;
+
+00:52:08.000 --> 00:52:12.560
+the domain boundaries? Yeah, that's a really&nbsp;
+good question. So how do you deal with the&nbsp;&nbsp;
+
+00:52:12.560 --> 00:52:17.720
+fact that there's a domain decomposition and&nbsp;
+there could be issues between the boundaries?&nbsp;&nbsp;
+
+00:52:17.720 --> 00:52:23.840
+So what we actually found there was that as&nbsp;
+long as each expert so each sub domain solve,&nbsp;&nbsp;
+
+00:52:23.840 --> 00:52:29.240
+had the global initial and boundary conditions,&nbsp;
+that was actually enough for it to learn something&nbsp;&nbsp;
+
+00:52:29.240 --> 00:52:34.680
+reasonable and not have issues at the boundaries.&nbsp;
+Before we gave those global conditions,&nbsp;&nbsp;
+
+00:52:34.680 --> 00:52:38.680
+we were doing some things like trying&nbsp;
+to actually have overlapping domains,&nbsp;&nbsp;
+
+00:52:38.680 --> 00:52:42.920
+like stitching the boundary conditions, doing&nbsp;
+some type of Gaussian smoothing over the boundary&nbsp;&nbsp;
+
+00:52:42.920 --> 00:52:47.480
+conditions, or over the boundary conditions&nbsp;
+of the different domains, but just giving the&nbsp;&nbsp;
+
+00:52:47.480 --> 00:52:54.160
+global initial and boundary conditions to each&nbsp;
+subdomain ended up actually solving that issue.
+
+00:52:54.160 --> 00:52:58.280
+Okay. Next question is by Quan Chong,
+
+00:52:59.000 --> 00:53:04.920
+nice talk. You've shown strong advantage&nbsp;
+of neural spectral method. Perhaps
+
+00:53:04.920 --> 00:53:14.560
+he missed it. But are there any deficiencies to&nbsp;
+the methods? Yeah, so for deficient deficiencies&nbsp;&nbsp;
+
+00:53:14.560 --> 00:53:19.120
+for the methods. So I think one was the point&nbsp;
+that was brought up earlier, how do you deal with&nbsp;&nbsp;
+
+00:53:19.120 --> 00:53:24.560
+discontinuities? And so this is something that&nbsp;
+we're like I mentioned. We're actively working&nbsp;&nbsp;
+
+00:53:24.560 --> 00:53:30.280
+on this and using approaches to actually deal&nbsp;
+directly with discontinuities, especially if you&nbsp;&nbsp;
+
+00:53:30.280 --> 00:53:37.920
+have very complex domain geometries and the so&nbsp;
+that's one approach. The other approach is also&nbsp;&nbsp;
+
+00:53:37.920 --> 00:53:43.680
+that sometimes you might need more frequency&nbsp;
+modes to actually really capture the domain,&nbsp;&nbsp;
+
+00:53:43.680 --> 00:53:47.640
+especially for some of these more complex&nbsp;
+problems. And so you have to be careful there,&nbsp;&nbsp;
+
+00:53:47.640 --> 00:53:53.520
+because there's that trade off of more modes means&nbsp;
+that you have some computational inefficiencies.&nbsp;&nbsp;
+
+00:53:53.520 --> 00:53:58.760
+So it's going to be slower to train the model&nbsp;
+or run the model. But that's also something&nbsp;&nbsp;
+
+00:53:58.760 --> 00:54:05.560
+that we're actively working on now, and actually&nbsp;
+we've already made some speed ups which will be&nbsp;&nbsp;
+
+00:54:05.560 --> 00:54:12.720
+pushed to this repository pretty soon, that deal&nbsp;
+with that computational inefficiency problem.
+
+00:54:12.720 --> 00:54:18.520
+All right. Quan Chen also asked, also, can&nbsp;
+you recommend a good reference paper on Moe&nbsp;&nbsp;
+
+00:54:18.520 --> 00:54:26.120
+theory? Yeah, for a good reference paper.&nbsp;
+So the one of the earlier papers, I think,&nbsp;&nbsp;
+
+00:54:26.120 --> 00:54:34.000
+with Noam shazier from 2017 that's a good&nbsp;
+starting point for one of the earlier examples&nbsp;&nbsp;
+
+00:54:34.000 --> 00:54:39.520
+of something that worked quite well. But if&nbsp;
+you want to go even further to the theory,&nbsp;&nbsp;
+
+00:54:39.520 --> 00:54:43.000
+there's papers from the 90s that&nbsp;
+describe the problem setting,&nbsp;&nbsp;
+
+00:54:43.000 --> 00:54:51.560
+but that 2017 paper is an example of showing&nbsp;
+it in action in large scale machine learning.
+
+00:54:51.560 --> 00:54:52.120
+Okay.
+
+00:54:53.160 --> 00:54:56.560
+Next question is by Mike, if you run the new&nbsp;&nbsp;
+
+00:54:56.560 --> 00:55:00.000
+approaches, can you show that&nbsp;
+you can run these problems?
+
+00:55:00.000 --> 00:55:04.200
+Out indefinitely without an instability,&nbsp;&nbsp;
+
+00:55:04.200 --> 00:55:09.920
+yes. So is that in the PDE setting, or&nbsp;
+like the molecular dynamics setting?
+
+00:55:10.680 --> 00:55:15.920
+Probably PDE setting, I'm sure.&nbsp;
+Yeah. PDE, yes, sure, yeah. So,&nbsp;&nbsp;
+
+00:55:15.920 --> 00:55:24.320
+so we haven't tried running it out indefinitely,&nbsp;
+so to speak, just running it for months and months&nbsp;&nbsp;
+
+00:55:24.320 --> 00:55:29.320
+at a time. I think this does definitely help&nbsp;
+stabilize the methods, so you are able to do&nbsp;&nbsp;
+
+00:55:29.320 --> 00:55:34.680
+these much longer rollouts. And this is actually&nbsp;
+something we've started testing a lot more now,&nbsp;&nbsp;
+
+00:55:34.680 --> 00:55:40.320
+so we are able to run some of these navier stokes&nbsp;
+systems for longer time scales. But I think this&nbsp;&nbsp;
+
+00:55:40.320 --> 00:55:45.760
+also comes into as a problem becomes harder&nbsp;
+and harder. So if you have turbulence flow,&nbsp;&nbsp;
+
+00:55:45.760 --> 00:55:50.520
+for example, you have really high Reynolds&nbsp;
+numbers, I think that's where long time scales&nbsp;&nbsp;
+
+00:55:50.520 --> 00:55:54.920
+becomes hard. And I think that's actually one&nbsp;
+of the big challenges that we should really be&nbsp;&nbsp;
+
+00:55:54.920 --> 00:56:01.240
+working on with these methods to see how well&nbsp;
+we can do that, that long time scale modeling.
+
+00:56:01.240 --> 00:56:05.240
+Okay, next question is by Xu Tong,
+
+00:56:05.240 --> 00:56:12.320
+does the network approximate the coefficients of&nbsp;
+the basis function for the spectral method? If so,&nbsp;&nbsp;
+
+00:56:12.320 --> 00:56:17.880
+will there be an error when transforming the&nbsp;
+field from the physical domain to the spectral&nbsp;&nbsp;
+
+00:56:17.880 --> 00:56:23.360
+domain? Will this error propagate&nbsp;
+during the time domain evolution.
+
+00:56:23.360 --> 00:56:28.960
+So sounds like the question is, so you have,&nbsp;
+you're operating on spectral coefficients,&nbsp;&nbsp;
+
+00:56:28.960 --> 00:56:35.760
+and you're training specifically in spectral&nbsp;
+space on those coefficients. So the nice&nbsp;&nbsp;
+
+00:56:35.760 --> 00:56:42.200
+thing about the spectral approach,&nbsp;
+and I can go back here, so this,
+
+00:56:43.560 --> 00:56:49.400
+this identity here. So parcel of its identity&nbsp;
+essentially gives you an exact form of the&nbsp;&nbsp;
+
+00:56:49.400 --> 00:56:55.520
+PDE residual, up to a certain amount of basis&nbsp;
+functions. So whatever you truncate your basis&nbsp;&nbsp;
+
+00:56:55.520 --> 00:57:00.240
+functions at, and so by actually. And so this is&nbsp;
+computed directly with the sum of the squares of&nbsp;&nbsp;
+
+00:57:00.240 --> 00:57:05.880
+your spectral coefficients. And so because you&nbsp;
+can actually do this as an exact computation,&nbsp;&nbsp;
+
+00:57:05.880 --> 00:57:10.880
+this actually ends up not really mattering that&nbsp;
+much, because you've effectively solved for the&nbsp;&nbsp;
+
+00:57:10.880 --> 00:57:18.000
+PE residual in a mostly exact way, up to a&nbsp;
+certain level of basis function expansions.&nbsp;&nbsp;
+
+00:57:18.000 --> 00:57:22.560
+And so that issue doesn't really or we found that&nbsp;
+that issue doesn't really come up when we actually&nbsp;&nbsp;
+
+00:57:22.560 --> 00:57:27.720
+use this neural spectral methods approach on a&nbsp;
+on a physical problem, that when you actually&nbsp;&nbsp;
+
+00:57:27.720 --> 00:57:34.520
+translate this to solving on a physical&nbsp;
+grid, it ends up being the same either way,
+
+00:57:34.520 --> 00:57:35.200
+right?
+
+00:57:36.080 --> 00:57:41.760
+You know, related question by me, but it&nbsp;
+is that accuracy of the spectral method,&nbsp;&nbsp;
+
+00:57:41.760 --> 00:57:47.840
+neural spectral method is bounded by&nbsp;
+the whatever the spectral you know the&nbsp;&nbsp;
+
+00:57:47.840 --> 00:57:55.480
+basis you you are using, right? I mean, if&nbsp;
+the spectral basis can capture like 99.9%
+
+00:57:55.480 --> 00:58:00.680
+of your solutions, then you are stuck&nbsp;
+with it. That's the best you can do,&nbsp;&nbsp;
+
+00:58:00.680 --> 00:58:07.680
+right? So it's so it is, so it is. It does&nbsp;
+depend on what spectral basis set that you use,&nbsp;&nbsp;
+
+00:58:07.680 --> 00:58:14.160
+but we're also exploiting the fact that as&nbsp;
+your basis expansion goes towards infinity,&nbsp;&nbsp;
+
+00:58:14.160 --> 00:58:19.560
+it means that you're, in theory, going to&nbsp;
+be able to exactly approximate the solution.
+
+00:58:19.560 --> 00:58:23.840
+Yeah, in theory, yes. But in practice,&nbsp;
+you have to truncate at some point. You&nbsp;&nbsp;
+
+00:58:23.840 --> 00:58:29.200
+cannot go infinity. So there will be,&nbsp;
+you know, the limitation in accuracy,&nbsp;&nbsp;
+
+00:58:29.200 --> 00:58:36.200
+how much you can represent with the Yeah. So we,&nbsp;
+so we found, at least in the settings I showed,&nbsp;&nbsp;
+
+00:58:36.200 --> 00:58:42.880
+and we're now testing it on harder settings that&nbsp;
+there was, we didn't have to go towards infinity&nbsp;&nbsp;
+
+00:58:42.880 --> 00:58:48.600
+or something, to a very, very large number of&nbsp;
+terms. Usually we could go within a reasonable&nbsp;&nbsp;
+
+00:58:48.600 --> 00:58:54.000
+amount, within a reasonable computation&nbsp;
+cost, and get most of the way there. If,&nbsp;&nbsp;
+
+00:58:54.000 --> 00:58:59.520
+if the if there is no shock or discontinuity, yeah&nbsp;
+in the solution, yes, right, exactly, if there's&nbsp;&nbsp;
+
+00:58:59.520 --> 00:59:06.440
+no shocker discontinuity, and that area now we're&nbsp;
+actively working on with a few other approaches.
+
+00:59:09.840 --> 00:59:13.560
+Another question by me is, you know,
+
+00:59:15.360 --> 00:59:20.240
+nonlinear manifold reduced to the model, like a&nbsp;
+projection based reduced model, but you introduced&nbsp;&nbsp;
+
+00:59:20.240 --> 00:59:25.920
+that nonlinear manifold you know, the neural&nbsp;
+network, kind of basis social representations,&nbsp;&nbsp;
+
+00:59:25.920 --> 00:59:33.320
+and you plug that into the you know, existing&nbsp;
+numerical method and solve for the latent space&nbsp;&nbsp;
+
+00:59:33.320 --> 00:59:39.880
+coefficients instead of the full space you&nbsp;
+know, so that you know, you get The efficiency
+
+00:59:39.880 --> 00:59:45.200
+the the the method you, you know,&nbsp;
+introduce, so called the physics constraint
+
+00:59:45.960 --> 00:59:50.920
+methods you know, the first method you introduced,
+
+00:59:50.920 --> 00:59:55.280
+it has a very similarity between&nbsp;
+those two, by the fact that you,&nbsp;&nbsp;
+
+00:59:55.280 --> 01:00:00.200
+you do, take advantage of the&nbsp;
+existing numerical method and in.
+
+01:00:00.200 --> 01:00:05.320
+Instead of the traditional basis,&nbsp;
+you use the neural network basis,&nbsp;&nbsp;
+
+01:00:05.320 --> 01:00:09.080
+and then you actually solve that. PDE, right?
+
+01:00:09.080 --> 01:00:14.920
+So, yeah, so do are you? So my first question&nbsp;
+is, are you familiar with that nonlinear&nbsp;&nbsp;
+
+01:00:14.920 --> 01:00:20.920
+manifold with the student model? Yeah, I'm&nbsp;
+a bit I'm familiar with that general area,&nbsp;&nbsp;
+
+01:00:20.920 --> 01:00:28.400
+and I do agree that I think there is some overlap&nbsp;
+in that. I think some of the advantages of both&nbsp;&nbsp;
+
+01:00:28.400 --> 01:00:33.400
+the approaches I talked about here and that&nbsp;
+approach are that you're doing a change of basis&nbsp;&nbsp;
+
+01:00:33.400 --> 01:00:39.800
+and potentially now learning in a space that's&nbsp;
+going to be easier to learn on than it was before.
+
+01:00:39.800 --> 01:00:43.760
+Yeah, so, but in that project, I'm&nbsp;
+basically some of the, you know,&nbsp;&nbsp;
+
+01:00:43.760 --> 01:00:49.360
+because you're introducing more nonlinearity&nbsp;
+through the neural network you just introduced,&nbsp;&nbsp;
+
+01:00:49.360 --> 01:00:55.920
+which was not there before. So, so the&nbsp;
+complexity of the nonlinearity is has increased.&nbsp;&nbsp;
+
+01:00:56.640 --> 01:01:02.600
+So because of that, it is very important&nbsp;
+to, you know, apply the technique,&nbsp;&nbsp;
+
+01:01:02.600 --> 01:01:08.560
+so called hyper productions there,&nbsp;
+otherwise you wouldn't get the speed up,
+
+01:01:09.360 --> 01:01:14.640
+because it's you're interacting&nbsp;
+with the existing numerical methods,&nbsp;&nbsp;
+
+01:01:14.640 --> 01:01:21.480
+and you have increased the non linearity in very&nbsp;
+intertwined way. So you do need some special&nbsp;&nbsp;
+
+01:01:21.480 --> 01:01:28.400
+method to deal with it. I'm wondering if, for&nbsp;
+your method, if you need those kind of you know,&nbsp;&nbsp;
+
+01:01:28.400 --> 01:01:35.040
+how do you handle the nonlinearity you&nbsp;
+introduce through that neural network? Yeah,
+
+01:01:36.640 --> 01:01:44.680
+so I think in practice, we haven't seen that be&nbsp;
+a big issue. At one point we were using much more&nbsp;&nbsp;
+
+01:01:44.680 --> 01:01:51.240
+complicated iterative solvers, because we thought&nbsp;
+that that would be the one to one between solving&nbsp;&nbsp;
+
+01:01:51.240 --> 01:01:56.000
+this in a numerical setting and solving this in&nbsp;
+the neural network setting. But as long as we just&nbsp;&nbsp;
+
+01:01:56.000 --> 01:02:01.560
+have a reasonable iterative, nonlinear, least&nbsp;
+square Solver, we found that the neural network&nbsp;&nbsp;
+
+01:02:01.560 --> 01:02:06.280
+would do the rest of the heavy lifting,&nbsp;
+and so we didn't explicitly see, I think,&nbsp;&nbsp;
+
+01:02:06.280 --> 01:02:11.360
+this issue that you're describing, but I think&nbsp;
+it's definitely interesting, and it would be&nbsp;&nbsp;
+
+01:02:11.360 --> 01:02:17.760
+worth testing out on more cases to see if this&nbsp;
+actually explicitly needs to be dealt with.
+
+01:02:18.960 --> 01:02:19.880
+All right, well,
+
+01:02:20.840 --> 01:02:31.320
+it's three minutes after 11, so I think&nbsp;
+it's a good time to finish our, you know,&nbsp;&nbsp;
+
+01:02:31.320 --> 01:02:35.040
+your seminar. Thank you so&nbsp;
+much for the wonderful talk&nbsp;&nbsp;
+
+01:02:35.040 --> 01:02:42.160
+and beautiful introduction of those&nbsp;
+three methods. And, yeah, definitely
+
+01:02:42.160 --> 01:02:49.240
+more interested in going too deep and then&nbsp;
+learn more about it. So thank you so much.
+
+01:02:49.240 --> 01:02:51.960
+Yeah, thanks a lot for all of the great questions.&nbsp;&nbsp;
+
+01:02:51.960 --> 01:02:56.080
+It was fun to have so many questions,&nbsp;
+and feel free to contact me afterwards&nbsp;&nbsp;
+
+01:02:56.080 --> 01:03:03.720
+if you want to talk more or have more&nbsp;
+questions. Awesome, thank you, Aditi,
+
+01:03:03.720 --> 01:03:04.600
+great. Thanks.
+

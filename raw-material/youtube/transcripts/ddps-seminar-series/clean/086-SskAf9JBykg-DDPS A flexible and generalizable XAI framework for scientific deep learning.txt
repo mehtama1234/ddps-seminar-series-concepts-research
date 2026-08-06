@@ -1,0 +1,1372 @@
+all right let's start okay welcome to
+the ddps seminar everyone before we
+introduce our employees speakers let's
+go over some rules and Logistics as
+usual
+uh first of all please mute yourself
+during the token to please use chat room
+to post your questions so that we can
+address them in Q a session at the end
+uh second two days today is ddps seminar
+is open to external audiences so no
+classified discussion is allowed please
+watch out finally The Talk today will be
+recorded and uploaded in our YouTube
+channel that's about it now let me
+introduce our speaker today
+it is an honor to host Dr Amir um arjani
+who is a tenure track assistant
+professor at the University of Utah
+um you know based on the conversation I
+just made I'm we are expecting him to
+become a associate professor um
+spring next year as a matter of fact
+he obtained his Bachelor master and
+Doctor degree in mechanical engineering
+from
+Isfahan University of Technology
+Illinois Institute of Technology and UC
+Berkeley respectively
+is is the director of the computational
+biomechanics group at Utah and the
+recipient of the NSF Courier award is
+research utilizes various computational
+mechanics and data-driven techniques to
+study biological flows and soft tissue
+mechanics today
+Amil will present an exciting topic
+which is a flexible and generalizable
+xai framework for scientific deep
+learning
+please enjoy and expect a wonderful talk
+now without further Ado let me pass the
+button to Emir by asking one random
+question as usual the random question is
+what is your idea of the perfect day
+a perfect day yeah
+a perfect day is a happy day
+I don't know if everything goes by plan
+that's a perfect day oh yeah that that
+sometimes no bad news no bad news no
+Grant rejections yeah that does
+sometimes happen yeah yeah okay thank
+you thank you
+thank you it's great to be here and I'm
+excited speaking uh uh talking with all
+of you so I'll be presenting our recent
+work on interpretable AI
+so um okay so as we all know deep
+learning studies become very popular in
+physics-based modeling whether that's
+super resolution denoising predicting
+clothes closure modeling or just the
+surrogate model for in-loop calculations
+like optimization or uncertainty
+quantifications but there are two key
+challenges in deep learning uh one is a
+generalization to out of distribution
+test data or really extrapolation and
+the other challenge is lack of
+interpretability
+so interpretability is desired because
+it provides trust in our models it helps
+us get better fundamental understanding
+of the system that we're studying and it
+also helps us come up with better
+debugging strategies for our models and
+also out of distribution generalization
+or extrapolation is desired because it
+provides some level of robustness once
+you want to deploy our model and that
+I'll talk about that later and but I
+should mention that when I talk about
+extrapolation in this talk I don't mean
+extrapolation to Infinity of course
+that's not going to be possible unless
+you're really really lucky so I really
+mean some sort of you know some level of
+extrapolation or accepted error once you
+go outside of your training landscape
+okay so this is the figure that you've
+probably seen many many times in the
+past couple of years so you know we can
+divide scientific modeling in the age of
+AI into these three broad categories you
+know if you have you know all of physics
+in your model and you have data just for
+boundary conditions and parameters you
+can do physics based modeling using
+traditional solvers you know find
+element or any other approach and the
+choice here is usually driven by our
+background training so it's really
+mostly political for most of us but
+approach you use or you know based on
+our training and then um on the other
+end you know if you have large amounts
+of data deep learning is great in
+interpolating uh but the mid you know
+range where you have some physics and
+some data is what's really interesting
+so what I'd like to propose then why
+don't we can also think about dividing
+that mid-range into two different
+categories so in one part we can think
+about having lots of physics but the
+physics being not enough right we might
+be for example missing
+um the boundary parts of the boundary
+condition or sometimes it's just in but
+we know the pde so when you have lots of
+physics but it's just not enough and
+then we have some Stars small data so
+this is where you know approaches such
+as physics inform neural network or
+other classical data stimulation
+approaches have shown to be useful in
+tackling these types of problems but I'd
+like to discuss another type of problem
+here where we have lots of
+lots of very knowledge about the
+physical system so this is uh and I'll
+explain in a moment what I mean by
+little physics so this is what we would
+like to uh focus on for today's talk
+okay so what do I mean by that so in you
+know a lot of times when you start to
+move you know as a community as we start
+to move away from 1D and 2D Benchmark
+problems for scientific machine learning
+and start calculating more complex
+problems we will start to face this
+challenge that even though we might be
+able to generate large data for those
+practical problems our large data might
+not be large enough okay we will always
+face the challenge of out of
+distribution generalization or not being
+to cover the landscape of all possible
+behaviors so just to give you an example
+in my applications I'm really interested
+in cardiovascular fluid mechanics and
+you know if you want to build a machine
+learning circuit that truly can replace
+finds volume of find element you need to
+provide a mapping between the landscape
+of all possible complex morphology which
+3D morphologies which of the arteries
+which could be really complicated and
+also boundary conditions to for the
+bactorial data so it's a 3D time
+dependent Vector Fields right so it's a
+really really difficult learning problem
+even though we might be able to generate
+launch data the large data might not be
+large enough so now this really brings
+the topic of robustness like you know it
+we need to think about as we move to
+practical problems and deploying deep
+learning we need to think about how
+robust it is so you know we can think
+about it two ways one is that you can
+think about in some applications you
+might not know exactly the boundary of
+the training landscape it might be a
+little bit blurred so you know don't
+exactly know if you're in distribution
+or out of distribution when you're
+deploying the model or in some cases
+your deep learning model is operating in
+in Loop calculations for example you
+have a multi-scale model it's
+optimization problem so your deep
+learning model is coupled to a
+traditional physics-based solver and you
+don't really have control over what that
+physics-based solver is sending into
+your deep learning model right so you
+want to have some level of robustness of
+like let's imagine like the
+physics-based solver is sending
+something that perturbs the model to out
+of distribution you want to make sure
+you provide some level of acceptable
+error for your deep learning model now
+what do I mean by little physics I
+talked about we can think about that in
+two different ways let's think about it
+that in certain
+deep learning architectures it might be
+difficult to regularize for all the
+physics right you might know the physics
+for the problem you're solving but it's
+just it might be that it makes the
+training process difficult or it might
+be difficult depending on what type of
+machine learning problem we're doing to
+regularize at least for all the physics
+that we know or we could also think
+about cases where we don't really know
+much about physics except some very
+little knowledge so for example you
+might only know symmetry we might know
+that you know points if a point is close
+to a point that we're interested in the
+input space that has a higher influence
+and the output or we might note that our
+problem belongs to broadcast of
+operators so this is what we're going to
+be leveraging today and what I mean by
+you know small knowledge a little
+knowledge of physics okay now so uh so
+the summary here is that we need some
+level of acceptable error in
+extrapolation and this really brings us
+to the topic of in my opinion robust
+scientific machine learning which is one
+of the priority research directions
+actually based on 2019 reports of doing
+scientific machine learning okay now
+let's start talking about out of
+distribution generalization so there are
+different ways to improve out of
+distribution generalization in the
+literature and but a lot of these
+approaches required to retrain your
+machine learning model and they might
+not have limited accuracy so our
+question was that can we do improve out
+of distribution generalization and note
+that I'm using the word improve I'm not
+arguing that we're trying to have very
+very good errors for extrapolation
+that's just too difficult so can we
+improve the accuracy for adult
+distribution generalization given a
+train neural network as a
+post-processing step okay so that's the
+question now the way we propose to do
+that is inspired by the process of human
+thinking so let me explain that suppose
+you're studying for an exam okay and the
+way you're studying for an exam is a
+data-driven approach as opposed to
+physics based so what I mean is that
+you're only studying sample a prior exam
+questions you're not studying the
+lecture notes okay so if you go to an
+exam you uh you know you see a question
+that's exactly the same as the sample
+exams you studied you know you can
+quickly write the answer but that's the
+training data just like have a neural
+network works if you see a question
+that's similar to what you studied but
+not quite the same that's what we call
+in distribution test data and as long as
+you've learned something meaningful you
+should be able to write the answer
+quickly again similar to a neural
+network as long as the neural network
+doesn't just memorize the labels it
+learns some meaningful pattern it should
+do a good job with interpolation now the
+third scenario is the tricky one if you
+see a question on the exam that's
+completely different from the sample
+questions you studied what would you do
+and this is the out of distribution test
+problem
+so what you probably would do is that
+some sort of thinking right you would
+probe your brain based on the sample
+questions you study right and try to use
+those sample questions you study that
+you're probing your brain it's some sort
+of interpretation and reasoning together
+with any prior knowledge you have to
+answer that new question so this is
+exactly what we wanted to do so give me
+a trained neural network that's already
+trained what I'm going to do is that I'm
+gonna probe it within its landscape of
+training you know provide them give it a
+bunch of inputs within the landscape of
+training It's Quickly going to produce
+outputs so generate that data set then
+what I'm going to do is that I'm gonna
+fit an interpretable model to that which
+I'll talk about how I do that so some
+sort of it's going to be some sort of
+sparse kernel regression with the
+library of integral equations and then
+fit that interpretable model in the form
+of some of internal equations which I'll
+discuss in a moment and use that to add
+answer the out of distribution input
+that's being that we're being asked okay
+so now the question becomes how do we
+build that interpretable model
+this brings us to the topic of
+interpretable unexplainable AI which is
+a topic in deep learning we could
+broadly categorize XI into two
+broadcaster approaches
+by Design approaches and post hoc so in
+by Design what we do is that we
+incorporate interpretability right from
+the beginning in the design of the
+architectural machine learning model so
+examples of that in our community
+perhaps Cindy is the most you know
+familiar example where it's you can
+think of it as a by Design XLR approach
+symbolic regression is perhaps another
+example and you can also even do by
+Design xai and a neural network where
+you essentially Define some
+interpretability loss and you penalize
+for interpretability during your
+learning and then you have the second
+class of X-ray problems you should call
+them post hoc and the way they work is
+that they essentially do the
+interpretation as a post-processing step
+okay so they interpret the black spots
+model as a post processing step so the
+issue with by Design approaches is that
+they limit expressive power right
+there's no free lunch if you build a
+model it's very interpretable you might
+not be able to fit complex data sets and
+the issue with postlock approaches don't
+have that issue because they do it as a
+post-processing step but the problem
+there is that
+um there's usually no code they explain
+a given in input okay
+so now our idea was that can we and some
+examples of postdoc approaches are
+gradient-based approaches where you just
+use the back propagate the gradient and
+the surrogate for explaining which
+feature is more important or also there
+are some other approaches where you take
+an input that you're interested in
+explaining and you just perturb it fit a
+linear model to that and explain that at
+the neural network is uh making
+predictions based on a specific input
+okay so these are some photoshop
+approaches so our idea was that can
+so it could be
+a post-hoc or by Design okay we have
+this very minimal effort and change in
+the infrastructure
+okay
+um now the key idea that motivates us is
+through Theory so I'll explain what I
+call this Theory guided machine learning
+in a moment but uh think about the
+certain Concepts like greens functions
+is one example so you know when you're
+dealing with the pte of this form you
+know you're given an input forcing
+function f you want to solve for U if
+your PD operator is linear you can you
+know you have a corresponding inverse to
+that which is what we call the greens
+function so essentially you can take
+your input integrate it over some green
+function which is like a kernel and get
+your output okay or solve the problem
+and um interestingly if you look at
+convolutional neural networks there's
+something similar kind of hidden in
+there so the the convolution operations
+that we have in different layers of a
+convolutional neural networks they're
+also based on some sort of similar
+integral equations where you can think
+about convolving your input going to
+that layer with some kernel function
+okay of course there's more cnns are
+much more complex than that but that's
+inside that's also happening inside them
+and also you know if you're familiar
+with radial basis functions Downstream
+processes that use squared exponential
+kernel functions you know again similar
+ideas we have in those types of uh
+problems and finally you know neural
+operators very hot topic these days a
+certain class of neural operators they
+also leverage certain similar idea but
+there you know you're doing it in
+multiple layers with neural networks so
+you're kind of losing the
+interpretability of course you're
+getting better expressive power so now
+um
+so it seems like integral equations are
+a key in providing mapping between
+functions so what we want to do is that
+we want to use them for interpretation
+so now before I proceed I want to make
+this you know link here is that what I
+think really what we're doing here in
+building the interpretable machine
+learning model is that we can think of
+this as some sort of theory guided
+machine learning so you know what I just
+explained here is some sort of theory
+guiding us how we set up our machine
+learning model so now you know if you
+think about machine learning scientific
+machine learning problems you know
+either you can think about physics
+informed machine learning like pins in
+these cases the physics is typically uh
+you know as a loss function you you kind
+of like regularize the problem with the
+loss function that's your physics so
+that's physics inform machine learning
+and then you can also think about Theory
+guided machine learning where
+essentially in these types of problems
+the physics or theory is guiding how you
+set up your machine learning model how
+you design your machine learning
+architecture that's motivated by the
+theory or the physics so one example of
+that is one of our recent words where we
+developed this financial physics inform
+neural networks which you can think
+about it integrating both physics inform
+machine learning
+where you build the architecture of your
+PIN neural network such that you're
+replicating classical mathematics Theory
+so in this case those perturbation
+Theory and asymptotic expansion so
+you're setting up this Ensemble neural
+networks to essentially do what you know
+old school classical perturbation
+through your asymptotic expansion does
+and that enables you to solve very thin
+and Boundary layer problems that you
+cannot do with a regular peanut approach
+so that's kind of you know what we're
+also trying to motivate you by is that
+letting Theory guide us how we design
+our machine learning problem
+okay so now the way we're going to do
+that in this case is through functional
+data analysis so FDA is a branch of
+Statistics that analyzes data in the
+form of functions rather than discrete
+data so essentially what we're
+interested in doing here is that give me
+an input function f
+and an output U that could either be a
+function itself or it could be as simply
+a single value or functional so I'd like
+to find a mapping between the input
+function to that
+and the way we do this in FDA is through
+what's called functional linear models
+essentially you define these integral
+equations that takes you from input to
+the output which the output again is
+either a function itself or a single
+scalar value so now the the goal in the
+functional linear models and functional
+data analysis is to find this kernel
+sign so that's the goal here the current
+approach is the way they do that is that
+they either predefine the kernel or they
+use some expansions to find it but you
+know the challenge here is that the
+precise choice of the kernel is not
+really clear you know this is a very
+nice model it's interpretable it's
+analytic right but the precise choice of
+this kernel that can provide that
+mapping for you that is not very clear
+and also a single choice or on a fully
+linear model like what you're seeing in
+this equation might not be sufficient to
+it might not have sufficient expressive
+power to fit complex data so what should
+we do uh before I personally if you're
+interested in functional data analysis
+these are two excellent textbooks
+written on the topic that I highly
+recommend them
+okay so what we propose is some sort of
+generalized FDA okay where we generalize
+this to provide some more expensive
+powers and we do that in three steps one
+we provide the option that we lift the
+input functions okay so we can either
+use polynomials and exponentials so we
+leave the input functions to create new
+features so that you know gives some
+sort of non-linearity and increase
+expressive power
+the second thing we do is that we
+provide the option for each of these
+integral terms to add in non-linearity
+so nonlinear function G could be applied
+to the output of the integral equation
+and you can think of this as an
+activation function so it's pretty
+similar to an activation function okay
+um and the third thing we do is that we
+essentially build a library of various
+choices of integral equations and this
+could be based on different kernels
+different choices of non-linearity and
+um lifting and also different bandwidth
+parameters within each kernel so you
+build this larger library and use sparse
+regression okay use password regression
+to select a set of these integral
+equations and you linearly add them so
+really the goal is to find this linear
+coefficients w i so essentially the
+final model will look something like
+this it's a linear sum of
+integral equations uh so you can think
+of it as a generalized functional linear
+model and you know it's still linear
+though with respect to its unknown
+parameters wi but you've added some
+non-linearity within demand so now the
+nice thing about this is that for each
+term in this model you can interpret
+basically based on the Kernel that you
+have the kernel will tell you how
+important effect of a certain point at
+the input is on a certain other point at
+the output and in the case where you're
+where your output is a single value
+single Vector scalar field this cannot
+provide some sort of rate for the effect
+of input and out okay so you can and
+also these coefficients provide you know
+how important each term is so you can
+have some sort of interpretability in
+this model
+okay now there are some other advantages
+with this approach this is completely
+analytical right so you can if if you're
+defining these kernels that are
+differentiable so the integral equations
+are differentiable you can take
+derivatives okay so that provides lots
+of Advantage opportunities for doing
+exciting things that you need
+derivatives another Advantage is that
+you can infer any point you don't need
+to interpolate because this is kind of
+like an analytical model you can even
+though you train at certain points
+you're not bound to those certain points
+you can you know evaluate any point in
+between without the need of
+interpolation and finally again going
+back to the totally guided idea you know
+the field of classical mathematics you
+know integral equations are well
+established topics and again an old
+school Topic in mathematics we have
+approaches for solving integral
+equations we have theorems so there's
+lots of idea you know opportunities to
+kind of Link those classical
+mathematical theories within the
+integral equation work to you know this
+model
+or extend those terms
+okay so now here's a summary of the
+Final Approach so what we do is that we
+have a chain neural network okay and we
+prove it based on different inputs
+within its landscape of training and we
+fit this interpretable model to it and
+we call that neural network we can also
+do this directly Based on data so forget
+about the neural network I want to do it
+directly Based on data I can do the same
+thing directly based on training data
+this is what I call data driven
+interpretable model and you can think of
+the second approach as a by Design
+approach the first approach as a post
+hoc approach so yeah so now what you do
+is you build this large Library this is
+very similar to Cindy by the way if you
+haven't noticed already you build a
+large library of different forms of
+integral equations with different
+non-linearities lifting different
+kernels different hyper parameters
+you've built this large library and then
+what you do is that you have your data
+and you do sponsor regression actually
+just pass regression and you find these
+coefficients W that you see here and
+then eventually you write your
+interpretable circuit model as a sum of
+integral equations and you can see this
+sum is over all possible lifting
+operations on the inputs all possible
+kernels and all possible
+predefined activation functions if you
+like or non-linearities through this G
+function
+okay so
+um now just for your reference these are
+some of the examples of some of these uh
+you know integral equations that we
+provide in that large Library
+okay now how do you find those
+coefficients you know our goal now is
+really to find these coefficients and
+once you find these coefficients we are
+you know we have our you know analytical
+circuit model so how do we do that so
+two approaches you can do that one is
+sparse regression by you solving this L1
+regularized uh regression problem this
+is exactly again similar to Cindy and
+the Lambda parameter here provides a
+trade-off between interpretability and
+accuracy in your regression problem the
+second choice you have is to do an L2
+regularization which might in certain
+problem provide better uh accuracy and
+in this case the nice thing about this
+Ultra regularization is that you have
+closed form solution right so you can
+form this normal equations and you know
+you have a closed form solution to this
+optimization problem and but the issue
+here is that this F transport F Matrix
+is usually highly highly ill conditions
+so you need to have major use robust uh
+linear solvers that can somehow you know
+mitigate this ill-condition issue and in
+this case in this L2 regularization case
+you can think about the Lambda parameter
+providing a Trader between
+accuracy of your regression and
+robustness of your linear solver because
+as you increase Lambda your linear
+solder will have an easier job
+converging okay
+uh so now once we find these coefficient
+and we find our interpretable model how
+do we use that so there are three broad
+applications that I can think about or
+discuss here today one is you know you
+can use this model as a post-hoc black
+box interpretation that is give me a
+neural network I probe it within its
+training landscape or I can probably
+just locally if I like I can even just
+probe the neural network in out of
+distribution regime to kind of
+understand how it's behaving in out of
+distribution or in extrapolation
+problems so I do that and then I fit my
+interpretable model to that probe data
+and those probe data are quickly done
+we're here we're just inferring the
+neural network is already trained so
+it's quickly you know inferring and
+producing those probe data so this is
+what I call neural network driven in the
+results
+the second uh application you could use
+this as a by Design x-ray approach
+meaning that you forget about the neural
+network you directly train this model on
+training data so there's no deep
+learning involved in this case and this
+one I called it data driven
+interpretable model and this third case
+you can think about as a hybrid
+Computing strategy
+which means that if you have you know
+you develop a cyber infrastructure where
+you can somehow tell what is in
+distribution what is out of distribution
+with some algorithm and if you have an
+in-distribution input you use a neural
+network if you have an out of
+distribution input you call the
+interpretable model so this is some sort
+of hybrid Computing strategy
+okay I want to talk about this in the
+results today so I'll talk about the
+first and second one okay here's just a
+quick motivation examples just to show
+you that how deep Learning Works in out
+of distribution so you know this is just
+a 1D function so you have this dashed
+blue lines being the function and
+imagine our training data just placed
+here right and we fit a neural network
+to it so the green line is the neural
+network so you know obviously it's a
+simple 1D problem it will do a perfect
+job fitting the data but as soon as you
+go outside so if you focus on the right
+hand side here as soon as you go outside
+of the training lines get your quickly
+off right but if you if you use a more
+interpretable model so in this case a
+gaussian process regression you can see
+that if you look at this right side here
+you can see that the gaussian process
+which is the green line does a better
+job compared to what you saw on the left
+with the neural network in terms of at
+least extrapolating a little bit better
+so this is one of one motivation for us
+to go for more interpretable models in
+extrapolation
+okay so let's get to the exam this is
+the first example this is the solid
+mechanics example where we want to
+predict strain energy and from a
+heterogeneous material
+so in all the examples I'm going to
+present today we used Phoenix for
+generating the training data so Phoenix
+is an open source uh find element solver
+that we use uh so in this case we use
+the mechanical Ms and MNS data that was
+uh and as that was provided to us it's
+an open source data set by the way so
+you know we work with our collaborators
+who developed this and essentially the
+idea is that we're using the classical
+MNS and MNS uh data in machine learning
+where you have this handwritten digits
+and letters and we're defining a mapping
+to convert the pixel bitmaps to an
+elastic modulized essentially using this
+equation so basically you take the
+bitmaps of the image you convert it to
+an elastic modulator now you have a
+heterogeneous material and you have to
+stretch it and in this problem you're
+interested in the straight errors so
+this is the mapping between an image to
+a single band okay and this parameter s
+if you change the parameter s you're
+going to shift this mapping so you can
+generate out of distribution data so
+that's how we generated out of
+distribution data here so now the
+results that you see you're going to be
+seeing the next few examples these are a
+box plot of the errors aggregated over
+all the data points and we're going to
+have on the left three are going to be
+the neural network training regime the
+error for the interpretable model driven
+by the neural network interpretable
+model directly trained on data and
+training and on the right is test and by
+test here I mean out of distribution
+tests so what you see in testing all the
+fears are really extrapolation
+okay so what do we see here what we see
+here is that
+that visual model
+s this box plug error that the errors
+are going down when you use these
+interpretable models in the
+extrapolation regime and I forgot to say
+that these red dots that you see in
+these box plots these are outliers so
+the red box red dots are the outliers
+for the error distribution
+and what we also seen this problem is
+that in the training side in this
+specific case interpretable models have
+comparable accuracy compared to the uh
+to the neural network
+so here's a second example we this is
+the porous media flow we want to predict
+velocity fields from a heterogeneous
+permeability film so this is a problem
+where you're mapping an image to an
+image okay so your input is the
+permeability an image of the
+permeability field which we Define using
+this equation and by varying the
+coefficients A and B we can you know
+generate training data and if I select
+the A and B coefficients to go outside
+of the region used for training now I'm
+generating out of distribution data
+uh so um so you want to go from its
+permeability mapping to the velocity
+Fields so if you look at the results
+here
+um what we see is that the interpretable
+model again improves the out of
+distribution generalization error and
+also you can see in this case that you
+know of course as you expect no the
+neural network training error is better
+than the interpretable models inside the
+training regime but interestingly you
+can see that outliers are a little bit
+reduced by interpretable models for the
+training data
+okay so here's another example so this
+example is more motivated by the type of
+work that I do so this is a predicting
+Wall Street stress in a blood flow
+problem based on low Fidelity data so
+the motivation here is that low Fidelity
+flow data are easy to generate whether
+that's computational using a you know a
+course dissipative solver it's really
+easy to generate that data or
+experimental if you have a you know
+experimental measurement that's not very
+accurate you know uh you know you're
+generating really low Fidelity data and
+also another motivation for this test
+case problem is that if you're
+interested in measuring fluid flow data
+near the wall especially if you have
+complex geometries that's a challenging
+task so in cardiovascular flow problems
+we're often interested in one shot
+stress but measuring one shear stress
+experimental is difficult because we
+have the wall interference there and
+also computationally getting accurate
+while Shield stress data requires you to
+do boundary layer machine having a fine
+mesh near the wall so that's also a
+little bit more challenging so the idea
+was that can we find a mapping between
+low Fidelity data that's that's measured
+away from the wall into high quality
+water system
+so the problem we look at is a 2d flow
+so the flow is going probably left to
+right we have a constricted vessel
+mimicking like a you know blocked
+archery and for a low Fidelity data we
+have cfd simulations with a very coarse
+mesh in this case just 500 elements and
+we also increase viscosity in this case
+we ramped up viscosity by 20 to
+represent a dissipative stimulation and
+you know just FYI this is actually in
+some problems a common thing to do in
+some low Fidelity solutions for example
+in stopping a high Schmidt number
+adventure and diffusion pdes often you
+know in the cardiovascular applications
+they picked the number and Smith numbers
+are just so large that solving it's just
+so difficult so often people just
+increase the diffusion coefficient to
+make it typically it's able to solve the
+problem basically so that's what we call
+low Fidelity data so we want to map that
+no Fidelity data to High Fidelity uh
+Water Shield stress daytime for training
+we generated quality data with a high
+resolution uh solver 40 000 elements and
+we also use p2p1 elements so quadratic
+shape functions for velocity
+this is what we call the High Fidelity
+solution strategy so just to give you an
+idea this is what the low Fidelity mesh
+looks like you know very coarse and this
+is what the low Fidelity fluid results
+look like you're looking at the velocity
+magnitude so you want to map the
+velocity industry it away from the wall
+to High Fidelity Wireless
+okay so here's the results so we have in
+the training data we train over a
+certain range of Millennials numbers and
+for out of distribution we're going to
+higher rails numbers so in this case we
+also within 250 240 and 300 so you're
+extrapolating the rails number basically
+for out of distribution
+and the goal is to map a low Fidelity
+velocity field that might look something
+like this into a high fidelity water
+should stress at the wall and this is
+also an example of a co-dimension one
+mapping so in this in the previous
+examples we either mapped an image to a
+single value or an image to an image but
+in this case we're mapping an image to a
+line okay now in this case if you look
+at the errors the training errors are
+really small compared to the
+extrapolation error so if you zoom into
+them this is what you see you can see um
+you have training accuracy that's even
+slightly better at least for the data
+driven interpretable model interestingly
+in this case compared to the neural
+network and if you look at the
+extrapolation case which is what you see
+here you can see that you know that it's
+you're significant getting reduced
+extrapolation error for the vast
+majority of the data and you have
+slightly higher extrapolation errors for
+your outliers in the for a few other
+players in the in the interpretable
+modes
+okay so here's another example this is
+the same problem but let's say instead
+of mapping the low Fidelity velocity to
+High Fidelity one is your stress why
+don't we map the low Fidelity velocity
+to Hype it a little bit so this is this
+mapping you want to go from this low
+Fidelity velocity to this High Fidelity
+velocity and interestingly in this case
+what we see if we look at the results is
+that we cannot we couldn't solve this
+problem
+so the at the out of distribution test
+test did not improve for the
+interpretable model in this case and you
+know I like this example because it
+reminds us that there's no theoretical
+guarantee you know and I just I'm not
+aware of any theoretical guarantee that
+you can guarantee that by using an
+interpretable model you can get improved
+generalization so you know we really
+need to understand when do such
+approaches work and when do they fail so
+that's you know something that we still
+need to work on
+okay so this is an example where
+essentially the method didn't provide
+improved extrapolation
+okay so the final example is just to
+show you that we can also do local
+interpretation so we don't have to so in
+all the previous examples we broke the
+entire landscape of training so with the
+interpretable model was fit to the
+entire training landscape but you don't
+necessarily need to do that if you're
+interested just an interpretation if
+you're interested in generalization you
+have to do that you have to learn the
+entire landscape so then you can push it
+a little bit further and extrapolate but
+if you're not interested in
+extrapolation you only want to explain
+behavior you might want to do that
+locally because you're going to get a
+more accurate fit and also likely it's
+going to be easier to fit a more
+interpretable model today so that's what
+this example is
+um
+so we provide a mapping between the
+modified permeability field to uh to the
+velocity magnitude and we change the
+permeability so the permeability
+permeable region the police region is
+only confined to this black region here
+I mean the training region will be a
+change at not only the uh the equation
+but also the shape of the super you know
+this porous region so then what we see
+here is that you know we get a good uh
+you know the training error that we get
+for the interpretable model that's
+driven by the neural network it's
+comparable to the neural network you can
+see that the training error in this case
+for the data driven model is much much
+smaller this shouldn't be surprising
+because in this case the data driven
+interpretable model is just fit to local
+data
+whereas the neural network is fit to the
+large larger Landscapes that's why the
+because between local interpretation
+here so that's why the data driven one
+has better error and you can also see
+that they have good error with respect
+to the neural network
+uh so so you know local interpretation
+is essentially
+easier to do it's an easier
+interpretation task okay so to summarize
+we developed an interpretable framework
+for interpreting and generalizing deep
+learning the framework is flexible you
+could apply it local Global or post-hoc
+or by Design the framework
+in most examples we studied it reduced
+extrapolation error and you know it
+could it had you know in most cases
+again comparable training accuracies at
+least for a simple problem to study but
+there are several challenges that remain
+you know how we Define that library of
+integral equations that's one challenge
+again very similar thing as Sydney
+um another challenge that when you go to
+more complex problems how do you define
+in distribution and out of distribution
+it might not be trivial in our case we
+had some parameters that change within a
+range so it was trivial but in some more
+complex problems it might not be trivial
+uh another thing is that you could have
+um you know really all these regression
+problems there's a trade-off between uh
+explanation how interpretable your model
+is and how accurate it extrapolates we
+saw that trade-off in the problems we
+studied
+um and also we don't really know when
+this method works and maybe but it
+doesn't work so that's you know more to
+be done there and also we could extend
+think about extending this to other
+problems time dependent problems
+parametric problems you know in
+functional data analysis there's also
+approaches to do parametric functional
+mapping you can also think about inverse
+problems in physics inform problems so
+there are several ways you can think
+about extending this one okay and more
+details on this paper and archive and um
+if you have any questions I'll be happy
+to answer them thank you
+thank you thank you so much for the
+wonderful program yeah
+um I enjoyed it a lot I'm sure um
+you know a lot of other people has
+enjoyed the life uh let's have a q a
+sessions
+um there are some questions in in the
+chat uh the first one I see is by Chris
+he was asking how is outlier defined so
+the outliers I think that's the default
+definition of a box plot but usually so
+it's in this case it was a values larger
+than 1.5 times the interquartile range
+basically uh in kind of like the default
+definition of a box plot you generate I
+think in math level python sounds good
+okay uh second question
+uh in the chat uh by
+um run up
+um he asked are the out of distribution
+points
+chosen taking into account bifurcation
+points or how do you tackle the
+bifocation points when you choose the
+out of distribution testing Rings that's
+a good question I didn't think about
+that so by bifurcation assume you mean
+like in from a dynamical systems
+perspective and you go out you know
+change a parameter the system suddenly
+becomes completely different right you
+go from certain stabilities to other
+stability properties yeah that's a great
+question I never thought about that so
+that's you know I would I think you know
+in this case it's you know I don't think
+a bifurcation happens I can imagine if
+it happens you have no luck yeah
+I can think about that uh so I think
+that's a good point uh I don't think if
+this approach will work if you buy for
+you have bifurcation once you go outside
+your parameter
+I mean bifurcation is
+it's completely different animal
+um
+it's not I don't think we can consider
+it out of distribution
+in data-driven contexts oh yeah anyway
+okay so next question is by gaurav uh he
+asked what is a training data sample
+velocity field sample or something else
+and how do we determine as to how much
+data is sufficient for training okay
+good question so no point
+training
+was between
+exact numbers of how many data sets we
+had was in the paper but usually on the
+order of hundreds
+or I think in some cases even thousand
+samples we use the details on the
+archive paper but and they were like
+automated so in Phoenix you can easily
+automate your solver change the
+parameter and quickly generate all these
+training data especially for these 2D
+problems uh but so the way you define
+training is by changing spam materials
+or in certain cases multiple parameters
+for example in this case we change not
+only this coefficient in the
+permeability field but also the shape of
+the permeability zone so that's based on
+the radius and also the center of this
+sphere that you see here so there's
+essentially there's a two or three
+parameters basically that you know
+find you have a range that's the
+training you go outside that range and
+that becomes extractable
+all right
+um another questions by six Scott uh he
+has all your examples you you didn't
+show the corner functions for the
+interpretable models so I think that's
+reporting the paper but you know here I
+have an appendix so this is all the
+parallel functions we used uh for uh
+image to image or image to scalar
+mappings so just to give you an idea
+what type of candles we're dealing with
+Just note that these better parameters
+you see here these are the bandwidths of
+the kernel which are very very important
+right so we Define a range for them and
+you can be you can the selection of the
+bandwidth you can also be guided by some
+optimal bandwidth selection methods we
+talked about that in the paper so you
+have to not only Define different
+kernels but also different bandwidths
+that's what essentially makes up the
+library so you know so this is this is
+this is the library library that I'm
+talking about
+all right sounds good mostly looks like
+it's a delusion type of column so mostly
+it's radial basis function type kernels
+like yeah
+yeah all right sounds good uh I don't
+see any other
+um questions in the Q a but I I do have
+a some questions so in the beginning of
+the presentations you talked about the
+the by designs yeah
+you said it's it's limiting the
+expressibility
+um
+but I I don't know it's a maybe the
+difference in the opinion I I wouldn't
+say that's limiting the expressibility I
+would say limiting the over
+parameterization so because a lot of
+neural network
+um you know taking advantage of the over
+parametrization you introduce like
+millions millions of the primary and you
+try to come up with a some fine-tuned
+parameter of its maps that it fits the
+data so think about it this way
+I think by let's say you have a third
+order polynomial and your body is
+all right so you don't have the
+expressive power to fit a cubic
+polynomial because you're only going up
+to you know quadratic but in neural
+network will automatically be able to
+you know fit that because it has you
+know the universal approximation Theory
+so that's really what we mean but of
+course you can you always push the by
+Design approach to be more and more and
+more accurate by expanding you know but
+depending on how you're doing it but
+yeah I'm talking about in the context of
+how you know improving the out of uh
+distribution accuracy generalization so
+you know one way of doing it is you know
+you start with the over parameterized
+neural network right and then but a lot
+of times over parameterization is
+acceptable to the overfitting so which
+is not good for the generalized and
+generalization so so from that
+pre-trained model you you can reduce
+that your you know the size of the
+parameterizations hoping that that will
+improve the general uh generalization I
+agree yeah yeah
+um oh okay yeah so in that sense I
+wouldn't say that's limiting the
+expressibility I would say it's my
+expressibility I mean in distribution
+training regime like training labels
+putting training labels basically
+all right
+you have limited ability to precisely
+fit your training by by Design
+approaches versus a black Boxer
+okay while we are talking uh there is
+another question by gaurav since
+generation of 3DD data can be
+computationally expensive are there any
+videos to the models with the 3D data
+built based on this approach
+reduce order models built based on this
+approach uh
+and that's exactly sure so what do you
+mean but uh
+do you want to mute yourself and then
+yes I I was just trying to say that a
+lot of the times generating 3D data just
+a single snapshot can be very very
+expensive
+uh so I was just saying that for the
+functional data analysis approach that
+you talked about where you were training
+it on some 2D data I definitely saw but
+uh is there any example for a 3D
+simulation or a more realistic
+simulation yeah so you could extend it
+to 3D but you'll just have volumetric
+insiders over insert area integrals we
+haven't done that yet but you could no
+the theoretical extension of course it
+will be computationally more expensive
+you know it's a little bit more
+difficult and all of that but you know
+from at least pure Theory point of view
+it's just now you have volumetric
+integrals instead of 2D integrals
+but we haven't done that
+sounds good okay I have one going back
+to my question
+um
+so when you introduce G FDA
+um what does g stand for like STD stands
+for function data analysis oh
+generalized okay
+um there
+um I do see that
+um you know
+this steps is very similar to
+um finding the cool man operator
+um are you familiar with that yes yes
+yes yes yeah so um basically what they
+do is you know you have a you know some
+data and then you try to lift that into
+by introducing you know use that feature
+here uh but the you know
+technically unlimited number of you know
+non-linear map of that original data to
+you know to increase the size of the
+data and then
+um in theory there is always the linear
+operator which can you know map those
+Dynamics right yes yes you're right so
+essentially you're absolutely right so
+we essentially this is also a form of
+operator learning problem really yeah
+and and also it's also similar to the
+lift and learn approach in ROMs by Karen
+Wilcox
+yeah exactly you also do the same thing
+you lift your input functions and you
+know you come up with more accurate
+problems I mean yeah I mean the Kumon
+operator focusing on the the linear
+operator
+um the lift land you know what they are
+doing with the caramel cooks and their
+colleagues
+um you know some are focusing on the
+quadratic modeling yeah but you you're
+you know generalized to that particular
+uh model uh form but you know with this
+non-linearity introduced by you like the
+through G functions there
+um
+yeah that was very interesting
+um you know the command operator was the
+first thing I you know
+sort of you know we're gonna look at
+this slide another
+a question I have is you know you you
+introduce the the Cindy type of this um
+you know The Spar side and
+identification the Dynamics
+identification model in order to improve
+the interview interpretability
+um and I the one thing is you use the
+integral form
+um not the strong form just like this
+have you
+um
+are you familiar with the weak Cindy
+yeah yes work yes that's what they do
+um they they take the integral form yes
+and
+so yeah a big Singapore if I remember
+correctly that's based on the weak form
+of the pde where you multiply exactly
+integration by parts so you're learning
+it in the big form sense in a strong
+form but here you're not assuming any
+knowledge of you know you're not
+learning a pde in this case you're
+learning an operator
+between
+they both used
+to use yeah integral equations and they
+use the data too I mean the recently
+uses the data as well so
+so uh I do see the another similarity
+between those two
+yeah very interesting uh while we are
+discussing to do we have another uh
+question in Q a uh in chat no I don't
+see that okay let's open to the audience
+is there anyone who
+um who would like to Omit yourself and
+you know ask questions directly
+no well
+then let's thank our speaker today uh
+for the wonderful talk and wonderful q a
+sessions I you know it's it's really
+exciting oh and you you raise your hand
+or do you have a question oh okay the
+clapping
+all right uh with that let's
+um you know let's wrap up the uh
+the seminar today well thank you so much
+emmya thank you thanks for having me
+thank you yeah
+expect

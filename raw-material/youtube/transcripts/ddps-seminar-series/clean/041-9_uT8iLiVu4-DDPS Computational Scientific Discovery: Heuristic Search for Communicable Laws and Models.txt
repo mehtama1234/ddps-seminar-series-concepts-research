@@ -1,0 +1,1860 @@
+it's on
+all right let's start officially
+welcome to the ddps seminar everyone
+before we introduce our invited speaker
+let's go over some rules and logistics
+first of all please mute yourself during
+the talk unless you have questions
+if you have questions you are welcome to
+admit and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a session at the
+end
+second today's gdpr seminar is open to
+external audiences
+therefore no classified discussion is
+allowed so please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host pat
+now who is a director of the institute
+for the study of learning and expertise
+and as a research scientist at
+stanford's center for design research he
+has contributed to ai and cognitive
+science for more than 40 years
+having published over 300 papers and
+five books on these topics
+dr lenny developed some of the first
+computational approaches to scientific
+knowledge discovery and he was an only
+champion of experimental studies of
+machine learning and its application to
+real world problems
+he is
+the founding editor of two journals
+machine learning in 1986 and advances in
+cognitive systems in 2012
+and he is a fellow of both
+triple
+triple ai and the cognitive science
+society dr lange
+current research focuses on
+architectures for embodied agents
+abductive methods for plan understanding
+and learning procedures from written
+instructions
+today pat will give a talk
+with the title of computational
+scientific discovery
+heuristic search for communicable
+laws and models
+please enjoy his wonderful talk and now
+without further ado let me pass the
+button to
+pat by asking one random question as
+usual today's random question is what is
+your favorite things to do other than
+research
+and other than arguing with other
+researchers
+i agreed science fiction probably
+oh okay so that is still related to the
+science
+okay um yes it's often a lot i think a
+lot of us have been motivated by by
+ideas we encountered in science fiction
+in the earth that's true yeah
+i like history too
+that's wonderful that's wonderful um
+surprisingly i i often um get inspired
+by uh some songs
+also
+yeah well you'll have to sink for this
+later
+all right uh
+thank you pat it's all yours stay tuned
+very good
+thank you everyone for coming
+um
+and uh first thanks to uh to my many
+collaborators this is just a small set
+um i know lucha todorovsky is is uh is
+signed in so if you have any questions
+for him
+and you run out for me you can ask him
+later
+and my funders many funders over the
+years
+um
+this talk is broken into two major parts
+the first is largely historical
+and the second is about more recent
+research that i've done
+so i'm going to give a lot of background
+and one of the reasons i'm doing that is
+because uh this topic has has suddenly
+become over the past five six years
+become uh
+getting a lot of attention but many of
+the people who are working in the area
+don't seem to be aware of the 40 plus
+years of research on it so so some of it
+is i think a very important review so i
+think we would all agree that science is
+a unique activity it's uh
+there are other
+areas of
+of human life where we
+try and understand things or
+or
+[Music]
+make progress but science is
+distinguished by a reliance on formal
+laws
+models and theories of of observations
+and i'm thinking about things like
+kepler's laws of planetary motion
+newton's theory of gravitation
+the krebs citric acid cycle
+um dalton's atomic theory and
+we typically refer to the activity of
+finding
+these kinds of accounts as scientific
+discovery there are other aspects of
+discovery like finding new particles or
+planets but but
+often when we talk about discovery we're
+talking about finding laws or models or
+theories
+now
+i want you to
+imagine yourself back in
+1971 72
+when i was an undergraduate in college
+and this is what people thought about
+scientific discovery back then it was
+mostly what what karl popper wrote in
+he said that
+discovery is very interesting maybe
+psychologists could could look at it but
+but it's not really
+subject to logical analysis
+he said the initial act
+of conceiving or inventing a theory
+seems to me neither to call for logical
+analysis nor to be susceptible of it
+it may be expressed by saying saying
+that every discovery contains an
+irrational element or a creative
+intuition
+now popper set the stage for this but
+there were many other philosophers who
+believe that carl hempel uh said it
+repeatedly and this is what i was
+exposed to as an undergraduate in my
+philosophy of science course and i went
+that can't be right because i was taking
+courses in cognitive psychology in
+computer science since i was starting to
+read uh some of the early ai work and
+and i i said no we we can do this we can
+understand what's going on discovery um
+and it was advances in these two fields
+cognitive psychology and ai uh
+which really took off together in the
+1950s that that opened the door to
+attract attacking this
+and herb simon
+who was my advisor at carnegie mellon
+uh he
+was the one who championed this cause in
+the mid 60s he said
+well scientific discovery isn't really
+that mysterious it's really a form of
+problem solving
+which he equated with
+search through a space of problem states
+that are generated by applying mental
+operators
+and they're guided by heuristics to make
+that search tractable
+much like
+um exploring a maze where you're trying
+to find your way to the end and there
+are certain rules heuristics like keep
+your hand on one side and so on that
+will help you get to the end
+now heuristic search even then had been
+and implicated in many cases of human
+cognition from proving theorems to
+playing chess to to lots of other areas
+um and and simon said
+well it's not limited to that we can
+apply the same ideas to explain what's
+going on in scientific discovery not
+only to model how humans discover new
+scientific knowledge but how to automate
+that process in running computer
+programs
+so here's the generic task okay
+you're given a set of scientific data or
+phenomena it doesn't have to be numbers
+that you want to to to model to account
+for
+you're also given
+in some sense a space of candidate laws
+or hypotheses or models and that those
+are stated in some established
+scientific formalism and we're going to
+come back to this later because it's a
+very important point that distinguishes
+work in this area from pretty much
+everything else in machine learning
+uh and you're also given knowledge uh
+about the scientific domain and maybe
+heuristics to help you guide search
+and the output the result which you want
+to find are laws or models that describe
+or explain the observations and of
+course you want them to generalize to
+new cases but first you gotta gotta get
+the handle the the observations you got
+and i'll come
+discuss later the distinction between
+description and explanation which is a
+standard
+uh distinction in the philosophy of
+science
+anyway simon said hey we can develop ai
+systems that care carry out heuristic
+search through a space of alternative
+laws or models or theories and that's
+how we're going to account for discovery
+well you all know this story right uh
+this is this is uh albert einstein and
+his discovery of e equals m c squared um
+where you can see that he was doing
+systematics it's a careful search
+through the space of hypotheses until he
+finally got a clue as to as to what the
+solution was um this is not actually how
+simon now how al einstein found it and
+but this is an example of a very simple
+kind of search called generate and test
+i don't think that's what human
+scientists use very much but it it does
+uh if you have trouble remembering the
+idea of discovery a search you can think
+back to this uh to this gary larson
+cartoon
+so
+so i went to carnegie mellon in 1975
+specifically to work with herb simon on
+scientific discovery and
+by the end of the decade i had developed
+a system
+that adopted incorporated his ideas
+it carried out search through a space of
+theoretical terms
+it used mental operators that combined
+old terms into newer higher level ones
+it guided its search by heuristics that
+noted regularities in the data
+and it applied those recursively to
+formulate higher level explanations
+i call the system bacon
+because it uh it was named after francis
+bacon because it adopted a data driven
+approach to discovery and it and i
+showed that it could rediscover laws
+from the history of physics and
+chemistry
+here's a very simple example and this is
+going to look trivial to you i'll tell
+you at the time people were telling me
+you couldn't do this okay so
+so
+and this is again in the late 70s uh
+here are some data
+from borreli on on the the
+distance of jupiter's moons
+from the primary and their periods
+and um
+and
+you might notice that if you uh if you
+if the the distance and the period are
+increasing with each other that might
+suggest that if you should look at their
+ratio because it might be that they
+increase together because the ratio is a
+constant in fact it's not
+but now if you look at
+uh d over p
+and d you find that uh that there they
+when goes up as it goes down so that
+suggests you might look at their product
+that's also not a constant but if you
+look at the product of these last two
+d cubed over p squared that is more or
+less a constant and bacon would say ah i
+found a law here
+it wouldn't stop there uh in cases where
+it had experimental control uh in a
+simulated environment not a real
+lab
+it could it could vary one variable at a
+time and it could build higher and
+higher level laws for example for the
+ideal gas law it might hold
+the
+number of moles and the temperature
+constant and and vary
+the pressure and see it would find the
+volume change and that would lead to a
+law p v is the constant it would get
+different constants for different
+numbers of moles
+uh and it would then say well let me
+compare relate the number of moles to
+this constant it's not a constant
+anymore it's varying
+and it would find this c over n as a
+constant
+and then it would vary temperature and
+it would find this law which
+is equivalent to the ideal gas law
+so
+using techniques like that bacon was
+able to reconstruct from small amounts
+of data uh
+a bunch of
+of numeric laws from the history of
+physics and chemistry
+mostly physics
+the ideal gas law kepler's law third law
+coulomb's law ohm's law the law of
+reflection uh archimedes law
+uh
+where he had the eureka moment
+conservation momentum and black's law
+specific heat you'll see that these are
+really not very simple forms right so
+it's not you can't do this with say
+linear regression although i assure you
+people at the time said why are you
+doing this this is just regression back
+then ai was all about symbol processing
+and people a lot of people had trouble
+understanding why i was even interested
+in in handling numeric data because that
+wasn't an ai kind of thing but uh but in
+fact i said yes it is and and if you
+think about it these
+the interesting thing here is not the
+parameters the interesting is the
+qualitative structure of these laws um
+that's what the system was searching so
+although it was in some sense doing um
+doing regression i think it was much
+more interesting than classic
+statistical approaches
+now
+i did this work i continued to work on
+it for
+on on bacon or various extensions of it
+for for some years but but other people
+picked up uh the torch too and and and
+ran with it and here's a list of systems
+that were developed over the the
+following uh
+20 years that were i would all say
+directly inspired by bacon
+and i won't go through them all
+or say which ones are the most
+interesting
+i will mention much in one one here rf5
+which was kazumi saito's
+thesis work
+in japan
+and as far as i know that was the first
+time someone used neural network
+technology to search through a space of
+of uh of numeric laws uh again inspired
+by the vacant work um
+so if you're doing deep learning for uh
+for
+equation discovery you should be citing
+his early work uh but these last ones
+i'm not gonna i'll talk more about later
+because they
+but they move beyond
+simple equation discovery to what i
+would call a kind of model discovery in
+particular for differential equations
+and uh we'll return to that later
+now these all these these had very
+different methods okay the thing they
+had in common is they searched a space
+of explicit mathematicals
+to match the data
+difference bacon used almost trivial
+search techniques okay its main
+contribution was to show that you could
+do this at all which again was very
+controversial at the time
+but then people would do use more
+sophisticated techniques
+in a number of us
+by by 1990 we're using multivariate
+regression as a subroutine sometimes
+i think that some of the legrams work by
+toroski and todorowski actually used
+genetic programming to search the space
+of hypotheses so if you are using that
+kind of technique make sure you cite
+their work
+now the early stages of any science
+focus on descriptive laws
+like the ones i just showed you uh
+sometimes they're qualitative often
+they're quantitative um but they're they
+really their purpose is to summarize the
+data they don't really go go beyond the
+data or below the data but
+more mature sciences the all of these
+were taken from the early stages of
+physics or chemistry but mature sciences
+instead
+emphasized creating models that explain
+phenomena and when i say explain i mean
+that they are in postulating
+components and structures that you
+cannot observe
+they're hypothesizing
+processes about how various
+entities interact
+so they they really move beyond
+description to offer a deeper account
+linked to theoretical constructs almost
+always some it's not often some kind of
+background knowledge about the domain
+now can we develop com computer systems
+that do this that that replicate this
+side of scientific discovery well
+yes in fact there's been a bunch of work
+in that area too not so much me
+but actually some of it goes back to a
+system called dendrol which predated
+my own work in in discovery that was a
+system that inferred chemical structure
+from
+a
+chemical formula
+a mass spectrogram and generic knowledge
+about chemistry this was in organic
+chemistry and that led to many
+publications in the chemistry literature
+of me chem
+which did a similar kind of thing but
+for reaction pathways
+again using in
+in chemistry
+dendral was organic chemistry mechan was
+physical chemistry um
+uh my more recent work by a by ross king
+and his colleagues on a system called
+adam that combines experimental design
+data collection actually uses a robot to
+do this uh and causal inference to build
+models of yeast metabolism
+uh
+ailp
+by
+bohan
+at al
+one of stephen
+students uh uses a something called a
+logic programming to infer a food web
+for 40 45 invertebrates like spiders
+from their relative abundances measured
+in the field
+and uh more recently a system called ace
+developed by
+hold on
+liz bradley
+uh i think kevin anderson and others uh
+that uses that uh builds process models
+of how a landform was produced
+geological landform based on nucleotide
+densities of rocks
+now these are very different kinds of of
+systems from bacon and its successors
+because but they are also using now
+they're combining not data with
+knowledge to guide search to a space in
+this case of models it's just that
+they're going beyond the data not just
+describing it but explaining it in terms
+of of unobserved
+assumptions
+this is an old slide that tries to ship
+that shows the diversity of work in this
+area
+from 1979 to 2000 and there's so i
+haven't updated it it's busy enough as
+it is you can see that's a bunch of
+different
+uh pieces of work the the top row is
+is the kinds of things i showed you
+earlier successors to bacon
+these were systems that found
+qualitative laws these were systems that
+built structural models
+and these were systems that built
+more process models but all almost all
+qualitative
+and it didn't stop so i i mentioned that
+my work was was trying to reconstruct
+examples in the history of of science it
+didn't stop there okay of course
+um after i after i finished my my phd
+people are always saying well this is
+all very nice but you knew the answer
+will be impressed when you find
+something new
+and
+i've done a little bit of work in that
+area but most of the successes have come
+from others uh here are some examples
+by uh of as i i mentioned reaction
+pathways and catalytic chemistry
+qualitative factors in mutagenesis
+qualitative laws and metallic behavior
+uh in mathematics
+uh
+quantitative conjectures
+and graph theory and number theory
+uh temporal laws of an ecology and i
+mentioned the king's work on on
+metabolism and yeast
+and there's been others
+since then this again is an old slide
+this was this was uh
+up to date almost over 10 years ago
+what was my measure of success here is
+that they led to publications in the
+refereed literature
+of this the relevant scientific field
+they were contributing new models new
+laws
+to the domain science not to computer
+science journals not to ai journals
+that's how we measure success in terms
+of tenure cases right so maybe these
+systems well probably they didn't
+deserve tenure because they weren't
+doing it themselves but they did a
+substantial part of the work
+and here are some some books that have
+come out over the years on this again
+these are these are
+describing older work uh but
+if you particularly if you look at this
+most recent one that uh that sacha
+jaroszki and luke cho todorowski uh
+edited you'll see a great variety of
+work it really covers the gamut of work
+up through 2007.
+i think it's time to do another one
+okay
+i should mention briefly
+the
+something called data mining i'm sure
+you've all heard of it um
+uh in fact when it when the first
+conference was launched on this it was
+called data mining and knowledge
+discovery uh so you sort of think that
+it might be related to what i've been
+talking about in fact it's uh related
+but not as much as you might hope
+for as much as i would hope um
+the data mining movement first
+conference was uh in 1995
+uh you know 15 years after after
+i published the earliest work on bacon
+data mining emphasized large amounts of
+data
+back then large was maybe a million but
+it was still large at the time they did
+use computer
+techniques to find regularities in the
+data
+they did adopt the notion of heuristic
+search through a space of hypotheses
+initially they focused on commercial
+applications
+and commercial data sets if you went to
+the conference pretty much every you
+know
+eighty percent of the people were
+wearing wearing suits um
+and
+so there's a lot of business interest
+and there still is
+the big difference is that
+that most of the work here and use
+notations that were invented by computer
+scientists back then it was decision
+trees a little later and and and uh
+logical rules later it was it was
+phase nets
+later it was support vector machines and
+now i'm sure that there's a lot of work
+on on deep learning there
+the
+it did not use
+established scientific formalisms okay
+which is what
+computational scientific discovery is
+all about i would say that's its
+defining characteristic because the
+output of the system is
+a law or model in some some formalism
+that scientists themselves know and love
+different different fields but
+it has to make contact with the
+literature that's why i sometimes talk
+about it as communicable model laws and
+models because these are the notations
+that scientists use to communicate their
+results
+um
+sorry but decision trees phase nets
+deep neural networks are not it
+you may be able to translate them back
+into communicable
+uh formalisms and some people do that
+but that's a key step if you're not
+doing that i wouldn't count it there has
+been work on scientific data mining some
+very impressive work but the output i
+would say does not count as scientific
+knowledge if it unless it takes this
+communicable form
+right
+okay
+so are there any questions
+clarifications that came up in the
+meantime
+uh no clarification question but uh
+there's one question from zachary um
+well it was a comment um he said that it
+seems like an e only important step in
+the discovery process
+is the determination of what phenomenon
+needs to be explained by the same theory
+of course so that remind that that just
+brings back so many memories okay
+because i'll tell you when we when we
+when we first published this work we
+started in the late 70s and early 80s
+and especially after we published our
+1987 book on scientific discovery
+there were lots of naysayers who would
+say oh well what you've done is very
+nice but isn't the real problem of
+discovery x or y or z
+whatevs always something we had not done
+it was it was well you have to pick what
+variables you're going to relate or you
+have to uh you have to find what problem
+you're you're going to work on and we
+said well of course we didn't say that
+we had a complete theory science is
+never ending right so we claimed that we
+had made progress and we had elucidated
+a important aspects of the discovery
+process not that we had automated the
+whole thing any more than machine i mean
+you could say the same thing about all
+machine learning work how do you decide
+what what problem to look at uh so sure
+i think there's something about the word
+discovery that sets people off right uh
+you see similar kind of results these
+days when you say when you use the word
+causal some people just think that
+somehow our reserve term and and i
+personally i think they're they're
+really just carbon chauvinist they want
+to reserve those terms for people and
+they don't want to let silicon
+entities be they have
+play in that arena
+there has been work on problem finding
+uh in fact
+deepak call carney who was another of
+herb simon students did a very
+interesting thesis um where he did a
+historical replication of krebs
+discovery of the urea cycle and and he
+he looked at the literature on what
+krebs did krebs is always changing what
+problems he's working on
+based on surprising results and and and
+kolkarni's
+keikai system uh actually did an in
+i thought a reasonable job of of
+mimicking that kind of of uh a
+problem-finding behavior uh but again it
+is understudied plenty of look if you're
+looking if i don't know how senior the
+person is but if he's a student this is
+a great thesis topic if he's an advisor
+it's a great topic for his students so
+go for it and i'll i want to see the
+results
+okay let me shift to more recent work
+that is building on the stuff that's
+gone before so
+as we've seen
+most of the research on computational
+scientific discovery as i've defined it
+has focused either on
+inducing numeric laws that describe
+quantitative observations what is often
+called equation discovery um
+and i don't make a side note here uh
+you'll come across the term symbolic
+regression
+i believe that john cosa introduced that
+around 2001
+when he did some work on genetic
+programming uh uh for for
+finding these kinds of
+of laws and models um i think that's a
+terrible term because
+regression has always had a symbolic
+aspect i mean if you
+if you do uh
+the the the
+resulting if you know in advance
+the exact form of the equation sure but
+if you're doing say multivariate
+regression where you do uh where you do
+variable selection with say backward
+elimination or forward selection then
+you're searching a space of model
+structures
+it's a very constrained space but i mean
+there's a strong symbolic element there
+there always has been so
+so i symbolic regression
+contains no content as a term equation
+discovery does um and so i'm going to
+continue to talk about equation
+discovery uh and model discovery and i
+hope you will too
+um
+so uh so again the most of the work in
+this area has been on focusing on
+discovering equations that encode
+numeric laws or
+inferring structural accounts that
+explain qualitative phenomena
+that's arguably more abductive and less
+inductive
+there's the the data tend to be very
+sparse one could question whether they
+are data in a classic sense they tend to
+be more more qualitative phenomena
+and we shouldn't go into the details
+there but the point is that that's what
+most of the work has been
+um but if you look at the more advanced
+sciences you some often find
+people combining aspects of both
+activities they end up coming up with
+models that
+that
+posit unobserved structural relations
+among entities
+and that include
+functional forms with numeric parameters
+i would call these quantitative
+explanatory models and now the question
+is can we can we automate their
+construction as well
+there has been work in this area too and
+i'd say there's two broad classes uh the
+first uh
+i call abstract causal models uh this is
+closely related to what's called
+structural equation models that work in
+that area was championed by clark
+leemore peter spirtis and their
+colleagues
+but not quite as far back as uh as the
+work on bacon but pretty far back late
+87 was their first book um
+and more recently uh there's been
+no no this was in parallel um work on
+discovering sets of linked differential
+equations and sasho jarossky and lucho
+tarowski did some of the earliest work
+on this
+but there's been other work by stolen
+bradley cosa and others
+this uh
+these
+both of these combine numeric equations
+into larger qualitative structures but
+they i would argue they're still mostly
+descriptive
+because they aren't postulating
+unobserved variables or processes
+it's good work
+and i'm going to
+draw on it but i i think it's not quite
+the sense of quantitative explanation
+that that that many scientists would
+want
+let me give you an example so these are
+some data from kevin rigo's lab at
+stanford he's an oceanographer and these
+are every every couple of years he takes
+a trip down to the raw sea in antarctica
+and they take samples i hope they've
+automated it by now i think they used to
+have to
+drop a bucket in and pull it back out
+this is the
+number of days of the past
+and
+of the concentration of phytoplankton
+and
+and nitrates nitrogen which is a
+nutrient that phytoplankton is known to
+rely on and you see that um as the
+phytoplankton grows the uh
+the
+nutrient is is dropping off but there's
+this massive die off around
+around and around the middle and in the
+and then you see the nitrogen going back
+up um
+at the bottom you see four uh equations
+they're different
+differential equations in in
+my own notation um they talk about
+four
+that talk about how four derivatives
+vary as a function of the the current
+values and notice that two of them that
+detritus and zooplankton are naturally
+not observed uh but they're still part
+of the model that
+that you have that then there this is a
+model that will actually reproduce these
+data pretty well so this is again an
+example where
+this is looks like
+finding linked differential equations or
+difference equations in this case but
+there's more
+because if you read papers by people who
+do this kind of work by
+by ecologists and oceanographers they'll
+tell you a story like this they'll say
+what's really going on is that as the
+phytoplankton uptakes nitrogen absorbs
+it it's it it grows that reproduces it
+concentration increases and the nitrogen
+decreases
+that continues until the nitrogen is
+more or less exhausted
+and that leads to this massive die off
+that produces detritus
+dead material that gradually
+breaks apart remineralizes to replenish
+the nitrogen
+it may also be true this is this is more
+iffy
+that zooplankton
+grazes on the phytoplankton and that
+slows down the
+the phytoplankton's increase and it also
+produces detritus
+that story suggests that you want to
+move beyond just describing and
+predicting these curves okay um
+you want to you want to get at these
+under these sound like processes to me
+and in fact you can you can identify
+parts of the the model that correspond
+to them right so so this first part i
+phytoplankton uptakes nitrogen that
+leads to its concentration increase and
+nitrogen decrease
+that is associated with these parts of
+the
+model and this last part
+is associated with these parts of the
+model right every so so the process is
+not a single thing it's a set of things
+that are happening together um but it's
+not the entire model right so the model
+is the collection of these things so we
+took that idea
+and again this was building on previous
+work that
+lucho and sasha had done
+and and the idea actually came out of
+discussions with them
+we said we can restructure this into a
+set of processes
+and here was the notation we came up
+with initially um this is what we called
+a quantitative process model it's
+actually
+influenced also by
+work by ken forbus
+who had developed a qualitative process
+language
+and this is very much like his
+notation except it's got functional
+forms and numeric parameters in it and
+so this is a
+process for phytoplankton loss and you
+can see that
+it says how much the phytoplankton is
+going down and how much trace is going
+up this is zooplankton law
+zooplankton grazing on phytoplankton
+uh nitrogen uptake and remineralization
+and so if you turns out you can if you
+if you assume that their effects are
+additive you can you can end up with
+with a model like a differential
+equation model like this okay
+the the idea here is that each process
+is saying that certain terms in the
+equation stand or fall together you
+could remove this one about zooplankton
+right that all the the the highlighted
+ones here without touching the others
+you'd still have a viable model
+it might not fit the data as well but it
+would it would be a different model with
+different with one less fewer process
+okay
+so now we come to
+the task as we formulated it what we
+what we
+call inductive process modeling that's
+where you have multivariate time series
+uh you have some variables you want to
+you want to predict maybe not all of
+them some of them may be exogenous like
+sunlight that you're not trying to
+explain
+you also have some background knowledge
+and i'll come to what that is in a
+minute
+and then you you run that through your
+inductive process modeler and out comes
+one or more models that not only fit the
+data
+but that explained it in terms of these
+these unobserved processes right they
+are differential equation models but
+they are more than that
+this is what i mean by this is the kind
+of background knowledge that we give as
+input these are generic processes they
+look just like the processes in the in
+the model except that they have type
+they have variables um not specific
+uh entities
+that have types right so one has to be
+of type species something else must be
+of type nutrient uh they have parameters
+and they and the parameters can be in
+functional forms
+these are equation fragments right this
+is not a complete differential equation
+this is a piece of a differential
+equation but this variable here
+this parameter is the same as this one
+which is this way of
+saying that that some basically it's
+it's
+adding a constraint about uh about
+conservation
+so in runs we early runs we did
+we had about 25 generic processes like
+this
+with for example different functional
+forms for loss and grazing
+those are the building blocks out of
+which we're going to build models you
+might think that ecologists would have
+agreed on what the processes actually
+are they don't there's at least 10
+different functional forms that are
+still actively
+used to model
+say
+grazing processes
+so it's uh and and perhaps they're
+different ones are applicable in
+different different settings we don't
+know
+um so we built a system called skipping
+ipm is inductive process modeling the sc
+has
+is about
+adding structural constraints which i
+will not talk about today because i
+don't have time
+but uh
+but uh but here's how the system works
+it would use that background knowledge
+the generic processes to generate
+process instances these were fully
+instantiated ones with particular
+variables plugged in but without the
+parameters right it would then use that
+to generate all possible model
+structures
+and for the kinds of that might be
+three or four thousand model structures
+that's what we were working with in the
+in the problems we were looking at um
+again it would reject some if they
+violated constraints but it was still a
+pretty big search space for each
+candidate structure it would then use
+gradient to sense search to try and
+estimate the parameters to do that it
+would actually run the model
+with a with some
+some sample parameters it would get an
+error score and then it would do take a
+gradient to send stat now keep going
+until it reached a local
+optimum and then it would do random
+restarts because sometimes it would get
+stuck
+and
+and then it would return
+the parameter one or more
+uh parameterized models ranked by the
+the the error score the rank the for
+example the mean squared error and that
+led to positive results on on a number
+of domains data sets again a lot of this
+work was done this was done with will
+bridewell uh lucho todorovsky and sasha
+travoski and and in some cases others
+um
+uh the raw sea data that i told you
+about um the and we did actually get
+journalists good generalization to a
+second year not shown here uh this is uh
+some laboratory data from uh from
+paramecia um
+one was eating on the other
+uh protozoa um
+this is uh data from a
+a lake or fjord uh this is predicting
+the the levels of of the of the water
+this is biochemical kinetics
+of what's called a pulse response
+experiment where you dump a chemical in
+it upsets the steady state and then it
+gradually comes back
+and others
+and so you can see that you can get
+not only a variety of handle a variety
+of different scientific domains but but
+different kinds of behavior this way
+which that shouldn't surprise you
+because differential equations are a
+powerful way of encoding models
+we also extended the framework in in
+multiple dimensions we built versions
+that revised models rather than building
+from scratch we introduced hierarchy to
+try and constrain the search so you have
+processes and sub processes
+we
+didn't have major overfitting issues but
+we did show that an ensemble like
+method using something similar to
+expectation maximization could improve
+results
+and also we could use that for uh
+sorry
+ensembles
+are different ensembles
+is a kind of model averaging but we
+found a way to keep them interpretable
+and we also have used a variant on
+expectation maximization to handle
+missing observations
+so again this was arguably a success
+but
+there were issues
+and it's always great when you can write
+a critique of your own work before
+someone else does um that's what we did
+in 2015 adam arvay was a phd student
+working with me at auckland
+when i was there
+and there were a number of problems with
+the systems we had built not just
+not just the one i told you about but
+the whole family
+one was that it it had to evaluate
+full model structures
+so again i told you that it would
+generate all possible maybe 4 000
+model structures and it would have to
+estimate the parameters for each one
+well that's not what herb simon was
+talking about when he said scientific
+discovery is heuristic search that was
+exhaustive search and we got to be able
+to do better than that it might not be
+so bad for simple models but but
+but uh but it doesn't scale ultimately
+but
+perhaps more surprisingly is that we
+because we had to do simulation of them
+of each model repeatedly in order to
+degrade descent to find the model
+parameters turned out that took 99.99
+of the cpu time
+plus we had to do random restarts to
+reduce chances of local optimum and so
+and despite that sometimes it would
+still not find a good fitting model it
+wasn't as robust as we wanted now the
+reason why we were doing this at the
+time and it's it made sense was that and
+this is i i don't know for sure about
+other recent work in this area but we
+were
+allowing for
+variables that were not mentioned at all
+in the data right completely unobserved
+uh and so you had to as part of this
+process
+repeated simulation you would you would
+estimate the values of these unobserved
+variables
+and we were handling non-linear
+differential equations so so we were
+tackling some hard problems the
+the parameter estimation methods of the
+time were not sufficient for it it was
+just too much and i we went i i asked
+four or five experts at stanford
+how we should handle this and they
+always said oh we do it this way and
+that didn't work
+luke joe can tell you we tried many many
+techniques that were not working for us
+finally in 2015 we came up with a new
+approach and it as often it involved
+rethinking the problem and
+and simplifying things at least
+temporarily
+so
+we said
+uh
+let's assume that processes only have
+algebraic eq uh
+wait sorry that
+let's assume that each process has a
+rate
+like in chemical reactions right
+chemical reactions have a rate at which
+they're operating
+there's an algebraic equation that
+determines that rate and what's more
+that's parameter free
+there are counter examples okay but
+we'll deal with them later
+so there's a parameter free algebraic
+equation and it's a function of
+variables uh that you have known that
+that you can measure okay so we're not
+we're also backing off of unobserved
+variables for now
+um and you can observe
+one or more derivatives that are that
+are proportional
+to to that processes rate right so each
+process has one or more derivative terms
+that are directly proportional to to the
+process rate
+this has nice mathematical properties
+and again it's very similar to uh to
+forbice's work on qualitative processes
+this is the new notation it's basically
+the same as before except each time each
+process we have a rate
+there's a there's a
+one parameter for each differential
+equation fragment
+but these are always linear
+right so they're linear functions of the
+rate which is why they're proportional
+to the rate
+and we can convert this again into
+a
+set of differential equations this is a
+always going to be a linear combination
+of
+these
+of these these terms these are not
+if you're not familiar with the the term
+linear differential equation these are
+linear differential equations even
+though they have
+could have products or ratios or other
+things in them as long as there's no uh
+there's no funny things like one over
+one plus k where k is a parameter that
+screws things up and we'll come back and
+we are i i think i know how to deal with
+that but i won't report results on it
+today
+and generic processes
+are again very similar uh there you can
+have constraints basically this is
+saying that a has to be positive this
+parameter
+that is exponential growth increases
+the prey concentration and so on
+and we built a system that built that
+that incorporated this idea it's
+now this one is actually going to carry
+out heuristic search
+it's going to generate all the process
+instances again making them concrete
+with particular variables
+and then for the from the data
+you're going to say if that process was
+really active let's calculate what its
+rate would be because remember we can do
+that because it's just an algebraic
+expression of observed variables
+and then for each dependent variable
+we're going to estimate the the
+derivative and then we're going to try
+and find the regression for each
+derivative term we're going to try and
+find a regression equation
+in terms of the process rates
+this is what it looks like graphically
+again this is the task of inductive
+process modeling there's two levels of
+search
+at this level here you at at this you
+you have to pick up a derivative you're
+going to try and model
+and let's suppose we pick this one here
+and then you try and find an equation
+that predicts that derivative in terms
+of
+a linear combination of of these process
+rates now in in the syst in this system
+that we built rpm it does constrained
+exhaustive search it would go out to
+four or five terms you would try them
+all and see which ones work best using
+multivariate linear regression to do
+that having found that equation it would
+then go and pick another variable
+and do a search for that the but the
+important thing is
+that later search for later equations is
+constrained by earlier ones
+because you knew that once
+once a
+a process was included in this one it
+would have to be if it if it impacted
+this very variable you'd have to include
+it too so so it was not independent by
+any means
+and so there's search
+at the through the space of models
+there's search for equations within
+those models
+this works well on natural data this is
+uh from some some old
+1978 data on uh
+this uh protozoan uh eco laboratory
+ecosystem uh and it's pretty noisy um
+but we found we found good r squares for
+these
+um and this this is a comparison to
+to the uh
+uh
+older skipper skipping system um this is
+this is showing you how how variable
+the
+our exhaustive search system was right
+so um it was uh we could we here we vary
+the number of of restarts we did this
+was this was actually for i think a
+three variable
+model um so it was really not very very
+complicated uh but uh with different
+number of restarts it would if you gave
+it more restarts it would uh it would
+the variations it would be more often it
+would find a good fitting model but uh
+but sometimes it was a big spread and it
+was always taking a lot of cpu time
+again because we were doing these framed
+estimation rates we were doing
+simulation runs again and again and
+again some people these days like to
+have as much cp use as much ctu time as
+possible that's not our style i think
+that we could do better
+and so
+so we then compared that to the new
+system
+and
+it
+was
+this was it would run different speeds
+at different times but it was always
+much it was like a million it was almost
+a million times less than than the old
+system and it was invariably getting
+really good fits the data now this was
+on small data set but
+in the small models but it was but it
+clearly would scale better
+and here we show that as you increase
+the number of
+variables this is the synthetic data
+with 10 noise uh then as you vary the
+number of generic processes that's the
+background knowledge and number of
+variables um it grows it grows slowly
+although it does it looks like it's
+faster than linear so so we'll come back
+to that
+and just to convince you that
+this can do non-trivial tasks these are
+again synthetic data from a
+a 20 species predator prey ecosystem
+where one fish is eating the next fish
+and so on but we don't tell the system
+what order they are and it can
+reconstruct
+the the
+predator prey relationships and the
+parameters from data lengthies
+i'm going to skip over
+some work on on model revision that i
+did with adam marve
+i did want to show you that here's an
+initial model synthetic model here are
+the changes you may we made we added a
+couple of terms one process and changed
+a couple of variables you can see how
+different the curves are but the system
+is able to recover and adapt the model
+only changing things that need to be
+changed
+and more recently
+we've extended
+the rpm to
+another system that does selective
+uh induction of process models we call
+it spm
+that delays binding the variables um
+in the generic processes until it finds
+evidence of a relationship it it deals
+with it it's able to handle more complex
+equations because it actually does
+heuristic search through the space of of
+uh regression equations using a kind of
+backward elimination that by itself
+isn't enough turns out that these the
+variables here are
+highly co-linear i mean massively
+co-linear and so
+uh if you have more than 10 variables uh
+predictive variables uh
+classic methods won't work so we we have
+to do sampling uh in order to keep the
+number of variables small
+and it finds multiple equations for each
+dependent variable and then it searches
+for ways to combine them into consistent
+models
+i anticipate that i'm running low late
+so
+so uh
+i
+just want to show you
+that this is a chemical reaction network
+that the system was able to reconstruct
+from synthetic data
+so so the older our rpm the original
+system could not have handled this
+uh
+this is showing how the
+backward elimination
+uh combined with uh with sampling of the
+of the process rates uh leads to much
+better scaling as you increase the
+number of uh
+of
+basically the number of terms for each
+differential equation so this this is
+just fine um up to up to 10 uh cp
+cpu-wise right
+whereas the old system was clearly
+blowing up at that point
+and and getting much
+much more robust results uh
+the older system the early
+rpm would uh would sometimes get the hit
+dead ends because it was basically doing
+greedy search through the space of
+models
+at the at the model level and it's uh
+and the new system is uh is is is doing
+much better on on these chemical
+synthetic chemical datasets
+all right
+so i am almost done
+so
+i said some of this along the way
+but let me repeat it
+this is building on lots of earlier work
+we borrowed ideas on qualitative
+processes from ken forbus uh work uh on
+inducing differential equation models by
+todorowski uh bradley and others
+the generic notion of heuristic search
+which goes back to simon
+i don't mean just for discovery i mean
+he and and newell were the first
+champions of heuristic search in in the
+ai revolution
+and multiple linear regression which we
+use as a subroutine uh
+also notions of delayed commitment in in
+uh in search and feature selection
+i mean this is bringing together a bunch
+of things
+uh
+i told you that we had made some
+simplifying assumptions
+uh in order to make this progress and we
+did i didn't want to because because
+these were
+because we thought we had this nice
+general framework it was just too
+unconstrained so so we need to ex to
+extend the system to handle
+rate expressions with parameters like
+one over one plus k
+um
+i think we can do that
+uh using a form of gradient descent to
+estimate them the the parameters it you
+can't use straightforward multiple
+linear regression
+anymore
+dealing with unobserved variables i
+think we can use an em like method an
+integrated optimization method to try
+and estimate those as we did in some of
+our earlier work
+and i've done a little bit of work on
+discovering entirely new processes you
+don't really want to have to tell the
+system in advance what all the generic
+processes are
+but i think that's a that's the biggest
+problem and the most exciting one i'd
+love to talk with someone if they know
+how to do that
+plenty of promising applications
+in finding reaction pathways in
+biochemistry like metabolic pathways um
+uh understanding the ecological dynamics
+of of human microflora which are
+basically ecosystems of hundreds of
+different bacteria
+um
+of course a topical
+topical area would be
+better epidemiological models of
+contagious diseases clearly we aren't
+doing very well at predicting them right
+now
+but not just discovery okay i'm really
+these days fascinated in the flip side
+of it which is design if you think about
+design it's really you're trying to
+discover a model that would if if if if
+you had if if it existed
+uh you're trying to to design a
+situation that would behave in a desired
+way rather than the observed way
+uh in fact uh
+lucho and sasho have actually done some
+work in this area um and uh maybe he can
+talk about it if he comes to the seminar
+um
+but i think doing you can do you could
+apply that for
+for chemical production for finding
+metabolic pathways for synthetic biology
+i think that i think that those would be
+great applications
+okay to summarize then inductive process
+modeling is this promising approach for
+discovering a particular class of
+scientific models
+it uses the formalism differential
+equations that many scientists will find
+familiar it uses background knowledge
+about the domain
+it produces meaningful results with
+moderate amounts of data you do not see
+millions of training cases right in fact
+we were usually working from one
+multivariate time series with maybe
+hundreds of samples or tens of samples
+it generates models that don't just
+describe the observations but explain
+them in deeper terms and i have we have
+have uh methods now that scale well to
+many processes and to complex models
+now i have to before ending i have to
+mention
+that there's a whole bunch of work going
+on now uh on particularly on inducing
+differential equation models
+and i list some of it here this isn't
+complete
+there's two subsets of this there are
+some some groups that are using using
+various statistical uh techniques to to
+find these models
+there are others who are using deep
+learning in learning in deep neural
+networks
+which of course you could argue with
+statistical but of a different type than
+than
+usual
+and so you see there's a bunch of papers
+that have come out on this recently
+these are
+what do they have in common well they
+are searching a space of models stated
+in scientific formalisms some of them
+for example
+this work here by cranmer and battaglia
+and others they use graph neural
+networks
+but then they convert the result into
+uh interpretable differential equations
+the uh others um
+others use uh use different approaches
+um and but but they they are they share
+this the other thing they have in common
+is they don't cite our work
+and or luke cho and sasha's work or very
+rarely do they uh and it's and i think
+that there's one person to blame for
+that and that's uh that's uh schmidt
+lipson who publishes this very
+influential paper in 2009 on finding
+differential equation models using
+genetic programming and it's good work
+except that they
+they didn't cite they cited my 1981
+paper but they basically miss cited it
+they didn't discuss it they didn't
+discuss the work by
+by luke cho and and sasha on using
+genetic programming to find differential
+equations so people who read
+the schmidt lips and paper think ah what
+a great new thing
+it's good work but it wasn't new
+and
+i hope that you will take this as
+motivation to go back and read some of
+the older literature i do think the
+other thing that that
+these have in common is i can't
+understand them okay these papers are
+generally so math heavy and i mean i was
+a math major but they are so math heavy
+that i have trouble parsing them um and
+so i may ask if anyone's interested in
+giving me a tutorial on what's really
+going on here i would love to learn
+because it's clearly important work but
+it but the the style of papers if you
+read papers by me or the slovenian group
+they will have a very different feel
+i actually believe you'll understand how
+their systems work and to reconstruct
+them and these i think it's more
+difficult
+last comment
+we all hear about big data we've been
+hearing i've been hearing about big data
+since the late 80s
+when big data was much smaller than it
+is now
+there's lots of companies and
+funding agencies who want to fund work
+on big data i think that that's an
+important issue but there's been lots of
+lots of progress on it i don't think
+that's the real issue
+there are two other issues we have to
+make progress on one is scaling to large
+and complex scientific models ones with
+hundreds or thousands of variables in
+them
+and scaling to large spaces of models
+right where there's
+thousands or millions of candidates that
+we have to search
+work on those various on those areas and
+i think if you look at what i talked
+about today you'll see that i was
+addressing those not so much the big
+data thing i don't think there are still
+plenty of scientific disciplines where
+we don't have big data but we do have
+big
+complex models and we do have big model
+spaces
+okay there so
+scientific discovery is not mystical
+despite what
+what uh
+uh
+popper said it's not irrational
+we can even study it and partially
+automate it
+we can view it in terms of searching a
+space of laws or models using operators
+for generating structures and parameters
+guiding search
+not only by the data but also by
+knowledge and we can discover those laws
+and models
+stated in formalisms that are familiar
+to scientists
+there have been lots of successes here
+and i hope that i've excited some people
+and you will will join us in in this
+effort here are some uh some classic
+publications and this is the
+slide to honor herb simon and jan zitkov
+both of who did some of the earliest
+work in this area and who combined ideas
+from computer science psychology
+philosophy and statistics i think they
+were great role models
+thank you
+thank you so much for the great talk pat
+that was wonderful talk i liked it
+we have
+one more questions from from the chat
+room
+it was from the andre
+filippo
+he said
+the structure of many physical laws
+mentioned in the talk followed from
+dimensional analysis
+broken hands pie theorem does your
+approach account for dimensions
+and he has um
+well do you want to answer that first
+question
+hold on i'm still trying to find the uh
+there it is
+okay right
+um
+i'm not seeing that
+but i'll answer it anyway so the answer
+is that
+of course these are physical laws and
+they're going to going to follow the
+rules of of of having that the
+dimensions have to balance right um the
+there has been some work on using
+dimensional analysis
+uh to uh to constrain the search
+for those of you who don't don't know
+this i mean in in aeronautics um
+of course it was expensive to build wind
+tunnels and to build models of
+aerodynamics
+and so
+so some smart people decades ago
+realized that uh that you could you
+could use
+that you could take knowledge about the
+dimensions to do
+many different experiments would map
+onto one point in a dimensionless space
+but that's that's not quite what i don't
+think that's what the question was about
+it's about can you use knowledge about
+dimensions to knock out candidates the
+answer is yes uh that one of the early
+systems uh developed by mitch kokar um
+that i cited earl early on he built a
+system for equation discovery that did
+that um i actually when i was in grad
+school i wrote a paper
+where i i did that i and i showed that
+you could rediscover newton's law with
+one data point
+but it i didn't get accepted and people
+didn't seem interested at the time so
+now fine idea um
+to my knowledge there's very little that
+actually at least to the work that i
+covered uh very little work that that
+does that
+luke joe may know otherwise
+uh or someone else may know there may be
+some of the more recent work the
+recent work on on deep learning for
+equation discovery
+or quote symbolic regression is uh
+is uh
+may do that because there's a lot of
+interest in incorporating ideas from
+physics i just don't know
+okay so he has he has a second question
+again from andre
+physical discovery explains a set of
+phenomena
+observed before
+and shows a way for further research
+within a corresponding field such as
+physics chemistry biology etc
+how does your approach help with that
+second part showing perspectives goals
+for further research
+well
+why don't we turn the question around
+and say how would suppose that a human
+scientist did what
+these systems do because obviously these
+are all things that human human
+scientists have done in the past
+how would their activities their results
+help move the science ahead
+um it it i mean clearly science is not
+a bat it's not it's not like batch
+processing
+even bacon which was incremental it
+would take in a few things at a time
+um
+was basically you gave it some data and
+it gave you some equations right and
+that's how these systems generally work
+uh that's not true for all of them
+um as i mentioned this system called
+carney did
+on
+reproducing krebs discovery of the urea
+cycle is very much about how new you you
+you design experiments you collect the
+data the test hypothesis you generate
+hypotheses design experiments uh test
+them uh revise your model or if
+something
+really surprising happens you might
+redirect your search and go after some
+new problem
+you see behind a similar kind of thing
+happening uh in the work by ross king
+and his colleagues on this closed what
+they it's a closed-loop uh process that
+discovers yeast metabolism models of
+yeast metabolism and and so there are
+examples like that but they tend to be
+coming up with qualitative explanatory
+models i haven't seen anything like that
+for either
+equation discovery or quantitative
+explanatory models it could happen uh if
+i was going to do that i would look for
+something like that right so there might
+be residuals
+in that you're not explaining so you
+look for some new new factor that could
+explain why there's this blip here um
+that would be a more incremental process
+um
+but uh but again there's that that's
+rarity in the literature as far as i
+know that's fine i think that that i'm
+interested in how people do things and
+and certainly if you want to build a
+system that does support scientific
+discovery
+over the long haul
+you're going to have to have that kind
+of closed-loop character to it
+okay thank you thank you so much for the
+um all the answers pat let me just ask
+do you usually get more questions than
+this or did i lose everyone because i
+went on too long
+oh well i mean i yeah well it's it's
+it's
+it's uh it's obviously over time it's we
+are uh 10 minutes um after the scheduled
+time but i didn't want to um
+you know stop your talk because i i want
+to have a
+the full
+full the i want to have the um
+here the you know everything prepared
+yeah if anyone wants to stick around
+afterwards i'm happy to talk or you can
+send me email
+um and you can find me on the web
+email address langley stanford.edu
+and you can find lots of papers on this
+kind of stuff
+sounds good yeah thank you for coming
+thank you thank you so much
+that was great pat
+thank you
+good okay let me
+stop the

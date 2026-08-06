@@ -1,0 +1,1211 @@
+Hello everyone, welcome to the DDPS
+seminar. Uh before we introduce our
+invited speaker, let's go over some
+rules and logistics. Uh first of all,
+please please mute yourself during the
+talk.
+But if you have questions, you can
+unmute and ask questions or use chat
+room to post your questions so that we
+can address them in Q&A session at the
+end. Second, today's DDPS seminar is
+open to external audience. Therefore, no
+classified discussion is allowed. So,
+please watch out. Finally, the talk
+today will be recorded and uploaded in
+our YouTube channel. That's about it.
+Now, let me briefly introduce our
+speaker today. It is an honor to host
+Alessandro Allah, who is an associate
+professor at Sapienza University of Rome
+since 2024. He earned a PhD in applied
+mathematics from Sapienza in 2014.
+Before joining Sapienza, he held
+positions as an assistant professor at
+Kafos Kari University of Venice. an
+adjunct professor at PUC Rio Brazil and
+a post-doctoral fellow at the Florida
+State University and the University of
+Hamburg in Germany. His research focuses
+on optimal control for PDEs, motor order
+reduction and datadriven modeling. Today
+Alice uh Alessandro uh will talk about
+datadriven algorithms for online
+identification and control of partial
+differential equations. I'm sure we are
+going to hear a wonderful talk. Now let
+me ask a a somewhat informal questions
+to Aleandro just to get to know him
+better and make this seminar somewhat
+informal. Is that okay Aleandro? Yeah.
+Okay. Here you go. Um so do you have any
+superpower uh like unusual habit or
+unusual the routines you do um which is
+distinguishing from others uh and helps
+you you know you know what you know so I
+was I was expecting something I mean
+usually people ask me something like
+that I say I do math but here I mean
+it's not Well, that's Yeah, that could
+that could be a superpower. I mean,
+why why do you think that's the
+superpower? Uh, Matt, no, I don't know.
+I'm just I'm just kidding. No, I I do
+not have a superpower. I'm sorry. How
+about the interesting
+How about the interesting habit you
+have? I like I like traveling. I like
+traveling. Traveling. I mean, you are in
+Italy. Uh, so that's perfect answer. Any
+favorite place to go? Well, um I spent
+four years in Brazil. So, Rio de Janeiro
+to me is one of the best place in the
+world to Yeah. Yeah. Yeah. Absolutely.
+I never Brazil. So, um you absolutely
+have to go want to go. I mean, Rio de
+Janeiro, it's summer all year around.
+You go to the beach, you you can hike,
+you go to the beach, you can party, you
+can do I mean many things. Absolutely
+amazing. Okay. Uh, my bucket list, but I
+suggest you to go if you speak Port when
+you speak Portuguese. So, there's a
+process. You learn Portuguese and then
+you go to Re Janeiro. Oh, I see. Okay.
+All right. There you go. Stage is yours.
+Okay. Thank you very much for this
+opportunity. Thank you all for for being
+here. Um, wherever you are. So, here
+it's 700 p.m. So, I can say good
+afternoon, good morning, and good night.
+Um
+anyway, so this this talk um is a is a
+joint work with Julia Bertalis
+and Anaco
+and it's about um optimal control when
+the the dynamics is not completely
+known. So that's why you see also
+identification. So I'm trying to combine
+things uh on datadriven modeling but
+applied to control. Uh so before I get
+uh into the topic I just want to
+advertise couple of events that we are
+um we are organizing in Rome that you
+are very welcome to to come and and
+join. So registration is free. So you
+just have to register. So we will have a
+some both are in September. the two
+consecutive weeks. So if you want to
+come to to Rome and spend two weeks, you
+have a uh an opportunity or if you like
+an excuse. Um
+so one is about a school on scientific
+machine learning also PhD and postoc are
+very welcome to to present uh short talk
+or posters depends on the amount of uh
+uh people that want to do that. And then
+the week after we have a workshop on
+optimal control and agent system.
+So just feel free to to contact me and
+also feel free to stop me anytime during
+the talk. I'm very happy to receive
+question to be stopped during the talk.
+So this is the outline of my talk.
+Basically I'm going to split the talks
+in two parts. The topic is the same but
+two different approaches. one is about
+uh for those of you familiar with the
+Cindi the sparse identification or
+linear dynamical system the first part
+and um and also it's a it also addresses
+some reinforcement learning ideas and
+the second part is about the use of
+physics informed neural network in this
+context of identification and and
+control. So let's start with the first
+one with the first part. Um those are
+the two main references for this part of
+the talk. Those are the two papers uh
+where you find all the details that I'm
+going to skip during this uh this part.
+So let me first set the my control
+problem. So you see here we have a uh
+a dynamics which is given by nonlinear
+dynamics. So this a is a function of of
+the state x. So x for me in this part is
+the state u is the control and also b um
+depends on the dynamics
+and then we have a quadratic cost
+function that we want to minimize. So
+maybe some of you that are familiar with
+the linear quad regulator. So in general
+you have x dot= ax + b u. In this case,
+this is a generalization where you see
+that A and B also depends on the state.
+So here I I have all the classical
+assumption to guarantee asinto
+stabilization on the matrix A Q R and so
+on. So to solve this problem as I
+mentioned if you have a linear quadratic
+setting usually the control you can get
+the control or let's say the value
+function solving the algebraic C
+equation which is given here. This is a
+nonlinear matrix equation and um and
+then the control has this structure
+where you see that you have r and r from
+the cost functional b from the dynamics
+and then pi from the solution the
+algebraic equation. So in this situation
+where there are no constraints on the
+control you can exactly solve and this
+there are many different works on
+approximation the algebraic equation
+also for a large scale problem. So you
+can use kr subspace you can use newton
+methods but uh nowadays there are very
+valid routine to solve this to
+approximate this problem very high
+dimensional problem then if you want to
+switch to nonlinear problem and setting
+uh with a similar setting to this you
+see that now I have I put in red the the
+dependence on the of the problem on the
+state a of x and b of x but if you
+freeze at each iteration at each time
+your current position. You see that you
+have to solve you can solve that using a
+state dependent C equation. So at the
+position X you have to solve you can
+solve you can get the control for this
+nonlinear problem uh solving the state
+dependent equation. You see that you
+have the exactly the same structure but
+that depends on X. So at each iteration
+at each time at each position you have
+to update your the solution of the
+algebraic equation and then you can
+solve you can get the the the control
+that in this case it's just suboptimal
+because the because it's not guaranteed
+that your value function has this
+quadratic struct structure just locally
+and here you see that you have uh you
+can get the control you see here the
+differences are just that d and pi that
+depends on the state on the current
+state. So you can think about the state
+dependent equation as a model predictive
+control with instantaneous control. So
+you freeze and you solve an RQR problem.
+Nevertheless, you can you can't prove
+that this is optimal. This is just
+suboptimal because what you are doing
+you are assuming that your value
+function can be locally uh quadratic. So
+this is a an approximation of the value
+function.
+And then from a computational point of
+view as I mentioned you have to solve an
+algebraic equation at each time in
+iteration. So this is very dem demanding
+it's very I mean my my point of view is
+to solve large scale problem. So for
+instance PDEs so that means that if you
+discretize a PD two dimensional PD you
+easily end up with a with um a large
+system of differential equation in
+dimension 10 to the four or even even
+larger. So that means for an algebraic
+card equation you have 10 to the 8
+unknown. So that's very very expensive.
+So here just to uh to refer to a recent
+work with Dante and Valerini where we
+address the problem of using state
+dependent equation for right dimensional
+problem and in H2 and H infinity
+control.
+Okay let me get into the topic of
+inification and control. So as you can
+imagine my um my control will be
+computed using the state dependent
+recarding approach. So now let me let me
+think also that my dynamics is not
+completely unknown. You see here that
+I'm supposeding to to I'm assuming to
+have a linear combination for my
+dynamics. So aj those are a bunch of
+matrices that uh that will build my
+library and then I have some coefficient
+here that uh that are unknown. So I have
+a library and I have some conficient I
+want to discover these coefficient
+coefficients plus I want to compute my
+control. So I have two unknowns the
+control and the coefficient. So I want
+to identify the dynamics but that I that
+that I want to control.
+Um so this is a a classical datadriven
+uh approximation like in this in a syn
+structure basically. Um
+so a let me stress that a j are known
+for all j's and also b is known.
+What are our assumptions? So this is a
+almost a reinforcement learning
+assumption. So we do not know the system
+but we can observe the system namely
+that if you give me an input u of t and
+an initial condition I can compute I can
+observe the the trajectory. So this mu
+star means that I can I can exactly
+observe the the problem. So I do not
+know my mu coefficients but if you give
+me u of t I can observe the dynamics
+through the trajectory. Okay. So the
+goal is as I mentioned the control of of
+unknown problem. I want to discover on
+the fly the problem. So I want to
+identify on the fly and I want to have
+also efficient and accurate
+approximation. So this is a
+reinforcement learning assumption. But
+here in this case we are not we want to
+do everything on the fly. So we do not
+want to observe many times the
+trajectory.
+During the talk I will use mu as a
+generic parameter, mu star as the true
+configuration and mutilda my estimate
+configuration.
+And then whenever I use this coefficient
+I want to stress which control for
+instance this control means this is the
+control which is associated to my
+estimate parameter. the dynamics here.
+This is the dynamics that I can observe
+this dynamics given this control which
+is computed through my estimate and
+plugged into the system that I do not
+know. And if I want to stress that I'm
+using
+um
+an approximate method, I will put he the
+i here to say that I'm computing at the
+time ti. So this is the discrete
+approximation.
+So again this is the cost function. I
+keep the quadratic structure for my cost
+function. So this is um as in the RQR
+problem and the workflow is to pick a
+parameter configuration. So an initial
+guess I compute the corresponding
+control given this initial guess for the
+parameter. I observe the trajectory.
+Then I update the parameter cons conf
+configuration based on the observation
+and I keep iterating this. A certain
+point I will stop to update my parameter
+configuration when I see that there is
+not much difference between two
+iterations.
+So now I I I need to tell you how to
+compute mu which is very important.
+So as I mentioned I start with an
+initial configuration. I can compute my
+control.
+After I compute my control, I get the
+trajectory. Okay, a discrete trajectory.
+When I compute the discrete trajectory,
+I can plug into the system. Remember
+that I have an answer for my for my
+trajectory. I have here a linear
+combination. Okay, but I can compute the
+aj into the trajectory and also the
+control. This is feedback control. So I
+know the structure of the control. So
+this turns out to be a linear regression
+problem basically. So you see on the
+left I have this this vector the
+derivative and the the control
+contribution and then the my library
+times my my vector. So this is a linear
+regression problem and we do compute the
+linear we do solve the linear regression
+problem using basian linear regression.
+Uh this is mainly I mean you can use any
+whatever you prefer. You can also use
+optimization or loss optimization, ridge
+optimization, whatever whatever you
+prefer. Here for some reason based on
+reinforcement learning, we we use the
+basal linear regression but the results
+will not be much different if you use
+another uh another um another method and
+then again we learn the system on the
+fly. So the algorithm works as follow as
+I mentioned. So I get an initial
+configuration. I solve my algebraic
+equation. I compute the feedback control
+and after that I get the feedback
+control. I can observe the trajectory
+and then I get my update for the
+parameter using the uh basian linear
+regression. I actually we actually put a
+stop area here to update the parameter
+configuration. When two uh parameter
+estimates are very close to each other,
+we stop the algorithm.
+Let me give you some test. So in one of
+the paper we also worked using model
+reduction for this but here we not f
+focus on on that. So we just uh we are
+just working on one-dimensional um we
+are just working on one-dimensional PTE
+but you see here that we have many PDs
+here you can think having petition
+adection diffusion you can think having
+Alen Khan Zovich
+uh KDV burgers so you have many
+combinations so you see I have just
+seven parameters to discover but I have
+many different
+uh problem and from a control point of
+view each of them are different uh
+features. So if you have a a parabolic
+problem is different from an epolic
+problem. So that makes also the control
+problem not that easy. Although we have
+just seven coefficients and sometimes we
+use
+zero dish boundary condition or normal
+boundary condition that depends on the
+problem. But you see here that if you
+discretize this kind this problem you
+get into the state dependent approach.
+My matrix A of X is the discret this is
+the discretization of the second order
+derivative. This is the discretization
+of the adection term. Then we have the
+polomial structure and then we have the
+matrix for the third order derivative or
+the or here we have the the burkas
+ninarity. In order to approximate this
+problem we we use the Jacobian free
+Newton kilome method which turns out to
+be very efficient for high dimensional
+high dimensional problem.
+So let me start with the viscous ber. So
+this is the problem that we want to
+identify. So this is the uh what we get
+from our observation. This is the
+problem behind our observation. And you
+see that we have a low diffusion and we
+have a burgers a burger stems. So those
+are some parameter where we control and
+the dimension of the discrete problem
+and you see here that using our method.
+So this is the true configuration. This
+is the reconstructive here. So this is
+the diffusion part. Um this is the
+burgers nonlinearity and all the the
+other coefficients are almost zero close
+to zero. I mean this also uh depends on
+the discretization here. So the the
+difference here is below our delta t. So
+that makes um consistent with what we
+were expecting. And here you see the the
+solution of the uncontrol problem. So
+uncontrol problem means that u is equal
+zero
+and then here we have the you have the
+solution the control solution. So using
+state dependent recog straightforward
+for the known problem and here where we
+do identification and control you see
+that they are pretty similar but a more
+precise um stud is given here for
+instance here you see the two different
+control the control U1 and U2 are the
+control that comes from the state
+dependent calcation so when the dynamics
+is no and when you see RL so this is our
+approach you see that they're pretty
+similar Here there is a difference but
+that was our choice to start with U
+equals Z at the beginning you are free I
+mean basically you're free and you can
+get even better better result here you
+see the convergence of the parameter
+configuration at the as at the beginning
+it's very uh changing a lot but then
+it's converging to a certain a certain
+configuration and here the valuation of
+the cost functional as expected the cost
+functional for the state dependent
+approach is is below but uh there's not
+much difference between our approach and
+the state dependent remind
+the dynamic is not known so we have an
+error in the identification which is
+also which is clearly reflected here
+from a CPU time point of view uh of
+course uncontrol problem is rather cheap
+but there is no control involved and
+here you see that uh it's rather similar
+it's rather similar that because the the
+amount of uh recation that you have to
+solve which is the most expensive part
+in the in this problem. So you see this
+is just the simulation without control.
+So this is the most expensive part the
+the the solution the approximation the
+equation and you have just one about one
+second more more expensive here just a
+linear regression problem more than
+here.
+Um
+so I tried to to give an idea about uh
+identification and control with for
+unknown PDS using some reinforcement
+learning assumption where you do not
+know the model but you can observe and
+on the the difference is that
+um we do that on the fly. So we do not
+get the many observations basically. uh
+I show you numerical convergence of for
+our for our experiments and in this talk
+I did not address but we also work on
+using model reduction for higher
+dimensional problems was someone was
+wanted to ask me something yeah um since
+you you're you're finishing the first
+part the first part yeah yeah okay cool
+so I guess it's a good time to close and
+then ask questions Um um so previous
+examples um how many state variable did
+you have like it was 121 I mean this is
+a onedimensional PTE so you don't get
+the large scale oh but that's the
+discretized version yes the discretized
+after discretization you got the 121 but
+since it's 1D you have a onear you do
+not get yeah then then in the in a
+second word that I'm not going to
+present here because I want to watch and
+switch and use the physics inform
+approach. Uh we also have something
+which is 10 to the four the dimension.
+Okay, got it. And then and then we
+combined with model reduction in order
+to to approximate I mean to to get
+something efficient and accurate. Okay.
+And then optimal control um
+demonstration you showed um you are
+assuming this equation is not known and
+then you um
+by regressions you know Cindy exactly
+you you identify that yeah yeah it's
+basically the apply to control problem
+so in that scenario what if the I mean
+in the regression you have to provide a
+set of library you know candid library
+and what if you know some of the
+essential uh term is not provided. Yeah.
+Mhm. Well, so what we did here um
+we didn't address that. Um but but but
+for us I mean I I try to have a more
+control point of view in a sense that uh
+here um we have a several problem to
+control basically and if you think about
+a control problem it it's I mean then if
+you add more terms that means that maybe
+your problem is not controllable okay so
+I also wanted to make sure that I could
+compute my control
+Right. Otherwise, I I I got I got other
+issues. And then also from a control
+point of view here, since you have many
+different combinations and many
+different interesting control problems
+that I I thought that was that was
+enough to to to address this. But yeah,
+I agree. I but I agree. I think in
+general I mean if you have libraries I
+mean more libraries or not exact
+libraries that this approach might not
+work. I mean I absolutely agree if that
+was your point.
+Yeah. Like I mean underlying assumption
+you have is you know those you know
+chosen libraries by user um hopefully
+that includes the true system equation.
+Yeah. Yeah. No, for for us for us
+absolutely we we had the true I mean for
+us we knew exactly it's it's not p
+purely datadriven in a sense that we
+knew the structure of the problem but we
+didn't I mean only the m coefficient
+were unknown okay but for a control
+point of view I mean I guess it's not
+that uh easy to to find libraries out of
+the blue without knowing information
+because you end up that the recigation
+is not solvable, right? Yeah. So then
+what do you do?
+Yeah, that's tough problem. Yeah. Yeah.
+Exactly. I mean that that's u that's my
+that's my point of view and that's
+that's the reason why um we we got
+exactly the same library basically.
+Okay. Cool. Is there any other question
+from audience? Because we just finished
+the first part and
+Alessandro will move on to the second
+part. Before that, if you have question
+Okay, maybe maybe at the end. Maybe at
+the end. Okay, cool. Let's see. Uh so
+now same problem but different approach.
+Physics informal network. I still have
+uh about 20 minutes, right? More or
+less.
+Yeah, more or less. Yeah. Okay. So I
+guess you are
+all familiar with physics informal
+network but so before starting let me
+just mention that uh so when we started
+to investigate here you see in red the
+our contribution
+we found uh
+not not many works on control using
+physics inform here I'm listing some of
+them perhaps this list is not complete
+but um I feel that this is still a very
+open uh open topic. I mean if you if you
+think that the physics in 4 were
+introduced maybe five six years ago I
+mean it I think it's normal that optimal
+control with this approach is still very
+very open. So what is physics informed
+network? physics inform network is a
+it's a way to use uh uh to to
+approximate differential equation using
+neuron network providing physics
+information and the physics information
+means that we in the loss function we
+provide we want to minimize the residual
+of the of the PD that we want to solve
+here we want to use the physics in form
+to solve time dependent optimal control
+problem in a scenario a particular
+scenario where we cannot use numerical
+uh numerical methods. So say that we do
+not know for instance the boundary
+conditions initial or final conditions
+um or just uh we just have a few data
+but we do not know the structure the
+continuous structure of the problem for
+instance and um also in situation where
+this the state integration probably are
+not completely known. So in this
+situation where when you do not know
+boundary condition or the initial
+conditions or the state equation or the
+joint equation you cannot use standard
+numerical methods. So this is the
+situation where we are that we are
+addressing um and of course that also
+gets into identification because we
+assume that the problem is not
+completely known and control because we
+want to uh to get an optimal control.
+So what uh in general we will have uh
+I'm slightly changing the notation. So
+here we have a state which depends on
+position and time. We will use a feed
+forward narrow network with L + one
+layers and L minus one hidden layers. Um
+we will have some data some observation
+and then the surrogate the narrow
+network will will
+return in this way. I will stress the n
+here and this parameter t that will be
+the object of our minimization. In fact
+we will have to define different loss
+functions. So for us loss function for
+the data. So if we have observation for
+the residual here and from the boundary
+if we have data from the boundary. Okay.
+So the three loss function that we're
+using are data residual of the PTE and
+boundary condition. So in that case you
+will get uh theta for the for the
+surrogate model and just to stress that
+if you do not have the residual and the
+boundary condition this is a standard
+deep neuron network.
+So we will use uh the optimization
+routine is a classical atom optimizer
+and um here I want to stress that f for
+us which is the residual here is not
+completely so we want to identify that
+for the state for for optimal control
+here I'm not using in feedback approach
+or the state dependent approach I'm
+using the standard open loop and in open
+loop okay you have a parameter that you
+want to control here. This is the state
+equation. Um,
+and I want to stress that this parameter
+is not known. So this is the parameter
+that we want to we want to identify. N
+will be known but C here will not be
+known. And then we have an optimal
+control here. This is a standard
+tracking problem. Quad also a quadratic
+cost function where we want to get as
+close as possible to a reference which
+is called Y bar.
+So this is a standard time dependent uh
+problem uh time dependent optimal
+control problem. And if you want to get
+your control you can use a lrange lranch
+function where you identify the the cost
+a joint and the control problem and you
+have the optimality condition which are
+usually given the state a joint equation
+which is a backward linear problem. T is
+the unknown that comes here and then the
+optimality condition that uh put
+correlate the control and the and the
+and the joint.
+So our physics uh I mean our neuronet
+network architecture works as follows.
+So we assume to have data for the
+uncontrol program to make it more
+realistic because usually you do not
+have data from the control program. So
+what do we do from this uncontrol from
+data from the uncontrol problem we try
+to identify the problem. So in the first
+oops in the first
+network architecture we identify the
+problem based on the uncontrol
+structure. So you see here our f now
+that does not depends on you. So in the
+first at the first stage we try to
+identify c. Once we identified C, we set
+a second uh narrow network architecture.
+You see here the live the the output is
+just the uncontrol and then when after
+identification we switch to a control
+problem and our output will be state
+control and adjint and and that's it. So
+we have two different architecture
+because we have to identify and usually
+you do not get the data from the control
+problem and then you solve the optimal
+control problem. What we minimize are
+exactly the same that depends on the
+data. So here in the second architecture
+we use some information. So we
+initialize our network from uh using
+this configuration for instance that
+even though it it comes from the
+uncontrol problem
+you get some feature of the of the
+dynamics.
+Um
+and also the loss function here that we
+want to also the data will be different.
+Basically here we do not use data
+um and here the residual is from the
+uncontrol problem.
+So in our simulations we will always
+have want to track our problem to to
+zero.
+Then uh if I want to indicate the
+numerical methods or when I assume to
+know the dynamics and so on, I will call
+y of u star to stress that this comes
+from the numerical method. Whenever the
+solution comes from the physics informal
+network approach, I will call y pin and
+up. And if I want to plug my pin control
+into my dynamics to set to check how
+consistent is our result, I will call y
+of pin. So y up pin is the numerical
+method
+using the control that comes from the
+narrow network.
+I want to compute a different kind of
+control. So the the diff the the error
+between the optimal solution the pin
+solution
+between the optimal control and the and
+the pin control and then also the
+difference between uh uh the optimal
+solution and the the the solution using
+the pin control. So the with the
+numerical method
+we will use five layers three hidden
+layers with 64 no 64 nodes and the
+learning rate for the Adam optimizer is
+10 to the minus 3 in order to
+uh to weight more our data so our
+information we put 10 in front of the
+data in the boundary whenever I provided
+and just one in front of the rece
+So first example again this is the
+control the viscous burgers
+that's drinking sorry so the unknown is
+is this parameter the diffusion part
+this is the initial condition and this
+is the boundary condition so this is
+unknown and also the control
+this is the quadic cost function and
+therefore completance I provide you the
+the joint equation optimality
+conditions.
+So now we focus on two different
+scenarios. One when the diffusion 0.5 so
+which is um more parabolic problem and
+one when the diffusion is 0.05 so that
+the vection is dominating. We're just
+using 10 data.
+No initial condition is provided and the
+boundary condition is just a sparse
+level. We just have 18 points to check
+the boundary condition
+where we test our narrow network. We
+have 336
+points and our um threshold to stop our
+meth is 10 to the minus 7.
+So now the problem is very is diffusive.
+So in black sorry in white you see the
+point the data that we are considering
+from the uncontrol problem you see that
+the initial condition is not considered
+and in black
+you should see probably so here
+here here those points are the boundary
+condition that I'm data about the
+boundary condition so I'm not providing
+the boundary condition I'm just
+providing some sparse data
+and GR. So this is from the uncontrol
+problem and this is what you expect from
+the control problem. You see that
+um the data from the boundary are the
+same and this is the initial condition.
+This is something that you can discover
+from the uh the network using the
+uncontrolled setting.
+So this is the optimal solution. The
+solution that we expect from using
+numerical method when everything is
+known. This is the uncontrolled
+solution. So you see that it is going to
+zero faster. Get it's getting flat uh
+flat faster. And this is the pin
+solution. I mean from a visual point of
+view you see here that they are pretty
+similar.
+This is the the optimal control and the
+pin control. Again it's difficult to see
+um to visualize the difference. So here
+in zero this is not exactly zero but
+nevertheless they they have a very good
+agreement. So let me let let's try to
+quantify the error. So all the errors so
+difference between the control the
+optimal control and the pin control
+state optimal state and the pin solution
+is always about between 10 to the minus
+2 and 10 to theus 3. This is the our
+level of accuracy and you see here a
+comparison of the final time. So this is
+the uncontrol solution and this is the
+three different strategies and the at
+the final time the state at the final
+time. You see that there is an error
+clearly but uh the narrow network it's
+getting what he has it has to do and
+this is how the uh the diffusion is
+converging towards the the ground truth.
+So this is the
+um the side configuration and this is
+how we are converging to the to the
+ground.
+Let's go to something which is uh more
+uh adection dominating. Same structure
+few data but you see now how important
+is the vection here and also is also
+clear more clearly how the control is
+working. So you see that this is going
+to zero faster than this. In fact here
+you have the uncontrolled solution. This
+is the uncontrol the control solution.
+And again they are very similar.
+This was interesting for us because this
+I mean usually from control problem if
+you have a an adection dominated problem
+this is harder but nevertheless even
+keeping the same order accuracy which is
+always something between 10 to the minus
+2 10 to the minus 3
+you can get uh you can make the pin
+approach working. So this is the a
+comparison between the the controls
+and al again This is the conversions of
+the diff to the diffusion parameter and
+the solution the final time. You see
+here the error behavior but the results
+are very similar to the previous the
+previous case.
+Let's go to alen camp.
+So now we have a a polomial nonlinearity
+y to the three. So this this control
+problem is rather interesting because
+the the uncontrol problem is going I
+mean this problem the uncontrol problem
+has three equilibrium and the uncontrol
+problem goes to the stable equilibrium
+which is + one or minus one depending on
+the initial condition.
+Uh so if you want to get uh to the
+solution to zero you have to apply you
+can apply control and again the
+diffusion is the unknown part.
+Again quadratic cost functional we want
+to track zero this is the join and this
+is the optimality conditions
+and we are using two different scenario
+the diffusion 0.1
+and we have mu= 1. So this is an easy
+case and then second case is the
+diffusion is one but the ninarity is 11.
+So this is uh the interesting part from
+a control point of view and also we we
+were working with two different kind of
+initial condition condition one which
+was just positive and the second one
+which also was changing the sign and
+again we work with a few amount of data
+just 12 data for for the uncontrol
+solution and 14 data for the b uh um no
+12 12 points for the boundary conditions
+get we we do not use any data from
+control and a joint. So all the
+information that we have comes from the
+uncontrolled solution
+uh 520 points for receiver and the stop
+that is 10 to the minus 5 you see in
+white the amount of data that we're
+using and in black on the on the
+boundary. So same idea 0.1 diffusion and
+one for the non 10. You see how
+the uncontrol problem is gets to the
+sort of steady state here and the
+control solution is going to zero. Those
+are very similar again
+the control we have an agreement
+and this is how looks like how it looks
+like the the solution on the final time.
+It's it's clear the difference between
+uncontrol problem and control problem.
+And here we have the conversion towards
+the the ground truth the error what we
+found that was always something between
+-2 and -3.
+So this was more so here the unc control
+gets um so the the the maximum the
+initial condition is 0.2 and you always
+get 0.2 two
+if you change this this coefficient in
+front of the linear term I mean here
+it's always similar the amount of data
+that we are using
+so this is increasing now the problem is
+is less stable is increasing and you see
+the the control solution that is going
+to zero
+and also the initial condition now
+changing the sign which makes the
+problem a a little bit more difficult.
+This is the control is very active at
+the beginning then it gets to zero and
+again the convergence of the to the
+desired configuration and the solution
+the final time error is always between
+10 to theus 2 minus three.
+So coming from control and numerical
+analysis,
+we were trying to understand when to use
+and why to use physics informal network
+because from um from accuracy point of
+view and the efficiency point of view
+I mean accuracy
+I I understood that um something order
+minus three it's usually accepted. So
+you you can never beat a numerical
+method efficiency
+there are numerical method that very are
+very efficient nowadays also for
+dimensional problem so the use of neuron
+network does not make the very efficient
+I mean straightforward
+this approach so we were thinking when
+to use that so situation where you know
+you do not you do not know the problem
+you are just a few information then this
+form neuronet network in my opinion is
+very is very interesting and is very
+useful otherwise you cannot do anything.
+Um
+so this uh in the paper we we were we we
+wrote a very long conclusion where we
+were addressing all these question
+that's is something that I'm something
+during the talk I I somehow address and
+we were I mean that was our
+interpretation. So this uh drives me to
+the conclusion. So in this second part I
+was I presenting something about
+extension of physics informal network to
+control problem where the control
+problem is not completely known the
+dynamics is not completely known. So we
+were using this approach to identify and
+comput and compute control. So with that
+I really would like to thank you for
+your attention for being here till the
+end. Thank you. Thank you so much for
+the nice talk Alessandro
+and um I loved it um and especially this
+slides you you know some comments and
+the conclusions about the pins and
+giving us a some foodful thoughts and I
+guess it's a trap for the the questions
+from audience they can use this one yeah
+I'm I mean also if you are not familiar
+with control and you want to share your
+experience so Maybe I was I mean I I'm I
+do not come from an error network and uh
+but I mean my experience was always this
+kind of error. So if you have a better
+experience of suggestions I'm very happy
+to hear your opinion which uh which
+captures more you know similar
+experience I had with the pins as well.
+um as you said um you know numerical
+traditional numerical methods in terms
+of accuracy and speed probably it
+outperforms the pins and that's what I
+have seen it before uh yeah yeah but if
+you don't don't have anything any data
+uh maybe pins is the only options you
+can yeah yeah yeah you can use so
+honestly honestly I started to do a very
+simple uh problem linear integration
+um using pins with it equation no
+control and oh I was getting 10 to the
+main stream nothing better
+yeah yeah there's a convergence issue
+with with the pins
+and and I was not able to get any
+convergence like you know I mean I was
+expecting to have I mean I don't know
+maybe I have more layers more nodes more
+data something I mean I was not able to
+get some order convergence out of that
+which made me I mean well maybe I made
+mistake I don't know but uh no no no
+it's like this is this is the thread an
+exactly common trend I mean yeah that's
+that too like a lot of trial and errors
+you have to go through you know yeah
+exactly
+it's it's it's humongous
+um okay uh Boris yes please everyone
+hiandro thanks for the nice talk hi
+Boris I had a question on your um the
+first part where you showed uh I didn't
+ask it at that point but where you
+showed uh convergence of the control
+signal and then convergence of the um
+energy or in the first part. Yeah. In
+the first part. Yeah.
+Yeah.
+Yeah. Yeah. Exactly. So um somehow the
+the the difference in the control
+doesn't seem to be or or how am I
+interpreting the differences in the
+control coming from RL
+um and the U1's and U2s that you have
+computed
+um they don't seem to show up in the
+cost function is it so what's your
+weight on control that was my question I
+think
+um so the
+it reflects in a sense that uh this is
+more exp I mean is a little bit higher
+than this one. So
+but what what you see here is just uh at
+the bit it's just at the first iteration
+this is our choice to put u equals zero
+okay but then at the second the second
+step I mean they are pretty much
+matching you see so it's just the first
+at the first iteration that there is
+this difference and then uh and then if
+you think about the cost you paid zero
+at the beginning at the first at the
+first iteration right by because of the
+choice Right.
+So that that is maybe the reason also
+that is not expensive but okay now I
+see. Yeah. Yeah. Now now I see that in
+the paper in the paper I think um we
+also addressed that and we did uh in one
+of the two I think in the second paper
+the one with using model reduction we
+did not do starting from zero. Okay. So
+you you do not even see this this
+discrepancy. Okay. Okay. Yeah. Fine.
+Yeah, just wanted to clarify and see
+that I understood the figure. Yeah.
+Okay. Thank you. You're welcome.
+Any other questions?
+So, are you planning to, you know, apply
+this to like a higher dimensional uh
+system like 2D, 3D for using a lot? Um
+well for this one for this approach
+we have done uh for two dimensional PDs.
+Um
+not fancy PDS. So if you if you ask me
+if I did for Navia Stokes or something
+for fluid I haven't done that. Um for
+pins
+I don't know because two dimensional PDs
+that means that it's very expensive from
+a compositional point of view. So I
+think something has to be done to make
+it more efficient. Otherwise uh it's
+very very costly in my opinion. Yeah.
+Because I mean it's it's not just one
+one PD we have three PD I mean two PDs
+to solve basically use a joint and
+state. So it might be very expensive in
+my opinion. Yeah
+that if you if you have references to
+make it more efficient I'm happy to to
+receive
+Yeah. Um well I mean really impactful
+application for the in general control
+problem is robotic control. Yeah. Yeah.
+Yeah. Sure. Sure. Sure. No no I'm just
+thinking like in general uh in general
+in a sense that if you have a n
+dimensional problem you want to use neon
+network
+at least straightforward and this way I
+mean it can be very expensive. Yeah I
+mean the the reason I brought up the
+robotic I mean I don't have experience
+with it. Maybe Boris has some experience
+with the the robotic control there. the
+uh you know number of variables you
+treat is not that high right it's not
+the we are not dealing with the like
+thousands or millions of degrees of
+freedom which comes no no with robotic
+you can I mean I think robotic you can I
+mean you can get
+different levels of dimensions basically
+and how do you see the application of
+that your first approach like using the
+sparse regression in the incorporating
+in the optimal control and apply apply
+that to the robotic uh applications.
+I I I would say I mean I do not know the
+structure of the robotic um of the
+robotic I mean the equation comes from
+of the robotic force. So I don't know I
+don't I'm not sure if you can get I mean
+uh probably you can write in a in a
+setting uh uh as a state dependent.
+Um,
+so the key point is not the control in
+my opinion. The key point is the are the
+libraries for this approach in general
+for Cindy. So if you have information
+about the libraries, I think I think
+it's pretty doable.
+You mean like the um
+um variable library is it known? Yeah.
+Yeah. Yeah. So what I call AJ
+in in this in this part
+I I guess those system is not known in
+general in robberics. I don't know Boris
+if you can comment on that. Um so in
+that case if it is not no that means so
+you are thinking about something like
+purely datadriven that you don't exactly
+exactly so data. Yeah. But use the Cindy
+um to identify some sort of you know
+surrogate model. It does not have to be
+exact coin. Yeah. Yeah. I mean but that
+I would say that from that point of view
+the key point is the libraries then
+everything is is doable
+in my opinion. I mean
+okay
+uh you have a question right? Yeah.
+Hands up. Uh Alejandro. Yeah, thanks
+thanks for the presentation. So I was
+wondering which optimizer did you use
+for the pins problems?
+Uh Adam. Adam. Okay. So in our test
+cases we you know we were using Adam and
+then Adam plus LBFGS but then recently
+we found another optimizer called soap
+which is basically shampoo with Adam in
+the preconditioner basis. So that giving
+pretty good result and it's very
+completely efficient much better. Can
+you can you write the name of the
+optimizer on the chat please? Yeah.
+Yeah. I'll I'll I'll refer the paper.
+Yeah. Yeah. Yeah. Thank you very much.
+Yeah. It's also if you have a paper
+Thank you. Yeah. So I'm Yeah, I'm typing
+it now.
+How how efficient is it? uh pattern like
+it's with you know compared to LVFGs
+it's almost 10 times efficient yeah and
+the good thing is that you don't need to
+use Adam in conjunction with you know
+shampoo or soap you just use the soap
+optimizer right away
+very good tip thank you so yeah I'm also
+posting one paper uh from pedicures
+group Wong and pedicuries. I think they
+they tested it on pins problem and for
+all the problems uh they found better
+results. Uh okay. Yeah. Thanks for
+sharing. Yeah, no problem.
+Cool. Is there any other question?
+If not, let's let's thank our speaker
+for the nice talk. Uh, Alessandro,
+it was a very nice talk and um, thank
+you very much, very nice numerical
+results and thank you for sharing with
+us um, through this DDP seminar.
+Hopefully uh, you get more network and
+connections and uh, I would say future
+future collaborations
+that would mean wonderful. Okay. Well,
+with that
+byebye.
+Bye bye manage.

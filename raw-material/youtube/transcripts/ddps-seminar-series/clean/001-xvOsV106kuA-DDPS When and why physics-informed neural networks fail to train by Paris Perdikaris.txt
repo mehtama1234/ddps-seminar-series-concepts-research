@@ -1,0 +1,1657 @@
+right
+i'm very pleased to introduce uh today's
+speaker
+um dr pardikarius he
+is an assistant professor in the
+department of mechanical engineering and
+applied mechanics at university of
+pennsylvania
+he received his phd in applied
+mathematics at
+brown university in 2015 working
+under the supervision of dr ka
+kanya dakis and prior to joining
+upan in 2018 um
+paris was a postdoctoral researcher at
+mechanical department mechanical
+engineering department at
+mit working on physics informed
+machine learning and design organization
+under uncertainty
+this work spans a wide range of areas
+including the computational science and
+engineering with a
+particular focus on the analysis and
+design of complex
+physical and biological systems you will
+see
+some of those in today's talk i'm sure
+and finally he
+is a recipient of a
+very prestigious career awards from doe
+and air force and
+so we are expecting great talk today
+with no further ado here
+we go uh tucker park podiakis
+it's all yours uh make sure you unmute
+yourself yeah
+yeah thank you very much yangchu for the
+satisfaction and also for
+having me here today with you i'm
+excited to
+connect with you and present some recent
+work um
+so to the audience as young just said
+please use the chat i'll try to check
+that sporadically but also feel free to
+unmute your microphones and interrupt me
+if you have any questions at any point
+today's talk will be more focused on
+methods
+and i'd like to discuss some recent work
+we've done
+in this in the context of what we call
+physics and form neural networks which
+essentially is a class of
+methods um a class of deep learning
+methods that we're trying to apply for
+simulating physical systems
+uh involving partial differential
+equations both for
+forward simulations but also for solving
+english problems
+um today will not be much focused on
+success stories but more on
+open challenges and open questions that
+we're trying to understand and address
+to a better understanding of how these
+constrained deep learning models behave
+uh when we're trying to train them and
+fit them to a particular problem
+so let me start with some motivation and
+everything that i will
+share today falls under this umbrella of
+how do we use machine learning for
+physics for
+simulating or studying physical systems
+or vice versa how do we
+use physics to sort of inform our
+learning algorithm
+and let me start by an example that that
+was a very recent
+darpa project that ended a few months
+ago
+so there was a darpa program called the
+physics of ai
+and essentially there were two different
+schools of thought that emerged that of
+this program the main idea here is how
+do we bake in physical laws
+into machine learning pipelines or
+machine learning algorithms
+and there's two schools of fault here
+basically so one is that we want to
+basically design architectures from the
+bottom up
+so carefully sit down and design
+specialized architectures that have very
+strong inductive biases
+in the sense that they implicitly
+satisfy the principles
+we want to to encoding them so for
+instance
+they can implicitly be invariant to
+simple group symmetries of the
+underlying system
+so a great example as you all know that
+falls under this category is
+convolutional neural networks that are
+designed to respect certain symmetries
+that are
+focused on natural images but if there's
+other works
+uh for instance i'm showing you a figure
+from a worker with condor who has
+spent a lot of time thinking how to
+encode certain
+um in various properties like in various
+super mutations and rotations for
+studying many body and molecular systems
+so the goal there is basically to to
+train neural networks to predict
+uh properties of a molecule given the
+configuration of it of its atoms and
+obviously the you know the property
+should not change if you rotate the
+molecule in certain way or
+it shouldn't remain invariant under
+certain permutations
+so the great thing about the first rule
+of thought is that
+the physics can be implicitly encoded
+and it's implicitly satisfied
+by the network with no approximation
+however you really have to design those
+models from the ground up that means you
+cannot really borrow
+you know fire up your tensorflow or
+pytorch
+library and then borrow existing
+building blocks you have to really
+take a step back and code you those
+architectures maybe you have to write
+your own kuda kernels for scaling them
+to gpus and so forth
+so that that is the price you need to
+pay
+now the second school of thought and
+this is where this talk will be more
+focused on is kind of like the easy way
+out in the sense that
+we are working with conventional network
+architectures
+so we'll be using neural networks to
+represent the solution to
+our differential equations um typically
+fully connected or convolutional
+networks so
+we will have fairly weak inductive
+biases and then we'll try to encode the
+physics
+during the training of the network using
+some certain
+penalty functions or regularizers in in
+our training objective
+okay so uh this is not a really
+new idea so the first people who try to
+uh take that route in the context of
+using neural nets for solving
+differential equations
+uh goes back to the early 90s so the
+work of sikho jose and anger and then
+lagarix in 98
+and then this whole idea was recently
+revived
+a few years ago and has sparked great
+interest
+a lot of people are working on this area
+as we speak
+basically what was a game changer is
+that instead of
+using you know manual derivations to
+complete derivatives of neural networks
+we now use automatic differentiation
+pipelines
+so let me just give you a little bit
+more detail so what
+i mean here and essentially introduce to
+you what
+we call as physics inform neural
+networks so basically the idea is that
+we have a physical system that we want
+to study and that system is governed
+typically by a partial differential
+equation
+that has space and time variables and
+now the goal is either to solve that
+pde if somebody gives us the precise
+equation
+or the that would be the forward problem
+or the inverse problem
+means that we have a collection of
+observations
+we may or may not fully know the pde and
+we want to use those observations to
+calibrate uh any unknown terms so
+essentially to
+calibrate parameters or discover missing
+terms or closures and so forth
+so that would be the inverse problem but
+in both settings can be addressed
+under the same framework in which we
+will actually employ a neural network
+to represent the unknown
+dependent variables of the problem which
+are here denoted by you
+so for instance you know if you're
+studying fluids that would be
+the velocity field and the pressure of
+your fluid system right
+so we're trying to model the solution of
+the system using a neural network
+and basically uh we realized that this
+is a differentiable
+representation so this is very similar
+to what people have been doing a long
+time in
+numerical analysis where you're choosing
+a representation of your unknown
+solution
+typically as a linear combination of
+polynomials or some other bases
+well here we're using a neural net which
+essentially you could think of it as
+an adaptive basis model so
+in a fully connected neural net setting
+you have the inputs x and t
+you push them through the network and
+then whatever is at the last hidden
+layer of your network
+uh can be combined in a linear
+combination to give you the output u
+and essentially that would be the
+adaptive basis in which you represent
+the solution
+so now as i just mentioned this is a
+differentiable representation meaning
+that we can take derivatives
+of the output of the neural net with
+respect to the inputs
+here denoted as x and t that stands for
+space-time variables
+that means that we can compute operators
+that form the residual
+of rpd or operators that form the
+boundary conditions of rpd
+so essentially by doing so we can
+formulate now a composite loss function
+and essentially define if you wish a
+multi-task
+learning problem in which we're trying
+to train the neural network
+to achieve different objectives at the
+same time so the first objective is to
+fit any available data
+so we're penalizing the data fit the
+second objective is to try to minimize
+the residual of our pde so we're trying
+to encourage the outputs of our neural
+net to approximately satisfy the
+differential equation that we know
+and finally we're also trying to match
+any available boundary or initial
+conditions
+all at the same time so again this dates
+back to the 90s and the
+catch back then and that's why i think
+this type of framework did not really
+take off
+was that people had to really sit down
+and manually derive
+those gradient computations so
+you write down the forward pass of your
+neural net on the piece of paper and
+then you
+try to take derivatives and you can see
+that for more complex equations
+that require complex derivative you know
+differentiation operations
+or complex neural net architectures this
+can quickly become a really really
+tedious um
+task so essentially what happened a few
+years ago when we
+started this line of work is that we
+started using automatic differentiation
+as essentially we realize that this
+whole computation defines a
+computational graph
+and then we can basically use a chain
+rule with automatic differentiation
+libraries to compute all those gradients
+of the output with respect to space or
+time coordinates but also the gradients
+of course as usual
+with respect to the parameters of the
+loss function so that we calibrate the
+weights and the biases of the model
+using gradient descent
+so this is a general workflow for this
+type of framework of physics and formula
+networks we start from
+some given pde or maybe which we know up
+to some
+missing terms or parameters and we
+proceed by approximating the solution
+using a deep neural network
+and that essentially defines a residual
+so we can differentiate now this we can
+plug in the neural network and the pde
+uh compute the necessary derivatives and
+that will give us a
+residual which i denote here by r of
+x and t that also shares you can think
+of it as a neural network that shares
+the same exact parameters as
+u of or f of theta uh that represents a
+solution
+that now evaluates the residual of your
+pd
+and now based on that we can construct
+this composite loss function
+that has the several terms that i just
+mentioned for penalizing data fits
+if we have observational data minimize
+the pde residual and fit any initial
+boundary conditions and now this
+composite loss function will be then
+minimized using typically will be
+minimized using
+some gradient descent um algorithm or
+stochastic gradient descent
+for which here all the gradients will be
+computed with automatic differentiation
+so the
+both of the gradients with respect to
+the inputs of the neural net
+namely space and time coordinates but
+also the gradients with respect to the
+weight and the biases
+of the neural network so that defines a
+very very simple workflow and and to
+convince you let me just give you a toy
+example to see that you can actually
+solve pdes in you know 10 lines of
+python code basically
+so here's a 1d burgers equation it's a
+toy problem
+in fluid mechanics poor months model for
+studying turbulence
+and it's a non-linear hyperbolic pde
+here it's defined in one space dimension
+with some appropriate um uh
+initial and boundary conditions and then
+basically all it takes
+is that we have to define the neural net
+the solution as a neural net as you see
+here
+here i'm using some tensorflow semantics
+and then based on that we can compute
+the residuals simply by taking the
+gradients of
+the appropriate terms to form the pde
+residual again using some
+automatic differentiation and tensorflow
+i see a question here so how many passes
+do you need to backpropagate to get the
+second derivatives
+uh essentially let me go back here to
+answer that question
+to get second derivatives essentially
+you just need to construct a larger
+computational graph so you
+you can compute the udx for instance and
+that defines
+um a computational graph that is
+probably twice the size of the graph
+that just evaluates the neural network
+and yes the every time you need to you
+take a derivative
+second order derivative or third order
+derivative this computational graph will
+keep increasing
+so that is one of the potential
+computational bottlenecks that high
+order
+systems with higher order derivatives
+cause this exponential blow up
+in the computational graph and the
+memory required for performing automatic
+differentiation
+however this is assuming that you're
+using standard automatic differentiation
+approaches so there's other
+more technical approaches to automatic
+differentiation that are based on taylor
+expansions
+that are trying to bring down the
+footprint of taking high order
+derivatives but
+that's sort of like a subtle topic that
+i'm not going to get into
+details today okay so going back to the
+burgers equation
+essentially a few lines of python code
+can
+define the loss function for this
+problem and then we can evaluate it and
+minimize it
+using gradient descent and at the end of
+the day what happens
+we can get the prediction so basically
+what you see here at the top plot
+is the predicted solution for this
+problem so the horizontal axis is time
+coordinates
+vertical axis the spatial coordinate and
+then the black x's are the data
+that you observed and here in this case
+the only data that you observed were
+data
+for the initial condition and the
+boundary condition of
+the problem and you see that they are
+all scattered in space time
+so obviously if you were to train a
+plane neural network using this data
+you wouldn't be able to really
+extrapolate away from them and
+produce predictions inside the domain
+right so that would
+that would be you asking too much from
+your neural network you're asking to
+extrapolate apart from the data that
+you've seen
+and it would fail however now that we
+bring in this physics inform regularizer
+if you wish
+this is essentially what enables us to
+get the predicted solution inside the
+domain
+as you see here in the middle particular
+there's some slices
+temporal slices and you can we can
+compare the predicted solution versus
+the exact solution which is analytically
+available for this problem
+and you see a very good agreement um
+this
+shouldn't be too impressive for anyone
+however i should point out that this is
+a deceptively simple problem
+in the sense that if you were trying to
+solve the same problem using a classical
+numerical method
+you'd have to be very very careful about
+how you discretize your
+your domain in order to capture
+accurately
+the steep gradients that the solution
+develops around uh x equals zero so at
+finite time the so
+you know we're starting from a smooth
+initial condition but um due to the
+small value of the viscosity
+here this new variable in the burgers
+equation which is taken to be 0.01 over
+pi
+at finite time your solution will
+develop these very steep gradients
+so however for the neural network this
+is not
+not a problem it has a capacity of
+approximating this kind of irregular
+function if you wish
+and you know the training for this
+simple problem takes very very little
+time a few seconds on a gpu
+some reasonable prediction error so this
+is just a toy introductory
+example this is by no means the most
+impressive result
+uh that one can get so in this i see a
+question here we're doing the viscous
+problem
+the shock problem will blow out the
+derivative computation
+in fact we can solve the inviscid
+burgers equation as well but with some
+small modifications in the method but
+yeah so this is a viscous burgers
+equation with a very small viscosity
+but in fact you can actually tackle the
+implicit problem as well
+using uh these techniques uh so let me
+just move forward now
+to uh a more uh impressive
+case study and actually that was not
+performed by my group but uh
+this goes back to my advisors group at
+brown though it's a paper that they
+recently published in science
+uh okay let me go back so hopefully you
+can see the animation now
+uh essentially this showcases the
+ability of
+of this physics and from neuralness to
+also operates in the inverse problem
+setting
+which is also very interesting so in
+this case the
+task that they wanted to solve is the
+following so
+what you see here the animation in the
+top left this is just a movie
+of some passive scalar quantity that's
+advected
+uh through the bloodstream uh in
+someone's arteries so what you see there
+is a cerebral aneurysm so it's just an
+artery that has this abnormality in the
+arterial wall and basically there's
+there's blood flow but we don't really
+know what the actual
+flow field is but what we have
+is some measurements of this passive
+scalar quantity so
+in panel b there you see the aneurysm
+sac
+and the measurements correspond to some
+special temporal data points that we
+have collected
+along those slices inside the aneurysm
+sac so you see two two
+slices uh these are the the locations
+where the
+data points for the concentration
+variable are collected
+now the question is if somebody gives
+you this special temporal data of the
+concentration of the
+plastic scaler can you infer what is the
+underlying velocity field
+and what is the pressure so by the way
+there is no information here about
+geometry or boundary conditions the only
+data
+is the measurements of concentration
+along those two slices
+so the exact location of the arterial
+wall is not
+known so there's no boundary conditions
+that are supplied
+and the way this um you know the folks
+at brown were able to solve this problem
+is by
+employing a physical neural network that
+takes us into the space and time
+coordinates
+for this three-dimensional problem and
+then outputs
+five quantities of interest namely the
+concentration variable
+the velocity components uv and w and the
+pressure
+however the velocity and the pressure
+here are latent variables they are not
+observed no measurements were available
+however all of them the concept namely
+the concentration
+the velocity variables and the pressure
+are all correlated to the underlying
+physics and
+physics is expressed in the form of the
+navier-stokes equations for the
+incompressible fluid
+coupled with the advection equation for
+the fatal scalar
+so these are the equations you see at
+the top right of the slide
+and essentially now these are the
+equations that can help us formulate
+the pbe residual which will give us this
+physics regularizer in the loss function
+of training our neural net so now if we
+train a neural network
+in order to fit the concentration
+measurements and at the same time
+minimize the residual for this pde
+system
+um if we succeed in doing so then we
+will
+should be able to predict the underlying
+latent variables
+for the velocity and the pressure and
+this is what you see here
+in the d panel and the animation you can
+see that indeed
+the authors were able to predict
+accurately
+the underlying velocity and pressure
+field and also reconstructing the
+streamlines overflow and so forth
+uh so that was sort of an impressive
+application of this framework
+that was published recently on science
+however i should mention that everything
+here there's a little catch
+because everything here was done and the
+model was trained on synthetic cfd data
+which means that these data are
+relatively clean they're not
+contaminated by
+a noise or error model error
+[Music]
+it's a little bit more challenging to
+employ those methods in realistic
+sap iv or 4d flow mri or
+reality experimental data that is more
+heavily corrupted by noise
+anyways so i think this is all i have in
+terms of success stories as i said
+today's talk will be more focused on the
+methods and
+trying to understand the training
+dynamics and the you know
+limitations or open questions related to
+these
+physics informational networks so let me
+just take a step back and and give you
+an overview of
+what we're doing here again essentially
+we're considering physics to be as a
+prior
+for our deep learning model and we're
+defining this composite loss functions
+so we're trying to inject the physics
+during training of the model using
+regularization
+oh and the review here is not really
+common right in the sense that typically
+uh
+people when trying neural nets you may
+regularize the magnitude of the weights
+of those parameters data so you may you
+know consider the l1 or the l2 norm of
+your weight
+however here we're trying to regularize
+the output of your neural net which is
+sort of a functional constraint
+so it's a some sort of unconventional
+regularizer in the context of machine
+learning
+models and despite the success stories
+that i just showed you
+failure can happen at any time even for
+the simplest problems
+so here's the satoi example again this
+is the hellholtz equation defined in a
+two dimensional domain
+simple elliptic linear equation nothing
+complicated here however if you
+choose to represent the solution of this
+equation with the physics and phone
+neural network and you train it
+using the framework i just presented
+you it won't be easy to obtain accurate
+results so here's this uh illustrate
+this example where um a fully connected
+network with four
+hidden layers gets about 20 percent
+relative error is measured in the l21 so
+as you see here there's a lot of error
+coming from the particles of
+the domain that means that the neural
+net has a lot of trouble
+fitting the boundary conditions for this
+problem
+um now the question is why does that
+happen
+where does this those issues originate
+and how can we fix them
+question here is the regularization
+still necessary if we have enough data
+well it depends on the problem you're
+looking at but if you want to
+extrapolate away from your data
+then yes you need to have the
+regularization such that
+you know your extrapolations will be
+consistent with the physics and you can
+get
+accurate extrapolation or in the context
+of inverse problems you need to have
+a you want to infer unknown parameters
+in that setting you also need data
+okay so going back now to the question
+here what's going wrong
+let me just mention again what i just
+said that essentially the way we
+introduce physics
+by means of this unconventional
+regularizer
+which in many times requires us to
+revisit
+um standard practices so here for
+instance you know we can choose to use
+the mean squared error as a loss
+function or we can just
+use a fully connected network as an
+architecture
+maybe we normalize our data or not maybe
+we use
+gradient descent or adam as an optimizer
+so all those bullet points
+most of the time people are taking take
+them for granted and we make choices we
+just say okay adam the adam optimizer
+works great for deep learning let me
+just throw uh it
+in my problem however what i'm arguing
+here is that for this type of problems
+we need to revisit
+these standard practices and and ask
+ourselves whether they're appropriate or
+not
+um so as a general statement here is
+that despite some empirical success of
+these methods
+we're really still lacking a rigorous
+understanding of when
+and why these physics constraints can be
+effective
+in regularizing deep learning models so
+sometimes they work and sometimes that
+don't work and we really try to
+understand
+when and why they don't work so this is
+really the focus of
+the work that i will present today and
+it all started
+a few months ago where actually looking
+at this exact same benchmark that i'm
+showing
+we try to do some post-processing to
+really understand what's going
+wrong with the training dynamics of this
+neural network model
+and essentially this is just an overview
+of the symptoms that we observe
+and i think it's kind of educational and
+informative
+to think of the gradient descent problem
+in continuous time so
+essentially what you see there at the
+top is the gradient flow
+system for for our physics and for
+neural network essentially when we're
+training our model
+uh we are basically simulating this
+great flow from some initial condition
+to a local minimum that corresponds to
+some local equilibrium of this ode
+system
+theta here are the parameters of your
+neural networks essentially this is the
+equation that governs the evolution of
+the network parameters
+during training by a grading descent and
+essentially gradient descent
+all it does is it just corresponds to a
+forward euler discretization of this
+gradient flow problem
+okay so so what is going on with those
+constrained objectives that we're
+working with
+well it turns out that when the solution
+the underlying solution to the pde
+is complicated so it may exhibit high
+frequencies
+like in the example that i just showed
+you uh back here
+so you see here we have a solution with
+an isotropy and more frequencies in the
+x2 direction than
+in the x1 direction or you have a
+solution with multi-scale features well
+it turns out
+that this gradient flow problem becomes
+very stiff
+so in this control setting you see this
+plot on the right for different choices
+of some constants in rpd we can actually
+show that
+the stiffness of the gradient flow is
+increased
+the way we measure stiffness here is by
+looking at the largest eigenvalue of the
+hessian
+of our neural network so that sort of
+gives us an indication of the stiffness
+of the problem
+and then if you go back to numerical
+analysis and ask yourself what happens
+when you're discretizing a stipple de
+with forward euler
+well that imposes a very severe
+restriction on the step size you can
+take and here that choice
+means that we need to choose a really
+really really small learning rate and
+the answer is indeed if you do
+choose a small learning rate you will be
+able to solve the problem that i just
+showed you
+and now however you need to choose a
+learning rate in the order of 10 to the
+negative 6
+that means you may have to wait for a
+few days to solve
+this toy linear elliptic equation so
+that is not a practical solution
+so indeed the hypothesis is that
+stiffness exists in the gradient flow
+dynamics of physics and from neural
+networks and now the um
+what that does is that uh consequently
+this stiffness leads to imbalance
+gradients during back propagation so
+what you see there in the plot in the
+bottom right if you now post process
+and kind of try to analyze the training
+of your model
+and you can try to visualize the
+gradient magnitudes or the gradient
+distributed distribution of the
+gradients
+uh during back propagation for the two
+different terms in the loss function so
+in this case we had a term that is
+trying to fit the boundary conditions
+for the problem which is denoted here by
+lub
+and a term that is trying to minimize
+the residual you see here that the
+gradients corresponding to the boundary
+loss
+all collapse around zero so that means
+that during
+training during grading descent the
+network cannot really change the
+parameters
+um its parameters in order to fit the
+boundary condition
+and consequently it has a lot of trouble
+fitting the boundary condition and for
+the simple olympic problem if you don't
+feel the boundary condition you cannot
+hope to get an accurate solution
+but again this is just a symptom of the
+pathology this is just the
+post-processing of
+inspecting uh you know the patient died
+and now we're kind of postmortem we're
+we're saying or
+trying to to understand why the patient
+died
+uh so now the question is what is the
+actual disease right
+well can we make diagnosis and can we
+work on finding a cure to these problems
+so the focus of this work that i will
+present today
+is really on trying to take a step back
+and try to analyze and understand
+the training dynamics of these
+constrained physics informed neural
+networks
+so to do so we actually
+uh let me introduce some key concepts
+that we use
+first of all we try to come up with a
+practical theory for understanding
+physics informed neural networks and to
+do so we we will explore a connection
+between deep neural networks and kernel
+regression methods
+in fact the well-known result is that a
+neural network with one hidden layer
+that is infinitely wide so at the at the
+in limit of infinitely many neurons uh
+that neural network converges to a
+gaussian process with a certain kernel
+and the same thing holds for deep neural
+networks so at the limit of
+infinite widths we know that neural
+networks converge to a gaussian process
+with a certain kernel
+so that will from the theory some point
+that will help us analyze a few of the
+properties
+however what is more interesting is that
+the evolution of an infinite width
+network
+during gradient descent so under the
+gradient flow dynamics
+can also be described by another kernel
+which is called the neural tangent
+kernel
+okay so this is one of the main tools
+that we will be using here to analyze
+the performance
+so again the idea is to understand
+how the neural network parameters evolve
+and the outputs of the neural network
+evolve during gradient descent
+and we will do so through the lens of
+this ntk
+kernel okay so let me just
+start by some preliminary theoretical
+results that
+one can deduce from this analytical
+framework
+so the first result is we can actually
+show that
+which kind of confirms our intuition
+that physics and from neural networks
+converge to gaussian processes at the
+infinite width limit
+for linear pdes and to see that we you
+know you can start from a toy problem
+like the 1d poissons equation
+in which you can actually write down
+your neural net representation
+and you can take derivatives of this
+analytically to compute
+the second derivative that you see there
+uxx
+and basically we prove the following
+theorem that assuming that the
+activation function is smooth and it has
+a bounded second derivative which is
+a standard practice for most deep
+learning activation functions
+then a fully connected neural network
+with one hidden layer at initialization
+if you take the limits of infinite width
+that converges in distribution to a
+gaussian process
+for both the function itself and the
+second derivative and that gaussian
+process has a certain kernel which you
+can derive analytically
+and now this kernel you see depends on
+the second derivative of your activation
+function
+and so forth so this is sort of just a
+consistency result we knew that this
+result holds for plane neural networks
+and now we show that
+it also holds for physics and for neural
+networks
+under linear pde operators it's not a
+practical result
+so you you can really deduce anything
+about the trainability of the network
+from this result
+however by induction you can generalize
+it to deep
+fully connected architectures and any
+linear pde operator
+and in some sense opens up the path for
+performing some approximation theory
+studies to to quantify the accuracy
+convergence rate
+uh by looking at the limiting kernel
+that is introduced so essentially at the
+infinite width limit
+we converse to a kernel method and that
+induces a reproducing kernel hilbert
+space
+so now we can check whether the solution
+of rpd lives in that space and then
+try to come up with certain theoretical
+convergence
+rates guarantees
+okay so again let me just remind if you
+have any questions feel free to
+interrupt me but for me i think the
+more interesting part is the next part
+where we're actually trying to study how
+um the network parameters and the
+network outputs evolve
+under gradient descent so what happens
+well you know try to understand the
+training dynamics
+so to do so with we can start from the
+gradient flow so this is essentially
+what i showed you earlier
+here l is the total loss which includes
+the summation of the boundary losses and
+residual losses and so forth
+so it turns out that starting from this
+gradient flow you can derive the
+closed form system for the evolution of
+the outputs of your neural network
+denoted by u and also for the residual
+of your pde
+and the outputs and the residuals
+define an od system that is governed by
+the equation you see at the top
+where you see the data playing a role on
+the right hand side this is the network
+evaluated at the boundary points
+minus the correct boundary points and
+then the residual evaluated at locations
+x
+r which are the points inside of the
+domain where we're trying to penalize
+the residual
+minus the values for the residual and
+then you see a linear operator here
+denoted by those four blocks k u u k u r
+k
+r u and k r r essentially this is what
+uh what we refer to as the neural
+tangent kernel okay so this is a matrix
+that is a
+function of time and the individual
+blocks essentially are
+the correspond to the jacobian of
+your neural network outputs with respect
+to the parameters of the neural network
+so the ud theta
+and the lb theta for the residual so you
+have four different blocks
+you have the boundary term which is kuu
+you have the interaction of the boundary
+term and the residual which is k u r
+and then you have the residual term kr
+and that defines a symmetric uh
+matrix here so now the question is
+can we understand can we analyze this
+matrix this
+neural tangent operator and
+through this analysis shed some light
+and understand
+uh the training dynamics of our
+physics-informed neural network model
+so uh the first thing that we did and
+it's a quite
+interesting result is that one can show
+that the evolution of the neural tangent
+kernel uh
+remains almost constant during gradient
+descent and and you can see that again
+by starting from a toy problem again
+this one the poisson equation you can
+write down
+this closed form system that governs the
+evolution of your neural net and the
+residual
+in terms of the ntk and
+we can actually prove the following
+theorem so for a physics and from neural
+network again with one hidden layer
+at initialization and at the limit of
+infinite width
+we can show that the ntk of this
+physics-informed
+neural network model converges in
+probability to a deterministic limiting
+kernel that we denote here as k
+star and more interestingly
+for any positive time we can show that
+this kernel stays
+almost constant during training via
+grade in descent
+so this kernel does not really change so
+you computed that initialization
+and that can give you a lot of
+information
+about your training
+by by examining the spectrum the
+spectral properties of this ntk kernel
+and on the right hand side you just see
+some numerical
+verification of the theorem you see that
+as a network width
+is increased we are reporting um
+basically
+the change in the ntk kernel so the
+kernel that iteration and
+minus the kernel at initialization this
+is just a relative error and you see as
+the
+width of the network is increased the
+this ntk kernel does not change
+under gradient descent iterations and
+although the theorem was proven
+for a one layer deep neural network we
+have empirical results that that
+also that result also holds for uh
+arbitrarily deep neural networks
+uh so again the ntk uh operator remains
+constant
+during gradient descent so
+in in practice you can actually verify
+that numerically that
+in all cases the ntk quickly converges
+to some deterministic journal and
+remains constant
+during training for any architecture and
+any pde operator
+okay okay so there's a question there
+isn't that
+one relative error is relatively large
+so actually this is uh
+point one yeah it's well you
+you can see that it remains constant so
+as i mentioned here in the bullet point
+uh the kernel changes a little bit
+initially
+during grading descent and then remains
+constant so it may not be perfectly
+the same kernel as in the initialization
+but it just
+at some point it stabilizes that it
+remains constant throughout the rest of
+the gradient descent
+iterations as you see for instance down
+here
+after a few iterations basically you
+just reach this flat plateau and the
+kernel does not change anymore
+for the three hidden layer case for the
+one hidden layer case which is where the
+theorem holds you can actually see that
+the error is zero
+even from the very beginning so for the
+deeper case there is some trans
+transient theory uh
+window after which the kernel stabilizes
+and remains constant
+okay so now the question is okay so that
+is one property about the ntk
+oh you know it converges to some
+limiting kernel that does not change
+during gradient descent so what does
+that mean
+well first of all that means that we
+could
+view our physics and from neural network
+as an equivalent to external regression
+problems so we can actually
+derive um update rules
+or prediction rules and and treat our
+model as a kernel regressor
+however so as you see here you know
+these are the standard prediction
+equations
+for kernel regression you have your
+kernel evaluated at the test locations
+and you have the inverse of your kernel
+at the training locations times the data
+however
+this is not practical in the context of
+pins
+because this k star matrix is not
+invertible so from our experience the
+ntk
+of pins is always degenerate and
+therefore we may not be
+able to casually perform kernel
+regression predictions in practice
+and you see here this is the spectrum
+the eigenvalue distribution of our ntk
+kernel for a simple example
+you see um the blue line is the spectrum
+of the kernel at initialization and
+the dashed line is after 10 000
+iterations of grading design you see the
+spectrum does not really change
+however the kernel is degenerate and you
+cannot really invert it
+in order to treat your method as a
+kernel method
+so for that additional regularization is
+necessary to
+be able to invert this k matrix
+okay so but i think for me what is more
+interesting
+is what comes into the next slide where
+we actually
+through the lens of the ntk we can show
+that these physics and from neural
+network models suffer
+from what is called spectral bias and
+spectral bias is also known to be a
+pathology of standard neural networks
+and refers to the preferential
+um uh the preference of neural networks
+to approximating
+low frequency functions so by default
+neural net networks that are trained by
+gradient descent
+uh have this tendency of approximating
+low frequency functions and have a
+really really hard time converging
+to approximate high frequency components
+and you can actually verify that
+through the lens of this ntk theory uh
+for the case of pins for instance again
+going back with 1d poisson equation you
+can write down
+the evolution of your model in terms of
+its ntk
+you can compute the eigen decomposition
+of the ntk
+and essentially what you can show is the
+following points
+first of all the eigenvalues of the ntk
+will characterize how fast the absolute
+training error
+will decrease so essentially if you have
+large ntk eigenvalues that means that
+your model can train
+fast and converge you know decrease the
+absolute training error fast
+what is more important is that the
+components of your target function
+that correspond to ntk eigenvectors with
+large eigenvalues will be learned faster
+so let's just pause for a second and
+think about it so you have a neural
+network
+trying to train it on a set of data now
+or
+your pde and you know you can compute
+its ntk at initialization and you know
+the ntk does not really change much
+during training
+so right from the get go you can compute
+the spectral properties of your ntk
+namely its eigenvalues and eigenvectors
+and immediately that will tell you
+the preferential directions of your
+neural network so you will see from the
+shape of the eigenvectors
+you will see what kind of functions your
+neural network prefers to
+to approximate faster and it turns out
+that if
+these eigenvectors are low frequency and
+your target function is high frequency
+you will have a really really high time
+a hard time
+approximating the function so indeed it
+turns out that for fully connected
+networks the eigenvectors that
+correspond to high eigenvalues of the
+ntk matrix
+generally exhibit low frequencies and
+that is related to the spectral bias
+problem
+so our network has this built-in
+preference of approximating low
+frequency functions
+so in practice if we try to throw
+use it in the problem where the function
+the underlying function has
+high frequencies or multi-scale behavior
+it will be almost impossible to
+accurately
+approximate it unless we train with a
+small really small learning rate you
+know for a couple of weeks which is not
+practical um and the last point here is
+that in practice we observe that the
+eigenvalues of the ntk for physics and
+formula networks
+typically decay very very fast so that
+means
+extremely slow convergence to high
+frequency components of the target
+function
+so essentially there's this topology
+that we cannot really use
+you know based on this theory we
+shouldn't be using uh
+pins for approximating high frequency
+functions
+at least using you know vanilla
+multi-layer perceptions
+models maybe with a better architecture
+we could do better
+okay so again what i really like about
+this theory is just it gives you this
+tool that
+from the get-go from initialization you
+can actually get a sense of
+whether you'll get a reasonable result
+or not
+and this is not very surprising because
+neural networks are known to suffer from
+spectral bias what it was surprising in
+the context of
+physics in front neural networks is the
+second result that indicates a
+discrepancy of convergence rates
+in the loss functions and these
+composite loss functions that we use
+so first of all we can introduce this
+metric which we call the average
+convergence rate is quantity c
+which is basically just the sum of the
+eigenvalues of your sdk
+basically the average of your
+eigenvalues
+which can be easily computed and
+we can see now we can compute this c
+quantity for the
+corresponding blocks in our ntk matrix
+remember we had this capital k matrix
+that was comprised of blocks k u u
+k u r and k r r and now we can compute
+the c
+quantity for the individual blocks and
+what we see here
+is a remarkable discrepancy in the
+spectrum
+of k u u and k r r so for instance you
+see here the eigenvalues of k u have
+magnitude of 10 to the power 3
+the eigenvalues of k are are have
+magnitude of 10 to the power five
+according to this definition here our
+network will have a much
+higher preference of minimizing the
+residual
+for our problem and we have a much
+slower convergence rate for the boundary
+so in this case we can use this
+c metric uh that i just introduced to
+kind of
+detect even from initialization
+which of the terms in the loss function
+will dominate
+uh in the optimization so in this
+particular case you can see that
+the residual dominates over the boundary
+term
+and as a consequence the pde residual
+will converge much faster during
+gradient descent than fitting the
+boundary conditions
+and that leads to the failure that i
+just showed you that the network cannot
+really fit the boundary conditions
+properly and you get an inaccurate
+uh solution okay see some
+activity in the chat i wonder why
+convolutional networks do better for
+some problems
+so in this context convolutional
+networks
+would work like finite differences so we
+will have to discretize
+our domain uh treat it as an image in 2d
+or you know a regular grid
+in this case we sort of eliminate one of
+the two terms in our
+formulation because we only need to
+minimize the residual
+we're not approximating special
+derivatives with automatic
+differentiation
+and there's a tendency of convolutional
+networks to perform better
+however you introduce discretization
+error
+because essentially convolution
+corresponds to a finite different
+stencil
+so there are some issues related to that
+but we can discuss more on that a little
+bit later so now based on this result
+this sort of motivates that there's
+interacting terms in our loss function
+and then one term is dominating over the
+other
+so perhaps we can try to account for
+that during training
+so in the next slide based on this
+findings we propose this adaptive
+uh learning rates uh strategy for
+balancing the interplay between the
+different terms and we do that by trying
+to balance the spectrum
+of the npk for the residual term versus
+the spectrum of the ntk
+for the boundary term so we can choose
+those constants
+at initialization and we can even update
+them
+you know every couple of steps of our
+gradient descent algorithm
+and effectively those constants lambda b
+and lambda are
+you could think of them as changing
+adaptively their learning rate
+that we're using for fitting the
+different terms and so we just introduce
+those weights in our loss function
+essentially which are chosen adaptively
+and they're not
+tuned by the user and doing that
+actually can lead to significant
+uh performance improvements so here's
+just an example
+an example that tends to be kind of
+tricky for this physics and for neural
+networks and that's a wave equation
+so again it's a relatively simple pde
+that
+physics and formulas struggle with in
+this case we have three terms in the
+loss function we need to penalize the
+initial condition
+we need to analyze the gradient of the
+time derivative
+of the initial condition and also the
+residual of the pde
+uh if you were to train a physics inform
+neural network to solve this problem you
+will get a prediction that looks like
+this which is
+very very it smooths out everything and
+it's very
+inaccurate and you can actually do your
+post-processing and you
+investigate the reason behind failure
+for this example
+and again you see this remarkable
+discrepancy in the magnitude of the
+spectra for the boundary term the time
+derivative term
+and the residual again in this case your
+model has a really hard time fitting the
+initial condition
+for the function uh and and it will fail
+the predictions will be not good at all
+and then in the next slide you can
+actually apply this adaptive
+algorithm that i just showed you for
+like adaptively uh annealing
+uh the learning rate uh those constants
+here in this case are set to one but in
+the next slide we're updating them using
+this update rule
+by computing the spectrum of the ndk and
+you see that those constants
+lambda u e t and r quickly converge
+after a few gradient descent iterations
+to some plateau
+and essentially all what they're trying
+to do is to balance the spectrum so you
+see here the spectrum
+of the three different npk components
+uh before the rewaiting with solid lines
+and then after the
+introduction of these multipliers lambda
+you see that
+when we introduce the lambdas all those
+lines the dashed lines
+now are have the same magnitude and that
+means that during gradient descent
+our network learns at the same rate and
+learns how to minimize the three
+different terms of the same rate so
+no term is dominating over the other
+and that's the only trick that comes
+into so this is exactly the same model
+architecture
+everything is the same except for the
+fact that we're using this adaptive
+weight
+now for those of you that are
+experts in numerical methods you may
+kind of recognize
+this as being some sort of explicit
+discretization of your gradient flow but
+with some sort of adaptive
+integrator so some sort of adaptive step
+size
+and you may also wonder what if we have
+the stiffness and stability issues
+why don't we use an implicit method for
+discretizing the gradient flow
+and the answer is we can and that's some
+you know we're actually working on it as
+we speak and we have some
+early promising results and that lends
+itself to a whole literature and
+optimization for um
+that is related to proximal gradient
+methods
+uh so here's another question gradient
+descent is fairly simple what if you use
+more sophisticated minimizer like
+lbsgs so lbfgs is a quasi-newton method
+so it
+it utilizes approximations to the
+hessian
+it turns out that for for neural nets it
+does not
+perform really really well so in my
+experience bfgs performs well
+in the really small data regime but
+overall it's less robust than
+claimed stochastic gradient descent
+another comment here is that with lbfgs
+we cannot really take uh
+mini batches so we cannot perform
+stochastic updates
+so for a larger problem in 2d or 3d
+where you may have a lot of
+data points that you need to fit it
+quickly becomes
+very costly to apply
+but yeah lbfgs is also an alternative
+for smaller problems
+it tends to perform well in many cases
+and in many cases it can because of it
+because of constructing an approximation
+to the hessian you can uh to some extent
+regularize these discrepancies we see
+between the
+uh convergence rates and the different
+loss terms
+so i'm running a little bit out of time
+so let me just conclude here this is
+just a sum of contributions for what
+i like to call the practical theory for
+understanding the training dynamics of
+constrained neural networks
+because this is not limited to to
+physics and from neural networks
+essentially any sort of multi-task
+learning problem where you have multiple
+loss functions being minimized at the
+same time
+it would exhibit similar behaviors so
+i i put the summary there in terms of
+future directions
+it's really interesting to analyze to
+perform similar analysis for inverse
+problems like this aneurysm
+application i showed you earlier so this
+physics and formula networks tend to
+perform a lot
+better in the inverse problem setting
+than a forward problem setting
+and in fact we can actually justify why
+this is the case
+through the lens of this ntk analysis
+and more importantly is how we can use
+these theoretical
+findings to engineer better
+architectures that can be more
+robust with respect to spectral bias and
+this training converges pathologies
+so the message is that in general we
+should
+think about developing more specialized
+architectures and more specialized
+optimization algorithms for these type
+of problems
+and we cannot really resort to you know
+just employing adam or
+some plain neural net architecture and
+then hope for the best so
+it really pays dividends to
+to think a little bit deeper about it
+and and and
+design appropriate methods in this edit
+so all the failure
+cases that i showed you personally i
+don't think that they reflect
+a limitation of the framework is more of
+a limitation of our current
+understanding of how to properly set up
+the problem and properly train these
+deep learning models
+i see another question what about
+plugging everything into something like
+um you know a more sophisticated time
+integration routine
+yes absolutely so that's on one hand
+what i mean by adaptive integration and
+you can use implicit methods
+and and people in the optimization
+literature have taken that route and
+there's this whole family of proximal
+gradient and operators clipping methods
+uh so here we just we have barely
+scratched the surface
+on it and i think that's a definitely a
+direction that is worth looking into
+um obviously it introduces some
+computational bottlenecks and
+maybe your training might be a little
+bit slower but you can gain a lot in
+terms of stability and accuracy
+so that's all what i have i had a final
+slide just to show you some preliminary
+results for the inverse problem
+where you see here for the it's
+comparing the spectra or the forward and
+the inverse problem you see that the
+inverse problem is much better
+conditions
+so all the spectra are much closer and
+there is no huge discrepancy between
+them
+and that sort of indicates that the data
+distribution plays a profound role in
+this problem so for
+the forward problem we only had
+observational data for the boundary in
+initial conditions
+so the data distribution was kind of
+degenerate however for the inverse
+problem we have data available inside
+the domain and that regularizes the
+problem a lot
+and affects the trainability of our
+model so again
+we don't have a complete analysis for
+inverse problems but
+this is just a preliminary snapshot to
+show that
+through the lens of this ntk analysis
+they're much better conditioned
+than the forward problems so
+thank you again a lot for your time and
+i hope we have a few minutes for
+discussion

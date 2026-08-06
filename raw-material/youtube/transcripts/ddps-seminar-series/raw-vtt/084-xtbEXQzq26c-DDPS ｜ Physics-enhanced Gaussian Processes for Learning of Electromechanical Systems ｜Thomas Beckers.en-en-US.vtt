@@ -1,0 +1,4239 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.710 --> 00:00:05.410
+All right. Welcome to the DDPS seminar everyone. Before we introduce our invited speaker, today, let's go over some rules and logistics. First of all, please mute yourself during the talk and please use chatroom to post your questions so that you can address them in the q&amp;a session at the end. A second, today's DDPS seminar is open to external audiences. Therefore, no classified discussion is allowed. So please watch out. Finally the talk today will be recorded and uploaded in our YouTube channel. That's about it. Let me introduce our speaker today. It is an honor to host Thomas Becker's who is an assistant professor of computer science and the Institute for soft software integrated systems at Vanderbilt University. Before joining Vanderbilt, he was a postdoctoral researcher at the Department of Electrical and Systems Engineering University of Pennsylvania, where he was the member of the Grasp lab and precise and offset Center. In 2020, he earned his doctorate in electrical engineering at the Technical University of Munich, Germany. He received a BSc and MSc degree in electrical engineering in 2010 and 2013, respectively, from the Technical University of Braunschweig. Also in Germany, in 2018, he was a visiting researcher at the University of California Berkeley, very close from here, and he is a DAAD AInet fellow and was awarded with a Rohde Schwarz Outstanding Dissertation price. His research interests include physics, enhanced learning, nonparametric, models and safe learning based control. Today, Thomas will present an exciting topic, which is physics enhanced Gaussian process for learning of electromagnetic electromechanical systems. Please enjoy and expect a wonderful talk. Now without further ado, let me pass the baton to Thomas by asking one random question. Today's random question is, what is your idea of the perfect All right, first of all, thank you very much for the kind introduction. And yeah, so my perfect day, since you said I'm coming from Germany, like from Munich, so a Munich is very close to Europe, so great mountains. And I really love hiking. So my perfect day would definitely first start with a good with a good breakfast with eggs and bacon, you know, and then like a nice hiking trip. Best case would be in the mountains, having wonderful, sunny weather. And yeah, having a great day outdoors. Nice. Sounds like my perfect day as well. All right. The stage is yours. Thank you very much. Yes. Yes. So thank you for the kind introduction. And yeah, my name is Tomas Becker's. And yeah, today, I want to present our work on to second hand Gaussian processes for turning up electromechanical systems. And in general, so my background is in control theory. So I'm coming from, like the idea of safe learning based control. And so essentially, we started to think about, like, how can we make that possible? But let me start with the motivation. So when we think about today's systems, then we can we notice that actually, the complexity is more and more growing up in systems you see here, two nice example of very nice electromechanical system. So on the left side, there's a new humanoid robot from Boston Dynamics. And you'll see like complex structure and dynamics here on the right side bioinspired robot from Festo with new materials and new actuation concepts. And you can imagine that actually, the control of these robots of these systems is very challenging, at least, it's very time consuming. And it definitely requires expert knowledge. So we have to come up with models of the systems and input a controller. And it's very, very complex. However, I mean, you can also see with perspective, the amount of theoretical work and experimental evaluations, we can control these systems, right, you'll see like this, how this robot jumps, how this robot on the right side is actuated and can grip objects. But the problem is that sometimes we still say and we might say it because we are not a big con Consider, like all parts of the system dynamics sufficiently accurate. So are monitored, as you know, are never perfect. So there's always a mismatch between the model of the system and the actual system. And this can be in control. So if you use this model to control the system, this can lead to some key issues. As you can see in the videos on the left side, again, the Boston Dynamics robot. And you see, at some point, he steps on some soft material here, right at the moment. So and these are, these are part in the dynamics of the system, oh, and the environment that we are not able to capture in our model, because it's too complex, because it's very nonlinear, or just too time consuming to model all these things. So that means that we have always traveled to find good models, or that were never able to really get a perfect model due to too complex dynamics in our system due to some soft materials, for example, or just like new environments, like on the right side, so maybe there's like some wind. And so my, my drone crashed here. What we could experience in the last decade that machine learning is a very promising approach to tackle this issue. So the idea is, instead of using first principle models, so using like, standard physics like od ease, to come up with a model of the system, we're using data. So we collect data of the system, and then be using some machine learning models. And we use these models then for coming up with a controller. And here you see three examples. So the first one is actually already quite old. So this is a robot, which learns how to flip pancakes with we reinforcement learning approach. And so you, we use the machine learning model, to learn the dynamics of the pancake. And you can imagine that like these dynamics, pretty hard to write down just by hand. Another example, you might know from DeepMind, also already some years ago, where we used to reinforcement learning to learn how to actuate the stickman. So he can walk and even jump over obstacles. And more recent example from robotic hand from open AI, which learns how to actually many manipulators Rubik's cube. And also here, you can imagine that like a model for the cube rubik cube is quite hard, because you see you have some slips, you have uncertainties, and so very, very complex model. But you can also see is that actually all the systems are not very safety critical, right? So I mean, like with a pancake, maybe you you have a bad breakfast, if it's gone a bit go wrong. But I mean, it's not safety critical, right? And with a stickman Rubik's cube, so it's mostly like toy example. And what's the reason here? I think one of the main reasons is that most of our machine learning techniques so far are mostly blackbox models, right? So we don't really know when they work and how good they work. I mean, we just hope that if we have enough data, then they're going to be good enough. So my actually research focus. And so my research vision is actually how we can establish safe and robust control of totally unknown or at least partially unknown physical system, which means that we do not know the dynamics, we don't have a good model of the system. So how can we come up with a good controller, and everything like, getting a good controller always, is based on having a good model of the system? So I think what we need is, first of all, we should definitely include the prior knowledge we have about the system because especially like electrical, electromechanical systems, we have a lot of prior knowledge about it. I mean, we know there are some physics in the background, right? So we have Newton's law, we have energy conservation and all these physics in the background. So we should think about what we know. And definitely include this knowledge as prior knowledge and our learning processes. Then we always have a part that we do not know these can be some uncertainties, this can be an electromechanical system, for example, friction, which is really hard to model. So these are typically parts which are not captured by our models, but as in our systems, but we can't really model it. So these are the parts we do not know about the actual system dynamics. And they'll come from important part. The important part is to come up with safe controls, so to get some guarantees if I can actually control my system or not. And that's a part of that we need some uncertainty quantification. So we definitely Need to know what we don't know? Right? So that means, if you have a model, it's not enough to get some predictions of this model, we also need to know like how certain predictions are. So can we really trust the model? I mean, in best case, we have a trustworthy model. But at least we want to know, in case if our model is not trustworthy, because then we can think about strategies, how to still guarantee the safety, but at least we have to know if our model is trustworthy, or when it's not trustworthy. Okay, so, and the outline of this talk is, so the knowledge pipeline, what we do in control, as I said, is that we have our system here from the system, we come up with some model. And here we focus on data driven models, and then we use these models and control. But today, I just wanted to talk about this left part. So, when we have an electromechanical system and we collect data, how we can come up with a data driven model, how we can include trial knowledge into this model. And so, first of all, I introduced Gaussian processes, because the title of the talk also includes Gaussian processes. So, you can imagine working here with these processes as a machine learning model, then the first part of the target then I will introduce Gaussian process port Hamiltonian systems, which is, which is some class of physics enhanced data it was model we use. And in the second part, I will talk about a Gaussian process variational auto encoder. Okay, so before I dive into Gaussian processes, let me start again with why we want to have physic informed learning. So, as I said, in control, we have like two different concepts of how we can operate the control. So, both concepts is always the idea, if my control loop, for example, I want to control a robot, and I have to come up with a controller, scientifically, I start with some model of the system. And when I talk about the model, so, we have normally talked about an OD E model. Okay, so bunch of creation of OD e equation. And we have two different ways, actually how to do that. So, the first one is like physics based and that's the way we did like in the last 100 years, I would say, and the right side is learning based. Okay, let's have it physically. So what are the benefits of a physic based model? Okay, so really where I can write down the OD ease of the system? So first of all, a generalized well, right, I can actually evaluate this model on all points. So I'm not focused on a specific area. If I have this model, I can guarantee like some performance and stability properties of my close to so I go don't go into the details. So by then control theory, we have a really strong math background, how we can guarantee specific performance if we know that the model is correct, or at least we know that the model is like almost correct. So if we have some uncertainty quantification, then we can tell you how good this control loop work. The problem is always the model selection, as I said, when we want to model friction, for example, friction is very complex concept or just general non linearity is in our system. So what kind of model do we use? Here, if you think about, which is also like an interesting topic at the moment, like human robot collaboration, like exoskeletons, and so on, so we have the human in the loop? So how can we model the human with equations, right, so this is pretty, pretty tough problem. And it's also time consuming. So if you want to get a good model of a robot of quadcopter of whatever kind of system, it's really time consuming, you need expert knowledge and a lot of time to come up with an accurate model. On the other hand side, think about learning based approaches. So, instead of coming up with a physical model, we collect data of our system, and for example, in your network, or whatever kind of machine learning model, and we use this machine learning model then to come up with a controller. And you know, we're they these models are highly flexible, normally, we just knew need minimal expert knowledge. So, we can like in the simplest approach, we can just use a standard neural network collect data using some toolbox and then we have some kind of model right. The problem is, we do not know how to channel as well. So normally we assume okay, like around my training data, hopefully kind kind of works well. But outside this regime, I have no idea what happened actually. And, like, as I said, so these are typically blackbox models, so we'll just get some output, we do not know how trustworthy this model is, we have no uncertainty quantification. So, in this case, we cannot really give stability or any performance guarantee. And so, yeah, I've had kind of naturally to think about, okay, how can we bring together the best of both worlds? How can we bring together like, the guarantees from physic based model together with the flexibility of learning based models, and this was to me the motivation to start looking into physic enhance learning. Okay, so, yeah, let me introduce our first problem statement. So we think here, we want to talk to you about electromechanical system, which can be expressed as some type of OD function here. And we are input if time to see where p or the f function saw the dynamics, and then an input matrix G here, and an input u. Okay. And x is the state of the system, for example, the position and velocity of your mechanical system. And then we actually observe the system. And we collect data, and our data countries have to have a timestamp. So for example, every second, we record the state of the system, and the state can be corrupted by noise. That's, that's very typically, for example, if I have sensors on my system, I always have some noise in my measurements. So we assume we can have here some Gaussian noise, zero mean Gaussian noise on the state measurement, okay. And then over time, I collect some state measurements. And this is actually my data set. And I also incorporate the input to my system. For example, if I have a motor, that will be, for example, the torque of the motor to the robot. And when I talk here about electromechanical systems, I think it's important to mention here that these kinds of systems are typically low dimensional. So we talked about like, I don't know, two to maybe 1012 states. So these are the ticket systems we're dealing with, but often highly nonlinear, because we have like these nonlinear materials or nonlinear elements in our system. So it's low dimensional, but highly nonlinear. Okay, and the problem is, now given this data set D, we aim to find a dynamic model of our system. But first, we present a large class of systems. So we want to keep the flexibility. So we're going to come up with a physic and font machine learning model, which is flexible, so which I can use for different type of electromechanical system. So shall be expressive. Then, as I said, we are in control we're interested in and certainly classification, because at the end of the world, when we want to use these models in control, we need these uncertainty quantification to give guarantees about the performance of the controller. So we're looking for a model, which is reliable, or at least it should tell us if it's trustworthy or not. And then the last point is that it should respect physics. So it should, and if it's respect to physics, it generalizes Well, right. So then we can use the model not only close to the training data, but also if we have sparse training data, or if we're in an areas without much training data. Okay, and yeah, now, okay, we decided we want to do some physical prompt learning, right? But so what's our machine learning model here? And yeah, quick overview, very, very simplified overview, I would say about different models. And here on the x axis, you'll see explosivity on here, if we have any kind of uncertainty quantification, and first of all, we can think about parametric models right. So for example, a simple linear model, you know, you have two parameters a and b, and you can do like, least square and then you have like this regression model, it's very simple, but not very expressive and does not have any uncertainty quantification. networks of course, very expressive, can deal with large data sets, but at least in the plain form, we also have no uncertainty quantification. Then we have like the whole part of Bayesian parametric models, right. So, where a and b, you put some prior distributions on A and B, and you can use based theory William to get the posterior distribution, you know, and then you have a regression, actually with some uncertainty quantification. Again, same problem. It's not very expressive, even if you have more complex parametric model, but it's the like, mostly simple model. And then we have like, we can combine the best of both worlds kind of, and these are Gaussian processes. So and Gaussian processes actually allows us to include prior knowledge in a very nice way. It's a NonParametric Technique, which means it's actually very flexible. And it gives us uncertainty quantification application we want to see. Okay, so let me talk more about Gaussian process. Because this is a very central point for for this talk, we use it like and both approaches. So the idea of a Gaussian process is actually that the Gaussian process is a distribution over function space. So you can think about like a Gaussian distributed variable, which is fully defined by a mean, and a variance, right. And now you make it dependent over some index set, for example, the real numbers, so don't make it a function. And so you have like, you can describe a Gaussian process by a mean function, m of x, and some covariance function. So what's the covariance between two points in your input space. And the point of the Gaussian process is that if you, you have now like a function or in finite number of random variables, and if you pick any finite set of these random variables, it's always jointly Gaussian distributed. Okay, so if you pick two, for example, two variables, they're jointly Gaussian distributed here. And this means, so let's assume we have some index here, you're our input x and some output Y. And in red, here, this red line is now our mean, the gray is our uncertainty. And now if you pick like two variables at a random variable, so one at location X one, the other one at location X two, so we have the random variable y one and y two. So what's now the joint distribution, it's a Gaussian distribution, as I said, and we see here the mean function, and here the covariance function between these two points in the input space. Okay, so any finite set of a Gaussian process follows a Gaussian distribution. And now what we can do with this Gaussian process is we can use it for regression. And the idea is the following. So we use the theory, which means we start with some prior distribution, which can hear this to mean distribution, then we collect data. And based on this data, we update the fire, and we get the posterior, right. So that's the idea of base theory. And that's what we do here. So you see an example on the right side. When I collect data, I improve my prediction. And what you can see here, again, increased uncertainty. And we have now one data point. And what you can see the uncertainty here around this data point is decreasing this, which makes sense because we have data so our model tells us, okay, I'm actually very certain here about my prediction, and these colored lines and are sampled from the Gaussian process. So each time proper Gaussian process is a function is a deterministic function. And each function is like one possibility, right? Based on the data you collected, and what you can see, if you collect more data, your uncertainty is decreasing, which makes sense, right, and all the samples you drew from the Gaussian process coming closer and closer, because you're most certain about the actual underlying function. Alright, and if you have a lot of data, it can be noisy data, then this uncertainty is very small, and you're very certain about your output. Okay. And so if we want to do a prediction, if we have collected data, and we want to do a prediction for a new test, input x star, based on a training set D, okay, capital X is your, the position of your input position of your data, capital Y is the output position of your data, then we get like two, we get a very nice analytic closed form solution here. That's also a nice property of a Gaussian process. So you get a closed form solution for the prediction. And again, since it's, since it's Gaussian distribution, it's fully defined by the mean and the variance. So what you see here is now the posterior distribution, okay, so the mean for the output, given a test input, and your data set D And what you can see on the right side here, there's a creation, you see the fire mean. This and function, you see the covariance function again, the covariance tells you how we related are two points in your input space. So I have two covariance between my test input and my training data set capital X, then here I have my covariance of the training data, sort of capital X. And here my output data capital Y. Okay, so you see, it's very kind of simple function, what you get as close from solution for the posterior. One of the drawbacks of Gaussian processes, you can directly see here. And what you see here is that you have to compute the inverse of this covariance matrix. Okay. And it's inverse, the covariance matrix, like the dimension depends on how much data you have. So if you have more data, then you have to take an inverse of a very large matrix. Okay, so there are different approaches how to reduce this, but yeah, I don't want to talk about the details. But normally, this is some kind of drawback of a Gaussian process. Okay, and, yeah, to think about a Gaussian process, we can also think from a perspective of linear regression. So you can think about that you have some training data. So you want to do a Bayesian linear regression. So you have a linear function, you put a prior a Gaussian prior on the weights on these w's, you have some measurements of this unknown function, again, corrupted by some Gaussian noise. And then as we know, I mean, by doing some math in the background, we can come up with this standard expression for Bayesian linear regression. Right. So again, it's a normal distribution, given our data set, given some input point, the, the distribution of the output is Gaussian, defined by a mean, and by some variance, okay, so this standard Bayesian linear regression, and what now happens, but you can think about the Gaussian process. So what we do is, we kind of transform, Bayesian linear regression in a higher dimensional space. So you can think about it. For example, if we, it's easier to think about it, like from the perspective of classification. So imagine, we want to find a linear function to separate like these two points, okay. And these are the squares and these circles. Okay, I'm not working like in these two dimensional space, but what we can do is, we can lift it to a three dimensional space, for example, here to this sphere. And here, we can easily find a linear plane to separate these two training datasets. Okay. And that's the idea, actually, what what you can think about is about a Gaussian process is doing, we're doing Bayesian linear regression, but in a higher dimensional space. And this higher dimensional space is actually timed by some feature map. So you have some mapping from this lower dimensional space to this higher dimensional space. And instead of using like the x, the input, we just now use this feature mapping from the input. Okay, so we do this transformation from the input to the higher dimensional feature space. And the nice thing is here, because when you remember, like in the in the posterior distribution of the Gaussian process, you didn't see this feature map. And the point is that we actually don't really need to know this feature map. Because it turns out that if you put it like in this equation here from Bayesian linear regression, that always appears as inner product. So the only thing we need is the inner product of the feature map. And this is exactly the kernel function or the EPS and so from a Bayesian perspective, we think about it as covariance. From a machine learning perspective, this is often called the kernel function. Okay. Okay, so that was like the quick introduction into the Gaussian processes, and now really the pot like how can we incorporate phonology into the Gaussian process? And when we take a look on the mean function, so this is like this, again, the posterior mean, expression for the Gaussian process, it's slightly different. It's written in a slightly different way, but he again I have to fire mean, and here this part is now written as the sum over the number of data points he has my covariance function and this weighting factor depends on on the collected data, okay. And if you see this equation, you can directly come up with two ways how to incorporate training, prior knowledge. First one is via the meaning function, right. So you can think about including some parametric model s mean function, and this would act as some guidance right. So, without data it will follow your main function, but as soon as you have data you trust like or you rely on the data and you can diverge from your main function the other way is via this kernel function or correct order or covariance function right. So, we can also think about how can we design this covariance function okay. And this is different from the mean function because as I said the covariance function is connected to this feature map like where you lift your Bayesian linear regression here. So, this means this covariance function actually defines the class of functions of your Gaussian process. So, let me give you here some example. So, if you have some training data points a very simple covariance function is the so called linear covariance function and this kernel function actually defines the space of linear functions. So, which means, like every posterior mean of a Gaussian process is always a linear function okay. So, you limit the class of regression. So, are you limited the function class for you regression to linear function and from the machine learning community, we got very, we get many like different kernel function for example, the so called Martin Corona which defines the smoothness of your function so, you can say okay, you can reduce your function class to one time differentiable functional two times differentiable function and so on. And also the squared exponential kernel, which is a very popular kernel regenerates, always smooth function. So this is a class of smooth fun. Okay, but so far, this is like a perspective, like a function perspective. So, what are the properties of your function? But how can we now actually include physics? Okay, so how can we encode physics and the ideas here that we come up with a very general physics model? Okay, and what we, what we chose is the class of Polycom Etonian system. So this is a very general framework how to describe physical system, especially electromechanical system. And I'm sure you all heard about Hamiltonian systems. And this Hamiltonian system is a specific form of support Hamiltonian system, so called Mr. Tonin system as some kind of an extension of Hamiltonian system. But it's the same idea we have some Hamiltonian function, which is like the general energy in your function. But now we have some interconnection matrix and this interconnection matrix defines the internal flow of your energy. For example, thinking about the pendulum, it would define like how the energy flows from kinetic energy to the potential energy in the system, then in contrast to a Hamiltonian system, we can also have some dissipation in our system, okay. And this defined by this math matrix are, for example, if you have friction, it will be part of this matrix R, then we have some input matrix G, and some output y of our system, important metoden system have some very nice properties. So J is Q symmetric by definition. And this always ensures energy conservation. So at least if we have no dissipation of zero, then we have energy conservation, then the energy is always constant. The input and output defines a passive system, we can connect different automaton and system and get again a port Hamiltonian system, so we preserve the structure. And finally, like since it's like an energy driven model, it's very suitable for multi domain applications. So it's very easy to connect electrical system with a mechanical system, because it's everything is under the big umbrella of an energy er if the total energy of the system okay, and our idea now was like that, we have data from some kind of political system, we collect this data, and then we try to learn such port Hamiltonian system in connection with the Gaussian process model. And the idea is that we put a Gaussian process prior on the Hamiltonian. So we use the Gaussian process to learn the energy of the function. And we also do some parameter estimation for these matrix matrices J, R and G. Okay, so we assume we have no knowledge at all about the energy of the system, but we assume we have some at least structure knowledge about these matrices J, R, and G, which are typically kind of simple, but we can learn parameters in these matrices. Okay, and so we come up with the physics and form Gaussian process model. Since we use like this underlying parameters and see systems in the Gaussian process. And what we get here is you can think about, if we now sample from this Gaussian process model, it gives you some kind of distribution about all possible part Hamiltonian systems under this PP prior, okay, so you can think about, instead of just getting one model, you get like a distribution about model. But each model it says, is like physically correct, because there's always this underlying pot Hamiltonian system. So we will see an example on the next slide. So let me explain the pipeline here. So again, we have our system, we collect a state of our system over time, but the first step is what we do, we use some filter to come from the time and state information to state that derivative, okay, so like in like other approaches, but we actually need is like, we need the state and the state derivative to do the regression with the Gaussian process. So we can use some kind of filter, we you see a Gaussian process, but the at least and control, and there are many other features you can use, then we have our Gaussian process to learn the Hamiltonian, we learn we are able to learn some parameters in our matrices. And after the learning process, we sample from this Gaussian process. So for example, we can draw 10 samples. So we get like 10 deterministic pot Hamiltonian systems, then what we have to do is doing some approximation to make it more computationally tractable. And then we put this in an OD solver, and then we get trajectories live from our 10 Centerport Hamiltonian system, can each object we is like one possible model, based on the data we collected. Okay, and if we collect more data, these trajectories are closer together. If we have less data, then of course, we see more fluctuation between these models. Okay. I think I speed up a little bit so that we can also come to the second part of the talk. So as I said, we have here the fetus on the only purpose of this data is that we come from time state information or data to state state derivative. And what we do is simply, we use the time and states we fit a Gaussian process into this data. And then we take the derivative of a Gaussian process, since it's a closed form solution, it's easy to take the derivative if you can directly take the derivative of the covariance. And what we get is then the mean prediction for the state and the mean prediction for the state derivative. And so we can create a new data set with the state information again, for example, like the position and velocity of the robot, and derivative, like the bullish velocity and the acceleration, and then the actual core of the set forward, we put a GP prior then on the port Hamiltonian system done. And what we get is then a new kernel function, okay, and this kind of function is like inspired or includes this port Hamiltonian system structure. And so we have like, a Gaussian process for the right hand side of our od E. And what we use here is the property of a Gaussian process that it's closed under linear operator, which means if g here is a Gaussian process, and you have a linear operator acting on your on your process, then you can include that in the process. And f is again, it goes in process, okay, it's the same like a Gaussian distributed variable, if you have a linear operator on a Gaussian distributed variable, like it's again, a Gaussian distribution, right. So if X is Gaussian distributed, A times X is also Gaussian distributed. And that's the same for Gaussian processes. So for example, we can have the differential operator, and we can include it in the kernel function. And then what we could do is, for example, if we do function regression, but we do not have as training data, the function values, but the derivatives of this function of this function at some positions, right, we can take the derivative and then do a prediction of the value, of course, plus minus some constant. But so we can easily combine everything with a linear operator. And that's exactly what we do for the pod Hamiltonian system kronor. Because remembering the structure of a pod Hamiltonian system, so everything before this Hamiltonian function is actually linear up Right, so we have the derivative, we have the multiplication with J and r. So this is the linear operator on the Hamiltonian. So this means here in the center of our kernel function, we have the squared exponential kernel, because we UCL squared exponential, because we know the Hamiltonian is actually a smooth function. And then we use the linear operator, which is here, the J and the R matrix, and derivative with respect to x. And so we can come up with a new covariance function, which now includes the spot Hamiltonian structure. Okay, and as I said, if we have some unknown parameters in our matrices, J, R, and so on, we can actually treat these parameters as hyper parameters in the learning process. Okay, so we can learn it. So in Gaussian process, you use the log likelihood function to optimize the log likelihood function to get the parameters which describe best our data. And so you can treat our parameters, hyper parameters, and then we come up with this kernel function, which is actually a distribution of a port Hamiltonian system. Okay, so this was the learning part. So this is pretty nice, I think, because it's a closed form solution for everything, then for the sampling after we collected data, and we did the learning now to get accurate predictions from your model. So what we do is, we now have two sample so and the simpler way would be to sample now from this Gaussian process, which would give you a deterministic function for the right hand side of your od E. Okay, this would be one sample of your port Hamiltonian, Gaussian process. And so you could use this model, put in an OD solver and get the trajectory. However, this is kind of computationally costly, I don't go into the details, but what we do is then instead of getting the entire right hand side, we learn or we sample the Hamiltonian, okay, so we do not get a sample from the entire right hand side of the OD E, we just sample a Hamiltonian, okay. And then we use some approximation technique for the Hamiltonian. And then we put the Hamiltonian again in this quantum internal structure, and then use an OD solver to get our trajectory. Okay, so the takeaway message is here, we sample the the Hamiltonian from our model, and we put it in the structure, and then we have a nice ote model. So a deterministic model for each sample, we can put an OD solver, and we get a trajectory. Okay, and for this kind of pot Hamiltonian system, we have also some theoretical resides. So again, without going into the details here, due to the time constraints, but what we can see is that if we draw samples, we actually get pot Hamiltonian system, which have all the nice property of normal port Hamiltonian system. Okay, I skip your idea of the proof. But this is similar to like the proof of normal port Hamiltonian system. And the other interesting property, especially from a learning perspective, is that it allows now composable learning, okay, think about like you have a big system, like with many different complex parts. And now you can separate your system and learn these parts separately. And at the end of the day, you can now combine your probabilistic model with other probabilistic models. And again, it's one big pot Hamiltonian system, okay, and still have this closed form solution. So this is this is very nice property of this Gaussian process. What we use here okay, an example here. So here with like a toy example, what we use here is this wet ball, some island ball, and we have here coil, which creates a magnetic field, and when it creates a magnetic field, it attracts the ball, right? And it's a nice electromechanical system, because you can imagine that the inductance actually depends on the position of the board, okay, so like, the mechanics influence electric and the other way around. So what happened if the ball roll round and return on this inductance or this car, visualized here by this red color, then it attract the ball and so yeah, that's like a nice physical system. Okay, and here we collect some data points, and on the right hand side, but you can see is now our Gaussian process model with four samples and this color note three standard sorry And these colored balls are now samples of the Gaussian process. Okay, our port Hamiltonian system, what you can see here is like, we have not just like I don't know, 2030 data points. So our models are quite different. But the point is that like each model is physically correct. So from the perspective of both Hamiltonian systems, okay, so each model is like, correct, in terms of the evolution of the energy. And if you collect more data, like in this example, then of course, our models are closer together, our uncertainty is smaller, and lighter trajectories are very similar. Okay, so we get a nice model with some kind of uncertainty quantification, because we can draw some samples and actually see, like, what is the variance among the samples? And yeah, if we take a look on the numerical results, so the important message here is what you can see, as I said that each model is physically correct. And if you take a look especially on the Hamiltonian, so the dashed line is the actual system. So the real system, and the colored lines, and our sandpit from our Gaussian process model. And you can see here and the red square. So in this, at this time, we turned, turned off the coil. So what we want to observe here is that the energy is only constant or decreasing, right, because we don't put any external energy in this in the system. And you see that that's true for all samples. So and that's what I meant by that the samples are physically correct, okay, so the take home message is here, even response data, or even without any data, I was our samples are always like, physically correct. And of course, if you have more data, then your model is getting closer and closer to the actual system behavior. Okay, and we have some extension, which I just want to briefly mention. So we extend it to a switching system, for example, for this hopping robot, where you have switching dynamics in your system. So we can come up with switching port Hamiltonian systems, where we use a Gaussian process as as classifier here, in addition to our known Gaussian process, part Hamiltonian system. And so we can also identify this hopping robot, and what we get from the GP classifiers. Now it's takes us in which mode we are here for the hopping robot, people have two modes, we have one mode, where we are in contact with the ground and another mode, where are we where the robot is in the air. And so we have two different dynamics. And with the GP classifier now tells us, if we are in mode one and mode two, and again, we can then sample from this from this model. And we have like the very similar properties, as I showed you before. Another extension is that so far, we only had parametric, or we can only be only able to estimate some parameters in our J, r and t matrix, but this is some kind of limitation, because, for example, fiction would be some nonlinear function in your arm matrix. Okay, so some complex function, okay, not just like a parameter. Like, yeah, like in a very simple friction model, you just have, I don't know, a parameter in front of your velocity or something like that. But normally, the friction is much more complex. So can we also like, estimate more complex elements here and our J and our matrix. And the idea is here, that since we love Gaussian processes, so much, we also put now another Gaussian process here and our matrices, okay. And, again, we we have to think about how we can guarantee this Q symmetry, he also has a matrix, and that is our matrix is positive. But there are ways to do that. Then what we get is that we can also learn some nonlinear friction, for example, the only problem is that we have since we have now here got a Gaussian process and another Gaussian process on the energy wherever multiplications of Gaussian and is not Gaussian anymore. Okay, so in this structure, we're losing this nice closed form solution. And we have to do some variational inference to do some approximation here to make this problem tractable. But then we can we can come up with a fully Bayesian model. So when will not only learn the energy of the system, but also, for example, the friction of the system. And yet another toy example of a pendulum, which goes here threw some water bowl. And so we have some friction as soon as the pendulum is in the water, which is like, highly non linear, depending, of course, on the properties of the water on the shape, and so on. So we collect data here on the right side to see the phase diagram, so the angle of the pendulum and the angular velocity in red, you see the actual, the real system trajectory. And in yellow now, the Learn system trajectory, and the green spots are data we collect, so we collect more and more data. And you can see even after like, I don't know, 3040 data points, you get already a pretty good estimation. And again, here, it's always physically correct, the only thing is how good the model is, okay. And the color, the background color, actually is the uncertainty, again, here. So the blue area says it's very uncertain, and yellow greenish area tells us it's more uncertain, okay, and make sense, because then the area was training data are more or less more certain. And in the area with our training data, we have more uncertainty. And here you see, again, the black line is our model like that. This is the energy over the time. And again, we are always like physically correct in terms of the energy because the energy, sorry, is always decreasing over time. Okay, this was the first part, the second part, I tried to compress it to two that we can also talk about this. So the first part was about potting material system. The second part is also again, bringing together physics and Gaussian process, but in a very different setting. Because so far, we assumed we always have state measurements, right? So we have some sensors on our system, for example, position sensors, velocity sensors, and we get the state measurement. But what if we have like more high dimensional inputs, for example, video, okay, so imagine we have a pendulum, and you take a video. And now we want to learn like these dynamics. Okay. So we have a high dimensional input. And, yeah, the goal is to now using videos of your system, that we want to learn a low dimensional latent space. And because for example, with a pendulum, we know we can actually we present the dynamic libraries to states based on these videos. And of course, we want to again have that these legend spaces feel physically correct. So respecting some prior knowledge, and we want to have our uncertainty quantification. Okay, and the motivation, motivation example is here. Imagine that we have a car. So we have a video of a car, for example, going over a bumpy road, okay. And we want to learn a low dimensional representation for this video frame, okay. And we can actually express such a visual frame by two variable, the position, so the vertical position of the tire and the vertical position of the car itself. Okay. But the thing is, again, you have some physics in the background, right? So there is a coupling between the position of the tire and the position of the car, right? There are some dynamics here based on the spring and the damper, right? And so we think about how can we actually make use of this prior knowledge. So maybe we know the dynamics of the car, right? Because we designed the car, but what you don't know is actually the external excitation of the of the wheel. Okay, so how can we include this prior knowledge about the dynamics about the coupling of the wheel position, and the car position? And so we were thinking about, like a Fizik, enhance variational auto encoder to learn this low dimensional latent space. And yeah, variational auto encoder, I think I don't have to talk too much about it. I think you all know how it works, right? We have some high dimensional input data, we have a network, which compresses data to low dimensional space. And since it's a variational auto encoder, not a classic auto encoder. So we actually what we get is some Latin distribution. So not a single point, but the distribution in this space. And we sample from this distribution. And then we have our output decoder, and we try to learn our train our neural networks, so that at the end, we can reconstruct the input through this pipeline, right, and then we learn this low dimensional representation from this high dimensional space. And that's exactly now what we do. But now with a Gaussian process, so the idea is that we not only have one picture, but we have to video right So we have a video, we have like a picture over time. And we use now a Gaussian process to describe X actually the evolution of the object's position over time. Okay, think about, like, a simple example and the car, think about a ball. Okay, so you have video of a ball, right. And so you can actually represent like each frame by an X and Y position of the ball. Alright. So um, what we do is, we have again, and encoder network, which compress like this high dimensional picture of frame to the X and Y position, or like an distribution for the X and Y position. And then we have here now since it's evolution of a time, right, because the ball is flowing as it's going through the air. So it's like an evolution over time, we have now a Gaussian process here, because we have like a different position over time. But there's some correlation between the position right, so there's not like random, but so we would, for example, here assume a smooth trajectory, for example, for the boy. So that's why we can use a Gaussian process, which actually describe the position of the ball over time, then we sample from the Gaussian process, okay, and again, we use an output decoder. And we train this entire network so that the output reconstruct the input. Okay, so the kind of same idea of an autoencoder. But now, like with an evolution over time, where instead of having like a Gaussian distribution, we have, again, like this Gaussian process to capture this evolution over time. Think about the physics now, how can we include the physics and that's now the last step, what we do here is when we know that, so this movement of the ball is not like abbotsbury, but follows some dynamics, we know that there might be some, or there's some unknown excitation. But there are some dynamics in the background, right. So like gravity, and like this stuff. And now we're using these dynamics, again, to come up with some kind of physics inspired kernel. And we use this kind of function in the Gaussian process. Okay, you can think about that we can define a class of possible solutions of possible trajectories for the ball flying through there, they are not arbitrary. We know they're following some physics and be reduced the class of possible solutions and the Latin dynamics based on these physics. Okay, I tried to come to an end to stay in this one hour. But so what we are we, the goal is to find the lesson dynamics, okay, so we want to find a time series, which are the positions of the ball here. That's why and the dynamics should be expressed by some linear dynamic, okay, for example, gravity, and so on. So we have some knowledge about this our prior knowledge that there are some linear dynamics in the background, which gives us our output, but we do not know this unknown extra unknown excitation of our system, you, for example, the bumps in the road. And what we do is, we can write down the joint distribution, so the joint distribution between the video frames, and the lepton dynamics or the video different frames are the display by a large back to the bat here with like, by white videos. And the lesson dynamics here why. And this is pretty much what we do with variational auto encoders. The interesting point is here that you see here, the first half, we use a Bernoulli distribution, for modeling these pixels, the black white pixels, and on the right side, you see again, now there's a Gaussian distribution over time. And again, this key function here is our covariance, which is the physics enhanced kernel function. Okay. And now thinking about this kernel function, it's slightly different, or it's actually a big difference to our physic enhanced kernel before because in the pot Hamiltonian framework, we learned the right hand side of an OD E, and then we put it in the OD solver, here we directly want to generate a solution over time okay. So because like this GP defined or gives us the trajectory over time, and so what we want to learn is the trajectory of the object over time, which means we have some dynamics in the background. As I said, we have an input which is unknown to us, comes into the game dynamics, we get an output, and so the output is times the position of the object. But what we can do if it's a linear dynamics, we can again, write it as a linear operator. Okay, so the linear dynamics, you can express it with a Greens function. And if you use the green function with convolution, on the input, you get the actual trajectory over time. So everything here is again, a linear operator on the input. Okay? And same idea, we can now include this in our kernel function. So you see here, this k u one 2k, u n, I couldn't function. So again, for example, squared exponential functions on our input. And then we have here this linear operator, this g function, the green functions, and the convolution the integral. Okay, so now the samples of my Gaussian process are solutions of my dynamical systems. Okay, so trajectories of my system. And we did it for a simple system. Here, we assume we have a video of a particle, which have some mass spring damper dynamics in the background, and we have some external excitation of this particle. And so this particle is like floating around. So this is a video we actually observe from the particle. Okay, and so we collected a bunch of videos, I think we use the 5050 videos from this particle. And then we put this particle into the variational auto encoder pipeline, with a prior knowledge of the dynamics of the background, but the GP is then able to learn this unknown excitation of the particle. And what you can see here are two examples now to new input. That's a richness. So the dark color means here that to start, so this particular would do like the soaker motion. And the light. Color means that like the endpoint of the particular, the end on the left side of the input, so the original on the right side is now the reconstruction from the decoder network, and in between is now the Latin dynamics. So the crosses are the ground truth. So that's like the actual dynamics, which we know here in our toy example. But usually, it's unknown to us, right, and the red and blue line, and now the predictions for my Gaussian process, okay. And you'll see a very nice predictions here with the uncertainty bounds from the Gaussian process. And what you can see if we compare it to like the vanilla approach, which means you just roll a Gaussian process on the entire system without any prior knowledge. And you see now the difference. So the first row is using a standard Gaussian process to learn everything. So without the prior knowledge, just using a Gaussian process, again, the crosses are the ground true, the lines are now the predictions of the Gaussian process. And we just use training data in the first 30 microseconds, what you can see is that first of all, like just using the vanilla GP, after some training steps, the actual prediction is not very good. And but you see, the uncertainty is totally increasing, when we are in an area with our training data, which makes sense, right, because like without training data, and without prior knowledge, we don't get a good prediction. But in the second world with our physical inspired model, so we get a better prediction with the same amount of data. And you can see a generalize very well in the area without data. So in the area after 30 microseconds. So we get still a very nice prediction, even though we never collected data in this time area, right. But since we know there's like this prior knowledge about the dynamics, the prediction are much better. Okay, so let me come to an end to to keep the time. So the first part about of the talk was about Gaussian process part Hamiltonian system. The idea is that I get to distribute distribution about physically correct systems. And I can use the systems to, for example, interconnect to other part Hamiltonian systems, and I keep these nice properties. And each model is physically correct, independent of how much data I have. So even with less data, it's correct, but maybe very bad. But then I have uncertainty and feedback, and I know it's bad, but with more data, I get more and more certain, and I know that now I think good morning at the end. The second part was about the physic enhanced Gaussian process variational auto encoders here the idea is like having a high dimensional input like a video, and using prior knowledge about the dynamics of the object to describe position over time of this object. And using this prior knowledge, we can improve the prediction quality and make it more data efficient, the whole process. And what's interesting, but what we haven't done so far is like, if you train this pipeline, you can actually create new videos, why, but you can change the parameters. For example, in the dynamic thinking about the car example. You could change like the stiffness of your spring, or changing the damper. And then you can create new videos, like with different dynamics in the background, I think that's very nice. Because then you can think about like, yeah, seeing what happens if you if you have different dynamics, how it looks like, and so on, and so on. And yeah, yeah, I listed some of the papers, which covered these resides, and my website, and my email. Thank you very much. Well, thank you, Thomas, for the nice talk. Oh, by the way, it is okay to go beyond the one hour. Okay. I still try to speed up a little bit. So that's not going to be too late. Introduction, sir. Yes, yeah, pretty flexible on that. I mean, the people can leave, because if they have other obligations, but I mean, it is recorded. So we are going to upload this video later. So they can watch it later. Again, so I wanted to focus on you get to you get all the material. You want to recover in your presentation. So that is, that's, that's awesome. Okay, so let's have a q&amp;a sessions. Although we have many people left, that's okay. If you have any question, I don't see any question in chat room. So you can have any question, please help me then ask questions. Yeah, I can start. Okay. So your modal motivation. I mean, you start with a robotic control. So I thought it was about the control problem. But as I listened to you, it's not so much about the control. And it's you have the data and you try to improve the model, as you add more data using Bayesian processing? In some sense, it's a you're trying to get a some sort of surrogate model. Am I stating? Yeah, that's totally correct. As I said at the beginning, it's, it's like a two step process. What you normally do is like, first coming up with a good model, and then doing the control. And actually, yeah, I mean, I'm also working on the control part, just like this talk was focused just on the modeling part. You're totally right. I mean, the thing, what I tried to make clear is that as soon as we have a model, with uncertainty quantification, then we can use our way now and control pipeline. Like for example, if you heard about MPC control, or any other kinds of control, if we have some knowledge about the quality of the model, then we can typically get some robustness statements. And I mean, that's also like my other big research area, like then what kind of statements we can get here. But yeah, everything starts like with with the model, right, so yeah, maybe at some point, I can have another talk about their second use and these models and control and control. Okay, I see. That'd be on a different clock. Yeah, so I can see that you're really fond of vacation process. But but as you know, there are so many other choices. I'm wondering if you have compared to give some some sort of comparison study? Yeah, close up, we do have the menu options. Yes. Yeah, I mean, I, of course, look into other modes. But the thing is it? I think it kind of depends on your problem, as I said, I mean, we are mostly thinking about like, low dimensional problems with mostly sparse data. Because also like, from my previous lab, we had like many applications of robotics, especially in cooperation with the human like human robot interaction exoskeletons and artists cases, where you have typically very sparse data set because the human don't want to spend like hours coming up with training data, like with these past data set, I mean, Yeah, I don't know, for example, I tried Bayesian neural network or something like that, but totally not give the same performance with like sparse data set, you need much, much more data. And yeah, like in these settings, like, for us, it turns out that, yeah, the Gaussian process is actually the perfect approach for us. Because I can like, based on the idea that you have to prior knowledge, right, even if it's not physical prior knowledge that you have, like smoothness knowledge, or so on, that you can come up with very good results with sparse data. And I don't know about like, too much other approaches where you have this nice combination of sparse data of closed form expressions. And what's the last thing? I miss something? And yeah, uncertainty quantification. Okay, sounds good. Well, any questions from audience? We have a 13 of us. Maybe, maybe wait for Christmas, maybe a comment? Maybe something to add here? I mean, I don't want to say that the the Gaussian process is now the holy grail for everything right. I totally want to just say that, it totally depends on your application. Right? Of course, if you have a lot of data, you can think about other things. But yeah, as I said, like, depending on our applications, or thinking about that, it should be like, like, yeah, having a closed form solution, that also very nice thing about using these models in the control loop, that you want to have some real time guarantees, and so on. So that's, yeah, many things you have to think about, if you want to use it in controlled settings. That sounds good. I have another question about the training, how long usually does it take to train this promotion process? Model? I mean, that's the long I mean, the training is then like, about getting the hyper parameters, right? It's, it's been like optimizing the log likelihood function. Yeah, it totally depends on how much data you have. As I said, like, in the like vanilla form of a Gaussian process, it actually skates cubically with a number of data. So this means like, normally, you can nicely work with like 1000 to 3000 data points, and then it takes like, minutes, maybe to train it or even less. But as soon as you have more data than Yeah, it kind of explodes. So then you think, after think about either, there are like many people who think about how to speed up this Gaussian process. And there are already some solutions, how to make that possible, or really just using a totally different model than I think if you have a lot of data, then of course, neural networks, a better choice, I think, well, training of the neural net is not computationally efficient. Is it your code is available? Is it open source? That's not really yet. The state, I will make an open open source project we are working on that. We know that like in machine learning, you always have these very nice toolboxes and everything accessible. And I think that's something we have to work on in the control community, but we are definitely working on that. Yeah. Yeah. I hope we will get a nice package out soon. All right. Sounds good. But if some research group is interested in your model, is it shareable? Yeah, definitely. If you're interested, please reach out, I can actually send you like to code up his toy examples and so on. So you can definitely see how it works and work with it. So yeah, please feel free to reach out to me if you have any questions about it, or the code or something. All right. Sounds good. All right. Is there any question from audience? Well, if that let's thank our speaker Thomas for the wonderful talk and nice q&amp;a. Some sense. Well, thank you, Thomas. It's a real pleasure to having IBM. Yeah. Yeah. We are good. We're going to invite you again for a second talk. The cultural Alright, sounds good. Okay, let me stop the recording.
+
+
+00:00:05.487 --> 00:00:10.190
+ 
+
+
+00:00:10.267 --> 00:00:14.892
+ 
+
+
+00:00:14.969 --> 00:00:19.749
+ 
+
+
+00:00:19.826 --> 00:00:24.529
+ 
+
+
+00:00:24.606 --> 00:00:29.154
+ 
+
+
+00:00:29.231 --> 00:00:33.626
+ 
+
+
+00:00:33.703 --> 00:00:37.866
+ 
+
+
+00:00:37.943 --> 00:00:42.260
+ 
+
+
+00:00:42.337 --> 00:00:46.808
+ 
+
+
+00:00:46.885 --> 00:00:51.357
+ 
+
+
+00:00:51.434 --> 00:00:55.828
+ 
+
+
+00:00:55.905 --> 00:01:00.377
+ 
+
+
+00:01:00.454 --> 00:01:05.002
+ 
+
+
+00:01:05.079 --> 00:01:09.705
+ 
+
+
+00:01:09.782 --> 00:01:14.484
+ 
+
+
+00:01:14.562 --> 00:01:19.341
+ 
+
+
+00:01:19.418 --> 00:01:24.198
+ 
+
+
+00:01:24.275 --> 00:01:28.438
+ 
+
+
+00:01:28.515 --> 00:01:33.526
+ 
+
+
+00:01:33.603 --> 00:01:37.920
+ 
+
+
+00:01:37.998 --> 00:01:42.315
+ 
+
+
+00:01:42.392 --> 00:01:46.863
+ 
+
+
+00:01:46.940 --> 00:01:51.720
+ 
+
+
+00:01:51.797 --> 00:01:56.191
+ 
+
+
+00:01:56.268 --> 00:02:01.048
+ 
+
+
+00:02:01.125 --> 00:02:05.905
+ 
+
+
+00:02:05.982 --> 00:02:10.145
+ 
+
+
+00:02:10.222 --> 00:02:14.308
+ 
+
+
+00:02:14.385 --> 00:02:18.856
+ 
+
+
+00:02:18.933 --> 00:02:23.713
+ 
+
+
+00:02:23.790 --> 00:02:24.870
+
+
+00:02:26.460 --> 00:02:28.710
+ 
+
+
+00:02:28.710 --> 00:02:33.150
+ 
+
+
+00:02:33.270 --> 00:02:36.720
+ 
+
+
+00:02:36.720 --> 00:02:40.590
+ 
+
+
+00:02:40.590 --> 00:02:45.180
+ 
+
+
+00:02:46.110 --> 00:02:50.850
+ 
+
+
+00:02:50.850 --> 00:02:54.720
+ 
+
+
+00:02:54.720 --> 00:02:59.730
+ 
+
+
+00:02:59.730 --> 00:03:00.810
+
+
+00:03:01.050 --> 00:03:05.880
+ 
+
+
+00:03:05.880 --> 00:03:06.450
+
+
+00:03:07.380 --> 00:03:11.220
+ 
+
+
+00:03:11.220 --> 00:03:15.270
+ 
+
+
+00:03:15.270 --> 00:03:18.570
+ 
+
+
+00:03:18.570 --> 00:03:22.560
+ 
+
+
+00:03:23.130 --> 00:03:29.730
+ 
+
+
+00:03:29.730 --> 00:03:35.010
+ 
+
+
+00:03:35.010 --> 00:03:38.310
+ 
+
+
+00:03:38.310 --> 00:03:43.830
+ 
+
+
+00:03:43.830 --> 00:03:49.950
+ 
+
+
+00:03:49.980 --> 00:03:54.420
+ 
+
+
+00:03:54.420 --> 00:04:00.270
+ 
+
+
+00:04:00.270 --> 00:04:03.690
+ 
+
+
+00:04:03.690 --> 00:04:07.110
+ 
+
+
+00:04:07.110 --> 00:04:11.610
+ 
+
+
+00:04:11.610 --> 00:04:15.510
+ 
+
+
+00:04:15.510 --> 00:04:18.630
+ 
+
+
+00:04:18.630 --> 00:04:23.280
+ 
+
+
+00:04:24.030 --> 00:04:27.540
+ 
+
+
+00:04:27.540 --> 00:04:31.320
+ 
+
+
+00:04:31.740 --> 00:04:35.250
+ 
+
+
+00:04:35.250 --> 00:04:38.730
+ 
+
+
+00:04:38.760 --> 00:04:42.240
+ 
+
+
+00:04:42.270 --> 00:04:47.100
+ 
+
+
+00:04:47.100 --> 00:04:52.170
+ 
+
+
+00:04:52.170 --> 00:04:58.140
+ 
+
+
+00:04:58.170 --> 00:05:01.770
+ 
+
+
+00:05:01.770 --> 00:05:06.540
+ 
+
+
+00:05:06.540 --> 00:05:09.990
+ 
+
+
+00:05:09.990 --> 00:05:14.070
+ 
+
+
+00:05:14.070 --> 00:05:18.060
+ 
+
+
+00:05:18.060 --> 00:05:22.650
+ 
+
+
+00:05:22.650 --> 00:05:25.140
+ 
+
+
+00:05:25.140 --> 00:05:28.530
+ 
+
+
+00:05:28.530 --> 00:05:33.600
+ 
+
+
+00:05:33.600 --> 00:05:37.350
+ 
+
+
+00:05:37.650 --> 00:05:41.790
+ 
+
+
+00:05:41.790 --> 00:05:45.900
+ 
+
+
+00:05:45.900 --> 00:05:50.880
+ 
+
+
+00:05:50.880 --> 00:05:54.540
+ 
+
+
+00:05:54.570 --> 00:05:58.050
+ 
+
+
+00:05:58.050 --> 00:06:01.290
+ 
+
+
+00:06:01.290 --> 00:06:04.380
+ 
+
+
+00:06:04.380 --> 00:06:08.910
+ 
+
+
+00:06:08.910 --> 00:06:14.550
+ 
+
+
+00:06:14.610 --> 00:06:20.850
+ 
+
+
+00:06:20.850 --> 00:06:24.750
+ 
+
+
+00:06:24.750 --> 00:06:31.620
+ 
+
+
+00:06:31.620 --> 00:06:35.730
+ 
+
+
+00:06:35.730 --> 00:06:38.430
+ 
+
+
+00:06:38.430 --> 00:06:42.720
+ 
+
+
+00:06:42.720 --> 00:06:46.200
+ 
+
+
+00:06:46.530 --> 00:06:50.400
+ 
+
+
+00:06:50.580 --> 00:06:54.390
+ 
+
+
+00:06:54.720 --> 00:06:57.990
+ 
+
+
+00:06:57.990 --> 00:07:00.900
+ 
+
+
+00:07:00.900 --> 00:07:05.580
+ 
+
+
+00:07:05.580 --> 00:07:09.180
+ 
+
+
+00:07:09.180 --> 00:07:12.930
+ 
+
+
+00:07:12.930 --> 00:07:17.790
+ 
+
+
+00:07:17.790 --> 00:07:22.230
+ 
+
+
+00:07:22.260 --> 00:07:26.850
+ 
+
+
+00:07:26.850 --> 00:07:30.870
+ 
+
+
+00:07:30.870 --> 00:07:34.560
+ 
+
+
+00:07:34.560 --> 00:07:38.280
+ 
+
+
+00:07:38.280 --> 00:07:43.770
+ 
+
+
+00:07:43.770 --> 00:07:47.130
+ 
+
+
+00:07:47.130 --> 00:07:51.930
+ 
+
+
+00:07:51.930 --> 00:07:56.970
+ 
+
+
+00:07:56.970 --> 00:07:59.820
+ 
+
+
+00:07:59.820 --> 00:08:02.970
+ 
+
+
+00:08:02.970 --> 00:08:06.450
+ 
+
+
+00:08:06.450 --> 00:08:11.160
+ 
+
+
+00:08:11.190 --> 00:08:15.450
+ 
+
+
+00:08:15.450 --> 00:08:18.210
+ 
+
+
+00:08:19.260 --> 00:08:24.240
+ 
+
+
+00:08:24.270 --> 00:08:28.740
+ 
+
+
+00:08:29.070 --> 00:08:32.250
+ 
+
+
+00:08:32.250 --> 00:08:36.510
+ 
+
+
+00:08:36.510 --> 00:08:39.690
+ 
+
+
+00:08:39.690 --> 00:08:44.460
+ 
+
+
+00:08:44.460 --> 00:08:49.260
+ 
+
+
+00:08:49.260 --> 00:08:53.220
+ 
+
+
+00:08:53.580 --> 00:08:56.790
+ 
+
+
+00:08:56.850 --> 00:09:00.180
+ 
+
+
+00:09:00.180 --> 00:09:03.090
+ 
+
+
+00:09:03.090 --> 00:09:05.370
+ 
+
+
+00:09:05.370 --> 00:09:08.100
+ 
+
+
+00:09:09.210 --> 00:09:12.540
+ 
+
+
+00:09:13.140 --> 00:09:16.170
+ 
+
+
+00:09:16.170 --> 00:09:20.910
+ 
+
+
+00:09:20.910 --> 00:09:24.660
+ 
+
+
+00:09:24.660 --> 00:09:27.300
+ 
+
+
+00:09:27.300 --> 00:09:30.870
+ 
+
+
+00:09:30.870 --> 00:09:35.970
+ 
+
+
+00:09:35.970 --> 00:09:39.510
+ 
+
+
+00:09:39.510 --> 00:09:43.350
+ 
+
+
+00:09:43.350 --> 00:09:48.090
+ 
+
+
+00:09:48.090 --> 00:09:53.760
+ 
+
+
+00:09:53.760 --> 00:09:57.840
+ 
+
+
+00:09:57.840 --> 00:10:01.950
+ 
+
+
+00:10:02.160 --> 00:10:06.270
+ 
+
+
+00:10:06.270 --> 00:10:10.260
+ 
+
+
+00:10:10.260 --> 00:10:15.150
+ 
+
+
+00:10:15.150 --> 00:10:19.200
+ 
+
+
+00:10:19.200 --> 00:10:22.920
+ 
+
+
+00:10:22.920 --> 00:10:26.460
+ 
+
+
+00:10:26.460 --> 00:10:30.090
+ 
+
+
+00:10:30.090 --> 00:10:36.840
+ 
+
+
+00:10:36.930 --> 00:10:43.200
+ 
+
+
+00:10:43.200 --> 00:10:46.680
+ 
+
+
+00:10:47.880 --> 00:10:52.410
+ 
+
+
+00:10:52.410 --> 00:10:56.070
+ 
+
+
+00:10:56.580 --> 00:11:00.420
+ 
+
+
+00:11:00.420 --> 00:11:03.990
+ 
+
+
+00:11:03.990 --> 00:11:08.100
+ 
+
+
+00:11:08.100 --> 00:11:14.730
+ 
+
+
+00:11:14.790 --> 00:11:18.660
+ 
+
+
+00:11:18.690 --> 00:11:21.000
+ 
+
+
+00:11:21.270 --> 00:11:25.410
+ 
+
+
+00:11:25.410 --> 00:11:31.200
+ 
+
+
+00:11:31.200 --> 00:11:33.840
+ 
+
+
+00:11:34.050 --> 00:11:39.090
+ 
+
+
+00:11:39.090 --> 00:11:43.860
+ 
+
+
+00:11:43.860 --> 00:11:49.380
+ 
+
+
+00:11:49.380 --> 00:11:51.570
+
+
+00:11:53.010 --> 00:11:58.200
+ 
+
+
+00:11:58.830 --> 00:12:02.460
+ 
+
+
+00:12:02.490 --> 00:12:06.180
+ 
+
+
+00:12:06.180 --> 00:12:09.420
+ 
+
+
+00:12:09.420 --> 00:12:13.800
+ 
+
+
+00:12:14.220 --> 00:12:18.690
+ 
+
+
+00:12:18.690 --> 00:12:23.550
+ 
+
+
+00:12:23.580 --> 00:12:28.680
+ 
+
+
+00:12:28.680 --> 00:12:32.010
+ 
+
+
+00:12:32.010 --> 00:12:35.100
+ 
+
+
+00:12:35.100 --> 00:12:40.890
+ 
+
+
+00:12:40.890 --> 00:12:44.610
+ 
+
+
+00:12:44.610 --> 00:12:48.030
+ 
+
+
+00:12:48.030 --> 00:12:52.290
+ 
+
+
+00:12:52.290 --> 00:12:57.180
+ 
+
+
+00:12:57.180 --> 00:13:02.190
+ 
+
+
+00:13:02.220 --> 00:13:08.580
+ 
+
+
+00:13:08.610 --> 00:13:12.720
+ 
+
+
+00:13:12.960 --> 00:13:18.480
+ 
+
+
+00:13:18.630 --> 00:13:23.070
+ 
+
+
+00:13:23.070 --> 00:13:27.090
+ 
+
+
+00:13:27.120 --> 00:13:29.880
+ 
+
+
+00:13:30.180 --> 00:13:34.740
+ 
+
+
+00:13:34.740 --> 00:13:38.670
+ 
+
+
+00:13:38.700 --> 00:13:41.520
+ 
+
+
+00:13:41.520 --> 00:13:45.780
+ 
+
+
+00:13:45.780 --> 00:13:51.000
+ 
+
+
+00:13:51.000 --> 00:13:53.700
+ 
+
+
+00:13:53.700 --> 00:13:57.450
+ 
+
+
+00:13:57.450 --> 00:14:00.960
+ 
+
+
+00:14:00.960 --> 00:14:04.080
+ 
+
+
+00:14:04.710 --> 00:14:08.190
+ 
+
+
+00:14:08.190 --> 00:14:12.960
+ 
+
+
+00:14:12.960 --> 00:14:17.040
+ 
+
+
+00:14:17.040 --> 00:14:21.330
+ 
+
+
+00:14:21.870 --> 00:14:25.110
+ 
+
+
+00:14:25.110 --> 00:14:28.290
+ 
+
+
+00:14:28.890 --> 00:14:33.000
+ 
+
+
+00:14:33.000 --> 00:14:36.660
+ 
+
+
+00:14:36.690 --> 00:14:39.630
+ 
+
+
+00:14:39.660 --> 00:14:43.560
+ 
+
+
+00:14:43.620 --> 00:14:47.760
+ 
+
+
+00:14:47.760 --> 00:14:51.300
+ 
+
+
+00:14:51.300 --> 00:14:54.690
+ 
+
+
+00:14:54.720 --> 00:15:01.080
+ 
+
+
+00:15:01.080 --> 00:15:04.110
+ 
+
+
+00:15:04.530 --> 00:15:09.420
+ 
+
+
+00:15:09.420 --> 00:15:13.620
+ 
+
+
+00:15:13.620 --> 00:15:16.680
+ 
+
+
+00:15:16.680 --> 00:15:20.370
+ 
+
+
+00:15:20.370 --> 00:15:23.520
+ 
+
+
+00:15:23.520 --> 00:15:26.340
+ 
+
+
+00:15:26.340 --> 00:15:31.470
+ 
+
+
+00:15:31.470 --> 00:15:34.860
+ 
+
+
+00:15:34.860 --> 00:15:39.660
+ 
+
+
+00:15:39.660 --> 00:15:44.460
+ 
+
+
+00:15:44.460 --> 00:15:47.910
+ 
+
+
+00:15:47.910 --> 00:15:55.230
+ 
+
+
+00:15:56.850 --> 00:16:01.290
+ 
+
+
+00:16:01.290 --> 00:16:05.190
+ 
+
+
+00:16:05.250 --> 00:16:10.560
+ 
+
+
+00:16:10.860 --> 00:16:15.750
+ 
+
+
+00:16:15.750 --> 00:16:20.460
+ 
+
+
+00:16:20.460 --> 00:16:23.130
+ 
+
+
+00:16:23.130 --> 00:16:29.490
+ 
+
+
+00:16:29.550 --> 00:16:36.660
+ 
+
+
+00:16:36.660 --> 00:16:41.310
+ 
+
+
+00:16:41.310 --> 00:16:46.110
+ 
+
+
+00:16:46.110 --> 00:16:49.380
+ 
+
+
+00:16:49.380 --> 00:16:53.640
+ 
+
+
+00:16:53.880 --> 00:16:57.180
+ 
+
+
+00:16:57.180 --> 00:17:01.200
+ 
+
+
+00:17:01.200 --> 00:17:05.670
+ 
+
+
+00:17:05.670 --> 00:17:10.200
+ 
+
+
+00:17:10.200 --> 00:17:13.470
+ 
+
+
+00:17:13.470 --> 00:17:17.430
+ 
+
+
+00:17:17.430 --> 00:17:20.070
+ 
+
+
+00:17:20.070 --> 00:17:24.000
+ 
+
+
+00:17:24.000 --> 00:17:29.430
+ 
+
+
+00:17:29.430 --> 00:17:33.570
+ 
+
+
+00:17:33.570 --> 00:17:37.260
+ 
+
+
+00:17:37.260 --> 00:17:42.270
+ 
+
+
+00:17:42.270 --> 00:17:48.150
+ 
+
+
+00:17:48.150 --> 00:17:52.080
+ 
+
+
+00:17:52.080 --> 00:17:57.540
+ 
+
+
+00:17:57.540 --> 00:18:00.960
+ 
+
+
+00:18:00.960 --> 00:18:03.750
+ 
+
+
+00:18:04.050 --> 00:18:07.770
+ 
+
+
+00:18:07.800 --> 00:18:12.030
+ 
+
+
+00:18:12.030 --> 00:18:15.180
+ 
+
+
+00:18:15.180 --> 00:18:18.540
+ 
+
+
+00:18:18.540 --> 00:18:22.170
+ 
+
+
+00:18:22.170 --> 00:18:25.080
+ 
+
+
+00:18:25.080 --> 00:18:27.870
+ 
+
+
+00:18:27.870 --> 00:18:32.040
+ 
+
+
+00:18:32.040 --> 00:18:37.620
+ 
+
+
+00:18:38.010 --> 00:18:40.980
+ 
+
+
+00:18:40.980 --> 00:18:45.720
+ 
+
+
+00:18:45.840 --> 00:18:48.900
+ 
+
+
+00:18:48.900 --> 00:18:53.040
+ 
+
+
+00:18:55.170 --> 00:19:00.420
+ 
+
+
+00:19:00.420 --> 00:19:03.150
+ 
+
+
+00:19:03.150 --> 00:19:07.560
+ 
+
+
+00:19:07.560 --> 00:19:11.160
+ 
+
+
+00:19:11.220 --> 00:19:15.690
+ 
+
+
+00:19:15.690 --> 00:19:18.540
+ 
+
+
+00:19:18.540 --> 00:19:20.970
+ 
+
+
+00:19:20.970 --> 00:19:23.730
+ 
+
+
+00:19:23.730 --> 00:19:28.740
+ 
+
+
+00:19:28.740 --> 00:19:32.070
+ 
+
+
+00:19:32.070 --> 00:19:34.770
+ 
+
+
+00:19:34.770 --> 00:19:39.420
+ 
+
+
+00:19:39.420 --> 00:19:42.870
+ 
+
+
+00:19:42.870 --> 00:19:46.110
+ 
+
+
+00:19:46.110 --> 00:19:51.690
+ 
+
+
+00:19:51.990 --> 00:19:56.400
+ 
+
+
+00:19:56.430 --> 00:20:01.140
+ 
+
+
+00:20:01.140 --> 00:20:04.830
+ 
+
+
+00:20:04.830 --> 00:20:07.680
+ 
+
+
+00:20:07.680 --> 00:20:11.100
+ 
+
+
+00:20:11.100 --> 00:20:16.680
+ 
+
+
+00:20:16.770 --> 00:20:22.020
+ 
+
+
+00:20:22.020 --> 00:20:25.560
+ 
+
+
+00:20:25.560 --> 00:20:29.220
+ 
+
+
+00:20:29.220 --> 00:20:32.790
+ 
+
+
+00:20:32.820 --> 00:20:36.480
+ 
+
+
+00:20:36.480 --> 00:20:38.970
+ 
+
+
+00:20:41.280 --> 00:20:45.210
+ 
+
+
+00:20:45.210 --> 00:20:48.960
+ 
+
+
+00:20:48.960 --> 00:20:53.670
+ 
+
+
+00:20:53.700 --> 00:20:56.550
+ 
+
+
+00:20:56.550 --> 00:20:59.370
+ 
+
+
+00:20:59.370 --> 00:21:03.000
+ 
+
+
+00:21:03.030 --> 00:21:07.440
+ 
+
+
+00:21:07.650 --> 00:21:11.880
+ 
+
+
+00:21:11.880 --> 00:21:15.720
+ 
+
+
+00:21:15.720 --> 00:21:21.000
+ 
+
+
+00:21:21.000 --> 00:21:25.230
+ 
+
+
+00:21:25.230 --> 00:21:28.770
+ 
+
+
+00:21:28.770 --> 00:21:36.510
+ 
+
+
+00:21:36.510 --> 00:21:41.730
+ 
+
+
+00:21:41.760 --> 00:21:45.750
+ 
+
+
+00:21:45.750 --> 00:21:48.420
+ 
+
+
+00:21:48.420 --> 00:21:49.590
+
+
+00:21:50.850 --> 00:21:54.990
+ 
+
+
+00:21:54.990 --> 00:22:00.480
+ 
+
+
+00:22:00.480 --> 00:22:06.540
+ 
+
+
+00:22:06.540 --> 00:22:12.930
+ 
+
+
+00:22:12.930 --> 00:22:16.620
+ 
+
+
+00:22:16.620 --> 00:22:22.890
+ 
+
+
+00:22:22.890 --> 00:22:26.220
+ 
+
+
+00:22:26.220 --> 00:22:29.670
+ 
+
+
+00:22:29.670 --> 00:22:34.620
+ 
+
+
+00:22:34.620 --> 00:22:38.550
+ 
+
+
+00:22:39.480 --> 00:22:43.530
+ 
+
+
+00:22:43.530 --> 00:22:47.670
+ 
+
+
+00:22:47.670 --> 00:22:51.420
+ 
+
+
+00:22:51.450 --> 00:22:55.500
+ 
+
+
+00:22:55.500 --> 00:23:00.300
+ 
+
+
+00:23:00.300 --> 00:23:04.470
+ 
+
+
+00:23:04.470 --> 00:23:08.610
+ 
+
+
+00:23:08.610 --> 00:23:15.120
+ 
+
+
+00:23:15.120 --> 00:23:18.780
+ 
+
+
+00:23:18.780 --> 00:23:21.810
+ 
+
+
+00:23:21.810 --> 00:23:24.990
+ 
+
+
+00:23:24.990 --> 00:23:28.770
+ 
+
+
+00:23:28.770 --> 00:23:32.040
+ 
+
+
+00:23:32.040 --> 00:23:34.770
+ 
+
+
+00:23:34.770 --> 00:23:39.000
+ 
+
+
+00:23:39.000 --> 00:23:44.040
+ 
+
+
+00:23:44.040 --> 00:23:47.160
+ 
+
+
+00:23:47.160 --> 00:23:50.280
+ 
+
+
+00:23:50.280 --> 00:23:54.510
+ 
+
+
+00:23:54.660 --> 00:23:57.660
+ 
+
+
+00:23:57.870 --> 00:24:01.110
+ 
+
+
+00:24:01.110 --> 00:24:04.920
+ 
+
+
+00:24:04.920 --> 00:24:07.980
+ 
+
+
+00:24:07.980 --> 00:24:12.690
+ 
+
+
+00:24:12.690 --> 00:24:15.570
+ 
+
+
+00:24:15.600 --> 00:24:22.350
+ 
+
+
+00:24:22.350 --> 00:24:26.160
+ 
+
+
+00:24:26.160 --> 00:24:31.590
+ 
+
+
+00:24:31.620 --> 00:24:35.910
+ 
+
+
+00:24:35.910 --> 00:24:39.090
+ 
+
+
+00:24:39.090 --> 00:24:43.050
+ 
+
+
+00:24:43.050 --> 00:24:46.320
+ 
+
+
+00:24:46.320 --> 00:24:49.530
+ 
+
+
+00:24:49.530 --> 00:24:55.500
+ 
+
+
+00:24:55.500 --> 00:25:02.160
+ 
+
+
+00:25:02.160 --> 00:25:05.850
+ 
+
+
+00:25:06.510 --> 00:25:09.450
+ 
+
+
+00:25:09.450 --> 00:25:13.980
+ 
+
+
+00:25:13.980 --> 00:25:17.190
+ 
+
+
+00:25:17.520 --> 00:25:21.960
+ 
+
+
+00:25:22.470 --> 00:25:27.870
+ 
+
+
+00:25:27.870 --> 00:25:32.730
+ 
+
+
+00:25:32.730 --> 00:25:36.360
+ 
+
+
+00:25:36.360 --> 00:25:40.740
+ 
+
+
+00:25:40.740 --> 00:25:44.640
+ 
+
+
+00:25:44.880 --> 00:25:48.840
+ 
+
+
+00:25:48.840 --> 00:25:51.630
+ 
+
+
+00:25:51.630 --> 00:25:54.540
+ 
+
+
+00:25:54.570 --> 00:25:57.990
+ 
+
+
+00:25:57.990 --> 00:26:03.090
+ 
+
+
+00:26:03.120 --> 00:26:05.640
+ 
+
+
+00:26:05.940 --> 00:26:11.520
+ 
+
+
+00:26:12.210 --> 00:26:15.030
+ 
+
+
+00:26:15.030 --> 00:26:17.760
+ 
+
+
+00:26:17.760 --> 00:26:21.510
+ 
+
+
+00:26:21.540 --> 00:26:24.930
+ 
+
+
+00:26:24.930 --> 00:26:30.570
+ 
+
+
+00:26:30.570 --> 00:26:33.690
+ 
+
+
+00:26:33.690 --> 00:26:39.270
+ 
+
+
+00:26:39.270 --> 00:26:44.520
+ 
+
+
+00:26:44.520 --> 00:26:47.940
+ 
+
+
+00:26:47.940 --> 00:26:52.140
+ 
+
+
+00:26:52.140 --> 00:26:57.390
+ 
+
+
+00:26:57.390 --> 00:27:02.790
+ 
+
+
+00:27:02.820 --> 00:27:06.630
+ 
+
+
+00:27:06.630 --> 00:27:09.780
+ 
+
+
+00:27:09.780 --> 00:27:14.700
+ 
+
+
+00:27:14.730 --> 00:27:19.410
+ 
+
+
+00:27:19.800 --> 00:27:23.700
+ 
+
+
+00:27:23.700 --> 00:27:27.240
+ 
+
+
+00:27:28.410 --> 00:27:32.460
+ 
+
+
+00:27:32.490 --> 00:27:37.140
+ 
+
+
+00:27:37.140 --> 00:27:40.470
+ 
+
+
+00:27:40.470 --> 00:27:43.500
+ 
+
+
+00:27:43.500 --> 00:27:47.460
+ 
+
+
+00:27:47.460 --> 00:27:52.860
+ 
+
+
+00:27:52.860 --> 00:27:56.340
+ 
+
+
+00:27:56.340 --> 00:27:59.490
+ 
+
+
+00:27:59.490 --> 00:28:03.090
+ 
+
+
+00:28:03.090 --> 00:28:06.870
+ 
+
+
+00:28:06.870 --> 00:28:09.480
+ 
+
+
+00:28:09.480 --> 00:28:15.120
+ 
+
+
+00:28:15.120 --> 00:28:20.370
+ 
+
+
+00:28:20.370 --> 00:28:24.090
+ 
+
+
+00:28:24.090 --> 00:28:29.340
+ 
+
+
+00:28:29.340 --> 00:28:33.120
+ 
+
+
+00:28:33.120 --> 00:28:36.900
+ 
+
+
+00:28:36.900 --> 00:28:40.260
+ 
+
+
+00:28:40.560 --> 00:28:44.790
+ 
+
+
+00:28:45.000 --> 00:28:47.280
+ 
+
+
+00:28:47.280 --> 00:28:51.150
+ 
+
+
+00:28:51.150 --> 00:28:54.030
+ 
+
+
+00:28:54.030 --> 00:28:57.150
+ 
+
+
+00:28:57.150 --> 00:29:00.690
+ 
+
+
+00:29:01.080 --> 00:29:03.600
+ 
+
+
+00:29:03.600 --> 00:29:09.900
+ 
+
+
+00:29:09.900 --> 00:29:14.010
+ 
+
+
+00:29:14.010 --> 00:29:17.430
+ 
+
+
+00:29:17.430 --> 00:29:20.760
+ 
+
+
+00:29:21.300 --> 00:29:24.870
+ 
+
+
+00:29:24.870 --> 00:29:29.400
+ 
+
+
+00:29:29.400 --> 00:29:33.210
+ 
+
+
+00:29:33.210 --> 00:29:36.870
+ 
+
+
+00:29:36.870 --> 00:29:39.870
+ 
+
+
+00:29:39.960 --> 00:29:43.890
+ 
+
+
+00:29:43.890 --> 00:29:47.340
+ 
+
+
+00:29:47.340 --> 00:29:50.940
+ 
+
+
+00:29:50.940 --> 00:29:54.480
+ 
+
+
+00:29:54.480 --> 00:29:59.850
+ 
+
+
+00:29:59.850 --> 00:30:03.660
+ 
+
+
+00:30:03.660 --> 00:30:07.740
+ 
+
+
+00:30:07.740 --> 00:30:11.460
+ 
+
+
+00:30:12.660 --> 00:30:16.650
+ 
+
+
+00:30:16.650 --> 00:30:20.250
+ 
+
+
+00:30:20.250 --> 00:30:23.280
+ 
+
+
+00:30:23.280 --> 00:30:26.520
+ 
+
+
+00:30:26.520 --> 00:30:30.840
+ 
+
+
+00:30:30.930 --> 00:30:34.050
+ 
+
+
+00:30:34.050 --> 00:30:37.950
+ 
+
+
+00:30:38.040 --> 00:30:42.660
+ 
+
+
+00:30:42.660 --> 00:30:45.300
+ 
+
+
+00:30:46.859 --> 00:30:49.679
+ 
+
+
+00:30:49.679 --> 00:30:54.239
+ 
+
+
+00:30:54.389 --> 00:30:58.799
+ 
+
+
+00:30:59.189 --> 00:31:02.459
+ 
+
+
+00:31:02.459 --> 00:31:07.409
+ 
+
+
+00:31:07.409 --> 00:31:11.279
+ 
+
+
+00:31:11.279 --> 00:31:15.869
+ 
+
+
+00:31:16.319 --> 00:31:19.379
+ 
+
+
+00:31:19.379 --> 00:31:25.409
+ 
+
+
+00:31:25.409 --> 00:31:28.229
+ 
+
+
+00:31:28.229 --> 00:31:31.829
+ 
+
+
+00:31:32.339 --> 00:31:35.519
+ 
+
+
+00:31:35.519 --> 00:31:39.119
+ 
+
+
+00:31:39.149 --> 00:31:43.289
+ 
+
+
+00:31:43.739 --> 00:31:47.099
+ 
+
+
+00:31:47.099 --> 00:31:51.269
+ 
+
+
+00:31:51.299 --> 00:31:55.229
+ 
+
+
+00:31:55.229 --> 00:32:00.809
+ 
+
+
+00:32:00.809 --> 00:32:05.609
+ 
+
+
+00:32:05.609 --> 00:32:09.089
+ 
+
+
+00:32:09.089 --> 00:32:13.919
+ 
+
+
+00:32:13.919 --> 00:32:18.809
+ 
+
+
+00:32:18.809 --> 00:32:22.619
+ 
+
+
+00:32:22.619 --> 00:32:25.499
+ 
+
+
+00:32:25.499 --> 00:32:29.129
+ 
+
+
+00:32:29.159 --> 00:32:32.189
+ 
+
+
+00:32:32.189 --> 00:32:36.329
+ 
+
+
+00:32:36.329 --> 00:32:39.029
+ 
+
+
+00:32:39.239 --> 00:32:42.659
+ 
+
+
+00:32:42.659 --> 00:32:46.919
+ 
+
+
+00:32:46.919 --> 00:32:50.969
+ 
+
+
+00:32:51.539 --> 00:32:54.779
+ 
+
+
+00:32:54.779 --> 00:32:58.349
+ 
+
+
+00:32:58.349 --> 00:33:02.129
+ 
+
+
+00:33:02.279 --> 00:33:06.479
+ 
+
+
+00:33:06.539 --> 00:33:12.749
+ 
+
+
+00:33:12.749 --> 00:33:17.219
+ 
+
+
+00:33:17.219 --> 00:33:21.659
+ 
+
+
+00:33:21.659 --> 00:33:25.799
+ 
+
+
+00:33:25.799 --> 00:33:28.499
+ 
+
+
+00:33:29.369 --> 00:33:34.049
+ 
+
+
+00:33:34.079 --> 00:33:37.709
+ 
+
+
+00:33:37.709 --> 00:33:42.689
+ 
+
+
+00:33:42.689 --> 00:33:46.079
+ 
+
+
+00:33:46.079 --> 00:33:49.379
+ 
+
+
+00:33:49.409 --> 00:33:53.189
+ 
+
+
+00:33:53.339 --> 00:33:57.299
+ 
+
+
+00:33:57.299 --> 00:34:04.049
+ 
+
+
+00:34:04.079 --> 00:34:08.609
+ 
+
+
+00:34:08.609 --> 00:34:13.589
+ 
+
+
+00:34:13.589 --> 00:34:17.249
+ 
+
+
+00:34:17.249 --> 00:34:20.939
+ 
+
+
+00:34:20.939 --> 00:34:24.029
+ 
+
+
+00:34:24.029 --> 00:34:29.459
+ 
+
+
+00:34:29.789 --> 00:34:35.489
+ 
+
+
+00:34:35.489 --> 00:34:39.359
+ 
+
+
+00:34:39.359 --> 00:34:42.629
+ 
+
+
+00:34:42.629 --> 00:34:46.619
+ 
+
+
+00:34:46.829 --> 00:34:51.479
+ 
+
+
+00:34:52.319 --> 00:34:55.499
+ 
+
+
+00:34:55.499 --> 00:34:59.849
+ 
+
+
+00:34:59.849 --> 00:35:05.009
+ 
+
+
+00:35:05.009 --> 00:35:09.629
+ 
+
+
+00:35:09.629 --> 00:35:14.549
+ 
+
+
+00:35:14.549 --> 00:35:18.599
+ 
+
+
+00:35:18.719 --> 00:35:21.989
+ 
+
+
+00:35:21.989 --> 00:35:26.129
+ 
+
+
+00:35:26.189 --> 00:35:30.569
+ 
+
+
+00:35:30.599 --> 00:35:33.899
+ 
+
+
+00:35:33.899 --> 00:35:37.589
+ 
+
+
+00:35:37.919 --> 00:35:41.939
+ 
+
+
+00:35:41.969 --> 00:35:46.709
+ 
+
+
+00:35:46.709 --> 00:35:51.869
+ 
+
+
+00:35:51.869 --> 00:35:56.369
+ 
+
+
+00:35:56.579 --> 00:35:59.849
+ 
+
+
+00:35:59.849 --> 00:36:03.869
+ 
+
+
+00:36:03.869 --> 00:36:07.589
+ 
+
+
+00:36:07.709 --> 00:36:11.129
+ 
+
+
+00:36:11.639 --> 00:36:15.509
+ 
+
+
+00:36:15.509 --> 00:36:19.409
+ 
+
+
+00:36:19.409 --> 00:36:24.899
+ 
+
+
+00:36:24.899 --> 00:36:28.439
+ 
+
+
+00:36:29.459 --> 00:36:34.739
+ 
+
+
+00:36:34.739 --> 00:36:37.919
+ 
+
+
+00:36:37.919 --> 00:36:42.299
+ 
+
+
+00:36:42.299 --> 00:36:47.249
+ 
+
+
+00:36:47.249 --> 00:36:51.779
+ 
+
+
+00:36:51.779 --> 00:36:56.069
+ 
+
+
+00:36:56.069 --> 00:36:58.499
+ 
+
+
+00:36:58.499 --> 00:37:02.309
+ 
+
+
+00:37:02.639 --> 00:37:10.679
+ 
+
+
+00:37:10.679 --> 00:37:13.679
+ 
+
+
+00:37:13.679 --> 00:37:18.359
+ 
+
+
+00:37:18.359 --> 00:37:23.819
+ 
+
+
+00:37:23.939 --> 00:37:29.519
+ 
+
+
+00:37:29.519 --> 00:37:33.629
+ 
+
+
+00:37:33.839 --> 00:37:37.169
+ 
+
+
+00:37:37.169 --> 00:37:40.439
+ 
+
+
+00:37:40.439 --> 00:37:44.519
+ 
+
+
+00:37:45.269 --> 00:37:48.959
+ 
+
+
+00:37:48.959 --> 00:37:52.499
+ 
+
+
+00:37:52.499 --> 00:37:56.429
+ 
+
+
+00:37:56.429 --> 00:38:00.119
+ 
+
+
+00:38:00.119 --> 00:38:05.969
+ 
+
+
+00:38:05.999 --> 00:38:11.939
+ 
+
+
+00:38:11.939 --> 00:38:17.519
+ 
+
+
+00:38:17.549 --> 00:38:21.179
+ 
+
+
+00:38:21.179 --> 00:38:26.189
+ 
+
+
+00:38:26.759 --> 00:38:31.019
+ 
+
+
+00:38:31.109 --> 00:38:35.009
+
+
+00:38:35.220 --> 00:38:38.400
+ 
+
+
+00:38:38.400 --> 00:38:44.280
+ 
+
+
+00:38:44.280 --> 00:38:47.850
+ 
+
+
+00:38:47.880 --> 00:38:53.730
+ 
+
+
+00:38:54.060 --> 00:38:57.120
+ 
+
+
+00:38:57.120 --> 00:39:00.420
+ 
+
+
+00:39:00.420 --> 00:39:04.350
+ 
+
+
+00:39:04.350 --> 00:39:08.550
+ 
+
+
+00:39:08.580 --> 00:39:12.180
+ 
+
+
+00:39:12.510 --> 00:39:15.180
+ 
+
+
+00:39:15.180 --> 00:39:19.050
+ 
+
+
+00:39:19.050 --> 00:39:22.380
+ 
+
+
+00:39:22.380 --> 00:39:26.610
+ 
+
+
+00:39:26.610 --> 00:39:31.440
+ 
+
+
+00:39:31.500 --> 00:39:36.270
+ 
+
+
+00:39:36.270 --> 00:39:40.080
+ 
+
+
+00:39:40.080 --> 00:39:46.380
+ 
+
+
+00:39:46.380 --> 00:39:49.980
+ 
+
+
+00:39:49.980 --> 00:39:53.310
+ 
+
+
+00:39:53.310 --> 00:39:57.360
+ 
+
+
+00:39:57.390 --> 00:40:01.140
+ 
+
+
+00:40:01.140 --> 00:40:05.310
+ 
+
+
+00:40:05.310 --> 00:40:08.970
+ 
+
+
+00:40:09.060 --> 00:40:12.750
+ 
+
+
+00:40:12.750 --> 00:40:16.500
+ 
+
+
+00:40:16.500 --> 00:40:20.460
+ 
+
+
+00:40:20.460 --> 00:40:24.300
+ 
+
+
+00:40:24.300 --> 00:40:29.880
+ 
+
+
+00:40:29.880 --> 00:40:34.110
+ 
+
+
+00:40:34.110 --> 00:40:38.880
+ 
+
+
+00:40:38.880 --> 00:40:44.070
+ 
+
+
+00:40:44.070 --> 00:40:47.280
+ 
+
+
+00:40:47.550 --> 00:40:51.240
+ 
+
+
+00:40:51.240 --> 00:40:54.270
+ 
+
+
+00:40:54.300 --> 00:40:58.200
+ 
+
+
+00:40:58.200 --> 00:41:03.240
+ 
+
+
+00:41:03.240 --> 00:41:08.910
+ 
+
+
+00:41:08.910 --> 00:41:11.850
+ 
+
+
+00:41:11.850 --> 00:41:17.850
+ 
+
+
+00:41:17.880 --> 00:41:21.540
+ 
+
+
+00:41:21.540 --> 00:41:27.270
+ 
+
+
+00:41:27.300 --> 00:41:31.260
+ 
+
+
+00:41:31.260 --> 00:41:36.660
+ 
+
+
+00:41:36.660 --> 00:41:42.090
+ 
+
+
+00:41:42.090 --> 00:41:45.870
+ 
+
+
+00:41:45.870 --> 00:41:49.050
+ 
+
+
+00:41:49.050 --> 00:41:53.280
+ 
+
+
+00:41:54.210 --> 00:41:59.220
+ 
+
+
+00:41:59.220 --> 00:42:03.570
+ 
+
+
+00:42:03.570 --> 00:42:08.790
+ 
+
+
+00:42:08.910 --> 00:42:16.020
+ 
+
+
+00:42:16.020 --> 00:42:19.500
+ 
+
+
+00:42:19.500 --> 00:42:24.450
+ 
+
+
+00:42:24.870 --> 00:42:28.350
+ 
+
+
+00:42:28.350 --> 00:42:33.240
+ 
+
+
+00:42:33.240 --> 00:42:38.310
+ 
+
+
+00:42:38.310 --> 00:42:42.780
+ 
+
+
+00:42:42.780 --> 00:42:47.370
+ 
+
+
+00:42:47.370 --> 00:42:50.910
+ 
+
+
+00:42:50.910 --> 00:42:54.870
+ 
+
+
+00:42:54.990 --> 00:43:01.830
+ 
+
+
+00:43:01.830 --> 00:43:05.880
+ 
+
+
+00:43:06.270 --> 00:43:09.810
+ 
+
+
+00:43:09.810 --> 00:43:14.790
+ 
+
+
+00:43:14.820 --> 00:43:18.360
+ 
+
+
+00:43:18.360 --> 00:43:22.620
+ 
+
+
+00:43:22.620 --> 00:43:27.900
+ 
+
+
+00:43:27.990 --> 00:43:31.380
+ 
+
+
+00:43:31.380 --> 00:43:35.010
+ 
+
+
+00:43:35.040 --> 00:43:38.160
+ 
+
+
+00:43:38.160 --> 00:43:42.360
+ 
+
+
+00:43:42.360 --> 00:43:46.500
+ 
+
+
+00:43:46.650 --> 00:43:48.990
+ 
+
+
+00:43:48.990 --> 00:43:52.860
+ 
+
+
+00:43:52.860 --> 00:43:56.550
+ 
+
+
+00:43:56.550 --> 00:43:59.490
+ 
+
+
+00:43:59.490 --> 00:44:06.480
+ 
+
+
+00:44:06.540 --> 00:44:13.710
+ 
+
+
+00:44:13.710 --> 00:44:18.330
+ 
+
+
+00:44:18.330 --> 00:44:21.000
+ 
+
+
+00:44:21.000 --> 00:44:24.600
+ 
+
+
+00:44:24.630 --> 00:44:28.260
+ 
+
+
+00:44:28.290 --> 00:44:32.310
+ 
+
+
+00:44:32.310 --> 00:44:35.850
+ 
+
+
+00:44:35.850 --> 00:44:40.680
+ 
+
+
+00:44:41.010 --> 00:44:45.150
+ 
+
+
+00:44:45.150 --> 00:44:48.900
+ 
+
+
+00:44:48.900 --> 00:44:52.800
+ 
+
+
+00:44:52.800 --> 00:44:55.440
+ 
+
+
+00:44:55.440 --> 00:44:59.160
+ 
+
+
+00:44:59.160 --> 00:45:02.640
+ 
+
+
+00:45:02.640 --> 00:45:07.260
+ 
+
+
+00:45:07.260 --> 00:45:11.430
+ 
+
+
+00:45:11.430 --> 00:45:15.870
+ 
+
+
+00:45:15.870 --> 00:45:19.710
+ 
+
+
+00:45:19.710 --> 00:45:23.550
+ 
+
+
+00:45:23.550 --> 00:45:29.880
+ 
+
+
+00:45:29.880 --> 00:45:33.450
+ 
+
+
+00:45:33.480 --> 00:45:37.890
+ 
+
+
+00:45:37.890 --> 00:45:41.550
+ 
+
+
+00:45:41.550 --> 00:45:43.890
+ 
+
+
+00:45:43.890 --> 00:45:47.640
+ 
+
+
+00:45:47.640 --> 00:45:53.340
+ 
+
+
+00:45:53.340 --> 00:45:56.700
+ 
+
+
+00:45:56.700 --> 00:46:01.620
+ 
+
+
+00:46:01.830 --> 00:46:06.690
+ 
+
+
+00:46:06.690 --> 00:46:10.440
+ 
+
+
+00:46:10.440 --> 00:46:14.970
+ 
+
+
+00:46:14.970 --> 00:46:19.680
+ 
+
+
+00:46:19.680 --> 00:46:24.120
+ 
+
+
+00:46:24.120 --> 00:46:27.330
+ 
+
+
+00:46:27.330 --> 00:46:31.590
+ 
+
+
+00:46:31.590 --> 00:46:34.830
+ 
+
+
+00:46:34.830 --> 00:46:40.140
+ 
+
+
+00:46:40.140 --> 00:46:44.610
+ 
+
+
+00:46:44.610 --> 00:46:49.440
+ 
+
+
+00:46:49.560 --> 00:46:53.160
+ 
+
+
+00:46:53.160 --> 00:46:58.140
+ 
+
+
+00:46:58.140 --> 00:47:01.230
+ 
+
+
+00:47:01.230 --> 00:47:03.960
+ 
+
+
+00:47:03.960 --> 00:47:08.010
+ 
+
+
+00:47:08.010 --> 00:47:11.550
+ 
+
+
+00:47:11.550 --> 00:47:16.740
+ 
+
+
+00:47:17.970 --> 00:47:22.230
+ 
+
+
+00:47:22.230 --> 00:47:27.510
+ 
+
+
+00:47:27.510 --> 00:47:31.740
+ 
+
+
+00:47:31.770 --> 00:47:35.670
+ 
+
+
+00:47:35.670 --> 00:47:40.620
+ 
+
+
+00:47:40.620 --> 00:47:44.670
+ 
+
+
+00:47:44.670 --> 00:47:47.490
+ 
+
+
+00:47:47.490 --> 00:47:51.930
+ 
+
+
+00:47:52.260 --> 00:47:56.160
+ 
+
+
+00:47:56.160 --> 00:47:59.610
+ 
+
+
+00:47:59.610 --> 00:48:04.620
+ 
+
+
+00:48:04.620 --> 00:48:05.400
+
+
+00:48:06.960 --> 00:48:13.020
+ 
+
+
+00:48:13.020 --> 00:48:17.700
+ 
+
+
+00:48:17.700 --> 00:48:22.710
+ 
+
+
+00:48:22.740 --> 00:48:27.030
+ 
+
+
+00:48:27.030 --> 00:48:31.230
+ 
+
+
+00:48:31.230 --> 00:48:33.720
+ 
+
+
+00:48:33.720 --> 00:48:36.930
+ 
+
+
+00:48:36.930 --> 00:48:41.280
+ 
+
+
+00:48:41.280 --> 00:48:46.320
+ 
+
+
+00:48:46.320 --> 00:48:50.310
+ 
+
+
+00:48:50.310 --> 00:48:54.240
+ 
+
+
+00:48:54.630 --> 00:49:01.770
+ 
+
+
+00:49:01.770 --> 00:49:06.840
+ 
+
+
+00:49:06.840 --> 00:49:15.570
+ 
+
+
+00:49:15.600 --> 00:49:20.610
+ 
+
+
+00:49:22.080 --> 00:49:26.670
+ 
+
+
+00:49:26.670 --> 00:49:30.600
+ 
+
+
+00:49:30.780 --> 00:49:33.720
+ 
+
+
+00:49:33.720 --> 00:49:36.420
+ 
+
+
+00:49:36.420 --> 00:49:40.890
+ 
+
+
+00:49:40.890 --> 00:49:44.280
+ 
+
+
+00:49:44.280 --> 00:49:48.510
+ 
+
+
+00:49:48.510 --> 00:49:51.630
+ 
+
+
+00:49:51.630 --> 00:49:55.590
+ 
+
+
+00:49:55.590 --> 00:50:00.270
+ 
+
+
+00:50:00.270 --> 00:50:04.740
+ 
+
+
+00:50:04.770 --> 00:50:08.970
+ 
+
+
+00:50:08.970 --> 00:50:11.550
+ 
+
+
+00:50:11.550 --> 00:50:15.120
+ 
+
+
+00:50:15.150 --> 00:50:18.900
+ 
+
+
+00:50:18.900 --> 00:50:25.350
+ 
+
+
+00:50:25.380 --> 00:50:30.390
+ 
+
+
+00:50:30.390 --> 00:50:33.180
+ 
+
+
+00:50:33.180 --> 00:50:37.890
+ 
+
+
+00:50:37.920 --> 00:50:41.700
+ 
+
+
+00:50:41.700 --> 00:50:45.030
+ 
+
+
+00:50:45.030 --> 00:50:48.150
+ 
+
+
+00:50:48.150 --> 00:50:51.600
+ 
+
+
+00:50:51.600 --> 00:50:57.930
+ 
+
+
+00:50:57.930 --> 00:51:01.770
+ 
+
+
+00:51:01.770 --> 00:51:04.080
+ 
+
+
+00:51:04.080 --> 00:51:06.630
+ 
+
+
+00:51:06.630 --> 00:51:10.920
+ 
+
+
+00:51:10.950 --> 00:51:15.930
+ 
+
+
+00:51:15.930 --> 00:51:18.900
+ 
+
+
+00:51:18.900 --> 00:51:22.560
+ 
+
+
+00:51:26.070 --> 00:51:30.180
+ 
+
+
+00:51:30.180 --> 00:51:33.990
+ 
+
+
+00:51:33.990 --> 00:51:37.020
+ 
+
+
+00:51:37.020 --> 00:51:40.200
+ 
+
+
+00:51:40.200 --> 00:51:44.550
+ 
+
+
+00:51:44.550 --> 00:51:47.490
+ 
+
+
+00:51:47.520 --> 00:51:51.780
+ 
+
+
+00:51:51.780 --> 00:51:56.850
+ 
+
+
+00:51:56.880 --> 00:52:00.840
+ 
+
+
+00:52:00.930 --> 00:52:04.500
+ 
+
+
+00:52:05.070 --> 00:52:09.540
+ 
+
+
+00:52:09.540 --> 00:52:16.020
+ 
+
+
+00:52:16.380 --> 00:52:20.520
+ 
+
+
+00:52:20.520 --> 00:52:24.150
+ 
+
+
+00:52:24.150 --> 00:52:27.960
+ 
+
+
+00:52:28.710 --> 00:52:32.520
+ 
+
+
+00:52:32.790 --> 00:52:36.300
+ 
+
+
+00:52:36.300 --> 00:52:39.060
+ 
+
+
+00:52:39.060 --> 00:52:43.830
+ 
+
+
+00:52:44.100 --> 00:52:48.540
+ 
+
+
+00:52:48.540 --> 00:52:51.240
+ 
+
+
+00:52:51.240 --> 00:52:55.080
+ 
+
+
+00:52:55.380 --> 00:53:01.320
+ 
+
+
+00:53:01.320 --> 00:53:04.890
+ 
+
+
+00:53:04.890 --> 00:53:09.630
+ 
+
+
+00:53:09.630 --> 00:53:15.360
+ 
+
+
+00:53:15.360 --> 00:53:18.120
+ 
+
+
+00:53:18.120 --> 00:53:21.390
+ 
+
+
+00:53:21.390 --> 00:53:25.200
+ 
+
+
+00:53:25.200 --> 00:53:29.340
+ 
+
+
+00:53:29.340 --> 00:53:33.720
+ 
+
+
+00:53:33.720 --> 00:53:36.870
+ 
+
+
+00:53:36.870 --> 00:53:42.990
+ 
+
+
+00:53:43.020 --> 00:53:47.370
+ 
+
+
+00:53:47.640 --> 00:53:50.400
+ 
+
+
+00:53:50.700 --> 00:53:54.330
+ 
+
+
+00:53:54.330 --> 00:53:58.620
+ 
+
+
+00:53:58.620 --> 00:54:03.870
+ 
+
+
+00:54:03.870 --> 00:54:06.660
+ 
+
+
+00:54:06.780 --> 00:54:09.420
+ 
+
+
+00:54:09.420 --> 00:54:13.680
+ 
+
+
+00:54:13.680 --> 00:54:17.910
+ 
+
+
+00:54:17.910 --> 00:54:22.470
+ 
+
+
+00:54:22.500 --> 00:54:25.290
+ 
+
+
+00:54:25.290 --> 00:54:28.530
+ 
+
+
+00:54:28.530 --> 00:54:32.610
+ 
+
+
+00:54:32.610 --> 00:54:37.620
+ 
+
+
+00:54:37.620 --> 00:54:42.570
+ 
+
+
+00:54:42.570 --> 00:54:45.720
+ 
+
+
+00:54:45.720 --> 00:54:50.820
+ 
+
+
+00:54:52.110 --> 00:54:56.100
+ 
+
+
+00:54:56.100 --> 00:55:01.200
+ 
+
+
+00:55:01.200 --> 00:55:05.550
+ 
+
+
+00:55:05.550 --> 00:55:10.620
+ 
+
+
+00:55:10.620 --> 00:55:16.380
+ 
+
+
+00:55:16.380 --> 00:55:20.730
+ 
+
+
+00:55:20.730 --> 00:55:25.800
+ 
+
+
+00:55:25.800 --> 00:55:30.540
+ 
+
+
+00:55:30.540 --> 00:55:35.520
+ 
+
+
+00:55:35.520 --> 00:55:40.350
+ 
+
+
+00:55:40.350 --> 00:55:43.410
+ 
+
+
+00:55:43.470 --> 00:55:47.850
+ 
+
+
+00:55:47.850 --> 00:55:53.310
+ 
+
+
+00:55:53.310 --> 00:55:56.850
+ 
+
+
+00:55:56.880 --> 00:56:00.870
+ 
+
+
+00:56:00.900 --> 00:56:04.380
+ 
+
+
+00:56:04.380 --> 00:56:08.220
+ 
+
+
+00:56:08.250 --> 00:56:12.690
+ 
+
+
+00:56:12.690 --> 00:56:16.440
+ 
+
+
+00:56:16.500 --> 00:56:19.650
+ 
+
+
+00:56:20.310 --> 00:56:23.790
+ 
+
+
+00:56:23.790 --> 00:56:29.040
+ 
+
+
+00:56:29.040 --> 00:56:33.330
+ 
+
+
+00:56:33.330 --> 00:56:37.920
+ 
+
+
+00:56:37.950 --> 00:56:41.610
+ 
+
+
+00:56:41.610 --> 00:56:45.150
+ 
+
+
+00:56:45.150 --> 00:56:49.740
+ 
+
+
+00:56:49.740 --> 00:56:52.860
+ 
+
+
+00:56:52.860 --> 00:56:58.470
+ 
+
+
+00:56:58.500 --> 00:57:03.030
+ 
+
+
+00:57:03.150 --> 00:57:07.230
+ 
+
+
+00:57:07.260 --> 00:57:10.440
+ 
+
+
+00:57:10.470 --> 00:57:14.190
+ 
+
+
+00:57:14.190 --> 00:57:18.690
+ 
+
+
+00:57:18.690 --> 00:57:22.230
+ 
+
+
+00:57:22.230 --> 00:57:26.250
+ 
+
+
+00:57:26.250 --> 00:57:30.360
+ 
+
+
+00:57:30.360 --> 00:57:34.200
+ 
+
+
+00:57:34.200 --> 00:57:37.650
+ 
+
+
+00:57:37.650 --> 00:57:42.000
+ 
+
+
+00:57:45.750 --> 00:57:50.670
+ 
+
+
+00:57:50.670 --> 00:57:56.370
+ 
+
+
+00:57:56.370 --> 00:57:59.970
+ 
+
+
+00:58:00.000 --> 00:58:05.430
+ 
+
+
+00:58:05.430 --> 00:58:09.600
+ 
+
+
+00:58:09.630 --> 00:58:13.440
+ 
+
+
+00:58:13.440 --> 00:58:16.680
+ 
+
+
+00:58:16.680 --> 00:58:21.900
+ 
+
+
+00:58:21.900 --> 00:58:25.350
+ 
+
+
+00:58:25.350 --> 00:58:30.390
+ 
+
+
+00:58:30.390 --> 00:58:33.660
+ 
+
+
+00:58:33.660 --> 00:58:37.560
+ 
+
+
+00:58:37.590 --> 00:58:42.540
+ 
+
+
+00:58:42.600 --> 00:58:51.300
+ 
+
+
+00:58:51.300 --> 00:58:55.470
+ 
+
+
+00:58:55.470 --> 00:59:00.090
+ 
+
+
+00:59:00.090 --> 00:59:04.170
+ 
+
+
+00:59:04.170 --> 00:59:07.740
+ 
+
+
+00:59:07.740 --> 00:59:12.750
+ 
+
+
+00:59:12.750 --> 00:59:16.980
+ 
+
+
+00:59:16.980 --> 00:59:22.710
+ 
+
+
+00:59:22.710 --> 00:59:25.650
+ 
+
+
+00:59:25.650 --> 00:59:29.190
+ 
+
+
+00:59:29.490 --> 00:59:31.980
+ 
+
+
+00:59:31.980 --> 00:59:36.540
+ 
+
+
+00:59:36.540 --> 00:59:41.010
+ 
+
+
+00:59:41.010 --> 00:59:45.870
+ 
+
+
+00:59:45.870 --> 00:59:51.240
+ 
+
+
+00:59:51.240 --> 00:59:55.470
+ 
+
+
+00:59:55.470 --> 00:59:58.770
+ 
+
+
+00:59:59.340 --> 01:00:04.290
+ 
+
+
+01:00:04.410 --> 01:00:09.330
+ 
+
+
+01:00:09.330 --> 01:00:13.380
+ 
+
+
+01:00:13.410 --> 01:00:17.220
+ 
+
+
+01:00:17.610 --> 01:00:21.120
+ 
+
+
+01:00:21.120 --> 01:00:26.100
+ 
+
+
+01:00:26.100 --> 01:00:30.930
+ 
+
+
+01:00:30.930 --> 01:00:35.880
+ 
+
+
+01:00:35.880 --> 01:00:42.030
+ 
+
+
+01:00:42.030 --> 01:00:45.090
+ 
+
+
+01:00:45.090 --> 01:00:48.720
+ 
+
+
+01:00:48.750 --> 01:00:52.050
+ 
+
+
+01:00:52.050 --> 01:00:56.010
+ 
+
+
+01:00:56.010 --> 01:01:01.290
+ 
+
+
+01:01:01.290 --> 01:01:05.460
+ 
+
+
+01:01:05.460 --> 01:01:09.990
+ 
+
+
+01:01:09.990 --> 01:01:13.920
+ 
+
+
+01:01:13.920 --> 01:01:17.940
+ 
+
+
+01:01:17.940 --> 01:01:21.270
+ 
+
+
+01:01:21.390 --> 01:01:25.890
+ 
+
+
+01:01:25.890 --> 01:01:30.180
+ 
+
+
+01:01:30.180 --> 01:01:34.530
+ 
+
+
+01:01:35.550 --> 01:01:39.690
+ 
+
+
+01:01:39.720 --> 01:01:43.650
+ 
+
+
+01:01:43.680 --> 01:01:47.340
+ 
+
+
+01:01:47.340 --> 01:01:51.120
+ 
+
+
+01:01:51.690 --> 01:01:55.650
+ 
+
+
+01:01:55.650 --> 01:02:00.840
+ 
+
+
+01:02:00.840 --> 01:02:05.400
+ 
+
+
+01:02:05.400 --> 01:02:08.340
+ 
+
+
+01:02:08.340 --> 01:02:13.140
+ 
+
+
+01:02:13.140 --> 01:02:18.270
+ 
+
+
+01:02:18.720 --> 01:02:22.680
+ 
+
+
+01:02:22.680 --> 01:02:25.770
+ 
+
+
+01:02:25.830 --> 01:02:31.260
+ 
+
+
+01:02:31.260 --> 01:02:34.620
+ 
+
+
+01:02:34.620 --> 01:02:38.580
+ 
+
+
+01:02:38.580 --> 01:02:43.620
+ 
+
+
+01:02:43.620 --> 01:02:47.190
+ 
+
+
+01:02:47.190 --> 01:02:52.440
+ 
+
+
+01:02:52.470 --> 01:02:55.830
+ 
+
+
+01:02:55.830 --> 01:02:58.530
+ 
+
+
+01:02:58.530 --> 01:03:01.650
+ 
+
+
+01:03:01.650 --> 01:03:06.060
+ 
+
+
+01:03:06.060 --> 01:03:11.010
+ 
+
+
+01:03:11.010 --> 01:03:15.840
+ 
+
+
+01:03:16.140 --> 01:03:21.900
+ 
+
+
+01:03:21.990 --> 01:03:25.920
+ 
+
+
+01:03:26.400 --> 01:03:31.890
+ 
+
+
+01:03:31.890 --> 01:03:34.290
+ 
+
+
+01:03:34.290 --> 01:03:37.320
+ 
+
+
+01:03:37.320 --> 01:03:41.370
+ 
+
+
+01:03:41.370 --> 01:03:45.540
+ 
+
+
+01:03:45.540 --> 01:03:49.500
+ 
+
+
+01:03:49.500 --> 01:03:53.220
+ 
+
+
+01:03:53.430 --> 01:03:57.630
+ 
+
+
+01:03:57.660 --> 01:04:01.260
+ 
+
+
+01:04:01.260 --> 01:04:05.460
+ 
+
+
+01:04:05.460 --> 01:04:09.300
+ 
+
+
+01:04:09.300 --> 01:04:13.500
+ 
+
+
+01:04:13.500 --> 01:04:16.620
+ 
+
+
+01:04:16.950 --> 01:04:20.040
+ 
+
+
+01:04:20.040 --> 01:04:25.050
+ 
+
+
+01:04:25.050 --> 01:04:28.920
+ 
+
+
+01:04:30.480 --> 01:04:34.650
+ 
+
+
+01:04:34.650 --> 01:04:39.030
+ 
+
+
+01:04:39.030 --> 01:04:42.330
+ 
+
+
+01:04:42.360 --> 01:04:46.890
+ 
+
+
+01:04:46.890 --> 01:04:50.430
+ 
+
+
+01:04:50.430 --> 01:04:54.150
+ 
+
+
+01:04:54.150 --> 01:04:58.230
+ 
+
+
+01:04:58.230 --> 01:05:01.830
+ 
+
+
+01:05:02.220 --> 01:05:06.480
+ 
+
+
+01:05:06.480 --> 01:05:10.830
+ 
+
+
+01:05:10.830 --> 01:05:14.280
+ 
+
+
+01:05:14.280 --> 01:05:17.370
+ 
+
+
+01:05:17.370 --> 01:05:21.240
+ 
+
+
+01:05:21.240 --> 01:05:24.960
+ 
+
+
+01:05:25.200 --> 01:05:27.480
+ 
+
+
+01:05:27.480 --> 01:05:32.220
+ 
+
+
+01:05:32.220 --> 01:05:36.630
+ 
+
+
+01:05:36.630 --> 01:05:40.320
+ 
+
+
+01:05:40.320 --> 01:05:42.870
+ 
+
+
+01:05:42.870 --> 01:05:46.020
+ 
+
+
+01:05:46.020 --> 01:05:49.980
+ 
+
+
+01:05:49.980 --> 01:05:54.120
+ 
+
+
+01:05:54.120 --> 01:05:57.420
+ 
+
+
+01:05:58.260 --> 01:05:58.710
+
+
+01:05:58.710 --> 01:06:04.020
+ 
+
+
+01:06:04.050 --> 01:06:05.970
+
+
+01:06:07.260 --> 01:06:11.250
+ 
+
+
+01:06:11.250 --> 01:06:13.800
+
+
+01:06:15.420 --> 01:06:19.440
+ 
+
+
+01:06:19.530 --> 01:06:24.090
+ 
+
+
+01:06:24.090 --> 01:06:31.170
+ 
+
+
+01:06:31.380 --> 01:06:37.260
+ 
+
+
+01:06:37.260 --> 01:06:41.880
+ 
+
+
+01:06:41.880 --> 01:06:45.870
+ 
+
+
+01:06:45.870 --> 01:06:50.640
+ 
+
+
+01:06:50.670 --> 01:06:55.500
+ 
+
+
+01:06:55.800 --> 01:06:59.190
+ 
+
+
+01:06:59.190 --> 01:07:08.520
+ 
+
+
+01:07:08.730 --> 01:07:13.290
+ 
+
+
+01:07:13.470 --> 01:07:18.690
+ 
+
+
+01:07:18.720 --> 01:07:23.550
+ 
+
+
+01:07:23.580 --> 01:07:29.880
+ 
+
+
+01:07:30.270 --> 01:07:34.440
+ 
+
+
+01:07:34.440 --> 01:07:40.470
+ 
+
+
+01:07:40.500 --> 01:07:41.220
+
+
+01:07:41.940 --> 01:07:45.120
+ 
+
+
+01:07:45.810 --> 01:07:49.830
+ 
+
+
+01:07:49.830 --> 01:07:52.530
+ 
+
+
+01:07:52.530 --> 01:07:57.120
+ 
+
+
+01:07:57.120 --> 01:08:01.200
+ 
+
+
+01:08:01.200 --> 01:08:06.330
+ 
+
+
+01:08:06.510 --> 01:08:11.640
+ 
+
+
+01:08:11.640 --> 01:08:16.440
+ 
+
+
+01:08:16.440 --> 01:08:20.460
+ 
+
+
+01:08:20.460 --> 01:08:24.420
+ 
+
+
+01:08:24.420 --> 01:08:27.690
+ 
+
+
+01:08:27.690 --> 01:08:31.680
+ 
+
+
+01:08:31.680 --> 01:08:35.460
+ 
+
+
+01:08:35.460 --> 01:08:39.210
+ 
+
+
+01:08:39.210 --> 01:08:42.810
+ 
+
+
+01:08:42.810 --> 01:08:47.010
+ 
+
+
+01:08:47.160 --> 01:08:53.250
+ 
+
+
+01:08:53.250 --> 01:09:01.320
+ 
+
+
+01:09:01.380 --> 01:09:06.480
+ 
+
+
+01:09:06.480 --> 01:09:09.930
+ 
+
+
+01:09:10.170 --> 01:09:15.300
+ 
+
+
+01:09:15.810 --> 01:09:16.590
+
+
+01:09:20.820 --> 01:09:24.750
+ 
+
+
+01:09:24.750 --> 01:09:28.770
+ 
+
+
+01:09:28.770 --> 01:09:32.490
+ 
+
+
+01:09:32.490 --> 01:09:37.200
+ 
+
+
+01:09:37.500 --> 01:09:41.430
+ 
+
+
+01:09:41.430 --> 01:09:45.960
+ 
+
+
+01:09:46.170 --> 01:09:50.220
+ 
+
+
+01:09:50.550 --> 01:09:53.400
+ 
+
+
+01:09:53.400 --> 01:09:56.370
+ 
+
+
+01:09:56.370 --> 01:10:01.170
+ 
+
+
+01:10:01.170 --> 01:10:03.840
+ 
+
+
+01:10:03.840 --> 01:10:07.800
+ 
+
+
+01:10:07.830 --> 01:10:12.870
+ 
+
+
+01:10:12.870 --> 01:10:17.040
+ 
+
+
+01:10:17.040 --> 01:10:21.630
+ 
+
+
+01:10:21.630 --> 01:10:25.080
+ 
+
+
+01:10:25.080 --> 01:10:27.720
+ 
+
+
+01:10:27.720 --> 01:10:30.690
+ 
+
+
+01:10:30.690 --> 01:10:33.840
+ 
+
+
+01:10:34.290 --> 01:10:37.830
+ 
+
+
+01:10:37.830 --> 01:10:44.040
+ 
+
+
+01:10:44.400 --> 01:10:49.860
+ 
+
+
+01:10:49.860 --> 01:10:51.210
+
+
+01:10:53.250 --> 01:11:02.040
+ 
+
+
+01:11:02.040 --> 01:11:03.660
+
+
+01:11:08.070 --> 01:11:12.360
+ 
+
+
+01:11:12.360 --> 01:11:15.630
+ 
+
+
+01:11:15.630 --> 01:11:20.070
+ 
+
+
+01:11:20.070 --> 01:11:24.420
+ 
+
+
+01:11:24.420 --> 01:11:27.780
+ 
+
+
+01:11:27.780 --> 01:11:31.830
+ 
+
+
+01:11:31.830 --> 01:11:35.220
+ 
+
+
+01:11:35.220 --> 01:11:37.950
+ 
+
+
+01:11:37.950 --> 01:11:41.040
+ 
+
+
+01:11:41.040 --> 01:11:44.610
+ 
+
+
+01:11:44.610 --> 01:11:48.750
+ 
+
+
+01:11:49.320 --> 01:11:51.060
+ 
+
+
+01:11:51.330 --> 01:11:55.680
+ 
+
+
+01:11:55.680 --> 01:12:00.180
+ 
+
+
+01:12:00.180 --> 01:12:00.680
+
+
+01:12:01.380 --> 01:12:05.640
+ 
+
+
+01:12:05.850 --> 01:12:09.300
+ 
+
+
+01:12:09.450 --> 01:12:13.530
+ 
+
+
+01:12:13.530 --> 01:12:17.070
+ 
+
+
+01:12:17.070 --> 01:12:20.820
+ 
+
+
+01:12:21.690 --> 01:12:27.210
+ 
+
+
+01:12:27.450 --> 01:12:32.340
+ 
+
+
+01:12:32.370 --> 01:12:36.240
+ 
+
+
+01:12:37.290 --> 01:12:40.530
+ 
+
+
+01:12:40.530 --> 01:12:44.910
+ 
+
+
+01:12:44.910 --> 01:12:48.510
+ 
+
+
+01:12:48.510 --> 01:12:51.420
+ 
+
+
+01:12:51.420 --> 01:12:54.750
+ 
+
+
+01:12:54.750 --> 01:12:57.420
+ 
+
+
+01:12:57.420 --> 01:12:59.970
+ 
+
+
+01:13:00.750 --> 01:13:04.380
+ 
+
+
+01:13:04.380 --> 01:13:13.020
+ 
+
+
+01:13:13.290 --> 01:13:13.790
+
+
+01:13:15.060 --> 01:13:22.110
+ 
+
+
+01:13:22.110 --> 01:13:25.140
+ 
+
+
+01:13:25.140 --> 01:13:29.160
+ 
+
+
+01:13:29.190 --> 01:13:32.820
+ 
+
+
+01:13:32.820 --> 01:13:35.670
+ 
+
+
+01:13:36.360 --> 01:13:41.580
+ 
+
+
+01:13:41.970 --> 01:13:44.970
+ 
+
+
+01:13:44.970 --> 01:13:49.290
+ 
+
+
+01:13:49.800 --> 01:13:52.980
+ 
+
+
+01:13:52.980 --> 01:13:56.070
+ 
+
+
+01:13:56.070 --> 01:13:59.850
+ 
+
+
+01:13:59.850 --> 01:14:02.850
+ 
+
+
+01:14:02.850 --> 01:14:05.490
+ 
+
+
+01:14:05.820 --> 01:14:09.840
+ 
+
+
+01:14:09.840 --> 01:14:16.170
+ 
+
+
+01:14:16.200 --> 01:14:20.070
+ 
+
+
+01:14:20.070 --> 01:14:24.630
+ 
+
+
+01:14:25.110 --> 01:14:30.510
+ 
+
+
+01:14:30.510 --> 01:14:40.590
+ 
+
+
+01:14:40.590 --> 01:14:41.280
+
+

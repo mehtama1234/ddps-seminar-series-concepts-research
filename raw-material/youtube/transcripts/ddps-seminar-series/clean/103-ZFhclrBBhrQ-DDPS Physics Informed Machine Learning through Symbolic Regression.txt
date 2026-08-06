@@ -1,0 +1,1916 @@
+Okay, uh welcome to the DDPS seminar,
+everyone. Before we introduce our
+invited speaker, let's go over some
+rules and logistics. First of all,
+please mute yourself during the talk.
+But if you have questions, you can
+unmute and ask questions
+or use chat room to post your question
+so that we can address them in training
+session at the end.
+Uh second, today's DDPS seminar is open
+to external audiences, so no class by
+discussion is allowed here.
+Uh finally, the talk today will be
+recorded and uploaded in our YouTube
+channel. That's about it. Now, let me
+briefly introduce our speaker today. I
+will try to be brief. Um I mean, George
+is pretty successful, so it's it can be
+pretty long, but let me try.
+All right. It is an honor to host Dr.
+George Bollas, who is the Pratt Whitney
+Endowed Chair Professor and Director in
+Advanced Systems Engineering with the
+Chemical and Biomolecular
+uh Engineering Department at the
+University of Connecticut.
+Prior to joining University of
+Connecticut, he was a postdoctoral
+fellow at the MIT. And before he
+received his
+bachelor's degrees and doctoral degree
+in chemical engineering from the
+Aristotle University um in Greece, uh
+he's inter-
+his interdisciplinary research uh merges
+the fields of energy technology, process
+systems engineering, and model-based
+system engineering.
+Uh his laboratory pursues a balanced
+approach to information theory for the
+design, optimization, control,
+operation, and maintenance of
+cyber-physical systems with applications
+on energy, chemical industry,
+manufacturing, naval, and aerospace
+industry.
+Dr. Bollas, he's the recipient of
+numerous awards such as NSF career
+awards and many others. And he manages a
+portfolio of over 7 million in in his
+research group's research projects.
+While his institute managed active
+research funding that totals over $30
+million. Dollars.
+Okay, today George will talk about
+physics-informed machine learning
+through symbolic regression. Please
+enjoy and expect wonderful talk. Now let
+me
+ask a couple of questions
+to George
+just to get to know him better and make
+this seminar somewhat informal. Okay,
+first question. Here it goes.
+Obviously, you're passionate about
+symbolic regression and scientific
+machine learning in general.
+When and how did you get into this field
+and started to do research on on them?
+George
+Well, that's an excellent question. It's
+a long story. I'll try to make it short.
+I actually at the at the end of
+this presentation, I'm presenting the
+use of symbolic regression to discover
+the fault cause of
+heat exchanger for heat exchanger
+fouling
+and how it progresses with time. We were
+working on fault detection and isolation
+using information theory and principles
+of design of experiments.
+And
+we're optimizing the system and the
+conditions and at some point someone a
+partner from
+the
+industry we're working with asked what
+if we don't not just optimize the
+conditions, what we optimize the
+function that actually is used to detect
+the fault. That is called differential
+sensors or soft sensor and so on. And we
+actually started working on symbolic
+regression to create functions that
+maximize the information with respect to
+the fault in the system. The evidence of
+a fault in the system.
+Mhm.
+And from there we expanded it to
+fault codes and from there we expanded
+it to actually discovering the physics.
+Nice. Nice. Okay. Here here is a second
+question. Since you are quite successful
+and established now in terms of
+portfolio and funding, is there any
+secret for this?
+Uh
+good partners and entering a partnership
+with uh
+goals that relate to success for
+everyone and uh real
+excitement about the research you're
+doing.
+All right. Thank you for sharing the
+secret. Okay, the stage is yours.
+Okay, thank you very much uh Youngsu and
+I'm honored to be invited to give this
+webinar.
+Uh I'll uh discuss physics and formal
+machine learning through symbolic
+regression and
+some of the progress that we recently
+have made on on this field.
+I'll uh start by providing some context
+of why we're doing this um
+um and what's the role of AI in the
+context of cyber-physical systems and
+why we need glass box models and
+interpretable models.
+Uh this slide is actually from uh one of
+the course that I teach and
+uh there I discuss about the concept of
+analogous systems models. Uh there is a
+few very interesting books that uh try
+to generalize modeling
+as a concept across disciplines. Um the
+slide shows examples of
+translation mechanical system,
+rotational mechanical system, electrical
+system, hydraulic system, and we can
+expand that to chemical systems and so
+on.
+And the whole point is that
+pretty much the same set of differential
+equations, the same structure or
+functions describe any system
+in the physical world. And uh you can
+expand this to partial differential
+equations for more advanced systems and
+also uh um
+expand in the spatial domain. Uh so if
+we could discover these equations from
+data, then we'll be discovering the real
+truth, the uh
+truth about systems uh from from the
+data and we'll be discovering these
+physical laws from data. That's really
+the drive force
+for in what we do. Another reason why
+we're doing it is this is an example
+from
+a manufacturing system from precision
+machining. On the left hand side is a
+manufacturing system that doesn't
+manufacture very well. That's why you
+see the sparks and the smoke and it also
+has audio. I don't know if it plays.
+It makes too much noise. The left hand
+side uh
+process while the right hand side
+process is almost perfect and
+in machining and the reality is that the
+left hand side has a tool that is worn,
+but you don't know until you take it out
+and you measure it under a microscope.
+And there is a lot of thousands of
+papers and lot of research on how to
+actually infer the condition of the tool
+in precision machining.
+And
+the reality is that the manufacturing
+floor productivity requires more
+aggressive machining that actually
+deteriorates the tool even faster and
+that requires an accurate digital twin.
+So you're trying to infer something that
+you never measure out of other types of
+data and at some point we realized that
+there is
+valuable data in the physics that relate
+to the forces, friction, and power
+consumed that is changing a little bit
+because of
+the tool being worn, but also there is
+data in audio, vibration of the machine,
+and so on that
+relate to physics that we never model.
+And
+this type of data are extremely
+informative about the condition of the
+tool. So the idea was how do we actually
+merge models that are data driven and
+physics based in
+assessing either tool condition or the
+state of the tool and generally speaking
+creating digital twins for cyber
+physical systems as in the example here.
+And the answer, of course, in everything
+nowadays is artificial intelligence and
+AI models and data-driven models. Um
+I'll just uh go over some very basic
+definitions according to IBM. Artificial
+intelligence describes machines that
+mimic cognitive functions such as
+learning and problem solving.
+And some data that show that uh
+um it's projected to be a $10 trillion
+uh dollars market uh
+um
+pretty much will affect any any business
+in any domain. So, for us engineers,
+it's uh we are in a unique position to
+guide uh AI development to accomplish
+our goals, which are to optimally
+control systems,
+uh maintain the systems'
+decision-making, design, and so on.
+But uh
+the problem with uh AI alone is that uh
+machine learning in the
+general context requires large amounts
+of data.
+Uh big data may not always be useful or
+available for physics or engineering
+purposes, especially when we design new
+systems or systems that uh have uh
+limited information about. Uh so, the
+question is how would could we inject
+physics into machine learning to learn
+better models from less data? And this
+is how
+uh the general term physics-informed
+machine learning is defined. How we
+inject physics into a machine learning
+model or machine learning into a
+physics-based model.
+And we have a potential observation
+bias, inductive bias, and learning bias
+that would be filtered through some form
+of physics-informed machine learning to
+address issues like or opportunities or
+system specifics like symmetry,
+conservation laws, or dynamics. Um so,
+this beautiful image shows
+uh created by Donald Ergerson from PNNL
+shows a high-level idea of what this
+looks like. On the left-hand side, we
+have equations that we understand and we
+derived over hundreds or thousands of
+years of studying systems. On on side,
+we just have data and we try to figure
+out what are best ways to combine that.
+To give you an example and I'll be going
+over
+chemical reactor examples extensively.
+It's my field and
+as I mentioned the presentation and the
+approach is not really focused on
+chemical systems but we use chemical
+systems mostly because we are very
+familiar and comfortable with all those.
+A dynamic plug flow reactor equation
+when I was teaching undergraduates in
+the classroom, I would start by saying
+that there is an accumulation term for
+the concentration C. There is a
+diffusion term that
+is describes the change of concentration
+because of the driving force of the
+concentration differences, a convection
+term that describes force convection,
+forced movement of material and then a
+reaction term since it's a chemical
+reactor.
+And
+in many cases would like to
+inject that knowledge into our machine
+learning approach. Say it's a chemical
+reactor so expect you to have
+accumulation, diffusion, convection,
+reaction or discover something from
+which we'll identify that these terms
+exist there so it must be a plug flow
+reactor out of the data if I didn't know
+what type of reactor it is.
+It's central to communication with other
+experts and stakeholders to have
+interpretable or glass box models and
+also it's extremely helpful in
+explaining the what, the how and the why
+of a system operates the way it
+operates.
+It becomes more and more a requirement
+by federal agencies as well. So I'm
+giving you just examples of the FDA that
+requires that
+an appropriate model should be
+plausible, consistent with current
+knowledge and have mathematically
+identifiable parameters. That's not the
+case in many of the black box data
+driven models.
+Or it becomes more and more of the focus
+of FAA
+where to approve data, approve the data
+not the analytical the
+and the applicant must the data are
+valid. In many cases, that can be shown
+through a model and you exchange
+information through the model that
+generates this data. And having that
+model being interpretable and
+explainable helps a lot with the
+justification.
+I'll cover very quickly some of the
+common tools, modern tools for equation
+discovery.
+We'll try to discover equations out of
+data in this presentation. In the vast
+majority of this presentation,
+what created a lot of noise a few years
+ago and extremely successful in many
+different implementations and
+applications is sparse regression, a
+tool a tool called Cindy.
+The idea is that
+we are aware of some phenomena, let's
+say this XX squared, X cubed, or the
+diffusion, convection, and so on in my
+previous example. And but we don't know
+how these are combined and how these
+actually formulate the model.
+So, we form a sparse regression problem
+where we try to identify which terms and
+with which parameters they need to be
+multiplied with so that we can
+discover the model, the governing
+equations of a system.
+And a little bit more advanced approach
+and also
+somewhat older is genetic programming or
+genetic algorithms that uses an argument
+set of variables, let's say XYZ, and a
+primitive primitive set of operators,
+let's say say in this example plus,
+product, and cosine. And through
+manipulation, combination of those, and
+then mutation and crossover, it creates
+trees of these expressions and
+combinations of these expressions. It
+follows it mimics evolution theory and
+it worked for humans and animals, so in
+principle, it should work for
+discovering equations as well.
+So, we'll be focusing on genetic
+programming and symbolic regression
+specifically, but there are some
+interesting approaches that actually
+combine neural networks with symbolic
+regression.
+For instance, the PIN approach, PIN
+approach.
+Um
+For an example, in Burgers' equation,
+forms a neural network that estimates
+the state variables, and then that
+estimate of the state variable is used
+in some form of sparse regression to or
+possibly even symbolic regression to
+generate expressions for the derivatives
+of that state variable. It takes
+advantage of
+automatic differentiation to
+inexpensively
+estimate derivatives of the state
+variable, and in that sense, it avoids
+the expensive step of integration of
+that state variable in space or time. It
+uses a normalization term to reduce
+terms that are
+not likely to be significant and likely
+to cause errors, and finds a solution in
+the form of some differential equations.
+Inverse PINs
+can have variable injection of domain
+knowledge that goes into the library,
+and
+the error depends on the quality of the
+surrogate, not the data, and the
+normalization
+chooses the most important physics, and
+it can go through many passes, so
+iterate through that alternate direction
+of optimization scheme, and that works
+also very well.
+So, that one implementation of that is
+deep mode that we'll discuss later in in
+one of the applications that we'll show.
+I'm not big fan of discussing tools, but
+in computer science, you have to go over
+those.
+We work
+originally with deep, the distributed
+evolutionary algorithm in Python. That's
+pretty much a scaffolding for genetic
+custom genetic programs and other
+evolutionary algorithms. Nowadays, we
+use a little bit more PySR
+that uses islands of expressions and
+allows exchange of
+functions and
+results between these islands of
+expressions. There is other tools like
+deep symbolic regression and I think so
+this comes from your group where there
+is a sequencing
+generated by because of neural networks
+that go into genetic programming to to
+generate functions.
+I will be comparing many different
+methods including what we've done and I
+will be comparing based on some metrics
+for the um
+success of in discovery of a model.
+So the one would be how responsive or
+how it
+a model discovered is sensitive to noise
+from low to high.
+When it's low when it has low
+sensitivity to noise then it will be
+good. It will be shown with a green
+arrow.
+When it's high sensitivity to noise it
+will be bad. It will be
+red arrow point
+down pointing downwards.
+Then we'll study how sensitive they are
+to data data density or scarcity. Then
+we'll discuss how fast it is in actually
+discovering equations and then we'll
+also communicate how creative it is
+meaning if I didn't know what the basis
+functions are if I had to discover
+the functional form that goes into for
+instance sparse regression how creative
+is the algorithm in actually discovering
+these functional forms these basis
+functions.
+So I'll start with
+how we actually try to discover truth
+ground truth from data. This is
+a work by Ben Cohen a PhD candidate with
+University of Connecticut
+and
+Ben Ben has been very creative in
+actually
+combining many of these tools in with a
+goal to discover physics. Our focus
+there is mostly to discover the ground
+truth at any cost and then from there
+see what
+what we're doing right and what we're
+doing wrong so that we can optimize the
+process.
+Um I'll show you a highlight and I'll go
+through some of the
+explanation of uh um how we came up with
+this overall classification. I'm showing
+you uh
+several different method classes PDE
+find PDE weak Cindy deep mode and
+DiscoPDE is our method and I'm assessing
+it here and assessing all of this here
+in terms of noise and scarcity and time.
+And uh
+uh overall no method is perfect uh but
+um
+all of these methods target
+simpler and smaller models compared to
+deep learning and I'm citing Jan LeCun
+at the top of the slides uh
+claim that deep learning is dead long
+live
+differential programming and in essence
+all these methods are applying some form
+of this differential programming in the
+context of discovering partial
+differential equations out of data. Uh
+so um the good news is many of these
+methods are relatively robust to data
+scarcity and
+the more robust they become to data data
+scarcity they become more
+they have become at significant cost in
+time and the question that we asked
+ourselves is what can be done to improve
+interpretability and discovery. So how
+can we discover what we don't know and
+at the same time have it interpretable
+so actually understand the results. So
+the challenge for us was to
+automatically discover discover
+governing differential equation from
+noisy and scarce data. So in many cases
+what I will be presenting is very simple
+systems where we try to
+identify a couple of differential
+equations out of out of their data.
+So this is DiscoPDE as we call it the
+framework that we developed and I'll be
+gathering it
+um step by step. I'll start with as as I
+move on with the slides I'll start with
+an isothermal plug flow reactor example,
+a differential equation that looks like
+that. I already went over that. This is
+accumulation term, this is the
+diffusion, this is the convection, and
+this is the reaction term, the square of
+the concentration. Um we assume that we
+know an initial condition that there is
+no reaction when the
+the data start being collected, and we
+assume that we know the boundary
+condition. So, the black box is the
+actual reactor, and we don't know what
+the equations are, but we know that it's
+a chemical reactor, so we have reaction,
+diffusion, convection, and so on, and
+accumulation.
+And I'll I'll go over these steps of the
+of the framework that we develop step by
+step by step in the next few slides.
+So, what we're trying to do here is to
+we'll assume that there is a system
+that's dynamic, so there will be a
+dynamic term on the left-hand side, and
+we'll assume that we don't know what the
+right-hand side of the differential
+equation that the partial differential
+equation is. So, that will become some S
+function of the concentration and many
+parameters that we need to estimate also
+at the same time.
+Um the way it works is by
+generally speaking in
+symbolic regression is one needs to
+define an argument set. In our case, we
+know it's a reactor, so we anticipate
+diffusion, convection, reaction, and
+some feedstock
+that go in. Then, in the primitive set
+in this particular case, we allow plus,
+minus, and product.
+The reason for that is
+to keep the problem simple and to avoid
+overfitting, and also because we are
+aware that
+if it's a chemical reaction system,
+we wouldn't expect these terms to be
+combined with the cosines or exponential
+functions, and so on. We'll advance this
+as we move forward
+anyway.
+The genetic programming hyper parameters
+are provided here, and these are always
+the result of tuning and experience with
+a particular system. And the expression
+inclusion is, as I mentioned that the
+right hand side of the
+time dependent for silly occasion is to
+be discovered using the argument set in
+the primitive set that we provided. What
+we'll measure is the concentration of A
+of the reactant at the outlet of the
+reactor as a function of time. So this
+is the concentration would be variable
+across the reactor as well as at the
+exit of the reactor, but we'll be having
+just one sensor at the exit of the
+reactor and we'll try to um
+and discover the governing equation for
+the entire reactor. So this is the
+primitive set, the expression
+combination strategy, the genetic
+programming hyper parameters and the
+data to be provided in the framework
+that
+that we're using.
+Next
+we will
+start discovery process that in this
+example we're doing deep and we
+initialize population. I'm giving a
+dummy example here for instance CA minus
+the convection terms times the diffusion
+term. This is obviously not a solution,
+but let's assume it starts with
+something like that. I'm giving you the
+graphical representation of what this
+looks like in in symbolic equation in
+deep and we'll start with this initial
+population and we set the initial
+population size to 100. That also
+depends on problem complexity and other
+specifics of the problem. And then we'll
+start building a model. So as soon as we
+generate a tree, we will assign
+parameters to all these terms and then
+we'll need to estimate these parameters
+values. To estimate these parameter
+values in this particular problem, we'll
+have to integrate. Integration is
+expensive. We use Casadi and an ODE
+solver in Casadi available Casadi that
+comes from Sundials
+and
+we do integration and parameter
+estimation and then we evaluate the
+fitness of the result of the CA of the
+solution for CA the concentration of
+species A. Um using uh the Bayesian
+information criterion to not overfit
+uh
+the data. And uh
+we provide this to evolution next.
+Evolution will do either crossover or
+mutation or any other of the functions
+that genetic algorithms use and genetic
+programming uses. And I'm showing you an
+example of crossover and mutation here,
+but this is pretty standard and trivial
+things in genetic programming. And
+through evolution, it will come up with
+a new model that it will build and um
+uh
+and eventually uh we'll do parameter
+estimation and integration, evaluate the
+fitness against the data that we
+measure, and continue that loop until we
+have uh
+uh reached some minimum until we have
+reached either the number of iterations
+that we allow or some
+uh error threshold. Uh the result the
+final result is here. We gave it two
+different experiments. Um this is the
+measurement of the concentration at the
+exit of the reactor of species A uh with
+time at two different initial feed
+conditions boundary conditions. And um
+this is also the squared error across
+the entire domain of the reactor. So
+it's as a function of X as well. So it's
+very very small although we only
+measured the um
+data at the exit of the reactor. The
+reason for that is because we do the
+very expensive step of integration
+uh
+across the reactor length and the
+reactor and over time.
+So that was our trivial example. And to
+be 100% honest with you, that could have
+been done with sparse regression as well
+because practically we knew all the
+terms all the terms that we should
+inject in
+um
+uh in the basis functions.
+Uh to test it further, we said let's say
+as let's actually test the hypothesis
+that we know it's a reactor, we know it
+performs a reaction, but we don't know
+the order of the reaction, and we don't
+know if it's a plug flow reactor or
+CSTR. But, that have a very different
+governing equations. The ground truth of
+plug flow reactor is what we studied
+already. The ground truth for CSTR is a
+mass balance equation that
+is shown here. This is the right hand
+side
+of the differential equation with
+respect to time, right?
+So, we provided two data series. Again,
+the exact same
+feed conditions concentration for
+species A, and we run it through the
+framework. And in 95% of the trials, we
+discovered almost the exact same
+equation for the plug flow reactor. And
+for an 80% of the trials, we discovered
+almost the exact same equation for the
+CSTR, for the continuous stirred tank
+reactor.
+The small differences in
+the parameters are due to noise because
+we
+injected
+noise without never smoothed out, and we
+feed a little bit of the noise with it,
+but it's very minor.
+The elephant in the room, and I will
+discuss it, I'm not going to hide it, is
+that it takes about 20 minutes to
+discover this one differential equation,
+regardless of whether it's a CSTR or
+PFR.
+Then, we took it one step further.
+Usually, we don't have
+just one differential equation, so we
+wanted to explore what it looks like
+when we have, let's say, a coupled mass
+and energy balances, we call it. So, we
+have mass transport and energy
+transport, and I can the reactor and
+reaction.
+And the
+argument set for each one of these
+partitions is presented are presented
+here, as well as the primitive set. And
+we evolved
+uh uh
+two parallel
+functions
+using an expression approach that
+allows an expression to be evolved as a
+function of only the concentration
+because we know there will be a mass
+balance as a function of all in the
+temperature because we know there will
+be an energy balance as a function of
+temperature and then as a function of
+concentration and temperature because
+that's actually what
+usually chemical reaction
+depends on. The combination strategy was
+that that we allowed was that the
+derivative of concentration with respect
+to time will be a function of S1 and S3
+as defined in the expression trees and
+the energy balance will be a function of
+S2 S3 and we assume that we know the
+kinetic constant of that reaction.
+That's actually not
+wild assumption. You could know the
+kinetics of a reaction out of a
+completely different system and still
+try to discover the governing equations
+of a chemical reactor.
+So the two differential equations right
+hand side of the differential equations
+are
+presented here and what we recovered was
+pretty much identical to the ground
+truth by evolving two functions two
+different equations in parallel.
+So that worked very well but
+it shows that we can actually evolve
+parallel several
+partial differential equations in
+parallel but it doesn't address a few of
+the issues specifically the issues of
+time, sensors, number of sensors and
+scarcity and so on.
+We took it one step further to study
+to compare algorithms and how we do
+against other common algorithms. What
+I'm presenting here is deep mode and we
+seen the against our framework. We have
+more comparisons but this is
+enough to at least convey our strengths
+and our weaknesses in as much honesty as
+I can.
+So we seen the deals with
+integrates using a weak formulation so
+the integration step is extremely
+inexpensive compared to ours and it also
+performs partial regression which in
+practice here almost
+translates to
+linear regression so it's extremely
+fast. So what you will see here is weak
+SINDy I'll start with a time.
+Weak SINDy
+performs really really well until it
+cannot perform it can it cannot discover
+anything anymore. Deep mode is about
+four orders of magnitude more
+computationally expensive and ours is
+about five orders of magnitude more
+computationally expensive. So the
+elephant in the room is that once you do
+symbolic regression to discover a
+function that then you will integrate
+over space and time you accept the fact
+that that integration is very expensive.
+And we address that but at this point
+I'll I'll just state the obvious that we
+got this result and say okay we have a
+time issue like it takes it takes a long
+time.
+The the great news is when we
+estimated the error of the parameter
+estimates in this particular function to
+make it apples to apples for the
+comparison of very different methods
+like weak SINDy, deep mode and our
+method.
+Weak SINDy failed after 46 sensors so
+this is how many sensors we have in
+space.
+Deep mode failed after eight sensors
+whereas in our case we could go all the
+way down to two sensors and
+and and one sensor and still get a model
+that
+is accurate in terms of the parameters
+that we estimate a very good
+representation of the actual truth of
+the ground truth of the
+governing equations. So we provide
+improved discovery when data is scarce
+but it's much slower than the
+alternatives and that is what we try to
+address next. So I'll summarize a few
+more efforts
+in in comparing different types of
+methods.
+So
+first of all I would like to say that no
+method dominates there's no perfect
+solution right now.
+Avoiding data in derivative or integral
+calculations helps with noise and data
+scarcity.
+In many of the approaches like sparse
+regression and the basic SINDy or
+genetic algorithms, we use the
+derivative of the data as calculated by
+the data. That's extremely noisy. If the
+data are noisy, then the derivative is
+very, very noisy, and that doesn't help
+with deriving accurate models.
+The scientific discovery itself in some
+of these methods is very small in the
+context that if you know all the basis
+functions, that's great. You practically
+know your system. It's a sometimes just
+a linear regression problem. But what if
+you don't?
+What I'm presenting here is sparse
+regression, which is the original SINDy
+genetic algorithms where also we use
+finite difference of the data
+to avoid integration. Integral
+symbolic regression, that is weak SINDy
+where we approximate integration
+with a weak formulation. GA or
+programming with ODEs solvers is our
+method where we actually integrated the
+data and then
+pin-based symbolic regression is pretty
+much the deep mode result. And I'm
+showing the summarize the summary of the
+performance of all these approaches as a
+function of noise, sparsity, creativity,
+and time. And as I mentioned, there is
+no good solution, but we notice that in
+everything we do, we are very robust to
+noise. We can work with a very sparse
+data. It's symbolic regression and
+genetic programs that could be as
+creative as we are allowed to be, but
+it's very computationally expensive as
+we discussed. So,
+the question that we asked after is can
+we develop tools that are better at
+discovering free-form
+human-interpretable differential
+equation models from sparse and noisy
+data and do it at a
+in the context of
+reducing the time that it takes for us
+to discover these models. And we are
+interested in time because very few
+systems are governed by one equation or
+two equations. And I'll show you
+examples with a hundreds of equations
+later on. So,
+it's not going to scale well when it
+takes that long for learning for
+discovery of one occasion.
+So I'll admit that the innovation here
+was very limited. We actually
+learned from PIN for physics informed
+neural networks
+and I'll go over what we did there and
+how we started comparing methods and how
+we stole some of the ideas to apply them
+in a symbolic regression. That's work by
+Nazia Nazia Aslam a new student in my
+group working on
+PINN.
+Nazia is working with
+Modulus a tool out of Nvidia that is one
+very robust implementation of PINN. The
+fundamental idea of PINN is avoid
+integration at all costs, estimate the
+state variable and
+extensive use of automatic
+differentiation
+to approximate the derivatives. If the
+derivative is known then we do PINN and
+we constrain the solution some to some
+differential equation that is
+unknown. If the derivative if the
+differential equation is partially
+unknown for instance the terms and so on
+then it's called inverse PINN and
+we estimate the parameters of that
+derivative using data that differential
+equation using data while the
+differential
+equation is also used as a constraint or
+in the loss function. The
+Modulus has a very robust and smooth
+implementation. Later on we'll be using
+PyTorch another tool that does the same
+and I'm pretty sure there is
+many other
+flavors of of the same basic idea of
+PINN.
+So our concept was the inverse PINNs are
+designed for parameter estimation. The
+loss function uses some loss function of
+the data how well the data
+fit plus whatever we know about the
+partial differential equation in the
+loss function and estimates parameters
+for that partial differential equation
+potentially some terms and also fits the
+data. And this is done in traditional
+PNN using neural network. So, the key
+idea there is that automatic
+differentiation is used extensively. We
+can do the same with symbolic regression
+actually a little bit more inexpensively
+because that all the terms and functions
+that are generated from symbolic
+regression are smaller. So, it's a less
+effort for the automatic differentiation
+step.
+So, we start with a simple example and
+I'll go through the summary of the
+results and then I'll show you also some
+more details of these results. Um
+So, we worked again with a PDE of an
+isothermal plug flow reactor. The
+equation that we try to discover is
+here.
+We generated 20 points or 100 points out
+of that equation random points with same
+points we try to
+experiments we try to
+discover the PDE using inverse PIN or
+symbolic regression. Both employing
+automatic differentiation and pretty
+much the same type of
+basic approach and basic principles.
+5% noise was added to all the
+experiments and the predicted values of
+the parameters like 0.5 and 1.3 are
+shown here
+for inverse PINs. Of course, increasing
+the number of measured points increases
+the accuracy of the solution and for
+symbolic regression. And as I will
+actually highlight later, symbolic
+regression finds smaller models with
+more accurate parameter estimates.
+The
+the advantage and drawbacks is that the
+inverse PIN with 100 points used about
+8,000 parameters or 7,500 parameters and
+it took
+73 seconds while a symbolic regression
+had only three parameters and it took
+100 seconds a little bit more time but
+in with 100 points it actually found the
+analytical solution. There is an
+analytical solution to that partial
+differential equation that I will
+actually
+show it to you
+later on.
+So it actually discovered not just a
+very small model, but the actual model
+that corresponds to the analytical
+solution to the partial differential
+equation, which then is differentiated
+using automatic differentiation to
+satisfy
+the partial differential equation that
+we try to emulate. The overall evolution
+of the solution is presented here. It
+first been super fast finding very good
+solution very early on. Symbolic
+regression will go through
+some steps of figuring out what you do
+before it finds a solution. So it's a
+little bit slower as I mentioned, but
+not
+not too slow anymore, mostly because
+we're not doing integration, we're doing
+automatic differentiation. We really
+use the same ideas in a different
+context.
+So
+in terms of time and how long it takes
+to actually discover partial
+differential equations using symbolic
+regression
+understood that
+that evaluating fitness is difficult
+because it includes parameter estimation
+and
+the integration step is very slow. So
+we'd like to either find easier fitness
+functions or integrate fewer times. One
+of our goals is actually to explore what
+we call slope integrators instead of
+accurate integrators also.
+But also
+other
+approaches to
+simplify or reduce the time
+computational time as such as
+recognizing that there are known physics
+and we don't need to rediscover those,
+no relearn those and focus on what is
+unknown. And I'll show you an example of
+that in the next slide.
+One interesting approach is when we
+understand the physics well of a system
+as for example in this type of
+partial differential equation that's
+again a dynamic plug flow reactor, then
+we could actually simplify the equation
+that we try to discover all the data
+based on our understanding of the
+equation of so that we try to discover.
+So in this case what we did is we used
+method of characteristics. It really
+takes the concentration at the exit of a
+plug flow reactor from the time domain
+and it plots it in the characteristic
+lines and
+and then what was unknown here was the
+reaction term and for that we actually
+played with
+complicated functions that sparse
+regression could would not discover
+unless we we were expecting this
+particular function. So
+kinetics that look like that or kinetics
+that are actually functions of
+temperature and concentration or just
+the second order
+second
+power of the concentration as simple
+kinetics. We used that because for that
+particular case there is an analytical
+solution to this partial differential
+equation and wanted to see if symbolic
+regression will find the analytical
+solution. So in all cases the
+the framework that we developed actually
+discovered the kinetics that were
+unknown and when the kinetics were C
+squared and we were actually trying to
+solve the problem using the method of
+characteristics, we actually found the
+analytical solution to the partial
+differential equation.
+So that is very beneficial because it's
+not just fitting data, it's actually
+discovering the a ground truth, the real
+truth of the partial differential
+equation using just one sensor but by
+simplifying
+the problem statement, how the problem
+is stated by using the method of
+characteristics. One could say that for
+us to apply the method of
+characteristics implies that we know the
+form of the equation and that would be
+an accurate statement but to some extent
+it shows how we can actually manipulate
+the data to have to get better
+representations of the data for the
+purpose of symbolic regression.
+Then we took it
+Then we wanted to study what if we know
+some physics and we don't know some
+physics. So, let's assume that we have a
+partial differential equation that the
+it looks like that d u d x plus d u d y
+plus some u and then times
+parameters and then plus u, but we don't
+know the function of u and we have of
+data for this function of u and the real
+function of u here is really what I show
+here, what was discovered by eventually
+by symbolic regression, this
+function of signs and exponents,
+exponential functions of x and y. So, we
+generated these data points that I'm
+highlighting here with crosses and we
+try to apply symbolic regression with
+automatic differentiation of the
+function of u that we have here.
+Automatic differentiation will give me
+the automatic the the derivative with
+respect to x, the derivative with
+respect to y, the function of u of
+course, and it will fit the data. We did
+this with symbolic regression and neural
+network. This is the example that I was
+showing you earlier with a PINN and
+symbolic regression. The benefits of
+symbolic regression is that we learn
+analytical solution and parameter
+values, better parameter estimates as
+I'm showing you here compared to PINN
+and a fewer parameters than the last
+model that I presented earlier compared
+to PINN.
+And
+to take it one step further,
+what this did is we use automatic
+differentiation to get derivatives of
+solution proposed by SR, so we avoid
+integration altogether. We evaluate the
+partial differential equation using the
+analytical derivatives when we apply
+automatic differentiation this term, we
+actually get the analytical derivative,
+the analytical solution derivative and
+then
+and we find the optimal parameter values
+for partial differential equation
+through parameter estimation. And of
+course, it applies the same principle
+that solution or the loss function is
+penalized includes the
+partial differential equation so it
+cannot be violated significantly.
+We wanted to explore how this
+generalizes and how this comparison
+generalizes to other types of systems.
+So we tried an advection system and a
+Burgers equation.
+This is the advection system. This is
+Burgers equation.
+In this particular case, what we did is
+we randomly took 10 samples
+out of the solution of the advection
+advection equations.
+10 points is randomly selected with 5%
+noise added. And then we
+performed 10 experiments, 10 synthetic
+experiments, virtual experiments where
+we selected these 10 10 points. Because
+of the noise, there was some
+distribution parameter estimates. So we
+assume there is a a normal distribution
+that fits these parameter estimates. And
+what I'm presenting here is the normal
+distribution and the standard
+based on the mean and the standard
+deviation that fit the parameter
+estimates out of these 10 experiments.
+And I'm just presenting here the
+solution from symbolic regression and
+PINN. So symbolic regression gets closer
+to the real value, but what's more
+interesting is that it's a much narrower
+distribution for the parameter estimates
+over all these 10 experiments. Uh
+And the reason for that is a much
+smaller model. It's a much more robust
+model. It's actually closer to the
+ground truth. Whereas when we did it in
+the Burgers equation, it was
+relatively good symbolic regression at
+estimating theta two. And both models
+were very inaccurate at estimating theta
+one, the diffusion term.
+I think the reason for that is that even
+the 5% noise as it's
+translated after differentiating the
+function U that we estimate twice with
+respect to X,
+uh leads to
+very inaccurate estimates of the
+derivative that leads to inaccurate
+estimates of the parameter.
+Uh but in both cases what we saw was
+that the symbolic regression was
+actually closer to the ground truth of
+the parameter values theta 1 and theta
+2.
+Most importantly, that in all cases
+symbolic regression gives models with
+more confidence, a smaller standard
+deviation.
+So, we took
+that and
+as I mentioned, we had started working
+from fault detection and I'm going to
+present very quickly some work that
+relates to fault detection and how we
+can actually find missing
+missing missing physics in a data when
+we have a very large-scale model that we
+trust, but
+portion of the model that we don't know.
+That's work by Effie Safikou,
+who's been working on on the field of
+fault detection, prognostics, and
+diagnostics for quite a while with me.
+The idea was with an aircraft system,
+heat exchanger fouls, and that heat
+exchanger is responsible for
+the pressurized air conditioning kit
+that is responsible for the quality of
+air, temperature, and pressure in the
+cabin.
+So, very important little system that's
+actually usually sits underneath the
+airplane. After I worked on this
+project, I never fly on an airplane
+without actually noticing where the heat
+exchanger is and the quality of the air
+and so on. And
+let's assume that that heat exchanger
+has some kind of
+fouls. This is what it looks when the
+heat exchanger fouls.
+That is some function of time.
+In In our case, we assume that the heat
+exchanger fouling, this is the heat
+transfer resistance, is a function of
+time that is asymptotic and it looks
+like that, like the blue line. And the
+question is, can we discover this if we
+have an accurate model for the system?
+So,
+And, a energy balance across a heat
+exchanger. It's a dynamic system that's
+actually very dynamic because the
+aircraft changes altitudes and and
+speeds and so on.
+Uh so, the
+heat exchanger has 125 differential
+algebraic equations after discretization
+through all the cells and so on in the
+heat exchanger.
+Uh it has two hot sensors
+uh for the temperature at the exit of
+the heat exchanger. It has uncertainty
+in terms of moisture content and cold
+temperature because it flies at variable
+altitude. And it has one fault that is
+the thermal fouling resistance that we
+don't know. We're trying to discover the
+function, but in our synthetic
+experiments, we'll be using this
+function uh asymptotic function for the
+thermal fouling resistance. And we would
+like to do fault prognosis. If we
+estimate what the function of the
+progression of the fault is, then we can
+do fault prognostics and
+predict when the system will fail. So,
+that's a very busy slide, but I'll give
+you the highlight of
+what we're doing here. Um
+as I mentioned, we're working on
+information theory to optimize the way
+we run a a diagnostic test, and we came
+up with differential sensors. I'll show
+you in the next slide. Soft sensors that
+actually use information theory to
+maximize derive a function that maximize
+the information with respect to a fault.
+And in this particular case is
+the heat transfer resistance that heat
+that expresses heat exchanger fouling.
+Then we define some fault and failure
+baselines that are actually these
+horizontal lines that I presented
+earlier.
+Here.
+This is really defined by the system at
+the 5% fouling this heat exchanger is
+fouled and needs to be changed. And at
+this is corresponds to 80% fouling, it
+must be changed. It
+must be replaced. And
+then for prognostics, we need to
+discover how the fault progresses with
+time. And to discover that, we need to
+create some function of time that will
+augment the system model that we have
+already. And the system model of 125
+differential equations that I discussed
+earlier. So, all we're looking for is to
+add one more algebraic equation to 125
+differential equations and integrate the
+system and validate that equation based
+on the sensors that we have, either the
+inferential sensor or the hard sensors
+by which from which we measure
+the uh temperature of the heat
+exchanger. So,
+and for the inferential sensor, just to
+give you the highlight, is uh
+uh through sensitivity analysis and
+estimation theory, we used what's called
+D-optimality criterion that utilizes the
+Fisher information matrix. This has This
+is applied over a very large system
+scale model and that's why I'm
+presenting these slides to show you
+scalability. And it uses extensively
+automatic differentiation and other
+techniques to simplify how we do the
+computations of calculating uh uh
+D-optimality, the determinant of the
+Fisher information matrix, and so on.
+Uh the idea is to minimize the
+covariance between parameter fault
+parameters and certain parameters while
+neglect the covariance between the
+uncertain parameters because we're not
+trying to estimate uncertainty, we're
+just trying to estimate the fault and
+specifically the function of the fault
+later on. And the idea here is that we
+have a system model. We'll use genetic
+programming to estimate some function
+for one of the parameters in the system
+model as a function of time. We'll
+integrate that system model with this
+new parameter and then the in the
+objective function, we'll try to
+minimize the uh difference the squared
+error of this inferential sensor that we
+created earlier through symbolic
+regression again. So, it's symbolic
+regression twice. The first is using
+information theory to find optimal
+sensors or sensor optimal ways of sensor
+fusion uh out of the data that are
+recorded and the second time is to
+actually create an equation inside the
+model that describes the progression of
+the fault. And we'll be doing that uh at
+uh variable time steps. So, what I'm
+showing here in green is if we stop
+here, we have this information for
+the fault as well as
+the soft and hard sensor. And we'll be
+trying to estimate the function of theta
+using all the data collected up to this
+point. So, I'm showing I'm going to show
+you all the results very quickly. Uh so,
+when we have just just a little bit of
+information, and we try to evolve this
+function, and we get the function that
+that looks like that. It's close to
+reality, but not very accurate. RUL is
+the remaining useful life. That is
+when I have only this information, it's
+estimated to be infinite infinity when
+the actual remaining useful life is
+about
+325 minutes. And the fault prognostics
+has significant errors when that
+happens. It's about 50% wrong. Then, as
+I start increasing the information that
+I allow, now I have a longer window from
+which I collected information, I do the
+same. I evolve a new function. The
+function looks like that. And then the
+inject that function into the system of
+equations that describe the system.
+Then, I integrate the system, calculate
+the values of the inferential sensor,
+compare it to the actual values of the
+of the sensor that we collected. And
+then we optimize and keep evolving that
+function using symbolic regression. And
+we getting closer and closer to actually
+prognosing the fault correctly. So, this
+is the green line is what the estimated
+function would project in time. We're
+almost right. And as we keep providing
+more and more information, more and more
+data, that is a sliding window that
+keeps increasing. It's not a sliding
+window. It's an increasing width
+window.
+Then, we have more than enough
+information to actually get the real
+function that is responsible for heat
+exchanger fouling.
+In a simpler way to present it is to
+actually show to you that
+uh the remaining useful life, that's
+when the heat exchanger should be
+changed and how we predict that. Uh it
+starts uh with some deviation from the
+true values, but very quickly converges
+to the actual value and to zero error
+pretty much
+after 50 minutes and five five
+iterations. So, in summary, this hybrid
+approach where there is a component in
+the model that's evolved through
+symbolic regression, but there is a very
+large-scale model that's integrated and
+manipulated for predicting the remaining
+useful life of a system is very very
+superior to other approaches like
+normal prognostic approaches that use
+some form of a degradation model.
+So, with that, I'll I'll conclude by
+saying that our goal is to enable
+discovery of physics from data and not
+very rich data sets, which is very
+common in engineering.
+Automatic
+To some extent, we can automate automate
+the teaching of basic engineering
+principles through the extraction of
+those from data domain expert knowledge
+as in the example of analogous modeling
+and how we could actually explain to
+students as we teach how we could derive
+this
+um these models from data as as long as
+we have some basic understanding of the
+key principles that govern that process.
+Explore data-driven approaches that
+provide unique new insights to process
+systems.
+Um how did we do? Some methods work.
+Computational complexity and scalability
+are the elephants in the room. We
+addressed those by utilizing concepts of
+automatic differentiation and other
+approaches that are common in P&N.
+And
+hybrid approaches that use few symbolic
+regression, sparse regression, P&N, etc.
+might be better suited some cases as we
+presented with a deep mode and P&N
+approaches.
+Um as I presented to you in the method
+of characteristic example, sometimes the
+mathematical manipulation of the
+equations or the data extremely
+extremely beneficial.
+And what we're doing right now is
+we try to further reduce and eliminate
+the need for integration of ODEs and
+DAEs to finalize the work that I
+presented to you. And
+we want to study the importance of the
+accuracy of integrators when we do
+integration because for all I know, we
+don't need the best possible integrator
+like CVODE that we use in uh
+in our approach to integrate something
+cheaper and inexpensive might do just as
+well in discovering the equations. I
+don't know the answer to that. That's an
+open question. With that, I think I'm
+out of time and I thank you very much
+for your attention. I will be happy to
+answer questions.
+Thank you. Thank you so much for the
+wonderful talk, George. Um that was very
+nice and
+many many um many many information
+knowledge here. Um okay, let's have a
+Q&A sessions.
+Um if you have any questions, please
+unmute yourself and ask your questions.
+Um you don't have to,
+you know, wait for me.
+Maybe I can start. Um
+You know, for the
+for data, you know, to use data well
+intentionally, you developed a symbolic
+regression technique
+to
+to be workable for the sparse data.
+As the data becomes sparse,
+uh the position of the data would be
+pretty important.
+Um how do you determine
+those locations of the
+of the data? There There must There must
+be some optimal locations.
+Sometime That's a
+That's a good question and we could do
+that by
+actually
+exploring the optimality or some
+information metric that relates to the
+location also. Um
+And that's relatively inexpensive
+computationally because as long as
+you're into the automatic
+differentiation, you can calculate the
+sensitivities inexpensively as well as
+long as as as soon as you have
+a PDE or ODE system that describes your
+your system. Um
+in some cases, for instance, when you
+use the exit concentration, is what's
+usually available. No one measures
+concentrations inside the reactor
+because that's practically impossible.
+You usually have some some measurement
+device downstream the reactor. In some
+in some other cases, we applied
+completely random selection of a
+measurement of points of where we
+measure. And we repeated this many
+times. But there is an interesting point
+there, and it's not too much work
+actually to somehow
+find the optimal
+point of measurement
+Right.
+for
+types of data that you need in addition
+to as as you evolve the model.
+Right, right. Okay, so in the future
+maybe you can incorporate that
+Yeah.
+into your
+your methods.
+Well, I mean, I do have a some
+recommendation for that there is a, you
+know, point selection algorithm like a
+DIM and ASOPT and etc. So, I I can
+probably
+um email you with those references and
+we can
+Oh, please do so. Actually, by the sir,
+I was giving a presentation to
+Kaniadakis's group in Brown
+Mhm.
+a few months ago, and they said you
+shouldn't be using we're using almost
+exclusively deep at that point. And they
+said you shouldn't be using deep, you
+should be using by sir because it makes
+life so easier. So, now we're using
+both.
+Please provide feedback. We actually
+take it very seriously. Okay,
+complaints.
+All right.
+Awesome. Um
+Okay. On another question from me would
+be um because because of my fault, um I
+missed the
+I missed the point where you used the
+physics
+uh to divide the the symbolic
+regression. So, I
+in my head
+Okay, you you you try to use the
+symbolic regressions to find out the
+physics, but somehow you use the physics
+again to help the
+the symbolic regressions. So, do do you
+do you see the circle?
+Here, which one is first then?
+So, how how does
+all those components are
+I'm not sure
+here or
+So, you So, the the idea of using the
+symbolic regression is you do not know
+the the PDE, right? You you you try to
+come, you know, find out the unknown
+PDE.
+For half of the talk, we don't know
+anything about the PDE, but you know
+something about the physics of governing
+equations. Uh
+If you have some partial knowledge about
+the physics, you you try to use that and
+then
+Uh but it could be like in this example
+at in the slide I'm showing here that
+you know
+part of the PDE, but you don't know the
+function of you and you want to compare
+combine that with actual data. Or it
+could be as in the heat exchanger
+following example where you know the
+system in
+insane accuracy or
+Yeah.
+fidelity, but
+there is one component of the system
+that's unknown and you try to evolve
+that that component. So, we we it
+depends on the problem statement, but
+we've shown that it works regardless.
+Got it. Got it. Okay. So, I
+I
+when when I look at this slide, I was
+not following what this PDE plus data
+means.
+Plus data means the data
+this function.
+And yes, we uh
+No, we have
+It's my fault.
+Yeah.
+It's it's exactly
+it's exactly how inverse PIN works. Like
+you have the PDE, but you don't know the
+parameters and you also have data. So,
+you estimate the parameters and the
+function
+at the same time. And we were doing this
+mostly because we identified that
+integration is by far the most expensive
+step as you could imagine
+partial differential equations.
+So we wanted to really test how we're
+doing with symbolic regression using the
+exact same principles and concepts that
+PNN inverse PNN uses.
+Yeah, yeah.
+Well
+Well I mean you also mentioned the
+sparse regression technique like the
+Cindy weak Cindy and also you compare
+your results with a
+um you know your symbolic regression
+technique.
+Um
+as you also mentioned Lawrence Livermore
+we have developed the DSO as well and we
+do have some
+experience of
+la la
+you know running those DSO algorithm. Um
+the the
+symbolic regression from my express
+impressions it gives you
+those important terms um using those
+primitive operators and they they know
+how to combine them which which you
+cannot do with a simple you know
+you know sparse regression technique
+because you have to know the the terms
+the as a user you have to provide them.
+So I
+and a lot of times when you run the
+DSO I mean the tools we have developed
+at Lawrence Livermore National Lab um
+it does give you those those terms
+exactly so
+at the end you get the solution from DSO
+and then apply the sparse regression to
+find out you know those coefficient in
+front of those those terms. That that
+seems to work well
+but from your work I guess
+you don't need the
+the sparse regression like the second
+second second trial of the s-
+the sparse regression.
+It's every The even the you can get the
+precise coefficient.
+As we create
+we come up with the problem statements
+like really all these problems are
+synthetic, right?
+And
+you know the solution before you start
+and it's actually not fair in many
+cases, but
+Right, right, right.
+uh problem statements, we have a degree
+of freedom there to say
+that much I know, that much I don't
+know. I don't know. I know that it will
+be a diffusion term, so I'll force it in
+there, but I don't know the the reaction
+term. That's the example I showed with
+the method of characteristics where the
+reaction term can be anything, right?
+And there was nothing in the basis
+functions that would
+let me get there.
+That would imply that this is this this
+was found by symbolic regression. So, uh
+there is so many different forms and
+functions that could dominate or govern
+a system that
+you don't necessarily know.
+If it's things as simple as finding the
+square of C as in this case, yes, sparse
+regression that I mean you can augment
+the add terms more and more terms as
+basis functions of sparse regression, it
+will work just just as fine. But
+there is so many cases that it's it's
+very unknown and there is also other
+cases where
+I didn't present it here, but it's not
+so much about finding the ground truth,
+but is about finding models that uh
+are explainable. You can read through
+them, identify a little bit of truth,
+but not exactly identical to whatever it
+is the governing equation. I was
+discussing earlier about the
+manufacturing case, that is also the
+case when you use data like
+uh frequency the
+um
+uh
+audio data in the frequency domain, then
+you lose any connection to physics. What
+does it mean, right? Or wavelet
+transforms of the audio data and things
+like that. It means nothing to humans.
+Um but the frequency of those things can
+as they identify and selected by
+symbolic regression sometimes it means
+something. It tells you a little bit and
+you can at least still read the
+equation. That's the beauty of
+symbolic regression. But then you will
+have to build models that you don't know
+what they are and sparse regression
+would never serve that purpose.
+Yeah. Yeah.
+Yeah, that's nice thing about the the
+symbolic regressions.
+Um
+Okay, I'm I asked too many questions. I
+I do have more questions but
+let's let's give audiences some chance.
+Is there any questions um from audience?
+You can unmute yourself and ask
+question.
+Well, if not I let me ask one more
+question.
+Okay.
+Sure.
+Um
+You know, the Okay, this is you know
+um directly using data and then come up
+with the governing equations of the data
+directly, right? Um
+A lot of times, you know, this in terms
+of in the context of developing a
+surrogate model or reduced model. So,
+the goal of those those model is try to
+accelerate the existing
+simulations, right? Um there recently we
+have developed you know, algorithm so
+called the lasty latent space dynamic
+dynamics identification. We do use a you
+know, this symbolic regression or sparse
+regression technique but in the latent
+space, not not on the not in the actual
+you know, physical space.
+Um the reason is that um because we know
+how to solve it but the problem the
+motivation of those the development of
+those methods was
+expensive, you know, computational cost,
+right? So, and and that comes from the
+high-dimensionality
+um after the discretization.
+So, as you generate the data that you
+know the data in space-time everywhere,
+like very
+and so we have a abundant of data, but
+the thing is it's it's very high
+dimensional. So, what we did was we
+compress the data into the reduced space
+by using linear compression or
+non-linear compression, and then we
+apply
+this
+uh symbolic regression or sparse
+regression. And that tends to work
+pretty well, and it was perfect to apply
+those symbolic or you know, this this um
+the sparse regression in the latent
+space because we do not know the
+underlying governing equations for the
+for that latent space.
+Um maybe
+this method, your your symbolic
+regression approach
+is very useful um in that context as
+well. I I guess this is just a comment
+rather than the questions.
+We had um
+something along the lines of um
+I mean, you're trying to describe model
+reduction or surrogate modeling and
+model optimization. Uh um
+There is very interesting
+uh
+extensions of how you could combine
+information theory
+principles of identifiability and uh
+uh and so on uh with uh symbolic
+regression to actually find informative
+models and also define optimally the
+samples that you use for the for the
+reduction.
+An elephant in the room there is that
+usually you need a large data set. So,
+Yeah.
+We actually had a project that took
+about
+3 months of Monte Carlo simulation over
+a CFD model
+Mhm.
+uh
+to just generate the data, and every
+time we wanted to change the parameter
+in the five fidelity model we need
+another three months so it's it's quite
+challenging so
+it's it's very interesting it's
+I think I read a little bit of of your
+work and it's a very interesting
+extension of
+of work of
+some of these models and some of these
+approaches to some
+That's great.
+All right.
+Um
+Do you do you know Pat Langley at
+Stanford University?
+I'm not personally. I think I
+Oh,
+okay. So I guess you had
+heard of him. I guess he's he's he's
+into this this area like
+physics discovery or the discovery
+algorithm in general. Um
+So
+We had
+Hod Lipson a few many years ago.
+Who's the
+They had Eureka back in the day they had
+some really good papers and a lot of
+noise on that because before it became a
+company and then they stopped publishing
+all together but yeah there is there is
+some very interesting works in the same
+field and
+Right. Right. Right. All right.
+Okay.
+Let me stop here
+and
+if there is no further questions let's
+let's thank our speaker
+George for the wonderful talk.
+And hopefully we can collaborate in the
+future.
+Yeah, hopefully we can.
+Yeah.
+Thank you very much for the invitation
+and it was a pleasure.
+Thank you. Thank you George.
+Okay.
+Have a good day.
+Bye.

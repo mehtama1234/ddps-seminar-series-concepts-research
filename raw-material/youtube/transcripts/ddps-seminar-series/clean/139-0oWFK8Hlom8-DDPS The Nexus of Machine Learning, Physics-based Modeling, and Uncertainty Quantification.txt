@@ -1,0 +1,1486 @@
+Sorry. And uh thank you very much Tony
+for the invitation and for the very nice
+introduction. And thank you to everyone
+uh for attending and and thank you to
+the DDPM group for this invitation. It's
+really an honor to be able to uh present
+to you all today. What I'm going to talk
+about today is really at the
+intersection of um you know of ML and
+pushing toward AI and uh physics based
+modeling with what my group specializes
+in is uncertainty quantification. And
+you know we're going to talk about this
+in some sort of broad brush strokes. So,
+we're going to talk sort of big picture
+about some things uh covering hopefully
+covering
+a a good swath of ground uh and and and
+really zeroing in on certain uh certain
+aspects of of what we do. So, you know,
+trying to take a high level perspective
+and zoom into particular things uh as
+they as they're relevant. So uh to get
+started um the first thing I want to do
+is acknowledge you know a huge group a
+huge team of of people who have
+contributed to this work. So uh
+everybody that you see on this screen
+ranging from graduate students to
+collaborators uh in various capacities
+has contributed in some way shape or
+form and to to the work that I'm going
+to present here. Um and so I want to
+acknowledge all of them. Uh many of you
+for in in particular may be familiar
+with uh Sumant who's down here at the
+bottom middle uh who spent the summer at
+at uh in the DDPM group um at Liverour.
+So um
+I'm going to talk about work that
+everybody here did and and and really uh
+want to emphasize that this is a team
+effort. I want to start with uh a couple
+I guess brief advertisements. Um as Tony
+mentioned my group um oh sorry before
+that I uh I have developed a course on
+Corsera for uh uncertainty
+quantification. So if if you're new to
+uncertainty quantification and you want
+to learn the basics, you know, this is a
+good place to start. Um, for those of
+you who already know UKQ and are
+familiar with uh with the basics, uh
+it's probably a little too uh
+rudimentary, but for those of you who um
+are interested in picking up the basics,
+this is a good place to start. Uh and
+also, as Tony mentioned, my group
+develops the UQPI uh software package,
+which is uncertainty quantification with
+Python. Um the the thing I want to
+emphasize here is that UKI is really
+meant as a as a development environment.
+So it's really you know we're seeking
+we're seeking new developments. It's
+fully modular and it's built in a way
+that's intended to be easily extensible.
+So new new things can be built in rel
+relatively easily. Um and to that point
+uh right now we have recently just uh
+released the what we call the CML or
+affectionately refer to it as Smile uh
+the scientific machine learning module
+which is built right on top of PyTorch.
+So everything is fully compatible with
+PyTorch uh Beijian layers and various
+other things that you can do UKQ uh
+right on top of PyTorch. Um so with that
+with those advertisements I'll start to
+kind of dig into uh the the
+presentation.
+Now I divide the presentation into two
+pieces. Uh there's a very good there's a
+very strong likelihood that we will not
+get to the second piece. Um but I put it
+here for completeness anyway. Uh you
+know hoping that maybe if we have some
+time we we can get there. But um part
+one is going to be about talking about
+how do we do uncertainty quantification
+in scientific machine learning models or
+as I'm going to call it UKQ4ML.
+The second part is how how do we use ML
+uh for UKQ purposes. So that's the
+that's the idea of solving um solving
+problems in UKQ with ML. So we'll we'll
+come to that uh if we have time. But I'm
+going to start with this UKQ for ML
+component.
+Um
+so let's start very basic right so I
+think we're all pretty familiar with
+this idea of scientific machine learning
+right we're at the intersection of
+machine learning methods and how we can
+apply those to solve phys for phys solve
+physical systems usually in the context
+of btees and and uh um maybe some
+observational data um but that's sort of
+the the the big picture and when we
+think about uh CML we oftentimes think
+of three three sort of classes of
+problems right so we talk about PTE
+solvers these are things like uh physics
+informed neural networks and you know
+deep gerkin methods and and and and
+similar things uh there's PTE discovery
+type of problems like Cindy symbolic
+regression type of uh of problems and
+then what I'm going to focus on
+primarily today um is in the context of
+operator learning right so we have an
+unknown an operator, we want to be able
+to uh we want to be able to to uh fit
+that from some data perhaps impose uh
+some physical constraints and and so on.
+So when we think about operator
+learning, you know, we're we're in this
+context where we're starting with some
+input function and we want to be able to
+predict some output function. We want an
+operator that's going to map from that
+input function. Again, we're working in
+function spaces to map an input function
+to an output function. Uh simple example
+of this is, you know, very simple uh
+differential equation. You know, we
+start with some some input function and
+we're trying to predict uh the evolution
+of that uh uh from that from that
+initial condition. Um this hopefully is
+pretty familiar to everyone, so I won't
+belabor it. uh there are several sever
+there are many many different methods uh
+for for operator learning. I'll
+highlight a couple that have been
+particularly popular and and widely used
+and and very uh very useful methods. Uh
+in particular uh the deep operator
+network or deep net which is built on
+the universal approximation theorem
+which really breaks the operator down
+into two components uh both both learned
+with neural networks. uh one being uh
+the what are called the the trunk net
+and the other being what's called the
+branch net. And essentially what you're
+doing is you're learning um a set of
+basis functions that that span the space
+of your output and the associated
+coefficients uh for that basis uh with
+the branch net. Um so again you
+discretize your input um and you'd learn
+a basis that's spanning the output
+space. Um, another popular method that's
+widely used and very uh um uh
+works very nicely for many problems is
+what's called the 4A neural operator. Um
+and again in this in this method what
+you're doing is you're trying to use for
+transforms to approximate the integral
+operator. Right? So um so that's uh so
+these are two popular methods. Um, but I
+wanna I want to sort of take a step back
+from these because these are particular
+methods that are really useful and and
+widely employed. Um, but as we think
+about sort of getting bigger and solving
+bigger, larger, more complicated
+problems, we're we're starting to move
+toward what are widely known as
+foundation models, right? So foundation
+models um you know if we look at just
+what Wikipedia says they're you know big
+deep learning models that are trained on
+vast data sets and they're expected to
+work over a wide range of of use cases.
+Um and I'm going to talk here about what
+I'm going to call two basic classes of
+foundation models. Right? So you have
+your large language models which are
+everybody knows and and probably uses on
+a day-to-day basis. Now um but then
+there's also so you have this the large
+language models but then you also have
+this emerging uh field of scientific
+machine learning models or scientific
+foundation models right so we're trying
+to use very very large models trained on
+vast data sets to solve uh to solve
+physical problems um and this is really
+an emerging an emerging area that the
+DDPM group has done a lot of work in Um
+and in fact you know the that I really
+appreciate the work that the group has
+done and saying hey we need you know we
+need to set standards for this and we
+need to um to really um build this whole
+concept up because as it is right now or
+as it has been it's been very loosely
+defined right um and so trying to put uh
+uh some some bounds on that and trying
+to push that d that that that work
+forward Um
+it's sort of fortuitous that I'm giving
+the presentation today because just a a
+couple of days ago the nationalmy's
+released this report on uh on foundation
+models and one of the things that was
+really highlighted in this report and it
+I mean it permeates this report very
+very uh very strongly is the need to
+start thinking about uncertainty
+quantification in foundation models. So
+a couple of the uh conclusions that they
+draw in this in this report is that VVUQ
+methods VV being verification and
+validation UQ being uncertainty
+quantification um the methods that are
+analogous to those for traditional
+modeling don't exist in the context of
+foundation models right those haven't
+been they haven't been built yet um and
+they need to be built and they need to
+be and they're they're really critically
+important um A second conclusion there
+is that they need to be interpretable,
+right? We need to understand what the
+uncertainties and foundation models
+mean. Um, and that's going to be
+critical for establishing and
+maintaining trust in these very very
+large and generalizable models, right?
+That that often times will look and feel
+like black boxes. Um, and so their
+conclusion there, their recommendation
+is that the DOE really needs to take the
+lead in this. And I think going back to
+the to the paper here on the left hand
+side of your screen, I think it's it's
+uh it's really being demonstrated that
+the DOE is taking the lead on this. Um
+and and and it's really it's really
+great to see. So um that's why I say
+it's sort of fortuitous for me to be
+giving this talk today because I'm going
+to talk about UKQ and foundation models
+or at least trying to nudge us in that
+direction. Um, so when we think about
+foundation models, uh, I want to break
+down a couple of characteristics that we
+think of with foundation models, right?
+So we want generalizability.
+Um, and I'm going to break this down in
+the two types of of foundation models,
+right? Your LLMs and then your
+scientific uh, foundation models. So in
+generalizability, right, LLMs need to be
+able to do multitasking and CML. We want
+them to be able to solve across
+different re regimes of physics and
+solve uh uh different PTEEs and so on.
+Um we want them to be adaptable, right?
+So in LLMs, we want to we want to be
+able to span different domains that
+we're uh that we're studying. In in CML,
+we want to be able to span the
+conditions that we're that this that the
+problem can uh that sorry that the model
+can work for different boundary
+conditions, initial conditions,
+geometries as I mentioned all across a
+multifysics uh setting.
+But beyond that, we really need them to
+be extrapolatory,
+right? We need them to work for tasks
+that are that are unseen in the training
+data. Um, so what that, you know, when I
+think about that, I think about
+scientific machine learning models being
+able to be predictive and not
+necessarily just predictive in the con
+in the constraints of the of the
+training set. Now, I will mention that
+um these three characteristics differ
+very slightly from uh what uh what the
+DDPM group has called the core values of
+generality, reusability, and
+scalability. But I really think they're
+largely consistent and I don't see them
+as being at odds um really in any way.
+Um so let's think about when the the
+when I think about UQ for foundation
+models, it's really important for me to
+think about we have these very very
+large uh very complicated models and we
+need to really break them down because
+in order to quantify uncertainty, we
+need to understand the components of
+those models. And so I'm going to talk
+briefly about the components of
+foundation models um as uh in the for
+the context of UKQ. So we start with
+some sort of um what I'm going to call
+tokenization here. Um and tokenization
+in the LLM community is very well
+understood. But when I say tokenization
+in in the CML
+uh in the CML world, I'm really talking
+mainly about discretization, right? We
+have spatial discretization, we have
+time discretization. we're discretizing
+the problems that we're solving. Um, and
+so those are those are somewhat
+analogous between uh CML and large
+language models.
+And the next component is our learning
+objectives, right? In LLM, we might be
+trying to make, you know, word
+predictions or sentence predictions. In
+SCML, we're trying to do regression.
+We're trying to predict in space and
+time for uh uh for some operator or some
+uh set of equations. And
+given that objective, given the the
+discretization we have, we have to
+define a model architecture, right? LLMs
+are largely based on transformers. You
+know, you have encoder decoders, you
+have decoder only models. Um, in CML,
+it's sort of split. Some, you know, some
+are transformer-based, many are neural
+operator based, as I was talking before.
+Um but there's no you know there's no
+one unified sort of model that uh that
+that's being used for uh for CML
+foundation models and and the last piece
+that I'm going to talk about is training
+right so in training you have
+pre-training phases you know where
+you're churning through huge amounts of
+data and then you have fine-tuning
+phases right and and um in this is very
+well known in in LLMs and in CML we have
+combinations of different types of data
+sources. We might have simulation data,
+experimental data, um, and so on. And
+those might come at different
+resolutions and all these kind of
+things. So you might be training on many
+PTE and then trying to fine-tune for a
+specific PTE or, you know, various other
+ways of training. Um, the point in
+bringing all of these up is that all of
+these components introduce
+uncertainties. There are uncertainties
+in all of this and we need to address
+the uncertainties in all of these
+things. Um the second thing to to to
+emphasize is that these models are are
+huge. They're astronomically large.
+Right? So if we look at some of the LLM
+models, we're talking about model models
+that have hundreds of millions to
+billions of parameters.
+Um in the CML models, you're you're
+talking about the same thing, right?
+Neural operator based models can be
+millions, hundreds of millions of
+parameters. Now, um, transformer-based
+architectures again can be tens of tens
+of millions to potentially billions of
+parameters. Um, and a couple of models
+in particular that we are we're
+specifically looking at are uh the
+neural combinatorial wavelet neural
+operator developed by Soic Chucker Borty
+and his team. Uh, so we're specifically
+looking at that. I'm not going to talk
+about results for either of these
+models, but just letting you know that
+these are some of the models that we're
+looking at as well as the uh MPP AIT
+model um out of the Flat Iron Institute
+that uh has now I guess been superseded
+by the the Walrus model, but it's a it's
+a good transformer-based architecture
+for us to kind of test out some of these
+ideas that we're uh that that we're that
+we're playing around with. So, now let's
+talk about all of this in the sort of
+context of UQ, right? So I mentioned the
+components of of the model right? So um
+we have uncertainty in all of the
+components. If we think about mapping
+using the model as a mapping from the
+input to the output we have we have
+uncertainty in the model architecture
+itself. Right? What model is what model
+architecture is appropriate? What
+parameterization of that model is is is
+right for the problem. That's a uh
+there's a there's huge uncertainties in
+that. Um, once we've decided what the
+model should be, then how do we
+introduce uncertainty in the parameters
+themselves? And I'm actually going to
+talk probably a good portion that'll be
+the the thing that I talk about the most
+here. And again, recognizing that we
+have millions to billions of parameters
+in in these models. Um, there's
+uncertainty in how we quote unquote
+tokenize, right? How do we discretise uh
+the the inputs and the outputs and what
+influence does that have on predictive
+capability? You know, starting to push
+toward things like multifidelity and
+being able to train on data sources that
+are heterogeneous from simulations and
+experiments and so on. Um you have
+uncertainty in your learning objectives.
+So when you define your loss function,
+you are defining a specific loss
+function that is going to drive your
+solution to uh to whatever you're
+prioritizing. And so that in and of
+itself introduces uncertainties and
+those need to be addressed as well. Um
+and finally in the training strategies
+whether you're doing pre-training or
+fine-tuning how you define uh how you
+define and curate the data selection or
+the the data set uh how you establish
+learning rates and schedules and all of
+these kind of things can be influential
+in the uncertainties that uh that your
+model predicts. So uh the point is that
+there are uncertainties in every
+component of these very very large
+models and we need to address each and
+each of those uncertainties in turn. And
+and my personal sentiment on it is that
+if we're thinking about models that are
+this large and complex, it's really
+essential that we break these models
+down into these components and think
+about how we tackle uncertainty in those
+components uh as we as we progress.
+Otherwise, you know, um we we get
+overwhelmed by by the uncertainties and
+and by the the sheer magnitude of the
+the sheer scale of the of of the
+problem. So the way that we've done this
+is you can see we've formulated sort of
+the the um probabilistic prediction. Um
+so what I'm doing here is I'm saying you
+know the probability of a prediction S
+given some input and some data D. We can
+express this in a law of total
+probability that's sort of long and you
+know ugly on the screen. But uh when I
+when when we actually break this this
+equation down, we can start to think
+about each and every one of these
+components. So if I look for example at
+the parametric uncertainty, right? This
+is the probability of my parameters
+given the fact that I've selected a
+model and a training strategy and so on
+and so forth. um then I can formulate
+this in a Bayian framework right I can
+set up I can set this up in in terms of
+B rule and I can say well okay I have a
+likelihood function over the data and I
+have some prior there's and and I can't
+emphasize enough the importance of this
+prior right there's a lot of work um in
+particular uh work that's looking at
+things like functional prior um and how
+do you define priors that are meaningful
+ful for physical problems. Um, and not
+just, you know, declaring them sort of
+ad hoc. Um, I'm not going to get into
+that today. That's a that's a whole
+another topic. But, uh, but it's
+something that I I really want to make
+sure to emphasize is important. Now, so
+when we solve so when we when we set
+this up using Baze rule, um, I want to
+emphasize that also there, you know,
+there have been some some works that
+have started to do this in the large
+language model community. There's things
+like combining low rank approximations
+with variational inference for LLMs and
+you know these are these are starting to
+um u to see the light of day and this
+and very happy to see that these things
+are uh are happening. Um
+so let's talk a little bit about how we
+then
+define Beijian neural networks in this
+context. Right? So we're we're thinking
+about setting up and and learning the
+parameters in a in a Bayian setting. So
+we think of if I take that that one
+component out of that long equation and
+I simplify it. Um that's what I'm
+showing here with B rule at the top. Um
+I can set that up so that I can you know
+I can I can calculate the predictive
+probab the predictive probability of the
+output um in in this way where my
+objective now is I I've built sort of B
+rule into my into my objective function.
+Um when I do this the nice thing is that
+I can apply uh you know law of total
+variance and I can actually split the
+uncertainties
+um into an aliatory and epistemic
+component. So when I'm making a basian
+prediction with a neural network I can
+see the component that's coming from the
+aliatory uncertainty and this and the
+portion that's that's coming from the
+epistemic. Um, now there are a lot of
+different sort of flavors of Beijian
+neural networks and how we can think
+about training Beijian neural networks.
+And I'm not going to belabor all of
+this. Um,
+but uh there are different strategies,
+right? There's more the sort of more
+exact strategies where you start and try
+to draw samples from the posterior using
+markoffchain Monte Carlo methods um and
+and and various uh other sampling
+strategies.
+um those are the most
+accurate, the most, you know, the the
+the ideal models, if you will, in some
+sense, but they're also very very comp
+computationally expensive and
+prohibitive and struggle with really
+highdimensional problems, especially if
+we're talking about millions or billions
+of parameters. Um there are of course
+simplifications that we can make looking
+at variational inference and and other
+approximations. So in variational
+inference we're going to assume a
+simplified form of the uh of the
+posterior and if we assume a simplified
+form then we can minimize a a difference
+between the underlying assumed form and
+the true posterior. We can do this with
+a various with a a variety of
+divergences whether it's scale
+divergence Jensen Shannon divergence
+etc. um you know and this is a a pretty
+efficient way of training bashian neural
+networks but of course you're making
+assumptions and of course you have uh
+addition you have even uh even more you
+know things like Monte Carlo dropout
+where you're essentially applying a
+Bernoli distribution over the parameters
+and allowing yourself to randomly drop
+out um as you as you proceed. So these
+are you know they they get progressively
+less expensive but also progressively
+stronger assumptions that you're making
+um as you move forward. Now if we talk
+about being able to estimate the or
+sorry uh sample directly from the
+posterior one of the most common methods
+is to use what's known as Hamiltonian
+Monte Carlo. And in Hamiltonian Monte
+Carlo, you define uh you define a
+Hamiltonian and you know you assume that
+the the position uh of that uh of that
+system is the state of your system and
+then you evolve that according to
+Hamilton's you evolve the uh the state
+of the system uh using Hamilton's
+equations as shown here. you know, you
+define a uh uh
+uh potential energy as the log of your
+of your distribution and then you can
+evolve the system using numerical time
+integration uh with a with a metropolis
+Hastings acceptance criteria. uh this is
+very very expensive to do if especially
+if you're working in in high dimensions
+because you're you're integrating a time
+uh uh a time evolving differential
+equation into your into your sampling
+strategy. Uh so one thing that we we did
+uh a few years ago to kind of accelerate
+this is we said well okay we can take
+that time evolving system we can learn a
+physics informed neural network that's
+going to evolve that system and we can
+integrate that physics informed neural
+network into the uh u into the HMC
+process. So in in uh in this case what
+we're doing is we're building what's
+called a Hamiltonian neural network
+where you use in graph gradients. You're
+using autodiff to compute the the
+derivatives that you need for the u
+evolution of the Hamiltonian system and
+then you're able to use your neural
+network to evolve that system of
+equations. Now this works nicely for
+problems. It works really nicely for
+lowdimensional problems. um and trying
+to scale it up is where things is where
+things get really really challenging. Um
+so we've been able to scale it up to
+problems that are maybe you know few
+hundred dimensions but a few hundred
+dimensions isn't going to get you
+anywhere in a in a in a foundation
+model. So um
+so what we're trying to do is we're
+trying to now take take these ideas and
+say okay well how can we scale these
+ideas right how can we get these ideas
+to push forward to scaling to problems
+that are going to be as large as the
+foundation models. Um so I want to take
+a step back just to look at uh you know
+the different neural network types right
+these Bayian neural network types right
+we have Hamiltonian Monte Carlo as sort
+of let's call it the gold standard to
+some extent right so uh you can do
+really nice things in terms of exact uh
+getting exact sample sorry samples from
+your exact posterior but it's really
+really expensive now VI um you know is
+really is much more efficient but uh you
+are making some pretty strong
+assumptions on what the form of the
+posterior is and so there's questions
+about uh how reliable your your
+uncertainty estimates are and then Monte
+Carlo dropout takes that even a step
+further making stronger assumptions and
+so um you know the question is how much
+can you really rely on the uncertainties
+that come out of uh of those methods. So
+to test this out, you know, and think
+about how can how far can we just push
+the the methods out of out of the box,
+we um we we ran a comparison here where
+we're making a prediction. And this is
+not a neural operator. This is not a
+foundation model. This is just a
+standard neural network. This a basian
+unit where we're taking some input
+microructure and we're trying to predict
+the mean and the variation the mean and
+the variance of the of the stress field
+uh that evolves under unaxial tension
+conditions. Um here our model varies
+from you know 10 to 100,000 parameters.
+So in the context it's you know it's a
+decent size model but in the context of
+a foundation model it's tiny right. Um
+and so this is just taking those methods
+out of the box and saying well what can
+what can we do with those? Well in this
+context we actually have shown that we
+can apply Hamiltonian Monte Carlo. We
+can we can run Hamiltonian Monte Carlo
+up to that up to the scale of a problem
+about this size. This is really where we
+hit our computational limitations um is
+when we get to these size problems. Uh
+we ran that with the B compared against
+the base by backrop algorithm. That's
+the sort of benchmark method in many
+ways for variational inference along
+with Monte Carlo dropout. Um and what
+you can see here um is that you have the
+input microructure on the left. you have
+a prediction of the mean stress sort of
+in the middle and then you have um the
+uh the variance of the of the stress
+that comes out of that. And the the real
+takeaway here is that while Hamilton
+Hamiltonian Monte Carlo which is shown
+here down on the bottom right um is sort
+of as I mentioned like the gold standard
+when we compare it against base by
+backrop and Monte Carlo dropout what we
+found is that there were significant
+differences with Monte Carlo dropout but
+base by backrop actually did a
+reasonably decent job at recovering um
+what came out of the Hamiltonian Monte
+Carlo much much better so than uh than
+the Monte Carlo dropout method. Um so
+so moving forward, we're going to try to
+we're going to try to leverage these two
+methods, variational inference and
+Hamiltonian Monte Carlo in some in in
+some clever ways. Uh but before we do
+that, so this was a paper that we
+published uh in the last year just
+looking at um uh these uncertainties and
+and making this comparison. Um but when
+we think about variational inference in
+particular, so there's a lot of ass
+there are a lot of different things that
+you can do in variational inference to
+compare the difference to compare your
+uh your your assumed distribution to the
+um to the true posterior. So based by
+backrop as I mentioned uses KL
+divergence. Another way is to use alpha
+divergence or JS divergence. In this
+work we used the um the alpha divergence
+and one of the things that we highlight
+here is you can see that this is a very
+simple function um and what we're trying
+to fit is we're trying to fit this uh
+using based by back prop to get an
+estimate of the uncertainty and you can
+see that the the solution is very highly
+dependent on the initialization how we
+start the training for u for the for the
+Beijian neural network. And so we
+realize that this is sort of a
+fundamental issue in the def in the
+definition uh of the model. Uh and so
+the way we address this is through a um
+a s pseudoasian model averaging scheme.
+So now we're talking about like
+ensembles of models. So what we do is we
+take we train several vi models. Um we
+compute associated model weights from
+each of those um using the expected log
+pointwise predictive density. So you can
+see here in this in this uh in this
+array of of plots these are each
+different models. So every one of these
+has an associated weight. You can see
+some of them are better, some of them
+are are not as good, some of them have
+high weight, some of them have low. And
+then when you weigh all of these models
+in uh uh together, what you see is that
+you can recover something that is better
+than the initial VI model but and is
+closer to the to to what you would get
+from the the Hamiltonian Monte Carlos.
+So you get a better more diverse picture
+of the uncertainties. Of course this
+comes at the at the cost of having to do
+ensembles which is of course another way
+of of um of training the the neural
+network. Um so up to this point right
+we've talked about um we've talked about
+how we can start to attack the question
+of parameter uncertainty right so we can
+do things like we can do variational
+inference we can use alpha divergence as
+we did in this work we can start to do
+ensembles and model weights so now we're
+starting to think about some of the
+model form uncertainties if you're if
+you're doing ensembles over multiple
+models then you can start to attack
+those things But we haven't really, you
+know, we haven't really pushed anywhere
+near the the foundation models at this
+point, right? We're still working with
+regular neural networks at this point.
+Um, so that brought us to um, you know,
+to really thinking about how do we scale
+these these problems. So one of the one
+of the hypotheses that we developed was
+this idea and I think that this is
+fairly you know um fairly common given
+the application of things like low rank
+approximations and so on is that not all
+of the parameters in these huge models
+are really going to be important for UKQ
+purposes. Right? So when we have
+hundreds of millions or billions of
+parameters, not all of those mo not all
+of those parameters are really going to
+be uh critical for the uh for the for
+UKQ purposes. So our idea was let's find
+the most sensitive parameters, the ones
+that are really influencing the
+uncertainties in the prediction. And the
+way we attack this is we we solve um or
+sorry we we train the model initially
+using variational inference. We rank the
+parameters according to their
+sensitivity scores. Uh we'll get into
+how we do that. And then we're going to
+take the the model parameters that are
+very low sensitivity and we're going to
+fix those parameters and then we're
+going to apply Hamiltonian Monte Carlo
+to uh a subset of parameters that we
+think are the most influential.
+Um so how do we define sensitivity?
+Right? So we have a a huge parameter
+space and in order to assign uh assign
+sensitivities we have the ability to
+very quickly evaluate gradients. Uh so
+we do that using the uh build a tiller
+series expansion apply the delta method
+to get the variance of each of the
+parameters um uh the variance associated
+with each of the parameters I should say
+and their total contribution to the
+overall variance of the of the output.
+And then we define a threshold and say
+below this threshold we're going to
+consider those parameters to be not
+influential in the uncertainty estimate.
+So if we look at again this you know
+very simple sinosoidal model um
+if we if we apply uh Hamiltonian Monte
+Carlo on the right you can see that the
+the estimates of uncertainty are are
+fairly robust. You know, you can see if
+we're doing interpolation, for example,
+in this region near zero that the
+uncertainties are encapsulating the the
+true the true solution um with uh with
+what you would expect to be relatively
+high uncertainty given that you have a a
+gap in that data. Um and if you compare
+that with VI which does pretty poorly uh
+in that in that predictive regime when
+we apply uh the
+when we apply the sensitivities and then
+uh uh apply Hamiltonian Monte Carlo to
+those sensitive parameters we push
+ourselves toward the HMC solution. Now,
+importantly, I should emphasize that
+we're not getting back where we would be
+if we could do uh the full HMC, but we
+are improving substantially over over
+variational inference. So, uh it's a
+step in the right direction, but it's
+not, you know, it doesn't fully get us
+where we want to go. Now, we applied
+this in the context of uh a Beijian
+Depoton net for a um a hypersonic flow
+problem. Here we have uh a number of
+inputs represented through the energy
+spectrum of the of the incoming flow.
+Here we have 52 uh input parameters. Uh
+and we're trying to make predictions at
+four pressure sensors on on the wall of
+this cone um the nose cone in the
+hypersonic flow. So we're we have uh
+four different sensors. we're trying to
+predict the the pressure spectrum and we
+applied this uh variational this vi
+approach. Um this gives you a sense of
+how how this method uh allows us to
+scale u in in in a problem like this
+like this depot. So if I look at the
+number of parameters here on the x-axis
+right what I can see is that the
+uncertainties for 90% of uh sorry 90% of
+the uncertainties are encapsulated by
+only 840 parameters out of the
+approximately 16,000 parameters that are
+in our total model. So what that means
+is that we can do a we can do HMC on a
+parameter space of 840 rather than on a
+parameter space of 16,000 which is a
+substantial savings and allows us to do
+HMC uh in a in in a much larger problem.
+So we did this and you can compare uh
+the VIHMC and the VI for this uh depotet
+problem. It's a little hard to see from
+these from these plots, but um the VIHMC
+uncertainties are as we argue in the
+paper are are significantly better
+calibrated uh than just the VI
+uncertainties uh for this for this
+problem. And so that ability to reduce
+the parameter space and focus
+uncertainties on a small number of
+parameters really allowed us to scale
+this problem up to something again
+16,000 parameters is not a foundation
+model but it's it's at least pushing us
+into into larger and larger problems. Uh
+right now what we're working on is um
+applying this in the context of a basian
+fora neural operator. So in a basian for
+f for neural operator what we have uh in
+this particular setting is we're looking
+at a six-story uh shear building
+subjected to stochastic ground ground
+acceleration uh with significant non
+nonlinearity in the u um in the force
+displacement relationship for the in the
+floors. So the structure is modeled in
+open seas. We have uh a number of
+parameters again stochastic ground
+ground motion um defined by a filtered
+white noise uh stochastic process and
+we've done this now just with a pure
+neural operator and showed that the
+forier neural operator uh performs
+actually quite well for this problem u
+in a recent paper. But now we want to
+take this VHMC approach and we want to
+be able to solve this with a Beijian
+FNO. And so that's that's kind of a a
+current uh a current work that we're
+that we're working on right now is that
+if you look at this uh this 4A neural
+operator right now we have four four um
+4A layers. We have about six million
+parameters in this model. So, okay. So,
+now we're getting to something that's,
+you know, modestly large size, something
+that's bigger than just the tens of
+thousands of parameters that we've been
+dealing with before. Um, but
+importantly, the the the really
+important thing that I want to highlight
+here is down on the bottom right where
+we can see that if we define our our
+threshold, I think this is a 95%
+threshold. we see that we can reduce
+from 6 million parameters down to about
+8,000 parameters in that model that are
+capturing 95% of the uncertainty. Right?
+So now we can do uncertainty
+quantification on 8,000 dimensions
+instead of 6 million dimensions. And
+that is a huge savings. Right? So now we
+can actually start thinking about
+applying Hamiltonian, Monte Carlo or
+similar strategies uh to problems that
+are that are um uh getting larger in
+scale. And so this is ongoing work. We
+haven't uh we haven't finished this. Um
+but I think there's a lot of promise
+here that shows that we're starting to
+be able to scale these methods to be
+able to do uh uh UKQ in in larger and
+larger problems. Um
+the the the next thing I want to talk
+about is this idea of being able to
+incorporate that with some dimension
+reduction. Right? We I talked about I
+mentioned low rank approximations. Um a
+big theme of my work over the past uh
+decade or so has been combining
+dimension reduction strategies with
+surrogate modeling for UKQ purposes. So
+in the sort of big picture uh you know
+what we're trying to do is take a really
+highdimensional input problem map it
+down to something that's much lower
+dimension and you can do many there are
+many many different ways to do this. um
+build sorry build the uh surrogate model
+or the neural operator or whatever uh
+you're trying to build in that
+lowdimensional space and then lift that
+back out um to to the to the
+highdimensional solution. And um you
+know so we published a paper a few years
+ago that looked at a survey of these
+sort of of dimension reduction schemes
+using unsuper unsupervised learning
+schemes to build uh surrogate models in
+lowdimensional latent spaces. So we we
+looked at several classes of methods
+that um range from linear methods to
+autoenccoders and uh uh spectral methods
+and so on and we compared uh compared
+many of them. So um this is just to give
+you a sense of some of the things that
+we've done in this space. I'm not going
+to get into um into all into the
+details. Um another another component of
+what we've done is now taking that
+dimension reduction here you can see if
+I kind of follow this schematic through
+here on the top left you have
+highdimensional input that you're
+mapping through some fun through some
+operator fee onto a lowdimensional
+latent space. Again, you're taking the
+highdimensional output of it of that
+system, mapping it to a lowdimensional
+latent space. And here we're building a
+polinomial chaos expansion surrogate.
+These are what are known as manifold
+PCEES. Um something that we've worked on
+uh uh for several years now. Again, just
+to give you a sense of some of the
+things that we've done in in this space.
+Um another uh another approach uses um
+uh principal geodessic analysis looking
+at how do we actually do interpolation
+and and prediction on on manifolds. Um
+and finally, you know, to the sort of to
+the point uh uh of this of this work,
+we've done this by building
+neural operators in those latent spaces,
+right? So you you make a a prediction uh
+or sorry, you make you you project onto
+a latent space or onto a manifold, you
+build your operator on that space, and
+then you project the solution back out.
+So in this case, we're looking at a
+depotonet. we we essentially bookend
+that depotet with autoenccoders and then
+you build the you build the depotet in
+the in the latent space. Um, and the
+reason I bring all of this up is because
+now we can start to think about com
+combining things like um using these
+type of of embedding approaches to
+minimize the uh to to optimize the
+information content and minimize the
+size of the networks that we need to
+employ and then start thinking about
+employing things like variational
+inference with Hamiltonian Monte Carlo
+to quantify uncertainty in these in
+these systems. So, um, these are just
+some results from I'm going to skip over
+this. I want to get back to our our main
+theme here.
+Um, so going back to this idea of how we
+can, um, start to approach foundation
+models, you know, we've now talked about
+different strategies that'll allow us to
+attack the par the parameter uncertainty
+and hoping to be able to scale to larger
+and larger parameter um, spaces. Um, I
+want to talk briefly about a couple
+other aspects of this before I finish
+up. Um, so I want to talk briefly about
+this idea of uncertainty in the quote
+unquote tokenization or discretization
+in the in the case of uh scientific
+machine learning models. Um so one you
+know if you're familiar with operator
+learning methods you you know that uh
+that in many of these approaches you
+need to have some fixed discretization
+to your input or you need some way of
+you know defining a uniform grid or some
+sort of uh uh again fixed discretization
+on the input. So what we want is to be
+able to define this a neural operator
+that is discretized on an arbitrary set
+of points. We don't want to be
+constrained by that uh by that fixed
+discretization.
+Now a neural you know traditional neural
+operators are are great in that you can
+you fix the input and then it can make
+arbitrary predictions on the outputs. Um
+instead what we want to be able to do is
+we want to be able to make predictions
+with um arbitrary discretization on the
+inputs and arbitrary uh uh
+discretization or uh arbitrary
+prediction in space and time on the
+outputs. And the way we achieve this is
+through a projection. So what we do is
+we take the input and we find an
+embedding that is common uh for for all
+of those inputs. we define a projection
+onto that uh onto that uh um onto that
+basis and then we use that projection as
+the input into our into our our neural
+operator. Um again not won't get into
+the details of this if you're interested
+you can see uh the the resolution
+independent neural operator paper. We've
+also done this uh with physics
+constrained uh problems. So we have a
+physics informed version of the of the
+Rhino. And in this case again you have
+input data that are coming from various
+resolutions not fixed resolution. We
+perform an embedding using a dictionary
+learning scheme and then again build
+this neural operator. Um but this time
+what we're we're using physics informed
+learning to to do this. Um this is a new
+paper that we just uh just published in
+the last several months. Um, so now I
+bring this up because this is going to
+be really important as we start to think
+about how do we embed uh how do we embed
+data for foundation models because you
+need to have some consistency or some
+sort of way of of merging data sets that
+are going to be cons that are going to
+be consistent in some way. So this this
+idea of Rhino and similar ideas around
+particularly extending this to
+multifidelity schemes and being able to
+extend this to concepts where we can
+incorporate both computational data and
+and experimental data is really going to
+be critical in being able to understand
+the influence of the discretization and
+there the quote unquote tokenization on
+um on these larger more complicated
+models. So, I'm going to uh I'm going to
+wrap it up here. I'm probably I'm not
+going to talk about uh the second part
+because I I I don't I don't really have
+time to do that. But um I'm going to
+wrap it up here by highlighting a few
+things that we've we've talked about
+here. So, when we think about breaking
+down foundation models into their
+components, we need to start thinking
+about attacking each of those components
+individually and thinking about
+uncertainty in each of those components.
+And what I hope I've I've I've
+communicated in this presentation is
+that we're not we're not there yet.
+Absolutely not. I don't I wouldn't even
+come close to claiming that we are. Um
+but what I think we have is I think we
+have some strategies that are allowing
+us to start tackling this problem,
+right? And this is uh and this is really
+I think a critical problem for us moving
+forward. So we've started to be able to
+address parameter uncertainty. Can we
+address parameter uncertainty in
+billions of param in in billion
+dimensional parameter spaces right now?
+No, we can't. But we are pushing those
+limits. We are pushing ourselves to the
+point where we're getting closer. You
+know, we're we're taking millions of
+parameters and reducing it to thousands
+of parameters that are influential and
+quantifying uncertainty there. Um maybe
+if we combine these things with
+dimension reduction schemes with low
+rank approximations then that can help
+us to kind of continue to push that uh
+uh to to the limit. Um
+when it comes to model form uncertainty
+as I mentioned at the very beginning
+like these scientific foundation models
+there's a lot of question about what the
+appropriate architecture is what the
+appropriate parameterization is and so
+on. uh probabilistic ensembles might be
+helpful in that. Uh of course they come
+with a cost. They come with they come
+with uh um uh they they come with
+drawbacks but you know we've started to
+explore probabilistic ensembles in the
+context of of some larger models. Um and
+then there's I think the an area where
+there's a lot of really open challenges
+is in this idea of of tokenization and
+discretization dependence and how that
+influences uncertainty. So I talked
+briefly about some um multi-resolution
+strategies that can maybe push us in the
+right direction toward uh being able to
+address uncertainties associated with
+tokenization and and discretization.
+uh in particular going again toward
+multifidelity modeling and integrating
+multimodal data um in in the foundation
+model training. Um I will emphasize of
+course that we have not addressed uh
+several of these challenges right we've
+uh we have not talked at all about UKQ
+uh in the pre-training versus
+fine-tuning stage you know many people
+in the large language model uh uh
+community will argue that well you don't
+need UKQ and pre-training right UKQ and
+pre-training is unnecessary because the
+the the data sets that you're training
+on are so vast and so large that you're
+uh that you are
+uh essentially negating the need for UKQ
+at that stage and where UKQ is really
+needed is in f is in fine-tuning
+especially when you want to start uh
+catering these models to specific
+applications and things and I think
+there's some you know there's some
+justification in that argument but I
+think it's I think the argument is
+different in scientific foundation
+models right um I don't think I don't
+think that that necessarily that
+argument necessarily holds uh in
+scientific foundation models because we
+don't have the entire internet to train
+on, right? Um and so um I also haven't
+talked about things like how we
+understand the uncertainty in that
+results from the definition of the loss
+function and how we are prioritizing the
+training of our model whether that
+includes physical constraints and so on
+and so forth. And so there are a lot of
+components of this that we still are are
+very very early and very very um uh
+really have not gotten started on. Uh so
+with that I am going to uh I'm going to
+conclude. I'm going to go ahead and uh
+skip to the end here. This is all the
+stuff on um UQ for uh ML for UKQ methods
+you know but I don't have time for that
+today and I thank you all for uh for
+joining me today and I'm very happy to
+answer any questions that you have and
+you know look forward to discussions of
+this both today and you know long into
+the future.
+>> Yeah, thanks for the wonderful talk
+Michael. Um so I don't see any questions
+yet in the chat room but uh if the
+audience have a question please feel
+free to unmute yourself.
+So as we give the audience a moment to
+get their force I will jump in with a
+question to kick things off. So I'm
+curious about like in the VI HMC
+approach you show show us some great
+success of this um parameter reduction.
+So I'm curious about could we always
+assume I mean could we always see such a
+reduction for for a guarantee do you
+think the choice of the say the over
+over parameterized model architecture or
+the data richness or like some
+properties of the physical system matter
+to guarantee the uh decay of the
+posterior
+uh such that we can see a spar set of
+sensitive parameters. Yeah, I think
+that's a terrific question. Um, and I I
+I suspect that it's going to be
+dependent on all of those factors. Um,
+you know, how highly overparameterized
+your model is, how expansive and rich
+the data set is, um, how it what is the
+architecture of the model, right? All of
+these all of these pieces that I've
+talked about in this in this uh in this
+presentation and kind of tried to
+elaborate through that equation, I think
+they all play a role here. Um so there
+are going to be problems where a huge
+dimension reduction is possible, but I
+can also envision problems where the
+savings isn't uh isn't nearly what we
+would want it to be.
+See,
+so um are there more questions from the
+audience?
+Yeah. Uh I know questions may pop up
+after hour after the session ends, but
+um Oh, Jonas. Uh please.
+>> Yes, of course. I had one question which
+is actually about the whole purpose of
+using surrogate models in the first
+place, right? Because like they are
+meant largely I mean there's a few
+reasons, but one could be potentially
+like memory or computational efficiency
+in terms of training and these sorts of
+things. Um my question is um
+the methods you've been proposing right
+like I mean I might have missed this
+earlier but um I know the main issue is
+there's often a trade-off between the
+fact you might introduce a nice Yuki
+method but if it is expensive enough to
+train it kind of reduces the need to
+have a circuit model in the first place
+right because you have to add that and
+maybe adding extra training for that
+might sort of reduce the amount of
+benefits in that case right so I was
+curious like how much work like what's
+the state of work with regards to
+actually building more not just
+efficient surrogates but like actually
+UKQ that scales well with you know the
+benefits of the surrogates.
+>> Yeah. Um so let me let me maybe take a
+step back and and maybe I I perhaps
+didn't uh communicate this well enough
+you know at the at the outset is that
+you know when we when we make a
+surrogate model um we are we are
+introducing
+a myriad of uncertainties that didn't
+exist before. There were already
+uncertainties in the problem to begin
+with. we've introduced many more of
+them. Um, and what we're hoping to be
+able to do is without adding
+that extra, you know, that huge
+computational burden of additional
+training, can we make those surrogate
+models give you some estimate of what
+the uncertainty is? So, you know, we're
+still sort of operating in that in that
+in that hope, for lack of a better way
+of putting it, that the surrogate model
+is still going to be a significant
+computational savings. And so that's
+really, you know, the that's really at
+the at the heart of the issue is can you
+make the surrogate model predict not
+just but predict but predict with
+uncertainty in a way that's still
+computationally tractable and is going
+to give you those savings that you
+sought from developing a surrogate model
+to begin with. Um
+do I think we are there yet? Uh, not no
+I mean certainly not in terms of being
+able to do it with these very very large
+models. I think in in in many settings
+we we do a very nice job I think of this
+um but not at the scale that that uh
+that we would like to. I hope that
+answers your question.
+>> Yeah, definitely. Yeah. I mean it's more
+just because like I mean I think a lot
+of the methods you have here you've
+you're talking about here are not like
+as intrusive as a lot of existing UKQ
+approaches, right? But um yeah, I've
+noticed a lot of them, right? I guess
+you sort of have this almost
+multiplicative scaling with like adding
+certain like extra training things, etc.
+And so if it's something you can put as
+much of like as an add-on that is not
+intrusive, right, then that could
+potentially be okay because then at
+least it's like you kind of have two
+separate things that you can you don't
+have to heavily modify necessarily the
+architecture to get that right.
+>> Yeah, I mean certainly that's the hope.
+Absolutely.
+>> Okay. Thank you. Yeah. I know it's um
+I'll definitely uh read more into this
+and yeah I mean because yeah I was
+working on a similar project which we
+were working on a surrogate model where
+we're like yeah we could introduce UKQ
+but a lot of the pre-existing techniques
+in that context would have um we would
+have to totally change the training
+architecture and everything. So
+>> thank you.
+>> Thank you.
+>> Sh I saw you raise your hand please ask
+your question.
+>> Okay. Uh hi uh Michael. So I have a few
+comments if if I understand this
+correctly. So you uh many rely on this
+Htonian you know Monte Carlo. So that
+basically you need to have a few
+assumptions like your posterior has to
+be very smooth and also you have to have
+the gradient you have the global effect
+and and also you know uh in practical in
+practice you know there's some initial
+weights and [snorts] the model being
+stoastic you know there's uh tons of uh
+issues there I mean uh and another thing
+is I'm just thinking just some comments.
+Maybe the other way I'm thinking is
+instead of trying to sample um using the
+this you know um different uh bion
+methods and maybe you can also think
+about make the uh assemble bigger you
+know instead of like try to you know
+using the uh combine the knowonial you
+know Monte Carlo into the initial
+assemble um then build a much better
+prior knowledge then Another thing is if
+you don't have a gradient in the um uh
+in your uh bas network you might have to
+use that trust region approach or some
+like bian optimization to solve the
+vision problem you know you know so
+which is you know I'm just saying that
+this kind of these things I like it you
+know but it's just involve in practice
+involve so many challenges you know even
+you try to run this you know big um
+a area model it can take very long just
+just finish one wrong you know that you
+know so that then can by itself can be
+>> you know some trouble and greed can be
+difficult and also uh assumption can be
+very easy [clears throat] to be violated
+you know just just something you know uh
+I don't I I'd like to get some uh
+remarks from you just so so I can think
+about what should I do you know just get
+some larger uh idea from you so much
+yeah
+>> uh thank you Shia Um the every one of
+the points that you made is is a great
+point. Um and so
+I don't I don't in any way, shape or
+form uh pretend to to say that this is a
+uh you know a panacea for solving these
+these types of problems. There are there
+are a number of challenges uh that arise
+in here. um especially I mean even
+running our top chain Monte Carlo in you
+know we're reducing in this example from
+6 million to 8,000 parameters right so
+running HMC in 6,000 parameter space is
+immensely challenging right um and so
+I'm not saying that HMC even is
+necessarily the the answer um you know
+there are many many different types of
+uh of MCMC methods that could be applied
+here um in this in this in this sort of
+context and there are different ways
+that you can approach it and all of them
+are uh you know come with their
+advantages and disadvantages. So
+certainly recognized uh you know that uh
+that aspect of it. Um
+and
+you know in terms of in terms of the uh
+the the training strategies
+there are
+again you know there's just uh so many
+ways to diff to to attack this and I
+think that
+what we're what we're aiming to do is
+come up with techniques that are that
+are viable to push uh to push those
+limits and I think we're I think We're
+starting to make progress in that. And
+again, I don't mean to claim that uh
+that we are that we have solved the
+problem by any stretch of the
+imagination.
+Thank

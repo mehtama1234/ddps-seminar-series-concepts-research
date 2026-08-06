@@ -1,0 +1,1995 @@
+Welcome everyone to the DDPS seminar.
+Before we introduce our invited speaker,
+let's go over some rules and logistics.
+First, please mute yourself during the
+talk.
+But if you have questions, you can
+unmute and ask questions or use chat
+room to post your question so that
+we can address them in Q&A session at
+the end or during the talk. Um
+Second, today's DDPS seminar is open to
+external audience. Therefore, no
+classified discussion is allowed, so
+please watch out.
+Finally, the talk today will be recorded
+and uploaded in our YouTube channel.
+That's about it. Now, let me briefly
+introduce our speaker today. It is an
+honor to host Dr. Gabor
+Csanyi.
+Um am I pronouncing your last name?
+That's approximately that. We've done
+do. What what is the correct one?
+Csanyi. Csanyi, okay. Csanyi.
+Um Professor Csanyi, he uh who is a
+professor of molecular
+molecular modeling in the Department of
+engineering engineering at the
+University of Cambridge Cambridge.
+He specializes in atomistic simulation
+and multi-scale modeling integrating
+quantum mechanics with larger scale
+systems. His research focuses on
+applying machine learning techniques to
+material modeling, particularly in
+developing interatomic potentials
+derived from ab initio electro
+electronic structure data.
+Professor Csanyi also explores
+statistical challenges in molecular
+dynamics such as enhanced sampling
+algorithms for exploring the
+configuration space of materials and
+molecules. He contributes to the
+Lennard-Jones Center fostering
+collaborations among atomic
+scale modeler.
+Um today, uh,
+Professor Chan will talk about
+foundation models for materials, uh,
+chemistry. I'm sure we are going to hear
+a wonderful talk.
+Now, let me ask you informal questions,
+um, just to get to know him better and
+make this seminar somewhat informal. So,
+I
+I just, you know,
+figured out you have a, um, many, many
+different hobbies, um,
+uh,
+the climbing, hiking, and sailing, and,
+um, what, the coffee making?
+What is the most, uh,
+most enjoyable among What is the number
+one,
+um, thing you you enjoy among all those?
+these these depend on, you know, they're
+on different time scales, right? So,
+Yeah. I coffee three times a day, and
+that's very important. And I get to sail
+three times a year, which is becoming
+very recently started, and that's
+becoming very important.
+Oh, okay. Best thing to do is to take
+all my coffee equipment and make it on
+the boat. So, Let me ask you one more
+question
+because you mentioned sail, and how
+What's the farthest, uh,
+the sailing course you took?
+From here to outside? No, I mean, I've
+spent about five weeks conti- on the
+water, you know, sleeping on the boat,
+but always docking at night. So, no no
+open This is not ocean sailing. This is
+more,
+um,
+coastal.
+Wow, that's that sounds fantastic.
+do it on the Adriatic, so Adriatic? Or
+Mediterranean Sea.
+Beautiful. Sounds wonderful.
+Jealous. Okay, the stage is yours.
+Please.
+Thank you very much.
+Um,
+okay, so, before I start, I want to
+emphasize that I'd like to I like people
+to uh type questions into the chat as
+the talk goes on.
+It's uh It's Normally when I speak in
+person, I ask people to jump up and down
+and interrupt me.
+Uh but it's it's harder to do that for
+you uh on the on the Zoom. People don't
+tend to do that. So, but I think if if
+you type in questions as they occur to
+you, then that's great. And I can either
+address them during the talk or we can
+start with that at the end.
+Okay, so I'm also conscious that this is
+a
+more diverse audience than my typical
+weekly fortnightly seminar audience. So,
+you're not all molecular modelers. So,
+I've had a I prepared a a little bit of
+a few slides of more extended
+introduction to this field.
+So, and what you see here is my group at
+the I guess a couple of years ago is is
+our Christmas party.
+Uh and I also have
+a very collaborative We have a lot of
+lot of international collaborations.
+I've just many more in this. I've just
+listed the people who've been working
+with me for many years.
+Okay, so um I want to start by talking
+about materials modeling
+and how
+uh simulating
+materials and molecules on the computer,
+of course, is done
+to uh
+to support and experiments and theory uh
+and is really a third way of
+interrogating uh nature. And there are
+um
+many many length scales on which uh
+modeling is done. So, you have to pick a
+length pick Often your
+your questions concern a certain length
+scale and you have to pick
+the appropriate modeling uh
+framework, modeling regime, and
+technique. So, um on these axes, I have
+on the
+horizontal axis is capability. So, atoms
+So, you talk about the number of atoms
+or the time if you're thinking about uh
+uh forward integrating Newton's law.
+Uh, so the the time trajectory of of uh,
+particles. And on the all the way on the
+left you have for I just named it
+quantum chemistry. So, essentially is
+the exact solution or not exact, the
+numerically approximated solution of the
+exact real Schrödinger equation, the
+many-body Schrödinger equation. Um, and
+that uh, one can do for very few
+particles and for very very few time
+steps. But essentially for all intensive
+purposes in most of chemistry and most
+of material science, we can take that to
+be an exact method.
+But then, if you want to address higher
+length scales, more atoms, longer time
+scales, you have to approximate. And you
+approximate uh, for a while you
+approximate systematically. So, there's
+density functional theory here, which is
+kind of a workhorse of certainly
+materials modeling um, to some extent
+uh, chemistry as well. Uh, and and one
+can do, you know, 100 atoms and several
+hundred atoms and picoseconds, many
+picoseconds if you have bigger
+computers. Um, but uh, if you're going
+uh,
+going for longer, then you have to have
+these much more drastic approximations
+all the way up to, you know, doing
+experiments. Um, which is not a modeling
+method.
+I'll have it I have it on the slide for
+a reason you'll see in a second. Um, on
+the vertical axis I have
+the accuracy or the errors rather. And
+these are I call them in eVs
+or in factors of KT. But what you see is
+that as we approximate these these
+errors um, typical errors grow rapidly.
+So, how are these methods uh,
+parameterized? Uh, so typically let's
+talk about force fields, which is
+which is what the rest of the seminar is
+about. So, you have atoms. You don't
+want to have electrons anymore. You just
+want to know where the atoms are. How do
+they move? And force fields have
+typically been parameterized kind of
+both from uh, from below. So, let's make
+force fields that reproduce some aspects
+of quantum mechanics, either density
+functional theory or or whatever else or
+even better approximation. Or
+of course we can parameterize them kind
+of upwards. So basically we take force
+fields, we give them parameters that
+result in
+when you simulate with them properties
+that you can then compare. And this is
+why the chemistry laboratory is here. Uh
+you can compare them to experiment.
+Um and many, many things
+uh many, many force fields have been
+built this way and that's how the world
+has been operating for the best part of
+since computers have been
+invented.
+And uh what we're trying to do is
+something different is to somehow go in
+between these expensive quantum
+mechanical simulations and the very
+crude
+and early parameterized force fields
+using machine learning. So we're trying
+to create a set of
+a methods we can call them ML force
+fields. Uh they're going to be slower
+than the empirical force fields and they
+are
+purely parameterized from below.
+So that's the the key aspect is that we
+derive these force fields kind of
+rigorously from
+quantum mechanics via fitting to data uh
+and converging these these approximants.
+And the idea is because of this the idea
+is that we have no loss of accuracy with
+respect to whatever quantum mechanics we
+parameterizing. So really we're fitting
+the the atomic energies, potential
+energy surfaces
+uh of atoms as accurately as we desire.
+But without then having to solve the
+electrons, we hoping to gain and we have
+gained uh factors of millions or
+billions
+in evaluation time. And and what we give
+up is not dealing with explicit
+electrons, but just following where the
+atoms are moving. So I want to show you
+a few examples of this and and where we
+are uh in this um in this
+endeavor.
+So, but before that, let me show you
+what uh
+what molecular dynamics does when you do
+it with quantum mechanics. So, this is
+sort of what we're trying to replace in
+a way. And it's really called first
+principles molecular dynamics or ab
+initio molecular dynamics, and this is
+really a computational microscope for
+atomic scale processes. So, just to give
+three
+diverse examples, you can compute phase
+diagrams. The phase diagrams of
+materials is one of the most fundamental
+question that you can ask about a
+material. What's the Is it solid? Is it
+liquid? Is it a gas? Um is it And if
+it's a solid, what kind of solid? What's
+the crystal structure? And density
+functional theory has been um really uh
+working extremely well for a very wide
+range of systems uh predict
+verified
+to experiment where that's possible, and
+people are trusting it to go to extreme
+conditions like it was done in here
+uh by a paper by Julia Galli and her
+team, uh many thousands of kelvins,
+terapascals, which are not accessible um
+in uh in the laboratory. Another example
+is
+is aqueous solutions of polyatomic ions.
+So, uh of course lots and lots of uh
+experiments can access the bulk
+solution, and you can compute uh and
+measure ionization potentials of these
+ions, uh and
+you you can't see the labels here, but
+basically it's experiment uh versus
+theory, uh and DFT gives the right
+answer, so you trust uh that you're
+describing the physics correctly, and
+then you can go in and study details of
+solvated ions at the atomic level, which
+you are not able to do experimentally.
+And the third large area is surface
+science. So, uh this is a piece of uh
+titania,
+uh I think a piece of uh uh one of these
+titania surfaces 100 TiO2, and there's
+an absorbed molecule on it. And this is
+the left picture is experiment, um
+but uh so it's under UHV, but you can't
+really resolve atoms. You see the
+molecules,
+uh they move around, they undergo
+reactions, they undergo uh
+chemisorption, but you don't see the
+detail. It the the microscope is just
+not
+just not resolving enough.
+So, on the right-hand side, you see what
+people do with molecular modeling, the
+density functional theory, you get the
+right geometry, you get the correct
+energy landscape, and that's People have
+been doing this for decades.
+So, just zooming out a little bit, uh
+basically materials properties, the
+ability of thermal and dynamical
+uh are is is
+com- simulated uh with these kind of
+methods. Catalytic reactions,
+efficiency, and selectivity has been uh
+has enjoyed boom from uh
+from materials modeling. Um even
+complicated things like drug properties,
+solubility, metabolism,
+uh of course you're you're only zooming
+in to some particular small-scale atomic
+process that you
+think is the most relevant or is
+controlling, for example, at the to the
+rate of metabolism for a drug. Um and of
+course there's a huge semiconductor
+industry,
+uh which uh is able to understand its
+microscopic uh materials. Uh in the
+electronics, the detectors, the defects
+that control the behavior of these
+devices
+all through uh
+typically density functional
+uh calculations.
+So, the computational cost of these
+things, and I alluded to this in the
+first slide,
+uh but here's some more details. So,
+uh to do a low-level DFT,
+um
+it's it's 100 atoms, it's about one
+compute node, uh
+you know, 100 cores 1 hour to get the
+single energy of a single structure.
+And this scales with cubically typically
+in in most implementations. It scales
+cubically with the system size. For
+insulators, there are linear scaling
+implementations with very large
+prefactors. Uh
+so, that's a a very niche use. Um if you
+want better DFT,
+uh then for for those who know it hybrid
+functionals, then there's a 20 times
+prefactor typically and n to the fourth
+scaling. Uh and the gold standard, which
+is no longer DFT, but it's a higher
+level quantum chemistry, coupled cluster
+theory, would have an n to the seventh
+scaling. So, this You can see that it's
+one isn't going to make very much
+progress with these algorithms in terms
+of the system sizes that are accessible
+due to this steep scaling. And uh and
+yet, lots and lots of people use these
+methods at the these accessible system
+sizes. So, what I show here is a few
+years out of date now, but it's national
+UK national supercomputer, and it's the
+usage by code. And you know, just
+listing the code the executable names,
+and you see that there's this thing
+called VASP, which takes about 35% of
+all of the UK's academic computer time.
+And all the green bars
+uh are all other codes that essentially
+do the same thing. So, it's molecular
+dynamics with density functional theory.
+And if you add them up, then uh about
+40% of UK's uh academic supercomputing
+is doing molecular dynamics with
+explicit quantum mechanics using DFT.
+So, what happens when you do that? Uh
+you take uh atomic positions from
+somewhere,
+uh your initial condition, you solve the
+Schrödinger equation in this density
+functional approximation,
+and you get forces on the nuclei,
+and then you update the positions using
+uh sort of an OD solver OD using
+Newton's law. And one when you when you
+go through and just look at the
+information flow, it is striking that
+really almost all the
+all the numbers that you compute when
+you do the solution is about electrons
+and structure and electron density and
+orbitals of the electrons. And all of
+that is kind of thrown away um
+because the only thing that you really
+keep out of forces. There's a little bit
+depending on the algorithms that you
+use, you can in the second step you can
+use the previous solution to help
+initialize the
+the next solution. But the numbers that
+I quoted for how expensive this is kind
+of already assume that you have warm
+starts, that you have good initial
+conditions.
+So really the idea of deriving
+an approximation to the potential energy
+surface to the forces is to skip this
+step all together and just go from
+positions to forces using a perhaps very
+complex but still analytically
+computable
+function that you you you never conjure
+up the electronic degrees of freedom. Uh
+and that is what's going to give us the
+big saving. So really what we need is a
+energy function, a potential energy
+function of the potential of the atomic
+positions that map from R to the 3N to
+R. And then the force is just the
+gradient of that potential.
+So of course this idea is not new and
+quantum chemists have been doing this
+for for many decades.
+But for very small molecules. And the
+typical formalisms, the typical
+mathematical formalism to
+to write down this function don't scale
+didn't scale very well. Um they scale
+exponentially. Uh the the way the
+quantum chemists have been traditionally
+doing it for decades ago. So the real
+question is can we do it not for small
+molecules but for materials in general
+and for large molecules and molecular
+assemblies,
+uh, and and escape the the super
+exponential scaling. And, you know,
+here's a very small molecule, uh, that
+the the
+people have the kinds of things that
+people have been doing before, and
+instead we want to do things like this.
+We want to take a battery
+and just run the whole thing,
+uh, and as if we were as if we were
+doing, uh, full quantum mechanics. This
+is about, I think, here 3,000 atoms.
+So, just to know we're going to do this
+is machine learning. And, of course, AI
+and machine learning are kind of
+everywhere in the news, uh, these days,
+and there's hardly a person who hasn't
+come across that in some form. So, I
+just wanted to share a thought about
+this, why am why am I so, uh, excited
+about, um, about using machine learning
+in this area. Um,
+and and you might say that, you know,
+there's a lot of talk about AI for
+science here, and this is an example of
+one of those. Um, I think uh, the the
+the computer science companies, the
+machine learning AI companies are very
+excited because it's one of the safe
+applications of AI. You know, it's not
+going to kill anyone, um, to do a bit
+of, uh, science, uh, directly. So, uh,
+so I think that's, uh, that's as opposed
+to some other uses of AI. So, uh, I
+think that's very safe, um, and um,
+but but but the what distinguishes it
+from traditional uses of AI is, um,
+that, uh,
+I think traditional ML and AI solves
+problems that already have solutions,
+but they want to solve them much much
+much cheaper. And that's a, you know, as
+a way of
+impacting on society, that's huge, but,
+you know, we already know how to drive
+cars. People drive cars really well.
+Making a self-driving car would be an
+amazing feat, um, in the sense that it
+would change the economy, it would
+change the incentives, it would change
+society in a city.
+But, in terms of what is possible in the
+world
+cars will be driven around. It's not new
+in that sense.
+Um but when we apply ML and AI for
+science,
+we are solving problems
+that are previously not solvable at all.
+So, intractable completely because they
+are very, very expensive due to the
+steep scaling of the examples of these
+electronic structure methods that I
+outlined. So, if I want to take a drug
+molecule and ask, "Is it going to bind
+to a protein?" And I want the answer
+computed because it would be very, very
+expensive to test every single idea for
+a drug molecule experimentally,
+can I do that computationally? We
+believe the Schrödinger equation is
+certainly describes the system, but with
+the electronic structure methods, it is
+a absolutely out of the question that
+you'll be able to run
+the exact Schrödinger equation
+on a protein or even density functional
+theory on a protein for sufficient
+length of time that you could answer
+this question. Or
+I can run DFT on a on a material
+inorganic material for
+100 atoms, but I want to study a process
+that takes 100,000 atoms or a million
+atoms, and so I can't do that with
+density functional theory. ML allows us
+to create approximants that
+with which one can do a simulation that
+we couldn't do before. And that's the
+big excitement.
+So, how is this done? Um
+I have I see the first uh interesting
+question in the chat, so I'm going to
+stop. The question is, "Do these
+functions have deterministic solutions
+or are they uh or are they
+approximations?" So, let me go back to
+this. So, I think you you posted this
+when I was talking about this map from
+V of R V of R the the the energy map
+from the atomic positions to the forces.
+And I think the answer is that um
+within a certain um framework of
+electronic structure theory, this map is
+exact.
+And it's
+it one can compute it to arbitrary
+precision. Now, when I approximate it,
+I'm going to make errors.
+And that's not obvious what errors are
+acceptable. And that depends on what
+you're going to use them for.
+Okay, so we're not solving the sort of
+probabilistic quantum mechanics here. Uh
+we're not saying uh I'm going to have a
+stochastic system because quantum
+mechanics and measurement is
+probabilistic. We're going to
+essentially evolve the system
+undisturbed. So, the the stochastic
+nature of quantum mechanics doesn't
+really enter uh into uh into this this
+world that I'm describing. I hope that
+answered the question.
+So, uh
+how is this done? Um there are a couple
+of components. So, we need
+uh
+an app we we we want to derive the
+energy and the force of an atom. So,
+we're going to
+that's going to depend on its
+neighborhood. So, we're going to need
+some kind of descriptor for the atomic
+neighborhoods. And that
+can and and and similarity become the
+defined similarity metrics between
+different atomic environments.
+And then we need a regression method.
+So, that could be uh
+what I have here my example is a
+Gaussian process regression. Um
+or uh one can use a linear regression if
+the descriptors are good enough, or one
+can use neural network regression. And
+we've in the last few years ourselves in
+my own group have
+uh graduated to using neural networks uh
+as regression uh algorithms. But then um
+we then need an application uh to do the
+regression on, and that's in the case of
+the force field, that's typically atomic
+energies Uh and their derivatives the
+forces but actually the
+the idea is more general so you could
+take any atomic property and you could
+regress
+the delta ISO which is the NMR chemical
+shift
+or the alpha x which is the
+polarizability of an atom is a tensor
+and you could
+regret you could make a model of the
+polarizability as a function of the
+atomic environment. So
+what's then having defined these these
+components what you do is you create
+yourself a database
+of small smallish doable system sizes
+where the electronic structure can be
+computed that gives you points on the
+potential energy surface which you then
+interpolate using the regression that
+you've chosen and then you test it and
+if it's good enough
+you do the science if not you go back
+and you augment your database you refine
+the model.
+When we started this 20 years ago the
+big question was
+how many times you need to go around
+this loop and how do you know you need
+to test every single time
+how does this work in practice? It turns
+out that after 20 years that this loop
+is really quite
+you don't need to do around many times
+this is it's quite forgiving.
+Maybe 10 times maybe 20 times nowadays
+maybe once or already
+depending on the application. So this is
+this is this converges reasonably
+quickly. Just to give you a feeling of
+of what is going on in this high
+dimensional
+in this in this data-driven feelings
+here's a I can't draw high dimension so
+I've drawn low dimension. Imagine that I
+want to fit
+um
+this dashed curve and I have data points
+which are the red and I've chosen here
+Gaussian process regression.
+There's a lot of choice in these
+data-driven regression methods and the
+answer is going to depend on it. So here
+in this
+first row, the only data that I'm
+allowing
+to go into the regression are the point
+values. So, where the What is the value
+of the function? And the difference
+between the different panels here is
+where I take
+my
+Gaussian basis center locations. So,
+when you do Gaussian process regression,
+you can choose
+where to center your Gaussians and then
+you go into make the function as a
+linear combination of Gaussians. And you
+can see that if I take them at the data
+points, I get one kind of answer.
+If I
+take them the first two here are
+identical. If I take them on a regular
+grid, I get a different kind of answer.
+If I can choose fewer Gaussians and
+optimize their location, and I'm going
+to get a different answer. And the great
+the the blue shading is the uncertainty.
+Something that we can do with electronic
+structure theory is not just take
+function values, but derivatives. So,
+the forces are derivatives of the
+potential energy, and that's also
+essentially available at the same time
+for the same cost as the energies. And
+here in the second row, I'm doing
+exactly the same set of fits, but not to
+the function values, but to the
+derivatives. And you can see that I'm
+getting completely different
+approximations.
+And sometimes, for example, this one,
+all the derivatives are really good, but
+there's an overall shift, you know, away
+from the function because there's no
+information on on where
+the where the absolute value is. And if
+you use both
+derivatives and function values, then
+you see that actually all the fits are
+much better. And And yet, still you can
+get different fits depending on where
+you choose
+the data the data locations. So, there's
+a lot of
+learning, human learning, about how to
+use these techniques. And, you know,
+linear regression is somewhat simpler
+than Gaussian process regression, but um
+neural network regression is much more
+complicated, many more degrees of
+freedom, many more choices and hyper
+parameters.
+Regularization
+is an absolutely key aspect of all
+machine learning, all data-driven
+methods. So, you're making assumptions
+about the smoothness of our data and
+make choices about how strong those
+assumptions are and that influences the
+the fits
+to a great extent. So, I I I here I've
+drawn a very brief
+graphical history of the history of ML
+potentials, so that these ML fits to uh
+uh to the potential energy surface. And
+of course, the origins go back many
+decades and even before 2007, people
+were making low-dimensional fits,
+particularly to molecules, a few atom
+molecules. Uh and you can describe
+here's the potential energy and some
+cartoon of the potential energy
+landscape and you go somewhere to some
+local minimum and you take a few data
+points and you're approximating that
+local minimum using one of these
+regression talks. And then a big
+breakthrough came in 2007 with Jörg
+Behler and Michele Parrinello's paper uh
+where they've created new descriptors
+and that allowed them to make fits in
+high dimensions, so hundreds of
+dimensions. And in particular for
+materials, but also larger molecules
+too. And the way to imagine that is that
+there are now many local minima uh and
+you take much more data, uh hundreds,
+thousands, tens of thousands of data
+points and your regression method is
+flexible enough. They used neural
+networks, feedforward, simple MLPs, um
+but with many, many parameters and
+well-crafted descriptors of the local
+environment and so they could get very
+high accuracy in the locations, in the
+local environments, local minima where
+they had data.
+And
+then
+uh myself included and lots of others uh
+have uh evolved and improved upon these
+methods in the sub- subsequent 15 years.
+But just uh about 2 years ago, um
+again, there was a sort of a leap, I
+think, uh which is making models that
+have very wide transferability, very
+large generalization. And the way to
+imagine that is that you fit
+to just a few data points, relatively
+few, just in a very narrow part of
+configuration space
+uh compared to
+everything that you could think of, and
+that gives you a potential energy
+landscape that's kind of approximately
+correct uh everywhere, very far away uh
+from uh from the training data. And
+that's quite unusual. It was very, very
+unexpected, and this is what the last uh
+5 minutes of my talk uh will be about.
+Uh and
+and people were very surprised, and it's
+quite unusual, I think, even in the sort
+of ML and AI uh world.
+And what you can But of course, it's not
+accurate exactly everywhere else. So, if
+you want to make it more accurate
+somewhere else, because that's where
+your science is, then you take data
+there. You can explore it approximately,
+because you have a potential that they
+can do anything. Uh and then you take
+new data there, you can refine easily
+with very little data, and get high
+accuracy uh wherever uh you wherever you
+actually did put some data. So, we'll
+come back to the end. But uh let's go
+back just to illustrate kind of
+quantitatively uh the breakthrough uh of
+2007, and this is actually the paper is
+from 2014, so a few years later, but
+this is the first time that we've seen
+uh
+some
+being able to solve a task that um
+that really meant means something from a
+materials modeling point of view. So, we
+have uh here tungsten, uh and the errors
+of and empirical potentials on tungsten
+elastic constants, vacancy formation
+energy, surface energies. And you can
+see that these three different models,
+the Bonder potential, the modified
+embedded atom method, and the finish
+singular potential, the this sort of
+derived each 10 years apart, didn't
+really make much improvement in the
+overall accuracy with respect to a
+decent DFT reference.
+That's not why they were derived. They
+were derived and created to solve a
+certain science problem with trends and
+empirical ideas. So, I'm not These were
+These were excellent methods for what
+they were describing, but they were not
+making progress
+in towards actually fitting the
+potential energy surface. And when we
+turned on
+a set of descriptors and in our case
+Gaussian process regression,
+you just nail all of these things.
+And to to to arbitrary accuracy. You
+want better accuracy, it's not so hard
+to get. Overall, the meV per atom
+accuracy that we can get for materials
+is still true today, and it's actually
+now limited not by the fitting method,
+but by the underlying DFT data. So, of
+course, when you do the density
+functional theory, there are still
+numerical approximations, and they
+conspire to have a
+a noise of about a meV per atom.
+So, let me I have a slide with
+equations, and I know it's for most
+people learning new equations from a few
+minutes in slides is is in a talk is not
+the ideal, but I just have them so that
+to give you a glimpse of how the um
+fitting methods have evolved and how the
+descriptors evolved over the last 15
+years. Uh there's lots of at least in my
+own group, and there's lots of
+analogies.
+Uh maybe gives you a sense of the kind
+of mathematics that underlies
+uh this this business. So, the the
+smooth overlap of atomic positions,
+which was used to do the tungsten model
+that I showed you just now uh was made a
+year earlier and it's we start by um
+having you know a central atom I with
+neighbors J and we create an atomic
+environment density. So, this row I is
+all the atoms around uh a central atom I
+and we put a little Gaussian on each
+neighbor and this row is then expanded
+in a
+basis of uh YLMs and radial basis
+functions RN with expansion
+coefficients.
+Earlier on we used to keep the sigma
+finite. You'll see what later on it's
+actually perfectly okay to just have
+delta functions on each neighbor. That's
+the same as the sigma equals zero limit.
+And then you can write the coefficients
+just as the basis functions evaluated at
+the neighbor position.
+And um
+and that takes So, this these
+coefficients then are uh permutation
+invariant. It doesn't matter which order
+you consider the neighbors in this sum
+is a permutation invariant uh operation.
+Uh but we also would like the
+uh the descriptor to be rotationally
+invariant. I don't care how an atomic
+neighborhood is oriented. So, it turns
+out it turned out that if you take a
+square of these C coefficients, C dagger
+C, C Normally they're complex if you
+choose complex spherical harmonics, and
+you sum them over M, then you get this
+power spectrum which we call it P
+NN'L so they have three indices
+uh for each atom I and it turns out that
+that's a rotational invariant and it
+contains a rich description of the uh of
+the atomic neighborhoods. So, it took
+about six years and Ralph Drautz uh to
+realize that this scheme that we
+concocted up here can be vastly
+generalized and improved. Uh and that's
+he called that the atomic cluster
+expansion. And the paper's from 2019 um
+and I'm switching notation because I'm
+keeping to the notation of the of
+Ralph's paper. But basically uh
+but but there are close analogies
+because it's really a generalization of
+SOAP. So, you create these pair bases,
+which is just the radial R times Ylm,
+and now the R can depend not just on N,
+but also L, uh and uh you can the R can
+depend on the element index if you have
+different elements, uh chemical
+chemical elements in your system, and
+you sum up the the phi's evaluated the
+basis functions evaluated at each
+neighbor, uh and uh Ralph called this
+the atomic basis A, and that's basically
+this plays the role of C uh in in the
+SOAP formalism. And then, uh in the next
+step, so C and A are analogous, and then
+the construction of the rotation
+invariant is kind of done in two steps,
+uh but the first one is the product of
+the A's with itself, and that's if you
+just product two A's, so if new here is
+two, then that's exactly the same as
+what we did in SOAP. But what Ralph
+realized is that you can actually do
+this to arbitrary number of A's, uh and
+you get a many-body potential, and it's
+not expensive to do that, um or not
+necessarily expensive, and you get a
+tensor.
+And you get this this bold A, which is
+now a many-body uh representation, and
+and this is now the critical insight,
+you can simply make that rotation
+invariant as well. Just as we summed
+over M here, now we have to sum over L
+and M,
+and you get Clebsch-Gordan coefficients,
+they're more complicated than just no,
+the coefficient one here. But when you
+do that, you get these B bases, which we
+call the A bases. It's a complete
+linearly independent rotational
+permutational invariant uh basis for
+atomic neighborhoods. And so, we use the
+A bases uh for um for a number of
+applications. I'll show you one in a
+second, and it's much faster in its
+latest implementation, in large part due
+to Kristof Wardner um who's at UBC now
+and
+you know the ACE in in I I think in all
+aspects kind of supersedes
+the the earlier SOAP representation. And
+so there is
+there's more complexity, there are more
+parameters, but there's higher accuracy.
+And then
+the the latest sort of a couple of years
+ago, what we're using now is a
+generalization of ACE
+and that's called MACE.
+It's multi ACE or
+message passing ACE. We don't really
+define what the M stands for necessarily
+uniquely, but what's going on is that we
+create a phi. Please ignore the C and
+the H in the first round. I'll come back
+to that. In the first instance they
+don't they are not here.
+I've just written the general form. But
+then using those phis we sum them up
+over neighbors here and then taking a
+clue from
+graph neural networks and the
+deep learning architectures, we have a
+linear multiplying this this tensor.
+Which
+which kind of mixes up the different
+components and these are trainable. So
+this is now no longer a linear model
+like ACE is.
+But the tensor product here is exactly
+analogous the Clebsch-Gordan product
+here.
+And and and the summing over LM is
+exactly analogous. But in as opposed to
+ACE we don't stop here, but we
+have atomic features H which are which
+are start out as the identity, but now
+they update them using some waiting
+linear weights using the B functions and
+we take the the updated features and we
+plug them back in here.
+So that's why I had the more complicated
+formula for phi because we go through
+this whole process twice. Now with the
+updated atomic features H, that's why I
+need the Clebsch-Gordan in the second
+round because I need to sum up
+the product of H and R and Y and that
+requires an extra
+Clebsch-Gordan sum to identify the
+spherical the correct components of the
+spherical tensor of this this product.
+And then we go through the same summing
+over the J's, self-producting
+and then summing over the Clebsch-Gordan
+coefficients. And the second round of
+B's we just take as the descriptors. And
+the the main person behind all this code
+and ideas is Ilya Batatia, graduate
+student here in Cambridge. So let me
+show you a few examples. So what we were
+able to do
+with them
+with A's is uh
+a very large simulation. What's going on
+here?
+A large simulation of perovskites. So
+the this is the cesium lead iodide
+structure here which is sort of a
+frustrated network frustrated grid of
+these octahedra and because they are
+frustrated in terms of size
+at different temperatures they do
+different things. So experimental phase
+transitions are here and here. This is
+the the vertical axis here are the
+pseudo cubic lattice constants and you
+can see that at different temperatures
+you break the symmetry and get instead
+of one at high temperature now two and
+then finally three different lattice
+constants in the three different
+directions. And a simple empirical
+potential really just doesn't get those
+particularly
+at all. Whereas the A's model gets the
+transition temperatures of those phase
+transitions
+really quite accurately. There is an
+offset here of the absolute value of the
+lattice constant and that's just simply
+a well-known DFT error. The approximate
+the DFT approximation underestimates
+the lattice constants. But once
+we we can train this model and once you
+we train it typically iteratively, I
+have a
+little example here
+of a of a movie where this is not
+exactly the cesium version. This is a
+hybrid perovskite, but essentially we
+run MD, wait for it to explode, and then
+pick those configurations, put them back
+in the database, and after 16
+iterations, and this is the loop that I
+mentioned at the beginning,
+you get a stable potential which can run
+high temperature MD. And once you can do
+that, you can study something that
+people want to study about this
+material. So back to the cesium version,
+what you see here is a
+100,000 atoms run for 2 nanoseconds.
+Completely impossible with electronic
+structure method, but what the colors
+show here are the X direction, Y
+direction, and Z direction tilts of the
+different of the octahedra, how they
+relieve their frustration. And what you
+see here, and what people didn't know
+before this simulation, is that there
+are large domains, and in the X, Y, and
+Z, they don't correlate. So this is a
+simulation at 500 K, so it's one of
+these intermediate phases, and people
+didn't know whether that average
+intermediate phase is how is that a
+combination of
+the lower symmetry phases or
+how does it what's the relationship
+between the different tilts that are
+possible in this system. And now we
+know,
+and people use that in thinking about
+the rationalizing the observations that
+you make experimentally of these
+perovskites.
+So
+this was the wrong direction.
+Okay. So let me show you now jump a
+little bit forward, and let me show you
+a couple of results from May. So this is
+an our attempt our first attempt at
+making
+a transferable organic force field. So
+this is not materials, but my molecules,
+and we used the Spice dataset that was
+published quite some number of years
+ago. It's a million molecules calculated
+with a very high level of DFT. It's
+omega B97M.
+It's a hybrid range separated hybrid
+meta GGA
+for those who know it. It contains 10
+different elements, lots of different
+molecules, and we take those molecular
+energies and forces, create fit a MACE
+model, and then predict properties that
+people actually want to know. So, here
+are some torsional profiles. You take
+these molecules that have two rings and
+a single bond between them, and those
+two rings can rotate quite freely.
+And we can get the potential energy
+barrier and the full barrier profile for
+that rotation. And the sort of gold
+standard coupled cluster here is the
+black, and what you see here is the the
+level of DFT that Spice uses is the
+gray, so that matches the black really
+quite well. And three different MACEs,
+this blue, green, and red is the blue,
+green, and red here. And you can see
+that the large version of MACE with
+couple of million parameters in
+scattered around that formula that I put
+up sort of gets the gets the torsional
+profile, you know, within line with the
+accuracy here. And then you take this
+model, and you do
+much larger simulations. So, you can do,
+you know, all of these polypeptides in
+vacuum, and they fold up. This is
+polyalanine, and you know, the largest
+peptide in the database was your
+dipeptide. So, there is a lot of
+extrapolation to larger system sizes.
+And now we can do something that that is
+quantitative that people actually care
+about, which is something like
+solvation. So, part of that is hydration
+free energy. So, what's the free energy
+difference between taking between an
+isolated molecule in vacuum at finite
+temperature and in a box of water. So,
+now we're talking about the simulation
+of 1,000 atoms.
+And experiment here is blue.
+Orange and red are typical empirical
+models
+that have been fitted to solvation free
+energies. So, for small molecules, they
+basically get it right. They've been
+parameterized to get it right. But, the
+MACE-FF
+gets it right for the right reason
+because the potential energy and the
+forces are quantum mechanically correct.
+And so, this is just a few examples from
+the first pre-print of this paper, but
+since then we've done, you know, dozens
+and dozens of larger molecules and this
+this trend continues. And now you can
+also do more things that the drug
+industry cares about. So,
+log the log P is essentially the free
+energy difference between water
+solvation and a fatty this is octanol
+solvation. So, a much more aliphatic
+solvent. And again, experiment here is
+blue.
+Typical force field is gray. And MACE
+is is green. And so, you get the right
+answer for the right reason. This is a
+thing that drug companies would want to
+measure
+about the proposed drug molecule. So,
+now let me come to the sort of the last
+5 minutes.
+And I promised to talk about the very
+general MACE force fields. And the
+question is can we make a force field
+for all of materials, all materials? And
+I didn't think so, but other people did.
+So, credit to Shu-Ping Ong
+at at UC SD who have been trying to fit
+large material databases
+for many years. And you know, the
+accuracy is kind of improved, but people
+weren't really using them for anything
+else other than what Shu-Ping Ong
+designed them for, which is to filter
+proposed crystal structures where in the
+context of material discovery.
+But, but just very recently, so
+I I guess
+maybe 18 months ago, uh uh we we had to
+um
+uh
+friends of ours uh fitted our model to
+the same database that uh Shopee used,
+which is the Materials Project. It's got
+about 1.6 million structures. It covers
+89 elements. And there is a leaderboard
+online called Matbench Discovery. And
+with a little bit of help uh the the
+model did very well. Oh, what I'm
+showing here is the just to give you a
+visual guidance on what's in the
+training database. So, lots and lots of
+inorganic materials. Actually, all known
+inorganic materials. But that's it. Just
+bulk. Just very near equilibrium.
+And so, in uh in November 23, uh our
+model so was at the head of that
+leaderboard. And this leader the all all
+these columns are very correlated.
+They're basically how well do describe
+the energy of a new proposed structure
+with respect to the convex hull of those
+of those elements. And uh
+I think around that time us and other
+people's successes kind of led to a to a
+little bit of a a race uh to see if how
+good can uh can one be. And a few months
+later, uh Google uh released their GNoME
+model. And it became much better uh than
+than what our model achieved. But of
+course, on much much larger data set.
+So, we fitted to 1.6 million structures.
+They fitted to 89 million structures.
+That were secret. So, nobody knows what
+GNoME was fitted to. Um
+and their model was also much larger,
+which is all fine. But really, the
+training data uh scale-up was very
+significant here. Um and and since then,
+every month there's a new model here.
+So, Matters came from Microsoft or from
+Orbital Materials, Equiformer V2 from
+Facebook. You can see that this this
+scale is getting saturated. You know,
+the the maximum effort score possible
+when you get every energy right is 1.0.
+Uh so this this thing keeps changing all
+the time. Now, if you introduce a metric
+that's not just about energies but
+forces, so that's the kappa
+uh SRME, so that's the uh root mean
+square error on uh thermal conductivity
+of selected materials, then that
+requires you to have really good forces,
+and you see that now you don't
+correlate. So now things that are not so
+good on not as good as the best one on
+energies, a late a maze model fitted on
+12 million
+uh structures um
+actually uh does uh did the best. This
+is already very old, so if you check the
+web page now, you will see even later
+models doing very well.
+But this is still in domain testing.
+What about out of domain? What happens
+if you take one of these models and you
+just start doing an MD simulation of
+your favorite uh
+materials problem. So here we tried
+that. Um sort of a anecdotal story of of
+why nobody expected this to work. Uh
+here's the graphic piece of the graphite
+fitted on organic uh electrolyte and and
+lithium salt in there. This is the the
+the a model composition of a battery uh
+and in previous simulations, previous
+attempts of simulating a system like
+this, such a simulation would just
+explode
+due to the huge variety of structures
+that you can get. Uh when you fit it
+simulated in one of these models that's
+fitted to the Materials Project, you get
+a stable simulation.
+You can run this at 500 K for a
+nanosecond,
+and it just works. Uh and eventually the
+lithiums find their way into the
+graphite, and
+you get intercalation. So this was
+completely unexpected and a huge
+surprise.
+And then uh we got to
+uh go crazy, and every student start
+tried this model on their different um
+systems, so not just batteries, but the
+hybrid perovskites, polymerization of
+sulfur, amorphous carbon quenching,
+aqueous interfaces of salty solutions uh
+to various solids, hydrogen combustion
+catalysis, dichalcogenide 2D materials,
+defects in semiconductors. All of these
+just worked. We couldn't find a system a
+real materials modeling problem where
+you started the simulation in reasonably
+initial conditions and it just basically
+did the the chemically roughly the right
+thing.
+So, it didn't explode.
+Basic chemistry was happening.
+So, the result of that is this
+paper with nearly 90 authors, not all of
+whom I know
+in person, so that was a very
+interesting experience. It was all
+written in a matter of 6 weeks.
+And it's basically the
+a few highlights and then 50 different
+examples of all the ones that I showed.
+Basically saying, "What can you get from
+such a generic model?"
+Some of some of the highlights that
+we're particularly intrigued by
+this example is moths. So, we take the
+foundation model and test it on 20,000
+moths, none of which are in the training
+database, and almost all of it the
+energy correlation curve is nearly
+perfect. The ones that are in this cloud
+here are it's sort of a numerical
+discrepancy. The pseudo potential used
+in DFT So, the dipole of the DFT
+parameter functions is not the same for
+those. That was was trend and that gives
+you an energy offset.
+But, the the functionality is perfectly
+reasonable. So, if you take one of these
+moths, moth 74, and you here's a little
+carbon dioxide molecule, and you compute
+the free energy
+of carbon dioxide as a function of
+space, then you basically get the same
+answer as you would have got as people
+got before we fitted machine learning
+potential to this moth with lots and
+lots of DFT calculations specific to
+this system. And this is not an easy
+thing. If you take an empirical
+potential, you get the wrong answer. So,
+now that you have an off-the-shelf
+model, you can do screening of moles.
+You can take seven different ions, 14
+different ligands, just the example
+here, and you can do nanoseconds
+simulations in a matter of days. Here's
+hydrogen combustion. You start out with
+hydrogen gas and oxygen gas. You let it
+go, and you get the right things
+happening. You get water formation,
+and these are the different rates of
+water formation as a function of density
+and temperature. And when you look at it
+in detail, you get all the right
+intermediates forming, and none of this
+is in the database
+by itself. You have salts in the
+database, essentially, as inorganic
+salts is the closest we get. In the In
+the manuscript, we kind of identify for
+each application what is the closest
+that you get to to those atomic
+environments in the database. So,
+we're going to have computational
+scaling. So, um this is most of this
+work is is work of Chuck Witt, who's now
+at Harvard. And what you should get out
+of these plots is that is the number of
+atoms, and this is the throughput in
+million steps per day, so nanoseconds
+per day if you're using femtosecond time
+steps. And these solid curves are, you
+know, using a single, in this case, a
+CPU, so one node.
+And for a very small system, you can get
+to 10 nanoseconds. And of course, as you
+the system size goes up, you get
+the proportionally lower throughput. But
+for a thousand atoms, you can easily do
+two or three nanoseconds. And if you are
+willing to put to throw more resources
+at it, so weak scaling, throw more
+atoms, throw more CPUs, you can you get
+these essentially flat curves. So, we
+can sustain
+five nanoseconds per day essentially
+forever
+as you grow your system. And we've done
+up to millions of atoms. And a similar
+things happen on a GPU.
+So GPUs of course per flop are much
+cheaper. You sustain about between one
+and two
+nanoseconds per day again
+reasonably flat.
+And and Chuck is working there is a few
+factors within
+in this steel model that we could
+squeeze out we think. Um
+Let me show you some caveats because
+there are always some.
+So
+the materials project as I said contains
+really only near equilibrium structures.
+So if you highly compress the system
+then you get in our original fits you
+basically got nonsense. So this is a
+number of arsenic structures where if
+you really really compress them you get
+this as the potential energy curve which
+is kind of rubbish right? When you
+compress the material the energy should
+just go up. And it's not so surprising
+this is the data set with this gray
+histogram and none of these distances
+were ever near the data set. So in
+density there is very little
+extrapolation of this earlier
+method. And really tweaking the model
+size doesn't really help.
+What does help is splining into a ZBL
+reference. So we know that when atoms
+are super close less than one angstrom
+then actually the ZBL potential is a
+decent approximation
+and we also put in the isolated atom
+reference as these are the two extremes
+and with a few more tweaks distance
+transforms on the
+transform function on the interatomic
+distances and normalizing the densities
+in the intermediate layers of our graph
+neural network you can actually get from
+exactly the same data now we get really
+very reasonable compression curves. It
+absolutely no data here we get smooth
+connection to the splines.
+So
+let me see I'm basically out of time
+although we started about eight minutes
+late. Let me just show you one slide on
+fine tuning because I mentioned at the
+beginning. So, what else do we do apart
+from getting things approximately
+correct? So, this is the normal maze
+embedding
+of the of the atoms into the
+neighborhood and then two ace layers and
+the readout. Well, we can split the
+readout into two and on one of them we
+aim to get the original data and if you
+have 100 configurations of your favorite
+new system, we can create a new readout
+head that that gets that correct, but
+with very little new data. This is
+called multi-head fitting and it works
+remarkably well. So, here's another
+example from the
+manuscript that I showed with the 90
+authors. So, you take you think about
+lithium nickel oxide, which is from a
+prototype battery cathode
+and it undergoes young teller distortion
+at high temperature. So, the ab initio
+molecular dynamics shows you this is the
+nickel oxygen
+distance
+histogram and at low temperatures, you
+see these two peaks very clearly and
+they merge at high temperature and a
+specific temperature. And
+if
+this is the the the original
+off-the-shelf mace MP
+has the physics of young teller in
+there,
+but it's not really right. You don't get
+it at the right temperature, you don't
+get the right distribution. 100
+configurations randomly picked from an
+MD from this kind of MD and fine tuning
+and you get essentially
+indistinguishable performance from the
+AMD.
+So, I have I see a very very relevant
+question in the chat. What would happen
+if you just did normal fine tuning, so
+not multi-head? And what happens then is
+that you get you go you undergo
+catastrophic forgetting.
+So, basically for a few epochs things
+get better, but and essentially you end
+up completely over-fitting your 100 new
+configurations and the model is
+completely unusable and unstable.
+Of course, if you create if you include
+tens of thousands of new configurations,
+then you're essentially making a not a
+universal model, but you're now making a
+model for that particular material. Uh
+but the point of the multi-head is that
+you can get away with very little data
+as long as you uh you do the fine-tuning
+in this way.
+So, uh okay, here's another example
+which I now don't go through. It's in
+the It's in the archive on catalysis. Um
+let me just say that data matters. So,
+if you do instead of 1.6 million, you go
+up to 12 million data points, that's the
+Alexandria data set, then many things
+improve dramatically. So, here's um
+the uh sort of the normalized
+displacement along 111 direction of the
+BCC metals, and this is the stacking
+fault energy. And you see the DFT is in
+black and the original MACE model is in
+red, and these are very delicate. These
+are just, you know, eVs per angstrom
+squared. And without any fine-tuning, if
+you take the MACE MPA, and all these
+models, by the way, are available uh for
+download on our website, you get
+essentially perfect curves without any
+fine-tuning. Same thing happens for
+amorphous carbon.
+So, really this is the closing slide
+now. Uh and what I promised is that
+foundation models are systematic uh
+derivations, and what we we we're we're
+almost gotten there generally. So, we
+Our foundation model kind of takes us
+here in in error, so we can do very
+large systems
+at at the sort of approximate level, but
+with fine-tuning, with a tiny bit of
+fine-tuning, we can get down to the ab
+initio accuracy and have models that are
+million times faster. Um let me skip
+some of this and just uh put this slide
+up with some conclusions,
+uh and uh happy to answer questions.
+Thank you. Thank you so much for the
+wonderful talk.
+Um
+Yeah, Sh- Shivanand um
+he
+asked the questions, you know, related
+to the last question.
+Yeah, so to find you. So,
+so question I mean
+I'm not quite sure what you're asking.
+If you do continue learning without the
+multi-head,
+the catastrophic forgetting happens.
+Training more doesn't help. It It makes
+it worse. So, I think that uh this idea
+of This is called in the in the AI
+business, this is called multi-head
+fine-tuning with replay. So, you're
+getting some of the old data. The nice
+thing about it is that you don't need
+all of the data. So, if you're not
+training one of these models from
+scratch on the original MP Materials
+Project data, it's about 2,000 GPU
+hours.
+If you go to the latest data set uh from
+Facebook, which is 100 million
+materials, uh so, that's 100 times
+bigger. We need 10 times more data.
+Interestingly, it's about the the square
+root. So, um
+so, 20,000 hours, and that's not
+insignificant. But, that's why the
+multi-head only uses a few percent of
+the original data, randomly picked, uh
+and that's enough in typical
+applications to uh to avoid the
+catastrophic forgetting.
+So, uh
+yes, Amjad, uh
+you're asking a question about the
+scaling of the model uh at
+at high densities. And I think that is
+absolutely true. So, currently, we use a
+scheme where the cutoff is fixed in
+angstrom,
+and there I've seen some very
+interesting ideas about changing that.
+So, some people might want to use a
+certain number of nearest neighbors.
+Uh the one has to be very careful with
+that because
+you have to make sure that the model is
+still continuous, so that when one
+nearest neighbor gets replaced by
+another nearest neighbor that's on the
+opposite side of the atom,
+you have to make sure that uh that the
+the model remains continuous. Uh but, I
+think there are tricks for that. Um I
+think it might be interesting to uh to
+rather than doing it by the number of
+neighbors to have some kind of cut off
+that's
+uh that's adaptive to density. Uh I
+haven't quite thought that through
+precisely how that would work. But I
+think it's certainly true that when you
+squeeze a material very much, there is a
+kind of scaling that um that the Hessian
+is um
+decays. The interaction decays by the
+number of atom hops rather than by some
+uh absolute scale.
+So, uh let me just go through some
+number of questions. So, uh Yeah. The
+question is uh
+so, the matter published models
+uh
+using uh MP and OMAT. Uh and
+the question is what about uh
+multiple data sets? So, that's very
+interesting. Uh
+we are many people are playing with
+that. Uh the question really is
+consistency. So, um OMAT uses a set of
+um
+DFTs that's really quite close to MP,
+not quite the same. Um
+and and so, you can use them together.
+But actually, you might be better off
+doing a kind of multi-head where
+not the fine-tuning multi-head, but
+where you put the different DFTs on
+different heads.
+Um
+and certainly, I think one can't just
+unite data sets that are done with
+completely incompatible DFTs.
+I don't think anyone is really doing
+that. Um
+next question, uh are there systematic
+tests on the anharmonic
+and non-equilibrium properties? Uh
+absolutely so. So, the kappa uh SRME is
+is an is an anharmonic thermal
+conductivity. And there are lots of
+properties that people are interested in
+that are much more anharmonic than that.
+So, diffusivities,
+uh you know, in the smooth solid and the
+liquid. And you know, the the literature
+the recent literature is is full of uh
+of tests like that. And particularly,
+actually, the the people who make uh MP
+fits uh
+very often Shubin Ong, uh the Gnome uh
+Google community, uh lots of other
+people are interested in not so
+out-of-domain uh
+universal potentials like I am, but they
+want to do materials discovery on
+inorganic crystals, but they're
+interested in complex properties. So,
+things like lithium diffusivity in a
+solid-state uh ionic conductor. And you
+know, there are excellent uh results uh
+on that. Um
+Okay, next question. Uh foundation
+models perform well on general tasks
+close to the training set.
+Well, I don't think so. I mean, I've
+been trying to show you that uh
+that they perform well very far from the
+training set. Um so, I'm not quite sure
+what you mean. Are you mean Do you mean
+foundation models in general in the AI
+business? Yeah, that's I think
+foundation models of the kind that I'm
+talking about
+are precisely the opposite. Uh they
+perform
+amazingly well, surprisingly well,
+shockingly well very far away from the
+training set. Yeah. And we don't know
+why.
+So, I have to be very honest that we
+don't really know what aspect of quantum
+mechanics is being captured here in this
+architecture, in this GNN uh message
+passing uh architectures that allows
+this kind of transferability. Why are
+you getting hydrogen burning chemistry
+correctly essentially when you've seen
+ice and uh
+some some inorganic crystals. It's
+unclear. That's a a very very active uh
+research point. Um
+What are my thoughts about leveraging
+foundation models for targeted tasks?
+So, I'm not quite sure what you mean. I
+think because in these uh in in I think
+what I've showed you here is that there
+is this extreme generalization. So,
+maybe you can specify better
+uh what you mean. I think you also
+mentioned distillation. I think there is
+a a role for distillation. These models
+are
+much slower than empirical potentials,
+much slower than any AM.
+And one could take these foundation
+models, generate lots of data, fine-tune
+them, and then transfer that onto a much
+simpler model.
+Fit fit a very fast, very small model
+onto very large amounts of data. And
+there's lots of nice papers coming out
+of that. But Joshua, if you want to if I
+misunderstood your question,
+I apologize. You may want to clarify.
+Um
+Training specialized versus
+how close you are on the training set.
+I'm not sure what you meant. Yeah, I
+think Yo Joshua, do you want to unmute
+and
+clarify?
+If Joshua is still there.
+Uh yeah.
+No.
+He says ions in the
+in the chat. Um
+Okay, so yeah, I I I do see that the
+extreme generalizations
+of your model. But the the just to
+understand the mechanism, you you train
+on the many different um you know,
+molecular structures
+and relatively smaller size, right?
+Yeah, the almost all of it is less than
+50 atom. Yeah, and then you you use
+learn the the force fields.
+And when you combine them to apply that
+to the much larger scale, much larger
+number of molecules and atoms uh
+problems, you just use the regressions
+like a GNN and GP and
+you don't impose the the physics when
+you when you assemble them in your No,
+no, no. I mean each Look, underneath
+this there's a locality decomposition.
+So, quantum mechanics gives you one
+energy for the entire system and the set
+of forces, which is the derivative of
+that one energy, total energy. And these
+ML models decompose the total energy
+into atomic contributions.
+So, that's that decomposition is
+essential, right? That's We write the
+total energy, we approximate the total
+energy as a sum of local energies.
+That's what's learned and that's why
+these models are extensive. You know,
+all interatomic potentials do that. Even
+empirical potentials do that. I didn't
+emphasize this, but all potentials
+make that approximation that you divide
+up the total energy. And that's that's
+the learning task.
+I see. I see. is to is to learn the
+local contribution to the total energy
+that you compute quantum mechanically. I
+see. Maybe uh as Joshua mentioned, ions.
+So, it's it's sort of one of the um
+large models will be computationally
+How to use the foundation model in
+large-scale simulation where the large
+models will be computationally limiting.
+Um
+So,
+I Yeah, I I think, you know, if we we
+can do 1,000 atoms for 10 nanoseconds
+per day, but if you want to do a million
+atoms,
+uh and
+well, if you have the biggest the kind
+of supercomputer access that you guys
+have, then that would probably work uh
+for a nanosecond. But, you know, I
+accept, of course, that these are 100
+times slower than empirical potentials.
+So, I think I agree that there's a lot
+of scope in distillation. There's a lot
+of scope in
+uh making a specialized model out of the
+foundation model
+with generating lots and lots of
+training labels using the foundation
+model or a fine-tuned large model on a
+small on a specific system, and then you
+train a small model. Yeah. Uh uh, which
+is much faster. And and I think that is
+definitely a a viable approach, and I
+think many people are playing with it.
+Absolutely.
+Awesome. Uh, yeah, there's question
+about Omol. So, we've already fit Omol,
+uh, and uh, we we're working with uh,
+with the Facebook team. Uh, we have uh,
+we have essentially matched their
+published model on Omol,
+uh, with a few more tweaks, uh, and
+we're studying what kind of tweaks are
+necessary. I think the Omol, uh, data
+set is super exciting. Uh, I was part of
+the with the advisory group, uh, who
+helped uh, create that data set, and I
+think it's a
+well,
+it's it's an order it's two orders of
+magnitude larger, approximately, than
+uh, than the previous largest um, than
+the previous consistent data set, which
+had that level of electronic structure.
+And so, and it's much more diverse, and
+much better converge. So, I think, uh,
+there's huge excitement in the molecular
+ML community about it, and we're going
+to, um, use, uh, and uh, use Omol for
+the next Omol 25 for the next couple of
+years, particularly as we go to charge
+self-consistent models. So, one of the
+things that I didn't talk about at all
+is how to bring in electrostatics. Lots
+of people have done work on that, uh,
+and uh, we, uh, also want to make MACE,
+uh, electrostatically aware, and the
+Omol data set, uh, will be, uh, an
+essential part of this. Uh, I just wish
+that OMA was as carefully constructed as
+Omol, and, uh, and I think there is
+going to be another push,
+uh, in the community to bring up the
+materials,
+uh, model to that to the Omol kind of
+standard of rigor. Um, it's hard to go
+beyond GGA, right? So, we will not for a
+while we're not going to see imminently
+100 million mark materials computed with
+a hybrid functional. Uh
+because, you know, it's 100 times more
+expensive than GGA. But, you know, in a
+few years, maybe that's possible. Uh and
+then one can then really think about
+uniting materials and molecules. So,
+that's a a very big outstanding
+challenge is that the best functional
+for molecules doesn't really
+or it's too expensive or doesn't really
+work for materials or metals. And the
+other way around, the things that work
+really well for materials or acceptably
+well for materials don't are not really
+acceptable for a high-quality molecular
+work. And but I think with extra
+compute, um perhaps uh we could get a a
+molecular material consistent data set,
+which of course then opens up hybrid
+systems, interfacial systems.
+And that's uh that's something that's uh
+really exciting.
+Okay. I have another question. So, you
+um
+um I think I heard you were saying that
+um this foundation model is only
+applicable for the near equilibrium
+state.
+No, it was trained on near equilibrium.
+Oh, trained on the near equilibrium. But
+it's applicable look, it's I've shown
+you many
+it's applicable everywhere, right?
+That's the exciting thing.
+That it does
+far far out of equilibrium stuff roughly
+correctly so that you can uh
+find you can explore
+reaction networks. For example, on
+catalysis, the example I didn't have
+time to show is that you can explore
+reaction networks because the
+approximate landscape of troughs and
+peaks of the molecule potential energy
+on the surface is approximately right.
+And then by fine-tuning, you can get the
+barriers correctly. Is there a reason
+why you um
+it is limited to um
+you know, those training data, like the
+near equilibrium training data? No, no,
+no. I'm just I
+I'm just saying that that's I'm just
+telling you a story. That's what
+happened. That training data was
+available. It was near equilibrium. And
+that's the shocking thing is that that
+was enough.
+Um the O O map training data, 100
+million, is much less close to
+equilibrium. It includes a lot of MD
+data.
+So, I think people are making these data
+sets. There's no reason to have that
+limitation. I think that the real
+surprise was that that it was the
+diversity that was
+critical.
+The diversity of all materials coupled
+with the maze architecture and the this
+message passing
+um
+architecture
+uh
+was sufficient to extrapolate from this
+very in some ways very limited training
+data
+to to any kind of material. Amazing.
+Okay. The Logan So, Logan is asking
+about uh mixed GGA hybrid. Uh people are
+playing with that. Certainly, one option
+is to fine-tune. So, I talked about
+fine-tuning in the context of
+going to a certain part of the landscape
+or for certain material, but you can
+easily fine-tune
+for changing function. And you can
+change uh you can go to a hybrid for a
+specific system, and that's not a
+problem at all. Um
+whether how to do that for a foundation
+model, right? Can you have a foundation
+model with a GGA head and a hybrid head?
+How much hybrid data you need to do
+that? Very good question. I I'm sure
+people are trying that out. Uh that's
+that's an obvious
+experiment.
+Okay. Is there any other questions?
+If not, let's thank our speaker uh
+Professor Shani uh for the wonderful
+talk and also the discussion like Q&A
+sessions.
+Um that's awesome, like I mean
+as you said, it's a mysterious, but it's
+it works fantastic. That's awesome.
+Okay, thank you very much for listening.
+Okay.
+Um
+So, that ends the seminar today. Let me
+stop the recording.

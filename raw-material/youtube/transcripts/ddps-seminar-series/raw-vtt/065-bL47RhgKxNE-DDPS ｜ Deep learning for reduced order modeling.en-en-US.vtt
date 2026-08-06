@@ -1,0 +1,4013 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.350 --> 00:00:04.860
+Let me introduce you first. Okay. Welcome to the DDPS seminar everyone Before we introduce our invited speakers, Speaker invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk unless you have questions. If you have questions you are welcome to unmute and ask otherwise, please use chatroom to post your questions so that we can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences. Therefore, no classified discussion is allowed. So please watch out. Finally, the talk today will be recorded and uploaded in our YouTube channel. That's about it. Now let me introduce our speaker today, it is an honor to host Andrea Manzoni who is an associate professor of numerical analysis at Polytechnique de Milano Italia since 2020. He received a master's degree in mathematical engineering from Politecnico di Milano in 2008, where he is now a faculty there, and a PhD in mathematics from the Ecole Polytech federal, the EPFL, the Switzerland in 2012. He is the author of three books and about 70 papers, he won the numerous awards including ecommerce and the Siam ours. His research interests focus on reduced total modeling techniques for PDS, machine learning and deep learning PD constraint optimization and uncertainty quantification, with several applications including fluid dynamics, cardiac, cardiac electrophysiology, computational mechanics and structural health monitoring. Today, Andrea will talk about deep learning for reduced order modeling, which is a very interesting topic. Please enjoy and expect a wonderful talk. Now without further ado, let me pass the baton to Andrea by asking one random person as usual, today's random question is, can you think of the biggest sacrifice you have made in your life to be where you are right now? I have to say I have to say, give me maybe half an hour 40 minutes after the talk. Maybe I will be back to your question. All right. See ya. So for this very kind invitation I'm very happy to be here. I mean, of course only only only remotely connected. It's already night here in almost night evening, quiet evening in Milan, Italy. My talk is about deep learning for how to disorder modeling. These will be some our our story of about our research carried out in the last two years, three years and a half. And before starting, of course, I would like to say acknowledge, I mean, the people that actually shared this, this journey about deep learning in research and modeling. First of all, Stefania fresca, postdoc with me here at Marc's Politecnico di Milano, Nicola is Franco. He also is a junior postdoc to the vicar, Chi Chi now moved to London or to go but he is a researcher in another department at the civil engineering department here in Milan and Paolo Conte, now currently PhD student under my co supervision and the supervision of another colleague that is Attila Frangie, food professor in civil engineering, department policy, you know, colleague and dear friend of mine, also full professor here of numerical analysis at marks and then mango Gu, from University of Twente. He is assistant professor there and Jana starvin, is a professor at EPFL. Lausanne. So, in the three parts of the talk, so the contribution I've had the honor to share with these people will somehow with some our period, of course, I don't need I guess to to convince you that in in several cases in several scenario what we need is a good instance of accurate and efficient use of the modeling error. These are the modeling is key is essential to allow real time simulation, data simulation, uncertainty quantification towards also the construction of predictive digital twins. No matter if you're dealing with say that the support to clinical decisions or to structure lead monitoring or to designing and manufacturing, sooner or later you need to carry out say, efficient and accurate numerical simulation often are very complex systems. So the two questions I would like to address this evening this morning with you is whether or not scientific machine learning can enhance somehow reduced order modeling somehow. We just heard that modeling is a very active research field for the last I would say at least 20 years but of course new tools and new algorithms and new ideas from say scientific machine learning at large can somehow finance and I would like to do Do you at least some cases in which we are able to enhance the use of the modeling by using scientific machine learning of course, on the other hand, how do deep learning algorithms impact on the accuracy and efficiency of reduced reduced order models. So, before starting a sort of global picture of course, a lot of approaches have been say appeared in the last say few years regarding say both physics based and data driven methods, and I've tried to somehow co locate them on on a line by looking at the top you have of course, reduced by these methods or somehow projection based techniques to perform a reduced order modeling I will give you in a while a very quick introduction to this. Of course, in this case, you still need to solve low dimensional possibly nonlinear dynamical systems to get the solution by going say, down say you you find non intrusive reduced basis methods, you somehow try to still rely on say maybe subspaces or linear subspaces, but to carry out the construction of roms in our in our less intrusive or possibly non intrusive, non intrusive ways and then you also have for sure physics in for neural networks in which the contribution of the say data driven say way to to build say of course, ensuring that fulfilment of physical constraints, but the use of neural networks in that case becomes more more and more relevant, we are somehow in the middle because what I want to do, I would like to talk a nonlinear say strategies relying on deep learning to construct reduced order models and then the ingredients I will rely on our feed forward neural networks out encoders and somehow I will also touch a little bit on say, a new way of dealing with machine formed neural networks Dheeraj did these are some of the key words that I will use say during during the presentation. Of course, that the picture is quite is quite big in my opinion, we for sure are interested to develop say that these are the remodeling relying on machine learning and deep learning we could also perform a sort of algorithmic argumentation by machine learning and deep learning somehow trying to replace those parts of our use of the model would that represent a computational bottlenecks, we would also be interested in in performing a sort of Data driven Learning of physical laws even if I will not say addressed this topic. Today, we want us to perform a subsidy quantification once we have reduced order model and last but not least, we would also say rely on approximation theory to ensure that mathematically speaking, what we have built is say accurate in the sense of some say error estimates and so on. Of course, at the core at the middle, we have physical models in the form of partial differential equations or say dynamical systems internal bodies. And these are some tasks that we usually face not not just me, but say quite big academic research community all over the world are trying to somehow face of course, to perform model discovery or data simulation regarding say the learning of physical laws to approximate the solution to a given physical problem to say hi Nance maybe the disorder modeling construction using using neural nets are also to take into account information and contributions that can come from different models with different fidelity. So somehow, the three keywords that I have highlighted in blue will be somehow the the three pillars of my presentation, I will first address some possible ideas to perform the approximation of the whole solution of the problem. And then we'll move to say a possible way to exploit those ideas also to perform operator approximation and last but not least, how to take into account say, neural networks to perform also the approximation of some output quantities of interest in a multi fidelity framework. So, these are all say the connections we have some applications in mind, I will show you results regarding these four classes of problems, computational mechanics, cardiac electrophysiology, and then Frieden omics and also some few results regarding say micro electromechanical mechanical systems. The keywords are somehow in the middle of these slides. So I will first address ideas that are regarding deep learning based reducer them models and then I will move to sort of newer technique, we call it the pyro MX net how to take into account a neural network to perform a better approximation and last but not least, mostly fidelity neural network regression. So, this will be somehow the outline of of my talk. So, for the first part, I will focus on deep learning based reducer that models before a couple of words about a classical way a more classical way to construct reducer that models that is projection based that uses that model. So, I guess many of you have already experienced with reduced order modeling and in particular disorder modeling of parameterize systems or equations that depends on physical or geometrical parameters, sooner or later you need to replace a full order model with something that is more more efficient, but still still accurate of course, full order models for us are quite a huge say quite large dimensional dynamical systems, we want to approximate the solution in time for many different parameter values. And this means that we have say time derivatives and then linear and linear operators. And for for the sake of simplicity, I will already rely on a discretized version think about funny elements or your best say, your your more favorite a discretization technique, we discretize the space then we ended up with a quite large scale dynamical system to solve projection basically disordered modeling somehow relies on low dimensional linear subspaces we can use for instance proper orthogonal decomposition and that is nothing but singular value decomposition on a given matrix of snapshots of the of the form to build say, a low dimensional hopefully low dimensional linear subspace in which we then look for the solution, we assume in this case that they say form solution u h is approximated by a linear combination of say a few basis functions or reduced bases, these are capital N hopefully, the dimension of these bases is much smaller than the dimension n h of the of the initial high fidelity space and then through our Galerkin projection or a more general Petrov Galerkin projection, we ended up with a register that model that looks like the one in the in the green box. So, now, these shares the same structure of the of the Florida model, but now the dimension and is much smaller than an age of course, we need to take care of the assembling of the efficient assembling of the operators that appear in this user the model and this is the reason why we need to rely on suitable high production techniques, this is somehow say that the global picture regarding say projection based disorder models of course, there are some say pros and columns in this size in this context, we we can compute the the whole fields variable quickly then we can evaluate any possible output quantities of interest that depend on that solution. Of course, sometime the assembling of the reduced order model might become even more expensive than its solution and this is of course, a true computational bottleneck. And last but not least, even more crucially, often some problems are not reducible, mathematically speaking those problems that show up as low decay of the Kolmogorov and with our say more hardly reducible by means of these these kinds of of techniques, this is an example this is somehow a motivating example, arising in cardiac electrophysiology, we have a nonlinear unsteady reaction diffusion problem, the variable that you that that you look on the on the movie even if they are a bit lagged unfortunately, is the electric potential. This is a very simple test case or two dimensional say portion of tissue in which you have three parameters, the time at which you deliver say a second stimulus to the tissue, the radius of the region, in which you release the stimulus and some recovery properties of the tissue. So, just three parameters are enough to make the picture quite involved, because you may have very different say, results in terms of the evolution of the of the electrical potential here we have some, say snapshots in in time and two different parameter values. On the left of the slides, you have the full order model. On the right you have the reuse of the model. So everything seems to be good. But the issue is related with as low decay of the singular values related with both the solutions, snapshots and the snapshots of the nonlinear operators that appealing to the problem. So even if say the accuracy is is good, the point is that by relying goals on local reduced bases you need quite large reduced bases and these of course affect the efficiency of reuse or the modeling in this context and last but not least, even in presence of local reduced busy spaces, pod color caroms might be not very well suited to problems that feature coherent structures that propagate over time. So, you can also say and up with the issues related with the stability in in long time intervals or on these kind of methods. So, the reduced dimension can be potentially not as small as desired This is another drawback I bet an action is costly is an intrusive say task and these can prevent the Rams from from being very efficient. And say even more importantly around building in this way must account for all the variables that are that are involved in the in the in the flow of that model. For instance in this case, the electric potential is not the only say variable like for instance in the Navi stokes equations, you have velocities and pressures and if you want to rely on pod Galerkin ramps you you need to to approximate both velocity and pressure. And these are some of the drawbacks of these these techniques. And then we started to look at this problem for a problem as slight different perspective somehow say, noting that similarity as say Matt, Matt Matt, many other of course, authors and groups did somehow that is a close similarity between say, proper orthogonal decomposition that teanaway is already a task that say allows a sort of encoding and then a decoding because, when you have say that low dimensional approximation of the solution use amount decode it to get say, the high fidelity approximation of course, this is a linear operation in the case of pod this is just a matrix by vector multiplication and the same two paths from the high fidelity space to the low dimensional space. And somehow encoders can in a way generalize this kind of encoding decoding, as soon as they are say, applied to snapshots of the floor that model. So, somehow we start from data that are generated from the floater model, these are snapshots data, and we try to see if indeed, relying on auto encoders possibly involving convolutional layers can say honeyands This reduction task, some of the latent representation that is provided by an autoencoder awfully is much lower dimensional than the one provided my pod of course, this is obtained through a nonlinear model that has that has to be learned. So, this is a way you say a sort of parallelism between pod on the left and then auto encoders on the right but this is just one of the two tasks that we have, because this is just a way to represent our reduced reduced order solution at the the other task is to somehow be able to replace the generation of of the reduced order model. And there is that the first idea we started from So, deep learning base that uses the models in a way carpel two different architectures that can be trained both say simultaneously or say separately. So, a convolutional auto encoder the part that you look here in you have it here in in light blue, you start from high fidelity data, and then by using also some convolutional layers, you somehow compress the information that is contained on those data, as you say, treat images when you need to compress say, imaging data say by auto encoders this is only one part because the second part is a deep feed forward neural network that's from the time and the parameter vector mu allows us to generate a low dimensional representation of the solution. So, during the training phase, what we actually do is to train both networks by taking into account snapshots of the problem, say we want to solve for say times and parameter values we compute snapshots data and then we somehow match not just say the gray parts somehow the data after the say encoding and the decoding master look as close as possible to that the initial data but also say the low dimensional representation is that here is is a given as a as output from from from the encoder must match say the outcome of the defeat photo neural network because during the so called Online phase during the testing stage, what we want is just to say to rely on what is here contained in this read In a block, and for any new time and new parameter value, we only want to evaluate say the composition of two neural networks to simply say get these low dimensional representation and then decode these to say get the representation in the in the high fidelity space. So to be slightly more technical, we need to perform two tasks we need to perform the learning of the reduced dynamics and to say learn the dynamics of the system on this reduced nonlinear trial manifold, we use a deep feed forward neural network offers these are some options don't want to say these are the only options these are some of the options we found quite quite quite convenient. And the second task is the learning of the nonlinear trial manifold, because we want to model say, somehow reducing a unitary manifold through the decoder function of a convolutional auto encoder and the composition. So you have these decoder and of the deep feed forward neural network is what at the end of the day provides the DL rom approximation. So, on line at the very end, we say compute the deal are approximations by say evaluating two nets that have been trained, these are trained offline. And the training of these nets requires the solution of an optimization problem where say the loss function is made by those two contributions that appeared before before in this slide I sort of say reconstruction error and sort of say, close in close match between say the the low dimensional representation provided by the encoder and the deep feed forward neural network. All the details, of course are available in the papers. And these are collected at the end of the presentations, but of course, feel free them to contact me if you have a further question and then more detailed, say questions on any aspects, I will I will cover now some results. Regarding on our two dimensional nonlinear diffusion reaction problem as the one I showed you before. Here we have the full order model. This is the deal RAM solution with a latent dimension equal to three, here we have two parameters that are the coordinates of the stimulus that is released to say in this small portion of tissue plus time. And this is not my chance that we have decided to fix two, three, the reduced dimension, the comparison is clearly in favor of this deep learning based use of the models, this only takes a less than two seconds on a CPU and less than half a second or GPU to get the new solution for the new say, choice of the parameter values against say that the 14 seconds political or Koran, or eight seconds or a political ad can run relying on on local reduced basis function. This is of course, an initial site test case area via slightly more challenging example where you spend hours in this case changing say the location of the position where you release these, the second stimulus in this once again, nonlinear reaction diffusion problem. And those in this case, the comparison is between the 15 seconds. DRAM takes online to run and to perform CD approximation on CPU less than a couple of seconds on a GPU against more than, say, six minutes for the form and say, one minute and a half or half a minute for, say our Aguilar camera. And do you have also the behavior of the error on the test scheme on the testing sets a in time and the error states of course under the desired trash. So, that's that a couple of slides now for commenting maybe a bit more these aspects related on the choice of these reduced or latent dimension. And of course, in the case of pod, we clearly have some indication from the decay of the singular values where to say truncate where to chop the pod expansion, but how to perform these in the case of deep learning based on the models what we took inspiration from some works by the VOR and co authors of some some years ago, somehow introducing and then taking advantage of sort of nonlinear extension of the Kolmogorov and with the usual say, mathematical concept that is say used to evaluate the reducibility when you rely on linear subspaces we somehow have that in the case of say architecture like the one I showed you before. Here notation is slightly different because you have say, an encoder side prime sorry a decoder side and then these feed forward neural network fight. While it is possible, at least for say linear elliptic PDE is we started from saying analytic PDS, it is possible to show that say depending on the number p of the parameters that are involved in the problem, we can somehow bound or also somehow try to compare how these say Layton dimension must behave and for instance, if the parameter to solution mapping is say fulfilling some regularity assumptions, you can also show that say these latent dimension can be chosen as being equal to the number of the of the parameters and the details of those results are reported in these say recently accepted on mathematics of computation paper that is that is say highlighted highlighted here. This is a one part say of the results contained in that paper that the second part is also related with a sort of say, guidelines to construct those architectures. So, assuming that once again some regularity assumptions are are fulfilled regarding the parameter solution map, we can say link say the the accuracy in terms of a tolerance upside and we have say on the two error contributions, we have to bound the sort of reconstruction error and the sort of parametric error, we can somehow ensure that the error is below under a given threshold and as a function of this threshold we can also say assess how many for instance active weights and layers must be considered in both say that the outer encoder and the feed forward neural network so, that is of course, a ongoing activity on that generalization of this kind of say results also to other kinds of architectures. But, we started some hours to to to, to provide a sort of say mathematical say theoretical ground on on this. Of course, this is not the entire story, because, if it is true that the dimension of the deep learning reduced order models can be kept very small, hopefully say is equal to the number of parameters that are involved. It is also true that the DL rom can be queried at any desired time, I don't need to solve any dynamical system to compute a solution until a given say time capital T, I can query the DL rom online for any time in the SE training range, I would say we avoid expensive production techniques, this is another say good achievement. But on the other hand, in this setting the DL roms still require quite expensive training stage if the size of the Florida model NH is is very large, this is because we need to reduce the amount of data from a dimension and age to a very small dimension, but the problem the bottleneck is is NH and then we move to a say a sort of summer we decided to take the best features of DL ROMs and pod to some old couple them to say design these new pod DL rom architecture This means that the first layer somehow that the first dimensionality reduction is somehow performed through pod no matter if that dimension of the pod space here is quite large or even larger than say what expected is only relying on pod because then once we say performer first reduction saved from 1 million of degrees of freedom to 10 1000s then we can apply to that pod projection of the snapshots data that the raw machinery we have just introduced. So somehow we leverage on say, both good features that the RAM has to say perform an incredible dimensionality reduction say until the parameter dimension say and what pod is able to do in order to say perform linear dimensionality reduction that in this case is only say that the first say reduction layers now. So notation is slightly different than the D ID at the end is say the same as before we want to match somehow the two didn't the data that we're having gray here. So the projection in the pod space and the reconstruction of them and then the to say low dimensional representations that say at Come out of the encoder and have this deep feed forward neural network. So I have a question. So if you probably want the pod basis size to be pretty big, because the overall accuracy will be bounded by the pod. Absolutely. Yeah. Yeah, you're totally right. In the cases, I mean, I'm going to show indeed, of course, that the dimension of the pod can be quite large, but somehow this is already say a sort of reduction compared to the initial size say NH of the of the fluid model. So no matter if say, The Beauty dimension is 1000s or 10 1000s. Well, if you start from data that leaving 1 million dimensions because of these very fine discretization this is already say a good achievement. But of course, yes, you're 30 right into the pod dimension somehow bounds bounce some out the final accuracy of this, I don't want to say that this is the only say way to go, but at least this will say one of the most straightforward options, we we will try to this is not the only ingredient. We also relied on randomized SVD too far further reduce competition all times and also on a sort of say pre training strategy, in which we decided first to train a model for our simple task and then using that train model to to initialize the second training on the more complex tasks that we need to face for instance, we try to change the constitutive law and then to start to say training a network by relying on a simpler constitutive law regarding for instance, examples in competition mechanics and then say passing to them say conservative law we wanted or we also tried to learn say the nets on a smaller ranging time and then say, perform a second training for the final time range, we we want it these are some results, in which indeed also these sorts of pre training shows that the total time regarding training can be further reduced from one hour to say 15 minutes, this is quite a simple example of say, computational mechanics, we have a list of the nomics of these a simple beam structure at the very end, the testing can be can be performed in a very, very fast time. Similar results in collaboration with say a project regarding say the modeling of say of the cardiac activity here we have cardiac electrophysiology on ventricle on top on an atrium and here at the bottom, and here you have parameters that are related once again with a position of stimuli, these are simulations that takes more than three hours for say our final element follow the model of course, we need to pay more than say one day regarding say the construction of snapshots and then say a first reduction one hour of training of this periodical ROM, but all this allows us to perform online evaluation for new say locations regarding say that there is of the stimulus in say in a skillet is in the real time because this is more or less the scale regarding time that this phenomenon say actually takes takes place and the same safe for for for for an atrium in which they simulation time online is less than 0.2 seconds. These are some LPDDR roms allows us to get say even faster or say as fast as real time solutions. These are results regarding fruit and AmEx that the techniques is extremely general because it only relies solely on on data extracted from from simulations. And then we also enjoyed say, the use of this technique on different physical say problems here you have the the usual benchmark for foreign stocks flowing out in a pipe the flow pastor cylinder, where it's a new new solution for new parameter values can be very quickly computed this is say the flow. So, this is still the the flow pastor cylinder in which we also have the approximation not only of the velocity, but also the pressure provided of course pressure data are available and given to the to the network. So everything can be easily generalized also to the case in which we have more than a single variable to approximate and also the evaluation of outputs is indeed is indeed very accurate. This is what happens in the case of more involved fluid flow. This is our blood flow in a cerebral aneurysm geometry, where the parameters are related with the inflow in time. So here we have the comparison of the float that model of an element the pod around here, the main Oh and the error that is order of 10 to the minus five taking of course the comparison between the two and if you look at that, say that they are the flow pattern into into the aneurysm indeed you cannot say find So, big differences, you have these reported at the bottom and then it could continue with this an example with fluid structure interaction where we have the usual say solid the formation of this elastic beam attached to a fixed rigid square block and this is the velocity say pattern regarding say the flutter model on the left and two different say cases and then the corresponding pod DL rom approximation. So, no matter if say also the complexity of the problem maybe say increases a little bit there are no big substantial changes in the architecture of the pod and ROM and also in the case of vector field variables essentially the different valuable components can be can be grouped together and then treat it say and by BioPure detail from last but not least, we also apply this to the to the analysis in the simulation on the mechanical behavior of these micro electromechanical systems. These are say tiny components that you that you can find for instance in any smartphone we we have in our in our pocket some micro mirrors or things like that, where you the the interest is to characterize the So, called frequency response function because you have say loading on these structures describing terms for instance of amplitude and frequency parameters and then you want to assess for instance the maximum say deflection of these components that features some internal geometric nonlinearities in the in the way the these deforms, and at the end, you can for instance evaluate say a lot of combinations regarding different say frequencies and and and apply it to the off the load somehow in a in a couple of minutes. And what that say, I followed that model would I have required more bones than that then I hear because of the need to say to to perform very long long time sake simulation in this context. So, this was say everything that I gotta think to the first part of course, there are also some say extensions, further extensions, more aspects regarding both time extrapolation, if you want to go beyond say that the time window in which you have observed data, we somehow try to rely on long short term memory networks to perform say time extrapolation and we also introduced a sort of meshing formed layers to take into account the fact that indeed the data we are dealing with say are related to our competition Nash where we perform say the computations to get those snapshots and somehow we decided to say specify the structure of a network by taking into account say the connected matrices the relationships essentially between among the vertices of the mesh, so, somehow we will also be able to to make the neural network structure geometry aware, and this can be somehow an alternative say, way to perform, say a further reduction in the training to the pod we introduced before somehow here we decide to set to zero a lot of weights and biases in our network somehow those that are related with interactions among say, points that in the mesh are very far from each other. And these of course, have a strong impacts they also on the, on the training, say performances of that kind of, say architecture. So, the details are on those two, archive preprints if you're interested in you can have a look. So, this is the end of the, say, first part, the second and the third part, of course, will be say shorter than the first one, so don't worry about that. In the second part, if you don't have say, questions regarding the this was part of that was it can take here a short short break and then it can answer to your question if you have. So, there are questions from from chat room, but there are many Okay, there maybe we wait until the end of the okay okay. Okay. So, in the second part, somehow we try to take advantage of this framework to perform say, operator approximation. So now we we know that soon as we perform the construction of projection base that you started the models sooner or later you need to take into account tax reduction to be able to To assemble nonlinear terms for instance in an efficient way, so, but very often and this is a case that we found for instance in computational mechanics, where we have say quite involved in a linear constitutive laws for for the material, it might be the case that the pod dimension is quite small, because say the parameter to solution mapper is quite a is good regarding the reusability through a linear subspace but, what is a often annoying is the fact that those say operators at the reduced level require say a lot of say basis functions to be to be approximated in the case you rely for instance on the discrete empirical interpolation, okay. So, in an earlier case in which you need to rely on say, reduce Newton problem, for instance, Newton iteration teach timestamp if you do everything fully implicit, well, you end up with say, an iPad rom where, say your Jacobean matrix Jn and your user syllable en se must be approximated on a given basis. And the basis must be computed through snapshots starting from snapshots of their nonlinear terms of the residuals and then of the needle Jacoby's. This means that if you don't have a sufficiently reach approximation in terms of operator approximations, also say that the overall Newton iterations can be for instance not converging or you might generate Of course, large large errors that then accumulate in time. So, in these slides, I just recalled for those of you who are less acquainted say with for instance, this could implicate interpolation, how this somehow looks like you want to perform a linear approximation of the residual and then you take derivatives to have the Jacobian approximation. And then at a selected set of points is called magic points in the initial paper by mme quarters, you have to set a certain number of interpolation constraints to match say that reduce the presentation with the ones that you would obtain by only looping on those elements on the on the initial match, this is of course, extremely intrusive procedure. So, we decided to, to see if say diviner networks could also be used to perform operator approximation. So, somehow the pyro net the technique we ended up with is a projection based technique in which say, the operators at the reduced level meaning the residual and the Jacobian in the ROM are approximated through the DL rom approach we introduced before. So somehow, rather than using snapshots of the solution, I say use snapshots of residual vectors and Jacobian matrices already at the reduced level. So, this means that these are quite small dimensional data, because in those cases, the PD dimension is quite small regarding the solution approximation. And then I perform the training of the same network we saw before to be able online to compute reduced reduce factors regarding the residual and reduced matrices regarding the Cobian by simply evaluating online testing stage or neural net. I skipped those details, because it's becoming say quite late, you can find them on the paper, but the message is the same kind of architecture. So, an autoencoder plus a feed forward neural network is what indeed can be used also to perform operator approximation here there are some results in which indeed the speed up is remarkable if if operators are approximated through through neural networks, what is what is good in this case is that errors in time of course, do not grow more than say what the global errors regarding both production and high production DT Do you have some some example for instance regarding say, a beam case in which you have say a parameter dependence by the model of the structure for instance, and then we also perform some analysis regarding both the impact of the training sample size of course, you need say sufficiently large samples to train the network's and also which is the impact on the pod dimension for the solution approximation. And similar results were obtained on us slightly more say involved case in which you have the contraction of an extremely idealized say, vertical this is actually half an ellipsoid up really geometry also in this case, the errors are regarding say both pod projection for the solution and then these operator approximation do not say grow in time with say remarkable speedups compared to our to our floor, their model and to our pod Galerkin dime, ready sorter model. So now in this case, what was really limiting say the efficiency of the ram was the high production stage because the peel V reduction is already quite good in order to say, drastically reduce the dimension of the of the solution space. And this was the reason why we actually took advantage of, say, DL roms to perform, say, operator approximation. Third. And last part. Remember, we started from the need of approximating the solution, then we move to the operator approximation. And last but not least the how to take into account neural nets to perform output approximation in our sort of multi fidelity framework. So, the goal is to approximate in this case, a high fidelity model, and FhF, leveraging few data, possibly few data from the high fidelity model and several data from the low fidelity model. So, for the time being, we only have two Fidelity's. And we explored essentially three options a sort of intermediate option where we directly model the high fidelity function training as sort of only one network that takes both low fidelity 9080 data and considering the low fidelity output as a sort of intermediate level in this sort of two step approach in which we first learn, say the relationship between say, the low fidelity and the high fidelity data. In case of course, we have both on a limited set amount of samples. And then we say somehow try to learn the set say we start solid first to learn that low fidelity model from the input of the low fidelity model to the output the output and then we take advantage of this approximation. And then we give to our second network that somehow puts together the available I fidelity data and that say, artificially generated high fidelity data from this first network, this was the second option, a third option. So now added a third network in between to model somehow the linear correlation between the high fidelity and they're affiliated data in a sort of say, incremental approach in which we You start by learning say the linear correlation among them and then you focus a more on the output correction that you that you need, we took advantage of those say, architectures to police us rely on poor or reduced off their model approximation, suppose that you have say a pod Galerkin Richard the model this is our CDL miles case, depending on some parameters, say the wave number, the angular frequency, and some geometrical parameters regarding say, the shape of these acoustic horn we want to in this case, evaluate an output quantity of interest. So we are not interested to the whole say, solution field, but only to our work to an output of interest. And then we have a low fidelity model that is given by a pod Galerkin dime. But for instance, you you may rely on our poor dime approximation if you don't want to say rely on very rich operator approximation or on a poor pod basis. For whatever reason, the high fidelity data are the ones that comes from that identity simulation, find it elements say these are results regarding for instance, what happens in the case a different sizes in terms of basis function, so the different Fidelity's of the low fidelity model somehow and different amount of high fidelity data somehow combine to give you at the end of the day, say the approximation of the of the output then the our findings were that say these sort of two steps or three steps way to combine data, were say much more accurate than say that intermediate structure where all the data were seen by the network in in in a single shot, I would say the size of the use bases clearly impact on the accuracy of the low fidelity output, the high fidelity output is in black. It's clear that if the US bases all lead contains very very few bases, the output is a totally different story. This is extremely inaccurate. Nevertheless, the message is at the end, no matter if the low fidelity output is not as accurate as the OSI or the multi fidelity framework can somehow combined together a lot of low fidelity output and few very accurate high fidelity output. So only a few of us basis functions are considered to deal with a potentially inaccurate or very inaccurate low fidelity model. Clearly, as soon as the ICA data, say increase or business functions increase predictions are better. The intermediate model has as poor predictive accuracy See without a sufficiently accurate low fidelity model, but this was not the case of our two step or three step models. So, you can be a bit safer regarding say the, the poor fidelity of the low fidelity model, if you say combine those two steps or three steps, and then we decided to extend these are more recent results to extend these two time dependent outputs somehow injecting here LSDM cells. So, once again suitable neural networks that take into account also that the time dependent behavior, because what we realized is that say by simply considering those architectures with time dependent data was not enough to get very accurate prediction of time dependent output. So, at the end of the day, the architecture reconsidered as the same, but now feature also layer here that take into account LSDM networks. And they skip these results for instance, what I only say briefly, here you have a problem where you have a low dimensional dynamical system, a lot couples data, one with three species or three dimensional dynamical system, where somehow we have low fidelity data on a quite long range, high fidelity data on a say on a short range. And here you have the comparison between a single fidelity say LSDM model but only related on low fidelity data, while the the shift somehow in say the frequency also say, is observed. If you rely on isolated data, well, the accuracy is good as soon as you have the data but in in the time range. And we were we only ever looked at data while the prediction gets worse and worse, while our y's say combination of say low fidelity data, potentially inaccurate, but available, and few ICT data allows on for instance, two step architecture featuring LSDM layers to get a accurate prediction of the output also say in the time range in which data are not available. And these are somehow quite similar results. Regarding for instance, our problem where we add say a one dimensional model domain equation, this is say the value of u of the solution. So, the V here the electric potential at that point for varying parameters and running time. So, you have say, a behavior or a given behavior of the solution that somehow is quite quite different if, say low fidelity, high fidelity data are are used. Now, we combined together low fidelity and high fidelity data. So here you have the error between say the true what we want to approximate and what we obtain. On the first row we only have single fidelity, say architecture. So this means that as soon as you use LSTM our situation improves, but if we only rely solely on low fidelity data, well, clearly situation is quite is quite bad. Using LSTMs on high fidelity data is good, but the point is that isolated data can be can be very few. So what happens in in a multi fidelity case? Well, in a multi fidelity case without LSTMs. Well the situation is not good as desired, because you have say quite large errors. And in the second row say second, third and fourth picture, you have the say the good errors that are obtained, for instance by relying on a two step or even better a three step say architecture featuring than LSTM layers. So LSDM Layers allow us to take advantage of this multi fidelity framework to perform also evaluation of time dependent outputs, leveraging say on few isolated data and say possibly many more low fidelity ones. So to conclude, I hope to say to you I've been able to show that say deep learning enhanced the use of their models, say can can can be of help provided I satisfied his accuracy, provided we are able to control the computational effort to say tackle some of the problems that are listed in those bubbles. So different physical, different physics based models. Potentially Amanda we could use these disorder models to face several many quality scenarios so that the keywords is a disorder modeling UCLA origin all those cases of course, you may ask what happens regarding the need of ensuring physical constraints all what I've shown before this movie here at the bottom. So, now was taking into account physics only through the snapshots data, but we are currently working and maybe say now, next time we are in say, few months. In the future, I will be also able to show us in a more structured way some results for which we already have initial results. Here we have say that the forecast for instance, in time after say, the time range in which we observed the data without a physics based terms, and we have found a good way, details are still a bit under investigation regarding say the possibility to inject also physics in this kind of architecture. And you usually see that situation regarding time forecasts, say out of the say, training window is is much better. So more results we hope will follow soon. I stopped here, I listed in the slide some some references. If you are interested in of course, please have a look or an email, if you want to have a more detail. And they leave you with some of the picture you could take from exactly this window here. My back say a couple of hours ago. This is our campus and Milano the city center is is on the back. So thank you very much for your kind invitation and your attention. Thank you. Thank you so much for the wonderful talk. Well, it is a real picture you just taken on on our right. Yeah, did this was here. This is what actually I can can look from, say my window of my office that is our campus. All right. Sounds good. Okay, so we have a many questions to cover. There are many questions in me, actually tried to find various. Alright, so the first question is from John, on Texas a&amp;m. And he asked, in the very, very beginning, you have a slide about, you know, the physics based and even slides show that I'll be methods to be high on the physics axis, but low on the data driven axis. But I'll be methods collecting snapshots and discover the RV spaces. So they will be data driven techniques as well. Can you clarify, I agree, I agree with with John. Actually, of course, this was a possible way to convey in a single slides, of course, the plurality of different techniques and how my focus was maybe more on the way the use or the model and then a result that approximation is generated. I totally agree with you about the fact that of course, these are say also data driven techniques in the sense that of course, we need to take advantage of snapshots of our Florida model to generate their use or their approximations, but somehow, the way in which the reducer the model is built a steel takes into account a physical problem we started from. So in this sense, somehow I put say, at the very say, top of this slide, say reduced business methods, also, because these are the kinds of techniques I started from, say some some years ago, I totally agree with them, I guess it was a relative measure. Alright, another question from John. Isn't there also a parameter dependent latent representation that one needs to learn between the pod and the DL stages? Let's say so far, we've dealt with say say a quite limited number of parameters if this is the question by hand. So, we already have say physical parameters that affect say the problem that could also potentially be related with geometrical save variations, but somehow these are our input parameters. So if the question is related with the need of learning also sort of parametric description of the inputs, this would be say another maybe layer two to be added. There the representation that on the other end is learned for instance, by the feed forward neural network is intrinsically parameter dependent, because there's actually say, a way to map say parameters and time if you have time to these low dimensional, say it's base of the of the latent variables. So I look to to, to to to answer to John question. All right. Sounds good. Okay, percent about the customer from the rap. What about a chaotic system? How well does this approach deal with the chaotic systems like? Well, we would like to know on how it of course performs say on more and more involved cases. I've got this is your to challenge and this is still an open challenge to me say predicting forward in time say regarding the the range in which you collected snapshots data is already sacred challenging for non chaotic say dynamical systems and then it can imagine the kind of difficulty you may find in the case of say extrapolating forward in time. So, forecasting essentially the solution of the problem out of the, say, training range just for a small time forecast. Another maybe a key task that is related to this is the fact that we could also be interested potentially in extrapolating the behavior of the solution out of the parameter range in which we collected the data. So, somehow the network learns, say, what the data bringing as, as information, of course, we cannot say, imagine to be able to approximate unless we provide new physics inspired or physics informed or driven terms into this, this procedure, maybe that can say, play an essential role in order to shed some light on possible say, I don't want to say chaotic system, but say, less is more or less regular dynamics already, for instance, are periodic, say, systems already, say poses some small challenges and maybe some challenges? Well, I just wanted to say like, the cardiac stuff, since you already have cardiac simulations. Yeah, it's pretty easy to drive the cardiac stuff into a chaotic space. So as soon as say you have say, spiral waves that a somehow break down, essentially, we we add the results I didn't put, yes, your your comment. Thanks. Thanks, Rob, about this after your comment allows me to say something more, we essentially dealt with a case where we had say that the backup of those say spiral ways France. In that case, indeed, we were able to approximate the solution, at least in the time range in which we collected the data. So supposing that the data were already reflecting that kind of behavior. So backup, say of those, say France, we were able to reproduce them for new parameter values. But in that same time window, this is this is for sure. True. So at least say, in this case, there is there is much hope. Thanks for marking this. All right. Sounds good. Can we go back to John's question, like his second question about parameter dependent representation? So unfortunately, he he does not have a microphone available. So he's relying on the chat. I wish he if he can just intervene and ask that but he just gave me the clarification. The question is more about the latent code that live in between pod and and deep learning stages. Okay. Yeah, these indeed also somehow reflect say, the parameter dependence, somehow, the network is trained by taking into account data that have been computed for different parameter values. So somehow, in that case, you are representing you are attempting to represent the structure of the social manifold, essentially, as pod does. When pod is applied to to a bunch of SNAP, let's say computers for different parameter values. So in that case, you are somehow coding with that, say Latin representation. Say that they're all solution manifold that is intrinsically parameter dependent, right. And then of course, for any new parameter value, I need to find and this is the second part of the DRAM architecture need to find a way to connect a time and parameters to the low dimensional code. So I have to have a better clarified maybe this aspect to John, but if this is not the case, of course, we can keep on discussing. I guess you guys can exchange email and then yeah, sure. Yeah, sounds good. Okay. Next question is by Jessie from Stanford. She's asking since this approach, you know, she's talking over the pod. Since this approach still uses pod data, how does this approach better approximate problems with large Kolmogorov and with good Pinteresting And somehow we took advantage of pod as already Yong Soo was mentioning before with this question of course to enhance even more say the reduction that is carried out through a linear technique like pod indeed for instance So, already say cardiac electrophysiology for instance is already a problem where the Kolmogorov and weight decay is pretty bad is very slow because of that say quite complicated parameter to solution dependence right. So, the partial say conclusion we have reached So, far is that we can afford for dealing with say quite large pod spaces and you may think to take into accounts a sufficiently large pod spaces a pod dimension that would be totally ineffective if that was the only reduction stage like in our pod Galerkin way, no matter if that pod space is quite large dimensional while the DL rom machinery somehow then farther reduces dimensionality So, for the time being the only say partial answer, I totally agree with you this is not a complete answer is to try somehow to rely on sufficiently large dimensional 3d space or we haven't tried yet to rely on maybe local pod spaces that was already a way to say tackle the problem of the of this logic of the Kolmogorov went with but I totally agree with you that this is a say quite open issue yet right. Great. Next question is by evening. He asked for the second option of MF nn are the structures of the second neural network neural network for LS and neural network for HF the same if not router HF neural network more complicated than we say these are densenet In both cases, then all the details regarding for instance, that the construction in terms of complexity of the of the architectures are reporting the papers. So please have a look on that. I would say the goal of the tonight's is slightly different, because the first net needs to learn the relationship between the input and the low fidelity output. The second net are more like a correction by say bringing love data outputs to high fidelity output. So, the first nets So, the tasks that the two nets must perform are intrinsically different. The one is more of an input output say learning task. The second is more say a sort of conversion between low fidelity outputs to hijack outputs. So the structure is lots of different we then say perform a certain kind of training in the in the paper. So also the details regarding the procedure we followed up for the training are reported there. Diff Of course, you still have say, more detailed and quick questions related to this. Of course, feel free to write me and then we can can exchange ideas on this as well. Awesome. Sounds good. Okay, great. We don't have any other question in chat room. It's a minutes past 11 Already either it is the ATM over there. Right? Is 28 is eight is 8pm. Yeah, well, thank you for staying late with us. very gracious from your side. Thank you. Well, let's wrap up. So let's thank our speaker today for the wonderful talk. And if you have more questions please feel free to email him email and Andrea directly I'm sure he's going to be happy to answer any questions. That is my email address indeed pay attention to this one that follows my name unfortunately under one.manzoni.palmi.at polimer dot.it Thanks to you and Jung Soo once again for for this very kind and invitation I liked a lot and enjoyed about to to to give this presentation hopefully say we will be in touch and feel free of course to write me a comment to all the people attended for any kind of say, question. Sounds good. Thank you so much. Okay. All right. Bye bye.
+
+
+00:00:04.860 --> 00:00:08.040
+ 
+
+
+00:00:08.580 --> 00:00:12.600
+ 
+
+
+00:00:12.600 --> 00:00:16.590
+ 
+
+
+00:00:16.590 --> 00:00:19.320
+ 
+
+
+00:00:19.350 --> 00:00:22.710
+ 
+
+
+00:00:23.010 --> 00:00:26.280
+ 
+
+
+00:00:26.280 --> 00:00:30.930
+ 
+
+
+00:00:30.930 --> 00:00:32.130
+
+
+00:00:33.210 --> 00:00:36.120
+ 
+
+
+00:00:36.120 --> 00:00:39.360
+ 
+
+
+00:00:39.360 --> 00:00:43.710
+ 
+
+
+00:00:43.710 --> 00:00:49.020
+ 
+
+
+00:00:49.020 --> 00:00:53.250
+ 
+
+
+00:00:53.250 --> 00:00:59.760
+ 
+
+
+00:01:00.720 --> 00:01:05.670
+ 
+
+
+00:01:05.700 --> 00:01:11.160
+ 
+
+
+00:01:11.160 --> 00:01:16.380
+ 
+
+
+00:01:16.380 --> 00:01:21.720
+ 
+
+
+00:01:21.720 --> 00:01:26.970
+ 
+
+
+00:01:26.970 --> 00:01:31.290
+ 
+
+
+00:01:31.290 --> 00:01:35.730
+ 
+
+
+00:01:35.730 --> 00:01:38.040
+ 
+
+
+00:01:38.040 --> 00:01:41.790
+ 
+
+
+00:01:41.820 --> 00:01:46.290
+ 
+
+
+00:01:46.290 --> 00:01:51.000
+ 
+
+
+00:01:51.000 --> 00:01:55.020
+ 
+
+
+00:01:55.020 --> 00:01:59.550
+ 
+
+
+00:01:59.550 --> 00:02:03.180
+ 
+
+
+00:02:03.390 --> 00:02:06.930
+ 
+
+
+00:02:06.930 --> 00:02:07.320
+
+
+00:02:08.759 --> 00:02:12.509
+ 
+
+
+00:02:12.509 --> 00:02:15.869
+ 
+
+
+00:02:17.040 --> 00:02:21.240
+ 
+
+
+00:02:21.240 --> 00:02:23.760
+ 
+
+
+00:02:24.030 --> 00:02:28.320
+ 
+
+
+00:02:28.320 --> 00:02:32.370
+ 
+
+
+00:02:32.370 --> 00:02:36.630
+ 
+
+
+00:02:36.630 --> 00:02:41.640
+ 
+
+
+00:02:41.640 --> 00:02:44.520
+ 
+
+
+00:02:44.520 --> 00:02:48.360
+ 
+
+
+00:02:48.360 --> 00:02:51.780
+ 
+
+
+00:02:51.780 --> 00:02:56.700
+ 
+
+
+00:02:56.700 --> 00:02:59.520
+ 
+
+
+00:02:59.520 --> 00:03:03.390
+ 
+
+
+00:03:03.390 --> 00:03:07.680
+ 
+
+
+00:03:07.710 --> 00:03:11.640
+ 
+
+
+00:03:11.640 --> 00:03:14.100
+ 
+
+
+00:03:14.100 --> 00:03:16.770
+ 
+
+
+00:03:16.800 --> 00:03:18.270
+
+
+00:03:19.740 --> 00:03:22.590
+ 
+
+
+00:03:22.590 --> 00:03:25.800
+ 
+
+
+00:03:26.100 --> 00:03:29.340
+ 
+
+
+00:03:29.340 --> 00:03:32.880
+ 
+
+
+00:03:32.880 --> 00:03:36.450
+ 
+
+
+00:03:36.450 --> 00:03:39.750
+ 
+
+
+00:03:39.750 --> 00:03:43.350
+ 
+
+
+00:03:43.380 --> 00:03:47.820
+ 
+
+
+00:03:47.850 --> 00:03:49.500
+
+
+00:03:50.730 --> 00:03:54.960
+ 
+
+
+00:03:54.960 --> 00:03:59.490
+ 
+
+
+00:03:59.550 --> 00:04:02.670
+ 
+
+
+00:04:02.670 --> 00:04:08.100
+ 
+
+
+00:04:08.100 --> 00:04:10.650
+ 
+
+
+00:04:10.650 --> 00:04:15.000
+ 
+
+
+00:04:15.030 --> 00:04:19.110
+ 
+
+
+00:04:19.110 --> 00:04:23.700
+ 
+
+
+00:04:23.850 --> 00:04:27.360
+ 
+
+
+00:04:27.390 --> 00:04:31.530
+ 
+
+
+00:04:31.530 --> 00:04:36.030
+ 
+
+
+00:04:36.030 --> 00:04:40.590
+ 
+
+
+00:04:40.590 --> 00:04:43.860
+ 
+
+
+00:04:43.860 --> 00:04:46.800
+ 
+
+
+00:04:46.800 --> 00:04:50.460
+ 
+
+
+00:04:50.460 --> 00:04:54.180
+ 
+
+
+00:04:54.180 --> 00:04:57.960
+ 
+
+
+00:04:57.960 --> 00:04:59.970
+
+
+00:05:00.000 --> 00:05:03.120
+ 
+
+
+00:05:03.120 --> 00:05:06.420
+ 
+
+
+00:05:06.420 --> 00:05:10.650
+ 
+
+
+00:05:10.830 --> 00:05:15.810
+ 
+
+
+00:05:15.810 --> 00:05:19.200
+ 
+
+
+00:05:19.200 --> 00:05:23.190
+ 
+
+
+00:05:23.190 --> 00:05:27.660
+ 
+
+
+00:05:27.690 --> 00:05:33.630
+ 
+
+
+00:05:33.630 --> 00:05:38.220
+ 
+
+
+00:05:38.220 --> 00:05:41.850
+ 
+
+
+00:05:41.850 --> 00:05:45.540
+ 
+
+
+00:05:45.570 --> 00:05:48.870
+ 
+
+
+00:05:50.070 --> 00:05:52.620
+ 
+
+
+00:05:52.620 --> 00:05:55.920
+ 
+
+
+00:05:55.920 --> 00:06:02.190
+ 
+
+
+00:06:02.190 --> 00:06:06.750
+ 
+
+
+00:06:07.560 --> 00:06:11.430
+ 
+
+
+00:06:11.430 --> 00:06:15.600
+ 
+
+
+00:06:15.600 --> 00:06:19.080
+ 
+
+
+00:06:19.080 --> 00:06:21.180
+ 
+
+
+00:06:21.180 --> 00:06:25.680
+ 
+
+
+00:06:25.710 --> 00:06:28.230
+ 
+
+
+00:06:28.230 --> 00:06:31.410
+ 
+
+
+00:06:31.410 --> 00:06:36.420
+ 
+
+
+00:06:36.420 --> 00:06:36.810
+
+
+00:06:37.920 --> 00:06:42.750
+ 
+
+
+00:06:43.020 --> 00:06:46.740
+ 
+
+
+00:06:47.670 --> 00:06:52.230
+ 
+
+
+00:06:52.230 --> 00:06:56.940
+ 
+
+
+00:06:57.000 --> 00:07:01.920
+ 
+
+
+00:07:01.920 --> 00:07:06.120
+ 
+
+
+00:07:06.120 --> 00:07:09.630
+ 
+
+
+00:07:11.070 --> 00:07:14.760
+ 
+
+
+00:07:14.760 --> 00:07:18.330
+ 
+
+
+00:07:18.330 --> 00:07:21.030
+ 
+
+
+00:07:21.030 --> 00:07:24.570
+ 
+
+
+00:07:24.570 --> 00:07:27.150
+ 
+
+
+00:07:27.150 --> 00:07:32.460
+ 
+
+
+00:07:32.490 --> 00:07:36.390
+ 
+
+
+00:07:36.420 --> 00:07:39.630
+ 
+
+
+00:07:39.630 --> 00:07:43.920
+ 
+
+
+00:07:44.370 --> 00:07:44.970
+
+
+00:07:45.990 --> 00:07:46.650
+
+
+00:07:47.760 --> 00:07:50.790
+ 
+
+
+00:07:51.120 --> 00:07:54.660
+ 
+
+
+00:07:55.770 --> 00:07:59.610
+ 
+
+
+00:07:59.610 --> 00:08:06.180
+ 
+
+
+00:08:06.180 --> 00:08:10.080
+ 
+
+
+00:08:10.080 --> 00:08:13.890
+ 
+
+
+00:08:13.890 --> 00:08:16.860
+ 
+
+
+00:08:16.860 --> 00:08:22.470
+ 
+
+
+00:08:22.470 --> 00:08:27.990
+ 
+
+
+00:08:27.990 --> 00:08:31.380
+ 
+
+
+00:08:31.470 --> 00:08:34.560
+ 
+
+
+00:08:34.560 --> 00:08:39.240
+ 
+
+
+00:08:39.240 --> 00:08:45.120
+ 
+
+
+00:08:45.240 --> 00:08:50.100
+ 
+
+
+00:08:50.130 --> 00:08:53.880
+ 
+
+
+00:08:53.880 --> 00:08:57.330
+ 
+
+
+00:08:57.330 --> 00:09:00.930
+ 
+
+
+00:09:00.930 --> 00:09:06.510
+ 
+
+
+00:09:06.570 --> 00:09:10.530
+ 
+
+
+00:09:10.530 --> 00:09:14.820
+ 
+
+
+00:09:14.820 --> 00:09:18.330
+ 
+
+
+00:09:18.330 --> 00:09:22.440
+ 
+
+
+00:09:22.440 --> 00:09:26.400
+ 
+
+
+00:09:26.400 --> 00:09:30.270
+ 
+
+
+00:09:30.270 --> 00:09:33.090
+ 
+
+
+00:09:33.090 --> 00:09:37.290
+ 
+
+
+00:09:37.320 --> 00:09:40.770
+
+
+00:09:41.910 --> 00:09:45.090
+ 
+
+
+00:09:45.090 --> 00:09:49.320
+ 
+
+
+00:09:49.320 --> 00:09:52.770
+ 
+
+
+00:09:52.770 --> 00:09:56.100
+ 
+
+
+00:09:56.370 --> 00:09:59.970
+ 
+
+
+00:10:00.000 --> 00:10:04.590
+ 
+
+
+00:10:04.590 --> 00:10:08.490
+ 
+
+
+00:10:08.490 --> 00:10:12.120
+ 
+
+
+00:10:12.120 --> 00:10:15.060
+ 
+
+
+00:10:15.060 --> 00:10:20.460
+ 
+
+
+00:10:20.460 --> 00:10:25.260
+ 
+
+
+00:10:25.260 --> 00:10:29.430
+ 
+
+
+00:10:29.430 --> 00:10:33.930
+ 
+
+
+00:10:33.930 --> 00:10:38.160
+ 
+
+
+00:10:38.160 --> 00:10:41.370
+ 
+
+
+00:10:41.370 --> 00:10:44.220
+ 
+
+
+00:10:44.220 --> 00:10:47.220
+ 
+
+
+00:10:47.220 --> 00:10:51.630
+ 
+
+
+00:10:51.630 --> 00:10:55.920
+ 
+
+
+00:10:55.920 --> 00:11:00.390
+ 
+
+
+00:11:00.390 --> 00:11:06.390
+ 
+
+
+00:11:06.390 --> 00:11:10.050
+ 
+
+
+00:11:10.050 --> 00:11:13.860
+ 
+
+
+00:11:13.860 --> 00:11:18.570
+ 
+
+
+00:11:18.600 --> 00:11:23.280
+ 
+
+
+00:11:23.280 --> 00:11:28.050
+ 
+
+
+00:11:28.050 --> 00:11:30.810
+ 
+
+
+00:11:30.810 --> 00:11:33.840
+ 
+
+
+00:11:33.840 --> 00:11:37.350
+ 
+
+
+00:11:37.350 --> 00:11:41.880
+ 
+
+
+00:11:41.880 --> 00:11:44.250
+ 
+
+
+00:11:44.250 --> 00:11:47.460
+ 
+
+
+00:11:47.460 --> 00:11:51.630
+ 
+
+
+00:11:52.950 --> 00:11:56.760
+ 
+
+
+00:11:56.760 --> 00:12:00.930
+ 
+
+
+00:12:00.930 --> 00:12:05.010
+ 
+
+
+00:12:05.010 --> 00:12:10.230
+ 
+
+
+00:12:10.740 --> 00:12:15.150
+ 
+
+
+00:12:15.150 --> 00:12:19.290
+ 
+
+
+00:12:19.290 --> 00:12:23.070
+ 
+
+
+00:12:23.070 --> 00:12:25.680
+ 
+
+
+00:12:25.680 --> 00:12:29.070
+ 
+
+
+00:12:29.070 --> 00:12:32.670
+ 
+
+
+00:12:32.670 --> 00:12:36.870
+ 
+
+
+00:12:36.870 --> 00:12:42.000
+ 
+
+
+00:12:42.000 --> 00:12:45.330
+ 
+
+
+00:12:45.330 --> 00:12:48.270
+ 
+
+
+00:12:48.270 --> 00:12:51.600
+ 
+
+
+00:12:51.600 --> 00:12:55.530
+ 
+
+
+00:12:55.590 --> 00:12:58.500
+ 
+
+
+00:12:59.790 --> 00:13:06.750
+ 
+
+
+00:13:06.750 --> 00:13:11.490
+ 
+
+
+00:13:11.640 --> 00:13:14.220
+ 
+
+
+00:13:14.220 --> 00:13:18.480
+ 
+
+
+00:13:18.480 --> 00:13:21.540
+ 
+
+
+00:13:21.540 --> 00:13:25.050
+ 
+
+
+00:13:25.080 --> 00:13:28.830
+ 
+
+
+00:13:28.830 --> 00:13:31.680
+ 
+
+
+00:13:31.680 --> 00:13:35.100
+ 
+
+
+00:13:35.160 --> 00:13:39.750
+ 
+
+
+00:13:39.750 --> 00:13:43.500
+ 
+
+
+00:13:43.500 --> 00:13:47.670
+ 
+
+
+00:13:47.670 --> 00:13:52.650
+ 
+
+
+00:13:52.650 --> 00:13:55.410
+ 
+
+
+00:13:55.410 --> 00:13:58.890
+ 
+
+
+00:13:58.890 --> 00:14:02.400
+ 
+
+
+00:14:02.400 --> 00:14:06.270
+ 
+
+
+00:14:06.270 --> 00:14:09.870
+ 
+
+
+00:14:09.870 --> 00:14:12.810
+ 
+
+
+00:14:12.810 --> 00:14:15.390
+ 
+
+
+00:14:16.680 --> 00:14:20.310
+ 
+
+
+00:14:20.310 --> 00:14:24.390
+ 
+
+
+00:14:24.390 --> 00:14:28.110
+ 
+
+
+00:14:28.110 --> 00:14:29.310
+
+
+00:14:31.020 --> 00:14:35.040
+ 
+
+
+00:14:35.040 --> 00:14:37.920
+ 
+
+
+00:14:37.920 --> 00:14:40.950
+ 
+
+
+00:14:40.950 --> 00:14:46.350
+ 
+
+
+00:14:46.380 --> 00:14:50.130
+ 
+
+
+00:14:50.190 --> 00:14:53.100
+ 
+
+
+00:14:53.100 --> 00:14:57.090
+ 
+
+
+00:14:57.090 --> 00:14:59.970
+ 
+
+
+00:15:00.000 --> 00:15:05.880
+ 
+
+
+00:15:05.880 --> 00:15:09.900
+ 
+
+
+00:15:09.900 --> 00:15:13.620
+ 
+
+
+00:15:13.620 --> 00:15:16.200
+ 
+
+
+00:15:17.369 --> 00:15:21.809
+ 
+
+
+00:15:21.809 --> 00:15:24.629
+ 
+
+
+00:15:24.629 --> 00:15:28.379
+ 
+
+
+00:15:28.379 --> 00:15:32.489
+ 
+
+
+00:15:32.579 --> 00:15:36.179
+ 
+
+
+00:15:36.179 --> 00:15:40.589
+ 
+
+
+00:15:41.519 --> 00:15:46.169
+ 
+
+
+00:15:46.169 --> 00:15:51.419
+ 
+
+
+00:15:51.419 --> 00:15:55.739
+ 
+
+
+00:15:55.739 --> 00:15:58.259
+ 
+
+
+00:15:58.259 --> 00:16:00.779
+ 
+
+
+00:16:00.779 --> 00:16:04.319
+ 
+
+
+00:16:04.319 --> 00:16:06.989
+ 
+
+
+00:16:06.989 --> 00:16:11.039
+ 
+
+
+00:16:11.219 --> 00:16:13.709
+ 
+
+
+00:16:15.750 --> 00:16:18.750
+ 
+
+
+00:16:18.750 --> 00:16:22.890
+ 
+
+
+00:16:22.890 --> 00:16:28.680
+ 
+
+
+00:16:28.710 --> 00:16:32.190
+ 
+
+
+00:16:32.220 --> 00:16:36.390
+ 
+
+
+00:16:36.390 --> 00:16:40.260
+ 
+
+
+00:16:40.260 --> 00:16:46.890
+ 
+
+
+00:16:47.040 --> 00:16:50.850
+ 
+
+
+00:16:50.910 --> 00:16:56.310
+ 
+
+
+00:16:56.490 --> 00:16:59.610
+ 
+
+
+00:16:59.610 --> 00:17:03.000
+ 
+
+
+00:17:03.000 --> 00:17:06.930
+ 
+
+
+00:17:06.930 --> 00:17:12.060
+ 
+
+
+00:17:12.120 --> 00:17:17.370
+ 
+
+
+00:17:17.370 --> 00:17:21.810
+ 
+
+
+00:17:21.810 --> 00:17:26.190
+ 
+
+
+00:17:26.190 --> 00:17:30.390
+ 
+
+
+00:17:30.390 --> 00:17:34.080
+ 
+
+
+00:17:34.080 --> 00:17:39.660
+ 
+
+
+00:17:40.170 --> 00:17:42.960
+ 
+
+
+00:17:42.960 --> 00:17:47.940
+ 
+
+
+00:17:47.940 --> 00:17:51.270
+ 
+
+
+00:17:51.270 --> 00:17:54.210
+ 
+
+
+00:17:54.210 --> 00:17:57.090
+ 
+
+
+00:17:57.090 --> 00:18:00.210
+ 
+
+
+00:18:00.450 --> 00:18:03.360
+ 
+
+
+00:18:03.480 --> 00:18:08.160
+ 
+
+
+00:18:08.160 --> 00:18:13.320
+ 
+
+
+00:18:13.350 --> 00:18:16.890
+ 
+
+
+00:18:16.890 --> 00:18:21.330
+ 
+
+
+00:18:21.330 --> 00:18:25.200
+ 
+
+
+00:18:25.200 --> 00:18:30.330
+ 
+
+
+00:18:30.330 --> 00:18:34.260
+ 
+
+
+00:18:34.260 --> 00:18:37.920
+ 
+
+
+00:18:37.920 --> 00:18:41.850
+ 
+
+
+00:18:41.850 --> 00:18:45.660
+ 
+
+
+00:18:46.290 --> 00:18:50.280
+ 
+
+
+00:18:50.790 --> 00:18:55.230
+ 
+
+
+00:18:55.230 --> 00:18:58.560
+ 
+
+
+00:18:58.710 --> 00:19:03.240
+ 
+
+
+00:19:03.240 --> 00:19:07.200
+ 
+
+
+00:19:07.470 --> 00:19:11.970
+ 
+
+
+00:19:12.000 --> 00:19:16.410
+ 
+
+
+00:19:16.530 --> 00:19:22.830
+ 
+
+
+00:19:23.280 --> 00:19:28.440
+ 
+
+
+00:19:28.440 --> 00:19:34.650
+ 
+
+
+00:19:34.650 --> 00:19:38.400
+ 
+
+
+00:19:38.400 --> 00:19:41.580
+ 
+
+
+00:19:41.580 --> 00:19:45.810
+ 
+
+
+00:19:45.810 --> 00:19:49.260
+ 
+
+
+00:19:49.260 --> 00:19:52.410
+ 
+
+
+00:19:52.440 --> 00:19:57.120
+ 
+
+
+00:19:57.120 --> 00:19:59.850
+ 
+
+
+00:20:00.000 --> 00:20:05.160
+ 
+
+
+00:20:05.160 --> 00:20:08.340
+ 
+
+
+00:20:08.340 --> 00:20:12.960
+ 
+
+
+00:20:12.960 --> 00:20:18.960
+ 
+
+
+00:20:18.960 --> 00:20:23.400
+ 
+
+
+00:20:23.400 --> 00:20:25.770
+ 
+
+
+00:20:27.180 --> 00:20:31.200
+ 
+
+
+00:20:31.200 --> 00:20:33.780
+ 
+
+
+00:20:33.780 --> 00:20:36.840
+ 
+
+
+00:20:36.870 --> 00:20:39.750
+ 
+
+
+00:20:39.750 --> 00:20:43.440
+ 
+
+
+00:20:43.440 --> 00:20:47.820
+ 
+
+
+00:20:47.850 --> 00:20:51.030
+ 
+
+
+00:20:51.060 --> 00:20:54.360
+ 
+
+
+00:20:54.360 --> 00:20:58.290
+ 
+
+
+00:20:58.290 --> 00:21:01.590
+ 
+
+
+00:21:01.590 --> 00:21:06.150
+ 
+
+
+00:21:06.150 --> 00:21:13.350
+ 
+
+
+00:21:13.350 --> 00:21:17.940
+ 
+
+
+00:21:17.940 --> 00:21:21.990
+ 
+
+
+00:21:21.990 --> 00:21:25.410
+ 
+
+
+00:21:25.440 --> 00:21:28.320
+ 
+
+
+00:21:28.320 --> 00:21:31.620
+ 
+
+
+00:21:31.800 --> 00:21:37.410
+ 
+
+
+00:21:37.410 --> 00:21:39.960
+ 
+
+
+00:21:39.960 --> 00:21:44.160
+ 
+
+
+00:21:44.160 --> 00:21:47.490
+ 
+
+
+00:21:47.490 --> 00:21:51.240
+ 
+
+
+00:21:51.240 --> 00:21:54.750
+ 
+
+
+00:21:54.750 --> 00:21:57.960
+ 
+
+
+00:21:57.960 --> 00:22:01.860
+ 
+
+
+00:22:01.860 --> 00:22:05.910
+ 
+
+
+00:22:05.910 --> 00:22:08.820
+ 
+
+
+00:22:08.820 --> 00:22:12.900
+ 
+
+
+00:22:12.930 --> 00:22:15.630
+ 
+
+
+00:22:15.630 --> 00:22:18.990
+ 
+
+
+00:22:18.990 --> 00:22:22.080
+ 
+
+
+00:22:22.110 --> 00:22:26.940
+ 
+
+
+00:22:27.870 --> 00:22:31.170
+ 
+
+
+00:22:31.170 --> 00:22:34.680
+ 
+
+
+00:22:34.680 --> 00:22:39.120
+ 
+
+
+00:22:39.120 --> 00:22:44.340
+ 
+
+
+00:22:44.340 --> 00:22:49.110
+ 
+
+
+00:22:49.110 --> 00:22:53.250
+ 
+
+
+00:22:53.250 --> 00:22:57.540
+ 
+
+
+00:22:57.540 --> 00:23:00.270
+ 
+
+
+00:23:00.270 --> 00:23:04.410
+ 
+
+
+00:23:04.410 --> 00:23:08.580
+ 
+
+
+00:23:08.580 --> 00:23:10.740
+ 
+
+
+00:23:10.740 --> 00:23:16.950
+ 
+
+
+00:23:17.040 --> 00:23:21.510
+ 
+
+
+00:23:21.510 --> 00:23:25.830
+ 
+
+
+00:23:25.830 --> 00:23:30.630
+ 
+
+
+00:23:30.630 --> 00:23:35.970
+ 
+
+
+00:23:36.000 --> 00:23:39.240
+ 
+
+
+00:23:39.240 --> 00:23:42.810
+ 
+
+
+00:23:42.810 --> 00:23:43.230
+
+
+00:23:44.880 --> 00:23:49.260
+ 
+
+
+00:23:49.290 --> 00:23:53.760
+ 
+
+
+00:23:53.760 --> 00:23:57.090
+ 
+
+
+00:23:57.090 --> 00:24:00.480
+ 
+
+
+00:24:00.480 --> 00:24:06.180
+ 
+
+
+00:24:06.720 --> 00:24:11.400
+ 
+
+
+00:24:11.400 --> 00:24:16.170
+ 
+
+
+00:24:16.200 --> 00:24:20.130
+ 
+
+
+00:24:20.160 --> 00:24:25.500
+ 
+
+
+00:24:25.680 --> 00:24:30.600
+ 
+
+
+00:24:30.600 --> 00:24:35.760
+ 
+
+
+00:24:35.760 --> 00:24:37.890
+
+
+00:24:39.240 --> 00:24:43.740
+ 
+
+
+00:24:43.740 --> 00:24:47.070
+ 
+
+
+00:24:47.070 --> 00:24:51.930
+ 
+
+
+00:24:51.930 --> 00:24:55.530
+ 
+
+
+00:24:55.530 --> 00:24:57.870
+
+
+00:24:59.370 --> 00:24:59.940
+
+
+00:25:00.659 --> 00:25:04.499
+ 
+
+
+00:25:04.499 --> 00:25:09.119
+ 
+
+
+00:25:09.119 --> 00:25:12.779
+ 
+
+
+00:25:12.809 --> 00:25:18.899
+ 
+
+
+00:25:18.899 --> 00:25:22.529
+ 
+
+
+00:25:22.529 --> 00:25:26.189
+ 
+
+
+00:25:26.189 --> 00:25:30.629
+ 
+
+
+00:25:30.629 --> 00:25:35.309
+ 
+
+
+00:25:35.309 --> 00:25:40.859
+ 
+
+
+00:25:40.859 --> 00:25:45.149
+ 
+
+
+00:25:46.200 --> 00:25:49.620
+ 
+
+
+00:25:50.910 --> 00:25:55.770
+ 
+
+
+00:25:55.770 --> 00:25:58.830
+ 
+
+
+00:25:59.130 --> 00:26:04.950
+ 
+
+
+00:26:04.950 --> 00:26:08.760
+ 
+
+
+00:26:08.760 --> 00:26:16.650
+ 
+
+
+00:26:16.650 --> 00:26:20.760
+ 
+
+
+00:26:20.790 --> 00:26:24.690
+ 
+
+
+00:26:24.900 --> 00:26:29.130
+ 
+
+
+00:26:29.130 --> 00:26:33.480
+ 
+
+
+00:26:33.510 --> 00:26:39.330
+ 
+
+
+00:26:39.360 --> 00:26:42.960
+ 
+
+
+00:26:42.960 --> 00:26:48.810
+ 
+
+
+00:26:48.810 --> 00:26:55.080
+ 
+
+
+00:26:55.110 --> 00:26:59.040
+ 
+
+
+00:26:59.040 --> 00:27:04.470
+ 
+
+
+00:27:04.710 --> 00:27:09.120
+ 
+
+
+00:27:10.440 --> 00:27:15.570
+ 
+
+
+00:27:15.570 --> 00:27:19.110
+ 
+
+
+00:27:19.110 --> 00:27:22.950
+ 
+
+
+00:27:23.910 --> 00:27:27.210
+ 
+
+
+00:27:27.210 --> 00:27:31.710
+ 
+
+
+00:27:31.740 --> 00:27:36.600
+ 
+
+
+00:27:36.600 --> 00:27:41.250
+ 
+
+
+00:27:41.970 --> 00:27:48.330
+ 
+
+
+00:27:48.330 --> 00:27:48.840
+
+
+00:27:49.920 --> 00:27:53.790
+ 
+
+
+00:27:53.790 --> 00:27:58.710
+ 
+
+
+00:27:58.710 --> 00:28:03.300
+ 
+
+
+00:28:03.300 --> 00:28:07.590
+ 
+
+
+00:28:07.590 --> 00:28:10.950
+ 
+
+
+00:28:10.950 --> 00:28:14.430
+ 
+
+
+00:28:14.850 --> 00:28:17.970
+ 
+
+
+00:28:20.460 --> 00:28:27.810
+ 
+
+
+00:28:28.470 --> 00:28:35.400
+ 
+
+
+00:28:35.430 --> 00:28:38.970
+ 
+
+
+00:28:38.970 --> 00:28:44.190
+ 
+
+
+00:28:44.730 --> 00:28:49.200
+ 
+
+
+00:28:49.200 --> 00:28:54.900
+ 
+
+
+00:28:54.900 --> 00:28:59.760
+ 
+
+
+00:28:59.790 --> 00:29:04.050
+ 
+
+
+00:29:04.050 --> 00:29:08.730
+ 
+
+
+00:29:08.730 --> 00:29:12.360
+ 
+
+
+00:29:12.360 --> 00:29:17.310
+ 
+
+
+00:29:17.310 --> 00:29:21.840
+ 
+
+
+00:29:21.870 --> 00:29:27.390
+ 
+
+
+00:29:27.540 --> 00:29:33.480
+ 
+
+
+00:29:33.480 --> 00:29:38.760
+ 
+
+
+00:29:39.120 --> 00:29:43.230
+ 
+
+
+00:29:43.230 --> 00:29:47.460
+ 
+
+
+00:29:47.760 --> 00:29:51.870
+ 
+
+
+00:29:51.900 --> 00:29:55.320
+ 
+
+
+00:29:55.320 --> 00:29:59.970
+ 
+
+
+00:30:00.000 --> 00:30:04.650
+ 
+
+
+00:30:04.650 --> 00:30:05.760
+
+
+00:30:07.049 --> 00:30:08.399
+
+
+00:30:10.559 --> 00:30:14.069
+ 
+
+
+00:30:14.069 --> 00:30:17.969
+ 
+
+
+00:30:18.479 --> 00:30:19.619
+
+
+00:30:20.760 --> 00:30:24.450
+ 
+
+
+00:30:24.450 --> 00:30:28.830
+ 
+
+
+00:30:28.860 --> 00:30:34.980
+ 
+
+
+00:30:35.010 --> 00:30:38.670
+ 
+
+
+00:30:38.670 --> 00:30:42.240
+ 
+
+
+00:30:42.240 --> 00:30:45.930
+ 
+
+
+00:30:45.930 --> 00:30:49.830
+ 
+
+
+00:30:49.830 --> 00:30:53.670
+ 
+
+
+00:30:53.670 --> 00:30:54.150
+
+
+00:30:55.440 --> 00:31:00.120
+ 
+
+
+00:31:00.120 --> 00:31:03.060
+ 
+
+
+00:31:03.060 --> 00:31:06.480
+ 
+
+
+00:31:06.480 --> 00:31:11.790
+ 
+
+
+00:31:11.790 --> 00:31:16.500
+ 
+
+
+00:31:16.500 --> 00:31:20.250
+ 
+
+
+00:31:20.250 --> 00:31:23.640
+ 
+
+
+00:31:23.640 --> 00:31:26.970
+ 
+
+
+00:31:27.180 --> 00:31:32.250
+ 
+
+
+00:31:32.490 --> 00:31:37.140
+ 
+
+
+00:31:37.170 --> 00:31:41.430
+ 
+
+
+00:31:41.550 --> 00:31:44.130
+ 
+
+
+00:31:44.130 --> 00:31:49.050
+ 
+
+
+00:31:49.050 --> 00:31:54.750
+ 
+
+
+00:31:54.750 --> 00:31:58.410
+ 
+
+
+00:31:58.410 --> 00:32:02.580
+ 
+
+
+00:32:02.580 --> 00:32:07.260
+ 
+
+
+00:32:07.260 --> 00:32:10.710
+ 
+
+
+00:32:10.710 --> 00:32:15.480
+ 
+
+
+00:32:16.710 --> 00:32:19.410
+ 
+
+
+00:32:19.560 --> 00:32:24.750
+ 
+
+
+00:32:24.750 --> 00:32:27.840
+ 
+
+
+00:32:28.920 --> 00:32:33.420
+ 
+
+
+00:32:33.420 --> 00:32:37.170
+ 
+
+
+00:32:37.170 --> 00:32:42.030
+ 
+
+
+00:32:42.060 --> 00:32:45.810
+ 
+
+
+00:32:45.810 --> 00:32:49.410
+ 
+
+
+00:32:49.410 --> 00:32:53.850
+ 
+
+
+00:32:53.850 --> 00:32:58.320
+ 
+
+
+00:32:58.530 --> 00:33:03.990
+ 
+
+
+00:33:03.990 --> 00:33:07.800
+ 
+
+
+00:33:07.800 --> 00:33:12.240
+ 
+
+
+00:33:12.240 --> 00:33:16.800
+ 
+
+
+00:33:16.800 --> 00:33:20.940
+ 
+
+
+00:33:20.940 --> 00:33:24.720
+ 
+
+
+00:33:24.720 --> 00:33:28.020
+ 
+
+
+00:33:28.020 --> 00:33:31.560
+ 
+
+
+00:33:31.560 --> 00:33:34.080
+
+
+00:33:35.910 --> 00:33:42.060
+ 
+
+
+00:33:42.090 --> 00:33:46.800
+ 
+
+
+00:33:46.800 --> 00:33:49.680
+ 
+
+
+00:33:49.680 --> 00:33:53.820
+ 
+
+
+00:33:53.820 --> 00:33:57.420
+ 
+
+
+00:33:57.420 --> 00:34:00.780
+ 
+
+
+00:34:00.780 --> 00:34:04.140
+ 
+
+
+00:34:04.140 --> 00:34:07.080
+ 
+
+
+00:34:07.080 --> 00:34:10.020
+ 
+
+
+00:34:11.070 --> 00:34:15.660
+ 
+
+
+00:34:15.660 --> 00:34:19.260
+ 
+
+
+00:34:19.260 --> 00:34:21.870
+ 
+
+
+00:34:21.870 --> 00:34:26.010
+ 
+
+
+00:34:26.010 --> 00:34:28.680
+ 
+
+
+00:34:28.680 --> 00:34:32.820
+ 
+
+
+00:34:33.960 --> 00:34:37.980
+ 
+
+
+00:34:37.980 --> 00:34:41.820
+ 
+
+
+00:34:42.300 --> 00:34:46.770
+ 
+
+
+00:34:46.770 --> 00:34:51.930
+ 
+
+
+00:34:51.930 --> 00:34:54.870
+ 
+
+
+00:34:54.870 --> 00:34:59.970
+ 
+
+
+00:35:00.000 --> 00:35:04.410
+ 
+
+
+00:35:04.440 --> 00:35:07.110
+ 
+
+
+00:35:07.380 --> 00:35:10.380
+ 
+
+
+00:35:10.380 --> 00:35:15.270
+ 
+
+
+00:35:15.300 --> 00:35:19.980
+ 
+
+
+00:35:19.980 --> 00:35:23.820
+ 
+
+
+00:35:23.820 --> 00:35:24.780
+
+
+00:35:25.950 --> 00:35:29.970
+ 
+
+
+00:35:30.000 --> 00:35:34.290
+ 
+
+
+00:35:34.320 --> 00:35:38.640
+ 
+
+
+00:35:38.640 --> 00:35:42.330
+ 
+
+
+00:35:42.420 --> 00:35:47.370
+ 
+
+
+00:35:47.370 --> 00:35:51.030
+ 
+
+
+00:35:51.060 --> 00:35:53.790
+ 
+
+
+00:35:54.930 --> 00:35:57.780
+ 
+
+
+00:35:57.780 --> 00:36:00.360
+ 
+
+
+00:36:00.360 --> 00:36:05.970
+ 
+
+
+00:36:05.970 --> 00:36:09.090
+ 
+
+
+00:36:09.090 --> 00:36:11.850
+ 
+
+
+00:36:11.850 --> 00:36:13.350
+
+
+00:36:14.640 --> 00:36:19.500
+ 
+
+
+00:36:19.500 --> 00:36:25.230
+ 
+
+
+00:36:25.260 --> 00:36:30.060
+ 
+
+
+00:36:30.060 --> 00:36:33.720
+ 
+
+
+00:36:33.720 --> 00:36:37.380
+ 
+
+
+00:36:37.680 --> 00:36:41.190
+ 
+
+
+00:36:41.190 --> 00:36:44.460
+ 
+
+
+00:36:44.490 --> 00:36:49.320
+ 
+
+
+00:36:49.320 --> 00:36:53.100
+ 
+
+
+00:36:53.100 --> 00:36:57.720
+ 
+
+
+00:36:58.230 --> 00:37:02.970
+ 
+
+
+00:37:02.970 --> 00:37:07.140
+ 
+
+
+00:37:07.470 --> 00:37:11.790
+ 
+
+
+00:37:11.790 --> 00:37:15.150
+ 
+
+
+00:37:15.150 --> 00:37:19.140
+ 
+
+
+00:37:19.140 --> 00:37:22.020
+ 
+
+
+00:37:23.130 --> 00:37:26.340
+ 
+
+
+00:37:26.370 --> 00:37:28.170
+ 
+
+
+00:37:29.520 --> 00:37:33.240
+ 
+
+
+00:37:33.240 --> 00:37:36.900
+ 
+
+
+00:37:36.900 --> 00:37:42.180
+ 
+
+
+00:37:42.180 --> 00:37:46.260
+ 
+
+
+00:37:46.620 --> 00:37:51.420
+ 
+
+
+00:37:51.420 --> 00:37:53.970
+ 
+
+
+00:37:53.970 --> 00:37:55.710
+
+
+00:37:58.260 --> 00:38:02.100
+ 
+
+
+00:38:02.130 --> 00:38:06.630
+ 
+
+
+00:38:06.630 --> 00:38:12.210
+ 
+
+
+00:38:12.930 --> 00:38:17.460
+ 
+
+
+00:38:17.520 --> 00:38:21.570
+ 
+
+
+00:38:21.570 --> 00:38:24.780
+ 
+
+
+00:38:24.780 --> 00:38:30.000
+ 
+
+
+00:38:30.000 --> 00:38:36.990
+ 
+
+
+00:38:36.990 --> 00:38:41.970
+ 
+
+
+00:38:41.970 --> 00:38:46.200
+ 
+
+
+00:38:46.200 --> 00:38:51.150
+ 
+
+
+00:38:51.150 --> 00:38:54.540
+ 
+
+
+00:38:54.540 --> 00:38:58.530
+ 
+
+
+00:38:58.560 --> 00:39:01.710
+ 
+
+
+00:39:01.710 --> 00:39:04.650
+ 
+
+
+00:39:04.650 --> 00:39:09.180
+ 
+
+
+00:39:09.180 --> 00:39:11.910
+ 
+
+
+00:39:12.090 --> 00:39:16.380
+ 
+
+
+00:39:16.380 --> 00:39:19.350
+ 
+
+
+00:39:19.350 --> 00:39:23.280
+ 
+
+
+00:39:23.280 --> 00:39:24.870
+ 
+
+
+00:39:26.730 --> 00:39:31.800
+ 
+
+
+00:39:32.400 --> 00:39:39.180
+ 
+
+
+00:39:39.540 --> 00:39:43.770
+ 
+
+
+00:39:43.770 --> 00:39:48.840
+ 
+
+
+00:39:48.840 --> 00:39:53.910
+ 
+
+
+00:39:53.910 --> 00:39:57.030
+ 
+
+
+00:39:57.270 --> 00:40:00.000
+ 
+
+
+00:40:00.000 --> 00:40:02.610
+ 
+
+
+00:40:02.940 --> 00:40:05.940
+ 
+
+
+00:40:05.940 --> 00:40:08.400
+ 
+
+
+00:40:08.400 --> 00:40:12.090
+ 
+
+
+00:40:12.090 --> 00:40:15.840
+ 
+
+
+00:40:16.230 --> 00:40:21.090
+ 
+
+
+00:40:21.090 --> 00:40:25.200
+ 
+
+
+00:40:25.500 --> 00:40:29.940
+ 
+
+
+00:40:29.940 --> 00:40:34.650
+ 
+
+
+00:40:34.650 --> 00:40:37.350
+ 
+
+
+00:40:37.380 --> 00:40:40.920
+ 
+
+
+00:40:40.920 --> 00:40:44.490
+ 
+
+
+00:40:44.490 --> 00:40:48.660
+ 
+
+
+00:40:48.660 --> 00:40:53.340
+ 
+
+
+00:40:53.340 --> 00:40:58.140
+ 
+
+
+00:40:58.140 --> 00:41:03.390
+ 
+
+
+00:41:03.780 --> 00:41:07.440
+ 
+
+
+00:41:07.440 --> 00:41:10.860
+ 
+
+
+00:41:10.860 --> 00:41:14.880
+ 
+
+
+00:41:14.880 --> 00:41:18.330
+ 
+
+
+00:41:18.330 --> 00:41:21.780
+ 
+
+
+00:41:21.780 --> 00:41:25.200
+ 
+
+
+00:41:25.200 --> 00:41:29.130
+ 
+
+
+00:41:29.130 --> 00:41:32.070
+ 
+
+
+00:41:32.070 --> 00:41:35.220
+ 
+
+
+00:41:35.220 --> 00:41:39.300
+ 
+
+
+00:41:39.300 --> 00:41:41.400
+ 
+
+
+00:41:41.400 --> 00:41:44.940
+ 
+
+
+00:41:44.940 --> 00:41:47.880
+ 
+
+
+00:41:47.880 --> 00:41:51.810
+ 
+
+
+00:41:51.810 --> 00:41:54.270
+ 
+
+
+00:41:54.270 --> 00:41:58.050
+ 
+
+
+00:41:58.050 --> 00:42:00.390
+ 
+
+
+00:42:00.390 --> 00:42:02.010
+ 
+
+
+00:42:03.630 --> 00:42:08.940
+ 
+
+
+00:42:08.940 --> 00:42:13.770
+ 
+
+
+00:42:13.770 --> 00:42:19.020
+ 
+
+
+00:42:19.020 --> 00:42:23.100
+ 
+
+
+00:42:23.250 --> 00:42:26.640
+ 
+
+
+00:42:26.640 --> 00:42:31.950
+ 
+
+
+00:42:32.220 --> 00:42:37.950
+ 
+
+
+00:42:37.950 --> 00:42:42.180
+ 
+
+
+00:42:42.210 --> 00:42:45.000
+ 
+
+
+00:42:45.000 --> 00:42:48.840
+ 
+
+
+00:42:48.840 --> 00:42:51.150
+ 
+
+
+00:42:51.150 --> 00:42:56.430
+ 
+
+
+00:42:56.430 --> 00:43:01.980
+ 
+
+
+00:43:02.010 --> 00:43:05.460
+ 
+
+
+00:43:05.460 --> 00:43:11.340
+ 
+
+
+00:43:11.340 --> 00:43:11.760
+
+
+00:43:13.050 --> 00:43:17.730
+ 
+
+
+00:43:17.760 --> 00:43:20.820
+ 
+
+
+00:43:20.820 --> 00:43:24.270
+ 
+
+
+00:43:24.270 --> 00:43:26.970
+ 
+
+
+00:43:27.930 --> 00:43:30.990
+ 
+
+
+00:43:30.990 --> 00:43:36.450
+ 
+
+
+00:43:36.450 --> 00:43:38.700
+ 
+
+
+00:43:39.750 --> 00:43:44.970
+ 
+
+
+00:43:44.970 --> 00:43:51.150
+ 
+
+
+00:43:51.180 --> 00:43:55.710
+ 
+
+
+00:43:55.710 --> 00:44:00.720
+ 
+
+
+00:44:00.720 --> 00:44:04.290
+ 
+
+
+00:44:04.290 --> 00:44:07.710
+ 
+
+
+00:44:07.710 --> 00:44:10.590
+ 
+
+
+00:44:10.590 --> 00:44:15.420
+ 
+
+
+00:44:15.420 --> 00:44:18.600
+ 
+
+
+00:44:18.600 --> 00:44:22.590
+ 
+
+
+00:44:22.590 --> 00:44:25.710
+ 
+
+
+00:44:25.710 --> 00:44:30.000
+ 
+
+
+00:44:30.060 --> 00:44:33.510
+ 
+
+
+00:44:33.510 --> 00:44:37.140
+ 
+
+
+00:44:37.140 --> 00:44:43.020
+ 
+
+
+00:44:43.020 --> 00:44:47.430
+ 
+
+
+00:44:47.430 --> 00:44:51.930
+ 
+
+
+00:44:51.930 --> 00:44:56.250
+ 
+
+
+00:44:56.250 --> 00:44:59.430
+ 
+
+
+00:44:59.430 --> 00:44:59.970
+
+
+00:45:00.000 --> 00:45:02.940
+ 
+
+
+00:45:03.900 --> 00:45:07.260
+ 
+
+
+00:45:07.320 --> 00:45:11.370
+ 
+
+
+00:45:12.000 --> 00:45:16.950
+ 
+
+
+00:45:17.340 --> 00:45:20.790
+ 
+
+
+00:45:20.790 --> 00:45:25.620
+ 
+
+
+00:45:25.620 --> 00:45:28.980
+ 
+
+
+00:45:28.980 --> 00:45:34.290
+ 
+
+
+00:45:34.290 --> 00:45:36.510
+
+
+00:45:38.400 --> 00:45:41.550
+ 
+
+
+00:45:41.550 --> 00:45:46.170
+ 
+
+
+00:45:46.170 --> 00:45:49.290
+ 
+
+
+00:45:49.290 --> 00:45:53.040
+ 
+
+
+00:45:53.040 --> 00:45:56.880
+ 
+
+
+00:45:56.880 --> 00:46:01.290
+ 
+
+
+00:46:01.290 --> 00:46:04.740
+ 
+
+
+00:46:04.740 --> 00:46:07.890
+ 
+
+
+00:46:07.890 --> 00:46:14.490
+ 
+
+
+00:46:14.490 --> 00:46:17.580
+ 
+
+
+00:46:17.580 --> 00:46:21.810
+ 
+
+
+00:46:21.810 --> 00:46:25.590
+ 
+
+
+00:46:25.890 --> 00:46:30.660
+ 
+
+
+00:46:31.770 --> 00:46:35.970
+ 
+
+
+00:46:36.120 --> 00:46:40.050
+ 
+
+
+00:46:40.440 --> 00:46:43.770
+ 
+
+
+00:46:43.770 --> 00:46:47.280
+ 
+
+
+00:46:47.280 --> 00:46:50.940
+ 
+
+
+00:46:51.000 --> 00:46:54.330
+ 
+
+
+00:46:54.360 --> 00:46:58.350
+ 
+
+
+00:46:59.010 --> 00:47:03.930
+ 
+
+
+00:47:03.930 --> 00:47:06.960
+ 
+
+
+00:47:06.960 --> 00:47:10.470
+ 
+
+
+00:47:10.470 --> 00:47:15.480
+ 
+
+
+00:47:15.480 --> 00:47:19.500
+ 
+
+
+00:47:19.500 --> 00:47:24.750
+ 
+
+
+00:47:24.810 --> 00:47:29.460
+ 
+
+
+00:47:29.460 --> 00:47:33.240
+ 
+
+
+00:47:34.620 --> 00:47:36.210
+
+
+00:47:37.290 --> 00:47:38.490
+
+
+00:47:39.570 --> 00:47:42.600
+ 
+
+
+00:47:42.600 --> 00:47:46.710
+ 
+
+
+00:47:46.710 --> 00:47:50.850
+ 
+
+
+00:47:50.850 --> 00:47:54.390
+ 
+
+
+00:47:54.390 --> 00:47:59.280
+ 
+
+
+00:47:59.280 --> 00:48:03.330
+ 
+
+
+00:48:03.330 --> 00:48:06.960
+ 
+
+
+00:48:06.960 --> 00:48:10.800
+ 
+
+
+00:48:10.800 --> 00:48:15.270
+ 
+
+
+00:48:15.270 --> 00:48:18.090
+ 
+
+
+00:48:18.090 --> 00:48:21.720
+ 
+
+
+00:48:23.250 --> 00:48:27.120
+ 
+
+
+00:48:27.120 --> 00:48:32.520
+ 
+
+
+00:48:32.520 --> 00:48:35.520
+ 
+
+
+00:48:35.520 --> 00:48:39.450
+ 
+
+
+00:48:39.480 --> 00:48:43.410
+ 
+
+
+00:48:43.410 --> 00:48:48.120
+ 
+
+
+00:48:48.120 --> 00:48:53.760
+ 
+
+
+00:48:53.760 --> 00:48:57.330
+ 
+
+
+00:48:57.330 --> 00:49:02.340
+ 
+
+
+00:49:02.370 --> 00:49:08.010
+ 
+
+
+00:49:08.010 --> 00:49:11.580
+ 
+
+
+00:49:11.580 --> 00:49:15.630
+ 
+
+
+00:49:15.630 --> 00:49:19.020
+ 
+
+
+00:49:19.020 --> 00:49:22.620
+ 
+
+
+00:49:22.620 --> 00:49:27.330
+ 
+
+
+00:49:27.330 --> 00:49:30.960
+ 
+
+
+00:49:31.230 --> 00:49:36.540
+ 
+
+
+00:49:36.540 --> 00:49:38.730
+
+
+00:49:40.140 --> 00:49:44.040
+ 
+
+
+00:49:44.040 --> 00:49:46.860
+ 
+
+
+00:49:46.860 --> 00:49:52.260
+ 
+
+
+00:49:52.290 --> 00:49:54.630
+ 
+
+
+00:49:56.280 --> 00:49:59.970
+ 
+
+
+00:50:00.000 --> 00:50:03.420
+ 
+
+
+00:50:03.420 --> 00:50:08.220
+ 
+
+
+00:50:08.220 --> 00:50:14.160
+ 
+
+
+00:50:14.160 --> 00:50:18.060
+ 
+
+
+00:50:18.060 --> 00:50:21.630
+ 
+
+
+00:50:21.630 --> 00:50:26.730
+ 
+
+
+00:50:27.630 --> 00:50:33.240
+ 
+
+
+00:50:33.240 --> 00:50:36.060
+ 
+
+
+00:50:36.060 --> 00:50:41.010
+ 
+
+
+00:50:41.070 --> 00:50:46.680
+ 
+
+
+00:50:46.680 --> 00:50:49.740
+ 
+
+
+00:50:49.740 --> 00:50:52.080
+ 
+
+
+00:50:52.080 --> 00:50:56.070
+ 
+
+
+00:50:56.070 --> 00:51:01.890
+ 
+
+
+00:51:01.890 --> 00:51:02.730
+
+
+00:51:03.870 --> 00:51:10.050
+ 
+
+
+00:51:10.290 --> 00:51:13.710
+ 
+
+
+00:51:13.710 --> 00:51:16.710
+ 
+
+
+00:51:17.040 --> 00:51:20.670
+ 
+
+
+00:51:20.670 --> 00:51:26.430
+ 
+
+
+00:51:26.430 --> 00:51:32.490
+ 
+
+
+00:51:32.490 --> 00:51:36.390
+ 
+
+
+00:51:36.390 --> 00:51:41.820
+ 
+
+
+00:51:42.870 --> 00:51:46.140
+ 
+
+
+00:51:46.140 --> 00:51:50.100
+ 
+
+
+00:51:50.130 --> 00:51:54.120
+ 
+
+
+00:51:54.120 --> 00:51:58.200
+ 
+
+
+00:51:58.200 --> 00:52:03.420
+ 
+
+
+00:52:04.050 --> 00:52:08.700
+ 
+
+
+00:52:08.730 --> 00:52:12.600
+ 
+
+
+00:52:12.630 --> 00:52:17.490
+ 
+
+
+00:52:17.490 --> 00:52:23.130
+ 
+
+
+00:52:23.160 --> 00:52:29.160
+ 
+
+
+00:52:29.160 --> 00:52:37.230
+ 
+
+
+00:52:37.230 --> 00:52:41.520
+ 
+
+
+00:52:41.520 --> 00:52:46.470
+ 
+
+
+00:52:46.470 --> 00:52:50.160
+ 
+
+
+00:52:50.160 --> 00:52:53.280
+ 
+
+
+00:52:54.810 --> 00:52:59.610
+ 
+
+
+00:52:59.640 --> 00:53:03.870
+ 
+
+
+00:53:03.900 --> 00:53:07.530
+ 
+
+
+00:53:07.800 --> 00:53:11.340
+ 
+
+
+00:53:11.370 --> 00:53:17.670
+ 
+
+
+00:53:17.700 --> 00:53:23.190
+ 
+
+
+00:53:23.190 --> 00:53:28.530
+ 
+
+
+00:53:28.530 --> 00:53:31.410
+ 
+
+
+00:53:31.410 --> 00:53:36.300
+ 
+
+
+00:53:36.300 --> 00:53:41.070
+ 
+
+
+00:53:41.100 --> 00:53:45.510
+ 
+
+
+00:53:45.510 --> 00:53:50.310
+ 
+
+
+00:53:50.310 --> 00:53:53.700
+ 
+
+
+00:53:53.700 --> 00:53:57.000
+ 
+
+
+00:53:57.000 --> 00:54:01.530
+ 
+
+
+00:54:02.490 --> 00:54:06.510
+ 
+
+
+00:54:07.590 --> 00:54:10.350
+ 
+
+
+00:54:10.350 --> 00:54:14.760
+ 
+
+
+00:54:14.760 --> 00:54:21.060
+ 
+
+
+00:54:21.060 --> 00:54:21.510
+
+
+00:54:22.860 --> 00:54:29.670
+ 
+
+
+00:54:29.670 --> 00:54:35.100
+ 
+
+
+00:54:35.100 --> 00:54:36.000
+
+
+00:54:37.200 --> 00:54:41.220
+ 
+
+
+00:54:41.220 --> 00:54:44.820
+ 
+
+
+00:54:44.820 --> 00:54:48.060
+ 
+
+
+00:54:48.060 --> 00:54:50.490
+ 
+
+
+00:54:52.020 --> 00:54:55.710
+ 
+
+
+00:54:55.860 --> 00:54:58.920
+ 
+
+
+00:54:58.920 --> 00:55:00.000
+
+
+00:55:00.000 --> 00:55:01.650
+
+
+00:55:03.330 --> 00:55:08.700
+ 
+
+
+00:55:08.700 --> 00:55:12.960
+ 
+
+
+00:55:12.990 --> 00:55:17.490
+ 
+
+
+00:55:17.490 --> 00:55:21.120
+ 
+
+
+00:55:21.120 --> 00:55:25.590
+ 
+
+
+00:55:25.770 --> 00:55:30.090
+ 
+
+
+00:55:30.090 --> 00:55:33.180
+ 
+
+
+00:55:33.210 --> 00:55:36.780
+ 
+
+
+00:55:36.780 --> 00:55:41.610
+ 
+
+
+00:55:41.610 --> 00:55:42.120
+
+
+00:55:43.470 --> 00:55:48.570
+ 
+
+
+00:55:49.440 --> 00:55:52.860
+ 
+
+
+00:55:52.860 --> 00:55:56.400
+ 
+
+
+00:55:56.400 --> 00:55:59.940
+ 
+
+
+00:55:59.970 --> 00:56:06.450
+ 
+
+
+00:56:06.450 --> 00:56:11.490
+ 
+
+
+00:56:11.490 --> 00:56:15.630
+ 
+
+
+00:56:15.630 --> 00:56:19.890
+ 
+
+
+00:56:19.890 --> 00:56:21.300
+
+
+00:56:22.830 --> 00:56:26.760
+ 
+
+
+00:56:26.850 --> 00:56:29.010
+
+
+00:56:30.300 --> 00:56:35.610
+ 
+
+
+00:56:35.640 --> 00:56:39.300
+ 
+
+
+00:56:39.660 --> 00:56:43.380
+ 
+
+
+00:56:43.380 --> 00:56:46.800
+ 
+
+
+00:56:46.800 --> 00:56:49.500
+
+
+00:56:51.480 --> 00:56:56.190
+ 
+
+
+00:56:56.190 --> 00:57:01.380
+ 
+
+
+00:57:01.380 --> 00:57:05.700
+ 
+
+
+00:57:05.700 --> 00:57:10.470
+ 
+
+
+00:57:11.760 --> 00:57:15.210
+ 
+
+
+00:57:16.620 --> 00:57:21.930
+ 
+
+
+00:57:21.930 --> 00:57:25.590
+ 
+
+
+00:57:25.590 --> 00:57:29.940
+ 
+
+
+00:57:29.970 --> 00:57:35.160
+ 
+
+
+00:57:35.760 --> 00:57:40.110
+ 
+
+
+00:57:40.110 --> 00:57:44.370
+ 
+
+
+00:57:44.370 --> 00:57:48.330
+ 
+
+
+00:57:48.330 --> 00:57:52.170
+ 
+
+
+00:57:52.170 --> 00:57:56.820
+ 
+
+
+00:57:57.720 --> 00:58:00.870
+ 
+
+
+00:58:00.870 --> 00:58:01.710
+
+
+00:58:02.790 --> 00:58:05.550
+ 
+
+
+00:58:05.550 --> 00:58:09.240
+ 
+
+
+00:58:09.240 --> 00:58:12.570
+ 
+
+
+00:58:12.570 --> 00:58:15.330
+ 
+
+
+00:58:15.330 --> 00:58:19.170
+ 
+
+
+00:58:19.170 --> 00:58:22.890
+ 
+
+
+00:58:22.890 --> 00:58:26.400
+ 
+
+
+00:58:27.750 --> 00:58:31.650
+ 
+
+
+00:58:31.650 --> 00:58:33.990
+ 
+
+
+00:58:33.990 --> 00:58:38.700
+ 
+
+
+00:58:38.700 --> 00:58:44.550
+ 
+
+
+00:58:44.550 --> 00:58:48.120
+ 
+
+
+00:58:48.150 --> 00:58:52.950
+ 
+
+
+00:58:52.950 --> 00:58:54.720
+
+
+00:58:56.070 --> 00:58:56.670
+
+
+00:58:58.470 --> 00:59:00.690
+
+
+00:59:01.710 --> 00:59:04.440
+ 
+
+
+00:59:04.440 --> 00:59:07.980
+ 
+
+
+00:59:08.010 --> 00:59:11.700
+ 
+
+
+00:59:11.730 --> 00:59:15.750
+ 
+
+
+00:59:15.750 --> 00:59:20.580
+ 
+
+
+00:59:20.580 --> 00:59:24.120
+ 
+
+
+00:59:24.120 --> 00:59:28.710
+ 
+
+
+00:59:28.710 --> 00:59:29.220
+
+
+00:59:31.710 --> 00:59:35.040
+ 
+
+
+00:59:35.040 --> 00:59:37.890
+ 
+
+
+00:59:37.890 --> 00:59:41.670
+ 
+
+
+00:59:41.670 --> 00:59:47.370
+ 
+
+
+00:59:47.370 --> 00:59:50.940
+ 
+
+
+00:59:52.860 --> 00:59:56.460
+ 
+
+
+00:59:56.460 --> 00:59:57.090
+
+
+00:59:58.500 --> 00:59:58.950
+
+
+01:00:00.240 --> 01:00:01.140
+
+
+01:00:03.330 --> 01:00:07.140
+ 
+
+
+01:00:07.140 --> 01:00:11.220
+ 
+
+
+01:00:11.220 --> 01:00:12.360
+
+
+01:00:13.679 --> 01:00:18.239
+ 
+
+
+01:00:19.439 --> 01:00:21.599
+ 
+
+
+01:00:21.599 --> 01:00:25.799
+ 
+
+
+01:00:25.859 --> 01:00:31.019
+ 
+
+
+01:00:31.019 --> 01:00:34.679
+ 
+
+
+01:00:34.679 --> 01:00:38.039
+ 
+
+
+01:00:38.039 --> 01:00:42.389
+ 
+
+
+01:00:42.389 --> 01:00:44.879
+ 
+
+
+01:00:44.879 --> 01:00:50.339
+ 
+
+
+01:00:50.789 --> 01:00:55.619
+ 
+
+
+01:00:55.619 --> 01:00:59.579
+ 
+
+
+01:00:59.579 --> 01:01:04.199
+ 
+
+
+01:01:04.199 --> 01:01:06.449
+
+
+01:01:07.650 --> 01:01:11.550
+ 
+
+
+01:01:12.720 --> 01:01:18.630
+ 
+
+
+01:01:18.630 --> 01:01:25.080
+ 
+
+
+01:01:25.080 --> 01:01:30.630
+ 
+
+
+01:01:30.660 --> 01:01:34.950
+ 
+
+
+01:01:34.950 --> 01:01:38.400
+ 
+
+
+01:01:38.400 --> 01:01:43.530
+ 
+
+
+01:01:43.620 --> 01:01:49.200
+ 
+
+
+01:01:49.620 --> 01:01:52.950
+ 
+
+
+01:01:52.950 --> 01:01:56.400
+ 
+
+
+01:01:56.400 --> 01:02:00.330
+ 
+
+
+01:02:00.330 --> 01:02:02.280
+
+
+01:02:03.480 --> 01:02:07.290
+ 
+
+
+01:02:07.290 --> 01:02:12.570
+ 
+
+
+01:02:12.870 --> 01:02:17.370
+ 
+
+
+01:02:17.400 --> 01:02:21.180
+ 
+
+
+01:02:21.180 --> 01:02:26.160
+ 
+
+
+01:02:26.160 --> 01:02:33.270
+ 
+
+
+01:02:33.330 --> 01:02:37.020
+ 
+
+
+01:02:37.020 --> 01:02:40.770
+ 
+
+
+01:02:40.770 --> 01:02:44.970
+ 
+
+
+01:02:44.970 --> 01:02:49.470
+ 
+
+
+01:02:49.470 --> 01:02:54.090
+ 
+
+
+01:02:54.090 --> 01:02:57.180
+ 
+
+
+01:02:57.180 --> 01:03:00.870
+ 
+
+
+01:03:00.870 --> 01:03:05.700
+ 
+
+
+01:03:05.700 --> 01:03:09.840
+ 
+
+
+01:03:10.200 --> 01:03:13.890
+ 
+
+
+01:03:13.890 --> 01:03:15.330
+
+
+01:03:16.350 --> 01:03:21.000
+ 
+
+
+01:03:21.030 --> 01:03:23.910
+ 
+
+
+01:03:23.910 --> 01:03:28.320
+ 
+
+
+01:03:28.320 --> 01:03:35.550
+ 
+
+
+01:03:35.550 --> 01:03:40.140
+ 
+
+
+01:03:40.140 --> 01:03:44.700
+ 
+
+
+01:03:44.700 --> 01:03:49.470
+ 
+
+
+01:03:49.470 --> 01:03:53.280
+ 
+
+
+01:03:53.280 --> 01:03:58.950
+ 
+
+
+01:03:58.950 --> 01:04:01.860
+ 
+
+
+01:04:01.860 --> 01:04:05.910
+ 
+
+
+01:04:05.940 --> 01:04:09.960
+ 
+
+
+01:04:09.960 --> 01:04:12.570
+ 
+
+
+01:04:12.570 --> 01:04:16.530
+ 
+
+
+01:04:16.530 --> 01:04:20.280
+ 
+
+
+01:04:20.280 --> 01:04:23.850
+ 
+
+
+01:04:23.850 --> 01:04:26.280
+
+
+01:04:27.360 --> 01:04:30.570
+ 
+
+
+01:04:30.570 --> 01:04:33.990
+ 
+
+
+01:04:33.990 --> 01:04:38.340
+ 
+
+
+01:04:38.850 --> 01:04:39.270
+
+
+01:04:40.770 --> 01:04:44.370
+ 
+
+
+01:04:44.370 --> 01:04:48.480
+ 
+
+
+01:04:48.480 --> 01:04:49.710
+
+
+01:04:51.120 --> 01:04:54.690
+ 
+
+
+01:04:54.690 --> 01:04:59.340
+ 
+
+
+01:04:59.340 --> 01:04:59.970
+
+
+01:05:00.000 --> 01:05:07.590
+ 
+
+
+01:05:07.590 --> 01:05:09.270
+ 
+
+
+01:05:10.440 --> 01:05:13.860
+ 
+
+
+01:05:13.860 --> 01:05:17.220
+ 
+
+
+01:05:17.220 --> 01:05:21.120
+ 
+
+
+01:05:21.780 --> 01:05:26.220
+ 
+
+
+01:05:26.220 --> 01:05:30.450
+ 
+
+
+01:05:30.570 --> 01:05:35.880
+ 
+
+
+01:05:35.910 --> 01:05:40.410
+ 
+
+
+01:05:40.440 --> 01:05:43.350
+ 
+
+
+01:05:44.700 --> 01:05:50.070
+ 
+
+
+01:05:50.070 --> 01:05:51.030
+
+
+01:05:53.040 --> 01:05:54.990
+ 
+
+
+01:05:56.550 --> 01:06:00.600
+ 
+
+
+01:06:00.600 --> 01:06:01.350
+
+
+01:06:02.370 --> 01:06:07.230
+ 
+
+
+01:06:07.260 --> 01:06:11.730
+ 
+
+
+01:06:11.730 --> 01:06:15.870
+ 
+
+
+01:06:15.870 --> 01:06:19.410
+ 
+
+
+01:06:20.460 --> 01:06:26.190
+ 
+
+
+01:06:26.190 --> 01:06:31.890
+ 
+
+
+01:06:31.890 --> 01:06:37.770
+ 
+
+
+01:06:37.770 --> 01:06:40.230
+ 
+
+
+01:06:40.230 --> 01:06:41.850
+
+
+01:06:43.020 --> 01:06:48.000
+ 
+
+
+01:06:48.060 --> 01:06:54.210
+ 
+
+
+01:06:54.210 --> 01:06:59.190
+ 
+
+
+01:06:59.190 --> 01:07:03.420
+ 
+
+
+01:07:03.420 --> 01:07:11.010
+ 
+
+
+01:07:11.010 --> 01:07:15.000
+ 
+
+
+01:07:15.000 --> 01:07:17.340
+ 
+
+
+01:07:17.340 --> 01:07:20.880
+ 
+
+
+01:07:20.880 --> 01:07:21.240
+
+
+01:07:23.160 --> 01:07:25.320
+
+
+01:07:26.370 --> 01:07:29.670
+ 
+
+
+01:07:29.790 --> 01:07:33.870
+ 
+
+
+01:07:34.020 --> 01:07:39.060
+ 
+
+
+01:07:39.060 --> 01:07:43.830
+ 
+
+
+01:07:43.830 --> 01:07:50.190
+ 
+
+
+01:07:50.190 --> 01:07:53.760
+ 
+
+
+01:07:53.760 --> 01:07:59.490
+ 
+
+
+01:07:59.490 --> 01:08:05.400
+ 
+
+
+01:08:05.400 --> 01:08:10.080
+ 
+
+
+01:08:10.080 --> 01:08:15.330
+ 
+
+
+01:08:15.330 --> 01:08:19.230
+ 
+
+
+01:08:19.230 --> 01:08:24.060
+ 
+
+
+01:08:24.300 --> 01:08:27.750
+ 
+
+
+01:08:27.750 --> 01:08:31.290
+ 
+
+
+01:08:31.290 --> 01:08:36.000
+ 
+
+
+01:08:36.030 --> 01:08:42.120
+ 
+
+
+01:08:42.120 --> 01:08:48.090
+ 
+
+
+01:08:49.920 --> 01:08:54.330
+ 
+
+
+01:08:54.390 --> 01:08:58.290
+ 
+
+
+01:08:59.550 --> 01:09:03.390
+ 
+
+
+01:09:03.390 --> 01:09:06.540
+ 
+
+
+01:09:06.540 --> 01:09:11.070
+ 
+
+
+01:09:11.070 --> 01:09:13.710
+ 
+
+
+01:09:13.710 --> 01:09:16.830
+ 
+
+
+01:09:16.860 --> 01:09:21.210
+ 
+
+
+01:09:21.210 --> 01:09:25.770
+ 
+
+
+01:09:25.770 --> 01:09:29.940
+ 
+
+
+01:09:30.000 --> 01:09:34.320
+ 
+
+
+01:09:34.320 --> 01:09:37.110
+ 
+
+
+01:09:37.110 --> 01:09:41.010
+ 
+
+
+01:09:41.010 --> 01:09:44.400
+ 
+
+

@@ -1,0 +1,1696 @@
+Uh, welcome to the DDPS seminar,
+everyone. Before we
+uh introduce our invited speaker, let's
+go over some rules as usual.
+First of all, please mute yourself
+during the talk. If you have immediate
+questions, you're welcome to unmute and
+ask. Or otherwise, please use the chat
+room to post your questions so that we
+can address them in the Q&A session at
+the end.
+Second, today's seminar is open to
+external audience, so no classified
+discussion is allowed. Finally, the talk
+will be recorded and uploaded to our
+YouTube channel.
+Now, let me introduce our speaker.
+It is an honor to host Christopher
+Rackauckas, who is the
+uh vice president of modeling and
+simulation at JuliaHub, the director of
+scientific research at Pumas AI,
+co-PI of the JuliaHub at MIT, and the
+lead developer of the
+SciML open-source software organization.
+For his work in mechanistic machine
+learning, his work is credited for the
+15,000 times speed up of NASA launch
+services simulations, and recently
+demonstrate a 60 times to 570 times
+acceleration over Modelica
+tools in HVAC simulation,
+earning increased the US Air Force
+Artificial Intelligence Accelerator
+Scientific Excellence Award.
+He is the lead developer of the Pumas
+project and has received a top
+presentation award
+at
+um at every ACoP in the last 3 years for
+improving methods for uncertainty
+quantification,
+automatic GPU acceleration of mixed and
+nonlinear mixed effects modeling, and
+machine learning assist uh construction
+of the NLME
+models with deep NLME. For these
+achievements, Chris received the
+Emerging Scientist Award from ISOP.
+Today, he will talk about generalizing
+scientific learning and differentiable
+simulation beyond continuous models.
+Please enjoy the wonderful talk. Now,
+without further ado, let me hand over to
+Christopher. Yeah, thank you. I mean,
+I'll I'll I'll jump right into this.
+Thank you for the nice introduction. So,
+what I want to talk about today is
+scientific machine learning, right? And
+what scientific machine learning is is
+uh you know, I think that this this
+seminar everyone's kind of familiar with
+it, but the core idea behind scientific
+machine learning is that you know, you
+have this information in your scientific
+models that you don't necessarily have
+in your data. So, for example, you know,
+with general relativity, there is no
+data set that you know, kind of
+encapture captures, you know, what
+general relativity is, right? You know,
+there is no 3 billion line website that
+you know, like Google what Google has
+for general relativity. There are
+thousands of experiments that have shown
+us that it's true, there isn't that data
+set, right? So, if we want to build
+these AI systems that are you know,
+correct and predictive, what we want to
+do is we want to be able to use that
+knowledge as though we had data without
+having to require that we just go out
+there and gather that data, right? So,
+how do we do that? How do we build a
+machine learning kind of system that is
+incorporating all of the knowledge that
+we know and using that as a starting
+point, and then using our data to then
+go beyond the pieces that we know. This
+is what we're doing with scientific
+machine learning. And the core point of
+what I want to hit here on here is that
+differentiable simulation is very the a
+very specific way of doing scientific
+machine learning, and I want to talk
+about how differential simulation
+is hard, but it's worth developing more
+time in, right? So, you know, I want to
+really develop what differential
+simulation is, why it's important, why
+it's a hard way of doing scientific
+machine learning, but why it has a lot
+of payoff. And so, first of all, what is
+our approach to scientific machine
+learning? A lot of what I'll be talking
+about today will be in this this realm
+of these universal approximator
+differential equations, also kind of
+short-handed to universal differential
+equations. The core idea behind them is
+it's it's a very general object where
+you say, I have differential equations
+which are defined in part by universal
+approximator. So, what's a universal
+approximator? A universal approximator
+is any kind of object that is a
+representative of space of functions
+from Rn to Rm. So, a neural network is
+your classic example where there is the
+universal approximator theorem which
+says that for sufficiently large neural
+network, so sufficiently large in terms
+of the the size of the hidden layers or
+the number of hidden layers,
+um then with a sufficiently large neural
+network, you can approximate any
+possible function. It will
+you can find weights of the neural
+network such that its inputs go out to
+the outputs such that over the whole,
+you know, over a whole domain omega, f
+of x uh f of x is a you know, neural
+network of x is approximately f of x
+uh for all, you know, x in there with
+within some epsilon, right? So, there's
+a way to be able to formalize that this
+this property that you know, a
+sufficiently large neural network can
+approximate any any possible function
+that's sufficiently large. The reason
+why neural networks are used for a lot
+of these cases is because they overcome
+curse of dimensionality. So, for
+sufficiently large uh dimensions, uh
+they might be a nice object to do this,
+but it's not the only object that we use
+here. Uh there's also you can also make
+use of polynomial chaos expansions, you
+can make use of, you know, Legendre
+expansions, you can use Fourier series.
+All of these things are function
+approximators. Now, a lot of them are
+designed in 1D, and so the if you use a
+use a tensor product approach to build
+up these function approximators like a
+Fourier series into higher dimensions,
+you have exponential growth in the
+number of terms. This is the curse of
+dimensionality. And so, in some cases we
+use some things that overcome curse of
+dimensionality, other cases you don't.
+But the the core idea here is that you
+have function approximators. You have
+things that can stand in for functions
+that you don't know. And what you do is
+you build models that that make use of
+all this information you know. So, here
+for example is a version of
+Lotka-Volterra. So, we have a a version
+of Lotka-Volterra where we say, you
+know, x is the number of of bunnies, and
+if I leave bunnies alone, I get
+exponentially more bunnies. And if I
+leave wolves alone, I get exponentially
+less wolves over time. And I there
+there's something more to this model
+that I don't know. There is something
+there's something extra, and
+and whatever this extra thing is, it's
+it's a it's
+who knows? It's something that happens
+when we put rabbits and wolves together,
+but you know, they never teach you that
+in elementary school for some reason.
+So, what happens when we put rabbits and
+wolves together? That's what this model
+is saying. And so, what we then do is we
+we we train this this model. We right we
+train this neural network, this function
+approximator, to capture the thing that
+we did not know how to model, right? Um
+and so, that's that's step one, right?
+So, and once you do that, you then have
+a
+computational representation of the
+thing that you did not know how to
+model, right? So, you you know, you
+don't necessarily know what it is, but
+you have a object a computational object
+that is able to do input-output
+relationships
+uh such that the thing that you did not
+know how to model is correctly chosen to
+now match the data. So, it's it
+once it's trained, it becomes a function
+of the you know, becomes an
+approximation to the function that you
+did not otherwise know how to write
+down, right? And now, what can you do
+with that? Well, you can do all sorts of
+analyses, right? You can say, you know,
+understand the sensitivities of the
+piece of the model that you that you did
+not know. You can find its Jacobian. You
+can you know, you can do all these
+things that you would want to do with a
+model just on the thing that you
+previously did not know how to model. Um
+and one of the things that we then
+commonly do is we do perform a symbolic
+regression, right? We we we say, well,
+you know, now that we've learned uh in
+in such a way that we've made use of all
+of our prior information, let's now try
+to understand that that model element um
+in terms of some more primitive pieces,
+some pieces that are representative of
+mechanistic portions, which we if we
+were to write a model ourselves, we
+would use these these these pieces,
+right? And so, you can then do this kind
+of symbolic regression process and have
+it spit out uh equations which are more
+more readable, and they actually tend to
+improve the generalizability of the
+approach as well. So, in the to really
+kind of understand this entire approach,
+I want to kind of walk through this step
+by step. So, here uh we start with just
+a standard machine learning, right? So,
+the standard machine learning uh
+approach here that we're just going to
+do is a neural ODE, right? Just pure
+machine learning. U prime equals a
+neural network, right? So, we're saying,
+learn any possible function such that
+I've represented this time series. Um I
+go from 0 to 21 days worth of data,
+right? So, I just learn from 0 to 21
+days, just that many data points. I fit
+the model and extrapolate forward. And
+this is uh the first uh data from the
+first 21 days in the Wuhan region of
+China from the COVID-19 outbreak. And
+now, you look at this and you go, well,
+the the lines for the estimated from the
+from the model are completely not
+fitting the data at all after the
+training uh regime, right? Um and that
+you you are right, this is what happens
+with machine learning, right? Machine
+learning does not at necessarily act
+extrapolate well to out outside of its
+data set. So,
+So, what what what what what I'm saying
+here is that, you know, we have a lot of
+prior information though. Like I told
+you that this is an epidemic model, and
+so when you look at this, you go, well,
+of course that's the start of an
+exponential growth, right? But the
+machine learning model does not know
+that information, right? We just told
+the machine learning model, hey, here's
+a here's a bit of data from the start of
+a pandemic, go for it, right? It doesn't
+even know what a pandemic is. It's just
+it's fitting the data and it's just
+extrapolating forward. So, what happens
+if we tell it a little bit about what a
+pandemic is? So, here now we have this
+form of a universal ODE. So,
+you know, so this is a version of a one
+of these epidemic models where we now
+have a susceptible individuals, that's
+S. We have the susceptible individuals
+become exposed, the exposed individuals
+become infected, over time they either
+recover or they die, right? So, this is
+the SEIRD model. Now, one of the
+interesting things that happens when we
+go to this kind of mechanistic model
+form is that we now can use
+heterogeneous data and prior information
+inside of this process, right? So, for
+example, we can know a lot of the
+details about some of the the ratios
+between some of the reaction rates in
+this model because they can be directly
+estimated from what percentage of people
+are what percentage of people die versus
+recover, right? So, we don't need to
+actually use our time series to get a
+lot of these values. We can use prior
+information to be able to say, well, the
+percentage of folks who
+died from this disease is, you know, mu
+and you know, it's so you can start to
+write down these values directly from
+other sources of information, right? So,
+now we're bringing in other information
+in a in a scientific way where you where
+you're using all the knowledge that we
+have, but the piece that that I want to
+highlight here is that when we're
+talking about something like, you know,
+COVID-19 exposure, that was very
+dependent on the region of the world
+that you were in, right? So, for
+example, you know, if you're in China
+versus if you're in Sweden versus if
+you're in Italy versus you know, which
+state of the United States you're in,
+they're completely different exposure
+patterns to
+to to the virus. And so, writing down a
+simple equation for what how exposure to
+COVID-19 occurred is not necessarily
+easy to do.
+But, what we can do is we can say, well,
+we know a lot about this model, but the
+piece that we don't know how to model is
+the exposure term. So, let's just make
+that one exposure term be our neural
+network, you know, that the function
+that we did not know how to model. Let's
+put a neural network right there, and
+now we have all the info all the prior
+information we have, we have a machine
+learning model extending it, and then
+from that we're able to then see that if
+it's just 0 to 21 days worth of data, we
+extrapolate forward and we can
+extrapolate much better, right? We're
+able to get about 20 days of of
+extrapolation, right? And so, that the
+key key here is that we're using a lot
+of other prior information, you know,
+it's like we're we're not gaining
+something for free, we are putting more
+into the system and getting more out of
+it. But, there's there's other more
+concrete ways to also be able to
+understand this. So, if our if our
+neural network is always outputting a
+positive value, so we just, you know,
+make the last layer be a square a square
+function or an absolute value, then what
+what we know is just looking at the
+equations is that S' is always negative.
+And so, just from this information, we
+can actually infer a lot of things. So,
+what we have is a model that starts with
+an exponential growth phase, and then E
+will go up and then it'll have a peak
+and go down, so it'll have a single
+peak. And so, you can think about this
+is now, you know, the world of machine
+learning was about function
+approximators, right? That's where I
+started. But, by design what I've done
+now is I said, here is a form for
+universal function approximation where
+it is functions which have a start with
+an exponential growth phase and then
+have a single peak, right? So, I mean
+that that essentially encoding the types
+of properties that we know to be true
+with epidemic type models.
+And and so, you know, that's you know,
+there different ways to think about it,
+you know, that hey, I made this model as
+epidemicness possible, you know, that's
+more high level, but also
+mathematically, I've restricted the
+function space that I'm allowed to be
+fitting functions of. And so, from the
+same amount of data, if my true function
+is supposed to be living in this
+function space which I've which I've
+restricted to, then what I've done is I
+just made it so that way I more easily
+can be finding the right function
+because I'm finding a function from a
+subset of the larger set of all possible
+functions, right?
+Now, the last stage of of this universal
+differential equation process is to do
+the prior with the post analysis. So,
+this is this is always an interesting
+step. So, what we do here is we say,
+well, we've trained this neural network
+in such a way where it captures all of
+our prior knowledge, right? So, we we've
+captured all of our prior knowledge
+inside of the way that we've trained
+this this this exposure term. So, now
+let's actually represent it down into,
+you know, equations, right? Now, why do
+we not start directly with writing out
+down all the equations? Well, because
+that can have curse of dimensionality.
+You can have, you know, there's
+exponentially many ways or
+combinatorially be many ways you can
+write down, you know, these
+the these high dimensional functions,
+right? But, in this form, we can do the
+training process where we've taken into
+account everything that we know, all of
+our prior knowledge. We've once we once
+we've found this neural network, we can
+start to poke at it and just say, what
+did it actually learn? Um
+and here what we could see is that, you
+know, I let this neural network be a
+function in this case of S of I and D.
+And one of the interesting things is it
+comes out and it says, well, the best
+fitting function here is a function of S
+and I and you leave D out, which makes
+sense because for COVID-19, exposure to
+the disease was not dependent on the
+number of people who've died. The people
+who have died, they did have the
+disease, but they are no longer
+infecting individuals, they're no longer
+exposing them, right? And so, this is
+something that I can directly read out
+from the sparse identification. Now
+again, the interesting thing here is
+that because there is so much
+mathematical model around the object,
+you can actually interpret it, right?
+Because it's now there there is a lot of
+interpret, you know, there is model
+around it. It's not a completely
+amorphous object, it is a amorphous
+black box within a interpretable piece.
+So, as you start to learn more
+information about that black box, you
+start to and how it interacts with the
+rest of the model, then you are starting
+to learn what you did not know how to
+model, right? this piece of information
+like, oh, D is you know, this exposure
+is not a function of D, this is a this
+is a type of, you know, a a a type of
+scientific hypothesis, right? Now, the
+the reason why I think that this is
+interesting is cuz it allows for
+scientists in the loop, right? We're not
+just doing this in like a purely, you
+know, trust the machine learning has
+learned something. You can actually get
+some information out to then then be
+able to go back to the lab and say, it's
+made a prediction about what what needs
+to be true for this this exposure term
+to be acting the way it is. Let's
+actually go double-check this, right?
+Now, the other thing that happens here
+is that you actually get have some
+improved generalize-ability. So, we kind
+of see across the board that when you do
+the sparse
+sparsification process, you do tend to
+improve the generalize-ability over just
+having the pure neural network. And
+there's a lot of other a lot of reasons
+for that.
+Kind of comes down to some of the
+properties of extrapolation of of
+polynomials. And if anyone wants to ask
+it's something that that we haven't been
+able to prove, but we have some good
+ideas of the direction for how to to for
+what to do there.
+So, yeah, so so when I see a question
+here, so say the neural network is
+convolutional with arbitrary channels
+and feeds.
+How to best combine T and X in in this
+case? I I will go into to some some uses
+of conv and nets or in convolutional
+operators for PDEs a bit later, so I'll
+go back to that. For the COVID
+prediction example, how do you determine
+the functional form of the internal
+sparse regression? Yeah, so so we have
+to make we we have to to choose a, you
+know, for example, a library of
+functions that we want to do the sparse
+regression to. It could be things like,
+you know, every combination of
+polynomials, cosine, sine, you know,
+trigonometric functions, exponentials,
+and you know, earth like, you know,
+so you do have to make make a choice
+there about how expansive you want that
+dictionary to be and then you you you
+simplify it down. But, in general, I
+mean, that's that's one of the
+algorithms involved here.
+You know, I I could go into more detail,
+but it's it's really one just one one
+one step of the process and
+you know, it is it is a modular choice
+at that that aspect, yeah.
+Now, one of the things I want to kind of
+highlight here, you know, about when I
+when I start with scientific machine
+learning, I say, well, you know, it's
+it's you're pouring in model, you're
+pouring in data, and your goal is to if
+you have enough prior knowl- if you have
+enough knowledge, right? Where knowledge
+can come from data or it can come from
+models. As long as you put enough knowl-
+knowledge in, you should be able to get
+a good prediction, right? You just need
+to be able to hit the the prerequisite
+amount of knowledge, right? Now, one of
+the things that we've done what why I
+like to start with this this epidemic
+models because we had a lot of work
+papers and such with with Sandia
+National Labs where we dug into that
+idea where we said, okay, you know,
+you know, this is a choice, right? It's
+a choice to say there's only one term. I
+could have made two terms. I could have
+made, you know, this entire part of the
+equation neural network, you know,
+there's there's a continuum of how much
+model you have and how much data you're
+relying on, right? And so, one of the
+questions that we asked is, you know, as
+you go through this continuum of more to
+less model, does it actually work as we
+expect, right? Does it actually work
+like that like this big big figure,
+right? Where the more model you dump in,
+the less data you need. Or or another
+way to put that then is
+if you have more prior model and that
+prior model is correct, you know, will
+the universal differential equation be
+able to give you better predictions from
+the same amount of data, right? That's
+another way of stating that same
+sentence. And we have some work with
+with Sandia which, you know, kind of
+goes over a whole load of cases in
+different epidemic models with, you
+know, with simulated data and all all
+these cases to really show that that
+property tends to hold, right? So, so
+you can kind of think that, you know,
+this is something across the board
+where, you know, with these universal
+differential equations, you know, it's
+not a question of like how many data
+points you need, right? You know, a lot
+of these things we're we're doing it
+with 20 data points or 40 data points,
+right? Um so it is a lot less data than
+something like a standard deep learning
+framework, but the real question the
+real answer at the end of the day is the
+more prior model that you have and the
+more correct that is the less data that
+you need. And so it is really you know,
+it is really not you cannot say you need
+30 data points cuz whether you need 30
+data points is dependent on how much
+other model you've put in there, right?
+So so you know, I would say go you know,
+go check out you know, the some of this
+work and
+I forgot to put in here that the work
+with Sandia that really highlights that
+this aspect that really just shows the
+whole continuum of models and just shows
+how adding different parts of the model
+into it then incrementally improves that
+that that extrapolation performance. So
+but I mean that's that's in the general
+idea here, right? The more prior model
+that you have the more prior knowledge
+that you have the better will end up
+predicting. Um Now one of the things
+that we've seen with the universal
+differential equation stuff is it's kind
+of explode in terms of how the number of
+people really using it in practice. So I
+like to highlight this work of of some
+folks that you know, we we we we
+actually have this now inside of our
+inside of our
+SciML
+documentation and it's one of our
+tutorials examples where what they did
+was they they took these readings of
+gravitational waves. This is the LIGO
+gravitational wave data from the from
+the binary black hole experiment that
+first found the gravitational waves,
+right? And what they say is they go
+well, you know, gravitational waves they
+come from black holes. Black holes are
+big and so they didn't they're not well
+defined by Newtonian physics, right? But
+what if we assume that we only know
+Newtonian physics, right? Which is which
+is the equations that they have here and
+we augmenting Newtonian physics with
+with these neural networks to learn what
+the relativistic corrections would be.
+Can we learn what the relativistic
+corrections to
+you know, the the motion of two body
+large objects directly from data, right?
+And what they show is just that from a
+small amount of data, right? So just
+this small amount from the time series
+here they're able to learn how to
+augment the Newtonian mechanics with a
+correction and that correction then
+adequately extrapolates
+for being able to predict the the motion
+of the two body problem. It changes it
+from being ellipsoid, which is a you
+know, the the Newtonian solution to a
+Lissajous pattern. And so if you're
+interested I could pull up the the
+documentation example of of doing this,
+you know, it's kind of at this point
+it's just like a nice reproducible
+example that we use to to teach students
+about how to how how to do this this
+this process, but you know, it really
+shows the scientific machine learning in
+action.
+But I mean there's a lot of examples
+that do this. So for example, here's a
+case with earthquake safe buildings
+where the original model if you look
+closely at your screen, you'll see these
+dotted lines where you know, the
+original physical model it it could fit,
+but it wouldn't necessarily extrapolate
+well, but after doing the training after
+doing the fitting again, you know, the
+improves extrapolation performance. And
+then the interesting thing from that
+though is that not that is improving the
+extrapolation performance, but that the
+but what you can gain from this process
+is that it's told you how your original
+model was incorrect, which tells you the
+things that you did not know before that
+would be useful to know about in order
+to do better engineering. In this case
+they wanted to engineer earthquake safe
+buildings and so this told them what
+correction needs to be done to the model
+in order to then understand how to build
+a more
+earthquake safe building, right? Again,
+you know, there's there's two things to
+this. There's there's the extrapolation
+accuracy aspect, but also the fact that
+it's improving what you know about the
+model that you're trying to build. And I
+think that that that that second aspect
+is probably even more important.
+Everyone likes to think about you know,
+line goes you know, low low low cost
+with
+with machine learning, but I think that
+you know, improving the way that people
+build models, improving the speed at
+which people get accurate models, that
+is probably the the more important
+aspect here. Now there I can I can go
+through like 50 billion more examples of
+where people have used UDEs,
+but I've already done a talk directly on
+that. So if you want more more proof
+points on it, I'd say go check out this
+talk
+on YouTube. It goes into a lot of
+interesting examples as well. I'm going
+to cut it here and say, you know,
+there's a lot of other examples that we
+can that we can show, but now going in
+go so so knowing that that people you
+know, what what the general idea is and
+how and and the fact that you know,
+scientists and engineers are using this
+in practice, what I want to kind of go
+into more detail here in a mathematical
+way is you know, what what are the other
+things that you can do beyond the basics
+of it, right? So that really was just
+showing the
+showing the basics, but what are some
+things you know, that you can do to get
+creative with the UDE formalism, right?
+And I I think that you know, I really
+want to kind of show is that you know,
+the formalism really allows for
+generally imposing prior known
+structure. So what what what do I mean
+by that? So
+here's a case that comes from that that
+same epidemic line of work that we're
+talking about where I said you know, you
+have this continuum of models, right? So
+here's something that lives in this
+continuum of models where you might not
+know that much prior information, but
+you you you know, but you can impose a
+lot of the details. So here for example,
+you know, let's say we wanted to model
+something like the SIRD case, right? So
+susceptible becomes infected, infected
+either recovers or dies, right? Um
+So so what you can do in this case is
+you know,
+you can walk into a new situation and as
+a modeler you can very easily know like
+oh, people who are susceptible become
+infected and infected people recover or
+they die.
+That's not a very strong assumption,
+right? But but it is it is. I mean it's
+a graphical relationship, right? It's
+basically saying susceptible people do
+not recover without getting infected
+first, right?
+So can you encode that that that
+graphical information into a machine
+learning structure so that way that is
+prior known information, right? The UDE
+formalism is is very flexible, right?
+It's just you know, you put universal
+function approximators in differential
+equations in in in smart ways. So here
+for example is a way to do this, right?
+So you can have a neural network SI,
+right? You know, so we have three neural
+networks. So here's one function
+approximator. So we say there's some
+function I don't know where you subtract
+it here and you add it here. There's
+another function I don't know, which is
+you subtract it here and you add it back
+here. Then there's a third one, right?
+So there's three functions I don't know,
+but these are the places where these
+three functions go and by design what
+happen what needs to be true about this
+then is you know, well again, there's a
+lot of properties that I've just imposed
+here. For example, the number of
+individuals who the sub number
+susceptible individuals is always
+decreasing. Um you're going to have a
+peak in I, right? There's a lot of
+properties about an epidemic that I've
+already imposed directly only from this
+information. There's there's no prior
+equations really written down, just
+structure written down, right? And and
+so what what what we're able to show
+from this is that you can then you know,
+do the this do the training of the
+neural networks in this case, right? You
+train the neural networks and then you
+do the the sparse identification of the
+dynamics. Um and you're able to then
+recover what the what the exact
+equations were, right? So we can you
+know, simulate data, we generate the
+data, we we then fit back to it and then
+we see that we can directly predict what
+these equations are, but importantly
+what we can show is that you can do this
+direct you can accurately recover the
+equations using this form with less data
+points and with less
+with less data points than what would be
+required than directly doing something
+like you know, the the direct Cindy like
+the the Steven Brunton
+sparse identification approach, right?
+So cuz you know, why why why is that the
+case? Well, because we've imposed prior
+information here and so we we've really
+brought down the the structure that
+we've needed to learn and so from the
+same amount of data or from less data
+we're then able to recover the same
+equations, right? And so
+this starts to show you that you can
+start to get very crafty with the the
+types of ways that they that you're
+putting together function approximators
+and using you know, any any drop of
+prior information that you have.
+Um so another example that that came up
+which recently was actually published
+into Journal of Chemical Engineering if
+I remember correctly
+is is a case where we have the this
+chemical reactor and we're running a
+chemical component over it. So there
+there is one chemical that is flowing
+with a with an advection diffusion
+process and then there's another
+chemical which is non-spatial. So it's
+just a just an ODE process and they're
+interacting, right? We don't know what
+this interaction is. So what we do is we
+model that interaction with an with an
+with a neural network, but we know a lot
+about the rest of the process. It's a
+reaction diffusion partial differential
+equation coupling an ODE with a with a
+PDE term, right? And now one of the
+interesting things about this formalism
+is by by design now, right? I only have
+to learn an R2 to R2 function in order
+to actually learn everything I did not
+know about this model, right? So I have
+spatio-temporal data. Like you know, if
+if you think about it in the sense, I
+have spatio-temporal data and from
+spatio-temporal data
+you know,
+you know, I have n by n you know, times
+t time points, but at every single time
+point the same exact chemical reaction
+equation should be occurring. And so
+what I want to learn is I just want to
+learn what that chemical reaction is.
+And so even with a small amount of data,
+so even with a small amount of time
+series, that is still enough information
+to be able to recover what the chemical
+reaction term is. And once I've learned
+what the chemical reaction term is, I
+can extrapolate into the future and get
+things correct because the the important
+property was whether I had learned the
+rest of the equation in order to
+accurately model the the whole the whole
+process, right? So, you know, thinking
+about it like this, you know, if if if
+you think about it as as though it's a
+time series problem, right? If you just
+say learn from this time series how to
+predict in the future, machine learning
+is never going to learn what you know,
+how to how to make that the the the red
+dots go through the red line, right? You
+know, where the red line go through the
+red dots. It just doesn't the the blue,
+you know, the training data that we give
+it is insufficient for being able to do
+that, right? It's it's just not going
+to, you know, you can look at the
+picture and you can see, okay, you know,
+machine learning cannot learn things
+that it's never seen before, right? But
+there is something that hasn't seen
+before. It's this prior information of
+well, we have all this this reaction
+diffusion equations and everything
+written down. And so, by by virtue of
+writing down the partial differential
+equation form, we've actually
+transformed a problem of learning a
+spatiotemporal process, right? Something
+that is, you know, learning learning how
+to output things that are, you know, n
+by n to learning just an R2 to R2
+function that is a part of a
+spatiotemporal process, and we can then,
+you know, under the assumption under
+many assumptions about, you know, the
+fact that this reaction is independent,
+you know, the reaction constants are
+independent of the time and location
+where it takes place, right? That is
+encoded by writing it down as a
+semilinear partial differential
+equation. So, by writing it into this
+form, we've encoded a lot of prior
+knowledge that has made it a fairly easy
+learning problem that then makes it so
+that way from small amounts of data we
+can extrapolate. Um and so,
+you know, you might ask the question of,
+you know, well, what happens in this
+case if when we do the sparse
+identification? Um this one was actually
+a fairly interesting one for doing this
+identification because, you know, after
+we do this process, we we we fit the
+neural networks, the student went in and
+did the the identification process and
+saw that there
+there are a lot of cases where the
+equations were not exactly the same as,
+you know, in well, when you do this in
+the case of generated data, you generate
+the data with with a known equation for
+for for these these reaction terms, and
+then you go and you say, I'm going to
+run this process, I'm going to find out
+what equations I get. And you see that
+the equations are different and student
+was not happy that that it turned out
+like that. But we then we dug into it,
+right? We we dug into it a bit. What we
+noticed was that if you actually do
+second order Taylor series expansion of
+the of the different terms, what you
+what you see is that the these equations
+are lining up, right? Um the equate so,
+it's what what what this really means
+then is that the sparse identification
+is not necessarily able to tell you
+exactly the equations that generated
+your data, right? Um because it's kind
+of ill-posed, right? That's not
+you need infinite data to be able to
+really fully identify the function. But
+what it can show you is it can show you
+a simple function which is locally able
+to match the right properties of the
+true function, right? So, here when we
+do the second order Taylor series
+expansion, you know, the the two
+functions are are pretty much lying
+you know, directly
+with each other, right? And so, there's
+a lot of properties you can get then,
+right? So, from the learned kinetics,
+you know, for for someone who's who's
+looking at reaction equations, right?
+You know, you can say, well, if I have a
+a Q if if I have a Q squared term, this
+is a self-interaction kind of reaction
+kind of term, whereas a QQ star term,
+well, this is this is a a interaction
+between them. In some of these cases,
+the chemicals were non-interacting,
+right? Um and so, so there there's, you
+know, there there's a lot of different
+information that you can pull between
+the these these pieces just by learning
+the the equations even if they're not
+exactly the same form that you started
+with, it is a form that is
+representable, interpretable, and usable
+for for doing the scientific process,
+right? Um
+and so, I I I do like to to highlight
+that that this was a this is a kind of
+nice case where we were using scientific
+machine learning in an in an industrial
+setting. Um so, we were working with a
+Formula 1 team. This was the Williams
+Formula 1 team where originally they
+used a Gaussian process model, that you
+know, so this is the original Gaussian
+process model for being able to
+model their speed over ground sensor.
+So, the speed over ground sensors as
+they drove around a test track, um they
+would get this this data that would
+basically tell you the orientation of
+the car, um but that needs to be
+calibrated using the GPS data from the
+from the the from the test track, right?
+And so, what you can see here is the
+calibrated prediction of the car's
+orientation from that speed over ground
+sensor.
+And the original model did not take into
+account a lot of the physics of the car,
+right? It basically just say, here's my
+sensor data and here then is the
+prediction of what the orientation would
+be. And you can see it has a lot of
+these, you know, effects which, you
+know, it's the similar to the
+hallucinations that ChatGPT does, which
+is effectively, you know, it's giving
+you things that are not
+physical, right? The car cannot is not
+actually moving like this, right? The
+car's true orientation is the is the
+color underneath, and you can see that a
+lot of, you know, a standard machine
+learning model does not necessarily need
+to satisfy physics, right? It does not
+necessarily need to satisfy the fact
+that your car cannot just bounce around
+infinitely fast, right? But what we were
+able to do is we were able to put a a
+very simple model of the car's the
+vehicle dynamics and say, well, you
+know, what we don't actually know in
+this in this process is the relationship
+between the sensor to the vehicle
+dynamics, and so by putting it into that
+form, you know, a form in terms of
+differential equations, which naturally
+would be integrated, that naturally then
+smoothed the process and incorporated
+prior knowledge about, you know, the
+relationship between angular momentum
+and velocity and these these features,
+and that made it fairly easy to be able
+to get a much more accurate prediction
+from the same amount of data.
+So, um so, I I you know, one other thing
+to kind of then highlight here is that,
+you know, so
+what what is this UDE formalism? Well,
+this UDE formalism, another nice piece
+about it is that you can rephrase a lot
+of other SciML methods as UDEs, which
+makes it a very nice form as as someone
+who writes computational software to
+kind of formalize around. So, here for
+example is is a nice example of this.
+So, um there's work done by Han Jensen
+and and Lu and A, which is on
+methods for very high-dimensional
+semilinear parabolic partial
+differential equations.
+And they had this method where they
+talked about how you can, you know,
+solve these PDEs by using neural
+networks
+embedded within backwards stochastic
+differential equations. Um
+I'll I'll I'll skip over the the exact
+details of this whole process, but
+essentially it's this is one of these
+scientific machine learning methods for
+solving a PDE using neural networks in a
+specific way. And they came up with this
+this formalism where they'd say, you
+know, you build this this recurrent
+neural network, you train it with
+respect to a given
+with respect to a given cost function,
+and then you'll have something that will
+be predicting your your your your your
+PDE solution, right? Um now, the the
+reason why I want to skip over it is
+cuz, you know,
+when you start to talk about things and
+and work with things in this UDE
+formalism, it there is actually a fairly
+nice way of writing down what their
+algorithm is. Their their algorithm is a
+universal differential equation, um
+which is written as this SDE where there
+is this function that it goes right here
+that is unknown, and when you learn this
+neural network and a neural network that
+predicts the initial condition,
+uh you satisfy a loss function on the
+initial condition, so you solve this
+stochastic differential equation in
+reverse and you learn how to predict at
+that initial point, um then you have the
+the neural networks that give you the
+the solution to the PDE, right? So,
+there you can you can go and you can
+show them in a lot of different cases
+that a lot of of ways that people have
+been looking at, you know, using neural
+networks and mixing it with scientific
+practice, the general formalism of it is
+is as a universal differential equation,
+right? So, this version of saying, oh, I
+have this recurrent neural network, this
+recurrent neural network that was
+written down is simply the
+Euler-Maruyama discretization of this
+stochastic differential equation, right?
+And so, you know, if you wanted to then,
+you know, generalize their work, well,
+one of the ways you can generalize their
+work is just discretize this SDE using,
+you know, adaptive methods or higher
+order methods or, you know, all these
+different types of approaches, right?
+So, understanding what the continuous
+object that that is giving us, you know,
+the the you know, when when you do this
+in the UDE formalism, you can write down
+the continuous object for which the
+discretizations give you these ResNets
+and RNNs and and things that are then
+used in a lot of scientific cases, but
+you can then start to see that those are
+special cases of a more general object
+that you can then, you know, do a lot a
+lot of nice you know, mathematics more
+more simply on. Um and so, you know,
+we've been building up packages for
+doing a lot of these different type of
+scientific machine learning techniques,
+which really did then just uses
+everything, you know, everything in the
+UDE formalism. And so, you know, the the
+core of the software is do UDEs well,
+and then all these other cases are just,
+well, this is the you know, this is this
+ODE with this discretization, etc. And
+so, it makes it very easy for us to be
+able to repurpose the same underlying
+training architecture to many different
+problems.
+Um I think that that's just one thing to
+highlight as to, you know, we we think
+about this UDE formalism, one as a way
+to impose prior knowledge, but secondly
+as a computational tool, similar to like
+an ODE solver or a, you know, Newton's
+method, right? It's it it's a way it's
+it's a way to be able to turn the
+scientific machine learning into a
+computational tool that is then
+repeatable to a lot of other
+applications. Um now, I want to get back
+to then the story of of differentiable
+simulation, right? That's where I
+started with and and so I haven't talked
+about different differentiating
+simulations at all yet. And so why does
+this require differentiating simulator?
+And well, the the thing is I haven't
+told you anything about how I train
+these neural networks yet, right? So,
+how do I actually train a neural network
+in one of these cases? Let me let me
+show you an example this in an example.
+So, here is a case where we're looking
+at surrogates of of climate models,
+right? So, this is a three-dimensional
+Boston has to approximate Navier-Stokes
+equation. And what we want to do is we
+want to learn from the three-dimensional
+PDE how to approximate its dynamics in
+the Z direction, right? Just the just
+the height column. Um we just want to
+turn, you know, blocks of ocean into
+just one-dimensional PDEs. Now, you
+cannot do that exactly because, well,
+you know, Navier-Stokes has curl
+involved. You cannot represent curl in
+one dimension. But, what you can do is
+you can, you know, approximate it by you
+can take the average, you know, you if
+you take the original Boussinesq
+equations you take it an integral
+average along the the slices here, um
+you can get an approximating PDE, but
+that approximating PDE is missing a
+term, which then is requires you have
+another PDE, which has another PDE, etc.
+Right? So, this is one of these closure
+relationships that I'm sure a lot of
+people are well aware of. And but
+instead of saying, you know, oh, here's
+a term that I need to compute from
+another PDE, which is missing a term
+that's, you know, computed from another
+PDE. What I do is I just scrap all the
+extra terms and I just say, here's a
+term that would be computed somewhere
+else, but let me learn what that what
+that term is, right? So, if I did not
+have the neural network, this is called
+the standard convective adjustment
+parameterization um to to the ocean
+model. But, now what I'm doing is I'm
+saying, well, the convective adjustment
+equation is missing extra terms. Let me
+capture that with with a neural network.
+Let me capture the closure terms with
+with a neural network, right? So, here
+this is just the setup for for for for
+my test case here. Um and now how do you
+actually train this neural network,
+right? Well, you can go back to your
+data can say, well, here I have data
+that, you know, I I get the you know,
+average temperatures. I can take the
+slice, you know, the you know, the green
+slice, the red slice. I can take slices
+on the Z axis to be able to know what
+this average temperature capital T is. I
+can do DD DTDT by taking finite
+differences between my data points,
+right? I can DZ DDZ. I can calculate
+this operator by, you know, finite
+differences. So, you can you can go to
+your data and you can do all this
+differencing. And if you do all that
+differencing, you calculate, you know,
+what is
+del T del T and in what is the right
+hand side actually. And then the the
+neural network needs to be the residual
+between what the data is giving you and
+what the rest of this calculation would
+have would have given you without the
+neural network, right? So, so,
+you know, what I'm what I'm saying here
+is that, you know, you you can directly
+go to your data, apply all the
+derivative operators, and then learn and
+build a data set that is then, you know,
+neural network should take in this value
+and it should spit out this value as as
+the residual, right? You build up that
+data set, you put it in the PyTorch or
+TensorFlow, you you just train your
+neural network, and then after you've
+trained the neural network, you stick it
+into your simulation to to correct your
+simulation, and then you run it, right?
+And so, what we did is we did this
+process and we see that this this did
+not give as good
+results as any of the other things that
+we've done with scientific machine
+learning so far, right? In fact, it has
+a very specific behavior to it. So, as
+you run the simulation more and more,
+you tend to get a drift that is
+occurring more and more error as the
+time goes on. So, why would this be the
+case? Well, one way to understand what's
+going on here is that what we've done is
+we've came up with a process for this
+neural network must be you know, my
+derivative is incorrect, so this neural
+network must correct my derivative or
+control my derivative. Now, if you're
+controls engineer if you and you hear
+that term, that, you know, we're we're
+only applying control to a neural
+network control to our derivative and
+then we are getting a drift term, it
+should be immediately apparent that one
+of the things that we're missing is
+something like an integral term that
+pulls us that makes sure that we don't
+have this drift, right? Now, another way
+of thinking about this is the process
+of, you know, munging your data set to
+be able to get a data set to train the
+neural network has nothing to do with
+the simulation process. Yet, the
+simulation process itself is imposing
+errors on the process. And so, if you
+build your loss function and train your
+neural network and then stick it in your
+simulator, you're not accounting for all
+of the properties that your simulation
+process will also impose. And so,
+therefore, you
+you're you're training your neural
+network without all of the information
+that it needed to be the correct the
+correct correction, right? Either way
+you think about it, you you you end up
+in the same point where the right thing
+to do is instead of training on the
+derivative data directly, what you want
+to do is you want to, you know, what you
+want to do is you want to directly use
+the temperature data, right? This
+average temperature data. Write a loss
+function down where you solve your model
+with the neural network embedded with it
+and you check whether it's hitting the
+right temperature values.
+If not, you gradient descent and you
+change your neural network until it is,
+right? So, instead of training on the
+derivative terms, you're training on the
+integral of the neural network inside of
+your your inside of your your your
+model. And what happens when you do this
+difference is you get about two to three
+orders of magnitude better performance
+and better fits.
+Right? And so, you know, why the other
+way to understand this, of course, is
+that, you know, your your your
+simulation process is imposing its own
+errors, its discretization errors, and
+all these properties. And this training
+process is actually using the simulator
+as part of the loss function definition
+and making sure that it's correcting for
+that. So, that way when you actually do
+the fit, you know, you're you're getting
+something that it that is
+correcting for for any of these other
+errors that you've imposed in that
+simulation process, right? Now,
+either way we've we've now ended up in
+this formalism where we say, well, you
+know, fitting neural networks on data
+outside of simulators and then sticking
+them into your simulators, right? Does
+not give as good results as fitting
+neural networks as part of the
+simulation process. But, how do you fit
+things as part of a simulation process?
+Well, then that means you have to have
+your loss function
+be something that solves solves the PDE
+defined by the neural network as part of
+it. And we have to do then is you have
+to take the whenever you want to take
+the gradient descent step, you have to
+take the derivative of the solution of
+the PDE with respect to the neural
+network parameters. And this is that
+differentiable simulation aspect.
+Um
+And so, how do you actually do that
+process? Well, you know, we say the
+adjoint method, but the adjoint method
+is actually a there is a lot more than
+just one adjoint method. Um and it's,
+you know, so let me let me describe that
+this in one way. So, um the best way to
+describe that there's more than one
+adjoint method is to show you that you
+cannot just use one choice, you know,
+one popular choice for all problems,
+right? So, here for example, uh the
+neural ordinary differential equations
+paper describes one adjoint method,
+which is if you have a an ODE, U prime
+equals f of U T, sorry, that Z should be
+U. Um you solve this ODE going forwards
+and it says if if you solve this ODE,
+then you can solve this ODE in reverse
+and it magically it will give this this
+last term or this term right here gives
+you the derivative of your neural
+network with respect to parameters,
+right? And it all it does is it it
+relies on this numerical or this
+mathematical property that if you solve
+an ODE going forwards, you know, U prime
+equals f going forwards, then solving U
+prime equals minus f in reverse should
+give put you brought back on on in the
+same place, right? Um so, that's a
+property that is true mathematically,
+but if you actually look at real
+equations, uh that doesn't necessarily
+numerically work out. So, for example,
+here here if we look at the advection
+equation, if you discretize the
+advection equation, remember, you have
+to choose a way to discretize, either
+using the forward point or the reverse
+point, you know, upwinding or
+downwinding. Um
+and so, if your if your wave, you know,
+if if this PDE is describing a wave
+that's moving to the right, you're
+either choosing, you know, that your
+next value to the right is using your
+information from the right or
+information from the left. It should be
+obvious that if you don't ever use the
+point from the left to update the point
+to the right,
+cannot actually it does not actually
+have the actual resolution
+for for this motion. And so, one of
+these is unconditionally unstable. Now,
+the issue with with using an adjoint
+method as described like this is it
+says, well, if you solve the ODE going
+forwards, now we're going to use as part
+of our adjoint approach that if you
+solve the ODE going backwards with U
+prime equals minus f, you will, you
+know, you use that as part of this this
+adjoint derivation. The issue with that
+when you apply it to something like this
+partial differential equation is that
+that is not true for this PDE, right?
+So, if you solve this PDE, right? So, we
+discretize this PDE into set of ODEs,
+say the upwinding equation, you solve it
+going forwards, right? If you reverse
+the process,
+um you know, U prime equals minus f.
+When you when you reverse this process,
+the reverse solve will be downwinding
+and therefore, you know, you will have
+chosen the wrong the wrong direction and
+get
+unconditional instability, right? And
+so, what this really highlights then is
+that, you know, there isn't really just
+one adjoint method, right? So, this
+paper talks about, you know, here is a
+way to differentiate ODE solutions,
+which has O of one memory. It turns out
+that it has O of one memory, but the
+downs it has a downside that it is not
+stiffly accurate. So, it's not accurate
+on stiff equations and it is, you know,
+and it's not able to handle cases like
+the advection equation, right? So,
+instead what you need to think about
+with this with with differentiating, you
+know, the these these
+differential equation solvers and other
+equation solvers is that the adjoint
+methods and the way of calculating
+derivatives, they are approximating
+equations themselves and so they have
+numerical properties. And so similar to
+how with an ODE solver, you have to
+choose, you know, do I have a non-stiff
+or a stiff ODE, and yet these these
+methods have different properties, they
+have different, you know, scaling
+properties and different stability.
+Similarly, you have in when you start
+looking at the derivative approaches,
+you have the ways to calculate
+derivatives of these differential
+equations, um you also have changes in
+in the the in the properties where, you
+know, there are some methods which are
+stable, uh but require more memory.
+There's some methods that are stable and
+require more compute. And there are
+methods that are unstable, but use less
+memory and less compute. And so you have
+this engineering trade-off between the
+different ways and the different methods
+for for differentiating systems. Um
+you know, and you don't just have a a
+trade-off in terms of stability, you
+also can show that some of these methods
+have scaling which is cubic with respect
+to parameters, which can be fixed by
+doing all sorts of different tricks. So,
+this is the paper stiff neural ordinary
+differential equations that goes into a
+lot of detail in the differentiation
+process. But the key that I want to
+highlight there is that, you know, when
+you just say use the adjoint method, you
+know, that's that's like saying eat an
+apple, right? It's like, okay, a Gala
+apple or a, you know, a Granny Smith or
+a pink pink lady apple, right? It's you
+know, there there are many that there
+there it's it's it's like saying solve
+an ODE with an ODE solver. There's a
+whole world of different methods there.
+And actually each of these ways of doing
+the derivative process, it really
+imparts different numerical properties
+and different in different stability
+properties and all these different
+things that come into play. So, when
+actually doing the UDE formalism, the
+difficulty and the interesting part is
+all in the part that I leave out of the
+the the talks, which is, you know, the
+how do you do it stably? It's all in the
+mathematics of the derivative
+calculations. Um but the the key then is
+that you can you can do the UDE approach
+on any kind of simulation process that
+you can differentiate. So, this is what
+we've been building out as the JuliaSyML
+ecosystem, which is, you know, doing
+things like linear solves, nonlinear
+solves, right? If you could, you know,
+you can if you if your model is to write
+an actual, you know, integral, well, you
+can mix that integral function with
+neural networks or you can write down an
+optimization with neural networks, a PDE
+with neural networks, right? In all of
+the different cases where you can write
+down a mathematical object where you
+knew the function, you can extend this
+to the case where you have a neural
+network. As long as you can
+differentiate adequately with respect to
+that process. And so what we've done
+with the Julia ecosystem is we made it
+so that way the whole ecosystem of
+equation solvers all connect with the
+machine learning tools so that way you
+can do this this universal, you know,
+universal approximator mixed-in modeling
+approach to be able to generalize any
+type of scientific modeling to a
+scientific modeling that is augmented
+with neural networks. Um
+you know, and I want to I want to skip
+ahead here to to to this one one one
+beat. You know, so so for example, we've
+been using this a lot with Moderna, but
+I'll I'll skip over with that and the
+the story with with with chaos. I want
+to kind of get to to this this last
+story of, you know, very quickly, can we
+generalize beyond ODEs and PDEs, right?
+So, everyone talks about ODEs and PDEs.
+What can we do beyond that? Well, it
+turns out that that the the way to start
+understanding things beyond just ODEs is
+to look at chaotic systems. Chaotic
+systems actually don't differentiate
+correctly with with automatic
+differentiation. I'd be happy to
+elaborate on that in detail, but it
+turns out that what you can do though is
+you can define new forms of derivatives
+and new forms of adjoints, which are
+while the the derivative with of the
+solution is not really well defined of a
+chaotic system, the derivative of
+ergodic properties with respect to
+parameters is well defined. And you can
+start to do things like fit neural
+fit ODEs on, you know, time point values
+that are more than a Lyapunov
+coefficient away using, you know,
+average properties of the system.
+Um and so you know, and so this then
+kind of gives you a generalization of
+the UDE formalism to this case where,
+you know, you have a lot of random you
+know, pseudo randomness due to due to
+the chaotic nature of some of these
+processes in the in the error imparted
+by them. Um now, one of the other
+interesting cases then is can you do
+this in cases like a discrete jump
+models, right? Where derivatives are not
+normally defined. Um so what we what
+we've done is if you if in this
+something that was recently shown at
+NeurIPS was that um
+you know, in traditional uh
+differentiation, you you you take what
+you do is you you take your equation and
+you try to find a derivative. But in the
+generalized sense, what you can do is if
+you have any kind of a random variable,
+you can try to find a new random
+variable whose expected value is the
+derivative of the expected value of your
+original one, right? So, what you can do
+is you can say I have I have some series
+that that does some stochastic process.
+And what I want to do is I want to find
+a new stochastic process whose
+expectation acts like the derivative of
+my original process. Um and if you can
+do that, which, you know, I I'm running
+out of time here, so I'm not going to go
+over the whole thing, but the idea
+behind it is instead of looking at small
+perturbations like, you know, small
+perturbations, what you do is you look
+at, you know,
+small probabilities of having an O of
+one change. And when you when you do
+that kind of approach, you can start to
+build out these systems where if you
+were to have, say, an agent-based model,
+you can directly run automatic
+differentiation on that and get the
+derivative of the expectation of your
+agent-based model. You you So, if you
+have an agent-based model, you can run a
+process that generates a new agent-based
+model for you. Where when you solve this
+new agent-based model, the expectation
+of that agent-based model is the
+derivative of the expectation with
+respect to parameters of your original
+model, right? So, it's like some new
+model, it's a it's a pseudo model, but
+when you run this pseudo model, it gives
+you the derivative with respect to
+expectations of your original model. And
+so therefore, you can use it to be able
+to, say, train neural networks so that
+way your original agent-based model is
+learning the functions that would define
+the rate parameters of your model. Um
+and we're able to show this then in
+cases like uh
+extending, for example, um Conway's
+stochastic version of Conway's game game
+of life to something where we're then
+able to fit the parameters inside of
+there and be able to start mixing that
+with neural networks, right? So, instead
+of just looking at this world of, you
+know, we have ODEs and PDEs, you can
+start to say, well, we have all sorts of
+different scientific models. We have
+agent-based models, we have jump
+processes, Gillespie processes, um and
+and all these things. And in any case
+where we don't know functions, we can
+replace functions that we don't know
+with neural networks. And as long as we
+can find adequate ways to be able to
+differentiate with respect to the
+weights of those neural networks, we can
+then learn what these functions are
+inside of this process and then use that
+to be able to identify the pieces of the
+model that we didn't know. And it gives
+us a direct generalization of scientific
+machine learning to to that domain. And
+I think I'm about at time there, so I'm
+I'll I'll skip it skip right there to to
+questions. Um
+um
+I see that I do have a one one question
+here. So, in the Navier-Stokes 1D model,
+what what what's the input for the
+neural network term? Um do it does it
+only take one grid point uh local? Or um
+yeah, so for for that, um
+for this case, we actually looked at a
+bit at doing this in a way that is local
+and nonlocal. It turns out that um there
+is some mathematics behind this process
+where it says that the they the operator
+in general here should actually be
+nonlocal in order to be correct. Um so
+we we made this so that way the neural
+network actually takes in the full
+vector of the average temperatures. Um
+and we
+had another case where it was only
+local. So, making it local is actually
+equivalent to making this be acting as a
+convolution network. And uh that did not
+actually perform as well, which matches
+up with a lot of the the theory then
+about it being about the the closure
+term being a nonlocal operator. Um yeah,
+good question.
+Yeah, thanks, Chris, for the talk,
+everyone.

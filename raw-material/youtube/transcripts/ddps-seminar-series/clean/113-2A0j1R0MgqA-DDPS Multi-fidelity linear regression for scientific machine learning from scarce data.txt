@@ -1,0 +1,1498 @@
+welcome to the ddps seminar everyone
+before we introduce our invited speaker
+let's go over some rules and Logistics
+uh first of all please mute yourself
+during the talk but if you have
+questions you can unmute and ask
+questions or use chat room to post your
+questions so that we can address them in
+Q&A session at the end second today's
+ddps seminar is open to external
+external audiences
+uh therefore no classified discussion is
+allowed so please watch out and finally
+The Talk today will be recorded and
+uploaded in our YouTube channel that's
+about it now let me briefly introduce
+our speaker today it is an honor to host
+Elizabeth Quan who is an uh assistant
+professor at Georgia Tech jointly
+pointed in the school of aerospace
+engineering and the School of
+computational Science and Engineering
+her inter disciplinary research develops
+new computational methods to enable
+engineering design and decision making
+for complex systems with special
+expertise in motor reduction scientific
+machine learning and multifidelity
+methods recent Awards include a 2024 Air
+Force young investigator award and a
+2023 Hans Fisher visiting fellowship at
+the Technical University of Munich prior
+to joining Georgia Tech she was a v kman
+instructor at Caltech in the department
+of computing and mathematical Sciences
+she earned her SB SM and PhD degrees
+from MIT today Elizabeth uh will talk
+about multifidelity linear reg
+regression for scientific machine
+learning from scar data um I'm sure
+she's going to give a wonderful talk so
+please um have a high expectation but
+before I pass the button to Elizabeth
+let me ask one
+question um I happen to know that um the
+you the one sport you um regularly do
+like once a week is the rock climbing um
+I'm sure um a lot of people are already
+familiar with with rock climbing among
+the audiences but some are not so if you
+can briefly introduce why you are so
+into the rock climbing and you know
+advertise rock climbing to them oh
+goodness okay well if you haven't tried
+rock climbing it is an Olympic sport and
+uh the the the men's and women's Olympic
+uh events are going to be next week I
+think so you should look up the schedule
+and and watch because it's pretty cool
+to watch and that will also be my pitch
+for why you should do it because I think
+it's it's a nice sport for uh for
+watching because when you go to the gym
+you can you can try to climb and then
+when you are tired and don't feel like
+actively climbing yourself it can be
+pretty fun to watch other people like
+try to do the climbs um so I think it's
+it's a it's a nice Pastime nice you can
+utilize your time um in maximum
+enjoyment yes awesome okay well floor is
+yours Elizabeth all right so yeah thank
+you for the invitation Yu uh to speak in
+this seminar and I'm very pleased today
+to present uh some recent work uh that
+has been submitted uh came back from
+review and we've resubmitted the
+revision so fingers crossed that it will
+be accepted for publication um and so
+this is Joint work with honor Bon chod
+who is a research scientist at un Austin
+um and with my student dang Kong at
+Georgia Tech and his student VES Cella
+at UT
+Austin uh so before I start I want to
+say that um I typically like to take
+questions throughout the talk so I will
+try to pause in a couple places to see
+if there are questions um and I'll also
+ask uh Yu to help me monitor the chat
+and just interrupt if if there's like a
+clarifying question um I just think
+talks work better if I can address
+things along the way rather than saying
+saving everything to the end and I've
+you know planned the talk so that there
+should be time for that
+okay all right so the motivation for
+this work as well as most of my work is
+to support decision making in in
+engineering and science um and when we
+think about the decisions that we might
+want to make a lot of times they rely on
+what I will call a many query
+computation so that includes things like
+optimization uncertainty quantification
+and control tasks so in optimization you
+might have to query a model at every
+step of a gradient-based iterative
+method um in uncertainty quantification
+you would be querying a model for um
+every sample of say like a mon Carlo
+like uncertainty quantification
+computation and in control computations
+you're quering the model um basically
+you know at every second say in real
+time to understand like what the next
+control input should
+be so traditional numerical simulations
+that um come rprise most of our you know
+traditional models are based on physics
+um they're often high-dimensional
+because they result from discretizing a
+continuous uh governing equation on a
+high dimensional computational me mesh
+and that makes them generally too
+expensive for this many query setting um
+so these you know you're not going to be
+solving these traditional
+high-dimensional simulations you know in
+real time sa for control or you can't
+afford to do that many samples in
+uncertainty
+quantification so there's a real need um
+for efficient you know and when I say
+efficient I'm thinking like Fast uh so
+computationally efficient and cheap
+surrogate models to enable
+decisionmaking so I think uh everybody
+would probably agree that there's been a
+lot of interest in machine learning
+methods for surrogate modeling for
+Engineering Systems um they've shown a
+lot of
+Promise
+uh part partially through um some very
+visible successes in other domains that
+were traditionally seen as extremely
+challenging so in computer vision and
+natural language processing and and say
+playing playing the game of Go um so
+they've seen some real practical
+successes and in addition to those
+practical successes there are some
+theoretical guarantees of of what I call
+the expressive power of these of these
+machine learning models so I'm thinking
+in particularly about neural networks um
+for which there are a lot of theoretical
+guarantees that say like there is a
+neural network of some shape and size
+and form with some parameters that can
+match like you know sort of any complex
+nonlinear function like perfectly
+essentially um but there's a significant
+gap between that theory and Engineering
+practice um and and that's because of
+like basically what I was saying like
+there is a neural network that can match
+things perfectly it's just we don't know
+a lot about like what the neural network
+is like what its architecture is what
+its parameter should be and so because
+there's that gap between the theory and
+the practice um there's a real lack of
+trust I think for using these machine
+learned models for engineering design
+where you have some consequences that
+impact that have like um you know high
+costs both in terms of dollars but also
+in terms of like potentially human
+safety and so that's um a significant
+barrier to the widespread adoption of
+machine learning type methods in
+engineering so to address that um one
+might ask what is the reason that we
+have trust in traditional numerical
+simulations and
+I would say that some of the reasons for
+Trust In traditional numerical
+simulations are that they're based in
+physics which is something that we sort
+of understand to be true so there's a
+strong Foundation additionally we make
+some really explicit and transparent
+modeling assumptions in physics based
+simulations so for example like if
+you're going to simulate a fluid flow
+with Oiler versus Navia Stokes like you
+know that you're making an assumption in
+Oiler equations that like the viscus
+effects are
+negligible um and that helps you
+understand you know both when to trust
+the simulations as well as when we don't
+and in addition we have you know many
+decades of numerical analysis that help
+us understand the errors in these
+discretized uh these like sort of
+discretized pte
+models so then we ask okay so in machine
+learning or in statistical learning like
+where do we get trust from
+and uh I would in in sort of many of
+these applications trust comes from Big
+Data like the idea that you have so much
+data that like you've kind of like seen
+everything there is to see and and you
+can really represent like that reality
+quite
+accurately okay so to be more
+mathematically specific about what that
+trust means I'm going to say okay we're
+going to consider an input random
+variable
+Z and an output random variable y1 um
+and y1 is some function F1 of
+z uh and in the setting that I'm
+considering I I really think of F1 as
+being an expensive computational model
+although you could think think of it as
+as also perhaps being a physical
+experiment but like let's just think of
+it as a as a expensive computational
+model so maybe this is something you'd
+run on a super computer to get like the
+output y of
+Z and so the the surrogate modeling
+problem from data is then to say okay
+let's suppose that um fat is a
+parameterized model with parameters beta
+um and so I can choose some parameters
+beta and then I have some input and then
+I can give it my input variable Z and it
+will predict outputs so the machine
+learning task is then to find the best
+parameters of that model so I want to
+find the beta star that minimize um you
+know this is a standard law so this is
+in this case we're minimizing the square
+of the error of the surrogate model um
+and notice like we have an expectation
+here so that's sort of like over the
+joint distribution of the input and
+output
+data and because often we cannot easily
+compute these expectations exactly the
+standard thing then is to approximate
+this from uh from data so now I suppose
+I have input and output pairs um so like
+I have capital N of them and so then
+I've got Z being the inputs and then y i
+being the outputs and so then I instead
+of minimizing the exact expectations
+we'll try to find the beta that um
+minimize the empirical uh mean square
+error so this setup I think is um has
+become quite widespread and maybe
+familiar all right so this is the
+problem that is being solved in machine
+learning
+generally and essentially uh when I say
+trust comes from Big Data mathematically
+we're saying if that n is large enough
+then this empirical mean square error
+minimization well approximates this true
+um mean square error minimization and so
+if n is large enough then we trust that
+the training performance is going to be
+represented of what we call the test
+performance so you know how we would do
+on data that's not in on inputs that are
+not in this training
+set but in engineering settings n is
+often small uh because each because each
+of these yi1 data points comes from
+evaluating that expensive
+model and so we're often pretty far from
+the setting in which we might say like
+one could implicitly trust that
+minimizing this error is representative
+minimizing that error
+overall and so the main idea of today's
+talk is to address that lack of trust
+due to small to small n or scarce data
+by combining our limited expensive High
+Fidelity data um with some greater
+volumes of Cheaper low Fidelity
+data um in order to address the the
+small data Challenge and when I say
+small data I'm really talking about that
+small High Fidelity
+data and so what I'm going to present
+today is a new method um for
+multifidelity linear regression so
+acknowledging that linear regression
+models are not as general as the neural
+networks that I was motivating the talk
+with but seeing this as kind of a step
+towards U more General machine learning
+models and in that linear regression
+setting we're going to develop a new
+method that's based on multifidelity at
+control variants I'll explain what those
+are um I'll present some bias and
+variance analysis that help us
+understand the accuracy um and
+robustness of the of the models that we
+learn from the multifidelity data and
+then I have some numerical results that
+uh demonstrate the sort of potential for
+this multifidelity method to really
+address these uh small data training
+challenges so um I will pause right here
+and just see if there were any questions
+so far about like the notation the setup
+um or anything
+else I I don't see questions in chat
+yet no
+yeah it's um a pedagogical technique
+I've learned to give a long pause in
+case people formulate
+questions okay well then I will jump
+right into the first part of the talk
+okay so I'm going to talk about
+multifidelity control variant methods
+okay so control varats are um a
+technique or you know a family of
+methods that actually arise from Monta
+Carlo uh estimation of you know
+statistics and the goal is to reduce the
+variance of Monta Carlo
+estimators so I'm going to set aside the
+machine learning problem for now and
+just think about like a standard Mont
+Carlo estimate of like the output mean
+so if I wanted to estimate the mean of
+F1 of my random variable Z and I had n
+samples of the inut Z then I could have
+standard montra Carlo estimator is just
+the sample mean of the
+outputs and we know that this estimator
+is unbiased so that the expectation of
+this estimator is the expectation of the
+is the true mean and that the variance
+scales with
+1/n and so if n is large then you know
+this variance is quite small and so we
+we think that the estimator we would say
+the estimator has a low standard error
+and then if n is very small then the
+this variance could be quite large and
+so this this estimator could have quite
+a high standard eror so the goal of
+control variance is to reduce the
+variance of the estimator and the way we
+do that is um we introduce like another
+random variable so like let's just I'll
+tell you what it is in a second but like
+suppose that we have another random
+variable W and it's correlated with the
+outputs so it's you know maybe think of
+it as an approximation so it's well
+correlated with the outputs but and
+suppose for now that we know what the
+mean of that random variable is so we
+like have some exact expression for the
+mean of
+w then this formula defines the control
+VAR estimator so we've got mu hat and I
+use CV to say this is the control VAR
+estimator so we have this this first
+term which is kind of the standard
+original estimator and then we add a
+second term which is a correction um and
+that correction is basically the true
+mean U minus the sample mean
+of of of the W's okay and so the key
+here is that these wi I are correlated
+with these F1 of z
+i um okay so this estimator has some
+nice properties the first one is that
+this control VAR estimator does not
+introduce bias and that's because in
+expectation like the expectation of w is
+muw right so so that term just goes away
+in
+expectation um so that's nice and and
+Alpha I should say is is some kind of
+scaling coefficient I'll talk about it
+more later but just think of it as a
+constant for
+now um the
+second uh property I guess that we want
+to analyze is the variance of this of
+this control VAR estimator which uh is
+related to the standard error of the
+estimator and so I can can you know give
+an expression for the variance of the
+estimator just by expanding uh the sort
+of co-variance definition of variance
+and this is what I get in terms of um
+Alpha so you see there's you know kind
+of here's the variance of the first term
+like here's the variance of the second
+term and then here's kind of the sort of
+cross that cross
+term and you can minimize this
+expression with respect to Alpha and
+find an alpha star which minimizes the
+overall variance of this estimator um
+and that Alpha star is basic is given by
+this expression so it's the co-variance
+of the model with with your W and
+divided by the variance of w so if I now
+stick that Alpha star in into this
+expression um this is what I get okay so
+with the optimal Alpha star you'll see
+that the variance of the control VAR
+estimator is the variance of the
+original Mont car estimator minus
+something
+positive or not negative uh and so
+essentially the takeaway is that the
+higher the correlation between F1 and W
+the greater the variance reduction and
+that makes I think some intuitive
+sense Elizabeth yeah uh there's are some
+questions do you want to take
+it all right the first question is from
+Kevin we need to know the exact mean and
+the same number of samples are yeah are
+used for w um yeah so we will end up
+estimating the mean of w in fact I just
+introduced it with the exact mean just
+to get the idea across um and I will
+talk a little bit more about the number
+of samples of w but yeah I'm introducing
+it with the same number of samples here
+because it's just a bit simpler to not
+have to have a lot of different letters
+running around but we can relax that it
+can be kind of there are different
+sampling strategies all right sure and
+the second question from uh duchant is's
+asking are you ignoring The Intercept uh
+term in the linear regression you know
+general form is y = to MX plus C I see
+you use the Y is equal to MX function
+um
+[Music]
+uh in my numerical experiments I do
+indeed have a an intercept so we allow
+kind of a constant like you know one of
+The Columns of the linear regression
+Matrix is a bunch of ones um although I
+don't I don't remember having that on a
+slide yet all right
+yeah thank you for the
+questions all right so yeah um so this
+is the main idea of control variant um
+basically the higher the correlation
+between W and F1 of Z you know the the
+greater your variance
+reduction and so multifidelity control
+variant methods um are based on this
+idea where we use lower Fidelity models
+to Define that W um and so now I'm going
+to say suppose I have some function F2
+so think of this is maybe a coarser grid
+than F1 or maybe you know some
+simplifying assumptions are made
+relative to F1 so that this runs
+faster uh then this is the way I Define
+the approximate control VAR and so to uh
+Kevin's question like notice here now I
+have replaced the exact mean with a
+sample mean um and what I'm showing you
+is is really the sampling strategy
+that's based on what like some people
+would say is the is the multifidelity
+Mont Carlo method and then there's kind
+of variant of this where you can have
+you know different different numbers of
+samples for each of these things um but
+basically I'm saying that F2 is cheap so
+I can afford many more samples of F2
+than I can of F1 so this is kind of a
+high sample approximation of the mean of
+F2 so this instead of knowing the mean
+of w exactly I'm approximating it with
+with a lot of
+samples um and I can easily generalize
+this to many other low Fidelity models
+um just by um adding you know additional
+terms uh so for like the F3 term you
+would have something like this for the
+F4 term you'd have something like this
+and there are several variations on this
+theme um so the what I'm using in this
+talk is um from this multifidelity Mont
+Carlo paper which is a 2016 paper by
+Benjamin payer ster and
+collaborators um but uh Alex gordetsky
+at Michigan um has done a lot of work to
+generalize that and so that would be um
+this work would would really kind of
+allow n and M here to really vary in in
+in more General
+ways and um another variant is is known
+as ml blue or multi-level best linear
+unbiased estimators by um Dan shad and
+and Elizabeth Olman um and that would
+allow sort of even more General
+structures like you would have sort of
+different model groupings just to give
+you a flavor of what exists um but these
+latter two are a little bit more
+complicated I think just in in terms of
+the notation in particular so I'm
+sticking with um multifidelity mon car
+just to introduce the main
+idea okay so um so I've introduced the
+main control VAR idea and now I'm saying
+okay I'm using low Fidelity models to
+define the control variance and so those
+low Fidelity models are being used to
+generate correlated samples that are
+going to help me reduce the variance of
+my Monte Carlo estimator that's kind of
+the punch
+line um are there
+questions all right so yeah this is just
+kind of highlighting again what I was
+saying so this is n expensive samples
+and N is not very large from The High
+Fidelity model and now I have lots of
+Cheaper samples from the low Fidelity
+model they're used to compute this
+correction um in this 2016 paper
+Benjamin Pariser shows that like the
+multifidelity Mont Carlo estimator has
+lower variance than the Mont Carlo
+estimator of equivalent cost so like
+there's kind of a constraint there
+saying like Okay I'm trading off some of
+my High Fidelity samples to get low
+Fidelity
+samples under certain technical
+conditions which I will summarize here
+by saying if the high and low Fidelity
+models are sufficiently well correlated
+and if the ratio of costs between models
+is sufficiently high
+um and the detailed conditions are in
+that 2016 paper um additionally in that
+paper they look at the influence of what
+you might think of as hyperparameters of
+the method so like you know what's the
+best Alpha what are the best M and N in
+this sampling structure and uh
+essentially you can formulate an
+optimization problem to say like what is
+the alpha n and M that minimize the
+variance of the mfmc estimator and uh
+there's an analytical solution to that
+problem and the the analytical solution
+then depends on second order statistics
+um of the models so Sigma being the
+standard deviation of fub1 and F2 and
+row being the Pearson correlation
+coefficient so the second order
+correlation
+coefficient um because in many settings
+those statistics are not exactly known
+um the standard practice then is to use
+a small number of pilot samples to
+estimate those statistics and then you
+get an estimate of the optimal alpha n
+and M that you would then use um to
+figure out the number of
+like the NM and Alpha to to implement
+this
+estimator
+okay um I see a question do I understand
+correctly one needs M plus M samples of
+FS2
+um in multifidelity MRA Carlo actually
+these are nested samples so it's m total
+and then these n are the first n of
+those M um but in some of the general
+variants that I um mentioned uh things
+are a little bit bit different but yeah
+you need a lot more samples of of F2
+than of F1 in
+general all right so that's the sort of
+background of multi mon Carlo and so
+what I want to explain now is how we use
+this for multifidelity um linear
+regression okay so back to our linear
+regression
+problem um I have the input random
+variable Z output random variable y1 and
+where y1 is related to Z through this
+High Fidelity model which is
+expensive um so now I restrict to this
+linear regression setting so I'm going
+to say let X denote features of the
+input okay and so this is where like I
+could have a constant feature to allow
+an intercept right um and you know so X
+could be like polinomial features they
+could be forier features they could be
+um features you know chosen from some
+Physics informed library but whatever
+they are um I'm going to have a linear
+combination of those features determine
+my output so this is my model class um
+so beta are my linear regression
+coefficients and so now um just oh just
+going back one okay so this is my uh
+linear regression task basically
+minimize uh this expected
+error all right so this linear
+regression problem is very well
+understood so its solution um is given
+by this formula so just the expectation
+of XX X transpose inverse times the
+expectation of x * y so just note this
+is a square Matrix and this is a vector
+so um so I'm going to
+just note those Expectations by cxx and
+cxy because like this is a covariance
+matrix and this is in sense like the
+covariance of the inputs with the output
+and just remind folks um that if X and Y
+are centered so if they have mean zero
+then these are these covariances and
+then the optimal beta star satisfies
+this interpretation of the um residual
+of the model being orthogonal to the
+features so the standard way we
+approximate this solution because you
+know this obviously has expect exact
+expectations is to say okay now given
+data pairs you know um and data pairs of
+inputs and outputs I will then
+approximate these covariance matrices um
+with uh the sample so these are sample
+covariances
+uh and then my Beta hat uh or beta and
+uh I forget what I used oops sorry okay
+uh then my approximation is is just
+given by like inverting this sample
+covariance multiplying it by this other
+sample covariance okay so that's
+standard um but I'm actually not going
+to use the standard approximation um and
+and the main reason for that is that
+this is actually not an unbiased
+estimator of beta star and that's
+because cxx n here is unbiased for
+estimating cxx but then once you invert
+it like the inverse of the unbiased
+estimator is not an unbiased estimator
+for the inverse and for reasons that
+will become clear I care very much about
+it being unbiased so I'm going to do a
+modified approximation of a linear
+regression
+solution um where instead I'm just going
+to assume that I have cxx exactly right
+um the justification for that is to say
+well the expensive part of getting data
+is really getting y1 right like every
+output requires that I evaluate this
+expensive model but in theory I could
+get lots of inputs for free and
+basically have so many input samples
+that I could assume that I have a good
+very good or exact estimator of cxx
+because that only depends on the
+features and not on the output of the
+model and the other main reason like I
+said is because this is now unbiased um
+this beta has unbiased estimator for
+beta star and that's going to be
+important for us in in our multifidelity
+model uh any questions about this
+setup um ask um if F1 and F2 have to
+share an input domain yes like so far
+we've just kind of assumed that they
+have the same inputs uh if they don't
+have the same inputs uh you'll need to
+do more
+research
+yeah but that is an interesting case
+that of course we're aware of and and
+thinking about how to
+handle
+yep okay so that's the High Fidelity
+linear regression setup and so um having
+chosen the parameters using that uh n
+High Fidelity data estimator we Define a
+trained model using those those
+parameters um and now if I think about
+for a given input Z like what is the
+variance of the model predictions so fat
+like um the variance depending on what
+the data are um then in fact that
+variance can be related to the
+co-variance of these beta hat ends so of
+those uh parameter
+estimates uh which is what this says so
+the variance in model predictions comes
+from variance in the parameter estimates
+and the variance in parameter estimates
+comes from variance in these like cxy
+estimates and so if we have a small n we
+would have high variance in the cxy
+estimates and therefore High variance in
+these beta n estimates and therefore
+High variance in the learn model
+predictions and so that really kind of
+kills your robustness like thinking like
+training on this small data set versus
+that small data set might lead to very
+high like changes in the model
+predictions so the main idea of
+multifidelity um linear regression in
+this paper is that we're going to use
+multifidelity control variat to reduce
+the variance of the cxy estimate which
+is then going to lower the variance of
+the betas which is going to lower the
+variance of the predictions which is
+going to improve the Learned model
+robustness
+okay so that's what's on this slide
+basically I'm saying I'm defining a
+multifidelity estimator of
+cxy um using this m multi montra Cara
+form so it's similar form to what's
+before I mean those sums have gone away
+because the sums are kind of being
+written as these Matrix Vector products
+but you have this like M sample estimate
+minus this n sample estimate so you
+recognize that form something that is
+different is that this is a
+d-dimensional vector that is being
+estimated so whereas Alpha was a like a
+scalar coefficient before here I've now
+place that with an a which is a matrix
+coefficient so you can think of as kind
+of like a
+gain um just s that and so with this
+estimator this multifidelity estimator
+of cxy then I have a multifidelity
+estimator of beta that which gives me a
+multifidelity learned model that uses
+those parameter estimates so this is
+kind of the main idea of the whole
+paper all right so what I want to talk
+about next is some of the analysis we're
+able to do of this approach um are there
+any questions before I jump to that
+part
+right
+okay okay so the first um key result is
+that this multi fideli linear regression
+estimator is
+unbiased so that was our estimator and
+so the first claim I'll make is that um
+the expectation of this estimator is the
+expectation of X y1 which appears in the
+you know the true formulation for or in
+the true formula for Bas star and that's
+un uh biased uh I'll get to that
+question in a second that's unbiased for
+the same reason as multif Mar Carlo
+basically an expectation these two terms
+are going to cancel because they're
+estimates for the same statistic just
+with a different number of
+samples um because uh our estimator beta
+hat MF is um linear in cat MF then in
+fact where our multifidelity parameter
+estimated for beta is unbiased with
+respect to the true optimal parameter um
+it's followed from linearity and then
+finally that means our predictions are
+also unbiased so that also follows from
+linearity of the model and the
+parameters and this is significant and
+and it's basically saying that by
+introducing this low Fidelity data like
+we're not changing the bias of the
+estimator so in that sense the low
+Fidelity estimator does not have a
+corrupting
+influence uh on on the learning even
+though we had
+um like even though we added this low
+Fidelity data um Jazelle I'm going to
+defer that question until I talk about a
+which will happen in like two
+slides um are there any questions about
+this unbiased bit
+okay all right so the next thing I want
+to talk about is the error because um
+you know obviously the error of a model
+sort of depends not only on the bias but
+also on the variance um so let's talk
+about what what is the variance of this
+multifidelity estimator so um remember I
+was trying to estimate X
+y1 like that's kind of what cxy is
+trying to the mean of xy1 is what cxy is
+trying to estimate so I'm going to
+Define a function G which is just like f
+multiplied by the features so what I'm
+trying to do essentially is estimate
+like do a multifid estimate of the mean
+of this function G now and so this is
+the sort of High Fidelity function G and
+then I've got some correction terms
+based on the low Fidelity functions
+G and so I can write an expression for
+the variance um of this estimator in
+terms of uh co-variances of G's so like
+you see that like so um just as a
+reminder G maps to like a d dimensional
+Vector where D is the number of features
+and so I can Define these gamma like
+Gamma 1 one and Gamma 22 and Gamma one2
+as being the covariance of like the high
+fidelity with itself covariance of the
+low Fidelity with itself and like cross
+covariance
+terms and so we see that the variance of
+the multifidelity estimator definitely
+depends on what this Matrix a is okay
+and so that um you know starting to
+answer J's question you know makes you
+wonder okay what's the best
+a um so just as a reminder when I was
+just estimating scalar means like the
+alpha which was a a scalar coefficient
+had an optimal form uh that was the
+coari of the f one and F2 divid by the
+variance of
+FS2 and so similarly we can show that to
+minimize the trace of the co-variance of
+this you know Vector estimator
+um the optimal a star that would
+minimize that trace the covariance um is
+Gamma 1 2/ by gamma 2 like basic divided
+by but yeah like gamma 22 inverse so it
+has the same form and so you know I mean
+that you know kind of gives you some
+confidence that maybe I did my proof
+correctly um and and yeah does reduce to
+this and the like the Matrix optimal
+thing does reduce to the scalar optimal
+thing
+um so that would be the optimal way to
+choose star to minimize the variance of
+the
+estimator all right so we have a theorem
+basically saying okay with with the
+gamas defined the way I've defined them
+um this choice is optimal in the sense
+that it minimizes the trace of the
+covariance of this multi estimator so it
+also minimizes the trace of the
+co-variance of the parameter estimates
+and it therefore minimizes the variance
+of the model predictions like you know
+conditioned on the input
+okay um so practical considerations so I
+mentioned that for you know standard
+multifid M Carlo just for scaler mean
+estimation we have to estimate these
+second order statistics of the models to
+get the alpha star and we usually do
+that with pilot samples and it works
+reasonably well across a number of
+applications but just Noti noting that
+for my regression set
+this optimal AAR now depends on these
+coari matrices being estimated um
+because I'm estimating a vector quantity
+and in general that's going to be a
+harder estimation problem than
+estimating sort of scaler statistics and
+might require a high number of pilot
+samples so the theoretical optimal a
+star may like actually be quite
+expensive to
+compute um and so since we're not sure
+we can get good estimates of this
+theoretically optimal AAR we have some
+practical uh Alternatives one is to say
+okay what if I restrict a to essentially
+be a scalar so a is going to be a scalar
+Alpha times the identity then the
+optimal scalar coefficient has a form
+that also may not surprise you it like
+has you know kind of similar resemblance
+to the optimal a star and so this is
+like in in this class of a this is the
+best way to choose Alpha star trace of
+Gamma 1 two over trace of gamma
+22 um or alternatively if you don't even
+want to bother estimating these traces
+you could just say okay I'm just going
+to just as a heris use this Alpha star
+that came from mean estimation which you
+know is not optimal in any sense but
+what we find you know Works reasonably
+well
+um so this slide essentially summarizes
+kind of the three ways that we might
+choose that scaling coefficient and now
+I'll ask Jazelle if there's any sort of
+follow-up questions on on
+a or anyone else if anyone has questions
+okay glad to hear
+it okay so I talked about choosing a um
+I haven't really talked about choosing
+m&n which is like how to allocate the
+samples among say maybe a fixed
+computational budget um and I'll just
+say that we haven't really done this I'm
+saying like we could formulate a
+minimization to do this to say like what
+are the M andn that are going to
+minimize this variance um but it would
+be kind of complicated and would also
+depend on these estimates that we we we
+think in practice might be quite hard to
+get so you know just practically maybe
+you already have data that's just like
+given to you like here's some low
+Fidelity data here's some High Fidelity
+data so like probably just want to use
+all of it um or as a heris use the m&n
+that would come from the mfmc paper so
+there's like I said an analytical
+formula to tell you how many uh samples
+to distribute to each model and so
+that's what I'm going to do in my
+numerical experiments this kind of
+puristic thing
+all right so just to summarize what we
+were able to get out of the theoretical
+analysis uh so the first thing is the
+multifidelity approach is unbiased with
+respect to the distribution of the High
+Fidelity data okay so the low Fidelity
+data do not have any kind of corrupting
+influence and something I want to
+emphasize is that this is a kind of
+guarantee that's possible in this
+multifidelity control variant setting
+that is not possible for what I would
+think of as more ad hoc approaches some
+of which are based on transfer learning
+like you don't have that guarantee that
+the low Fidelity data are not
+corrupting um we also show that if you
+have variance reduction of the cxy
+estimator this is going to lead to
+reduced variance in the coefficient
+estimators and therefore reduced
+variance in the model predictions and
+that's significant because it means that
+the lower that the expected square error
+of the Learned model is going to be
+lower relative to the High Fidelity only
+training
+process um so we have improvements in
+accuracy as
+well so before uh the last thing I have
+for you are numerical results are there
+questions at this
+point
+okay all right so the first thing I have
+is an analytical example in one
+dimension because I can plot the models
+and kind of show you how the variance
+looks so um I just have a uniform random
+variable z um High Fidelity function is
+an exponential function and the low
+Fidelity function is an exponential
+function that we've sort of moved around
+a little bit so it's a little bit
+off uh in this case I pretend that the
+High Fidelity model costs one and the
+low Fidelity model is a lot cheaper so
+one 1,000 times cheaper and they have
+quite a good correlation this is like
+97% correlated and we're going to fit a
+Cordic model so yeah here's the
+intercept um and then I've got you know
+first second third and fourth order
+features um so to ensure like Fair
+comparisons um we will say that the the
+cost of acquiring data points is going
+to be fixed um and so we compare
+standard High Fidelity only training so
+just filling up that whole budget with
+samples from F1 with multi Fidelity uh
+training where I use that mfmc model
+like sample allocation algorithm to
+determine the number of samples and so
+this table shows you like how many
+samples go to um The High Fidelity model
+and the low Fidelity model in the m
+Fidelity approach so for a budget of 10
+I use 80% of my budget on
+um on High Fidelity samples and kind of
+the remainder among M there's a reason
+that like kind of a a silly reason why
+this doesn't all add up to 10 and and
+that's something that I could fix but I
+just
+haven't um but anyway so this is the
+number of samples that are being
+used uh for different budgets and so I
+mean the main idea is like you sacrifice
+a few High Fidelity samples in order to
+get a lot of low Fidelity
+samples okay and so the reason I wanted
+to have this analytical example is to
+basically show you the how the how these
+models vary so
+um the black line on this plot is the
+best fit CTIC function to the
+exponential data you know that's that's
+taking exact expectations because we can
+because it's a simple example um so
+that's sort of the optimum with respect
+to the underlying distribution um these
+blue lines which are with some
+transparency um show you different
+realizations of the High Fidelity
+trained model and this is with a 100
+samples which is like a lot of samples
+for a one-dimensional example and so
+even with like a 100 samples you see
+there's quite a lot of variation in the
+fitted quartic functions um for the High
+Fidelity only data and then in these
+orange Dash lines these are also plotted
+with transparency you see a lot narrower
+variation like they're much closer to
+that beta star okay so we're like just
+kind of this is the visual of showing
+you like how much more robust the
+multifidelity training approach
+is um okay so I mean I will walk you
+through this kind of a lot okay so now
+this is kind of an exploration of the
+dependence of the model on the hyper
+param hyper parameters so like the
+choice of a and the choice of N and M
+which depend on those estimates of
+Statistics um so
+as I mentioned before we have um you
+know three different ways to choose that
+a like there's the optimal Matrix
+coefficient there's like the optimal uh
+scalar coefficient and then there's kind
+of this heris that comes from like what
+you would do if you were estimating the
+mean and those three choices of
+coefficient depend on estimates of model
+statistics so in the left column what
+I'm showing you is okay I'm assuming I
+have the exact model statistics right so
+this is the the case in which like a
+star is optimal and that's what you see
+the a star has the lowest variance so
+this is the trace of the co-variance of
+that um of the cxy this is the trace of
+the covariance of the estimates and this
+is for a fixed Z the variance of the
+model predictions and so yeah that
+optimal Alpha star coefficient is like
+the best you can do if you truly know
+the model
+statistics um and then these two scalar
+things perform kind of similarly when
+you know the optimal statistics uh the
+exact
+statistics and then as I move to the
+right um I'm estimating these optimal
+statistics as well as the optimal as
+well as theistic N&M with 100 Pilot
+samples which is you know probably more
+than is realistic but um and then 10
+pilot samples so that's really quite few
+and then you see okay like when you have
+just 10 pilot samples okay theoretically
+The Matrix coefficient would be optimal
+but in fact is suboptimal because you
+have poor statistics that you're basing
+that that coefficient uh
+on um but despite the you know this the
+fact that there is some sensitivity to
+estimating the statistics um we see
+consistently that these multi Fidelity
+strategies have lower variance uh in the
+predictions than the High Fidelity only
+of of the same
+cost okay so that was an analytical
+example and now I have a pte model
+problem this is um a convection
+diffusion reaction uh you know model in
+a two-dimensional main um
+and it's like a one-step chemistry model
+and so I have five input parameters
+which um this a is not the same as the
+Matrix a this is now the arenus uh
+reaction a um the activation energy e um
+temperature of the inflow and like
+initial temperature at the wall and then
+Fe is like a fuel oxidizer ratio so
+these are five
+parameters um the output I want to
+predict is the maximum temperature in
+the chamber at steady State and um my
+High Fidelity data then comes from like
+a 2d finite difference simulation where
+the cost is 1.9 and that's actually in
+seconds so 1.9 seconds and then I have
+low Fidelity data that comes from um a
+pod dime model and that has a cost of
+like 6,000 of a second and in this case
+we have a 95% correlation between the
+models so this is still pretty highly
+correlated okay so here I'm showing you
+that for this example so also fitting a
+quartic model but to five inputs so
+there's like I think like 25 features or
+something like that um here the the main
+thing to highlight is that when I'm
+estimating so like I have like a ton of
+samples just stored and so if I've got
+high sample estimates like the a star
+The Matrix optimal coefficient does do
+better as it should in theory but then
+when I have to estimate those statistics
+those covariance matrices to choose the
+a star Alpha star and alpha mean um the
+AAR is not on this plot because it's
+like 10 to the I don't know like 20 okay
+so it's just so bad that you wouldn't
+want to do that because it's you just
+don't have good estimates for those
+covariant
+matrices however um the optimal Matrix
+uh coefficient Alpha star does
+do much better and so that's kind of our
+general recommendation in the paper this
+is probably the thing to go with in
+Practical settings and again like you
+know consistently we see that like when
+you do that like you get um a lower
+variance in the prediction for
+multifidelity training than with High
+Fidelity training of the same
+cost and then here I just want to show
+you how that translates to Improvement
+in the prediction error or in the
+generalization error so um here I've
+just you know drawn some samples from
+the distribution that are from that are
+not seen in training and um this dotted
+black line is kind of the optimal
+prediction error like um computed uh
+optimal computed with a ton of samples
+basically it's like a very high sample
+reference
+um so that's the best we could do and
+then with High Fidelity only um I'm
+showing you here's kind of the mean over
+a bunch of realizations of training and
+then I've got like the plus minus one
+standard deviation and shaded and that's
+over just a bunch of realizations of
+training on like different independent
+training
+sets and uh that's for High Fidelity and
+blue uh and then low Fidelity and orange
+so here you really see the fact that
+we're lowering the variance of those
+predictions is significantly lowering
+the average uh prediction error or
+average generalization error and also
+narrowing like kind of how wide that
+range is so it's making it robust and
+it's making it more accurate it's kind
+of the key
+takeaway um and that effect is
+particularly pronounced um in this
+lowbudget regime right so like when when
+when data is scarce um that's where
+you're really seeing like you know
+significant
+gains so that brings me kind of to the
+end of things so here's a QR code for
+the archive paper um
+and to just to summarize so we have a
+new multifidelity linear regression
+method that combines high and low
+Fidelity data during model
+training um the multifidelity Learned
+models are unbiased and they have lower
+expected square error than standard
+training uh but we do have a lot of open
+questions like you know some was I think
+Jazelle was asking about like can we
+handle different inputs not right now
+but we're thinking about it um I also
+presented this like entirely for ve uh
+for scale predictions like scalar
+outputs and there are some interesting
+questions about what you would do if you
+are predicting Vector
+outputs um there's also questions about
+like how would you extend this to
+nonlinear regression um which we're
+working on and have some ideas there's
+like actually many ways you could think
+about extending it to nonline regression
+um as well as additional analytical
+questions um in particular like
+multifidelity monra Carlo has a lot of
+literature on like how to select models
+to guarantee that they're going to be
+useful um and that's kind of uh
+something we could also do here but have
+not gotten around to yet so thank you
+for um your attention and uh I'm happy
+to take questions all right uh thank you
+so much for the wonderful talk um we
+have a question gel asked how the
+correlation between the models affect
+the performance what is the minimum
+correlations you would recommend between
+the models for usable results yeah that
+is a great question um and I will say we
+have not done that analysis for the
+ression setting but a lot of that
+analysis has been done for the just the
+Monte Carlo setting which is different
+okay and so from the Monta Carlo setting
+um some of the things we learned it's
+you know it's not like that there's a
+cut off for the correlation but there's
+a cut off for the correlation with
+respect to how much the like how high
+the cost ratio is so when I was doing
+multi montra Carlo for like um just
+Unity quantification for um a telescope
+model we found we we like used models
+with correlation as low as like 38% um
+with significant cost reduction it was
+like a 10 like you know 10 or sorry 10
+to the six like six orders of magnitude
+cost reduction and then you can show
+that that still leads to variance
+reduction so it's really like the worse
+the model is the cheaper it has to be to
+be useful um but emphasizing that that's
+what we've been able to show uh both
+numerically and theoretically for
+estimating means and that estimating uh
+of linear regression does complicate
+things a little
+bit
+Co I have a question so in your second
+examples your lower Fidelity model was
+the
+Pod and I I know some other you know
+researcher who's working on the
+multifidelity uh settings they also add
+the cost of the
+training the
+podd model I'm guessing you haven't
+included that no I haven't right now I'm
+just saying like I'm treating those
+those models as kind of like oracles
+that we have and then the question is
+like how would you use the data that
+arises from that um but I mean I think
+it's a good question I know that you
+know there are other people working on
+these sort of context aware approaches
+where you're kind of like taking into
+account how much yeah like how much
+effort it takes to just get the low
+Fidelity source so so those are
+connecting those that body of literature
+to this is definitely an area of
+interest thank you next question is by
+Boris Boris you're you're hereis you I
+can also ask you person okay Elizabeth
+maybe I I think I probably missed this
+um you're optimally assigning these
+these uh M's and NS right um I am heris
+assigning the M's and n's based on the
+optimal Model Management approach for
+mean estimation um I briefly touched on
+this that like you could try to
+formulate um a problem that optimal
+assigns the M's and n's for the linear
+regression thing but it would depend on
+so many statistic estimates that we
+don't think we can get well in in
+Practical settings that we think that a
+heuristic is likely to be uh you know
+practically useful okay or practically
+useful yeah thank you nice
+talk all right the next question is by
+Kevin uh thanks for the great talk the
+PD example doesn't didn't seem to be a
+linear regression problem or maybe I
+miss uh yeah I think I was not um maybe
+as as clear and explicit about that as I
+should have been so um we are fitting a
+Cordic model to these five parameters so
+like the features X of Z are like you
+know like various uh you know constant
+and first through fourth order
+polinomial terms of these five model uh
+five parameters that are being
+fit so
+yeah oh Al this is still
+apply
+okay all right um next question is by
+Eric Chang earlier I think you mentioned
+something about the low Fidelity model
+being based on some transer learning
+approach possibly breaking the biased
+Bist of the estimator could you expand
+that yeah yeah let me so let me say that
+like I think there's a lot of interest
+in multifidelity learning approaches um
+and um people I mean there's so many
+different ways you could do you could
+combine high and low Fidelity uh data so
+I've seen things where it's like you
+have two neural networks and one trains
+on High Fidelity data one trains on low
+Fidelity data and then you add them
+together somehow or I've seen things
+where you like string like you know five
+different neural networks together and
+some of them map between the high and
+low Fidelity data and some of them are
+just for the High Fidelity data and some
+are just for the low Fidelity data and
+I've seen things where it's like onee
+old Network or I mean one model and you
+just train on the low Fidelity data and
+then you just at the end you throw in
+the High Fidelity data just to kind of
+update things
+so there's many ways you could do this
+um and the point I was trying to make is
+that we're doing it in a way that's
+based on the multifidelity control
+variant literature which has a lot of
+theory including this guarantee of
+unbiasedness and that is something I
+have not seen for these other approaches
+that I was just describing like you know
+if you just throw in the High Fidelity
+data at the end you don't get that kind
+of guarantee of unbiasedness like so I
+mean that's not to say that there
+couldn't exist a guarantee if you were
+careful about it just that I haven't
+seen that in that literature and so this
+is something that I think is in
+advantage of this approach based on
+multifidelity control
+varats all right thank you next question
+is by jackary he asked can you use more
+than one low Fidelity
+model yes um so this extends very easily
+to more than one low Fidelity model and
+you just kind of you end up adding like
+more terms of the same kind like more
+like so you'd have like a second term
+with like your F3 and another with your
+F4 and then in these variants that I
+mentioned the generalized approximate
+control variants as well as like the ml
+blue estimators they're like sort of
+even more General ways of combining
+those models um and I I will say they're
+they're more General and they get
+greater variance reduction under the
+assumption that you kind of have those
+exact statistics so it's kind of unclear
+in practice like how well you do if you
+don't have great statistics estimates
+but there's lots of ways to to add other
+models in
+awesome um well let me ask this question
+out so so you like the unbiased
+model I can see
+yeah in some sense that's um Can can it
+it can be also viewed as a modeling bias
+right I means you you have a mean and
+bias and um you know to make it unbiased
+you you you go another level and then so
+for you you you apply the multi
+covariate method on that um so I I see
+that like
+hierarchical you know modeling approach
+you start with the mean and second order
+statistic third order fourth order
+statistics and so on on and on to to
+make the bias model to
+unbias
+um uh if you maybe you have a different
+view on that yeah I that's not how I
+would describe it like I would say
+um you know this approach is really
+about reducing the variance of
+estimators of the of the Learned model
+parameters and we have an approach um
+where we use an unbiased estimator for
+the model parameters so that when we
+combine them in the multifidelity sense
+the multifidelity estimator also remains
+unbiased um
+if and we're not really using like
+higher like the only higher order
+statistics that kind of enter into into
+the model are the second order
+statistics which are just used for
+choosing hyperparameters of the method
+there's like no third order or fourth
+order statistics in this
+method yeah if you don't use the estimat
+uh but at the end in practical sense
+you're using estimates yeah in the
+practical sense we are using estimates
+of the second order statistics but third
+order and fourth order statistics don't
+anywhere yeah yeah um so if I rephrase
+my question um since we are using the
+estimate um there will be another bias
+TS which we ignore uh using the
+estimates the the guarantees of the
+optimality of the variance reduction are
+you know sort of approximate guarantees
+but in fact the unbiasedness does not
+depend on those things so no matter what
+like the unbiasness is is there even if
+we estimate statistics okay and that's
+just from the form of the
+estimator okay thank you Elizabeth um is
+there any other question wow that's a
+punctual 11 a.m. we started punctually
+at 10:00 a.m.
+and looks like we are ending punct
+punctually at 11 a.m. excellent Gold
+Star Gold Star yes
+all right if there has no uh further
+questions let's thank our uh speaker
+Elizabeth for the wonderful talk um
+Elizabeth you're the great teacher I I I
+can see like students uh will love to
+take your classes I appreciate that I
+hope they
+do thank you for having me all right
+thank you thank you
+Elizabeth all right that ends our uh
+seminar today let me start the record
+button well I have

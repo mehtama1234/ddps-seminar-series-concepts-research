@@ -1,0 +1,1126 @@
+all right uh welcome to the ddps seminar
+everyone it is an honor to host the
+anima
+um anandukuma who is a brand professor
+at Caltech and director of ml research
+at Nvidia she was previously a principal
+scientist at Amazon web services
+um anima is really a pine pine Pioneer
+Pioneer of the neural operators and
+today she is going to talk about ml for
+solving pdes neural operators on the
+function spaces
+um yeah so Animas yeah thank you all
+yours thank you and great to be here
+sorry for the delay I you know the WebEx
+I haven't used in a long time so and now
+I had some teething problems but yeah so
+I'm happy to talk about neural operators
+and what is the methodology behind it
+why that is suitable for different
+scientific applications including
+solving partial differential equations
+and also why not just the standard
+neural network tools right what is
+special about neural operators
+yeah so indeed you know if you want to
+think about modeling multi-scale
+processes uh in a variety of scientific
+domains uh you know this is very
+challenging right I mean the scales are
+enormous you can go all the way down to
+problems at the quantum level looking at
+uh interactions as wave functions uh
+between electrons in a molecule and
+using that to predict the properties uh
+especially when it comes to designing
+new drugs or materials this is important
+all the way to the planetary scale if
+you want to predict the weather or
+climate how we can look at
+microscopic interactions and the impact
+it has globally at planetary scales and
+that's the aspect that is so challenging
+to model and of course there's so many
+other problems in between as well that
+are multi-scale in nature and this is
+different from Tech story match
+processing right that you've seen a lot
+of exciting developments but that
+doesn't directly translate into our
+ability to model these processes um text
+is discrete data
+again image processing
+typically you just think of doing that
+at one fixed resolution right and it's
+object-centric in natural images you our
+main goal is to reduce from this pixel
+space to some low dimensional
+representation that is centered around
+objects you know for instance segmenting
+the objects being able to recognize the
+objects so that's where a lot of the
+focus is on right going from these pixel
+dimensions to lower dimensional space on
+the other hand if you think about these
+multi-scale processes there's
+information in all scales right so you
+cannot ex very easily reduce it to some
+high level representation like we do
+with image processing and so we need to
+think of different Frameworks to be able
+to
+nicely capture all of the scales and do
+High Fidelity modeling and as an example
+I want to show the challenges in
+modeling climate the one big source of
+uncertainty in fact the biggest source
+of uncertainty is the presence of these
+low-lying clouds what we call
+stratocumulus clouds and the turbulence
+in them so the ability to model the
+turbulence at very fine spatial and
+temporal scales is important in order to
+get
+uh very you know the right answers or
+the uh in these micro scales ultimately
+impact the macro behavior and what my
+colleague tapio Schneider estimates is
+you really need to go down to one meter
+special resolution planet-wide and that
+requires about 100 billion times more
+Computing than what we have today
+and so if we are trying to do standard
+numerical methods and we need to go to
+these fine scales it's just very Out Of
+Reach to be able to do that right in a
+Brute Force Manner and so right now of
+our capabilities are barely getting to
+one kilometer right so that's also not
+fully there we are you know still
+getting to that resolution and so
+there's a big gap between what we can do
+today versus what we really need to do
+to capture the fine scales in climate
+modeling and so that's just one of the
+examples the same is true with quantum
+chemistry or multitude of other examples
+I showed you we
+cannot get to the level of computation
+needed to capture all the scales of the
+problem and also you know in this case
+we are going from bottom-up physics
+right so we are starting with partial
+differential equations each time we are
+redoing all of the computations to get
+us to the answers so the question is
+what is the role of data-driven methods
+that could learn from previous data and
+be able to do these computations much
+faster
+so this is where I think machine
+learning can have a very big impact uh
+you know helping us build on top of
+accelerated Computing you know gpus or
+indeed the Workhorse of AI so getting
+all those hardware accelerations and
+efficiency and of course super Computing
+scale so we'll use all of that but
+machine learning is really the enabler
+of that scale right it's going to help
+us LeapFrog and get us very big speed
+UPS in terms of being able to do much
+faster computations you know if we can
+avoid the fine grid required for
+numerical methods and get away with
+coarser grids the getaway uh with not
+having to do intermediate iterations and
+get to the answers faster because we
+learned the features that are relevant
+to that domain then we can really
+LeapFrog in our computational abilities
+and I think that's the promise and we'll
+also see in many applications we are
+able to get very impressive speed ups
+and we're able to maintain the Fidelity
+or sometimes even surpass it compared to
+traditional methods
+yeah so let me first start with the
+framework and give an overview of what
+neural operator is right so what makes
+it different from standard neural
+networks I think I told you uh just a
+few slides ago that we cannot use the
+same models as text or image processing
+because we need to capture all of the
+scales and I think that's the key
+difference if we used any of the
+standard neural networks for image
+processing whether it's convolutional
+neural network or Vision Transformers
+that typically trained to
+work at a fixed resolution so you have
+training data at one resolution and you
+also have testing data at the same
+resolution
+on the other hand if we are thinking
+about
+solving scientific problems as I
+mentioned we need to capture many
+different scales and not only that we
+need to be able to query at any scale
+right so if you use any of the
+scientific methods any numerical methods
+we have the flexibility of having
+different grids right so in fact
+different problems entail different
+shapes of grids for instance the airfoil
+you know typically we have this
+non-uniform grid because you want more
+finer grid near these sharp points and
+so this flexibility to go different
+shapes of grids as well as query at any
+point because the phenomenon is a
+continuous domain is important and so
+standard neural networks don't have that
+capability and so the question is how do
+we design neural operators that can
+mimic the capabilities of current
+numerical methods but are also
+having high fidelity are expressive
+they're able to capture the multi-scale
+phenomena and they're fast right so we
+need to be able to do all of this at
+once
+so that's where our inspiration comes
+from the ability to solve first linear
+partial differential equations so as a
+thought process if we start with asking
+what is an efficient way to learn
+solutions for linear partial
+differential equations uh you know you
+can think of
+this form of the solution right the
+inverse of differential operator is the
+integral operator and we can look
+towards building
+a block here that learns to solve this
+integral linear operator so this is now
+a building block that can solve linear
+partial differential equations for
+instance the heat diffusion equation is
+a linear partial differential equation
+and in some cases we even know this
+kernel or the screens functional
+analytically in other cases you have to
+numerically compute it but the key is
+here solving linear partial differential
+equations involves
+you know learning the kernel or the
+screen's function and also being able to
+integrate that on the continuous domain
+so because this integration is over the
+continuous domain you can now give your
+input at any different discretization
+right and you would still be able to
+hang out the output be at any
+discretization so that's the key
+difference from a standard neural
+network where the input is only in a
+fixed discretization a fixed grid here
+we have the flexibility to have the
+input in any point in the continuous
+domain because it's Computing this
+integration at any point
+and so that's the key aspect that is uh
+you know will be different from standard
+neural networks and also now the
+question is how do we compute this
+efficiently right so there is two
+aspects one is how do we compute this
+efficiently the other aspect is how do I
+extend this Beyond linear equations to
+non-linear equations you know so many
+phenomena of interest that I showed you
+fluid dynamics for climate modeling or
+quantum chemistry right so you know many
+of the especially the approximations of
+that become non-linear uh problems so we
+need to be able to
+handle non-linearity
+and so that's where we introduce a more
+General framework that takes these
+blocks that learn integral linear
+operators and compose that with
+non-linearity
+so these compositions of integral linear
+operators with non-linear activations
+you know they can be standard non-linear
+activations like relu or gallu are
+usually yellow because we want also
+second order derivatives right in many
+of these differential equations they
+involve second order derivatives so we
+want that smoothness and so we use a
+function like Galu for um a non-linear
+activation but that's a detail but the
+general framework is that by composing
+linear blocks with non-linear
+activations we get an expressive model
+and this is the same philosophy as a
+standard neural network because even
+there you have a linear function and you
+compose with non-linear activation the
+linear function in uh fully connected
+neural network is matrix multiplication
+in convolutional neural network is
+convolution right by the same philosophy
+holds here that
+we compute a linear operator and then we
+compose with non-linearity the only
+difference is this is now learning a
+linear operator as opposed to a linear
+function so this operator Maps a
+continuous input token an input in a
+continuous domain to uh but output which
+is also a function on continuous domain
+right so that's the main difference
+anima uh Madi has a question
+um about are the inputs here location
+time and the outputs the solution of the
+equations
+so the input can be both space and time
+right so to me input is any function on
+a continuous domain
+and that domain could be space or time
+or both or anything else as well
+so this General framework is you know
+that's that's one option
+okay thank you
+great and again yeah if there are
+further questions here do uh feel free
+to interrupt me
+so that's the framework
+um now of course one thing I haven't
+told you is how to learn these integral
+linear operators efficiently
+and so one framework that has been very
+successful is what we call Fourier
+neural operator where uh we uh relax the
+kernel to a convolutional kernel so
+meaning you are you know only look at
+translations right and this is uh indeed
+um a limitation compared to the general
+kernel but because we compose it with
+non-linear activations we can show that
+it's still expressive and in fact you
+know both this original
+neural operator as well as the
+convolution based neural operator are
+both Universal approximators so you can
+approximate any non-linear operator uh
+which is a mapping from one function
+space to another with these Frameworks
+and I think this is important to be able
+to capture as I said any non-linear
+operator
+so but of course this I have just made
+this simplification but what is this
+bias right why is this more efficient to
+learn a convolutional operator so this
+is where we can do change of basis we
+can go from convolution to element-wise
+multiplication in the four-year domain
+for instance so we know Fourier basis is
+a good inductive bias for many problems
+including fluid dynamics it's been used
+for numerical methods as well so we can
+use that inspiration and say Fourier
+domain is a good inductory bias and not
+only that it becomes
+much more efficient to learn the
+coefficients in the Fourier domain right
+so this way the integration over the
+continuous domain just becomes matrix
+multiplication so this is efficient and
+we can learn
+the coefficients in an efficient manner
+so that's the principle it's very simple
+that we can transform our input into the
+Fourier domain we learn the coefficients
+in the Fourier domain and we go back to
+the standard domain and then we do
+non-linearity in the standard domain
+which could be space and time and we
+could then repeat this again
+so a few points here right so first of
+all
+um you know if it did just this
+convolutional operator in the Fourier
+domain without non-linearity that would
+be limiting
+right so and in fact that's what the
+numerical methods to they transform to
+the
+Fourier domain and digits to iteration
+there
+um on the other hand we have non-linear
+Activation so we have the now
+flexibility to not just you know it's
+not just limited to the Fourier spectrum
+of the original signal we're also
+learning features over non-linear
+activations so that's a benefit the
+other benefit we can get is through
+regularization or we can capture only
+the low frequency modes in the first
+layer so we just filter out and only
+retain low frequency modes here of
+course if you didn't have non-linearity
+this would be a strong aliasing right so
+this would lead to errors because many
+signals of Interest have high frequency
+components so you can't just threshold
+them but on the other hand because we
+have non-linear activations present we
+can further transform the signal and
+still have the ability to capture high
+frequency content and that's why we are
+able to provide the guarantees of
+universal approximation even though in
+each layer we are using a regularization
+to keep low frequency modes of course
+that's a hyper parameter of how much do
+you threshold to retain low frequency
+modes versus how many layers do you have
+right so both are hyper parameters we
+can choose for different problems
+but really the benefit is the ability to
+now make learning efficient as well as
+keep the discretization invariance
+meaning I can now input my signal at any
+resolution or you know with any
+resolution I can still
+capture the signal through Fourier
+transform right because I can do Fourier
+transform at any resolution and that's a
+key ingredient that makes this overall
+framework end-to-end discretization
+invariant by that what I mean is let me
+first show you just an example a proof
+of concept in terms of showing how we
+can you know train in one resolution and
+test in a different resolution right
+which wouldn't be possible with standard
+neural networks so we're training using
+only course resolution data for this
+navier Stokes equation
+and we do that over different initial
+conditions and then at testing time we
+provide higher resolution inputs and
+then we look at how well does it predict
+right and what we see is indeed that
+does predict pretty well and in can see
+that in fact in the frequency spectrum
+as well that the prediction is very
+graceful even beyond the
+I've seen resolution meaning it
+extrapolates to higher resolution
+without seeing it during training so
+this is what we mean by zero shot super
+resolution and you can see that here
+um that you know there is right I mean
+these systems are dissipative so you do
+have see the drop off of the energy
+Spectrum but you know when we're giving
+training data at a fixed resolution we
+only see these wave numbers right so
+these we have no idea what the higher
+wave numbers are but in cases where
+there is uh a nice drop of our framework
+is able to track that compared to uh
+other standard Frameworks like qnet I
+think there was another question
+yes there was another question by Maddie
+um he said this also assumes that the
+set of equations that represents the
+physics in one scale is also valid in on
+other scale right yeah we are currently
+assuming there's only a fixed set of
+equations right so the way I mean I
+haven't even used the equations right so
+if you're using the equations in a
+physics informed manner that would
+matter in this case we are just giving
+data right there's no physics knowledge
+built into the model but what really you
+know where this will work well is when
+there's a nice drop off in terms of
+energy right in these higher frequencies
+if you for instance have something very
+arbitrary like this right some arbitrary
+Spectrum here that is having very high
+energy content you know we cannot expect
+to capture it because we have absolutely
+no information about that all right he
+also asked what is what is the
+difference between two scales Vector of
+10 factor of hundred you can see that
+here right the wave numbers so these are
+the wave numbers we provide we can go
+all the way up to 100 so we provide a
+little more than what it's 25 wave
+numbers or 30 something like that and
+and we can go much further we can go to
+any scale right the prediction can
+happen at any scale sounds good thank
+you anima yeah
+yeah so just to kind of make this point
+about discretization in variance what
+can we can be guarantee right as I
+mentioned we cannot guarantee that we
+will give you as error free answer at
+any resolution because that's impossible
+if we do not see higher resolution
+inputs you know there's no way we can
+capture all of the information about it
+on the other hand what we can guarantee
+is graceful
+you know degradation right Grace like
+kind of having consistent answers even
+as we refine the mesh so the idea is you
+keep refining the mesh and asking what
+is the value at any point here you
+should converge to a limit and ideally
+that limit should be closer to the
+ground truth operator right so so what
+we're guaranteeing is this kind of
+convergence and this is something you
+may not you know otherwise see in other
+Frameworks and so just to kind of make
+that point clear you know standard
+neural networks do not have this ability
+because most of them you can't even
+query at any resolution right so the
+standard architectures expect always the
+resolution to be fixed whereas neural
+operators remove that dependence there's
+of course an intermediate step where you
+could use interpolation on top of
+standard neural network so you train
+your neural network at a fixed
+resolution you use a standard fixed
+interpolation whether it's bilinear
+interpolation or any such framework you
+can use on top where there's no learning
+for interpolation so that framework
+indeed allows you to query anywhere in
+the domain but it does not guarantee
+Universal approximation because the
+neural network just learns at a fixed
+scale right so it is not learning in the
+function space like we do with neural
+operators and that to me is the big
+benefit we obtain here
+yeah so just to reiterate the framework
+of neural operators is
+taking uh you know ways to compute these
+integral linear operator and composing
+with non-linearity to give it both
+expressivity but by Learning Blocks that
+compute integral linear operators we
+still keep discretization invariance and
+so that kind of like you know ability to
+have both aspects of discretization
+invariance and non-linearity is crucial
+so there's an extensive Library I
+encourage you to go check it out you
+know it's open source also contribute to
+it would be great to hear your thoughts
+where we do have implementations of the
+Fourier neural operator that I mentioned
+but also there are other approaches
+right in order to be able to estimate
+this for instance through graph based
+method because you can learn through
+a graph neural network uh and message
+passing what is the relationship between
+nearby points and then you can turn it
+into an operator because once you learn
+the kernel you can approximate the
+integration as summation
+so this works well if the phenomena is
+fairly local so it's much harder to do
+for Global dependence like in fluid
+dynamics because you would need the
+neighborhood to be very large and that
+is expensive so I think there are
+Frameworks where the graph based methods
+are effective and then the other domains
+especially with uh where we know the
+operator is highly non-local where
+Fourier based methods are effective
+because you know we can express these
+kind of global dependence efficiently
+through Fourier transforms
+yeah so far what I mentioned was just
+Computing on a
+you know a practical implementation was
+Computing on a uniform grid right
+because Fourier transform the efficient
+implementation is fast Fourier transform
+that assumes uniform grid and if you try
+to do Fourier transform or non-uniform
+grids show that our algorithms but those
+implementations are not efficient and so
+we wanted to keep the Fourier transform
+as fast Fourier transform on uniform
+grid and the way we you know decided to
+handle non-uniform input domains right
+the physical space for instance this
+airfoil Wing this is a irregular
+geometry shape and we also want a grid
+to be irregular to capture that
+non-uniformity
+so this is our input domain so what we
+propose is to learn a deformation from
+this to
+um
+a uniform Grid in a latent space and we
+know from topology that such
+deformations exist so if you assume this
+is homeomorphic toy Taurus you can learn
+the transformation right and and if not
+you can also there you decompose the
+domain into multiple parts and piece
+them together which is a detail from
+topology but the idea is this is very
+general so in general you should be able
+to learn the Transformations from a
+physical space that is irregular to a
+latent space that is regular
+and so what we do is we learn such
+deformations Point wise and this way we
+can go to a latent space and do
+efficient computations and come back to
+the standard domain and so you can see
+that where we predict deformation for
+plastic forging here and again we see
+you know really impressive speed UPS
+about 100 000 times speed up over
+standard numerical methods and you can
+see that geometry is changing over time
+and it's able to maintain and do that
+prediction
+so this is another example where we you
+know
+can handle a regular shape ah in the
+sense that the fluid is now flowing
+through a catheter with all these
+triangular shapes right so we propose
+triangular shapes as a way to limit the
+bacterial contamination so what's known
+as the bacteria swim upstream to the
+fluid flow and if it can reduce the
+a bacteria by trapping it in these
+triangular places then we can reduce the
+contamination and so one benefit with
+these methods is that we can do inverse
+design very effectively so not just
+inverse design any kind of inverse
+problems because the trained neural
+operators are differentiable right so we
+can directly get the gradients back and
+so what we did was to ask you know how
+can I find the optimal triangular shape
+to minimize the bacterial contamination
+so here the contamination should be
+ideally zero because we don't want the
+bacteria going back into the patient and
+so we were able to do that by doing
+gradient descent which is very fast and
+effective and that's how we
+um you know were able to very quickly
+propose a design on our collaborators 3D
+printed it and tested it in the lab and
+this is just a visualization of you know
+how you can see many particles are
+getting trapped in these triangular
+grooves
+yeah and so this is another here uh
+demonstration with airfoil if you want
+to optimize for lift versus drag right
+we can directly do gradient descent and
+come up with this and here we are
+having the simulation of the fluid
+dynamics around the aircraft Wing right
+so we are only training for the forward
+model so in the forward model we have
+many different aircraft Wings we are
+predicting how you know what is the
+fluid dynamics around that and and then
+we can directly do the inverse problems
+so the key is you don't need to know
+what is the optimal design when you're
+doing the training of the neural
+operator
+and you can do the inverse and come up
+with the optimal design
+yeah so far I did not incorporate any of
+the physics I think there was a question
+earlier asteroid so you know how does It
+capture the different scales so
+in you know in terms of uh if you want
+to really capture the fine scales and we
+need to do that with high accuracy we
+would need to know the equations as well
+and so the idea is if the data is only
+at course resolution I now have the
+flexibility to express my equations at a
+much finer resolution and so this way we
+can capture both data and the equations
+and we can get to High Fidelity results
+and so we can then do zero short super
+resolution uh very well even at higher
+resolutions
+and we can also further fine-tune our
+model because you know during training
+we have a variety of initial conditions
+and solutions but at this time we have a
+single initial condition right so we
+want to do well on this we can further
+fine tune with the equation laws on this
+specific instance and that way we get to
+our better error
+and so we can also do better transfer
+learning with physics-based losses
+because we can you know learn the
+operator safe on one Reynolds number if
+you want to fine tune on a different
+Reynolds number there is a
+distributional shift but having the
+equation loss allows us to quickly
+figure out what the distribution changed
+right what parameter change and still
+utilize the information that was you
+know in the earlier train model and so
+this leads to faster convergence
+um yeah so so far what I told you was to
+learn deterministic Maps between
+function spaces right what about
+learning probability distributions on
+function spaces and indeed this directly
+you know asks similar questions as we've
+seen with generative AI whether it's
+text Generation image generation right
+so they're all learning probability
+distributions can we do the same and
+indeed for scientific Computing that's
+very important right so inverse problems
+if you want the posterior of your
+inverse problem that's a probability
+distribution naturally right uncertainty
+quantification
+um learning like chaotic Dynamics so you
+want to ask what are the different
+attractors and what is their
+distribution so all of this are problems
+that require probability distribution
+and of course if you're looking at
+stochastic differential equations or
+rather
+processes those are also you know
+involve learning probability on function
+spaces so what we've recently
+um
+derived is a diffusion model but now on
+function spaces
+and so we are doing that by extending
+what is known as core function in
+diffusion models in finite dimensional
+spaces to now score operator right so
+this operator Maps a function space of
+of one domain to another and in this
+case what we want to do is map instead
+of gaussian noise a gaussian random
+field to the output distribution and so
+this is the key difference here with
+gaussian random field you can now sample
+at any resolution so you're no longer
+limited to sampling at the resolution of
+the training data like we see in image
+generation models and that's how we can
+now you know do this training at low
+resolution and generate high resolution
+images and still get you know very good
+Fidelity of what we generate right so if
+you now have a density of initial
+conditions you want to capture that
+random distribution
+of solutions for these given initial
+conditions in this example you can see
+that we can do very well
+so I wanted to see if there are further
+questions before I maybe showcase one or
+two examples of using these various
+methods yeah Matty do you want to meet
+yourself
+um I see you please raise your hand
+Madi are you there
+I don't I don't hear it okay see any
+other questions from audience
+animal you can move on
+I think there's another question uh
+um no yeah I'm yeah I yeah I don't think
+so you can move on okay
+yeah so to give you some examples you
+know we trained um using these Fourier
+neural operator and its variants on
+weather data so but this is
+um era 5 reanalysis data that's
+available since the 1970s so having this
+wealth of historical weather data allows
+us to train a model that's very accurate
+as well as fast so here's a
+visualization of the atmospheric rivers
+and you can see that it can capture
+these very wide you know that are those
+are thousands of miles wide phenomena
+that has a huge impact on whether there
+are storms or drought in the western
+coast here
+and not only that it's very fast it's
+about 45 000 times faster than current
+numerical weather models
+so you can also see that with trajectory
+prediction we can you know predict these
+wind conditions and the high wind
+conditions are in purple and you can see
+our prediction closely follows the
+trajectory of Hurricane Matthew which
+was certainly not in the training data
+right so we are looking at how well it
+does on new hurricanes and it's able to
+give you a good uncertainty bound around
+the trajectory of the hurricane so these
+are some more details and we also have
+some of our models open source there I
+welcome you to go check it out and what
+you can see is the ability to have big
+speed UPS over current numerical weather
+models and at the same time good
+accuracy so what would take hours on a
+CPU cluster for current numerical by the
+models takes less than a second on a
+single desktop GPU
+yeah and we continue to improve this I
+think we just recently talked I think
+yesterday the talk was at iClear
+workshop on climate AI where by
+incorporating the spherical geometry so
+instead of the Fourier fast Fourier
+transform on euclidean Space we now have
+spherical harmonics and we build that
+into our model and that leads to even
+better extrapolation so you can do much
+longer rollouts than what we
+had trained for we trained it just for a
+few time steps of six hours or so right
+so we have a very short range training
+but we can extrapolate the model to long
+rollouts and there's good stability and
+we continue to improve the forecasting
+skills as well compared to the ifs which
+is the you know current numerical
+weather models
+so we've also used in a number of other
+scenarios to mitigate climate change
+carbon capture and storage is a big
+aspect so how do we model the buildup of
+pressure as carbon dioxide is pumped
+into these Wells so we are now able to
+do multi-well modeling so being able to
+look at multiple Wells at once and if
+you have a permeability map so you know
+how permeable the ground is and we can
+then use that as the input given a
+permeability map we have high resolution
+a fine grid prediction within the wells
+as well as a coarser grid to connect the
+different Wells and you can see that we
+can model the gas plume Evolution as
+well as the pressure buildup and we can
+do that over 30 year range and we can
+even do further if needed but the key is
+you can see that it has a very big speed
+up about 7 100 000 times faster than
+current numerical weather models
+so these are applicable in many other
+scenarios as well you know predicting
+air turbulence for drone flights or
+other flights is important
+so we've been uh testing it in the lab
+by looking at turbulent conditions here
+and using laser measurements and showing
+that we can do very nice real-time fluid
+prediction directly from noisy
+experimental data and so we continue to
+test models like this also in the right
+physical Hardware on the lab to see how
+well we can stabilize uh the airfoil
+wing and many other cases
+so just to show like at Caltech we also
+have the fan array where we can test
+this very carefully on different kinds
+of wind conditions
+so I think I already mentioned the
+cathedral before so let me yeah so
+um you know again sorry for the delay
+but I hope you got a good overview of
+what neural operators are what is the
+principle behind designing them and how
+they differ from standard neural
+networks and their ability to capture
+multiple scales and do
+inferences in a discretization invariant
+manner
+thank you sounds good thank you so much
+for the wonderful talk animal
+um I guess did I miss the the question
+from the Joseph let's have a q a
+sessions by the way
+um Joseph asked are there any special
+considerations for using neural operator
+operators on inverse problems
+um so there are different options right
+so you can do the you can learn the
+neural operator uh for the forward
+problem and then just take Radiance
+differentiate through the model or you
+can directly learn the inverse mapping
+and so there are both options or you can
+couple both of them as well
+um and also in both of these cases you
+can ask you know how do I
+also incorporate the physics right so
+you can also do the physics informed
+version and then there is the aspect
+that to capture the not just point
+estimates but to get the right posterior
+distribution you know can we use
+diffusion models so what I propose
+diffusion models on function spaces
+thank you okay another question by
+Huawei for the CCS case have your team
+try to explore the super resolution
+property of Albano
+yeah we can certainly
+predictions but we
+are now working with some Partners
+getting real data and validating on that
+awesome okay next question is by fatal
+what do you need to train the neural
+operator do you need the original pde
+can you learn on noisy ground truth yeah
+so we don't need the original pde right
+so the framework I described was very
+general the input can be any function on
+a domain and the output is a function
+right so you're learning that mapping
+and so you can take data from solvers
+existing solvers like I showed you the
+navier Stokes example or you can take
+the weather example where the data is
+already there the historical by the data
+the re-analysis data and we train on it
+so it can be very general sounds good
+okay if the equations are there we can
+incorporate that as a loss function in
+addition
+edges is still in pinot right
+okay the next question is by rui Pang
+and he has the photo function mapping to
+learn from pde coefficient to solution
+any ideas what function spaces it is in
+and is the mapping unique
+so for to learn from the coefficients to
+the solutions you know they
+the unique solution right but we don't
+need to even assume that as long as we
+have the data that learns the mapping we
+can do that but of course if it's Unique
+then you have a good error and you can
+learn this well all right sounds good so
+um I don't think there is any other
+question but I have a question you can
+reach the hands story yeah I think yeah
+I so for for the for the FML can I say
+more about like the boundary conditions
+especially like non-pure periodical
+boundary conditions and also for the
+like the in the carbon storage case you
+showed that to have like uh like the
+course created far fields and also like
+near the well like I have the high high
+resolution great so how you make the the
+boundary conditions consistency between
+these two yeah that's a that's a great
+point so for the first generally like
+for non-periodic uh cases right the
+Fourier Branch may not capture that very
+easily I mean you can't correct that
+with Fourier continuation methods and we
+also proposed that but we also have
+alternative Branch food so we have skip
+connections and so that's a very
+efficient way to cap capture a
+non-periodic
+conditions and so we we have
+architectures that handle that very
+efficiently so in terms of like for the
+specific uh you know case of uh CCS what
+we did was a nested fno model so we now
+have different fno models for you know
+within the Well versus outside we have
+multiple levels and uh yeah so they just
+share the information across them
+that makes
+sounds good do you have more questions
+no okay
+um so FNL is known to require many many
+data so
+um
+and from your experience it you know if
+you incorporate the physics then do you
+see that you require the last data is
+required absolutely our data requirement
+goes down significantly and of course it
+depends on the hardness of the problem
+right so you know some cases you may
+even do with one data point that's the
+physics informed neural network setting
+right so if the optimization landscape
+is very efficient you don't need any
+data at all you can directly solve for
+the equation laws and then there are
+others that are high dimensional and
+very hard and you may need more data so
+there's a whole spectrum of problems
+okay sounds good
+um I have a just clarify clarification
+questions you said that people net is
+not discretization Independence I I
+thought he was discretized so so there's
+a so the original Deep on it that was uh
+proposed was on assuming a fixed input
+grid
+so the input grid was assumed to be
+fixed the output is also is still a
+function so the output is
+can work at any resolution but the input
+was a fixed grid and then later on in a
+while right proposed a solution others
+proposed to solution as well to fix that
+but anyway I wanted the the original one
+happened yeah I just wanted to clarify
+of course but I think the current
+version of The Depot net yeah that
+doesn't it's independent out there okay
+um another question from CEO one Chang
+what is the regularity assumptions
+needed in the function spaces if the
+solution is of low regularity for
+example the domain is singular and the
+functional is rough then the current
+framework be applied yeah so we are
+working on like kind of extensions of
+this in terms of practical architecture
+but there's already Theory showing that
+you can use Fourier neural operator to
+approximate those well as well like Sam
+Lander and Andrew Steward have like a
+recent paper but yeah this is something
+we're working on
+okay yeah I have another question uh
+foreign learning
+um if the the
+differential equations are different
+like for different problems do you think
+that transfer learning is still helpful
+or not I know like in the same equations
+probably it's like a helpful from uh but
+but from the point of view of a
+difference the differential equations
+yeah that's great and and that's unclear
+right it's again the same as any
+you know what we see in other Vision
+domains like how much is the shared
+features you might think some of it is
+still shared because numerical methods
+right like kind of have
+similar approaches for all of these
+domains so it may still transfer but
+yeah it's a good question you know how
+effective it is we haven't tried it so
+far
+yeah comments on on that chinkai I mean
+transfer learning not on the neural
+operator but the on the traditional
+neural network sensing a sense uh it has
+been applied you know you know yeah
+different pde and you know use that to
+accelerate the another neural net model
+for that another PVE that has been
+demonstrated but I guess it's an example
+by example yeah exactly yeah but it's I
+think I think think I expect that there
+should still be an advantage yes some
+some unusable right
+all right any other questions from
+audiences
+um
+oh yes we do okay
+um as uh the question from protano when
+you compare the speed up to you consider
+the training or data generation time so
+you know no in these numbers we don't
+first of all it's still not a
+significant amount right so because to
+me data is just something that uh you
+know you only do training once right and
+then inference is running cost and so
+this is the standard way we would
+evaluate any method so because also
+there is cost that goes into programming
+these algorithms even for traditional
+methods so so I would just you know to
+me that's uh something that you know
+happens before the solver comes online
+but we do report that in our papers
+got it uh another question by Maddie can
+the method extrapolate to new and unseen
+geometries
+yeah in the the geometric fno that I
+proposed EI does that's how you can see
+that even online changing geometry of
+the deformation it's able to track
+but you should have some mapping from
+you know once geometry to another that
+no we just learned that we learned that
+now okay yeah
+all right
+different trees that's how we're able to
+generalize it
+all right sounds good is there any other
+questions from audience
+if not let's thank our speaker anema for
+the wonderful talk and and good
+discussion times
+and thanks everyone and thanks for
+sticking around I really appreciate it
+thank you yeah and I do reach out if you
+have further questions that would be
+awesome okay thank you thank you
+thank you everyone we have another tdps
+seminar tomorrow so see you tomorrow
+bye now thank you bye

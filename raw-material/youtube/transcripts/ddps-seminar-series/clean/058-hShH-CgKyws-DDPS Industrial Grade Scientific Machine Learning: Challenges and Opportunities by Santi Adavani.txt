@@ -1,0 +1,1506 @@
+okay um
+welcome to the ddps
+seminar everyone before we introduce our
+invited speaker let's go over some rules
+and logistics
+first of all please mute yourself during
+the talk unless you have questions if
+you have questions you are welcome to
+unmute and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a session at the
+end
+second today's gdpr seminar is open to
+external audiences therefore no
+classified discussion is allowed so
+please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today it is an honor to host
+santi
+adebani who is a cto and co-founder of
+rocket ml as ctos and he drives the
+technology roadmap that includes the
+design and development of scientific
+machine learning solutions
+prior to rocket ml santi worked as a
+senior data scientist and ai product
+manager at intel
+where he led the development of ai
+systems for automated data management
+for yield enhancements he received a ph
+phd
+from the university of pennsylvania
+where he developed fast algorithms to
+solve partial differential equation
+constrained optimization problems on
+supercomputers with applications in
+electrocardiology
+today santi will talk about industrial
+grade scientific machine learning
+challenges and opportunities this is a
+very interesting topic
+please enjoy and expect a wonderful talk
+now without further due let me pass the
+button to santi by asking one random
+question
+as usual today's question is what is
+your favorite things to do other than
+your other your job role as a cto
+oh uh thanks for inviting me also yeah
+my favorite thing uh i play volleyball
+uh in my free time and if the weather is
+good i go hiking
+pacific northwest has beautiful
+trails so that's the other thing i do
+nice nice well with 100 degree i guess
+okay all right stage is yours
+thank you
+okay hello everyone it's great to be
+here uh
+so today i'll talk about uh industrial
+grade
+scientific machine learning and
+challenges and opportunities so before i
+go in i would like to thank all my
+collaborators
+from rocket ml uh iowa state university
+and nyu
+and with the for so
+the challenges and opportunities i'm
+going to talk about today are about
+how do we take scientific machine
+learning
+that is more in the academic setting
+today and how do you make it to good
+goodness how do we make it so popular as
+machine learning in general and how do
+we make it
+accessible to a lot more people lot more
+organizations so that
+we see the real value of saml going into
+into industry
+so for those of you who have not
+heard about this before so this is uh
+my talk outline i talk about
+introduction tell you what sci ml is and
+motivate the problem i'm looking at a
+little more
+i'll talk about challenges and
+opportunities and in specific i'll
+discuss about ambiguities scalability
+and deployability problems and i
+summarize my talk so that's the outline
+so saml is scientific machine learning
+for short and uh this is the definition
+from department of energy in 2019
+so the way it's defined is it's a core
+component of ai
+that can be trained on
+scientific data right so that's the
+10 000 foot level definition and in
+order to uh
+simplify it the way we look at it is it
+is at the intersection of
+uh laws of physics science and machine
+learning and and that is the
+intersection that we are most interested
+in and we were talking about cyan
+so from this 10 000 foot level
+definition if you want to kind of bring
+it down
+and look at ciaml through the lens of
+data and the lens of amount of
+information used
+on
+one end of the spectrum we have
+scientific computing right this is a
+traditional way of solving
+physics problems
+and
+or chemistry or any science problems
+right for that matter
+we have the formulation of the problem
+be it pde ode
+or any other way of defining in a
+scientific manner
+and we use traditional methods finite
+elements finite differences molecular
+dynamics
+uh finite volumes so on and so forth and
+we solve a given physics problem right
+using traditional methods
+and on the other end we have a
+large-scale machine learning
+world that is that is uh that is
+exploring that is
+you have a lot of data coming from
+either simulation a lot of data coming
+from
+sensors and
+we are using all the data where the
+physics is implicit
+and building these building machine
+learning models large scale machine
+learning models to
+to to explain the physics or to embed
+the physics in a model
+and there's a lot happening in between
+right so that is
+you're using the best
+um
+learning from like from from scientific
+computing and you're also using the
+learnings from machine learning and this
+coupled region is what what we can term
+as scientific machine learning where
+you're using data as well as the physics
+from uh either explicitly or implicitly
+and there is a lot of work going on in
+this space
+be it solving
+pdes using neural networks we're solving
+inverse problems
+and a lot of methods being developed in
+the community which has significant
+implications for
+simulations control design and
+and inverse problems
+so the value of scientific machine
+learning is is very well understood so
+that is when we go talk to somebody in
+the industry and explain the value of
+saml it's very clear that is we are
+going to speed up time to solution so
+the time to solution for a given problem
+can be accelerated by orders of
+magnitude is a value proposition that
+everyone understands
+and that's a baseline that we can think
+of when we think of science
+and here we i'm giving you two examples
+that uh
+that were published from from our group
+the first one is a is a fluid flow
+problem uh where a traditional method
+would take around 400 seconds for
+simulation and using a cyan l model it
+would take around 10 seconds right so
+when i'm talking about
+the siamel solution i'm primarily
+talking about the inference side of
+things that is i've already built a
+model
+and i'm using that model to do inference
+same thing with heat transfer so if you
+have a steady state heat transfer
+problem
+you can
+solve the problem using a traditional
+method which would take a lot of time in
+this case i'm talking about
+a 5 12 cube problem with millions of
+pixels or boxes
+and when i try to solve the same using
+ml it would take around 20 seconds so
+the value proposition for using saml is
+is fairly clear and we've been
+demonstrating that
+but the challenge is
+how do we take this from from lab to
+bedside right so how do you make
+industrial great for
+applications that are have high societal
+impact and
+have very low margin of error and have
+to be robust and fall tolerant so how do
+we go from
+um
+having this academic discussions and
+having all these publications which are
+doing really amazing work and uh take it
+from there to actually being used in
+say
+designing heat exchangers or
+or designing
+drugs for uh
+or designing uh different implants for
+in
+the medical industry right so what are
+these challenges to make siamese more
+ubiquitous and how do you make it
+accessible to industry
+uh and industry researchers is is the
+challenge that i'm going to discuss
+today
+the first challenge that we run into is
+ambiguity right so that is
+when we're talking about uh traditional
+solvers um
+the terminology that we use is fairly
+clear that is you have certain control
+parameters uh be it boundary conditions
+initial conditions uh material
+properties and you want to solve a pde
+so i'm going to discuss
+most of the topics in the context of
+pdes
+because that's one of the major work
+that's happening
+and within that context the terminology
+is control parameters you have a solver
+and uh you are predicting certain state
+variables right so for example in the
+case of uh
+poisson problem a steady state heat
+equation or conductivity or any a lot of
+applications that can be
+modeled using a model using this
+elliptic equation
+one of the use cases is you're changing
+the diffusivity or the input material
+property in this case
+new
+and you're trying to predict
+a solution which is the output of
+this
+equation using a solver
+so the input output
+mechanisms of
+of a traditional solver is fairly well
+understood and the terminology around
+uh solving a pde is also very well
+understood
+but when we talk about translating this
+problem into a deep learning problem
+where
+there is innovation that is needed
+across all stages
+it things start becoming a little more
+ambiguous and and vague for
+communication purposes and this is one
+barrier we see for
+for a lot more people to start using
+xaml and trying to make
+uh uh make best use of the all the
+innovations are happening right so just
+to
+make this a little more clear
+when we're going from a traditional
+problem to a deep learning problem now
+we need to think about scientific
+machine learning in the context of a
+neural network and that is what is the
+input data how are we defining the input
+data
+uh how do we represent that data for
+example is it
+is it points is it voxels how are we
+representing this data
+and uh what are the network
+architectures used right for example in
+in some cases you want to use
+a multi-layer perceptron in some case
+you want to use cnn's etc etc and
+there's a lot of innovation happening
+even within the
+network architectures and you want to
+define the loss functions right so
+there's a lot happening within the loss
+function space
+so a few examples within that is uh when
+we talk about network architectures uh
+these are some of the work that we do
+internally we we try to uh classify
+these as
+uh point-wise architectures and
+full-field architectures right so
+uh when we talk about point-wise
+architectures the
+main problem we are looking at is how do
+we map a single point to a single point
+right so what that means is you have a
+material properties or
+certain control parameters where you're
+training the network using a single
+point in the mesh or single point in the
+domain and you're predicting the output
+uh so it has its own pros and cons and
+from a from a industry point of view
+this has implications that is you may be
+able to train very fast
+but inference would require you to
+sample at lot more points
+and also the other implications are
+you're solving one instance of the pde
+uh but you may have to enforce these
+boundary conditions uh
+explicitly in your loss function so that
+those become
+some challenges and obviously a lot of
+advantages of using point-wise
+architectures
+and when it comes to full-field
+architectures the idea is you can
+actually pass in
+a full field as your input and get a
+full field as your output that is the
+input
+properties you are passing in are an
+entire mesh
+or an entire voxel grid in this case and
+the output is a solution of that
+so in this case the pros are you you can
+enforce your boundary conditions
+conditions exactly
+but training becomes uh expensive but
+inference could be much faster because
+you've already trained the network
+enough with enough samples and you can
+also solve a parametric set of pdes and
+not just a single pde
+to
+to be used this for other use cases
+and when it comes to loss functions this
+loss function that we work
+on internally is
+can we define the loss function without
+using any simulation data right so for
+example
+when we define a neural network
+architecture and try to predict
+an output you can either compare that
+output with
+with an existing simulation data right
+that way you can use
+the traditional loss functions to
+simulate it
+or you could use the respective pde and
+use that as a residual
+to train your network
+so in this case one of the things we did
+was we write the solution in terms of
+the basis functions
+and use calorical method to to
+multiply the test function with the
+solution
+and
+apply an integral on it to define a loss
+function
+so what this allows us to do is it
+allows us to actually impose boundary
+conditions exactly and also use the
+literature from finite element methods
+to
+um
+to describe uh convergence criteria
+describe error bounds and get good
+results
+so there's a lot of work going on in
+this space but when it when we actually
+have to communicate this
+with uh with external parties and try to
+say
+hey what how do we go about
+uh using this there are a lot of
+questions on what is what is the method
+does uh what are the problems we are
+solving and how does it compare with
+existing solutions
+so one opportunity we see here is and
+also this is something that we can work
+as a community is establishing
+a certain ontology
+around scientific machine learning and
+and here again um
+i may be talking about
+a specific subset of the problems that
+we encounter uh
+at rocket ml that is within the partial
+differential equivalence space but
+siamel itself is a much broader umbrella
+with uh
+with uncertainty quantification problems
+a lot of problems that
+we are
+not 100 percent aware of and that's
+where i think we can also work with the
+community in this case the audience here
+to grow this language that we are
+speaking right so
+the language that we speak especially in
+the pde space is hey what is the input
+data what are you trying to
+use as input for your neural network
+and in this case
+the cases we work with are material
+properties boundary conditions geometry
+and so on and so forth and if you look
+at the counterpart in the machine
+learning world
+you can think of these as like they're
+the language is fairly clear you're
+talking about either nlp problems or
+image problems or
+tabular data so the language there is
+fairly clear and we need uh within the
+cml community our own way of describing
+the problem we are solving
+the second thing is uh data
+representation which is
+uh points voxels graphs is one way of
+representing the
+data
+and uh and each of them have
+implications in terms of how we
+solve the problem right because points
+require different architecture boxes
+require different architecture graphs
+require different architectures
+and how do we represent the network
+right so once we have the the data
+representation and what we're solving
+uh what is the network representation is
+it mlp
+is it cnns is it graphs and there's a
+lot of innovation happening within each
+of these network representation and
+fourier interval operators are the
+popular ones
+and how do we
+make it clear for somebody looking at
+this as a as an innovation
+and last but not least the last function
+itself right that is
+you have data driven methods where you
+need simulation data and you have data
+free methods which take advantage of the
+the pde formulation or the physics
+information
+um
+to
+to describe your
+losses right and within that you can
+have point wise full field fem
+fdm and so on and so forth so this is
+one challenge i think we have a
+communication challenge and ontology
+challenge
+uh that we can solve by by trying to
+come up with certain criteria and the
+other thing is benchmarks so we need
+these these benchmarks that
+um
+they're fairly well established in the
+milk community but we need these in the
+cml community which is what are the
+problems you're solving right so are you
+solving an ode pde steady state or like
+definitely this list is not exhausted
+what are the problems you're solving and
+uh
+and then the data sets right so for
+example
+uh can we have this uh industry uh
+standard data sets on for these
+different problems can we have these
+geometries boundary conditions initial
+conditions that industry at lab
+at scale is very interested in to solve
+so that any innovation that is happening
+in this space is is can be easily taken
+by for the real world problems
+the the third one is accuracy
+performance like how does this new
+method or this new
+uh technology uh in terms of data
+representation or your network or loss
+function how does it work
+uh and what is the accuracy uh
+performance for that new method is
+another
+uh thing we can work on and the last two
+are training performance and inference
+performance that is how does it what
+does it take to train these models and
+uh what does it take to infer right so
+these are some of the uh benchmarks that
+we can put together
+and
+um
+and encourage
+the community to chip in to to
+engage in this conversation to
+improve these benchmarks and also come
+up with new ways of describing the work
+the second challenge which we focus
+fairly on is the scalability aspects of
+it so most of the challenges that we see
+uh to for industry option is also about
+the scale
+uh solving in a in a 2d problem in a
+small setting versus solving it at scale
+is a whole different challenge so i'll
+give you a very detailed example here
+and the way we solved it uh at rocket ml
+and that can
+trigger some conversation so the problem
+we were looking at here was solving
+an elliptic problem
+and in this case we were looking at
+training a neural network
+where
+the input is a diffusivity in this case
+the value of new in 3d
+and the output of the solution is what
+we want to predict using this neural
+network
+um and it has digital boundary
+conditions on on both sides and neumann
+on one side
+and there is no forcing function
+so in order to train this network
+especially when you're working with say
+using a network like 3d unit in in
+middle
+uh the challenges we run into our
+training these nets on gpus is is
+expensive right so gpus have relatively
+small memory
+and
+when we have
+large
+image volumes because
+when we walk talking about scientific
+computing problems the the grid
+resolution still matters right so you
+still need to
+have final grid to resolve the physics
+and when you have large image volumes
+and even for a fixed
+network size the peak memory
+that you need on a gpu
+would exceed right so for example once
+we hit a
+128 cube we can no longer use certain
+teslas
+uh and once we hit more than 128 cube we
+cannot use um
+v 100 and even with the latest ones like
+a 100 there is always an upper limit in
+terms of how far you can go
+and the only way around this is is scale
+out right so we need to train on
+multiple nodes multiple gpus and and
+using a hpc cluster
+and once you go to the scale
+uh it's no longer just distributed
+computing problem that is how do we use
+these gpus
+[Music]
+to uh to for optimal memory consumption
+and
+uh how do you use the cpus it also
+becomes a matter of uh
+um uh of uh how do we take advantage of
+the parallel file system because we want
+to do check pointing in between
+and
+use the file system for for existing
+data and so on and so forth and how do
+you manage your uh ethernet bandwidth to
+uh communicate between the nodes
+etcetera etcetera so it becomes a
+distributed computing problem to solve
+psi ml at scale
+so we tried that right so we basically
+said okay the simplest thing we can do
+is uh scale it out so let's use more
+gpus
+and throw more at the problem to see if
+we can solve a problem solve this 3d
+training problem
+and what we concluded was yeah we we put
+in more machines and
+we were able to train
+uh it took us around 34 hours to train
+this on eight gpus but
+just throwing more gpus at the problem
+is too slow and it's not sustainable
+so the
+uh the challenge we went with like can
+we come up with some kind of algorithmic
+innovation right so we can always throw
+more compute to
+solve a problem but that is not
+sustainable how do we use algorithmic
+innovations so this is where some of the
+ideas from
+existing solvers right from the
+scientific computing world can
+potentially be used in
+uh in scientific machine learning also
+so the the methodology we went after and
+and this has been published in last
+year's uh supercomputing paper
+is using this multi-grid
+approach to train networks using
+hierarchy of mesh sizes right so for
+example
+instead of
+training this network
+at the the finest resolution
+can we train the network um
+at uh at a fine resolution but don't
+train completely
+uh use the network weights to train uh
+the courser grid uh network and continue
+to train that until a point where you
+can still resolve physics but it's not
+too small
+and use those network weights to
+iteratively update
+your
+solution at other grids right
+and
+bringing some ideas from uh from the
+from the scientific computing world and
+applying it here
+has given us some benefits in terms of
+trend so in this case for for a little
+more detail here we started off with a
+with a depth
+unit so what i mean by depth 4 unit is i
+have
+four
+[Music]
+layers in the down
+stream of the unit and uh and four on
+the top including the bottleneck layer
+and the first thing we do is basically
+take in a
+coarser resolution
+data set
+and
+train that coastal resolution data set
+on
+on this 3d unit
+so once we train this and in this case
+we don't have to train this
+at
+for the entire
+until convergence we can actually stop
+it in between
+and once you have that we actually build
+a new network right so what i mean by a
+new network is
+we take in the depth for 4
+unit and plug it in as a part of the
+network that is
+of a bigger size right
+and
+once you have this you can transfer
+these weights to this underlying network
+and
+do this transfer line right so when i'm
+talking about transfer learning here i'm
+talking about going from uh
+one node right so when i say one node
+here it's basically going from
+one level to the next level okay
+so once you figure out this um this
+network transfer in terms of weight
+and
+uh experiment with
+different uh combinations of these uh b
+cycle
+uh w cycle and f cycle and so on and so
+forth you can come up with the the best
+combination of uh accuracy and speed up
+and uh use it for for training right
+because
+uh once we start training these models
+they can become pretty expensive in
+terms of both compute cost as well as uh
+as well as
+runtime okay
+so
+what i'm presenting here is basically um
+the the results from from that work
+right so
+uh we still left the
+problem with
+eight gpus so for example
+in this case uh we trained the baseline
+with eight nvidia gpus on azure
+and for training
+a 256 cube resolution problem so in this
+case i have
+a lot of data which we which we
+basically generated synthetically and
+used it for training and that took
+around uh two thousand minutes right so
+the plot you see here is basically
+training a 256 cube problem up to
+convergence okay so i'm not showing the
+entire
+x-axis here but to reach certain uh lost
+value it took
+around 2000 minutes
+and
+the same problem uh to basically train
+using multigrid that is we start off
+with a
+32 cube
+problem
+trained it to certain number of epochs
+to see
+how far we can get the loss value
+and then use that network for 64 cube
+and
+and iteratively
+went down the
+or increase the resolution right so
+what we are presenting here is basically
+what does that mean right so for example
+when you're
+using multigrid using 3264 128 256
+for smaller
+grid sizes because the network is also
+smaller you can train faster so it takes
+around 10 minutes to train the the first
+branch of this network and then as you
+go for larger sizes in this case 64 it
+takes 20 and so on and so forth but the
+accumulated time it takes overall to
+train this is at just around 150 minutes
+compared to doing this time below right
+so standalone basically trains
+uh uh takes a very long time and you can
+not only see the value of that and
+obviously in terms of the time but also
+in terms of cost
+so
+the
+idea of doing things at scale uh also
+to become
+first-class citizens in the sense
+in addition to training or building
+these models at small scale
+uh doing it last skill is important and
+and here if any of the audience working
+on any small scale problems and see
+potential for this at large scale
+we are happy to collaborate with you
+and bring in rocket ml's expertise in
+hpc
+and uh and deep learning to train these
+problems faster
+and
+and these problems can also be solved on
+on cpu clusters sometimes right for
+example
+uh if you want to solve this at uh 512
+cube resolution so instead of solving it
+256 and you want to scale it out to 512
+and this is just doing distributed data
+parallel deep learning
+even that won't fit into uh it won't fit
+in gpu memory and you need you can use
+cpus to train these
+so in this case what we did was
+obviously using doing it at 512 cube
+resolution on cpus it's it's not
+feasible it takes forever to do that
+but you could do this mix and match
+right so that is
+you can
+train your networks all the way to 256
+cube on a
+on on these gpu clusters and take those
+information and take it from
+gpus and do few iterations on cpus okay
+so
+that way you basically can take
+advantage of your cpu memory which is
+also much larger than the gpu memory and
+do not have the implications of slowness
+on cpus because they're not built for
+this kind of deep learning training
+cycles
+and
+that gives best of both worlds right so
+you can you can split from one to the
+other
+and what we think is
+instead of investing in in more
+complicated
+uh
+uh distributed algorithms that may have
+may not scale very well
+we could come up with this kind of
+algorithmic innovations that can help
+training
+faster but still using the existing
+infrastructure
+without giving up on the scalability
+aspects of it right that is as you
+increase the number of machines you want
+to you want to reduce your
+time to solution
+okay
+so this is basically uh
+the other challenge the channel that is
+scalability is one challenge and we have
+some ways to solve them
+the third uh one is deployability so
+this is a problem in
+in machine learning in general and it is
+a little more acute i think within the
+cml community is there is a lot of
+ecosystem built in and and there is a
+lot of solid solutions out there
+uh that have been um
+solved for
+uh for a long time and their existing
+software
+so any new system has to work alongside
+these existing tools right so it's ideal
+scenario
+uh
+but the the the
+the main intent there is there is there
+is something already exists either a new
+solution works along with it and if you
+want to replace it that becomes a fairly
+big challenge especially given uh
+an existing solution might be working
+very well for that matter right
+so with that challenge and you bring in
+these challenges with machine learning
+itself right so machine learning has too
+many wheels so
+um
+this this uh uh
+what i'm showing here is applicable even
+for any general purpose machine learning
+let alone scientific machine learning
+there are a lot of things happening when
+you go from
+prototyping to production right so what
+i mean by that is you're starting off
+with a with an idea you're saying okay
+let me try to solve this
+scientific computing problem using
+machine learning so you start building a
+hypothesis and
+uh you start identifying your data sets
+and you you do some kind of exploratory
+data analysis and start building a model
+and within building a model there are
+going to be a lot of cycles that is you
+have to
+work with your
+refining the data you need to work with
+defining your network architectures
+try to apply new methods that are coming
+in in the community and come up with a
+model that is that is reasonably that is
+reasonable right that works well enough
+to say okay let me take this and and go
+to
+production but how does that model
+integrate into uh
+into an existing system right so how do
+my users downstream
+who are
+familiar with using uh these existing
+solvers can they use my new solvers that
+is based on
+machine learning
+so there are these operational
+challenges which basically
+[Music]
+makes it
+a makes it a problem for um for anybody
+doing a prototyping on
+ml
+to take it to production right so
+actually when i say to production how to
+make people actually use these models
+that are built
+built at scale
+and
+that might be working fairly well
+so a few solvers so the way we are
+addressing this is basically build these
+iml solvers that are easy to consume
+right so
+can we make
+any of these solvers consumable like can
+we make give them something where
+you can bring in a geometry or bring in
+physics models and try to use these uh
+inputs right and whatever the input data
+that we're talking about and in for
+different domains these inputs might be
+different
+and can we build these ciamer solvers
+that
+take in these inputs that the users are
+familiar with
+and you can actually build a solution or
+solve the problem on the fly and give
+them a solution right so we need to
+think about a different way of
+integrating
+these latest innovations within the saml
+community and trying to make it easy for
+others to consume are there any cml
+solvers that are readily consumable that
+we can put out there
+and if you're working on any any
+specific problems and you want to
+package them as solvers we are happy to
+chat with you offline
+the the second problem is let's say we
+want to uh
+have a technology that
+where we we are not providing the
+solvers but we want to
+we want the researchers in an industry
+or research and organization to build
+these uh models right
+so in that case they will need an entire
+platform that can
+not only
+uh work with respect to model discovery
+so this is the first box here
+is where a siamel researcher would
+work on
+figuring out okay what is my problem
+what is the data i need to work with
+uh what is my
+scientific problem that i need to
+formulate as a an ml problem and use uh
+one kind of compute right so in this
+case cpu is gpus to
+generate the data as well as train
+and build a model
+and then once the model is built
+it is not trivial to
+uh
+to to deploy it let's say we deploy it
+um
+that model is only as good as the data
+that it saw right so any ml model
+doesn't matter whether it is
+uh
+scientific or otherwise
+requires
+some kind of monitoring some kind of
+retraining some kind of way to say okay
+this is no longer working
+well for the problem at hand but how do
+we
+improve it okay
+and
+and what are the retraining triggers
+that we need to look at are all the
+[Music]
+unknowns at this time and
+uh some kind of a platform to
+enable this entire pipeline is something
+interesting and this is another thing
+that we work on which is how do we bring
+these scientific computing world and the
+machine learning world
+together so that
+the whoever is trying to build these
+models get out get best of both worlds
+that is
+they can
+they can check whether their ml model is
+working as well as the traditional
+solvers
+and
+not only that it makes it easy for them
+to deploy
+so that the end users within the
+industry can actually consume and
+get
+uh get the best value out of all the
+innovations that are happening okay
+so with that um
+40 minutes in um um
+uh so simon
+to summarize i'm kind of wrapping up
+talk and samuel is transforming uh
+simulation sciences and has compelling
+value proposition for the industry
+we can demonstrate that it is energy
+efficient obviously once the model is
+built
+and
+we can reduce the time to solution that
+is a there are bigger value propositions
+for uh
+that resonates very well and it has a
+relatively lower memory footprint uh
+because once you train they have a model
+they can take
+uh take advantage of it
+and the opportunities to accelerate this
+transition from traditional to saml a
+lot of opportunities here that the
+community can work alongside industry
+that is establishing
+an ontology
+and establishing certain benchmarks
+bringing in hpc scalable solutions
+because scientific computing is a hpc
+heavy
+uh domain
+and
+bringing in hp scalable solutions is
+very attractive
+and
+tuned
+uh platforms towards more of a
+scientific machine learning use cases so
+that
+we can
+deploy the solutions make it real world
+and have a real world impact fairly
+quickly and make this overall space more
+uh accessible and lubricators for
+uh more people coming into this industry
+okay
+so with that
+i thank you for your
+[Music]
+for your time
+and i'm happy to take any questions
+thank you thank you so much for the
+wonderful talk i really enjoyed this
+auntie um
+very
+new perspective from from the
+from the cto of who works in the
+industry um on the scientific machine
+learning
+okay let's have a quiet session maybe
+you can keep the the slide um of course
+you know some of some of the question is
+specific to a specific slide so if you
+can share that again that would be
+wonderful
+all right and um
+yeah so there are
+in in
+in chat room um young sue this is pat
+why why don't we talk with the start
+with a technical question so if there's
+time we can come back to the
+terminological issues
+yeah yeah so we yeah that's what i was
+about to suggest uh with that okay pat
+thank you so much for
+you know stepping up on that
+okay so sounds good let's do the
+technical question if you have any any
+questions um
+then please
+do so i i do see one technical question
+from
+george's
+he asked how do technologies like
+unified shared memory platform for
+avoiding the limited gpu memory problem
+i guess that's related to your
+multi-grid
+approach
+um to overcome the memory issue
+of the training the neural net
+yeah i mean so what way we think about
+is yes there is a lot of innovation
+happening in these spaces right that has
+the
+there could be more memory available
+using
+well i'm not familiar with that specific
+technology but
+there is always more memory needed to
+train these networks because the
+the network is getting bigger or the
+problem resolution is getting bigger so
+we will always hit a limit in terms of
+how much you can use it's a typical hpc
+problem
+and
+uh if there is a new technology i'd say
+this this approach still is applicable
+for
+uh
+for using more memory and maybe solve
+bigger problems
+okay related to that um
+how diverse
+you know
+the different problem have you tried
+this multi-grid training um to
+santi um
+i mean the examples you have shown
+obviously that's one particular problem
+yeah so we have traded for try uh tried
+this for
+this poisson problem and we also tried
+this for
+a fluid flow problem
+so which is basically
+used it for burgers equation where
+the input is the initial conditions and
+the output is the full field
+in that case
+uh the problem was no longer just unit
+we had
+both fully connected layers
+uh as well as convolution layers right
+so in that case how to do the transfer
+learning becomes kind of tricky because
+uh it's it's not fully convolutional
+like unit so we have tried this in other
+cases also and we have seen similar
+results that is by doing this transfer
+learning using multi-grid
+uh we saw speed up in uh and training
+times
+and almost at the same scale like we
+could show
+five 10x
+speed up in training once you
+start using a lower resolution
+train network on higher resolution we
+could show things better
+okay sounds good um then why it asked we
+can put adder
+bars on
+fvm simulations although we don't do it
+every day can you put error bars on your
+ml models and this is essential for
+adopt
+adoptions by real engineers
+uh
+i think for
+absolutely so for error bars and ml
+models would be how do they compare with
+fem that would be the right error bars
+and that's where we need certain
+benchmarks saying okay if this is an ml
+model for this problem
+this is the best we see in fem
+and how does it compare with that fm
+simulation so
+in my mind the baseline would still be a
+traditional solver
+and any ml model error bar would have to
+be relative to that right and
+and i completely agree we need error
+bars and ml models and that will help in
+adoption for
+real engineers
+yeah
+okay so there's uh
+george's um he he has a comment on the
+um
+about the memory issue so
+he said uh unified shared memory is
+already available in nvidia gpus since
+cuda 6
+he shared the link and it works like a
+page swapping across this cpu gpu memory
+boundary so i guess you you want to
+check that out um yeah thank you thank
+you very much
+uh by the way do you have a access to
+the chat room
+i can see the chat window here oh
+awesome okay well then
+you will have a link
+right there
+okay sounds good
+any other question from audiences
+about the continuous integrations um
+yeah i mean that's a big challenge um
+you know we have to resolve i totally
+agree with that and the main probably
+uh
+the reason why that's a challenge is the
+reproducibility of the neural network
+um as well so if you can elaborate more
+on that aspect that would be wonderful
+yeah so um
+when it comes to deployability
+there are challenges coming from the
+machine learning world i mean even
+within the traditional ml world
+this deployability is a huge problem and
+a lot of
+uh
+problems still stay in the prototype
+phase and never reach production that's
+because the the language gap it so for
+example when it comes to ml
+how do you what is deployment actually
+means is it an application or is it an
+api that somebody can integrate and how
+does it work is is is one problem
+and
+you're absolutely right you know so that
+is
+when it comes to
+[Music]
+the the ciaml related problems it is the
+matter of um both reproducibility that
+is uh given uh
+given a new input parameter let's say
+i've trained a network
+with a whole bunch of material
+properties and i know that model work
+should work very well for
+a new metal property
+then can i rely on that new network to
+give me a solution is a matter of
+the data in which it was trained on
+right so what is the data distribution
+that it was initially trained on is
+going to be the main question
+because any new uh input that you give
+should be in that distribution for
+giving uh giving the right solution
+right that is number one that is
+uh is the date is your model going to
+drift
+uh
+from the
+uh from the trained model
+and if so
+we need to let the user know that okay
+this model is no longer doing very well
+and
+go back to your traditional solver for
+this case right so there should be this
+kind of transparency in terms of
+the uh
+of this model performance that is we
+need to be very clear to say okay these
+models work for these cases and we are
+going to give you some error bounds on
+how they work
+and if this error bound is not suitable
+for you go for another method right so
+we see these ml models to be uh as
+another tool in the toolkit for the for
+the engineers who are designing these
+things
+and not the only two that way they can
+compare and contrast they have the same
+error bounce and error mechanism that
+they can
+evaluate any other new method right and
+use along with their existing tools
+so a lot of different dimensions that we
+can think through when it comes to
+uh deployability
+what errors is definitely one big thing
+okay sounds good okay uh there's a
+not a not a question but the comment
+from rob um he said it's not it's not
+too difficult to put a pie torture torch
+script model inside the c plus plus code
+no
+it's not difficult to put a
+well rob he has a he he has worked on it
+uh in the past
+i mean you said it's not too difficult i
+i don't know it's a
+somewhat
+uh yeah it becomes
+if you want to do yeah we can add a word
+offline
+if you want to do training it becomes
+non-trivial if you want to do
+inferencing going from pi dots to c plus
+plus is is fine
+uh it depends on how we're going from
+from one to the other
+um and it if the question is is it can
+this solve the deployment problem
+i don't know i mean uh
+a lot of systems are already set up
+right so going into c plus code maybe a
+starting point might not solve the
+hundred percent of the
+integration problems
+so um
+so yeah that's my my commenter for that
+question if there was any all right
+sounds good is there any other questions
+and yeah the technical questions
+then i would like to give a um you know
+the path the chance of
+thank you yeah
+and and and thank you
+the
+talk and i just want to be clear no no
+issues with with the technical content
+of your talk i mean i i'm i'm happy to
+see you making progress on these issues
+and they're all important problems the
+points i raised early in your talk
+were about terminology and
+and uh the scoping of the problem you
+seem to be talking about this as those
+for physics rather than other fields of
+science you were seemed to be assuming
+that we had to be working with large
+data sets rather than small data sets
+even though there's been
+lots of work in machine learning on
+small data sets and you seem to be
+focusing
+on neural nets even though
+neural nets are are only one of the many
+paradigms in machine learning and um and
+and so i just wanted to encourage you uh
+to use language that was more inclusive
+that uh that acknowledged that machine
+learning is a broad field uh that it can
+be applied to many different sciences
+not just physics and uh and
+and also to use consider
+reconsider the term scientific machine
+learning because it suggests that it's
+broader than what you seem to mean
+that is
+uh i do not take it that you are working
+on
+discovering new scientific laws from
+actual data but rather
+making existing models more efficient
+that's fine that's that's that's an
+important problem but scientific machine
+learning suggests that it covers
+everything and we have other terms for
+fields like computational scientific
+discovery
+that i think are are more narrower and
+more focused
+so that's just my suggestions
+absolutely so pat you you actually
+did a nail it that's one of the
+challenges that i'm talking about as the
+first point
+we being in the community
+we have some at least some overlap
+there is a problem with terminology
+between what
+we work on and what you work on and i
+think
+that's where i want to kind of make this
+point that even with people who are
+working in this space we are unable to
+agree on terminology i'm sure right and
+imagine so when we go talk to folks they
+have no idea right when i say hello
+right people are very smart but if we
+are not able to agree on our terminology
+how are we going to get more people into
+this right how are we going to make this
+more ubiquitous i think there is an
+opportunity here that's what i'm trying
+to bring in it we have an opportunity to
+create certain terminology that where
+when we're talking about problems we're
+talking about
+specific problems that the other person
+knows okay they're working on this and
+i'm happy to chat with you offline
+because i think there's a problem that
+needs to be
+part part of part of where i'm coming
+from
+is that you know i've been working on
+on using ai and machine learning methods
+to discover scientific laws for over 40
+years okay
+and it's recently become a popular topic
+again uh and and i'm and i'm pleased
+that people are rediscovering some of
+our old work but but i remember working
+on this for a long time and saying well
+what's this this field called
+computational science uh which because i
+thought i was doing computational
+science but no uh computational science
+was narrowly defined to be pde models
+and getting them to run efficiently on
+on high performance computers and i felt
+locked out because because the
+the computation basically people who
+were doing com computational pdes were
+had had had had taken this term
+it sounded very broad term it actually
+had a very narrow meaning and so i just
+encourage people to use terms that
+reflect the breadth of what they're
+focusing on and not try and own the the
+territory if you see the same kind of
+thing all over ai for example graphical
+models
+there are a lot of graphical models that
+aren't don't count as graphical models
+and i think that's unfair
+right right right and i resonate with
+that and maybe i'll chat with you
+offline and this is exactly one thing i
+think we can solve as a community at
+least i think have motivated folks here
+and want to bring that thing into the
+mainstream so that i'm like for example
+myself i'm not familiar with your work
+but
+we could bring that as saying hey let's
+figure the terminology first and
+make whatever work fit into this and if
+you want to add more we can have right
+so i think there's an opportunity for us
+to work here i'll be happy to talk with
+you offline thank you for for being so
+open to this thanks thanks man
+wonderful uh well that is very
+productive and
+although um you know the community we
+gathered in this webinar series
+is it's not representing all the
+communities in scientific computing or
+scientific machine learning but it's a i
+guess it's a definitely a starting point
+i'm talking about the
+clearing the terminology here
+all right
+um any other questions
+or any other things you want to discuss
+before you add john
+[Music]
+if not let's thank our speaker sanjay
+for the wonderful talk and uh um yeah
+and thank you everyone to join the ddps
+seminar uh next one is actually the next
+week so
+um
+after short period of time we'll see you
+again
+okay thank you everyone thank you santi
+thank you thanks thanks for watching

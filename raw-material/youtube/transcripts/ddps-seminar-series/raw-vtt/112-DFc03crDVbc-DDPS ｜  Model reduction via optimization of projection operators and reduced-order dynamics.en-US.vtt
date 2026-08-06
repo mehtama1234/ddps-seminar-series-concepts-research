@@ -1,0 +1,2269 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:08.920 --> 00:00:14.400
+Ah see the screen. Okay, great.
+
+00:00:14.400 --> 00:00:21.600
+All right, awesome. All right, let me introduce&nbsp;
+you. Welcome to the DDP seminar everyone. Before&nbsp;&nbsp;
+
+00:00:21.600 --> 00:00:26.640
+we introduce our invited speaker, let's go&nbsp;
+over some rules and logistics. First of all,&nbsp;&nbsp;
+
+00:00:26.640 --> 00:00:32.720
+please mute yourself during the talk. But if you&nbsp;
+have questions, you can unmute and ask questions&nbsp;&nbsp;
+
+00:00:32.720 --> 00:00:39.160
+were used chat room to post your questions so that&nbsp;
+we can address them in q&amp;a session at the end.&nbsp;&nbsp;
+
+00:00:39.160 --> 00:00:45.280
+Second, today's DDPS seminar is open to external&nbsp;
+audiences. Therefore no classified discussion&nbsp;&nbsp;
+
+00:00:45.280 --> 00:00:52.520
+is allowed. Finally, the talk today will be&nbsp;
+recorded and uploaded in our YouTube channel. Oh,&nbsp;&nbsp;
+
+00:00:52.520 --> 00:01:00.120
+that's about it. Let me briefly introduce our&nbsp;
+speaker today. It is an honor to host Dr. Alberto&nbsp;&nbsp;
+
+00:01:00.120 --> 00:01:06.240
+Padovan who is a postdoctoral researcher in&nbsp;
+the Department of Aerospace Engineering at&nbsp;&nbsp;
+
+00:01:06.240 --> 00:01:12.880
+the University of Illinois Urbana Champaign. He&nbsp;
+obtained his PhD from Princeton University in&nbsp;&nbsp;
+
+00:01:12.880 --> 00:01:20.440
+August 2022. And His research interests lie at&nbsp;
+the intersection of fluid mechanics, dynamical&nbsp;&nbsp;
+
+00:01:20.440 --> 00:01:27.080
+systems and control theory. Alberto's current work&nbsp;
+focuses on the development of data driven methods&nbsp;&nbsp;
+
+00:01:27.080 --> 00:01:35.560
+for modal reduction of fluid flows, as well as&nbsp;
+on the analysis and control of supersonic and&nbsp;&nbsp;
+
+00:01:35.560 --> 00:01:43.100
+hypersonic wall bounded flows. Today, Alberto will&nbsp;
+talk about data driven model reduction via non&nbsp;&nbsp;
+
+00:01:43.100 --> 00:01:48.840
+intrusive optimization of projection operators and&nbsp;
+reduce to the dynamics. I'm sure we are going to&nbsp;&nbsp;
+
+00:01:48.840 --> 00:01:58.480
+hear a wonderful talk from him. Now let me ask a&nbsp;
+somewhat informal questions to Alberto just to get&nbsp;&nbsp;
+
+00:01:58.480 --> 00:02:05.120
+to know him better. Here we go. Are you ready?&nbsp;
+Number two. All right. This is the best random&nbsp;&nbsp;
+
+00:02:05.120 --> 00:02:11.240
+question I came up with. After I hearing about&nbsp;
+your background. I happened to know you. You love&nbsp;&nbsp;
+
+00:02:11.240 --> 00:02:21.600
+soccer. And if you can share your favorite soccer&nbsp;
+player history in history, that sister in history,
+
+00:02:21.600 --> 00:02:29.840
+their soccer player, I would say&nbsp;
+Paolo Maldini was the CMR. Captain.&nbsp;&nbsp;
+
+00:02:30.960 --> 00:02:33.440
+I'll go with them if I choose one. Yeah.
+
+00:02:33.440 --> 00:02:36.320
+Do you have the reason?
+
+00:02:36.320 --> 00:02:42.360
+Well, it was the it was the captain of&nbsp;
+my favorite team for a long time. And I&nbsp;&nbsp;
+
+00:02:42.360 --> 00:02:49.400
+guess he's known as one of the best defenders to&nbsp;
+ever play the game. So yeah, that's why ready?
+
+00:02:49.400 --> 00:02:57.120
+Great. Okay. Is stagey these is&nbsp;
+yours. Alberto. What was that?&nbsp;&nbsp;
+
+00:02:57.120 --> 00:03:01.600
+Stage is yours. It's your&nbsp;
+presentation. Yeah. Okay.
+
+00:03:01.600 --> 00:03:08.640
+Thank you, Dr. Troy for for inviting me&nbsp;
+at the DDPS Seminar Series. Today we'll&nbsp;&nbsp;
+
+00:03:08.640 --> 00:03:14.280
+talk about data driven model reduction, the non&nbsp;
+intrusive optimization of projection operators,&nbsp;&nbsp;
+
+00:03:14.280 --> 00:03:17.920
+and reduced order dynamics. And&nbsp;
+here's a the outline of my talk,&nbsp;&nbsp;
+
+00:03:17.920 --> 00:03:24.520
+I'll go over a few slides of introduction and&nbsp;
+motivation. And I'm sure that most if not all&nbsp;&nbsp;
+
+00:03:24.520 --> 00:03:29.440
+of you are familiar with some of the some of the&nbsp;
+concepts I'll be talking about. Then I'll go over&nbsp;&nbsp;
+
+00:03:30.000 --> 00:03:35.320
+an overview of some existing formulations,&nbsp;
+we'll touch upon Petrov, Galerkin models,&nbsp;&nbsp;
+
+00:03:35.320 --> 00:03:42.240
+which are intrusive. And then we'll talk about an&nbsp;
+existing non intrusive formulation which is known&nbsp;&nbsp;
+
+00:03:42.240 --> 00:03:48.160
+as operator inference. After that, I'll present&nbsp;
+the main topic of this of this presentation,&nbsp;&nbsp;
+
+00:03:48.160 --> 00:03:52.560
+which is Nystrom. This is a non intrusive&nbsp;
+trajectory based optimization of reduced&nbsp;&nbsp;
+
+00:03:52.560 --> 00:03:59.920
+order models, and is an extension of existing&nbsp;
+methods that we've recently come up with. And&nbsp;&nbsp;
+
+00:03:59.920 --> 00:04:05.840
+then I'll show some examples. We have three&nbsp;
+examples of increasing complexity to model,&nbsp;&nbsp;
+
+00:04:05.840 --> 00:04:13.960
+a one dimensional PDE and then a two dimensional&nbsp;
+driven cavity flow. Okay, so even though I'm sure&nbsp;&nbsp;
+
+00:04:13.960 --> 00:04:17.600
+that most of you are familiar with the overarching&nbsp;
+idea of model reduction, I thought it'd be good&nbsp;&nbsp;
+
+00:04:17.600 --> 00:04:25.600
+to set some foundations, just in case and, and so&nbsp;
+physical systems that were interesting, interested&nbsp;&nbsp;
+
+00:04:25.600 --> 00:04:29.720
+in studying or simulating, like fluids or solids&nbsp;
+are described by partial differential equations.&nbsp;&nbsp;
+
+00:04:30.480 --> 00:04:36.000
+And after spatial discretization we obtain systems&nbsp;
+of ODS with many degrees of freedom. So here's a&nbsp;&nbsp;
+
+00:04:36.000 --> 00:04:40.840
+brief example we have the incompressible navier&nbsp;
+stokes equations. And after spatial discretization&nbsp;&nbsp;
+
+00:04:40.840 --> 00:04:45.480
+using finite difference by volume finite element&nbsp;
+you name in your favorite spatial discretization&nbsp;&nbsp;
+
+00:04:45.480 --> 00:04:51.880
+scheme, we obtain a system of OD ease were here&nbsp;
+for instance, you have sub d is the velocity on&nbsp;&nbsp;
+
+00:04:51.880 --> 00:04:59.760
+a on a mesh and PDS the pressure and and q is&nbsp;
+the is the spatially discretized state. So the&nbsp;&nbsp;
+
+00:04:59.760 --> 00:05:03.800
+mainstay challenges associated with this high&nbsp;
+dimensionality is computational cost. And this&nbsp;&nbsp;
+
+00:05:03.800 --> 00:05:11.160
+can come in many flavors, but most notably, ones&nbsp;
+the cost associated with integrating equation one&nbsp;&nbsp;
+
+00:05:11.160 --> 00:05:16.960
+time. And number two could be related to the&nbsp;
+curse of dimensionality during tasks such as&nbsp;&nbsp;
+
+00:05:16.960 --> 00:05:22.680
+optimization control design, a system analysis.&nbsp;
+So to reduce cost, we'd like to find a reduced&nbsp;&nbsp;
+
+00:05:22.680 --> 00:05:28.960
+sort of model, which is a system given an equation&nbsp;
+two, that behaves like equation one in some sense,&nbsp;&nbsp;
+
+00:05:28.960 --> 00:05:33.600
+but it's much cheaper to work with. And the reason&nbsp;
+why it's cheaper to work with is because the&nbsp;&nbsp;
+
+00:05:33.600 --> 00:05:39.120
+reduced order model states Z has dimension that&nbsp;
+is usually much lower than the dimension of q,&nbsp;&nbsp;
+
+00:05:39.120 --> 00:05:46.600
+so we can integrate and work with equation two, in&nbsp;
+a more computationally efficient manner. Alright,&nbsp;&nbsp;
+
+00:05:46.600 --> 00:05:51.520
+so there are many approaches and many decades of&nbsp;
+literature on model reduction for for physical&nbsp;&nbsp;
+
+00:05:51.520 --> 00:05:57.240
+systems, but most of them tend to tend to share&nbsp;
+this, this type of architecture that I'll discuss&nbsp;&nbsp;
+
+00:05:57.240 --> 00:06:03.880
+in a second. So the first step is we start from&nbsp;
+the, what we call the full order model or the&nbsp;&nbsp;
+
+00:06:03.880 --> 00:06:08.680
+form. This is this especially discretize. Your&nbsp;
+stokes equations, if you're working with fluids,&nbsp;&nbsp;
+
+00:06:08.680 --> 00:06:12.960
+cubes, this is the state vector, it could be the&nbsp;
+velocity, density, or any any flow variable you're&nbsp;&nbsp;
+
+00:06:12.960 --> 00:06:19.160
+interested in. And you in case there's a there's&nbsp;
+control input, for instance, could be a boundary&nbsp;&nbsp;
+
+00:06:19.160 --> 00:06:25.080
+for saying the volumetric forcing, whatever type&nbsp;
+of actuator control input you might have on your&nbsp;&nbsp;
+
+00:06:25.080 --> 00:06:31.600
+on your system. So it reduced sort of model&nbsp;
+can be described schematically, as follows,&nbsp;&nbsp;
+
+00:06:31.600 --> 00:06:38.440
+we have three components, we have an encoder,&nbsp;
+decoder and ROM dynamics. So the decoder upsI is&nbsp;&nbsp;
+
+00:06:38.440 --> 00:06:43.560
+a awesomely nonlinear function that takes you&nbsp;
+from the dimensional space onto a low dimensional&nbsp;&nbsp;
+
+00:06:43.560 --> 00:06:48.120
+space, this could be a linear subspace or&nbsp;
+a nonlinear manifold. And so basically,&nbsp;&nbsp;
+
+00:06:48.120 --> 00:06:53.200
+this operation is that of a compression. So&nbsp;
+we go from dimension to dimension. Once we're&nbsp;&nbsp;
+
+00:06:53.200 --> 00:06:59.520
+in low dimensions, we have their own dynamics&nbsp;
+that evolve the low dimensional state, in time.&nbsp;&nbsp;
+
+00:07:00.560 --> 00:07:05.040
+And then finally, we have a decoder which goes&nbsp;
+which spa is a possibly nonlinear map from the low&nbsp;&nbsp;
+
+00:07:05.040 --> 00:07:10.800
+dimensional space to the high dimensional space,&nbsp;
+and gives us this quantity Q hat, which is the&nbsp;&nbsp;
+
+00:07:10.800 --> 00:07:16.480
+approximate solution Q. And hopefully, once we've&nbsp;
+gone through this pipeline, Q hat is not so far&nbsp;&nbsp;
+
+00:07:16.480 --> 00:07:21.560
+away from the ground truth solution Q. And as I&nbsp;
+was saying, there are many different approaches to&nbsp;&nbsp;
+
+00:07:22.520 --> 00:07:28.480
+to this and decades literature. So the encoder and&nbsp;
+decoder could be linear, it could be nonlinear,&nbsp;&nbsp;
+
+00:07:29.120 --> 00:07:34.040
+the encoder and decoder could be constrained&nbsp;
+to the final projection. So where for instance,&nbsp;&nbsp;
+
+00:07:34.040 --> 00:07:42.120
+the encoder is a left inverse of the decoder. And&nbsp;
+so we are implicitly defining a projection. And&nbsp;&nbsp;
+
+00:07:42.120 --> 00:07:50.480
+then also, it could be intrusive or non intrusive&nbsp;
+in the sense that the computations that give us fi&nbsp;&nbsp;
+
+00:07:50.480 --> 00:07:56.080
+MCI could be relying on the full order model or&nbsp;
+it could be relying exclusively on data without&nbsp;&nbsp;
+
+00:07:56.080 --> 00:08:02.120
+any knowledge of the governing equations that&nbsp;
+generated the data itself. And then as far as the&nbsp;&nbsp;
+
+00:08:02.120 --> 00:08:08.000
+route dynamics go, we could have continuous time&nbsp;
+dynamics, discrete time dynamics, and again, they&nbsp;&nbsp;
+
+00:08:08.000 --> 00:08:14.680
+could be computed intrusively, or non intrusively,&nbsp;
+depending on the specific application. Alright,&nbsp;&nbsp;
+
+00:08:14.680 --> 00:08:19.800
+so on today's talk, we're going to constrain&nbsp;
+ourselves to encoder and decoders that are&nbsp;&nbsp;
+
+00:08:19.800 --> 00:08:26.760
+linear. So they can be represented as n by&nbsp;
+our matrices in this specific case, also,&nbsp;&nbsp;
+
+00:08:26.760 --> 00:08:33.360
+we constrain them to define a linear projection.&nbsp;
+So here, you see that the the encoder is the left&nbsp;&nbsp;
+
+00:08:33.360 --> 00:08:38.800
+inverse of the decoder by design. And then also&nbsp;
+the reduced order model dynamics are continuous&nbsp;&nbsp;
+
+00:08:38.800 --> 00:08:45.120
+in time. And so today's overarching question is,&nbsp;
+how do we learn Phebe psi and ROM dynamics G non&nbsp;&nbsp;
+
+00:08:45.120 --> 00:08:51.280
+intrusively with the additional constraint than&nbsp;
+fee upside to find an oblique projection? Alright,&nbsp;&nbsp;
+
+00:08:51.280 --> 00:08:56.400
+so why don't we see some projections in the&nbsp;
+first place. So as I said before, if the&nbsp;&nbsp;
+
+00:08:56.400 --> 00:09:01.920
+encoder is the left inverse of the decoder, then&nbsp;
+we're implicitly defining a projection operator,&nbsp;&nbsp;
+
+00:09:01.920 --> 00:09:07.640
+which they call P. And if p is equal to Sy, then&nbsp;
+the projection is orthogonal. And if they're not&nbsp;&nbsp;
+
+00:09:07.640 --> 00:09:14.840
+equal, then the projection is oblique. So here's&nbsp;
+a here's a schematic of what an orthogonal and&nbsp;&nbsp;
+
+00:09:14.840 --> 00:09:20.720
+oblique projection to do. So if we have a three&nbsp;
+dimensional vector q in three dimensional space,&nbsp;&nbsp;
+
+00:09:20.720 --> 00:09:26.760
+and we have a target subspace, which is the&nbsp;
+span of FY, then an orthogonal projection will&nbsp;&nbsp;
+
+00:09:26.760 --> 00:09:33.720
+basically take you and projected onto FY in the&nbsp;
+direction of the orthogonal complement of fee.&nbsp;&nbsp;
+
+00:09:34.440 --> 00:09:37.600
+But if we want to have an oblique projection,&nbsp;
+instead, we need an additional component,&nbsp;&nbsp;
+
+00:09:37.600 --> 00:09:42.240
+which is another subspace sigh, I'm sorry,&nbsp;
+another subspace, which is given by the span&nbsp;&nbsp;
+
+00:09:42.240 --> 00:09:48.200
+of sigh. And so complete projection will take the&nbsp;
+vector of Q and projected onto feet onto the span&nbsp;&nbsp;
+
+00:09:48.200 --> 00:09:56.040
+of fee along the orthogonal complement of the span&nbsp;
+upside. And so in general, we'd like projections,&nbsp;&nbsp;
+
+00:09:56.040 --> 00:10:02.240
+because if, if the vector q lies in the range&nbsp;
+of the project And then basically projection,&nbsp;&nbsp;
+
+00:10:02.240 --> 00:10:09.080
+the projection operator p x is effectively the&nbsp;
+identity operator operator on its range. And so&nbsp;&nbsp;
+
+00:10:09.080 --> 00:10:13.120
+intuitively speaking from from the physical&nbsp;
+standpoint, this means that the operation&nbsp;&nbsp;
+
+00:10:13.120 --> 00:10:18.600
+of encoding and decoding the farm state does not&nbsp;
+introduce the spirits drift in the wrong state. So&nbsp;&nbsp;
+
+00:10:18.600 --> 00:10:24.040
+basically what we're saying if the wrong thing, if&nbsp;
+the reduced amount of state is evolving, we want&nbsp;&nbsp;
+
+00:10:24.040 --> 00:10:28.440
+it to be evolving because of the wrong dynamics,&nbsp;
+not because of the of the operation of encoding&nbsp;&nbsp;
+
+00:10:28.440 --> 00:10:33.240
+and decoding going from high dimensional low&nbsp;
+dimensional space. So this is, loosely speaking,&nbsp;&nbsp;
+
+00:10:33.240 --> 00:10:38.080
+the reason why we like projections. Now, why do&nbsp;
+we like oblique projects. So, there's many reasons&nbsp;&nbsp;
+
+00:10:38.080 --> 00:10:45.280
+why we, you know, going over all the reasons&nbsp;
+why it would take a lot of time. But in general,&nbsp;&nbsp;
+
+00:10:45.280 --> 00:10:52.640
+we need oblique projections for systems that are&nbsp;
+commonly referred to as non normal. And so were,&nbsp;&nbsp;
+
+00:10:53.800 --> 00:10:59.240
+loosely speaking, low energy states that&nbsp;
+we might not be able to see in a simulation&nbsp;&nbsp;
+
+00:11:00.040 --> 00:11:04.640
+are nonetheless dynamically important. And&nbsp;
+so to capture those types of mechanisms,&nbsp;&nbsp;
+
+00:11:04.640 --> 00:11:10.400
+we need oblique projections. So I thought I'd give&nbsp;
+you an example of the reason why bleak projections&nbsp;&nbsp;
+
+00:11:10.400 --> 00:11:16.360
+are good. So this is not quite an explanation&nbsp;
+of why we need them, but more so evidence of the&nbsp;&nbsp;
+
+00:11:16.360 --> 00:11:23.800
+fact that we do need them. So as a simple example,&nbsp;
+here, we have a complex Ginzburg Landau equation,&nbsp;&nbsp;
+
+00:11:23.800 --> 00:11:29.440
+we'll go back to description of it in a little&nbsp;
+bit. But for now, the important thing is that&nbsp;&nbsp;
+
+00:11:29.440 --> 00:11:34.520
+we have a one DPD. And we'd like to be able&nbsp;
+to compute reduced sort of models that are,&nbsp;&nbsp;
+
+00:11:34.520 --> 00:11:41.240
+that can predict the time history of the output&nbsp;
+Y in response to some input here. So that's the&nbsp;&nbsp;
+
+00:11:41.240 --> 00:11:45.880
+name of the game. So instead of solving this PDE,&nbsp;
+we want in this specific case, five dimensional&nbsp;&nbsp;
+
+00:11:45.880 --> 00:11:51.600
+reduced order models that can tell us what happens&nbsp;
+to why as we forced the system with some unknown,&nbsp;&nbsp;
+
+00:11:51.600 --> 00:11:59.520
+unseen MTU. And so I'll try to unpack unpack this&nbsp;
+figure as best they can. So what we did here is we&nbsp;&nbsp;
+
+00:11:59.520 --> 00:12:04.960
+forced the equation for with an impulse. So&nbsp;
+we started from nonzero initial condition
+
+00:12:05.880 --> 00:12:11.360
+in the span of be an initial time, and then we let&nbsp;
+the simulation go, and we compute you, I'm sorry,&nbsp;&nbsp;
+
+00:12:11.360 --> 00:12:17.480
+why. And so the ground truth, history of the&nbsp;
+output y is given by the black line. And then&nbsp;&nbsp;
+
+00:12:17.480 --> 00:12:22.440
+what we do here is we use four different model&nbsp;
+reduction approaches to compute five dimensional&nbsp;&nbsp;
+
+00:12:22.440 --> 00:12:28.000
+reduced order models. And I'll describe each one&nbsp;
+of them in detail in a little bit. But for now,&nbsp;&nbsp;
+
+00:12:28.000 --> 00:12:33.600
+the important thing is the following. So we have&nbsp;
+the first two methods are one is intrusive, and&nbsp;&nbsp;
+
+00:12:33.600 --> 00:12:37.840
+the other one is non intrusive. But the important&nbsp;
+thing is that they both rely on orthogonal&nbsp;&nbsp;
+
+00:12:37.840 --> 00:12:43.160
+projections onto a low dimensional subspace. The&nbsp;
+bottom two are one is intrusive, the other one is&nbsp;&nbsp;
+
+00:12:43.160 --> 00:12:47.960
+non intrusive, and it's the one I'll be talking&nbsp;
+about mostly today. But the the most important&nbsp;&nbsp;
+
+00:12:47.960 --> 00:12:52.960
+thing is that they compress the data using&nbsp;
+oblique projections. And you see the striking&nbsp;&nbsp;
+
+00:12:52.960 --> 00:12:59.760
+difference between the predicted capabilities of&nbsp;
+models that use oblique projections over models&nbsp;&nbsp;
+
+00:12:59.760 --> 00:13:04.120
+that use orthogonal projections, both models&nbsp;
+using oblique projections are doing a great&nbsp;&nbsp;
+
+00:13:04.120 --> 00:13:10.440
+job at tracking the ground truth history of the&nbsp;
+output, whereas the models that rely on orthogonal&nbsp;&nbsp;
+
+00:13:10.440 --> 00:13:15.760
+projections are not doing that great job. And&nbsp;
+this is also true for a different type of input,&nbsp;&nbsp;
+
+00:13:15.760 --> 00:13:21.440
+we're forcing with a sinusoid now, but the picture&nbsp;
+remains qualitatively the same in the sense that&nbsp;&nbsp;
+
+00:13:21.440 --> 00:13:26.280
+oblique projection ROMs are doing a good job of&nbsp;
+tracking the output, whereas orthogonal projection&nbsp;&nbsp;
+
+00:13:26.280 --> 00:13:33.840
+ROMs are not really giving us good prediction of&nbsp;
+what happens to why in response to you. Alright,&nbsp;&nbsp;
+
+00:13:33.840 --> 00:13:38.600
+so I hope this this was, I guess, convincing&nbsp;
+evidence enough of the reason why we need oblique&nbsp;&nbsp;
+
+00:13:38.600 --> 00:13:46.000
+projections for for model reduction. So here's&nbsp;
+an overview of some existing formulations. So,&nbsp;&nbsp;
+
+00:13:46.000 --> 00:13:54.720
+perhaps the most well known approach for to&nbsp;
+obtain a reduced model is Petrov Galerkin. And so,&nbsp;&nbsp;
+
+00:13:54.720 --> 00:13:59.680
+this is an intrusive approach. And computing&nbsp;
+the reduced order model requires knowledge&nbsp;&nbsp;
+
+00:13:59.680 --> 00:14:05.360
+and access to the full order governing equation&nbsp;
+governing equations. So, if we have the if the&nbsp;&nbsp;
+
+00:14:05.360 --> 00:14:09.920
+farm equations are given by equation five, this&nbsp;
+again could be the or the specialty discretize&nbsp;&nbsp;
+
+00:14:09.920 --> 00:14:14.520
+and average stokes equations, then the petro&nbsp;
+Galerkin dynamics are given by equation six.&nbsp;&nbsp;
+
+00:14:14.520 --> 00:14:21.680
+And what equation six is telling us that is that&nbsp;
+we are constraining the state q to the range of&nbsp;&nbsp;
+
+00:14:21.680 --> 00:14:27.160
+the projection for all times. And also, not only&nbsp;
+are we projecting the state onto the range of p,&nbsp;&nbsp;
+
+00:14:27.160 --> 00:14:33.600
+but we're also projecting the Dynamics F onto the&nbsp;
+range of p. So, we obtained this this model that&nbsp;&nbsp;
+
+00:14:33.600 --> 00:14:40.600
+is to be designed in such a way that Q hat&nbsp;
+is as close as possible to the original the&nbsp;&nbsp;
+
+00:14:40.600 --> 00:14:46.120
+original state q. And so even though the state q&nbsp;
+hat in this specific way, have written and has the&nbsp;&nbsp;
+
+00:14:46.120 --> 00:14:52.160
+same dimension of the state q, the dynamics and&nbsp;
+six can be realized by a low dimensional system&nbsp;&nbsp;
+
+00:14:52.160 --> 00:14:58.880
+where the dimension of the state z is that&nbsp;
+of the rank of the projection. So we see that&nbsp;&nbsp;
+
+00:14:59.640 --> 00:15:05.520
+basically The takeaway from this slide is that&nbsp;
+Petro Galerkin model the degrees of freedom,&nbsp;&nbsp;
+
+00:15:05.520 --> 00:15:12.360
+in particular can model so what we, what we get to&nbsp;
+choose are the matrices Fiemme sigh. But once we&nbsp;&nbsp;
+
+00:15:12.360 --> 00:15:18.920
+choose though those the round dynamics are fully&nbsp;
+determined by flip side, and by the full order&nbsp;&nbsp;
+
+00:15:18.920 --> 00:15:29.200
+Dynamics F. I'd like to point out that actually,&nbsp;
+we don't need to specify Fiemme psi more so as the&nbsp;&nbsp;
+
+00:15:29.200 --> 00:15:35.400
+their span. So really a natural delivery model&nbsp;
+is not a function of of the matrices VM side, but&nbsp;&nbsp;
+
+00:15:35.400 --> 00:15:42.600
+rather a function of this spaces that they span.&nbsp;
+And we'll come back to that in a little bit. So&nbsp;&nbsp;
+
+00:15:42.600 --> 00:15:47.400
+the name of so question is, how do we pick the up&nbsp;
+side, there are different ways to do that. Perhaps&nbsp;&nbsp;
+
+00:15:47.400 --> 00:15:56.680
+the most popular one is pod. Pod color coding&nbsp;
+is that weekly truths of approach. And it's&nbsp;&nbsp;
+
+00:15:57.240 --> 00:16:02.240
+historically the simplest way to choose fi upside.&nbsp;
+In fact, it goes like this, we collect data from a&nbsp;&nbsp;
+
+00:16:02.240 --> 00:16:10.360
+full order simulation, we stack it into a matrix&nbsp;
+and we take SVD, then what we do is we retain the&nbsp;&nbsp;
+
+00:16:10.360 --> 00:16:16.480
+first our columns of u, we call these the leading&nbsp;
+our pod modes. And then we simply set fee equal&nbsp;&nbsp;
+
+00:16:16.480 --> 00:16:22.800
+upside equal to the first our pod mounts.&nbsp;
+Once we have feed, we can easily compute the&nbsp;&nbsp;
+
+00:16:22.800 --> 00:16:29.080
+ROM dynamics as shown in bullet point three.&nbsp;
+And so this implicitly defines an orthogonal&nbsp;&nbsp;
+
+00:16:29.080 --> 00:16:35.640
+projection onto the range of the pod modes.&nbsp;
+And the ROM is known as a Galerkin model. And&nbsp;&nbsp;
+
+00:16:35.640 --> 00:16:41.680
+so from an intuitive standpoint, what we're doing&nbsp;
+here is we are projecting the governing equations&nbsp;&nbsp;
+
+00:16:41.680 --> 00:16:51.680
+onto the span of the most energetic features&nbsp;
+of the system. However, as I discussed briefly,&nbsp;&nbsp;
+
+00:16:51.680 --> 00:16:57.520
+few minutes ago, there might be non energetic&nbsp;
+states that are dynamically relevant. So that's,&nbsp;&nbsp;
+
+00:16:57.520 --> 00:17:03.800
+that's when we need a bleak projections. And&nbsp;
+so a common way to get an oblique projection is&nbsp;&nbsp;
+
+00:17:03.800 --> 00:17:11.640
+vast truncation. And so it was first developed&nbsp;
+in 1981. So it's somewhat old formulation. And&nbsp;&nbsp;
+
+00:17:11.640 --> 00:17:16.960
+it's a tool from linear control theory. And the&nbsp;
+method is highly intrusive. And I'll describe it&nbsp;&nbsp;
+
+00:17:16.960 --> 00:17:23.760
+in a minute what I mean by it. And so, bounce&nbsp;
+Christic bass truncation proceeds as follows,&nbsp;&nbsp;
+
+00:17:23.760 --> 00:17:28.560
+we start from the nonlinear governing equations.&nbsp;
+And first step is we need to linearize about a&nbsp;&nbsp;
+
+00:17:28.560 --> 00:17:35.440
+fixed point. So here a is the linearization of&nbsp;
+f, which is the derivative of f with respect&nbsp;&nbsp;
+
+00:17:35.440 --> 00:17:41.520
+to the state and the input matrix U A, B is the&nbsp;
+derivative of f with respect to the control input.&nbsp;&nbsp;
+
+00:17:41.520 --> 00:17:46.840
+And so now we have obtained we've we've obtained&nbsp;
+a linear time invariant system, which we can work&nbsp;&nbsp;
+
+00:17:46.840 --> 00:17:51.640
+with, with what we like LTI systems, because we&nbsp;
+kind of know everything there is to know about LTI&nbsp;&nbsp;
+
+00:17:51.640 --> 00:17:56.840
+systems and we can work with them pretty easily.&nbsp;
+So the the name of the game in bounce Truncation&nbsp;&nbsp;
+
+00:17:56.840 --> 00:18:01.720
+is the follows is the following, we want to&nbsp;
+find and truncate a set of coordinates where&nbsp;&nbsp;
+
+00:18:01.720 --> 00:18:07.720
+the controllability and observability gradients&nbsp;
+are equal, and diagonals. Now the specific details&nbsp;&nbsp;
+
+00:18:07.720 --> 00:18:13.960
+are not important. But basically, to find Fiemme&nbsp;
+psi, we need to compute these integrals in the&nbsp;&nbsp;
+
+00:18:13.960 --> 00:18:20.280
+parentheses. And you see that these integrals,&nbsp;
+which are the grammarians depend on a and a star,&nbsp;&nbsp;
+
+00:18:20.280 --> 00:18:26.680
+which is the Agilent way. And so in that sense,&nbsp;
+this method is very intrusive, because we cannot&nbsp;&nbsp;
+
+00:18:26.680 --> 00:18:29.960
+treat the solver as a black box, we have&nbsp;
+to go into the solver, we have to linearize&nbsp;&nbsp;
+
+00:18:29.960 --> 00:18:35.280
+it, and then we have to compete, it's agile. So&nbsp;
+those are very intrusive operations. In any case,&nbsp;&nbsp;
+
+00:18:35.280 --> 00:18:42.600
+once we have fee inside, we can compute, we can go&nbsp;
+back to our nonlinear system, and we can obtain a&nbsp;&nbsp;
+
+00:18:42.600 --> 00:18:49.200
+Petrov Galerkin representation of it as far as and&nbsp;
+so as I was saying, this method is very intrusive,&nbsp;&nbsp;
+
+00:18:49.200 --> 00:18:54.640
+because not only do we need to query F to compute&nbsp;
+round dynamics, but we also need to access the&nbsp;&nbsp;
+
+00:18:54.640 --> 00:19:01.120
+linearization and its Agilent around a steady&nbsp;
+state. So that's an that's an exclusive. That's&nbsp;&nbsp;
+
+00:19:01.120 --> 00:19:07.800
+an intrusive operation. The third approach I'll&nbsp;
+be discussing today, really briefly, is there's&nbsp;&nbsp;
+
+00:19:07.800 --> 00:19:14.160
+another formulation that we developed a couple&nbsp;
+of years ago and it's called Truth is trajectory&nbsp;&nbsp;
+
+00:19:14.160 --> 00:19:21.480
+based optimization of oblique projections. And it&nbsp;
+produces a wrong as follows the the actual concept&nbsp;&nbsp;
+
+00:19:21.480 --> 00:19:27.840
+is pretty straightforward. We collectors actually&nbsp;
+data and we and we save it from from a full order&nbsp;&nbsp;
+
+00:19:27.840 --> 00:19:34.320
+simulation. And then what we want to do is we want&nbsp;
+to find subspaces v and w that define an oblique&nbsp;&nbsp;
+
+00:19:34.320 --> 00:19:39.840
+projection that minimize this cost function, which&nbsp;
+is just the mean square error between the ground&nbsp;&nbsp;
+
+00:19:39.840 --> 00:19:48.080
+truth data and and the ROM prediction subject to&nbsp;
+a Petro Galerkin model of this form. So remember&nbsp;&nbsp;
+
+00:19:48.080 --> 00:19:53.600
+that, as I said before, a oblique projection is&nbsp;
+not really a function of the upside, but it's&nbsp;&nbsp;
+
+00:19:53.600 --> 00:19:58.800
+a function of the subspaces v and w that&nbsp;
+they expand. So the optimization problem&nbsp;&nbsp;
+
+00:19:58.800 --> 00:20:03.280
+is carried out in terms of the subspaces and&nbsp;
+the appropriate optimization spaces to grasp&nbsp;&nbsp;
+
+00:20:03.280 --> 00:20:09.120
+and manifold. And we'll we'll come back to&nbsp;
+that in a second once we discuss Nitrome. But&nbsp;&nbsp;
+
+00:20:09.120 --> 00:20:13.400
+the takeaway from this is this is an extremely&nbsp;
+intrusive procedure. So if you want to compute&nbsp;&nbsp;
+
+00:20:13.400 --> 00:20:19.080
+the gradient of the cost function with respect&nbsp;
+to the subspaces, then you can sort of see how&nbsp;&nbsp;
+
+00:20:19.080 --> 00:20:25.200
+we'll have to compute the linearization of f and&nbsp;
+if agilely along and try the entire trajectory. So&nbsp;&nbsp;
+
+00:20:25.200 --> 00:20:31.360
+the reduced order model is a function of fee and&nbsp;
+psi, but these psi are fed into the CFD solver. So&nbsp;&nbsp;
+
+00:20:31.360 --> 00:20:35.560
+if you want to compute gradients, we'll have&nbsp;
+to differentiate the CFD solver. And that's,&nbsp;&nbsp;
+
+00:20:35.560 --> 00:20:44.400
+it's extremely interesting. Okay, so enough&nbsp;
+with intrusive methods, we'll move on to to one,&nbsp;&nbsp;
+
+00:20:44.400 --> 00:20:49.360
+intrusive and non intrusive formulation, which is&nbsp;
+operator inference, which is very much related to&nbsp;&nbsp;
+
+00:20:49.360 --> 00:20:56.600
+to Nitrome, as we'll see in a second. So I'll&nbsp;
+provide a brief description of it here. So as&nbsp;&nbsp;
+
+00:20:56.600 --> 00:21:02.640
+we were saying, in petro dollar CAD models,&nbsp;
+the only thing that we can choose RFEM side.
+
+00:21:03.400 --> 00:21:08.080
+And then the round dynamics G are tied to the&nbsp;
+form Dynamics F in purely data driven methods,&nbsp;&nbsp;
+
+00:21:08.080 --> 00:21:12.640
+we can also choose G as a matter of fact, we're&nbsp;
+forced to because data is the only thing that&nbsp;&nbsp;
+
+00:21:12.640 --> 00:21:18.880
+we have to to back out g we cannot really access&nbsp;
+the governing equations. And so operator inference&nbsp;&nbsp;
+
+00:21:18.880 --> 00:21:23.960
+proceeds as follows. The first step is we collect&nbsp;
+data from from a representative trajectory,&nbsp;&nbsp;
+
+00:21:23.960 --> 00:21:31.760
+and we do pod and we we let VMs equal b equal&nbsp;
+to pi equal to the pod run. So, we're implicitly&nbsp;&nbsp;
+
+00:21:31.760 --> 00:21:37.720
+defining we're compressing the data from a high&nbsp;
+dimensional space to the low dimensional space,&nbsp;&nbsp;
+
+00:21:37.720 --> 00:21:43.680
+the orthogonal projection onto the span of pod&nbsp;
+mounds. So the second step is the following. Well,&nbsp;&nbsp;
+
+00:21:43.680 --> 00:21:50.080
+as I just said, we compress the data onto the span&nbsp;
+pod mounds, and we get coefficients z, but we also&nbsp;&nbsp;
+
+00:21:50.080 --> 00:21:54.960
+want to get the coefficients, we also want to get&nbsp;
+the time rate of change of those coefficients. So&nbsp;&nbsp;
+
+00:21:54.960 --> 00:22:00.680
+we we take the time derivative of the full or&nbsp;
+state, and we project it onto the span of the&nbsp;&nbsp;
+
+00:22:00.680 --> 00:22:07.160
+pod amounts. And so, assuming that the reduced&nbsp;
+order dynamics are polynomial in form, so they&nbsp;&nbsp;
+
+00:22:07.160 --> 00:22:14.400
+can be written as, as this equation here, operator&nbsp;
+inference solves this least squares problem where&nbsp;&nbsp;
+
+00:22:14.400 --> 00:22:21.680
+basically we want to find reduced order tensors&nbsp;
+ah B and however many others that minimize the&nbsp;&nbsp;
+
+00:22:21.680 --> 00:22:28.560
+difference between the round dynamics and the&nbsp;
+time rate of change of the projection of the farm&nbsp;&nbsp;
+
+00:22:28.560 --> 00:22:37.560
+state onto the pod mouse on on on the span of the&nbsp;
+pod months. So basically, in operator inference,&nbsp;&nbsp;
+
+00:22:37.560 --> 00:22:42.400
+we set the encoder decoder to be given by the pod&nbsp;
+modes that defines an orthogonal projection. And&nbsp;&nbsp;
+
+00:22:42.400 --> 00:22:49.840
+on the span of those nodes, we want to find&nbsp;
+polynomial dynamics by fitting tensors. Okay,&nbsp;&nbsp;
+
+00:22:49.840 --> 00:22:57.280
+great. So this is kind of the overview of the&nbsp;
+methods that are inherently connected with with&nbsp;&nbsp;
+
+00:22:57.280 --> 00:23:02.000
+nitrogen, which, which I'll be talking about in a&nbsp;
+second, I'd like to point out that there are many&nbsp;&nbsp;
+
+00:23:02.000 --> 00:23:08.160
+different other ways to to do model reduction, as&nbsp;
+I said in the introduction, discrete time discrete&nbsp;&nbsp;
+
+00:23:08.160 --> 00:23:14.000
+time dynamics, nonlinear encoder decoders, but&nbsp;
+as far as we're concerned today, this is what&nbsp;&nbsp;
+
+00:23:14.000 --> 00:23:19.480
+we will be comparing Nitrome against. So here&nbsp;
+we go. So this is not interested in trajectory&nbsp;&nbsp;
+
+00:23:19.480 --> 00:23:26.480
+based optimization of reduced the remodels. And&nbsp;
+this method kind of brings together concepts both&nbsp;&nbsp;
+
+00:23:26.480 --> 00:23:34.600
+from intrusive model and both and from operator&nbsp;
+inference, but the beauty of it is that will we&nbsp;&nbsp;
+
+00:23:34.600 --> 00:23:40.520
+will not need access to the governing equations&nbsp;
+and we can do the optimization purely from data.&nbsp;&nbsp;
+
+00:23:40.520 --> 00:23:45.080
+And so loosely speaking, is what we do is&nbsp;
+we simultaneously and unobtrusively look&nbsp;&nbsp;
+
+00:23:45.080 --> 00:23:52.200
+for optimal fields Sy and G given full order&nbsp;
+trajectories. And so, this is the full order&nbsp;&nbsp;
+
+00:23:52.200 --> 00:23:58.720
+model. Here again, this could be any specialty&nbsp;
+discretize PDE, we have an initial condition&nbsp;&nbsp;
+
+00:23:58.720 --> 00:24:05.160
+q naught. And then also we might be interested in&nbsp;
+some observable y, this could be a pressure at a&nbsp;&nbsp;
+
+00:24:05.160 --> 00:24:11.240
+wall could be shear stress could be the velocity&nbsp;
+profile somewhere on your computational grid,&nbsp;&nbsp;
+
+00:24:11.240 --> 00:24:18.520
+and then what we're looking for our reduced order&nbsp;
+models of this form. So, we have the dynamics of&nbsp;&nbsp;
+
+00:24:18.520 --> 00:24:24.040
+the rung evolving the coefficients on the span&nbsp;
+of a projection that will be defined shortly. The&nbsp;&nbsp;
+
+00:24:24.040 --> 00:24:28.840
+initial condition is the projection of the initial&nbsp;
+condition of the farm onto the span of feed&nbsp;&nbsp;
+
+00:24:28.840 --> 00:24:34.800
+and then we have the predicted output white hat.&nbsp;
+And so, a couple of things, I want to I want to&nbsp;&nbsp;
+
+00:24:34.800 --> 00:24:40.800
+discuss a couple of things before we lay we lay&nbsp;
+down to the optimization problem in mathematical&nbsp;&nbsp;
+
+00:24:40.800 --> 00:24:46.400
+terms. The first thing that we observe is that&nbsp;
+the ROM is not a function of fee itself is a&nbsp;&nbsp;
+
+00:24:46.400 --> 00:24:52.960
+function of the of the subspace that spanned by&nbsp;
+c. And so in fact, you can it can be shown that&nbsp;&nbsp;
+
+00:24:52.960 --> 00:25:01.480
+for any invertible matrix matrix, m of size R&nbsp;
+by R, this relationship holds this means that,&nbsp;&nbsp;
+
+00:25:01.480 --> 00:25:08.000
+if we stretch and rotate feet, we're not&nbsp;
+changing the reduced order model. So, our&nbsp;&nbsp;
+
+00:25:08.000 --> 00:25:14.000
+dimensional subspaces of Rn are elements of the&nbsp;
+grasp and metaphor. And so we will be looking for&nbsp;&nbsp;
+
+00:25:14.000 --> 00:25:22.560
+an optimal V on on the on the grasping manifold.&nbsp;
+A similar symmetry does not hold for sigh. In fact&nbsp;&nbsp;
+
+00:25:22.560 --> 00:25:29.720
+there exist invertible RBR matrices and where&nbsp;
+equality where this equality doesn't hold so,&nbsp;&nbsp;
+
+00:25:29.720 --> 00:25:34.800
+meaning that if we're if we rotate and stretch&nbsp;
+sigh, we do change the reduced order model. And&nbsp;&nbsp;
+
+00:25:34.800 --> 00:25:42.000
+so, the ROM is not a function of the span upside&nbsp;
+but rather a function of sites of nonetheless,&nbsp;&nbsp;
+
+00:25:42.000 --> 00:25:46.880
+we want site to have rank are otherwise we&nbsp;
+wouldn't be able to define a production.&nbsp;&nbsp;
+
+00:25:46.880 --> 00:25:52.040
+And so without loss of generality, we can take&nbsp;
+site to be an element of the Stiefel manifold,&nbsp;&nbsp;
+
+00:25:53.000 --> 00:25:58.240
+which is the space of orthonormal and by&nbsp;
+RT matrices. And the third assumption will&nbsp;&nbsp;
+
+00:25:58.840 --> 00:26:05.280
+be that the assumption we make next on the round&nbsp;
+dynamics is that they are polynomial. So we kind&nbsp;&nbsp;
+
+00:26:05.280 --> 00:26:10.560
+of borrowing this from operator inference&nbsp;
+that we described a minute ago. And so yeah,&nbsp;&nbsp;
+
+00:26:10.560 --> 00:26:16.640
+we're saying the polynomial dynamics are&nbsp;
+polynomial, the rounded answer polynomial. So&nbsp;&nbsp;
+
+00:26:16.640 --> 00:26:25.400
+the parameters we'll have to learn from data are&nbsp;
+these tensors, a, H and B in red. So altogether,&nbsp;&nbsp;
+
+00:26:25.400 --> 00:26:32.360
+the red quantities on this slide are the ones who&nbsp;
+will be tried to fit will try to fit from data.&nbsp;&nbsp;
+
+00:26:32.360 --> 00:26:38.360
+Okay, so mathematically, this is the optimization&nbsp;
+problem. So we have ground truth observations&nbsp;&nbsp;
+
+00:26:38.360 --> 00:26:45.760
+from the farm called y collected at some temporal&nbsp;
+temporal instances TI, and then we have a reduced&nbsp;&nbsp;
+
+00:26:45.760 --> 00:26:51.960
+order model of polynomial form, that will give&nbsp;
+us a prediction y hat at the same at the same at&nbsp;&nbsp;
+
+00:26:51.960 --> 00:26:58.360
+the same times. And what we want to do is want to&nbsp;
+minimize this cost function by choosing a subspace&nbsp;&nbsp;
+
+00:26:58.360 --> 00:27:04.960
+B on the Grassman manifold a a n by our matrix&nbsp;
+sy on on the unstable manifold and reduced order&nbsp;&nbsp;
+
+00:27:04.960 --> 00:27:10.120
+tensors that define the dynamics and so the&nbsp;
+optimization is carried out on this product&nbsp;&nbsp;
+
+00:27:10.120 --> 00:27:16.840
+manifold of the Grassman Stiefel and as many&nbsp;
+linear spaces as the number of tensors that&nbsp;&nbsp;
+
+00:27:16.840 --> 00:27:23.240
+we're trying to fit from data. Okay, so how&nbsp;
+do we compute the gradient? So the trick is&nbsp;&nbsp;
+
+00:27:23.240 --> 00:27:28.280
+that this manifold, and that we've just defined,&nbsp;
+maybe it's best if I go back, it's an abstract&nbsp;&nbsp;
+
+00:27:28.280 --> 00:27:35.120
+manifold. It's abstract in the sense that the&nbsp;
+Grassman is a is a is a manifold of subspaces&nbsp;&nbsp;
+
+00:27:35.120 --> 00:27:40.880
+and subspaces are abstract entities that we&nbsp;
+cannot represent on a computer. The only way&nbsp;&nbsp;
+
+00:27:40.880 --> 00:27:47.280
+we can represent the subspace fee on a computer is&nbsp;
+indirectly through through fee and then v is equal&nbsp;&nbsp;
+
+00:27:47.280 --> 00:27:54.480
+to the range of fixed so how do we how do we deal&nbsp;
+with this abstraction? The way to do it is to work&nbsp;&nbsp;
+
+00:27:54.480 --> 00:28:02.280
+to view the steeple and the grasp of manifolds as&nbsp;
+sub manifolds of an ambient space, whose object&nbsp;&nbsp;
+
+00:28:02.280 --> 00:28:07.200
+whose elements can be represented easily on a&nbsp;
+computer so Stiefel can be viewed as an embedded&nbsp;&nbsp;
+
+00:28:07.200 --> 00:28:13.960
+sub manifold of Euclidean space of matrices of&nbsp;
+size and by art, and then if we define a metric&nbsp;&nbsp;
+
+00:28:13.960 --> 00:28:19.280
+on this space, the stiff the Stiefel manifold&nbsp;
+will inherit it. And the grasping manifold&nbsp;&nbsp;
+
+00:28:19.280 --> 00:28:25.560
+can be viewed as a quotient manifold of the non&nbsp;
+orthogonal Stiefel manifold. So these are these,&nbsp;&nbsp;
+
+00:28:25.560 --> 00:28:37.480
+this is the space of n by our matrices of rank.&nbsp;
+And so again, if we define the a metric a metric&nbsp;&nbsp;
+
+00:28:37.480 --> 00:28:42.680
+on this space, then the Grassman manifold will&nbsp;
+inherited. Once we've done that, it is possible&nbsp;&nbsp;
+
+00:28:42.680 --> 00:28:48.080
+to define the grading of the cost function in&nbsp;
+terms of Euclidean space objects. So for instance,&nbsp;&nbsp;
+
+00:28:48.080 --> 00:28:52.280
+we can we can define the gradient of the cost&nbsp;
+function with respect to with respect to the&nbsp;&nbsp;
+
+00:28:52.280 --> 00:28:59.760
+substrate speed, in terms of in terms of fee and&nbsp;
+so we can easily compute that on on a computer.&nbsp;&nbsp;
+
+00:28:59.760 --> 00:29:05.400
+And so, the approach is quite standard, we have&nbsp;
+our cost we use the method of Lagrange multipliers&nbsp;&nbsp;
+
+00:29:05.400 --> 00:29:14.000
+with our cost function, we append the constraints,&nbsp;
+and here lambda are there Lagrange multipliers,&nbsp;&nbsp;
+
+00:29:14.720 --> 00:29:19.480
+it can be shown that these satisfy a reduced&nbsp;
+order Agilent equations. And then once we once&nbsp;&nbsp;
+
+00:29:19.480 --> 00:29:26.120
+we turn the crank, on calculus variations, it can&nbsp;
+be shown that the gradients that the gradient of&nbsp;&nbsp;
+
+00:29:26.120 --> 00:29:30.560
+the cost function with respect to the parameters&nbsp;
+can be computed in close form. So for instance,&nbsp;&nbsp;
+
+00:29:30.560 --> 00:29:34.640
+just to give you a sense of what this might look&nbsp;
+like, the grading of Allah with respect to a looks&nbsp;&nbsp;
+
+00:29:34.640 --> 00:29:41.000
+like this, right? And so you can think of and&nbsp;
+the procedure that gives you the gradient, it's,&nbsp;&nbsp;
+
+00:29:41.000 --> 00:29:47.800
+it's it's very much akin to a back propagation&nbsp;
+when you're training neural networks. The I&nbsp;&nbsp;
+
+00:29:47.800 --> 00:29:54.640
+guess the the beauty of the way we laid out the&nbsp;
+problem is that the gradient of our quote unquote,&nbsp;&nbsp;
+
+00:29:54.640 --> 00:29:59.760
+neural network, it can be computed in closed form,&nbsp;
+and so we don't need automatic differentiation to&nbsp;&nbsp;
+
+00:29:59.760 --> 00:30:05.480
+carry out this optimization. Alright, so I guess&nbsp;
+it's time for for some results now. And we'll look&nbsp;&nbsp;
+
+00:30:05.480 --> 00:30:12.960
+at three different examples toy model, a one DPD,&nbsp;
+and a lead driven cavity flow. So the toy model&nbsp;&nbsp;
+
+00:30:12.960 --> 00:30:22.600
+is a system of three ODS, it's very simple system.&nbsp;
+With state x 1x 2x. Three, we have an input u. And&nbsp;&nbsp;
+
+00:30:22.600 --> 00:30:30.600
+what we're interested in is in the time history&nbsp;
+of the output Y in response to inputs here,
+
+00:30:31.440 --> 00:30:39.160
+this new here is a parameter that we've introduced&nbsp;
+to show the need for oblique projections versus&nbsp;&nbsp;
+
+00:30:39.160 --> 00:30:44.280
+orthogonal projection. So if you take if new is&nbsp;
+very small, or even new, or even equal to zero,&nbsp;&nbsp;
+
+00:30:44.280 --> 00:30:51.200
+for the sake of discussion, the dynamics become&nbsp;
+effectively linear. But most importantly,&nbsp;&nbsp;
+
+00:30:51.200 --> 00:30:57.920
+they are governed by a diagonal, linear operator&nbsp;
+diagonal operator, it's normal. And so we,&nbsp;&nbsp;
+
+00:30:58.440 --> 00:31:03.520
+we expect that modern reduction approaches&nbsp;
+that rely on orthogonal projections will give&nbsp;&nbsp;
+
+00:31:03.520 --> 00:31:10.320
+us good reduced order models. Instead, if&nbsp;
+new is large, the system is nonlinear, but,&nbsp;&nbsp;
+
+00:31:11.000 --> 00:31:16.320
+but more importantly, the snom linearity&nbsp;
+has a special feature. So we see that it&nbsp;&nbsp;
+
+00:31:16.320 --> 00:31:22.360
+depends on x three. And so if you look at what&nbsp;
+x three does, x three is the fastest decaying&nbsp;&nbsp;
+
+00:31:22.360 --> 00:31:28.040
+state of the system. So in the case, well, its&nbsp;
+dynamics are linear, and it decays with with&nbsp;&nbsp;
+
+00:31:28.040 --> 00:31:36.920
+rate minus five. And so this x three is the least&nbsp;
+energetic state of the system. But nonetheless,&nbsp;&nbsp;
+
+00:31:36.920 --> 00:31:44.200
+it has a very large effect on the dynamics of&nbsp;
+x 1x. Two. And so if new is large, of course,&nbsp;&nbsp;
+
+00:31:44.200 --> 00:31:49.440
+so if new is large, we expect that we're going&nbsp;
+to need oblique projections for model reduction.&nbsp;&nbsp;
+
+00:31:49.440 --> 00:31:54.400
+Because we'll oblique projection is give us the&nbsp;
+possibility of detecting the fact that low energy&nbsp;&nbsp;
+
+00:31:54.400 --> 00:32:01.000
+states might be very important from from a&nbsp;
+dynamical standpoint. Okay, so we consider&nbsp;&nbsp;
+
+00:32:01.000 --> 00:32:06.520
+two different cases, new equal to five and new&nbsp;
+equal to 20. And we train the models with four&nbsp;&nbsp;
+
+00:32:06.520 --> 00:32:12.040
+step responses. So we'll, we'll we have a step&nbsp;
+input, you, we put it into the dynamics and then&nbsp;&nbsp;
+
+00:32:12.040 --> 00:32:18.440
+we collect the time time history of y in response&nbsp;
+to this for these four steps. Just to be clear,&nbsp;&nbsp;
+
+00:32:18.440 --> 00:32:23.440
+I'm not making a we're not computing a parametric&nbsp;
+run as a function new, we're considering two&nbsp;&nbsp;
+
+00:32:23.440 --> 00:32:29.800
+separate cases just to show when you may or may&nbsp;
+not need a blink projections for model reduction.&nbsp;&nbsp;
+
+00:32:29.800 --> 00:32:37.360
+So here, we're showing the average testing error&nbsp;
+across 100 Step responses for new equal to five,&nbsp;&nbsp;
+
+00:32:37.360 --> 00:32:42.200
+and here for new equal to 20. So we see that for&nbsp;
+new equal to five, we've seen that the dynamics&nbsp;&nbsp;
+
+00:32:42.200 --> 00:32:48.560
+are effectively linear and normal. So all model&nbsp;
+reduction approaches, including those that use&nbsp;&nbsp;
+
+00:32:48.560 --> 00:32:53.440
+orthogonal projections, namely pod, Eagle, arcing,&nbsp;
+and operator inference, are doing pretty well,&nbsp;&nbsp;
+
+00:32:53.440 --> 00:32:58.760
+the error is very, very low. And even though&nbsp;
+we're improving on it with our formulation,&nbsp;&nbsp;
+
+00:32:58.760 --> 00:33:04.000
+there's really no need for oblique projections&nbsp;
+in this specific case. But if we, if we turn up&nbsp;&nbsp;
+
+00:33:04.000 --> 00:33:10.000
+the value of New, then the dynamics become more&nbsp;
+quote unquote, non normal, where the this low&nbsp;&nbsp;
+
+00:33:10.000 --> 00:33:16.120
+energy state is becoming more data important. And&nbsp;
+we see that the two model reduction formulations&nbsp;&nbsp;
+
+00:33:16.120 --> 00:33:23.160
+that leverage leverage oblique projections are&nbsp;
+performing significantly better than orthogonal&nbsp;&nbsp;
+
+00:33:23.160 --> 00:33:32.320
+projection based reduced order models. And so&nbsp;
+this is these are plots that are computed using&nbsp;&nbsp;
+
+00:33:32.320 --> 00:33:38.320
+step responses. This is what we trained on. But&nbsp;
+what about different types of inputs? So, here&nbsp;&nbsp;
+
+00:33:38.320 --> 00:33:44.200
+we put in sinusoids. And so we didn't train our&nbsp;
+sinusoids. And we hope that our that our training&nbsp;&nbsp;
+
+00:33:44.200 --> 00:33:48.880
+has given us models that are capable of telling&nbsp;
+us what happens in response to a different type&nbsp;&nbsp;
+
+00:33:48.880 --> 00:33:54.920
+of input that we haven't seen before. So if new is&nbsp;
+small, again, and dynamics are effectively normal,&nbsp;&nbsp;
+
+00:33:54.920 --> 00:34:00.400
+we see that all modern production formulations&nbsp;
+are doing are doing extremely well. There's no&nbsp;&nbsp;
+
+00:34:00.400 --> 00:34:05.160
+distinction between between them, at least from&nbsp;
+a qualitative standpoint. But then, if we if we&nbsp;&nbsp;
+
+00:34:05.160 --> 00:34:10.960
+turn on if we turn up the value new, we start&nbsp;
+seeing some some major discrepancies and we&nbsp;&nbsp;
+
+00:34:10.960 --> 00:34:19.360
+see that Troopa Nitrome that reliably projections&nbsp;
+are tracking The GroundTruth output very well. But&nbsp;&nbsp;
+
+00:34:19.360 --> 00:34:25.880
+the other two formulations are not doing so good a&nbsp;
+job as it can be seen from from this figure. Okay,&nbsp;&nbsp;
+
+00:34:25.880 --> 00:34:31.120
+so this is this is all for the reduced order&nbsp;
+model. We'll move on to a more complicated system,&nbsp;&nbsp;
+
+00:34:31.120 --> 00:34:39.200
+you have already seen this briefly and in the&nbsp;
+introductory section of the talk, but, so,&nbsp;&nbsp;
+
+00:34:39.200 --> 00:34:47.240
+this is the complex Ginzburg Landau equation. So&nbsp;
+this is a one dimensional PDE and where here new&nbsp;&nbsp;
+
+00:34:47.240 --> 00:34:55.320
+gamma and mu and a our parameters, we choose them&nbsp;
+so that the origin is linearly stable. The system&nbsp;&nbsp;
+
+00:34:55.320 --> 00:35:01.440
+However, despite the fact that it's stable, it&nbsp;
+will exhibit law For example, to transmit growth,&nbsp;&nbsp;
+
+00:35:01.440 --> 00:35:08.480
+and this is this is due to the fact that the&nbsp;
+linear operator here is not normal. And so again,&nbsp;&nbsp;
+
+00:35:08.480 --> 00:35:13.320
+this is one of those instances where we'll need&nbsp;
+whether we work intrusively or not exclusively,&nbsp;&nbsp;
+
+00:35:13.320 --> 00:35:20.080
+we need to compress the data using oblique&nbsp;
+projections. And so the just just just for&nbsp;&nbsp;
+
+00:35:20.080 --> 00:35:27.360
+the sake of example, what we'd like to do is to be&nbsp;
+able to predict outputs y in response to inputs,&nbsp;&nbsp;
+
+00:35:28.640 --> 00:35:35.560
+B, Vu. And so here, in this figure, I'm showing&nbsp;
+the spatial distribution of the input and output&nbsp;&nbsp;
+
+00:35:35.560 --> 00:35:43.960
+operators B and C, here we have B, in black,&nbsp;
+and C in red. And so from a physical standpoint,&nbsp;&nbsp;
+
+00:35:43.960 --> 00:35:52.040
+we're we're forcing the system upstream. And we're&nbsp;
+and we're observing the response downstream. And&nbsp;&nbsp;
+
+00:35:52.040 --> 00:35:57.720
+this is this is typical of specially developing&nbsp;
+flows, for instance, where of take a jet,&nbsp;&nbsp;
+
+00:35:57.720 --> 00:36:01.680
+for instance, where you might actuate near the&nbsp;
+nozzle, but then you want to look at what happens&nbsp;&nbsp;
+
+00:36:01.680 --> 00:36:08.040
+to the to vorticity. downstream. And so this is&nbsp;
+this is kind of what we're trying to, to emulate&nbsp;&nbsp;
+
+00:36:08.040 --> 00:36:13.440
+here in this example, and we look for models&nbsp;
+with dimension five, and we trained with four&nbsp;&nbsp;
+
+00:36:13.440 --> 00:36:20.720
+impulse response impulse responses. So the spatial&nbsp;
+distribution of the impulse is in the span of B,&nbsp;&nbsp;
+
+00:36:20.720 --> 00:36:28.440
+what we what we what we bear is the amplitude of&nbsp;
+the impulse magnitude, u at time zero. And so once&nbsp;&nbsp;
+
+00:36:28.440 --> 00:36:37.520
+we train, then we test across 25 impulse responses&nbsp;
+with unseen amplitudes. And here we have again,&nbsp;&nbsp;
+
+00:36:37.520 --> 00:36:44.640
+pod Galerkin operator inference troop and our&nbsp;
+formulation nitrogen. And we see that Nitrome&nbsp;&nbsp;
+
+00:36:44.640 --> 00:36:53.440
+and troop for that matter, are doing very well&nbsp;
+under their maintaining a very low average error&nbsp;&nbsp;
+
+00:36:53.440 --> 00:37:01.400
+across time. And here on the right hand side&nbsp;
+is a representative trajectory of the output Y,&nbsp;&nbsp;
+
+00:37:01.400 --> 00:37:07.880
+taken from one of these impulses that we that we&nbsp;
+tested on. So we see that both Troopa Nitrome are&nbsp;&nbsp;
+
+00:37:07.880 --> 00:37:14.440
+capable of tracking the ground truth, time history&nbsp;
+of the alpha y. But the other two formulations&nbsp;&nbsp;
+
+00:37:14.440 --> 00:37:21.800
+with orthogonal projections are not really&nbsp;
+capable of giving us a a faithful prediction&nbsp;&nbsp;
+
+00:37:21.800 --> 00:37:26.640
+of what happens to the to the full order system in&nbsp;
+response to input. And then just for just to make&nbsp;&nbsp;
+
+00:37:26.640 --> 00:37:33.240
+sure that we've learned dynamics, and we haven't&nbsp;
+overfit impulses, we we changed the, we changed&nbsp;&nbsp;
+
+00:37:33.240 --> 00:37:37.520
+the forcing input. On the left hand side, we're&nbsp;
+forcing with a sinusoidal input. With frequency&nbsp;&nbsp;
+
+00:37:37.520 --> 00:37:43.400
+omega, this is roughly the natural frequency of&nbsp;
+the full ordered dynamics. And we see that we're,&nbsp;&nbsp;
+
+00:37:44.400 --> 00:37:50.960
+again, we're tracking the output pretty well.&nbsp;
+And this is the analog for the second harmonic&nbsp;&nbsp;
+
+00:37:50.960 --> 00:37:56.080
+of the fundamental frequency. And again, we see&nbsp;
+that we're doing a pretty good job here as well,&nbsp;&nbsp;
+
+00:37:56.080 --> 00:38:03.400
+can see some minor discrepancies here at later&nbsp;
+time. This is probably due to the fact that the&nbsp;&nbsp;
+
+00:38:03.400 --> 00:38:09.720
+frequency content to omega wasn't that dominant in&nbsp;
+the training dataset. So the model hasn't really&nbsp;&nbsp;
+
+00:38:09.720 --> 00:38:19.760
+seen a lot of two omega structures showing up in&nbsp;
+the in in the training data set. So I guess that&nbsp;&nbsp;
+
+00:38:19.760 --> 00:38:25.320
+the four things with frequency to omega are&nbsp;
+somewhat out of distribution for nonetheless,&nbsp;&nbsp;
+
+00:38:25.320 --> 00:38:33.080
+we're performing much better than the other&nbsp;
+methods using orthogonal projections and much&nbsp;&nbsp;
+
+00:38:33.080 --> 00:38:39.440
+better than an operator inference, which is nine&nbsp;
+years old. Okay, so this is the last example&nbsp;&nbsp;
+
+00:38:39.440 --> 00:38:43.800
+I'll be talking about. So this is the I guess,&nbsp;
+the highest degree of complexity complexity,&nbsp;&nbsp;
+
+00:38:43.800 --> 00:38:49.600
+we've considered this is a two dimensional&nbsp;
+incompressible, literal Academy fluid Reynolds&nbsp;&nbsp;
+
+00:38:49.600 --> 00:38:57.440
+number 8300. The top boundary of the domain&nbsp;
+moves with horizontal velocity equal to one,&nbsp;&nbsp;
+
+00:38:58.120 --> 00:39:04.840
+and we spatially discretize the matter stokes&nbsp;
+equations with a finite difference scheme on 100&nbsp;&nbsp;
+
+00:39:04.840 --> 00:39:10.200
+by 100 grid. So what we want to do here for the&nbsp;
+sake of example, we want to want models that are&nbsp;&nbsp;
+
+00:39:10.200 --> 00:39:17.880
+capable of predicting the whole velocity field so&nbsp;
+the whole und velocity field on the whole domain,&nbsp;&nbsp;
+
+00:39:17.880 --> 00:39:22.800
+in response to inputs that enter the flow&nbsp;
+via spatially localized bodied forest that&nbsp;&nbsp;
+
+00:39:22.800 --> 00:39:30.960
+is placed near the top right corner. So you can&nbsp;
+envision this as being like a Gaussian spatial&nbsp;&nbsp;
+
+00:39:30.960 --> 00:39:40.680
+profile that injects acts as a body force on the&nbsp;
+momentum equation of the fluid. So what we do is&nbsp;&nbsp;
+
+00:39:40.680 --> 00:39:47.160
+we train reduced order models of dimension 50&nbsp;
+With seven impulse responses. And just to give&nbsp;&nbsp;
+
+00:39:47.160 --> 00:39:53.440
+you a sense for how this flow behaves, I've&nbsp;
+plotted the energy of the perturbation from&nbsp;&nbsp;
+
+00:39:53.440 --> 00:39:58.680
+the from the training trajectories over time&nbsp;
+and what I mean by birth rate perturbations,&nbsp;&nbsp;
+
+00:39:58.680 --> 00:40:06.280
+these are flux equations about the steady state&nbsp;
+that exists at Reynolds number at 300. So most&nbsp;&nbsp;
+
+00:40:06.280 --> 00:40:12.920
+notably, what happens here is that after an&nbsp;
+initial decay in energy, the energy spikes back&nbsp;&nbsp;
+
+00:40:12.920 --> 00:40:21.320
+up at roughly at time equals five or six. And this&nbsp;
+is, this is typical behavior of non neural systems
+
+00:40:22.360 --> 00:40:27.320
+where there's transient energy growth, and in&nbsp;
+this specific case, it's pretty high amplitude.&nbsp;&nbsp;
+
+00:40:27.840 --> 00:40:32.640
+If the system was normal than the,&nbsp;
+the energy wouldn't spike back up,&nbsp;&nbsp;
+
+00:40:32.640 --> 00:40:40.160
+and it would, it would keep on decaying back to&nbsp;
+zero. And also, I'd like to point out that this,&nbsp;&nbsp;
+
+00:40:40.160 --> 00:40:47.240
+this figure also indicates that the system is&nbsp;
+quite nonlinear because these, these lines are not&nbsp;&nbsp;
+
+00:40:47.240 --> 00:40:52.680
+scalar multiples of each other. So if the dynamics&nbsp;
+were linear, then the these, these will be scalar&nbsp;&nbsp;
+
+00:40:52.680 --> 00:40:58.160
+multiples of each other, but they're not in this&nbsp;
+case. So we're looking at a nonlinear system that&nbsp;&nbsp;
+
+00:40:58.160 --> 00:41:06.560
+has underlying non normal like dynamics. Alright,&nbsp;
+so we do not apply troops in this specific case,&nbsp;&nbsp;
+
+00:41:06.560 --> 00:41:10.880
+because it's because it's very intrusive, but&nbsp;
+what we consider a special Galerkin projection&nbsp;&nbsp;
+
+00:41:10.880 --> 00:41:17.160
+operator and Franssen nitrosamines. So this is&nbsp;
+the training error for the seven trajectories&nbsp;&nbsp;
+
+00:41:17.160 --> 00:41:23.600
+training trajectories, we consider it and this&nbsp;
+is the testing error for unseen impulses. And&nbsp;&nbsp;
+
+00:41:23.600 --> 00:41:31.440
+we see that with nitrogen, we've managed to keep&nbsp;
+the error pretty low, even at times before 10,&nbsp;&nbsp;
+
+00:41:31.440 --> 00:41:38.520
+where we have that huge spike in energy in the&nbsp;
+in the training trajectories and, and testing&nbsp;&nbsp;
+
+00:41:38.520 --> 00:41:44.120
+trajectories, for that matter. So the question&nbsp;
+we're asking next is, okay, we have a model that&nbsp;&nbsp;
+
+00:41:44.120 --> 00:41:52.960
+performs pretty well on impulse on impulses.&nbsp;
+How does it perform on unseen inputs, and so&nbsp;&nbsp;
+
+00:41:52.960 --> 00:41:59.240
+as before, we forced the system sinusoidally. So&nbsp;
+we consider we have six different runs. And we&nbsp;&nbsp;
+
+00:41:59.240 --> 00:42:04.640
+consider harmonics of the frequency one point&nbsp;
+25, and harmonics at the frequency one, these&nbsp;&nbsp;
+
+00:42:04.640 --> 00:42:12.040
+are frequencies that are relevant for the full&nbsp;
+order dynamics. And we see that in all settings,&nbsp;&nbsp;
+
+00:42:12.040 --> 00:42:17.360
+we're doing a really good job of tracking the, the&nbsp;
+energy, the evolution of the energy of the of the&nbsp;&nbsp;
+
+00:42:17.360 --> 00:42:24.800
+perturbations. For as I said, for all for Austin&nbsp;
+areas. In particular, I want to point out that at&nbsp;&nbsp;
+
+00:42:24.800 --> 00:42:30.400
+long time, aside from crass minor discrepancies&nbsp;
+in amplitude, we are, we're getting the right&nbsp;&nbsp;
+
+00:42:30.400 --> 00:42:37.080
+phase of these oscillations. And also at early&nbsp;
+times, we're we're doing very well at tracking the&nbsp;&nbsp;
+
+00:42:37.080 --> 00:42:46.560
+initial growth of energy before the system settles&nbsp;
+onto a onto onto a forced limit cycle. So this is&nbsp;&nbsp;
+
+00:42:46.560 --> 00:42:51.880
+what snapshots from the solutions look like we&nbsp;
+have top left the full order model this is grant&nbsp;&nbsp;
+
+00:42:51.880 --> 00:42:57.120
+this is ground truth solution computed from CFD,&nbsp;
+this is nitrogen. Again, these are 50 dimensional&nbsp;&nbsp;
+
+00:42:58.040 --> 00:43:03.000
+models, operator inference and pod alerting,&nbsp;
+you see that pure legal arcing and operator&nbsp;&nbsp;
+
+00:43:03.000 --> 00:43:09.760
+inference are underestimating the, the magnitude&nbsp;
+of the vorticity that arises in response to these&nbsp;&nbsp;
+
+00:43:09.760 --> 00:43:16.280
+sinusoidal inputs. But also they're they're not&nbsp;
+predicting the face correct. So if you look at&nbsp;&nbsp;
+
+00:43:16.280 --> 00:43:22.680
+this blue vertical structure here, x equal to 0.5.&nbsp;
+At the bottom of the cavity, you see that operator&nbsp;&nbsp;
+
+00:43:22.680 --> 00:43:28.960
+inference and pod Galerkin predict structures&nbsp;
+that are out of phase with that, that structure.&nbsp;&nbsp;
+
+00:43:28.960 --> 00:43:36.120
+By contrast, Nystrom is doing a very good job at&nbsp;
+predicting both the amplitude of the vorticity&nbsp;&nbsp;
+
+00:43:36.120 --> 00:43:41.520
+field and the phase of vertical structures.&nbsp;
+And here's another set of snapshots for a low&nbsp;&nbsp;
+
+00:43:41.520 --> 00:43:49.640
+frequency forcing input. In this case, again,&nbsp;
+Nitrome is capable of predicting a given a good&nbsp;&nbsp;
+
+00:43:49.640 --> 00:43:55.840
+prediction of what happens to the flow by contrast&nbsp;
+operator and for instant pod lurking or it seemed&nbsp;&nbsp;
+
+00:43:55.840 --> 00:44:01.080
+to be overestimating the vertical structure or the&nbsp;
+vertical, the magnitude of the vorticity. And they&nbsp;&nbsp;
+
+00:44:01.080 --> 00:44:07.760
+are not giving a faithful representation, the type&nbsp;
+of vertical structures that we see in response&nbsp;&nbsp;
+
+00:44:07.760 --> 00:44:13.120
+to the input. Okay, so in conclusion, we have&nbsp;
+introduced a novel nonintrusive model reduction&nbsp;&nbsp;
+
+00:44:13.120 --> 00:44:19.200
+framework for systems that exhibit large amplitude&nbsp;
+change and growth. And the key takeaway is that&nbsp;&nbsp;
+
+00:44:19.200 --> 00:44:23.400
+we improve on existing non intrusive methods by&nbsp;
+projecting the high dimensional data onto a low&nbsp;&nbsp;
+
+00:44:23.400 --> 00:44:29.600
+dimensional subspace via oblique projection. And&nbsp;
+that's the key the improvement here is that we're&nbsp;&nbsp;
+
+00:44:29.600 --> 00:44:37.080
+capable of computing oblique projections&nbsp;
+directly from data for for model reduction&nbsp;&nbsp;
+
+00:44:37.080 --> 00:44:43.400
+for future work. Here we're considering linear&nbsp;
+projections onto onto linear subspaces. But it&nbsp;&nbsp;
+
+00:44:43.400 --> 00:44:51.080
+would be interesting to extend the formulation to&nbsp;
+nonlinear projections onto polynomial manifolds.&nbsp;&nbsp;
+
+00:44:51.600 --> 00:44:58.160
+And it will be fascinating to be able to do&nbsp;
+so while keeping the while still being able to&nbsp;&nbsp;
+
+00:44:58.160 --> 00:45:03.120
+compute the gradient in close form. And we'll have&nbsp;
+to see if we're able to able to do that without&nbsp;&nbsp;
+
+00:45:03.120 --> 00:45:10.120
+relying on automatic differentiation. Yeah, so&nbsp;
+I'd like to acknowledge the contributions from my&nbsp;&nbsp;
+
+00:45:10.120 --> 00:45:15.360
+collaborators and co authors, Blaine Ballmer and&nbsp;
+Professor budoni At UC and professor but only is&nbsp;&nbsp;
+
+00:45:15.360 --> 00:45:22.080
+my postdoc supervisor. And then of course, funding&nbsp;
+from the National Science Foundation. Okay, well,&nbsp;&nbsp;
+
+00:45:22.080 --> 00:45:25.880
+thank you for listening. And I'm&nbsp;
+very happy to take any questions.
+
+00:45:25.880 --> 00:45:31.680
+Thank you. Thank you so much for the&nbsp;
+wonderful talk. Alberto. Great job. Okay,&nbsp;&nbsp;
+
+00:45:31.680 --> 00:45:39.520
+let's have a q&amp;a sessions. We do have a&nbsp;
+question from the chat have been asked.&nbsp;&nbsp;
+
+00:45:39.520 --> 00:45:45.560
+Thanks for the talk. It was very interesting.&nbsp;
+Can you give us a more insight explanation&nbsp;&nbsp;
+
+00:45:45.560 --> 00:45:51.320
+on how oblique projection performs&nbsp;
+better than orthogonal projection?
+
+00:45:51.320 --> 00:45:56.920
+Right, right. Yeah. So let me&nbsp;
+see if I can, perhaps, okay, so&nbsp;&nbsp;
+
+00:46:00.400 --> 00:46:04.960
+from a from, I guess from a, try to get an&nbsp;
+answer from a physical but also mathematical&nbsp;&nbsp;
+
+00:46:04.960 --> 00:46:13.200
+standpoint. So typically, when we do orthogonal&nbsp;
+projections, we look at pod, and then we use&nbsp;&nbsp;
+
+00:46:13.200 --> 00:46:20.600
+pod to do so and pod will take trajectories&nbsp;
+and look, and we'll give you a projection&nbsp;&nbsp;
+
+00:46:20.600 --> 00:46:27.200
+onto the features that are most energetic. So&nbsp;
+for instance, in this simple toy model, pod&nbsp;&nbsp;
+
+00:46:27.200 --> 00:46:33.040
+would tell you that the most energetic states&nbsp;
+are x one and execute. And so we'd be performing,&nbsp;&nbsp;
+
+00:46:33.040 --> 00:46:41.880
+and we'd be projecting with the reduced order&nbsp;
+model of would be neglecting the state x three.&nbsp;&nbsp;
+
+00:46:41.880 --> 00:46:46.360
+The trouble with that is that the state x&nbsp;
+three even though it's, it's very low energy,&nbsp;&nbsp;
+
+00:46:46.360 --> 00:46:51.400
+because it's the case very fast, it's extremely&nbsp;
+dynamically important, because we see that&nbsp;&nbsp;
+
+00:46:51.400 --> 00:46:57.120
+x three has a large impact on the energetic&nbsp;
+structures. So we have a situation where we&nbsp;&nbsp;
+
+00:46:57.120 --> 00:47:04.760
+have high energy structures, but their dynamics&nbsp;
+is very much affected by low energy structures,&nbsp;&nbsp;
+
+00:47:04.760 --> 00:47:09.720
+that procedures like pod would completely&nbsp;
+disregard. So what an oblique projection lets&nbsp;&nbsp;
+
+00:47:09.720 --> 00:47:15.800
+you do is it lets you identify the high energy&nbsp;
+subspace. So that will, it will give you fi high&nbsp;&nbsp;
+
+00:47:15.800 --> 00:47:21.920
+energy subspace. But it also lets the boss gives&nbsp;
+you the possibility of choosing side and side can&nbsp;&nbsp;
+
+00:47:21.920 --> 00:47:26.840
+be chosen in such a way that it accounts for&nbsp;
+the fact that x three is dynamic, important.&nbsp;&nbsp;
+
+00:47:27.640 --> 00:47:32.880
+So when you have an oblique projection, you have a&nbsp;
+more degrees of freedom, if you will, you have the&nbsp;&nbsp;
+
+00:47:32.880 --> 00:47:38.760
+subspace where you project onto, and you but you&nbsp;
+also have a subspace that tells you the direction&nbsp;&nbsp;
+
+00:47:38.760 --> 00:47:47.640
+along which to present. And so by doing that, you&nbsp;
+you're capable of that that's loosely speaking,&nbsp;&nbsp;
+
+00:47:47.640 --> 00:47:54.400
+why we projection operators tend to work&nbsp;
+better than projection operators. Yeah. Right.
+
+00:47:54.400 --> 00:48:02.600
+Thank you. Next question is by Gizelle. Why is the&nbsp;
+error consistently higher? Near physical to zero,&nbsp;&nbsp;
+
+00:48:02.600 --> 00:48:13.000
+for example, for slide 27? Across the board? Is&nbsp;
+Yeah, can you go to seven? Is this due to the&nbsp;&nbsp;
+
+00:48:13.000 --> 00:48:20.440
+increased complexity of the function at all your&nbsp;
+times? It's diminishes later? Or is there another&nbsp;&nbsp;
+
+00:48:20.440 --> 00:48:32.080
+factor contributing to this behavior that I might&nbsp;
+be missing? What happens with? Where am I? What&nbsp;&nbsp;
+
+00:48:32.080 --> 00:48:39.480
+happens with these models? If you extrapolate&nbsp;
+two times, that you are mortal? Hadn't sin?
+
+00:48:39.480 --> 00:48:46.280
+Right? Yeah. So there's two questions there,&nbsp;
+I guess. The first one is why is the error&nbsp;&nbsp;
+
+00:48:46.280 --> 00:49:00.240
+consistently higher at early times? Okay. So&nbsp;
+basically, oblique in general, okay, so most,&nbsp;&nbsp;
+
+00:49:00.240 --> 00:49:08.520
+most of the contribution to the cost function&nbsp;
+error is due to the long time dynamics of the&nbsp;&nbsp;
+
+00:49:08.520 --> 00:49:14.040
+system. So for instance, if you if you have a&nbsp;
+limit cycle, for example, a good reduced order&nbsp;&nbsp;
+
+00:49:14.040 --> 00:49:20.360
+model will be a model that gives you the correct&nbsp;
+amplitude of the of the limit cycle oscillations&nbsp;&nbsp;
+
+00:49:20.360 --> 00:49:25.560
+and the correct face. And so in order to do that,&nbsp;
+it might not be necessary to minimize the error&nbsp;&nbsp;
+
+00:49:25.560 --> 00:49:35.760
+at early times. What's important, is that the&nbsp;
+wrong trajectory. And is in the correct phase&nbsp;&nbsp;
+
+00:49:35.760 --> 00:49:42.893
+with the farm trajectory he wants to farm enters&nbsp;
+the low dimensional subspace. So basically, it's&nbsp;&nbsp;
+
+00:49:43.520 --> 00:49:47.840
+kind of it's kind of a feature. It's kind of a&nbsp;
+it's kind of something that we have to live with,&nbsp;&nbsp;
+
+00:49:47.840 --> 00:49:53.800
+like the initial condition that we are giving&nbsp;
+that we are looking at might not be close to&nbsp;&nbsp;
+
+00:49:53.800 --> 00:50:01.400
+the subspace that we're protecting, that we're&nbsp;
+using for model reduction and work So with that,&nbsp;&nbsp;
+
+00:50:01.400 --> 00:50:06.080
+what oblique projection has allowed us to do&nbsp;
+is that over time, the wrong trajectory, and&nbsp;&nbsp;
+
+00:50:06.080 --> 00:50:11.480
+the farm trajectory will approach each other and&nbsp;
+will continue in a synchronized fashion. And so at&nbsp;&nbsp;
+
+00:50:11.480 --> 00:50:16.680
+that point, the round will be very good and the&nbsp;
+error will be very low. So that's kind of early&nbsp;&nbsp;
+
+00:50:16.680 --> 00:50:22.440
+time errors is kind of something that there's not&nbsp;
+much we can do about because the initial condition&nbsp;&nbsp;
+
+00:50:22.440 --> 00:50:26.880
+might be far away from the low dimensional&nbsp;
+subspace that we're considering for model&nbsp;&nbsp;
+
+00:50:26.880 --> 00:50:33.400
+reduction. So I hope that answers the question.&nbsp;
+Second question that we had that was extrapolating&nbsp;&nbsp;
+
+00:50:33.400 --> 00:50:41.280
+the model perform for long times? Well, as&nbsp;
+far as very well, I guess. So. In this case,&nbsp;&nbsp;
+
+00:50:41.280 --> 00:50:48.840
+for the toy model, we've trained from zero to 10.&nbsp;
+But we're testing the sinusoidal input is carried&nbsp;&nbsp;
+
+00:50:48.840 --> 00:50:58.320
+out for 30 time units. And so it's three times the&nbsp;
+temporal extension of the it's like three times&nbsp;&nbsp;
+
+00:50:58.320 --> 00:51:05.160
+the length of the training data set. And the same&nbsp;
+goes for the complex principal Landau equation&nbsp;&nbsp;
+
+00:51:05.160 --> 00:51:14.640
+and the letter of inquiry flow. We we would hope&nbsp;
+that it's kind of a it's important that models&nbsp;&nbsp;
+
+00:51:14.640 --> 00:51:22.240
+are able to extrapolate in time. And the way to&nbsp;
+guarantee that is to make sure that we're actually&nbsp;&nbsp;
+
+00:51:22.240 --> 00:51:29.240
+learning good dynamics, and that we're not, of&nbsp;
+course overfitting. Once, once we're confident&nbsp;&nbsp;
+
+00:51:29.240 --> 00:51:36.120
+that the ROM is that the wrong dynamics and the&nbsp;
+projection is good, then we tend to observe that&nbsp;&nbsp;
+
+00:51:36.120 --> 00:51:44.400
+the model is very capable of extrapolating to&nbsp;
+very long times that hadn't been seen before.
+
+00:51:44.400 --> 00:51:53.400
+Yeah. Awesome. Well, follow on to that. I mean,&nbsp;
+your examples are statistically periodic or&nbsp;&nbsp;
+
+00:51:53.400 --> 00:52:02.800
+the deterministically. Periodic, right? If&nbsp;
+so, if you are extrapolating time domains,&nbsp;&nbsp;
+
+00:52:03.360 --> 00:52:10.360
+you have seen those data people. So it's you&nbsp;
+are able to capture that using the soft spacey,&nbsp;&nbsp;
+
+00:52:10.360 --> 00:52:18.120
+you trained with a overly crazy&nbsp;
+projections and operator inference.
+
+00:52:19.360 --> 00:52:26.760
+Yeah, I'd like to point out that yes or no, no,&nbsp;
+in the sense that we don't train on periodic data,&nbsp;&nbsp;
+
+00:52:26.760 --> 00:52:33.720
+we train on impulses. Right. So the type of&nbsp;
+although the information contained within&nbsp;&nbsp;
+
+00:52:33.720 --> 00:52:40.920
+those impulses is enough. Yeah, that the model&nbsp;
+figures out that if you force sinusoidally,&nbsp;&nbsp;
+
+00:52:40.920 --> 00:52:46.000
+you will induce a limit cycle and with a certain&nbsp;
+frequency and amplitude. And so that's why it's&nbsp;&nbsp;
+
+00:52:46.000 --> 00:52:56.920
+capable of giving good predictions for a long&nbsp;
+time. Yeah. So yeah, I agree. Like, the model is,&nbsp;&nbsp;
+
+00:52:56.920 --> 00:53:06.600
+at the end of the day, as for any other data&nbsp;
+driven method? If if the input is, you know,&nbsp;&nbsp;
+
+00:53:06.600 --> 00:53:10.200
+in distribution, then we expect it&nbsp;
+to do well, if for some reason we&nbsp;&nbsp;
+
+00:53:10.200 --> 00:53:17.960
+have inputs that were no signature on the&nbsp;
+training data, then the model might fail.
+
+00:53:17.960 --> 00:53:26.440
+Yeah. Totally agree. Any other questions?&nbsp;
+I have a couple of questions. So&nbsp;&nbsp;
+
+00:53:27.800 --> 00:53:36.040
+all right, so before I go to my question,&nbsp;
+yes. The the recall, as to questions, he said,&nbsp;&nbsp;
+
+00:53:36.040 --> 00:53:44.360
+very interesting talk. And his first question&nbsp;
+is, do you have a follow ative estimate of&nbsp;&nbsp;
+
+00:53:44.360 --> 00:53:51.400
+the time saving of nitrile wrong compared&nbsp;
+to the farm in the example? So basically,&nbsp;&nbsp;
+
+00:53:51.400 --> 00:53:57.480
+speed up is talking about right. And&nbsp;
+second question is, which criterion&nbsp;&nbsp;
+
+00:53:57.480 --> 00:54:02.760
+did you use to decide the dimension&nbsp;
+of the reduce model? basis? Dimension?
+
+00:54:03.680 --> 00:54:04.320
+Great question. For
+
+00:54:04.320 --> 00:54:06.680
+the for the for the, for the last example, I
+
+00:54:06.680 --> 00:54:14.040
+guess. Well, okay, so speed up goes. I haven't&nbsp;
+computed it, but for this example we have. Okay,&nbsp;&nbsp;
+
+00:54:14.040 --> 00:54:25.080
+so this would be to flow variables. It will&nbsp;
+be 20,000 dimensional, if I'm not mistaken.&nbsp;&nbsp;
+
+00:54:25.080 --> 00:54:33.240
+So 20,000 degrees of freedom versus 50. Or no,&nbsp;
+you do the math 1000 times faster. Roughly,&nbsp;&nbsp;
+
+00:54:33.240 --> 00:54:43.760
+depending on Yeah, it's, yeah, it's quite a&nbsp;
+bit faster. And, um, as far as the other okay,&nbsp;&nbsp;
+
+00:54:43.760 --> 00:54:49.840
+what why did you, how did you pick the dimension?&nbsp;
+Okay, so I picked the dimension by doing pod&nbsp;&nbsp;
+
+00:54:49.840 --> 00:54:56.000
+first and looking at the decay of the singular&nbsp;
+values of the training of the training data set,&nbsp;&nbsp;
+
+00:54:56.000 --> 00:55:06.600
+and the leading 50 modes, gave us a Uh, forget&nbsp;
+like roughly 99% of the total variance in the in&nbsp;&nbsp;
+
+00:55:06.600 --> 00:55:13.520
+the data. So that's that's a very common criterion&nbsp;
+to to pick the underlying wrong dimension.
+
+00:55:13.520 --> 00:55:20.760
+Yeah. All right. Thank you.&nbsp;
+Can you tell us? Does it make&nbsp;&nbsp;
+
+00:55:20.760 --> 00:55:27.280
+sense to test this approach on chaotic&nbsp;
+equation such as the Lorentz system?
+
+00:55:27.280 --> 00:55:31.600
+That's, that's fantastic question. There might be&nbsp;&nbsp;
+
+00:55:31.600 --> 00:55:38.360
+a little bit of difficulties&nbsp;
+with that, in that, okay.
+
+00:55:38.360 --> 00:55:40.400
+Let's see.
+
+00:55:41.200 --> 00:55:44.720
+It might, it might make sense to do&nbsp;
+it, I would actually be very curious&nbsp;&nbsp;
+
+00:55:44.720 --> 00:55:49.520
+to see what happens. But what needs to&nbsp;
+be careful when computing the gradient,&nbsp;&nbsp;
+
+00:55:49.520 --> 00:55:57.680
+right? Because for when we're computing the,&nbsp;
+we're integrating the ROM adjuncts equation&nbsp;&nbsp;
+
+00:55:57.680 --> 00:56:03.480
+in time. So in effect, we were back propagating&nbsp;
+the earth through the through the trajectories,&nbsp;&nbsp;
+
+00:56:03.480 --> 00:56:11.240
+if the system is chaotic, then then the grading&nbsp;
+would blow up. So there are I'm not too familiar&nbsp;&nbsp;
+
+00:56:11.240 --> 00:56:17.640
+with literature on how to handle that. But I&nbsp;
+know there are ways to optimize systems of,&nbsp;&nbsp;
+
+00:56:17.640 --> 00:56:25.280
+you know, in the presence of chaos, so one&nbsp;
+might need to do a little bit of trickery to&nbsp;&nbsp;
+
+00:56:25.280 --> 00:56:33.400
+to be able to carry out the optimization.&nbsp;
+But yeah, in, in principle, yes. I would&nbsp;&nbsp;
+
+00:56:33.400 --> 00:56:41.760
+believe that it would make sense to, to look to&nbsp;
+apply this formulation to chaotic systems. Yeah.
+
+00:56:41.760 --> 00:56:50.720
+Thank you. So going back to my questions, my first&nbsp;
+question is kind of related to what diesel asked&nbsp;&nbsp;
+
+00:56:50.720 --> 00:56:59.060
+earlier, about, you know, all your times you got&nbsp;
+higher error and example, you know, to eat a trip&nbsp;&nbsp;
+
+00:56:59.060 --> 00:57:08.880
+and cavity problems, it clearly has a high energy&nbsp;
+phase, and later on that energy dies dies out. So&nbsp;&nbsp;
+
+00:57:08.880 --> 00:57:15.960
+the, for the touch to a problem, if you if I have&nbsp;
+to divide the simulation into two phase, you know,&nbsp;&nbsp;
+
+00:57:15.960 --> 00:57:24.040
+there's all the phase and later phase, there's a&nbsp;
+concept called the time windowing, the ROM where&nbsp;&nbsp;
+
+00:57:24.040 --> 00:57:31.840
+you can, you know, come up with a different set&nbsp;
+of the bases for the four different phase. So,&nbsp;&nbsp;
+
+00:57:31.840 --> 00:57:37.240
+in the beginning phase, you, you know, tailor&nbsp;
+your basis so that it can capture the high energy&nbsp;&nbsp;
+
+00:57:37.240 --> 00:57:42.920
+better. And then later on the, you know, it's&nbsp;
+easier problems. So you probably get away with&nbsp;&nbsp;
+
+00:57:42.920 --> 00:57:51.000
+a smaller dimension of the bases. So I think&nbsp;
+you could extend your algorithm to time in&nbsp;&nbsp;
+
+00:57:51.000 --> 00:58:03.000
+doing framework to even further improve the this I&nbsp;
+did, relatively early in the only time face. Yeah.
+
+00:58:03.000 --> 00:58:08.720
+That's, that's very interesting thought.&nbsp;
+Yeah. So I guess that that approach would&nbsp;&nbsp;
+
+00:58:08.720 --> 00:58:14.120
+let us maybe decrease the initial&nbsp;
+initial error due to the fact that&nbsp;&nbsp;
+
+00:58:16.040 --> 00:58:19.560
+the the initial condition is far away&nbsp;
+from the subspace we're projecting onto,&nbsp;&nbsp;
+
+00:58:19.560 --> 00:58:24.720
+but then we move on to a different subspace&nbsp;
+later on that, yeah, it's a great thought.
+
+00:58:25.760 --> 00:58:33.440
+And, yeah, I mean, there's a more discussion on&nbsp;
+to it. But yes, that's the basic idea. And when&nbsp;&nbsp;
+
+00:58:33.440 --> 00:58:39.200
+you go from one phase to another phase, you could&nbsp;
+come up with a some sort of physics indicator,&nbsp;&nbsp;
+
+00:58:39.200 --> 00:58:45.000
+depending on the applications. So that that&nbsp;
+indicator tells you automatically where to change&nbsp;&nbsp;
+
+00:58:45.000 --> 00:58:50.640
+it from, you know, first phase to the second&nbsp;
+baseball scores if you don't want to manually,&nbsp;&nbsp;
+
+00:58:50.640 --> 00:59:00.920
+you know, cut this time. So yeah. My second&nbsp;
+question is, okay, you have presented in the&nbsp;&nbsp;
+
+00:59:00.920 --> 00:59:09.160
+context of the reproductive case only. And natural&nbsp;
+next step would be the parameterization. Like the&nbsp;&nbsp;
+
+00:59:09.160 --> 00:59:18.880
+generalization OBO methods, if you can share any&nbsp;
+thought on that, because that's natural next step.
+
+00:59:18.880 --> 00:59:26.040
+Right, right. Yeah. So if we want to have&nbsp;
+parametric, reduced order models, I guess that&nbsp;&nbsp;
+
+00:59:26.680 --> 00:59:35.800
+what if I had to think about it really quick&nbsp;
+how to do it would be to interpolate across&nbsp;&nbsp;
+
+00:59:35.800 --> 00:59:41.760
+and parameter space. And of course, we'd have to&nbsp;
+be we'd have to be careful about how we do that,&nbsp;&nbsp;
+
+00:59:41.760 --> 00:59:48.800
+because we're like at each each parameter&nbsp;
+where we actually perform a fit, we are&nbsp;&nbsp;
+
+00:59:49.640 --> 00:59:57.920
+computing subspaces, and elements of Stiefel&nbsp;
+manifold. And so we have to interpolate on those&nbsp;&nbsp;
+
+00:59:57.920 --> 01:00:05.440
+manifolds and also, we'd have to get At that&nbsp;
+the interpolated at once. Once we interpolate,&nbsp;&nbsp;
+
+01:00:05.440 --> 01:00:15.480
+we preserve the property that fee upside to find&nbsp;
+the final projection. Yeah. So I guess that those&nbsp;&nbsp;
+
+01:00:15.480 --> 01:00:24.640
+would be the first concerns. Yeah. But it's very,&nbsp;
+very much the next step on on how to extend,&nbsp;&nbsp;
+
+01:00:24.640 --> 01:00:31.320
+and I welcome any sort of input. You guys&nbsp;
+are all experts in these topics. Yeah. So
+
+01:00:31.320 --> 01:00:38.360
+there is a interpolation and stuff on manifolds.&nbsp;
+There's an acronym for that. So I can definitely,&nbsp;&nbsp;
+
+01:00:38.360 --> 01:00:45.200
+definitely share that with you. Yeah, but yeah,&nbsp;
+I totally agree. You know, interpolation would&nbsp;&nbsp;
+
+01:00:45.200 --> 01:00:55.480
+be a way to go. Or the parameterizations. Awesome.&nbsp;
+Okay. Um, all right. Is there any other question?&nbsp;&nbsp;
+
+01:00:56.360 --> 01:01:04.320
+If not, let's thank our speaker, for the&nbsp;
+wonderful talk so much, Alberto. Very much.
+
+01:01:04.320 --> 01:01:05.400
+Thank you for joining.
+
+01:01:05.400 --> 01:01:09.720
+Very nice work. And after this talk, hopefully,&nbsp;&nbsp;
+
+01:01:09.720 --> 01:01:13.280
+there will be more collaboration&nbsp;
+between Lawrence Livermore and your,
+
+01:01:13.280 --> 01:01:14.920
+your I would love that.
+
+01:01:14.920 --> 01:01:18.360
+Let's let's let's keep in touch.&nbsp;
+All right. Sounds good. Okay,
+
+01:01:18.360 --> 01:01:20.600
+thanks for having me again. Bye. Bye. Thank you.
+

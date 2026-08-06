@@ -1,0 +1,3173 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.560 --> 00:00:05.460
+So, good morning, everyone. Welcome to the DDPS seminar. Before we introduce our invited speaker today, let's go over some rules as usual. First of all, please mute yourself during the talk. If you have immediate questions, you're welcome to unmute and ask or otherwise, please use the chat room to pose your question and show that we will address your questions at the end in the q&amp;a session. Second, today's seminar is open to extra external audience so no classified discussion is allowed. Finally, the talk will be recorded and upload to our YouTube channel. Now, let me introduce our speaker. It is an honor to host Matias Cho who goes by tear tear is currently an associate professor in the Department of Mathematics at Emory University since 2022. Before that, he held faculty positions at Virginia Tech and Texas State University, and he was a postdoctoral fellow at Emory University. He obtained his doctorate degree from the University of Lubbock and master's degree from the University of Hamburg, both in Germany. Thea is a Humboldt fellow and an active member of Siam. The focus of TMS research is on solving ill posed and large scale inverse problems with applications in different disciplines, such as image processing, dynamical systems, he develops and analyzed, efficient numerical methods with regularization, randomized methods, patient immersion, and scientific machine learning to date here will present his work on big data in real problems, promoting sparsity and learning to recognize, please enjoy the wonderful talk. Now without further ado, let me hand it to Tia by asking one random question. So besides Atlanta, and Savannah, what is your favorite city in Georgia? In Georgia? Savannah. So when I did you exclude Savannah? Yeah, maybe excluding Savannah? Okay. So maybe Athens, I need to go then to Georgia State. University of Georgia, which is nice town over there. Yeah, I heard that also. Okay. Yeah. Yeah, the stage is all yours right now. Okay. Thanks so much for having me, Tony. And for introduce for the introduction, I'm very excited to talk about some of my research with you. And and that can be also a discussion about about some new directions. And I'm very happy if you interrupt me if you have any questions or comment comments throughout the talk. So I would be happy about that. So let me start here. Let's see. Oh, yeah, there we go. I wanted to start with a little bit more of my introduction. So first of all, here in the front, you see Emory University. And in the background, you see the skyline from Atlanta. So that is a pretty city, as well. And I'm sitting right in this building here with a observatory over here somewhere at the side. And of course, it's not for right now, but very green, light green at the moment. So Emory University is nicely located close to Atlanta, or in Atlanta. And, yeah, it's always nice to visit that place. All right. As Tony already said, so my work is somewhere in the field of inverse problems, machine, scientific machine learning UQ, dynamical systems all involved. And I just made it a little bit schematic over here. So in in the intersection of these methods, nevertheless, central to all what I'm doing two major things, and that is a model and data. And with that, I think I fit somehow within the theme of the seminar, which is data driven, physical simulations. So what I'm particularly interested in is inverse problems. So here I'm did a very simple sketch of what are they derive more of what I assumed what is data model driven? If I have just data given my model model, less information could be just a line and I cannot extrapolate information out of this regime where my data gives me good information. On the other hand, if I would have just a model, the model lines could go lie everywhere. When I don't have any proper information. However, both together might give me good predictions for future events or for Why things we haven't observed. So this is a big regime. And today, I want to talk specifically about inverse problem and how, how better to illustrate this with some images. And I give here, just a simple image, the glaring example, this one here, let's assume that it's all true image. And let's assume we have some blur in there. And we assume this is done by some forward operation, maybe some kernel, some Gaussian kernel, and we get a blurred image. And actually, interest is coming from a blurred and noisy image to go back to the true image. So we can write this down as a linear problem. And we have done that many, many times, before going the opposite direction, is essentially just inverting the operator, and we should get back our image. If we were to do that here in this example, that leads to a total failure of recovering the information we actually want, although I have the true model in there. So what happens so the part of inverse problems is that it is ill posed meaning noise in the data, or in the model or in the Numerix, even though can be amplified. So and that is summarized by the notion of powerlessness, or ill conditioned of an operator and we say a problem is ill posed if a solution does not exist, is not unique, or does not depend continuously on the data. And that goes back to what Mr. We are seeing here on the very right. All right, that that is more or less the stage of inverse problems and illustrated with some, some images. And we can write this in many different forms. And I don't want to take the Bayesian approach, I will here just look at the variational approach, we typically have a data fidelity term or loss function between the model and the data. And to stabilize the data fit, we need some prior knowledge, which is encoded in typically some regularization. And this regularization might depend in some of some hyper parameters, which are imposed regularization parameters, or in your, in your Gaussian, or if you have other distributions, where your regularizer comes from some other terms, which might influence your prior knowledge, which you want to introduce into your system. So as we have seen earlier, just looking at the data, fidelity, John might lead to an ill posed problem, and we need to establish this standard example here is taken off problem where we have a data fidelity form over here with some regularization term, where we want the solution to be close, yes, somehow, in some sense to zero. That is the standard setup. And of course, we are doing this for many, many, many years. But how Where are still the challenges? And one thing is definitely the dimensionality is if we think about, yeah, training a neural network as an inverse problem is definitely the dimensionality involved in that or if we have reconstructions of some medical MRI images, which are four four dimensional, then this problem goes fast out of hand and standard methods do not necessarily apply. Another thing, which I already talked a little bit about is the regularization. It's how do I include this for example, how do I take a regularization parameter, this is up royally not necessarily known. It is sometimes derived from the noise distribution of our problem, but that is not necessarily there. And the last thing is probably the uncertainty quantification. If we want for large scale problems, also to know a little bit about how certain we are about our inverse solution, then this one is typically computationally very expensive, and this is a challenge to work on that. All right, I will mostly talk about the first two parts and for now at least ignore a little bit uncertainty finding vacation but although it is a topic on its own. Alright, more specifically, I want to talk about a new project and new method we developed and this is what we call variable projected augmented Lagrangian. And now we'll get into a lot of details over there, the Arctic paper you can find over here. We're lucky to get some funding and I want to acknowledge NSF there and this is a joint project with Rosie we're not and Petrus three nails. All right, let's dive into that and look at the following. I want to solve the following inverse problems here I have a data fidelity term and you see I, for simplicity, I'm looking at a linear problem and some regularization term. And you saw taken off regularization has a 2 million square here we look at a one norm and some matrix d over here as well with some operator which we want to project our solution onto. And typically what we want is sparsity in our solution and L one zero type norm is not suitable or computationally too expensive, we use the one norm over here, which promotes sparsity in general is rip condition is satisfied and so on. Nevertheless, we have done that many times. And this is typically referred to as a generalized lasso problem, the generalized come through an operator da, otherwise, we just call it lasso problem. All right, and some regularization parameter over here. All right, so to give you an example, where these type of problems come up, and this is definitely a similar signal processing, more specifically signal compression, where the signal needs to compress and you want a lot of pieces to be zero compressed sensing. And you already see these are all topics which came up especially in the late 2000s and started 2000s. And dictionary learning is something else but also denoising image deep learning and other things, I will talk about a couple of potential applications, it's a wide variety, which we can look at. So, this generalized lasso is computationally expensive, since we need iterative methods to solve this, we cannot directly solve it like the chicken off problems, if we have not enough not too large problem, and we can just invert but here we typically need iterative method. And it is computed internally more challenging than for example, that then the point I already made also here, we typically don't know the regularization parameter, how can we determine this parameter, especially in the sentence, or in the settings of L one regularization, which is not standard, many tools have been developed for the L two norm for the chicken off problem with the L. One, it is a little bit harder. Of course, there is a zoo of methods out there to attack this generalized lasso problem. And I stated a couple of methods over here. And if you want to, I actually put one more animal into into the zoo, but I want to convince you that there is a good reason and to use these kind of methods. Alright, to start with, I just want to be on the same page that everyone can hopefully follow. I want to introduce ADMM and derive it and just see how we develop the variable protected augmented Lagrangian. Alright, let's keep going. So this was our problem over here. And we can reformulate ages by introducing just a surrogate variable, here, the y. And what we do is we are just enforcing the Y to be equal to dx. We're just replacing this piece. In general, that might be a bad idea. Everyone who has some optimization will say okay, a constrained optimization problem is significantly harder than an unconstrained optimization problem. Why would we do that? Well, We'll get to that. So the first thing you do is okay, I have this constraint problem, I form a lot the logwatch function and include also a penalty term. And this is a quadratic penalty term where we call this the augmented Lagrangian here, I have my Lagrangian multipliers over here. And this is my augmented Lagrangian where I not enforce it strictly, but have some penalty term when y is not equal to dx. And you see that the last two terms are some quadratic terms. And we can reshuffle these bowls and just reformulate this both together to have it in this form, which is easier to, to handle. And then the c takes the form of our Lagrange multiplier with some some factor over here. Of course, the lambda over here is an additional penalty parameter, which penalizes our nonconformity to our constraint. All right, this is augmented Lagrangian. And before I start talking about ADMM, again, I want to scale back and say, let's look at a generic function. And for simplicity, let let f be strictly convex. And I want to assume it's separable. Meaning I have two sets of variables, which have different meanings or which I can separate, you can think about, if you are familiar with a lot of training neural networks, each layer has a set of parameters and they have different meanings, they are interact, but they have different meanings or might live on different scales, right, or you may have some linear parameters and some nonlinear parameters. How can you solve these kinds of generic problems. So actually, what we have seen this, we just artificially introduced variable in our previous slide. So this one can come through an Yeah, reformulation of a separate into a separate problem, or naturally appearing in applications and one example is super resolution, where you have a lot of small images, and you want to reconstruct largest image with sub pixel information. Let me tell you what we could do. So the first approach is just ignore that we have two different variables, right, and just combine them both together and take your favorite method to use an iterative optimization method, maybe that's a some gradient descent method, or some, some BFGS, or whatever optimization method you want. Over here, and you want to minimize that, go back. Sorry for that. And this is one approach, that oftentimes suffers some slow convergence, especially if the Para variables are on different scales or have very different meanings. To combat this, there are typically two approaches which you can use one is called in the descent, what you're doing there is you're taking your favorite optimization method, again, going in one direction, a step, and then in the other direction step, and you're continuing this process over and over again. And there's a third approach, which is called alternating direction, and the alternating direction, instead of going a step in a direction you're optimizing in this direction, and then you optimize in the opposite direction. And you continue this approach over and over again. So and I think this is lost. In illustration, over here, we are very close to our ADMM method, alternating direction, we had two variables in here, and we are alternating essentially over this verb. So that is ADMM. Essentially, essentially, you have an update on your parameter X, minimizing this problem over here, then you update your y minimizing this problem and the Lagrange multiplier and I don't want to say too much that you can update them as well. Instead of increasing the penalty parameter, you can use this approach. So now, let's digest this a little bit. And what what just happened. So first of all, we have here suddenly linearly squares problems since our y is constant. This one is now easy to solve, right? We know we can solve a linear least squares problems, since y is constant. That's perfect, wonderful to do. The second thing is this guy over here, if you look at the why it goes in here and here and is not convoluted by a matrix means all these optimization problems are independent, first of all, and it is the so called shrinkage problem. So we can actually have an analytic solution for that, by this computer. It's not complicated, but but it might have an easy update for me. Okay, details, we don't need to know about this, right. But this is fairly straightforward and to do. And then the last part is the update on the Lagrange multipliers. So if we look at this method, where is the computational most effort we need to put in that is, of course, the first part over here, then I have some matrices A and D, and I need to solve this linear problem. So if I take a standard method, it will be somehow of the complexity of some however, many iterations I took in my auto iteration, times the dimensionality times and square some somewhere around this. But of course, since line four is the most expensive one, we typically do an iterative method to solve this. And we don't even potentially accurately solve that maybe go just a couple of iterations, right? Another way is to do pre the the pre computed decomposition of these matrices before and because you're always applying the same matrix. So you can could do something like that as the factorization if you consider consider the normal equations, right? Something like that. All right. So, so far, so good, and that is ADMM. But I didn't tell you that there is actually a fourth option of what we discussed earlier. And the fourth option is the variable projection. Before we did optimization optimization as updates that updates that or ignoring, but you can also hibernate this update in one direction, and optimize in the other one. And this is what we call a variable projection. And we can actually write it in this form, like I showed over here and update just of X and somehow eliminate the second variable within the first burger. Okay, so this one was actually developed in the early 70s by cola era. And that was particularly that for the separable nonlinear problems, where you have a of x where x is a nonlinear operator or nonlinear parameter, determining your operator, and y is a linear variable. So for this, it has been developed. And we could easily apply this also for, for the generalized lasso approach. So all we need to do is changing line for when we do an update on the linear problem, and then solve for the second one. I want to just to emphasize over here that we do an X actually opposite to what what, what the variable projection was intended to. And that is updating the linear and optimizing over the nonlinear because the non year is actually straightforward. So this is what we call them variable projected augmented Grandstream. And if you look at this, did I have it over here? I think my might have put it in the next slide. This is a projected problem over here. And several nice things happen to to this update is if I compute gradient information, the nonlinear problem goes away because we have optimality. So a lot of computational pieces will get easier. Here, you could, for example, steak as the step direction, the negative gradient, right That would be one option. But there are other choices, right. And this is just one one of. And I also could compute a line search parameter actually, I could, for simplicity here, just use the linearize line search parameter, the optimal linearize, nine search parameter, and then it would be something like a conjugate gradients, just one conjugate gradient step in my linear problem. And the content computational cost, if I'm looking at this algorithm, it just reduces here from n squared to n. That is, what the differences. And since we are now in the realm of standard optimization methods, I could use any optimization method to use for my for my search direction, and standard stopping criteria as you can impose on on this unconstrained optimization. All right, so I think it is a good time to first look, look at an example of how this works. Let's, let's let's let's see that, or I just summarized everything, again, over here was a particular choice. This is just a simple choice I can think of to make it work, then my thing is about they're just matrix vector multiplies. There's no inversion in there. And the algorithm is very straightforward. So there's no SQL, which I need to pack in there, like with ADMM, and so on, this will just need per iteration to matrix vector multiplies with A and D and one transpose or one, I joined for that for each. All right. Before I show the Numerix, just just a quick and I put a couple of things under the rock, but we can show that if we use the variable protected romantic Lagrangian method, and we can show that the method will converge, there's uniqueness, we need to show uniqueness of the projected problem. And then we need to show that the variable projection method converges, and then later on that augmented Lagrangian method converges, and we are coupling all of these elements together, then into one. All right, so now now we have time for some numerical experiments. Let's start with a couple of things. First of all, this is a de noising problem, the simples what we can think of so the operator A is just the identity. And the D operator here comes from total variation, meaning what I actually want in the derivative derivative in each direction, I want just a few jumps, right. And that is what the D operator does over here. So it's a two D, two, total variation, we are comparing to ADM, and there we use LS QR for the inner solve. And here for just illustration, we pick a regularization parameter 10 and a standard stopping criteria takes 10 to the minus four. And let's see how both of these methods perform. So, here on the left, you see the iteration count and the red residual over here and a lock 10 And here is the arrow over here. So, what you will see is that the residual and also the arrows go nearly to the identical value. So relative errors are nearly identical. But what you see see is ADMM uses less iterations, then we use however, this is an arbitrary count, right? Because what does iterations really mean? So, we want to look at what is the actual work we are doing. So, we are looking at the wall clock time. And there the picture looks very different. If we look on the left, we are looking at sizes of this image and just increase the sizes. And we also compare to taken off solution of course, taken off as just a linear invert inversion and the time is very fast. However, the reconstruction will be terrible. Because that is not we want don't want an L to regularize over here. And if you look at the wall clock time, that blue one the V V Powell variable projection and method is significantly faster, despite they both produce essentially the same image, the curves of the relative error lie on the same path over here And if we look at the timings over here, how ADMM Fizzers report looks like it is, yeah, between seven and nine speed up. And I also looked at the number of matrix vector multiplications, which I needed within ADMM. Or deeper that I was already encouraging. Let me show you another image over here that came from the beginning. The girl was at all earring over here. And what I just did, I did an inpainting example. And there's essentially an indicator function, which we have over here. And what I did as a small test is what happens when I change my regularization parameter, too much timing and to my relative error. And you see, if I take a small regularization error, then my timing is very bad. And if I take it too high, it will be bad as well. But when I hit around about a good reconstruction, that method is fairly fast. So that shows the importance of regularization property. But how do I select this work? And there are many different methods already out there. As I mentioned, discrepancy principle, up rd, and generalized cross validation, they're all methods, which we can utilize. However, they get a little bit computationally expensive. And they don't generalize to the L one, so easily more needs to be put in there. What we took a different approach, we said, we want to learn the regularization. So what we assume is there is a mapping from our observation to our regularization parameter. And I put this boldface here, since we think about this not only as a regularization parameter, some hyper parameters or some information about your priors, you can construct an neural network, which you parameterize to approximate this mapping, and you learn this mapping. And here, I just for completeness, I just wrote down a new on the network, but I think I don't need to, in this crowd, go through many details there, you know, what a neural network is, you're mapping from B to the regular zation. And it's parameterised with all the weights and bias terms, and you will want to learn on the parameters in this network to get a good mapping from B to the regularization. That means, once I've learned this, a new B, I'm getting, I just need to forward propagate through my network and get a regularization. Just some details on the how we pick the loss function and so on. And let me just summarize what we do the learning is an offline phase, we generate some training data, some B and some Optima regularization parameter, we can do that since we are in the training phase, and we know the underlying truth over there. Then we set up the neural network and learn the neural network from this data in the offline phase, we get a new B propagate forward, and then we can compute the inverse problem. So notice here, I don't want to throw away the physical model. Right? I'm learning just on the prior, I don't learn the mapping from B to the reconstructions. I want to still have the physics in my system, but I want to induce inflammation on my prayer. All right, here is a simple example for heat equation one the heat equation, just proof of concept. And he I looked a look at the taken off problem generated a bunch of random signals with some noise and I even chose different noise levels right with this, I can do this all however I want. I compare this methods to UPI, ie GCV. These are standard methods and discrepancy principle I cut out because otherwise you wouldn't see anything in the picketers that perform underperformed significantly. There's another method which is on on the optimal experiment comes from optimal experimental design. And then I use two different neural networks. One is a dnn and one is an RM or extreme learning machine, which is just a linear network essentially Without activation. So as we learn on some training data, so let me show you the results over here. On the left hand side, you will look at the test set. And we look at the difference between our recovered parameter and the optimal. And I use all these different methods, this is should be an I O ID sorry for that. And, of course, it should be around zero, that would be optimal, right. So, to hit the optimal parameters, and you'll see, the DNS performs extremely well over here compared to any of the statistical methods, or to the linearized model. If we translate this in the reconstruction arrow over here, in the right hand side, you will see, this is the optimal I can do and the black over here and I can zoom in and you see, the dnn pretty much captured very well. Right. Okay, that is good. All right. So, the disadvantage of of standard method is, is that it is very expensive to compute the regularization parameter, and it is not always optimal. But you don't need any learning process within that why dnn seven yd s needs learning to generate you regularization parameter. But the dnn is performed extremely well and adapted to your data. Once you get a new data in, you get a new regularization prompt. And especially for these data, which I was presented. I took one more example from tomography over here, which is also a linear operation. And I slowly curve back to the generalized lasso problem. Let me go back. If you don't are not familiar with tomography tomography, you essentially have a source and a receiver over here and you're having line integrals and you compute that attenuation coefficient, and you are essentially put your data in one line you are observed over here, and then you're rotating and input all the data on here. But from this, we call it sinogram. You want to reconstruct the image. And this is the shape Logan Phantom. And they are randomized ship logon we use for training, this data over here. The set up is as we had before, with some noise levels. And I don't want to go into the details only that we use a regularization now, which is the generalized lasso problem, where we cannot so easily use statistical standard statistical methods to estimate the regularization. And here are some test images or training images we have over here. And let me just do quickly, the dnn set up of course, this we are operating on images. So we are talking about Convolutional Neural Networks makes the training easier. Small mode not on that actually training this network to the regularization form it is extremely easy. You're going to one dimension, this is not large dimensional problem, right, you're going from a large dimensional to a one dimensional part which is piece of cake for these neural networks. Okay, that is all set up. How we learn we do use atom and mini batches with certain learning rate over here. And I look at the two different dnns, the dnn and the shallow network over over here and you see the optimal regularization parameter compared to the to the optimal compared to the learned regularization parameter. And if this one is around this line over here would be best and you'll see that dnn does pretty well, the LRM cannot learn so well. Because it's a linear mapping, you might get even negative regularization parameters, which in this case is not of any value. Okay, so how how does now the performance look there? If I look at the distribution of my discrepancy between my learned one and the optimal one, I see I'm very well performed very Well With My dnn looking over here with a relative error, and the density over here, the optimal is highlighted in black, and the dnn, I think we can ignore the linear the neural network, it performs pretty well. And I want to point something out, which I was surprised about. And that is, why is our new neural network better than the optimal one that cannot be? And I, at a certain point, notice that the optimal regularization parameter, I numerically solved. And in some cases, it didn't find it wasn't a local minima. And it never found the optimal one, why the neural net network was able to compensate even for that, which was very impressive. Of course, we did a lot of other experiments, for example, took out total out of sample images, which generated still very sick, very good results. All right, I'm circling back to a couple of applications to give you some time. Give us some time for for discussion. This is a very exciting recent work, we are working on five d MRI, cardiac MRI, and if you asked me what five d MRI is, I don't know what the five d actually means. Yeah. That it sounds strange, but it comes not from me, okay. The point five d means actually, it comes through two different phases, respiratory and the cardiac and you want to reconstruct 3d volume in time was a respiratory and cardiac phase. And this was a project we, we just recently started, and we looked at ADMM, which they standard used, and we just implemented V. Powell, on a very small scale. And this is a timing from 14.4 hours to 4.5. And that is just just the simplest form we could do. That is just the starting point. And if you think about you want your results of a cardiac image, very fast, 14.4 hours is not reasonable. But 4.5 goes already in this right direction. Nevertheless, in the beginning, I showed you a speed up of seven to nine, where they're not there yet. So there's still something to do. There's also other two methods we can use or under sampling, where we are now, not yet. Nevertheless, the sizes of the problem are extremely large, and data size is extremely large. And these methods are performing pretty well on this example. A question I often get is, what is where's the difference between variable projection augmented Lagrangian compared to ADMM. And then ADM m where you don't solve all till the very end, actually, we never do this right, you have an inexact ADMM and that's what most people are using. However, in ADMM, the Y is always fixed in the first problem to optimize over x or to find an x here, we don't need this here, it is adopted because we are on a different manifold. And this I just illustrate by using for example, a linear different regularization, different step size different learning rate over here, which is not just the linearized one, if I choose that, I go to the con convergence much faster over here in just 40 iteration or 30 iteration compare to 120. Why the step lengths so is significantly different. So the methods are really different there you are operating on different manifests. Because there are so many applications I want to just show you some I played around with which are just fun to do. And this one is for example, trend graph trend filtering where with missing data, so you have here, for example, the roadmap nap of Minnesota, and you have some trend in the data, and there are some missing black dots and you want to read, reconstruct this information of the two data and you can Do that RIA L one regularization, here, the operator looks a little bit different than just the standard, find a difference. One, but it is fun, fun to play these kinds of problems. And they they are solved very fast. Here's another problem, which I mentioned already in the beginning. So which is super resolution, you have a bunch of small resolution images. And now I put 10. A Tony on the spot. What do you think what the is? Can you identify what the image is? An astronaut. Yeah, exactly. That's an astronaut. And if you actually do the sub pixel information, and you do the reconstruction, this is a true one in this reconstruction I'm getting it was the power over here. I don't know if I have another example. I have one more. But that is already in my conclusion, I think I finished up hopefully, about in time. So my first three years federal protection is under utilized. And it is fun to play with that and can give surprisingly good results and many different ways. We used it also and, and training neural networks, separable neural networks, which I didn't talk about today. But if you're looking at some spots recover with some lateral problems, people have some fast convergence. Of course, this is just the beginning of things we are investigating. One thing is I so far, I talked about nonlinear linear operators, Nanya operators, we don't need to change our code. Our code works for nonlinear operators as well. But we haven't played with that as well. So if there are some nonlinear PDE is involved with that, that will be very interesting. We just last week, try to do dictionary learning here you see the first results, actually, I have already better results. So we ran it already twice and the dictionary learning but more to come in the future. I didn't talk about much about changing the norms, you can do this with a separable function as well. If you are separating the splitting of the variables, you can leverage, there are some points as well. My collaborator works on joint inversion at the moment, if you have two different modalities, and you want to join this information. For example, in sub surface imaging, we are doing that right now. And looking at some results over there. I talked very briefly about convergence. But there's still a lot more to do. And where I want to go and I spent some time on randomized methods, I want to include them in this framework as well so that we can go to larger dimensions even then we are doing right now, I talked a bit about the selection of the regularization parameter. But there is still lots to do and depends a little bit still on the operator, how can we get information out of that, that's also something we are currently working on. And I just showed you this simple version of the puzzle with a certain descent direction, and step size selection. But we can generalize this. And we can use different things. We already started that as well. And it works fine. But there's still a long way to go. And with this. I'm happy to take any questions. Thank you, everyone. Yeah, thank you very much, RTF for the wonderful talk. I believe everyone enjoyed his talk as much as I do. So now is the q&amp;a section. So please feel free to unmute yourself and ask questions. Yeah, maybe I can start by asking you a question. So I am curious about the neural network approach for getting the the regularization parameter. So I can see that getting the parameter in the online face is cheap. But in the offline phase, you have to solve for the optimal parameters. So how expensive is that labeling process? Actually, you hit the nail on the head, you know that that does expand invensis part at the moment over here. And then you're training the neural network is a piece of cake, really that that is the easy part, but finding the optimal parameters. Yeah, not necessarily even convex problems. And we we went already in some directions that is reinforcement learning that will We are learning it on the fly, what a good parameter is not the optimal, but ignoring what the optimal is but trying to reconstruct the image of the optimal parameter. So trying to ignore that one. However, so far that is also computationally expensive and reinforcement learning is not really proud to converge very fast. So, that is something we are working on right now. But good question. Very good question. I see. Yeah, thanks for the answer. So, so, is there a question from the audience? Yep. Yeah, thanks for great talk. I'm PhD from UT Austin. So, I just following single and quiet questions, I just follow that and I think there is a paper that people reach the, the author, they, they train the trainer parameters in the inverse problem framework, they train the regularizer and regularization parameter at the same times. And they achieve a better than the normal thicken up regulations. I mean, in that work is like, not only trained, optimum regularization parameter, but they weren't so trained. I think the inverse map at the same time, so, yeah, I just mentioned that. So, you can look on that and coloration here are talking about 10 Bhutan's work on then. No, no. Okay. Okay. So there is some work on there as well. And what we try to avoid over here is learning the inverse map from from b to x, then, that is the inverse problem. And I know that there's tons of work out there, and it's very interesting, but we wanted to keep the physical model really in place. We didn't want to touch this piece. But you're right, there's a lot of interesting workout. Nevertheless, whatever paper you have, there in mind, please send it to me, I'm very interested about developments, which are their true. Yeah, it'd be because what I have in my eyes, you know, like, instead of, we just waste a resource to train only the regularization parameter, right? Learning, like the the approach learning regularizer they also have the same meaning. They include the optimum regularization parameter with the priors, like the, like the proper regularizer for inverse problems. So which, like we have, like one, one cue to birth, something like that, instead of only white realization, I wish. So to be honest, we That's why I did it a bold face. So we learned not only one regularization parameter, we did multiple different things. One thing is, for example, what we learned, which was was interesting, how many iterative assaults I should do in my inversion process, because that is, for example, implicit regularization, right? So then I have my V, and I will get how many iterations? Should I When should I start this my directions? Right? Other things is, for example, you might want to have a mean or some covariance information, right? So you want parameterize covariance or so you want to maybe learn that one? Yeah, this is these are all different option, which, which is really great. And we haven't explored everything yet. But I'm really very curious. Please send me the paper or the link to the paper. Yeah, thank you. Yep. And yeah, I just like, one one was not like you mentioned about big data. inverse problem, right? And then if we have big data, and we need to do further optimize around for training data, I think is very expensive. Yeah. So there's some work we did on iterative. So it's on sketching, it touches sketching. If you have your larger and you just use pieces of your data. And there's relationship is between the sampled regularization parameters a SAM add regularization to the sample problem to the overall regularization parameter. And if you're doing interdit sell something you can actually learn the regularization, why you are going, which is very interesting, and we applied this For for linear problems, this is called slim tic sample limited memory taken off. Or then for neural networks. This is called Sample limited memory training. So slim train. Oh, do you have that work on your watch scholar? Yeah, it should be. It's called. If you look slim train, then you will find it. I hope so. Okay, thank you. Great. Yeah, thank you so much. Okay, so it gets some fruitful discussion. So are there any more questions from the audience? So, if we try to this is, this is in down. I'm currently a postdoc at Purdue University. And thanks for your wonderful talk. My question is related to Kim, maybe turn to page 23rd Or somewhere, or you have figures showing the how the accuracy will change with respect to the choice of regularization. This one, yes, yeah, this figure on the left top or at the top? And I'm wondering that for the data driven case, we actually have the noise model, right. So we have some principles that we can actually choose a relative, okay, parameter mu. Right. So maybe not an optimal for each measurement, but it's an okay, one. So my question is that was a reconstruction be quite sensitive to the choice of mu when it is near this relative good regularization parameter? That is an extremely good question, right? And first of all, I want to answer, it always depends on the application, right? So how sensitive your regularization parameter is, right? We see here, for example, their regularization parameter with 10 to the minus four and 10 to the minus two, will give a give me the pretty much the same result, right? And that if we have a good method to just a priori, estimated, plugged in, right, that that will definitely help. If I'm looking though, at the discrepancy principle, or yeah, you UPI E or generalized cost value, for large scale problems, they're extremely expensive, because you need need to invert this system multiple times. Right. So and that becomes very expensive. And that's why we are currently working on using the DNS particular for this problem, but also including information about the operator. So that not only be but also the operator, just some small information is in there, that we can have a quick information about the regularization parameter, and you're right, maybe additional information, maybe noise variance. If I know that I should plug it in, right, I can get out. There's something out and I would love to include that. Yeah. Thank you, thank you for your answer. I yeah, I just like have the following command on this one as well, there is active subspace methods for inverse problems. So, actually, I did we shot on that and if we apply an active subspace or inverse problem here, so we all latch, like over regularization parameter, we we we still get good results like the others a real robot, not squid over realisations parameter. So you will not have the inaccurate go blows up on with the lacks regulation parameter. Maybe I don't follow, follow I you saying you want an iterative approach to just use large singular values essentially, to reconstruct, or do you want to? Yeah, yeah. can apply that. Yes. Yeah, that would be an iterative method. And but that is typically more for L to regularization. For our one, it becomes a little bit more difficult, right? Yes. Yeah, I agree. Yeah. Thank you. Okay, so if there are no more questions, let's thank antiA for his wonderful talk and sharing his excellent results of us. Okay. Recording here
+
+
+00:00:06.000 --> 00:00:09.480
+ 
+
+
+00:00:09.480 --> 00:00:13.350
+ 
+
+
+00:00:13.350 --> 00:00:17.010
+ 
+
+
+00:00:17.040 --> 00:00:21.390
+ 
+
+
+00:00:21.390 --> 00:00:24.120
+ 
+
+
+00:00:24.120 --> 00:00:24.690
+
+
+00:00:25.920 --> 00:00:30.360
+ 
+
+
+00:00:30.420 --> 00:00:33.090
+ 
+
+
+00:00:33.120 --> 00:00:37.320
+ 
+
+
+00:00:37.350 --> 00:00:41.430
+ 
+
+
+00:00:41.460 --> 00:00:45.660
+ 
+
+
+00:00:45.660 --> 00:00:48.600
+ 
+
+
+00:00:48.630 --> 00:00:53.610
+ 
+
+
+00:00:53.610 --> 00:00:57.810
+ 
+
+
+00:00:57.810 --> 00:01:01.800
+ 
+
+
+00:01:01.800 --> 00:01:05.460
+ 
+
+
+00:01:05.730 --> 00:01:08.370
+ 
+
+
+00:01:08.370 --> 00:01:12.780
+ 
+
+
+00:01:12.780 --> 00:01:18.270
+ 
+
+
+00:01:18.270 --> 00:01:21.390
+ 
+
+
+00:01:21.420 --> 00:01:25.530
+ 
+
+
+00:01:26.100 --> 00:01:30.000
+ 
+
+
+00:01:30.000 --> 00:01:33.780
+ 
+
+
+00:01:33.780 --> 00:01:37.200
+ 
+
+
+00:01:37.230 --> 00:01:41.100
+ 
+
+
+00:01:41.100 --> 00:01:45.450
+ 
+
+
+00:01:45.450 --> 00:01:49.350
+ 
+
+
+00:01:49.350 --> 00:01:53.760
+ 
+
+
+00:01:53.760 --> 00:01:55.290
+
+
+00:01:56.310 --> 00:01:58.740
+
+
+00:02:00.720 --> 00:02:04.620
+ 
+
+
+00:02:04.620 --> 00:02:10.620
+ 
+
+
+00:02:10.620 --> 00:02:10.890
+
+
+00:02:12.000 --> 00:02:16.500
+ 
+
+
+00:02:16.500 --> 00:02:18.180
+
+
+00:02:19.230 --> 00:02:23.460
+ 
+
+
+00:02:23.460 --> 00:02:27.300
+ 
+
+
+00:02:27.330 --> 00:02:31.470
+ 
+
+
+00:02:31.470 --> 00:02:31.980
+
+
+00:02:33.300 --> 00:02:38.250
+ 
+
+
+00:02:38.250 --> 00:02:41.670
+ 
+
+
+00:02:41.670 --> 00:02:46.290
+ 
+
+
+00:02:46.290 --> 00:02:49.470
+
+
+00:02:50.550 --> 00:02:55.170
+ 
+
+
+00:02:55.170 --> 00:02:59.700
+ 
+
+
+00:02:59.700 --> 00:03:05.100
+ 
+
+
+00:03:05.190 --> 00:03:09.150
+ 
+
+
+00:03:09.150 --> 00:03:15.120
+ 
+
+
+00:03:15.120 --> 00:03:19.140
+ 
+
+
+00:03:19.140 --> 00:03:24.570
+ 
+
+
+00:03:24.750 --> 00:03:29.010
+ 
+
+
+00:03:29.010 --> 00:03:34.800
+ 
+
+
+00:03:34.800 --> 00:03:37.080
+
+
+00:03:38.730 --> 00:03:43.740
+ 
+
+
+00:03:43.740 --> 00:03:47.970
+ 
+
+
+00:03:47.970 --> 00:03:52.020
+ 
+
+
+00:03:52.020 --> 00:03:56.280
+ 
+
+
+00:03:56.280 --> 00:04:01.740
+ 
+
+
+00:04:01.740 --> 00:04:05.850
+ 
+
+
+00:04:06.060 --> 00:04:10.650
+ 
+
+
+00:04:10.650 --> 00:04:15.840
+ 
+
+
+00:04:15.840 --> 00:04:23.220
+ 
+
+
+00:04:23.580 --> 00:04:26.640
+ 
+
+
+00:04:26.640 --> 00:04:31.950
+ 
+
+
+00:04:31.950 --> 00:04:35.280
+ 
+
+
+00:04:35.580 --> 00:04:39.870
+ 
+
+
+00:04:39.870 --> 00:04:40.680
+
+
+00:04:41.910 --> 00:04:45.390
+ 
+
+
+00:04:45.390 --> 00:04:51.390
+ 
+
+
+00:04:51.390 --> 00:04:56.280
+ 
+
+
+00:04:56.280 --> 00:04:59.970
+ 
+
+
+00:05:00.000 --> 00:05:00.480
+
+
+00:05:01.979 --> 00:05:03.989
+
+
+00:05:05.069 --> 00:05:09.329
+ 
+
+
+00:05:09.359 --> 00:05:14.669
+ 
+
+
+00:05:15.269 --> 00:05:19.229
+ 
+
+
+00:05:19.229 --> 00:05:23.099
+ 
+
+
+00:05:23.099 --> 00:05:27.359
+ 
+
+
+00:05:27.359 --> 00:05:32.249
+ 
+
+
+00:05:32.249 --> 00:05:35.879
+ 
+
+
+00:05:35.879 --> 00:05:40.529
+ 
+
+
+00:05:40.529 --> 00:05:47.159
+ 
+
+
+00:05:47.159 --> 00:05:51.509
+ 
+
+
+00:05:51.809 --> 00:05:56.729
+ 
+
+
+00:05:56.849 --> 00:06:00.449
+ 
+
+
+00:06:00.509 --> 00:06:06.809
+ 
+
+
+00:06:06.809 --> 00:06:10.949
+ 
+
+
+00:06:10.949 --> 00:06:16.139
+ 
+
+
+00:06:16.139 --> 00:06:22.589
+ 
+
+
+00:06:22.589 --> 00:06:27.569
+ 
+
+
+00:06:27.569 --> 00:06:33.449
+ 
+
+
+00:06:33.449 --> 00:06:38.819
+ 
+
+
+00:06:39.419 --> 00:06:43.469
+ 
+
+
+00:06:43.469 --> 00:06:49.079
+ 
+
+
+00:06:49.079 --> 00:06:53.309
+ 
+
+
+00:06:53.309 --> 00:06:53.609
+
+
+00:06:54.810 --> 00:06:58.260
+ 
+
+
+00:06:58.260 --> 00:07:03.360
+ 
+
+
+00:07:03.360 --> 00:07:06.450
+ 
+
+
+00:07:06.720 --> 00:07:09.900
+ 
+
+
+00:07:09.900 --> 00:07:13.770
+ 
+
+
+00:07:14.910 --> 00:07:20.910
+ 
+
+
+00:07:21.420 --> 00:07:27.930
+ 
+
+
+00:07:27.960 --> 00:07:32.850
+ 
+
+
+00:07:32.850 --> 00:07:37.050
+ 
+
+
+00:07:37.050 --> 00:07:42.510
+ 
+
+
+00:07:42.510 --> 00:07:45.270
+ 
+
+
+00:07:45.270 --> 00:07:49.530
+ 
+
+
+00:07:49.590 --> 00:07:50.520
+
+
+00:07:51.540 --> 00:07:54.810
+ 
+
+
+00:07:54.810 --> 00:07:59.310
+ 
+
+
+00:08:00.450 --> 00:08:06.330
+ 
+
+
+00:08:06.330 --> 00:08:07.380
+
+
+00:08:08.490 --> 00:08:13.200
+ 
+
+
+00:08:13.230 --> 00:08:19.200
+ 
+
+
+00:08:19.290 --> 00:08:23.100
+ 
+
+
+00:08:23.100 --> 00:08:29.880
+ 
+
+
+00:08:29.880 --> 00:08:33.450
+ 
+
+
+00:08:33.450 --> 00:08:39.390
+ 
+
+
+00:08:39.450 --> 00:08:44.250
+ 
+
+
+00:08:44.280 --> 00:08:48.870
+ 
+
+
+00:08:49.110 --> 00:08:53.730
+ 
+
+
+00:08:54.030 --> 00:08:59.640
+ 
+
+
+00:08:59.640 --> 00:09:03.720
+ 
+
+
+00:09:03.720 --> 00:09:07.530
+ 
+
+
+00:09:09.390 --> 00:09:14.460
+ 
+
+
+00:09:14.460 --> 00:09:17.970
+ 
+
+
+00:09:17.970 --> 00:09:21.990
+ 
+
+
+00:09:21.990 --> 00:09:24.180
+
+
+00:09:25.980 --> 00:09:32.550
+ 
+
+
+00:09:32.610 --> 00:09:37.350
+ 
+
+
+00:09:37.560 --> 00:09:40.830
+ 
+
+
+00:09:40.830 --> 00:09:45.750
+ 
+
+
+00:09:45.810 --> 00:09:48.810
+ 
+
+
+00:09:48.810 --> 00:09:51.120
+ 
+
+
+00:09:52.410 --> 00:09:56.340
+ 
+
+
+00:09:56.610 --> 00:09:59.970
+ 
+
+
+00:10:00.000 --> 00:10:02.820
+ 
+
+
+00:10:04.140 --> 00:10:07.380
+ 
+
+
+00:10:08.429 --> 00:10:12.989
+ 
+
+
+00:10:12.989 --> 00:10:16.019
+ 
+
+
+00:10:16.019 --> 00:10:20.639
+ 
+
+
+00:10:20.639 --> 00:10:22.439
+
+
+00:10:23.760 --> 00:10:27.990
+ 
+
+
+00:10:28.020 --> 00:10:31.950
+ 
+
+
+00:10:31.950 --> 00:10:33.120
+
+
+00:10:34.770 --> 00:10:40.470
+ 
+
+
+00:10:40.470 --> 00:10:42.930
+
+
+00:10:44.340 --> 00:10:48.390
+ 
+
+
+00:10:48.390 --> 00:10:53.670
+ 
+
+
+00:10:53.670 --> 00:10:57.600
+ 
+
+
+00:10:57.600 --> 00:11:04.440
+ 
+
+
+00:11:04.440 --> 00:11:07.920
+ 
+
+
+00:11:09.180 --> 00:11:14.700
+ 
+
+
+00:11:14.910 --> 00:11:18.060
+ 
+
+
+00:11:19.200 --> 00:11:23.880
+ 
+
+
+00:11:23.880 --> 00:11:29.190
+ 
+
+
+00:11:29.190 --> 00:11:34.140
+ 
+
+
+00:11:34.140 --> 00:11:37.560
+ 
+
+
+00:11:37.590 --> 00:11:42.030
+ 
+
+
+00:11:42.030 --> 00:11:46.140
+ 
+
+
+00:11:46.140 --> 00:11:48.420
+
+
+00:11:49.800 --> 00:11:52.800
+ 
+
+
+00:11:52.800 --> 00:11:53.010
+
+
+00:11:55.920 --> 00:11:59.310
+ 
+
+
+00:11:59.310 --> 00:12:02.700
+ 
+
+
+00:12:05.160 --> 00:12:09.840
+ 
+
+
+00:12:10.080 --> 00:12:13.560
+ 
+
+
+00:12:13.560 --> 00:12:16.830
+ 
+
+
+00:12:16.830 --> 00:12:21.930
+ 
+
+
+00:12:21.930 --> 00:12:26.910
+ 
+
+
+00:12:26.940 --> 00:12:30.870
+ 
+
+
+00:12:30.900 --> 00:12:34.740
+ 
+
+
+00:12:34.740 --> 00:12:38.040
+ 
+
+
+00:12:41.940 --> 00:12:49.170
+ 
+
+
+00:12:49.260 --> 00:12:53.760
+ 
+
+
+00:12:53.790 --> 00:12:59.190
+ 
+
+
+00:12:59.790 --> 00:13:03.390
+ 
+
+
+00:13:03.390 --> 00:13:08.940
+ 
+
+
+00:13:09.030 --> 00:13:12.060
+ 
+
+
+00:13:13.860 --> 00:13:18.450
+ 
+
+
+00:13:18.450 --> 00:13:22.830
+ 
+
+
+00:13:22.830 --> 00:13:27.000
+ 
+
+
+00:13:27.030 --> 00:13:31.440
+ 
+
+
+00:13:31.440 --> 00:13:34.590
+ 
+
+
+00:13:34.710 --> 00:13:37.890
+ 
+
+
+00:13:39.570 --> 00:13:44.940
+ 
+
+
+00:13:45.600 --> 00:13:48.990
+ 
+
+
+00:13:50.310 --> 00:13:55.110
+ 
+
+
+00:13:55.110 --> 00:14:00.660
+ 
+
+
+00:14:00.660 --> 00:14:05.370
+ 
+
+
+00:14:05.400 --> 00:14:09.810
+ 
+
+
+00:14:10.380 --> 00:14:14.760
+ 
+
+
+00:14:14.790 --> 00:14:18.630
+ 
+
+
+00:14:18.630 --> 00:14:19.200
+
+
+00:14:20.550 --> 00:14:21.030
+
+
+00:14:22.470 --> 00:14:27.330
+ 
+
+
+00:14:27.330 --> 00:14:32.940
+ 
+
+
+00:14:33.960 --> 00:14:40.530
+ 
+
+
+00:14:40.830 --> 00:14:46.290
+ 
+
+
+00:14:46.290 --> 00:14:50.820
+ 
+
+
+00:14:50.820 --> 00:14:54.210
+ 
+
+
+00:14:54.210 --> 00:14:57.690
+ 
+
+
+00:14:57.690 --> 00:14:59.970
+ 
+
+
+00:15:00.000 --> 00:15:04.380
+ 
+
+
+00:15:04.380 --> 00:15:08.880
+ 
+
+
+00:15:08.880 --> 00:15:13.380
+ 
+
+
+00:15:13.380 --> 00:15:17.430
+ 
+
+
+00:15:17.430 --> 00:15:22.110
+ 
+
+
+00:15:22.350 --> 00:15:27.450
+ 
+
+
+00:15:27.480 --> 00:15:31.860
+ 
+
+
+00:15:33.450 --> 00:15:33.960
+
+
+00:15:35.490 --> 00:15:39.570
+ 
+
+
+00:15:39.570 --> 00:15:43.500
+ 
+
+
+00:15:43.500 --> 00:15:47.820
+ 
+
+
+00:15:47.820 --> 00:15:52.920
+ 
+
+
+00:15:52.920 --> 00:15:57.930
+ 
+
+
+00:15:57.930 --> 00:16:03.180
+ 
+
+
+00:16:03.480 --> 00:16:05.910
+
+
+00:16:07.440 --> 00:16:13.740
+ 
+
+
+00:16:14.040 --> 00:16:18.360
+ 
+
+
+00:16:18.390 --> 00:16:22.380
+ 
+
+
+00:16:22.380 --> 00:16:27.450
+ 
+
+
+00:16:27.450 --> 00:16:33.450
+ 
+
+
+00:16:33.450 --> 00:16:36.780
+ 
+
+
+00:16:36.780 --> 00:16:40.620
+ 
+
+
+00:16:40.620 --> 00:16:42.510
+ 
+
+
+00:16:43.830 --> 00:16:46.800
+ 
+
+
+00:16:46.800 --> 00:16:47.400
+
+
+00:16:48.780 --> 00:16:52.230
+ 
+
+
+00:16:52.230 --> 00:16:55.980
+ 
+
+
+00:16:55.980 --> 00:16:57.180
+
+
+00:16:59.190 --> 00:17:04.860
+ 
+
+
+00:17:04.860 --> 00:17:07.080
+
+
+00:17:08.760 --> 00:17:13.590
+ 
+
+
+00:17:13.590 --> 00:17:20.880
+ 
+
+
+00:17:20.880 --> 00:17:25.260
+ 
+
+
+00:17:25.260 --> 00:17:27.450
+
+
+00:17:28.770 --> 00:17:31.860
+ 
+
+
+00:17:31.860 --> 00:17:36.840
+ 
+
+
+00:17:39.210 --> 00:17:43.980
+ 
+
+
+00:17:43.980 --> 00:17:48.300
+ 
+
+
+00:17:48.330 --> 00:17:53.160
+ 
+
+
+00:17:53.190 --> 00:17:58.140
+ 
+
+
+00:17:58.170 --> 00:18:04.620
+ 
+
+
+00:18:04.620 --> 00:18:08.520
+ 
+
+
+00:18:08.520 --> 00:18:12.600
+ 
+
+
+00:18:12.600 --> 00:18:17.310
+ 
+
+
+00:18:17.340 --> 00:18:22.890
+ 
+
+
+00:18:23.100 --> 00:18:29.040
+ 
+
+
+00:18:29.040 --> 00:18:32.550
+ 
+
+
+00:18:33.330 --> 00:18:37.740
+ 
+
+
+00:18:37.800 --> 00:18:41.490
+ 
+
+
+00:18:41.490 --> 00:18:45.270
+ 
+
+
+00:18:45.420 --> 00:18:47.670
+
+
+00:18:49.230 --> 00:18:53.700
+ 
+
+
+00:18:53.700 --> 00:18:57.870
+ 
+
+
+00:18:57.870 --> 00:19:02.370
+ 
+
+
+00:19:02.400 --> 00:19:05.640
+ 
+
+
+00:19:06.630 --> 00:19:10.050
+ 
+
+
+00:19:11.160 --> 00:19:15.780
+ 
+
+
+00:19:15.810 --> 00:19:21.270
+ 
+
+
+00:19:21.270 --> 00:19:26.010
+ 
+
+
+00:19:26.010 --> 00:19:31.890
+ 
+
+
+00:19:31.890 --> 00:19:38.040
+ 
+
+
+00:19:38.040 --> 00:19:44.130
+ 
+
+
+00:19:44.130 --> 00:19:47.250
+ 
+
+
+00:19:47.250 --> 00:19:51.540
+ 
+
+
+00:19:51.540 --> 00:19:58.230
+ 
+
+
+00:19:58.230 --> 00:19:59.970
+
+
+00:20:00.000 --> 00:20:05.880
+ 
+
+
+00:20:05.880 --> 00:20:10.980
+ 
+
+
+00:20:10.980 --> 00:20:15.000
+ 
+
+
+00:20:15.000 --> 00:20:19.410
+ 
+
+
+00:20:20.940 --> 00:20:26.010
+ 
+
+
+00:20:26.010 --> 00:20:31.050
+ 
+
+
+00:20:31.050 --> 00:20:35.310
+ 
+
+
+00:20:35.310 --> 00:20:40.200
+ 
+
+
+00:20:40.560 --> 00:20:44.670
+ 
+
+
+00:20:44.670 --> 00:20:45.360
+
+
+00:20:46.740 --> 00:20:50.040
+ 
+
+
+00:20:50.040 --> 00:20:54.780
+ 
+
+
+00:20:54.780 --> 00:20:57.690
+ 
+
+
+00:20:59.040 --> 00:21:02.130
+ 
+
+
+00:21:02.130 --> 00:21:02.910
+
+
+00:21:04.440 --> 00:21:10.710
+ 
+
+
+00:21:10.740 --> 00:21:15.120
+ 
+
+
+00:21:15.120 --> 00:21:17.130
+
+
+00:21:18.300 --> 00:21:21.990
+ 
+
+
+00:21:23.370 --> 00:21:29.670
+ 
+
+
+00:21:29.670 --> 00:21:35.010
+ 
+
+
+00:21:35.010 --> 00:21:38.280
+ 
+
+
+00:21:38.310 --> 00:21:44.160
+ 
+
+
+00:21:44.160 --> 00:21:50.220
+ 
+
+
+00:21:50.430 --> 00:21:55.320
+ 
+
+
+00:21:55.320 --> 00:21:58.110
+ 
+
+
+00:21:59.460 --> 00:22:04.950
+ 
+
+
+00:22:04.950 --> 00:22:08.340
+ 
+
+
+00:22:08.340 --> 00:22:11.520
+ 
+
+
+00:22:11.520 --> 00:22:14.970
+ 
+
+
+00:22:14.970 --> 00:22:16.770
+ 
+
+
+00:22:18.060 --> 00:22:25.350
+ 
+
+
+00:22:25.350 --> 00:22:29.670
+ 
+
+
+00:22:29.670 --> 00:22:33.660
+ 
+
+
+00:22:33.660 --> 00:22:34.350
+
+
+00:22:35.430 --> 00:22:38.910
+ 
+
+
+00:22:38.940 --> 00:22:43.410
+ 
+
+
+00:22:44.010 --> 00:22:48.360
+ 
+
+
+00:22:49.380 --> 00:22:52.470
+ 
+
+
+00:22:52.500 --> 00:22:56.670
+ 
+
+
+00:22:56.670 --> 00:23:01.650
+ 
+
+
+00:23:01.710 --> 00:23:03.690
+
+
+00:23:04.830 --> 00:23:11.550
+ 
+
+
+00:23:11.550 --> 00:23:16.110
+ 
+
+
+00:23:16.110 --> 00:23:21.450
+ 
+
+
+00:23:21.450 --> 00:23:25.530
+ 
+
+
+00:23:25.530 --> 00:23:28.650
+
+
+00:23:29.700 --> 00:23:34.200
+ 
+
+
+00:23:34.290 --> 00:23:40.260
+ 
+
+
+00:23:40.350 --> 00:23:46.950
+ 
+
+
+00:23:46.950 --> 00:23:53.730
+ 
+
+
+00:23:53.730 --> 00:23:58.140
+ 
+
+
+00:23:58.170 --> 00:24:04.290
+ 
+
+
+00:24:04.290 --> 00:24:05.730
+
+
+00:24:06.780 --> 00:24:10.890
+ 
+
+
+00:24:10.920 --> 00:24:16.080
+ 
+
+
+00:24:16.080 --> 00:24:19.140
+ 
+
+
+00:24:20.610 --> 00:24:22.980
+
+
+00:24:24.570 --> 00:24:29.310
+ 
+
+
+00:24:29.310 --> 00:24:35.400
+ 
+
+
+00:24:35.400 --> 00:24:41.910
+ 
+
+
+00:24:41.910 --> 00:24:45.990
+ 
+
+
+00:24:45.990 --> 00:24:51.960
+ 
+
+
+00:24:51.960 --> 00:24:52.500
+
+
+00:24:53.790 --> 00:24:58.800
+ 
+
+
+00:24:58.800 --> 00:24:59.970
+
+
+00:25:00.000 --> 00:25:03.480
+ 
+
+
+00:25:03.900 --> 00:25:06.120
+
+
+00:25:08.790 --> 00:25:14.310
+ 
+
+
+00:25:14.310 --> 00:25:18.870
+ 
+
+
+00:25:18.870 --> 00:25:21.660
+ 
+
+
+00:25:21.660 --> 00:25:25.020
+ 
+
+
+00:25:25.020 --> 00:25:29.160
+ 
+
+
+00:25:29.190 --> 00:25:29.700
+
+
+00:25:30.870 --> 00:25:35.220
+ 
+
+
+00:25:35.220 --> 00:25:40.650
+ 
+
+
+00:25:41.100 --> 00:25:45.240
+ 
+
+
+00:25:45.390 --> 00:25:48.990
+ 
+
+
+00:25:48.990 --> 00:25:51.630
+
+
+00:25:52.680 --> 00:25:57.120
+ 
+
+
+00:25:57.120 --> 00:25:59.910
+ 
+
+
+00:26:01.170 --> 00:26:05.250
+ 
+
+
+00:26:05.250 --> 00:26:08.940
+ 
+
+
+00:26:08.940 --> 00:26:12.720
+ 
+
+
+00:26:12.720 --> 00:26:16.170
+ 
+
+
+00:26:16.170 --> 00:26:17.820
+
+
+00:26:19.230 --> 00:26:23.460
+ 
+
+
+00:26:23.670 --> 00:26:27.870
+ 
+
+
+00:26:27.900 --> 00:26:32.910
+ 
+
+
+00:26:32.910 --> 00:26:39.060
+ 
+
+
+00:26:39.060 --> 00:26:43.410
+ 
+
+
+00:26:43.410 --> 00:26:46.770
+ 
+
+
+00:26:48.480 --> 00:26:48.900
+
+
+00:26:50.310 --> 00:26:56.190
+ 
+
+
+00:26:56.190 --> 00:27:00.420
+ 
+
+
+00:27:00.450 --> 00:27:04.650
+ 
+
+
+00:27:05.160 --> 00:27:10.260
+ 
+
+
+00:27:10.260 --> 00:27:14.190
+ 
+
+
+00:27:14.190 --> 00:27:18.000
+ 
+
+
+00:27:18.000 --> 00:27:21.750
+ 
+
+
+00:27:21.750 --> 00:27:25.500
+ 
+
+
+00:27:25.500 --> 00:27:25.860
+
+
+00:27:28.110 --> 00:27:31.950
+ 
+
+
+00:27:31.950 --> 00:27:35.850
+ 
+
+
+00:27:36.420 --> 00:27:40.680
+ 
+
+
+00:27:40.710 --> 00:27:46.410
+ 
+
+
+00:27:46.410 --> 00:27:51.240
+ 
+
+
+00:27:51.240 --> 00:27:54.960
+ 
+
+
+00:27:54.960 --> 00:27:59.700
+ 
+
+
+00:27:59.700 --> 00:28:04.260
+ 
+
+
+00:28:05.670 --> 00:28:10.050
+ 
+
+
+00:28:10.050 --> 00:28:12.330
+
+
+00:28:13.590 --> 00:28:17.310
+ 
+
+
+00:28:17.340 --> 00:28:21.180
+ 
+
+
+00:28:21.180 --> 00:28:27.270
+ 
+
+
+00:28:27.300 --> 00:28:32.250
+ 
+
+
+00:28:32.250 --> 00:28:37.590
+ 
+
+
+00:28:37.590 --> 00:28:42.420
+ 
+
+
+00:28:42.450 --> 00:28:46.890
+ 
+
+
+00:28:46.890 --> 00:28:47.490
+
+
+00:28:48.720 --> 00:28:54.960
+ 
+
+
+00:28:54.960 --> 00:28:55.260
+
+
+00:28:56.520 --> 00:29:01.440
+ 
+
+
+00:29:01.590 --> 00:29:05.790
+ 
+
+
+00:29:05.790 --> 00:29:08.820
+ 
+
+
+00:29:08.820 --> 00:29:09.120
+
+
+00:29:10.380 --> 00:29:13.890
+ 
+
+
+00:29:13.890 --> 00:29:18.090
+ 
+
+
+00:29:18.090 --> 00:29:23.220
+ 
+
+
+00:29:23.310 --> 00:29:27.600
+ 
+
+
+00:29:27.600 --> 00:29:31.830
+ 
+
+
+00:29:32.880 --> 00:29:36.270
+ 
+
+
+00:29:38.250 --> 00:29:42.150
+ 
+
+
+00:29:42.480 --> 00:29:46.590
+ 
+
+
+00:29:46.740 --> 00:29:53.760
+ 
+
+
+00:29:53.760 --> 00:29:58.200
+ 
+
+
+00:29:58.200 --> 00:29:59.970
+
+
+00:30:00.719 --> 00:30:05.939
+ 
+
+
+00:30:05.939 --> 00:30:13.139
+ 
+
+
+00:30:13.139 --> 00:30:15.869
+ 
+
+
+00:30:17.490 --> 00:30:22.830
+ 
+
+
+00:30:22.860 --> 00:30:23.250
+
+
+00:30:24.900 --> 00:30:30.540
+ 
+
+
+00:30:30.540 --> 00:30:32.400
+ 
+
+
+00:30:33.540 --> 00:30:38.400
+ 
+
+
+00:30:39.450 --> 00:30:44.460
+ 
+
+
+00:30:44.460 --> 00:30:48.030
+ 
+
+
+00:30:48.060 --> 00:30:53.670
+ 
+
+
+00:30:53.670 --> 00:30:58.620
+ 
+
+
+00:30:58.620 --> 00:31:01.710
+ 
+
+
+00:31:01.710 --> 00:31:06.300
+ 
+
+
+00:31:06.300 --> 00:31:10.080
+ 
+
+
+00:31:10.320 --> 00:31:12.060
+
+
+00:31:13.260 --> 00:31:18.690
+ 
+
+
+00:31:18.690 --> 00:31:20.070
+
+
+00:31:21.660 --> 00:31:24.870
+ 
+
+
+00:31:24.870 --> 00:31:30.030
+ 
+
+
+00:31:30.060 --> 00:31:33.510
+ 
+
+
+00:31:33.510 --> 00:31:37.260
+ 
+
+
+00:31:37.260 --> 00:31:42.840
+ 
+
+
+00:31:42.840 --> 00:31:48.450
+ 
+
+
+00:31:48.450 --> 00:31:54.210
+ 
+
+
+00:31:54.240 --> 00:32:00.330
+ 
+
+
+00:32:00.480 --> 00:32:04.380
+ 
+
+
+00:32:04.470 --> 00:32:07.620
+ 
+
+
+00:32:07.620 --> 00:32:11.310
+ 
+
+
+00:32:11.310 --> 00:32:11.760
+
+
+00:32:13.170 --> 00:32:18.840
+ 
+
+
+00:32:18.870 --> 00:32:23.340
+ 
+
+
+00:32:23.340 --> 00:32:27.510
+ 
+
+
+00:32:27.510 --> 00:32:31.230
+ 
+
+
+00:32:31.230 --> 00:32:36.240
+ 
+
+
+00:32:36.360 --> 00:32:40.620
+ 
+
+
+00:32:40.620 --> 00:32:45.480
+ 
+
+
+00:32:45.480 --> 00:32:50.160
+ 
+
+
+00:32:50.190 --> 00:32:55.530
+ 
+
+
+00:32:55.530 --> 00:32:56.610
+
+
+00:32:57.810 --> 00:33:02.010
+ 
+
+
+00:33:02.010 --> 00:33:04.140
+ 
+
+
+00:33:06.420 --> 00:33:08.250
+
+
+00:33:09.270 --> 00:33:14.280
+ 
+
+
+00:33:14.310 --> 00:33:18.690
+ 
+
+
+00:33:18.690 --> 00:33:24.090
+ 
+
+
+00:33:24.120 --> 00:33:27.570
+ 
+
+
+00:33:27.570 --> 00:33:31.770
+ 
+
+
+00:33:31.770 --> 00:33:37.140
+ 
+
+
+00:33:37.140 --> 00:33:41.850
+ 
+
+
+00:33:41.850 --> 00:33:46.440
+ 
+
+
+00:33:46.440 --> 00:33:50.610
+ 
+
+
+00:33:50.610 --> 00:33:55.710
+ 
+
+
+00:33:55.710 --> 00:33:59.520
+ 
+
+
+00:33:59.700 --> 00:34:01.950
+ 
+
+
+00:34:03.870 --> 00:34:07.980
+ 
+
+
+00:34:07.980 --> 00:34:12.840
+ 
+
+
+00:34:12.870 --> 00:34:16.290
+ 
+
+
+00:34:16.290 --> 00:34:20.400
+ 
+
+
+00:34:20.400 --> 00:34:25.380
+ 
+
+
+00:34:27.300 --> 00:34:32.160
+ 
+
+
+00:34:32.160 --> 00:34:36.180
+ 
+
+
+00:34:36.360 --> 00:34:38.790
+ 
+
+
+00:34:38.790 --> 00:34:42.030
+ 
+
+
+00:34:42.030 --> 00:34:46.200
+ 
+
+
+00:34:46.200 --> 00:34:49.890
+ 
+
+
+00:34:49.890 --> 00:34:56.550
+ 
+
+
+00:34:56.550 --> 00:34:59.760
+ 
+
+
+00:35:00.719 --> 00:35:01.259
+
+
+00:35:02.280 --> 00:35:02.940
+
+
+00:35:04.110 --> 00:35:09.060
+ 
+
+
+00:35:09.060 --> 00:35:14.700
+ 
+
+
+00:35:14.700 --> 00:35:19.170
+ 
+
+
+00:35:19.170 --> 00:35:24.540
+ 
+
+
+00:35:24.570 --> 00:35:29.880
+ 
+
+
+00:35:29.910 --> 00:35:36.300
+ 
+
+
+00:35:36.300 --> 00:35:42.600
+ 
+
+
+00:35:43.290 --> 00:35:46.830
+ 
+
+
+00:35:46.830 --> 00:35:50.370
+ 
+
+
+00:35:51.960 --> 00:35:56.850
+ 
+
+
+00:35:56.850 --> 00:36:00.870
+ 
+
+
+00:36:00.870 --> 00:36:05.940
+ 
+
+
+00:36:06.090 --> 00:36:09.210
+ 
+
+
+00:36:10.440 --> 00:36:11.580
+
+
+00:36:12.630 --> 00:36:17.400
+ 
+
+
+00:36:19.080 --> 00:36:22.560
+ 
+
+
+00:36:22.560 --> 00:36:27.660
+ 
+
+
+00:36:27.660 --> 00:36:34.140
+ 
+
+
+00:36:34.170 --> 00:36:37.140
+ 
+
+
+00:36:38.460 --> 00:36:44.370
+ 
+
+
+00:36:44.370 --> 00:36:47.940
+ 
+
+
+00:36:48.150 --> 00:36:52.920
+ 
+
+
+00:36:52.950 --> 00:36:54.510
+
+
+00:36:55.620 --> 00:36:59.730
+ 
+
+
+00:36:59.760 --> 00:37:04.860
+ 
+
+
+00:37:05.400 --> 00:37:08.070
+
+
+00:37:10.260 --> 00:37:14.700
+ 
+
+
+00:37:14.730 --> 00:37:15.600
+
+
+00:37:17.070 --> 00:37:20.370
+ 
+
+
+00:37:20.370 --> 00:37:22.950
+ 
+
+
+00:37:23.970 --> 00:37:27.000
+ 
+
+
+00:37:27.030 --> 00:37:31.710
+ 
+
+
+00:37:31.710 --> 00:37:36.360
+ 
+
+
+00:37:36.510 --> 00:37:40.260
+ 
+
+
+00:37:40.260 --> 00:37:43.710
+ 
+
+
+00:37:43.710 --> 00:37:48.750
+ 
+
+
+00:37:49.830 --> 00:37:54.960
+ 
+
+
+00:37:54.960 --> 00:37:57.750
+ 
+
+
+00:37:57.750 --> 00:38:03.540
+ 
+
+
+00:38:03.540 --> 00:38:07.350
+ 
+
+
+00:38:07.350 --> 00:38:12.390
+ 
+
+
+00:38:12.390 --> 00:38:18.930
+ 
+
+
+00:38:18.930 --> 00:38:25.380
+ 
+
+
+00:38:25.380 --> 00:38:29.730
+ 
+
+
+00:38:29.730 --> 00:38:32.370
+ 
+
+
+00:38:33.810 --> 00:38:38.610
+ 
+
+
+00:38:38.610 --> 00:38:41.910
+ 
+
+
+00:38:41.910 --> 00:38:45.000
+ 
+
+
+00:38:45.030 --> 00:38:47.910
+ 
+
+
+00:38:47.910 --> 00:38:48.960
+
+
+00:38:50.010 --> 00:38:52.140
+ 
+
+
+00:38:54.000 --> 00:38:59.670
+ 
+
+
+00:38:59.670 --> 00:39:02.880
+ 
+
+
+00:39:04.650 --> 00:39:08.670
+ 
+
+
+00:39:09.900 --> 00:39:15.090
+ 
+
+
+00:39:15.090 --> 00:39:19.500
+ 
+
+
+00:39:19.500 --> 00:39:23.400
+ 
+
+
+00:39:23.430 --> 00:39:24.690
+
+
+00:39:26.160 --> 00:39:29.550
+ 
+
+
+00:39:29.550 --> 00:39:34.590
+ 
+
+
+00:39:34.590 --> 00:39:37.590
+ 
+
+
+00:39:37.590 --> 00:39:44.100
+ 
+
+
+00:39:44.130 --> 00:39:50.310
+ 
+
+
+00:39:50.310 --> 00:39:54.450
+ 
+
+
+00:39:54.450 --> 00:39:57.510
+
+
+00:39:58.590 --> 00:39:59.970
+
+
+00:40:00.000 --> 00:40:01.350
+
+
+00:40:03.659 --> 00:40:08.309
+ 
+
+
+00:40:08.729 --> 00:40:13.019
+ 
+
+
+00:40:13.019 --> 00:40:19.619
+ 
+
+
+00:40:19.619 --> 00:40:24.119
+ 
+
+
+00:40:24.119 --> 00:40:26.879
+ 
+
+
+00:40:27.960 --> 00:40:32.550
+ 
+
+
+00:40:32.550 --> 00:40:34.770
+
+
+00:40:35.850 --> 00:40:40.560
+ 
+
+
+00:40:40.560 --> 00:40:45.960
+ 
+
+
+00:40:45.960 --> 00:40:50.790
+ 
+
+
+00:40:50.790 --> 00:40:55.050
+ 
+
+
+00:40:55.050 --> 00:40:57.300
+
+
+00:40:58.380 --> 00:41:02.190
+ 
+
+
+00:41:02.220 --> 00:41:09.510
+ 
+
+
+00:41:09.810 --> 00:41:14.970
+ 
+
+
+00:41:15.060 --> 00:41:19.590
+ 
+
+
+00:41:19.590 --> 00:41:23.850
+ 
+
+
+00:41:23.850 --> 00:41:29.340
+ 
+
+
+00:41:29.340 --> 00:41:34.260
+ 
+
+
+00:41:35.070 --> 00:41:35.520
+
+
+00:41:36.720 --> 00:41:41.550
+ 
+
+
+00:41:41.580 --> 00:41:44.820
+ 
+
+
+00:41:44.820 --> 00:41:48.180
+ 
+
+
+00:41:49.260 --> 00:41:54.630
+ 
+
+
+00:41:55.410 --> 00:41:59.280
+ 
+
+
+00:41:59.280 --> 00:42:04.380
+ 
+
+
+00:42:04.440 --> 00:42:08.970
+ 
+
+
+00:42:08.970 --> 00:42:16.500
+ 
+
+
+00:42:16.500 --> 00:42:22.230
+ 
+
+
+00:42:22.260 --> 00:42:27.600
+ 
+
+
+00:42:27.600 --> 00:42:33.480
+ 
+
+
+00:42:33.480 --> 00:42:36.900
+ 
+
+
+00:42:36.900 --> 00:42:41.460
+ 
+
+
+00:42:41.460 --> 00:42:45.450
+ 
+
+
+00:42:45.750 --> 00:42:50.820
+ 
+
+
+00:42:50.820 --> 00:42:56.400
+ 
+
+
+00:42:56.400 --> 00:42:58.770
+ 
+
+
+00:42:59.910 --> 00:43:01.110
+
+
+00:43:02.160 --> 00:43:05.190
+ 
+
+
+00:43:06.990 --> 00:43:09.780
+
+
+00:43:10.830 --> 00:43:15.090
+ 
+
+
+00:43:17.370 --> 00:43:20.490
+ 
+
+
+00:43:23.760 --> 00:43:28.470
+ 
+
+
+00:43:28.500 --> 00:43:31.950
+ 
+
+
+00:43:31.950 --> 00:43:37.380
+ 
+
+
+00:43:37.650 --> 00:43:45.510
+ 
+
+
+00:43:45.510 --> 00:43:52.110
+ 
+
+
+00:43:52.110 --> 00:43:56.520
+ 
+
+
+00:43:56.760 --> 00:44:00.000
+ 
+
+
+00:44:00.420 --> 00:44:05.910
+ 
+
+
+00:44:05.910 --> 00:44:10.170
+ 
+
+
+00:44:10.170 --> 00:44:15.990
+ 
+
+
+00:44:15.990 --> 00:44:21.810
+ 
+
+
+00:44:21.810 --> 00:44:25.920
+ 
+
+
+00:44:25.920 --> 00:44:28.500
+ 
+
+
+00:44:31.080 --> 00:44:33.990
+ 
+
+
+00:44:33.990 --> 00:44:38.280
+ 
+
+
+00:44:38.280 --> 00:44:39.630
+
+
+00:44:41.100 --> 00:44:45.120
+ 
+
+
+00:44:45.120 --> 00:44:49.650
+ 
+
+
+00:44:49.650 --> 00:44:54.090
+ 
+
+
+00:44:54.090 --> 00:44:58.590
+ 
+
+
+00:44:58.590 --> 00:45:00.000
+
+
+00:45:00.000 --> 00:45:03.570
+ 
+
+
+00:45:03.570 --> 00:45:06.150
+ 
+
+
+00:45:06.150 --> 00:45:11.370
+ 
+
+
+00:45:11.400 --> 00:45:15.360
+ 
+
+
+00:45:16.650 --> 00:45:19.050
+ 
+
+
+00:45:19.050 --> 00:45:23.160
+ 
+
+
+00:45:23.430 --> 00:45:29.070
+ 
+
+
+00:45:29.220 --> 00:45:32.400
+ 
+
+
+00:45:32.400 --> 00:45:32.730
+
+
+00:45:38.820 --> 00:45:43.230
+ 
+
+
+00:45:43.230 --> 00:45:48.390
+ 
+
+
+00:45:48.390 --> 00:45:51.810
+ 
+
+
+00:45:51.810 --> 00:45:56.610
+ 
+
+
+00:45:56.610 --> 00:46:00.210
+ 
+
+
+00:46:00.210 --> 00:46:04.740
+ 
+
+
+00:46:05.640 --> 00:46:11.670
+ 
+
+
+00:46:11.790 --> 00:46:17.340
+ 
+
+
+00:46:17.340 --> 00:46:21.450
+ 
+
+
+00:46:21.450 --> 00:46:25.380
+ 
+
+
+00:46:25.380 --> 00:46:30.540
+ 
+
+
+00:46:30.540 --> 00:46:35.880
+ 
+
+
+00:46:35.880 --> 00:46:41.340
+ 
+
+
+00:46:41.340 --> 00:46:44.940
+ 
+
+
+00:46:44.940 --> 00:46:49.440
+ 
+
+
+00:46:49.440 --> 00:46:53.190
+ 
+
+
+00:46:53.190 --> 00:46:56.490
+ 
+
+
+00:46:56.490 --> 00:46:59.850
+ 
+
+
+00:46:59.850 --> 00:47:03.420
+ 
+
+
+00:47:04.500 --> 00:47:07.830
+ 
+
+
+00:47:07.830 --> 00:47:12.150
+ 
+
+
+00:47:12.660 --> 00:47:16.770
+ 
+
+
+00:47:16.770 --> 00:47:20.400
+ 
+
+
+00:47:20.400 --> 00:47:26.340
+ 
+
+
+00:47:26.370 --> 00:47:31.860
+ 
+
+
+00:47:31.860 --> 00:47:32.460
+
+
+00:47:34.110 --> 00:47:37.320
+ 
+
+
+00:47:37.320 --> 00:47:39.870
+ 
+
+
+00:47:39.870 --> 00:47:44.460
+ 
+
+
+00:47:44.460 --> 00:47:49.080
+ 
+
+
+00:47:49.080 --> 00:47:52.830
+ 
+
+
+00:47:52.830 --> 00:47:59.070
+ 
+
+
+00:47:59.100 --> 00:48:02.880
+ 
+
+
+00:48:02.880 --> 00:48:07.080
+ 
+
+
+00:48:07.110 --> 00:48:11.370
+ 
+
+
+00:48:11.370 --> 00:48:15.240
+ 
+
+
+00:48:15.240 --> 00:48:19.590
+ 
+
+
+00:48:19.650 --> 00:48:23.130
+ 
+
+
+00:48:23.280 --> 00:48:29.160
+ 
+
+
+00:48:29.160 --> 00:48:30.840
+
+
+00:48:32.010 --> 00:48:36.300
+ 
+
+
+00:48:36.300 --> 00:48:39.420
+ 
+
+
+00:48:39.420 --> 00:48:43.710
+ 
+
+
+00:48:43.710 --> 00:48:49.140
+ 
+
+
+00:48:49.140 --> 00:48:49.590
+
+
+00:48:51.030 --> 00:48:54.120
+ 
+
+
+00:48:54.120 --> 00:48:58.290
+ 
+
+
+00:48:58.290 --> 00:49:02.850
+ 
+
+
+00:49:02.850 --> 00:49:03.600
+
+
+00:49:08.100 --> 00:49:12.060
+ 
+
+
+00:49:12.060 --> 00:49:13.110
+
+
+00:49:14.250 --> 00:49:18.270
+ 
+
+
+00:49:18.270 --> 00:49:21.900
+ 
+
+
+00:49:21.900 --> 00:49:26.370
+ 
+
+
+00:49:26.370 --> 00:49:30.450
+ 
+
+
+00:49:30.450 --> 00:49:34.920
+ 
+
+
+00:49:34.980 --> 00:49:38.070
+ 
+
+
+00:49:39.090 --> 00:49:39.660
+
+
+00:49:41.160 --> 00:49:44.100
+ 
+
+
+00:49:44.550 --> 00:49:47.400
+ 
+
+
+00:49:47.400 --> 00:49:51.270
+ 
+
+
+00:49:51.270 --> 00:49:58.380
+ 
+
+
+00:49:58.560 --> 00:49:59.970
+
+
+00:50:00.000 --> 00:50:04.800
+ 
+
+
+00:50:04.800 --> 00:50:08.250
+ 
+
+
+00:50:08.250 --> 00:50:13.380
+ 
+
+
+00:50:13.380 --> 00:50:17.940
+ 
+
+
+00:50:18.120 --> 00:50:22.470
+ 
+
+
+00:50:22.500 --> 00:50:25.980
+ 
+
+
+00:50:25.980 --> 00:50:26.730
+
+
+00:50:27.870 --> 00:50:31.770
+ 
+
+
+00:50:31.770 --> 00:50:33.240
+
+
+00:50:35.310 --> 00:50:39.240
+ 
+
+
+00:50:40.830 --> 00:50:41.130
+
+
+00:50:42.990 --> 00:50:48.480
+ 
+
+
+00:50:48.480 --> 00:50:49.110
+
+
+00:50:50.640 --> 00:50:55.380
+ 
+
+
+00:50:56.820 --> 00:51:01.590
+ 
+
+
+00:51:01.590 --> 00:51:07.320
+ 
+
+
+00:51:07.800 --> 00:51:10.260
+ 
+
+
+00:51:11.790 --> 00:51:13.170
+
+
+00:51:14.790 --> 00:51:19.080
+ 
+
+
+00:51:19.080 --> 00:51:23.760
+ 
+
+
+00:51:23.760 --> 00:51:29.550
+ 
+
+
+00:51:29.550 --> 00:51:31.200
+ 
+
+
+00:51:33.000 --> 00:51:37.530
+ 
+
+
+00:51:37.530 --> 00:51:41.220
+ 
+
+
+00:51:41.220 --> 00:51:43.830
+ 
+
+
+00:51:45.120 --> 00:51:51.540
+ 
+
+
+00:51:52.020 --> 00:51:57.300
+ 
+
+
+00:51:57.300 --> 00:52:01.740
+ 
+
+
+00:52:01.740 --> 00:52:05.520
+ 
+
+
+00:52:05.520 --> 00:52:09.780
+ 
+
+
+00:52:09.780 --> 00:52:13.830
+ 
+
+
+00:52:13.830 --> 00:52:17.160
+ 
+
+
+00:52:17.160 --> 00:52:22.500
+ 
+
+
+00:52:22.560 --> 00:52:26.040
+ 
+
+
+00:52:26.040 --> 00:52:29.010
+ 
+
+
+00:52:30.150 --> 00:52:34.080
+ 
+
+
+00:52:34.560 --> 00:52:36.480
+
+
+00:52:37.500 --> 00:52:41.790
+ 
+
+
+00:52:41.790 --> 00:52:44.970
+ 
+
+
+00:52:46.620 --> 00:52:52.410
+ 
+
+
+00:52:53.490 --> 00:52:59.550
+ 
+
+
+00:52:59.550 --> 00:53:01.380
+
+
+00:53:02.640 --> 00:53:06.720
+ 
+
+
+00:53:06.720 --> 00:53:12.150
+ 
+
+
+00:53:12.150 --> 00:53:15.900
+ 
+
+
+00:53:15.900 --> 00:53:18.810
+ 
+
+
+00:53:18.810 --> 00:53:22.740
+ 
+
+
+00:53:22.740 --> 00:53:23.280
+
+
+00:53:24.480 --> 00:53:29.220
+ 
+
+
+00:53:29.220 --> 00:53:32.880
+ 
+
+
+00:53:32.880 --> 00:53:36.690
+ 
+
+
+00:53:36.690 --> 00:53:40.170
+ 
+
+
+00:53:40.170 --> 00:53:42.750
+ 
+
+
+00:53:43.980 --> 00:53:48.390
+ 
+
+
+00:53:48.450 --> 00:53:52.620
+ 
+
+
+00:53:52.620 --> 00:53:56.580
+ 
+
+
+00:53:56.580 --> 00:53:59.970
+ 
+
+
+00:54:00.060 --> 00:54:03.600
+ 
+
+
+00:54:03.600 --> 00:54:09.180
+ 
+
+
+00:54:09.570 --> 00:54:14.070
+ 
+
+
+00:54:14.400 --> 00:54:18.660
+ 
+
+
+00:54:18.660 --> 00:54:22.650
+ 
+
+
+00:54:23.220 --> 00:54:29.520
+ 
+
+
+00:54:29.520 --> 00:54:33.210
+ 
+
+
+00:54:33.210 --> 00:54:38.910
+ 
+
+
+00:54:38.940 --> 00:54:42.630
+ 
+
+
+00:54:42.630 --> 00:54:47.970
+ 
+
+
+00:54:48.060 --> 00:54:51.600
+ 
+
+
+00:54:51.810 --> 00:54:56.460
+ 
+
+
+00:54:56.460 --> 00:54:59.640
+ 
+
+
+00:55:00.000 --> 00:55:03.810
+ 
+
+
+00:55:03.810 --> 00:55:08.340
+ 
+
+
+00:55:08.340 --> 00:55:13.650
+ 
+
+
+00:55:14.070 --> 00:55:18.210
+ 
+
+
+00:55:18.240 --> 00:55:22.500
+ 
+
+
+00:55:22.500 --> 00:55:25.470
+ 
+
+
+00:55:27.060 --> 00:55:31.350
+ 
+
+
+00:55:31.380 --> 00:55:33.360
+ 
+
+
+00:55:34.920 --> 00:55:37.950
+
+
+00:55:39.390 --> 00:55:43.890
+ 
+
+
+00:55:43.890 --> 00:55:48.150
+ 
+
+
+00:55:48.150 --> 00:55:53.820
+ 
+
+
+00:55:53.820 --> 00:55:59.070
+ 
+
+
+00:55:59.070 --> 00:56:01.320
+ 
+
+
+00:56:02.940 --> 00:56:08.790
+ 
+
+
+00:56:09.090 --> 00:56:13.050
+ 
+
+
+00:56:13.050 --> 00:56:17.670
+ 
+
+
+00:56:17.670 --> 00:56:22.170
+ 
+
+
+00:56:22.170 --> 00:56:25.620
+ 
+
+
+00:56:25.650 --> 00:56:29.700
+ 
+
+
+00:56:29.700 --> 00:56:34.200
+ 
+
+
+00:56:34.200 --> 00:56:37.860
+ 
+
+
+00:56:37.860 --> 00:56:42.150
+ 
+
+
+00:56:42.150 --> 00:56:45.570
+ 
+
+
+00:56:45.570 --> 00:56:50.910
+ 
+
+
+00:56:50.910 --> 00:56:53.910
+ 
+
+
+00:56:53.910 --> 00:56:58.830
+ 
+
+
+00:56:58.830 --> 00:57:02.010
+
+
+00:57:04.020 --> 00:57:08.940
+ 
+
+
+00:57:08.940 --> 00:57:12.930
+ 
+
+
+00:57:12.960 --> 00:57:15.300
+
+
+00:57:18.270 --> 00:57:23.370
+ 
+
+
+00:57:23.370 --> 00:57:26.460
+ 
+
+
+00:57:26.460 --> 00:57:32.670
+ 
+
+
+00:57:32.670 --> 00:57:36.330
+ 
+
+
+00:57:36.330 --> 00:57:41.610
+ 
+
+
+00:57:41.880 --> 00:57:48.210
+ 
+
+
+00:57:48.210 --> 00:57:52.560
+ 
+
+
+00:57:52.560 --> 00:57:55.650
+ 
+
+
+00:57:59.010 --> 00:58:01.830
+ 
+
+
+00:58:01.980 --> 00:58:05.310
+ 
+
+
+00:58:05.310 --> 00:58:09.630
+ 
+
+
+00:58:09.660 --> 00:58:11.490
+ 
+
+
+00:58:12.750 --> 00:58:14.820
+ 
+
+
+00:58:17.970 --> 00:58:25.080
+ 
+
+
+00:58:25.080 --> 00:58:29.910
+ 
+
+
+00:58:30.300 --> 00:58:30.780
+
+
+00:58:31.800 --> 00:58:35.400
+ 
+
+
+00:58:35.400 --> 00:58:36.180
+
+
+00:58:37.380 --> 00:58:39.540
+
+
+00:58:41.040 --> 00:58:47.370
+ 
+
+
+00:58:47.400 --> 00:58:52.830
+ 
+
+
+00:58:52.830 --> 00:58:59.730
+ 
+
+
+00:58:59.730 --> 00:59:04.650
+ 
+
+
+00:59:04.650 --> 00:59:05.220
+
+
+00:59:06.900 --> 00:59:11.400
+ 
+
+
+00:59:11.400 --> 00:59:12.930
+
+
+00:59:14.190 --> 00:59:18.630
+ 
+
+
+00:59:18.630 --> 00:59:23.580
+ 
+
+
+00:59:23.580 --> 00:59:24.510
+
+
+00:59:26.010 --> 00:59:29.130
+ 
+
+
+00:59:29.130 --> 00:59:32.610
+ 
+
+
+00:59:32.610 --> 00:59:33.660
+
+
+00:59:34.680 --> 00:59:38.070
+ 
+
+
+00:59:41.700 --> 00:59:45.720
+ 
+
+
+00:59:45.720 --> 00:59:49.560
+ 
+
+
+00:59:50.550 --> 00:59:51.030
+
+
+00:59:53.190 --> 00:59:54.270
+
+

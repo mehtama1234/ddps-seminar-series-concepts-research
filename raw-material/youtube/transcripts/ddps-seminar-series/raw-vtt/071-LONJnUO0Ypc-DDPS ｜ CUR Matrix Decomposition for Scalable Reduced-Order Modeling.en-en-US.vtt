@@ -1,0 +1,3770 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:02.490 --> 00:00:07.920
+All right. All right. Welcome to the DDPS seminar everyone. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk. Unless you have questions if you have questions, you're welcome to unmute and ask otherwise, please use chat room to post your questions so that we can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences. So no class by discussion is allowed. Finally, the talk today will be recorded and uploaded in our YouTube channel. That's about it. Now, let me introduce our speaker today. It is an honor to host the Hussam babae, who is currently an assistant professor in the Department of Mechanical engineering and material science at the University of Pittsburgh. He earned his PhD in mechanical engineering and math Master's in applied mathematics both from Louisiana State University in 2013. He then joined the mechanical engineering department at MIT for his postdoctoral research where he worked with Professor George Konya Dacus. He joined the University of Pittsburgh in January 2017. His research is focused on developing videos to the model and machine learning techniques or science and engineering problems. His research has been funded by many organizations including NASA, NSF, and NIH and the Air Force of scientific research. Today has some we'll talk about Kerr matrix decomposition for scalable reduced order modeling of nonlinear partial differential equations using time dependent basis. Please enjoy and expect a wonderful talk. Now without further ado, let me pass the baton to Hasan by asking one random questions. Today's random question is what is your idea of the perfect day? What do you find your perfect day? Okay, perfect day would be a sunny day by the beach with my family. Oh, nice. Right now in California. It's not a perfect day. My there is is here is yours. All right. Okay, thank you so much Yong Soo for the invitation and kind introduction. So, as you said, I have been working on on developing reducer modeling based on time dependent basis. So to just motivate that, and so let me play this animation, what you'll see on the left is a biologically reacting flow. These are you're seeing this species mass production of 23 species here. And in order to solve this equation, you have to solve basically a system of PDE of 23 equations. And so, you can have larger mechanisms and you can go up to an order of 1000 species, which I cannot show here. Obviously, solving the system of it is is computationally expensive, both in terms of memory, I Oh, and also flop CPU cost, right. So a floating point operation costs. So, but as you as you saw, let me play that again, you can see there is a lot of similarities or as we say, correlations between these different species instantaneously. And what I want to show you that you can use time dependent basis to both extract and also exploit these structures to reduce the computational costs of these, these these simulations, both in terms of memory and storage. And what I want to talk about which is the for the focus of the talk, is the CLR decomposition, which I can show you that that kind of decomposition can improve the flops cost. So without further ado, let me just go so these are all of my students and collaborators. These are the ones who actually contributed to some extent to this talk. So I have my postdocs, former postdocs and students and also my collaborators, Dr. Payment Gateway at University of Pittsburgh, Dr. Jackie Chan at Sandia, Dr. Mark Carpenter, at NASA Langley and our CO professor, David Fernandez at the University of Oregon. Alright, so this is an outline of my talk. So I'll just introduce this time dependent basis. I'll talk about some of the stuff that we did an application of time dependent basis, two competing sensitivities and also Turbulent Combustion. Then we'll talk about this CR factorization and how that can be used to speed up computation using these time dependent bases and I'll talk about some applications to answer the qualification. So let me just give you a brief overview of I have on the flight low rank approximation using time dependent basis. Really the motivation is solving high dimensional PDS. Even in the, when I say high dimensional, if you discretize, that system, the discrete vector has a very large number order of millions to billions. And so the way we solve this system of equations using traditional scientific computing techniques, we use this basis, we use them to choose them from classical techniques, it could be Fourier methods could be polynomial methods, polynomial spectral polynomials, so on and so forth. Well, we make a choice here, and then we do suppression of virus, this is like a traditional way of doing scientific computing. And actually, that choice is the core is the root of the problems, especially if we go to high dimensions, where the, these bases because they do not exploit correlations, then the computation resulting from this kind of discretization suffers from the curse of dimensionality meaning this n scales exponentially large with the number of dimension. So, there are a number of ways to tackle this. So, one way is to do data driven. So, let's gather data from these observed systems and then do some sort of dimension reduction. You can do auto encoder, you can do pod DMD, all kinds of damage reduction techniques, and then do some sort of projection. So, this is a typical way of, of solving this kind of problem. But whenever we do any kind of data driven dimension reduction, there is no guarantee that whenever we build that subspace, or manifold that that manifold can extrapolate to unseen data, right? So you always have that problem. And also you have the issue of actually having to solve that system full or more. Right. So it's for some of these applications, we can even solve that full normal at once, let alone generating data. And so, like I said, collectively, and these are the challenges of adopting a data driven type methodologies for these massive systems. So I'm talking about like Fokker Planck type equation, for example, where just solving this ones could be could be out of question. So the idea is to one way, one remedy that I've been focusing on is actually to don't choose these spaces, let the governing equation find these spaces for you in a way that exploits correlation, right. So this is the whole idea of of time dependent bases, they're in an abstract way that we don't choose these from a classical library, we actually let the governing equation to find it. And I'll show you how you can do that for different problems. Okay, so the idea if I want to go back to the challenges of data driven to do so modeling is that can we bypass the data generation and just directly for solve for these for these equations right there, there is a way to actually make this time dependent basis also data treatment. I'm not talking about those, those problems. Today, I'm focusing on the ones that actually we don't want to do that generation, we do want to directly solve the PDE. So if you think about it, we just want to solve the PDE by exploiting the structure correlative structures in the PDE. And once we do that, we can actually build that produced irmo on the fly. So this is like a an overview of reducer mining with time dependent bases. The very, very important distinction between this and like pod type decomposition is that this is applied to matrix differential equation. So you must have a matrix, you have to formulate your problem as a matrix differential equation, and you can extend that to also tensor differential equation. Let's say this is a matrix differential equation where fee is not a vector. It's actually a matrix. So here I'm showing a schematic of that, let's imagine this V is this matrix and it has many many columns, you can think of application of this as a UQ application, but each column is a random sample of the of the dynamical system. And if these this matrix is instantaneously low rank, you can approximate it with an SVD like approximation, this is just one scheme. I take this as an example. And if this is instantaneous low rank, you can reduce an S to R and hopefully R if this is a low rank matrix R is much smaller than that. And then basically, this is an SVD like decomposition. Within the time dependent reducer modeling formulation, you can actually derive evolution equation for all these three components without actually needing to generate data and these are based on if you want to know the background math behind this is actually beautiful. Remind Only an optimization where this the rank or matrices, you can show the rank or matrix, realize the space of rank or matrices, realize that this is smooth manifold. And then you can use that the remaining optimization tools to do projection on that manifold, find the tangent space and evolve that tangent space. So all of the math part that I'm not going to cover today is actually covered within the remaining optimization. But what's important is that like I said, there is no data required here other than the initial condition and boundary condition. So yes, that's data, but not observation of the physical system. Right. So and then you can derive evolution equation for for these matrices. And because there is no data evolve, right, so you this kind of low rank approximation doesn't even have the issue of extrapolating to unseen data, because there is no data involved in the whole workflow process. So I'll adapt to the changing conditions. And when and one of the nice thing about this kind of decomposition is that the system could be very high rank over time, but needs to be low rank instantaneously. So that's the key observation, if the system is very high rank instantaneously, this is not an efficient methodology. Alright, so because of connection to SVD, and I'll show you actually, this is very closely related to instantaneous SVD of that matrix, and closely approximates that without actually computing any SVD than that's the key. It's quite interpretable right, we know how to interpret an SVD dimension reduction. Just some some notes actually, this was originated in quantum chemistry community for solving short and get equation. And so, this goes back actually in the year 2000 There is this beautiful review paper, which shows how this kind of methodology which you decompose your matrix to three SVD like matrices, that you can solve you can use that for solving Sjodin get equation, then in this paper, this was put into a more general context, right. So this is exactly the same formulation here, but just put into more general context and this is now called dynamical low rank approximation. And, and sort of on a parallel universe. Another sort of decomposition, which is a two matrix decomposition was also developed. First we know is by tamis, SubSys, and the Macchu. At MIT, they developed dynamically orthogonal decomposition, and and later on, George Clooney, darqueze. And Tammy. saps has also worked together on this kind of methodology. And so myself, and there was another version of this again, a two matrix decomposition by orthonormal decomposition, it was shown that do A and B are exactly the same thing. There's also two two matrix decomposition, optimally time dependent decomposition that is applied to linear systems, which I worked with. I worked on that and also there is dynamically orthogonal duallie, dynamical orthogonality conditions, sorry, there's a typo here. What is this, all of these terminologies may sound confusing, but I want to show you that they all of these are actually equivalent to each other. Right? So actually, we show that in this paper that you can, that this dynamical low rank approximation, this triple matrices are actually is like a hybrid of do and build together. And they are equivalent. What do I mean by equivalent, they are exactly the same low rank matrices proximation of the full matrix. And so so as you see, throughout this talk, I use this or this, but you shouldn't get distracted by any of these triple matrix decomposition or two matrix decomposition. What is important to know is that they all follow the same principle, and they are equivalent. Okay, let me show you an example of that before I get to the CLR decomposition for competing sensitivities how you can use this kind of app this is an application of the VDS or mine based on time dependent basis. So this is applied to compute sensitivities of lots of high dimensional systems. So if you want to compute sensitivity of a high dimensional system, let's say this is an nonlinear dynamical system. Now, you want to perturb this with respect to some sort of parameters for each of those parameters, you would have to solve this linear sensitivity equation, right? So obviously, if the number of parameters is large, this is not a cost effective way. That's why people use our joint equation for agile equation, you only saw one equation backward in time. So you have to solve the forward equation and then solve one equation backward in time and then compute sensitivities for a given objective function with respect to all the parameters, but there is like two major problems with that joint one is actually i o because you have to store the full forward model and then and then to solve the actual equation backwards in time. So that I O is actually a major problem, especially for massive simulations like Turbulent Combustion problems where you can't store the forward solution at all in a time resolved manner. And also agile, you have to do diversion for any any given parameter for any given objective function. So if your objective function changes, you have to do another agent equation. But so yeah, so now let's look at it from a completely different perspective. And that is that these sensitivities, so if you look at these sensitivities, these are actually different sensitivities, respect to different parameters, they are correlated to each other instantaneously. If they are correlated, you don't need to solve for each one of those. And you can actually solve for a compressed version of those forward into, alright, so that's really the key observation here. And so if you look at this, this is again, you have a matrix differential equation. So you can look at the sensitivity equation as a matrix differential equation where you're evolving all of these sensitivities together. And like I said, if these are low rank, you can, you can compress them. So this is this work I was published last year in Siam. And this is, I'm using the Dubai decomposition here. But like I said, you can actually derive a triple decomposition here. So instead of solving for of this sensitivity, solve for only a rank r, would hopefully R is much smaller than D, solve for d. So you need to solve PDE. So this is not cheap to solve either. But at least you solve PDS of order R instead of d. And then these are really projections of the pool or more onto these bases. And this is where you get these coefficients by wrong, this approximation of this matrix is instantaneous law, right? It's a good approximation. And, and that's it. So the way we swap, we find the evolution equation for you. And why is by forming a variational principle, this variational principle is nothing but the residual that you get, because we are doing a low rank approximation. So instead of the whole matrix of sensitivity, we put you by transposing the full Ormeau. And because it's a low rank approximation, this is not going to be zero. But this is going to be some nonzero we want to minimize this by optimally updating the low rank basis, you and the coefficient, subject to this other normality condition, we want these bases to be orthonormal, you can actually solve this with Lagrange multiplier. Once you solve this equation, you get this close on evolution equation for these bases and the coefficients, and then you solve this, instead of solving this equation. And that's where you get the computational advantage, right, instead of solving for the fields, you solve for our fields. And d over r is what you get in terms of memory, saving, and also in terms of in terms of flops. So this is now we applied this to the same problem was showing you at the very first slide, this is the biochemical reactions, biological reaction. So these, these are reaction parameters. And it's very important to know how any quantity of interest is sensitive to any of these parameters, because the competing these measuring these quantities is very expensive. And you you can't afford to measure all of them super accurately, you have to do a budget allocation and say, okay, these 10 parameters are important, and which are those 10 parameters. There are other applications as well. But this is just one skill, some other reduction is another one. So you can actually drop these reactions if they're not important if they're not, if the nothing is sensitive with respect to those and actually come up with the reduced mechanism. So if you look at this, this is actually a tensor because you've got like here 23 species, and we have 34 reaction parameters, if you look at the entire matrix, the entire sensitivity is actually a tensor, you have parameters, you have a species here and then you have grid points, but, so, here what we do we flatten this tensor and then becomes a matrix. So, these are the sensitivities of different species with respect to different parameters and then we seek to approximate this with this low rank approximation. So, instead of solving 23 by 34, PDS, which would be forward sensitivity equations, or if you want to solve an equation, you have to solve an agile equation for each of these species or instead of solving 23 Agent equation, we want to do a low rank approximation of this and see what we get, we did that. So this particular formulation is called force optimal time dependent decomposition or fotd. Like I said, it's a particular variation of that time dependent basis just apply to linear sensitivity equation, I can see increasing grant from two to eight you can this is relative error, you can actually match you can reduce the error significantly. So this is with with five mods you can get less than one person error, relative error. And this would be optimal. We show we actually took resolve the full Oromo all of the sensitivities and we took instantaneous SVD of that that will be the best and lowest error that one could achieve and we see actually we are tracking the instantaneous SVD very well, like I said, we when we solve these equations, we do not take any SVD this is all evolution equation, but the evolution equation is such that they approximate this instantaneous SVD. And you can see here the singular values match with the S instantaneous SVD. So, that means we are actually very, very closely tracking the optimal sub space here. And with five modes basically is equivalent, the cost of solving for five modes is equivalent solving five PDS for five sensitivities as opposed to 782. And also memory storage is also the same we saw basically, we only need to restore five modes, the coefficients, those are in terms of restoring that those are negligible. And so, but it can visualize them, I can go back to the previous slide I, I don't usually stop the presentation, but I had to because I'm, I'm looking something so you're, so you're solving five PDE instead of 782. So, so from those five PDE IDs, you generate the data and Ami. But you said that you're not using the data to construct this evolutionary equations, am I missing something actually constructor, so it's off Wi Fi, these are five of these modes, and also you solve an OD for the evolution equation, anytime you want, you can reconstruct the full order of sensitivities and include this matrix matrix. So you solve for these two matrices as shown here, five PDS Yeah, the cost of this is really negligible compared to this. So five PDS and OD E with this is the wrong basically, but wrong is a instantaneous projection of your full or mo onto this basis. And based on that, you can reconstruct, you can multiply these two skinny matrices and reconstruct the full sensitivities anytime you want, but we don't do that I mean, but you can do that at any any point you want, and where the where the parameter comes in or the forcing, they show up by forcing in the sensitivity equation, right. So, when you take the linear sensitivity, you take the derivative of your full normal with respect to these parameters, they show us forcing in the right hand side of the NCCF shows up in all of these equations. Okay. Sure. Okay. And also, this actually, we have the details you can find in this paper, if you're interested. And so, let me go back to this slide. So, you can see actually, the modes here like I said, this is interpretable the modes actually captured the structure. So, this is the first mode the second or third mode, you see actually captures finer and finer structure. So these are the time dependent cyberspace that is evolving with your system, and like this is a convection dominated problem. So you cannot solve these problems with POD static basis, you have to resort to some sort of basis adaptivity and I know Jung Soo and also others actually have worked on adaptive basis, but this is a matrix differential equation. So I think that's really the difference here, not the vector revolution equation and also Benjamin pass refer and Karthik also, University of Michigan also worked on adaptive basis, but, but this is like I said, this is a matrix differential equation. Anyway, so, you once you solve this problem, you can actually take your y one and reconfigure that because this will be remember this was a tensor with flatten that and then you can actually see the sensitivities with respect to of all the species with respect to all 34 parameters, this is just one of them out why one just visualize here and you can see which parameters is affecting which species immediately like I said, this is this actually has that simplified data representation that is immediately explainable interpretable so I want to talk about application Turbulent Combustion. This is another application where you have a matrix differential equation. Let's look at that. So to everyone combustion, you have to solve this compressible navier stokes equation, I'm taking DNSBL but this could be rands or alias, but then you need to solve this species transport equation. And for complex views, you may have even order of 1000 species. So this is solving this equation is really the major costs of solving Turbulent Combustion because you have to first store this 1000 species, which is really just out of question for under DNS, great just storing a matrix with 1000 species is out of question, and that is really the main bottleneck. And also the I O cost like it this is actually this one 2012 from Dr. Jackie Chan's group that and simulate this is a direct quote from the paper that because of I O limitation, we can only store like for every 400 trimesters of the solution. This is three dimensional simulation, whereas there are things happening or the order of 10 simulation time is completely missed. If you store the data every 400 times. So this is just i Oh, it's you can imagine the memory and solving the system and this is not for the 1000 species I think This is order of 100 species. So as we push this boundary to exascale computing, especially when memory and IO are the main issues actually solving this equation is a major challenge. And so how but if you look at this equation, this is a matrix differential equation and nonlinear matrix differential equation. And again, now here I'm using the tuple decomposition, but like I said, You shouldn't get distracted by to decompose by decomposition or cheaper decomposition, they are equivalent. So then you have this matrix decomposition, you can write this. So the this is a full order model evolution equation. Again, you can follow the same principle, which is a residual minimization, plug in this kind of low rank approximation. And this is a low rank approximation. So you've got some error here and plug it in here, because it's a low rank approximation is not going to satisfy the full remark. So you get this residual, and you want to minimize that residual by optimally updating all three components. Once you solve this minimization problem subject to the Arthur normality of view modes and y modes, then you get evolution equation here, you can find the details here in this paper. But just suffice to say that we are solving this solving this doesn't require some optimism, some iteration or anything, you get evolution equation as the optimality conditions. So the evolution equations are the optimality condition. So you don't need to solve a nonlinear optimization problem, and so on, so forth. This, these are the optimality conditions. So it's not like that you actually solve a gradient basis. These are actually what minimizes, if you if you and Sigmund was satisfied this governing equation, you're minimizing this residual. So we applied these two different views, I'll just show you a sample of this, this is a two dimensional Flog. This is GRI mechanism actually has quite complex chemistry, he's got 53 species and 325 reactions. So this is a direct numerical simulation of that we are showing contours of temperature and O H. And this is a rank six approximation of this instead of solving for 53 species, we are solving for six effective the species. And so we have done more analysis here, I just all those results are in this paper that hopefully will be out soon. But I want to show you that like I said, for practitioners, these are this is not just a way to speed up computation, this is actually interpretable. So if you focus on the Y modes, here, the Y modes represent as a time dependence of a space in the comp in the thermal in the composition of space, right, so if you look at the composition of space is a 53 dimensional space. And each of these vectors is so this collectively is a subspace and I can visualize that cyberspace and also we have done instantaneous PCA that means instantaneous SVD of this matrix. And we show that this time dependent bases actually closely follow the the instantaneous PC, PCA, but there is also PCA that is done in combustion community. Unfortunately, I don't have to cover that. But that's really equivalent to like a pod approach. But for composition space, so that's static, you can see that the especially the higher modes vary in time a lot. And you can look at the singular value the singular values of that matrix. So we solve the DNS of that and we computed the singular values of that. And then we can see the singular values. With this low rank approximation, we can capture the leading modes very well. And these are, so I want to go over this just in the interest of time, but if you're interested in this, we have a lot more details in this manuscript. And so we have extended this to three dimensional simulation as well. This is for a different mechanism saying yes mechanism, it's similar and you can see the modes. Now the modes here are three dimensional modes. And this is a DNS mixture fraction of DNS, but these are the modes want the first mode the second or third mode, you can see the modes actually evolved with the flow, and they add that to the flow. This is another case done in Dr. Jackie Chan's group. And so this actually has a sudden transition at the end. So there's a propagation of this wave from right to left and then when it gets near the end, you will see a sudden transition in the chemistry and so, all the disaster 39 species This is solved in std COVID Eight or defined difference and all these details are here. Let me just show you. This problem is actually very high rank even this month, so we had to choose r equals to 29. So we are not really getting so much reduction here. And this is actually I want to show you this as one of the challenges of solving these systems. That is instantaneous is not that low rank was still you go from 39 to 29, you can see this, we can get the transport, but there's this sudden transition at the end that is kind of time dependent bases can capture that sudden transition. And if you look at and also this is a convection dominated problem. So this kind of reduce or mine handles convection really well, as I mentioned earlier, if you look at the composition of a species yet, you will see at the end, these two modes drastically change in time. The higher modes usually change in timing, in older cases that we have considered, but not the first two modes. And you can see at the end, once this animation approaches the end, these are the two most energetic modes, you can see that that composition changes drastically towards the end, as you saw here as a, this is actually an extremely challenging problem to solve. All right, now, I want to get to the CLR decomposition, this was really an introduction to this, I wanted to talk about some of the other challenges, especially how to solve this system of equations efficiently for for nonlinear, governed for nonlinear PDE s, right. So if you look at the evolution equation, this is this is this is evolution equation I showed in the previous slide, but just simplified in terms of linear algebra. So you solve an evolution equation for four modes U and sigma and why when but if the right hand side of the governing equation is nonlinear, so this is the right hand side of the governing equation, you have to compute this F, which is a nonlinear map of your governing equation. If you form this matrix, first of all, you lose all the advantages that this methodology has to offer, because you have to occupy the entire memory and then apply this nonlinear map on that decompress matrix. Even though when we come back here, we'll project it back to this other space. But this is the same problem that exists in nonlinear, reduced order modeling with POD also, we have the same issue. And this is exactly the same issue that shows up here. So you have you need to do some sort of hyper reduction here. And I want to show you that CLR is actually the way to do hyper reduction here for this matrix differential equation. So there are four issues with this is issue of cost, which is the one we are targeting here. And also if you want to get efficiency with solving this equation, if your governing equation is nonlinear, like a combustion problem, or a UQ problem, if it is quadratic non linearity, you can get the speed up solving this equation by just plugging in this expansion into the governing equation and work out in a painstaking way, all the terms and solve this evolution equation, but that's highly intrusive, so you can get efficiency for nonlinear equation, but at the cost of doing an extremely intrusive process. Those two, these two are really the major drawbacks of this kind of formulation. And so we wanted to see if we can actually go back and and be able to solve this system of equation for a generic non linearity, but keeping the cost the as low as solving just for only our samples of this equation, right. So our samples are is the rank of the reduction, that is the nominal cost of solving this equation, and also rank adaptivity. And also stability when there are two other issues with this system. So first of all, our doesn't have to be fixed, right? So the rank of a system evolves over time. So just fixing that, that's a problem. So, these problems actually have been this issue of inverting this matrix have been addressed in this beautiful work. But reformulating this problem to another problem, and actually resolving this issue of having various having to invert this matrix, this matrix could become ill conditioned, remember, this is a singular value matrix. And if you want to solve this system with high accuracy, you need to resolve very small singular values. And, and so this is so you, so you have to be able to invert this matrix, this integration scheme actually resolves that issue by the cost of three pill. The cost of solving this is a scheme proposed here is triple of the cost of two times as large as the cost of solving this system, but it doesn't have this issue. Rank adaptivity also has been proposed here with work of Daniella venturi for tensile revolution equation and also within this formulation, but not the issue of cost. So these two issues have not been addressed up to this point. And that's really, I feel like these are major bottlenecks of solving this equation and getting the scale that they can offer. Okay, so let me just go to. So the all the details here is in this paper that was recently published by myself and my, my student, Jose no dairy. So let me just give you an overview. So here I'm switching to a UQ problem, that's another application, where you actually UQ problem, you can formulate it as a matrix differential equation here, but all the samples are. So if you look at the UQ problem, you have a nonlinear differential equation, and you have some random parameters. So this is the matrix of all the samples where each column is one sample. And you want to do a low rank approximation of this matrix. Like I said, computing this f of V is as costly as solving the fuller Mall. So that's the thing you'll be wanting to work for generic non linearity. If the system is linear, like the examples I showed at the beginning, you can actually work it out and solve this system in the Compress for you. And you can actually achieve all the computational efficiency, but not if this system is nonlinear. And so the cost of this system if you don't handle this properly, it will scale with the number of rows and number of columns of this matrix and that exactly the cost that you want to avoid, you want to have this cost. So like I said, for linear quadratic system, we can do that at the cost of doing a highly intrusive process. So the question is, how can we reduce the computational cost of solving a rank or tdb wrong time dependent basis wrong to that of solving only to our samples of that full or more, that is the nominal cost of evolving these equations. So this is so that I want to explain CLR, which is really fantastic. And I believe under explored linear algebra decomposition. So this is, let me just explain that. So let's say you have a matrix G. And this matrix has low rank structure, right. So this you can approximate it like if you take SVD of this matrix with bank or you can approximate it well, you can actually get something super close to an SVD of this matrix by strategically sample the columns and rows of this matrix, all the blue ones and all the all the red ones. And then you can approximate this means this should be an approximation, but just the columns of this which are shown by blue color, and the rows of this matrix, which are shown by red and this matrix, which is the, the intersection of these inverted, and arrays. If you select these rows and columns, strategically, you can get something very close to an SVD. And this was shown by Sorenson Embry that this is dying induced car decomposition. Alright, so we adopted the same strategy here. In fact, we didn't know about this, I have to confess and we did develop this methodology. And later on, we show that actually, this is exactly as you are the composition. So instead of f of t is the right hand side of the governing equation. So we can be only sample that equation at these columns and rows, not that so anything you see here in gray, that is not computed. And based on that, we can compute this, you can also do triple or by decomposition of this matrix. So we compute this by by sampling the columns, you find the column space for the ortho normalize, that will be denoted by fee of D, this is really Q R of the columns that we sample. And then these are just the interpolation coefficients that you can get it by the by interpolating every other column of these matrix to these spaces. So this is an interpolate matrix interpolation, not a matrix project, not a matrix projection, that is very important. So there is really nice. This is actually an oblique projection rather than an orthogonal projection. So unfortunately, I don't have time to cover all of that. But the key is that, remember, we didn't want to compute this matrix entirely, we wanted to compete it only that was the cause. Right? So but if but this matrix does have low rank structure, if didn't have low rank structure, we wouldn't be able to do this time dependent basis to begin with. And so if it has a lot on construction, you can actually strategically sample this, the sampling strategy is based on direct empirical interpolation method. I'm not going to go over this all those details are in the paper how we do this. So we need to have SVD of the these methods to know where to sample we don't have this matrix to begin with, let alone the SVD of this, we use the previous time step SVD of the previous time step of this matrix which we have cheaply, and use those as as as to derive to tell us where to sample right. So that's an I don't want to go over all of this, it all details on that paper. And so this is really an overview of this strategy. Like I said, instead of f the key is that instead have F now we have two skinny matrices that we can plug in here. So instead of putting F here, remember, F was the source of all the all the each computational issues. Now we have a skinny factorization that is plugged in here. Once you plug that in here, these are extremely fast. And I mean, and also, it's really nice that this is actually relatively non intrusive, because you only saw sort of the fuller mouth, you sample the fuller mouth and the right hand side, this is strategic columns. And you only need to sample it at these grid points. These are different grid points. So this act, you don't need to derive a new set of equations for any new PDE solver, you can actually just use use this. In fact, there is a way to extend this to even blackbox solver and we are working on that. And to make this actually non intrusive. Because these systems up to this point are worse extremely intrusive to solve it takes few months of time to just implement it in a in a typical final element called sorry. Has some arm the previous slide. So though it's the sample job dependent on time, so every time steps is exactly the changing district. Exactly. Because these will be done with a fixed sample, you wouldn't be able to do this. And I'll show you next in the demonstration that exactly that's That's exactly right. Is it implementation of that? It's kind of interesting. No, well, you need to have access to the F right hand side, right. So yeah, right. So you can get it for sampling the fuller mall, but the rows are rows are intrusive. Because rows, you're actually need to know the terms of the equation. So that's the part to know all the terms in the governing equation. And that's changing every time step. So these rows and columns change every time you scan, it will look at this SVD and approximation or SVD of the previous time as above F and based on that or update this. Yes. And this, this kind of approximation, like I said, is quite rigorous actually. So instead of approximating it, basically we're approximating the entire matrix of f, we then f hat, which is a CR decomposition, which is this aprox, this multiplication of these two skinny matrices, you can show actually, the difference between the full matrix and this approximation in the second norm is sigma p one, if we were doing SVD, here, this error would be exactly equal to sigma p plus one, this would be the P plus one a singular value, here, we only get this a scaling of these two numbers. So times the optimal error that you can get with the rank, rank or approximation and dying procedure. And these are the condition number of the interpolation matrices. And dying procedure, in fact, is a greedy procedure to minimize these two numbers. So you get really small numbers for these two. So you get That's what I said, you get actually something similar to an SVD. That's, that's what I mean, but without actually forming that matrix at all. And, and you can form or you can make this number of sample points also adaptive because you can look at the last singular value that you're resolving divided, you can come up with different error, error criteria, but you can look at the last singular value divided by the summation of the results singular value. And if that's not within the bounds that you want, you can add with a sample F, add one more columns, and one more rolls. So let me show you some application to UQ. So this is a stochastic burgers equation, the randomness comes from the initial condition and the boundary condition. And we're using a spectral element to solve this equation. And so you can see here the singular values, let me show you that because in the interest of time, I'm going to show you the speed of actually get, and then I'll show you some of the error. So this is tdb. Wrong. This is if you don't use this kind of methodology. This is how the CPU time scales as you increase the number of grid points. So n is the number of grid points the number of rows, but this one actually scales linearly. And so and also this is as you increase the number of samples, so as the number of scales linearly, again here, but as your answer when you ask the time points are time dependent, and that's exactly the case. So we can use Dine or Q Dine, which is based on QR decomposition. And this is burgers with the with sharks. So you see the shot two sharks here. And you can see here that actually, the time points are changing with time this axis is time. This is just I'm just showing the row points, right. So I'm not showing the columns because there's a sparse sampling in the column as well. And you can see the Q diamond dam actually captured almost the same points. So one, one immediate way you can see the advantage of this if you go to the full or like the way we were doing these things before, we were actually competing the right hand side that all of these great points right now we are only competing the right hand side at these points. So that's just that just tells you one One quick way to To see how efficient this is, and here we are comparing the modes that we extract by doing this kind of approximation with carbon and over approximation of the full normal, which is the optimal base instantaneous spaces. And you can see, we have shock, and we are capturing the full amount really well. This is another example burgers equation has quadratic non linearity, maybe you were able to do, you can do that intrusively, and still get efficiency, but not even even you do it intuitively, you're not going to be as efficient as this methodology. But here this is a compressible flow rather than a linearity is non polynomial. So, you have actually rho u divided by rho, so you have non linearity of fracture non linearity. And if we discretize, this system, we have 262,000 rows, and then we have 200,000 samples. So, this is the case, if you want to do UQ. Here, you can even store this matrix in memory, like, we saw this CPU, and the laptop CPU. So, you can even store this on the laptop CPU. So, we never actually during the workflow, we never store the full matrix. And we only do this as per sampling. And you can see here, first, we did it for a small number of samples. So we can actually do error analysis. So we did here for 200 samples, and we show with this as per sampling, we recover. So this is the tdb rom if you don't do sparse sampling the blue line, but this is tdb wrong with six sparse samples, 20 and 20 spot samples, this is for Diamond Q dime, and CB 20 samples, we can actually recover almost the ones that you don't do this for sampling. And like I said, P is adaptive. So P changes in time. So how many how many samples you have for the right hand side, you can actually adaptively adjust that to keep the error of this your approximation below a given threshold. And you can see, as time goes on the actually get different numbers of p. So these are number of samples. This is actually when it's a time dependent. So this is actually this is the mean and the variance and you can see the sample points actually captures the action here where the action happens. And like I said, this is now with 200,000 samples. And these are the samples in the column space, which you can see actually, they are located on the joint pdf of y one and y two. And we did convergence study here by increasing number of going points. And you can see we are converging in the instantaneous singular values. By increasing the rank of the system, we are still converging by increasing the number of samples from 100,000 to 100,000. And we get convergence all of this is also in that paper. All right, I think I'm almost out of time. I'm already out of time. So let me just conclude here at this is the way I see this this field. And the contribution that this kind of reducer modeling can do. So if you look at the way we were we are doing classical scientific computing, we do suppression of variables, we put time and the coefficient and we choose the bases, right. So you've got these bases that you can choose from that library. I think another way of solving this equation, which is a structure resolving you don't actually this skater is a great you're actually captured linear nonlinear correlation is by doing physics informed neural network, I know Paris is online. And basically you don't. One way to look at physics and form Neural Network is that you're not choosing the basis, you let the optimization process to find the optimal places for you. Right, so that so that is another way to break the curse of dimensionality and applying this to high dimensional problem. That's why it's advantageous. This is also another way of doing that. But here, we don't solve a nonlinear optimization problem, right. But like I said, this has also its own limitation, but But you don't choose the basis again, from a library, you let it evolve the time. And you the physics of your equation. And the residual of the governing equation really determines that. So yeah, here we apply this to to the problem here. This is compressible, Navier. Stokes, and you can see the basis actually evolves, these are bases in the 1x, two direction, these are bases in the x one direction, and CB bases adaptively evolve in time, I mean for this kind of problem is not really important to use these bases. But for high dimensional problem, this localization and adaptivity of the basis is really the key to break the curse of dimensionality because you don't want to put degrees of freedom in places, especially in high dimensional spaces. You don't want to waste because of freedom. And so this can actually effectively do that. And we have applied this to tensor evolution equations as well, which I didn't have time to cover that today. Maybe some other time. Yeah. And so this is where I see the place of the so it's actually it's got good connections with classical computing and also with machine learning in in a way because this is a low rank approximation. Alright, so with that, I'll thank you and I'll take any questions. Wonderful. Wonderful. Thank you so much. Awesome. Oh, very interesting. Okay, so let's have a q&amp;a session. So we do have a question from Pat. Pat. Are you online? Yes. Hey, okay. Yeah. Why don't you ask questions directly? Thanks. think those were I really liked the the images and stuff that I think they they really helped. But I did have trouble understanding what the what the reduced set dimensions correspond to what are they? What are they representing? Are they friendly? In the chemical example? For example? Are you talked about having lots of species? The new, the new basis? Does each one correspond to an algebraic combination of the original species? Or is it something else? That's right. So every one of those, let me go back to that example. That's exactly right. I think you said it at the end. That, so if you look at this matrix as a matrix of the oldest species, we don't solve for these directly we solve for these modes, each of these modes are really a linear combination of all of the species. Okay. Yeah, it's always linear. It is always linear. But you can actually extend this to nonlinear answers as well. And that's why they're working. And that is actually, I think, the next really problem. So there might be cases where some of the species are effectively have to have no influence at all. But and there's others where there's really a mixture of them, but it my guess is, there's certain kinds of things that go on there, like you would probably ever have. My guess is that there would be the species would be clustered or some, right? I don't know if that's true. But I can imagine that being true. Absolutely. And that's exactly right. So that's, so what you're talking about is actually this, maybe not one global time dependent basis, but you can actually localize that or you get into composition, especially in the physical space. And I have an absolutely, so we are actually exactly working on that idea as well. And, and, and UBC actually amazing improvement compared to just using one oil global, I believe that I believe it speeds things up, I just want to understand what's going on. So these are like the species are like gang members, they hang out together. Exactly. They travel the same put together and so on. Okay, got it. Thank you. Alright. Then I had a second question about the car work, which seems very different. So. So in one example, you showed the some of the points, and it looked like those were the points that had sort of the extreme values. Was that is? That's right. So let me show the burgers equation. Exactly. So I think so what they actually these points correspond to so they actually concentrated over the shocks. Right? So there are two shocks here, right? So and the dime algorithm in a clever way actually picks up. So you don't need to sample this at all of the points here, you only need to sample it at these points. But this is usually where action happens. When I when I turn on the Weather Channel, and someone tells me well, there's a front moving through here, it's sort of like that, you can dare they're trying to identify the the interesting that this continuities or, or, or major change kind of kind of areas. In fact, one thing you can immediately see if you look at the damn procedure, if these are these are the two modes that are visually These are often almost each other. And so the time the first time point, if I want to the first the most important point is where this mode is, has a maximum value. That's actually the first point which is that is the if you want to pick one point in your system at that instant of time that has the most variance that's this point here. So it picks that one and then it sort of recursively takes out this mod out of the system and see what's left with the leftover then it starts in an A greedy way to pick up more points and it does that it's like a sort of a like a QR type approximation you'd layer by layer with each point you pick out what they are will be concentrated. So you see these modes are highly non local, highly localized, right? So they're very localized near the shot and between they're sort of flat. So Dan doesn't actually pick those points and brilliant methodology. Okay, thank you very much. Good. Okay, next question is from Maryam Maria Maria online. Yeah, I am online. Okay, you can actually ever I'm taking too how extent to what extent the metals could be used It's come to my mind that what are the exact conditions or requirements that PDE should have to can be applicative? Excellent question. So remember when I said at the beginning, these are low rank approximation for matrix differential equation? Number one, you have to formulate your problem as a matrix differential equation one, and then second, you need to see if that matrix instantaneously has low rank. If your problem meets these two criteria, then this is a really good method to use. If not, that's not the end of the story. That's actually a topic of future research. And maybe it's out of context. But just let me know if it doesn't make sense. The method is, is mainly developed for a time dependent PDS if you have another type of tape PDS that is partial differential but doesn't include the time do you think it's applicable to? You can do the absolutely you can do that for actually there are a lot of nice result theoretical results for the steady state PDS. So first of all, this this time iterations would become this time evolution becomes iterations in that context, and you can, you can take much larger leap and steps to convert, so you're not limited by the time so there are other algorithms that you can use to jump over that. And then then you can show actually converge to the SVD of that results. So there are a lot of nice things you can show. But yeah, absolutely, that you can apply this to steady state problems. Thank you. Well, following on Marian questions, you know, if you don't have a time dependent time stand, instead you have a 3d as your space show domain is 3d, then you can make them to matrix equations. by decomposing each dimension into ones you couldn't really use. There are I mean, even one dimensional equation can be turned into a matrix differential equation. So it's really that's actually where you have to be able to say a 3d problem can become, in a number of ways can become a matrix differential equation, right? So you can take the 2d slab as one direction, x one and x two and x three is another direction, right? So that's, or you can even do this for the tensor evolution equation, which I didn't talk about, right? So that's another way. So if a 3d problem naturally fits within a tensor evolution equation, and sensor evolution equation of this system is very similar to what I just presented, all the principles are the same. And you can derive that. But like I said, there are a number of ways you can make your size. So So for example, if you have a 1d example, no time dependence, how would you make it matrix equations? You have only one variable, you can do domain decomposition and put them next to each other. That's one way. I see. Interesting, interesting. Okay, so. Any other questions? From audience? No, we actually hit the 11 o'clock punctually. All right, magically. Well, thank you so much for the wonderful talk. And sounds like you have more topics to talk about. Let's, you know, reserve that for the second. Yeah. Well, let's thank our invited speaker has them for the wonderful talk. And yeah, so thank you so much. Appreciate the opportunity. Yeah, I learned a lot. And I, I promise you I'm going to look into this deeply. Yeah, exactly. It's stuff you do. Actually, this is very relevant. Yeah. Absolutely. Yeah. All right. Sounds good. Thank you so much. If you can share the slide with me. That would be wonderful. Okay, obviously, you can do that. Yeah, sure. Absolutely. All right. Well, thank you so much. All right. Thank you. Bye bye. All right.
+
+
+00:00:08.430 --> 00:00:11.460
+ 
+
+
+00:00:11.460 --> 00:00:14.820
+ 
+
+
+00:00:14.820 --> 00:00:18.420
+ 
+
+
+00:00:18.420 --> 00:00:22.020
+ 
+
+
+00:00:22.020 --> 00:00:25.470
+ 
+
+
+00:00:25.470 --> 00:00:29.370
+ 
+
+
+00:00:29.460 --> 00:00:34.920
+ 
+
+
+00:00:35.160 --> 00:00:38.610
+ 
+
+
+00:00:38.610 --> 00:00:41.460
+ 
+
+
+00:00:41.460 --> 00:00:47.400
+ 
+
+
+00:00:47.670 --> 00:00:51.330
+ 
+
+
+00:00:51.330 --> 00:00:55.200
+ 
+
+
+00:00:55.920 --> 00:00:59.850
+ 
+
+
+00:00:59.850 --> 00:01:03.990
+ 
+
+
+00:01:04.320 --> 00:01:07.560
+ 
+
+
+00:01:07.560 --> 00:01:11.700
+ 
+
+
+00:01:11.700 --> 00:01:15.900
+ 
+
+
+00:01:15.900 --> 00:01:21.750
+ 
+
+
+00:01:21.750 --> 00:01:25.800
+ 
+
+
+00:01:25.800 --> 00:01:28.950
+ 
+
+
+00:01:28.950 --> 00:01:33.630
+ 
+
+
+00:01:33.720 --> 00:01:39.540
+ 
+
+
+00:01:40.050 --> 00:01:45.810
+ 
+
+
+00:01:45.810 --> 00:01:48.780
+ 
+
+
+00:01:48.780 --> 00:01:52.560
+ 
+
+
+00:01:52.560 --> 00:01:55.950
+ 
+
+
+00:01:55.950 --> 00:02:00.600
+ 
+
+
+00:02:00.630 --> 00:02:05.970
+ 
+
+
+00:02:06.570 --> 00:02:08.640
+ 
+
+
+00:02:10.650 --> 00:02:16.440
+ 
+
+
+00:02:16.440 --> 00:02:17.070
+
+
+00:02:17.550 --> 00:02:20.340
+ 
+
+
+00:02:20.340 --> 00:02:20.520
+
+
+00:02:21.270 --> 00:02:23.040
+
+
+00:02:24.960 --> 00:02:25.680
+
+
+00:02:27.360 --> 00:02:31.710
+ 
+
+
+00:02:31.710 --> 00:02:37.770
+ 
+
+
+00:02:37.800 --> 00:02:40.950
+ 
+
+
+00:02:40.950 --> 00:02:46.320
+ 
+
+
+00:02:46.320 --> 00:02:50.550
+ 
+
+
+00:02:51.060 --> 00:02:54.990
+ 
+
+
+00:02:54.990 --> 00:02:58.800
+ 
+
+
+00:02:58.800 --> 00:03:05.250
+ 
+
+
+00:03:05.250 --> 00:03:09.330
+ 
+
+
+00:03:09.330 --> 00:03:12.570
+ 
+
+
+00:03:12.570 --> 00:03:15.630
+ 
+
+
+00:03:15.660 --> 00:03:22.110
+ 
+
+
+00:03:22.110 --> 00:03:26.310
+ 
+
+
+00:03:26.310 --> 00:03:29.940
+ 
+
+
+00:03:29.940 --> 00:03:32.730
+ 
+
+
+00:03:32.730 --> 00:03:36.360
+ 
+
+
+00:03:36.360 --> 00:03:40.440
+ 
+
+
+00:03:40.470 --> 00:03:44.340
+ 
+
+
+00:03:44.370 --> 00:03:50.940
+ 
+
+
+00:03:50.970 --> 00:03:55.050
+ 
+
+
+00:03:55.050 --> 00:04:00.000
+ 
+
+
+00:04:00.000 --> 00:04:04.380
+ 
+
+
+00:04:04.620 --> 00:04:09.210
+ 
+
+
+00:04:09.210 --> 00:04:11.430
+ 
+
+
+00:04:11.460 --> 00:04:15.540
+ 
+
+
+00:04:15.540 --> 00:04:18.630
+ 
+
+
+00:04:18.630 --> 00:04:20.790
+ 
+
+
+00:04:20.790 --> 00:04:24.660
+ 
+
+
+00:04:24.660 --> 00:04:28.500
+ 
+
+
+00:04:28.500 --> 00:04:30.960
+ 
+
+
+00:04:30.960 --> 00:04:33.960
+ 
+
+
+00:04:33.960 --> 00:04:38.130
+ 
+
+
+00:04:39.120 --> 00:04:41.550
+ 
+
+
+00:04:41.550 --> 00:04:44.730
+ 
+
+
+00:04:44.730 --> 00:04:51.270
+ 
+
+
+00:04:51.330 --> 00:04:54.510
+ 
+
+
+00:04:54.510 --> 00:04:57.690
+ 
+
+
+00:04:57.690 --> 00:05:01.260
+ 
+
+
+00:05:01.260 --> 00:05:05.160
+ 
+
+
+00:05:05.160 --> 00:05:08.220
+ 
+
+
+00:05:08.430 --> 00:05:12.060
+ 
+
+
+00:05:12.060 --> 00:05:16.110
+ 
+
+
+00:05:16.110 --> 00:05:19.710
+ 
+
+
+00:05:19.710 --> 00:05:21.990
+ 
+
+
+00:05:21.990 --> 00:05:27.120
+ 
+
+
+00:05:27.120 --> 00:05:30.600
+ 
+
+
+00:05:30.600 --> 00:05:35.940
+ 
+
+
+00:05:35.940 --> 00:05:38.850
+ 
+
+
+00:05:38.850 --> 00:05:41.820
+ 
+
+
+00:05:42.180 --> 00:05:45.930
+ 
+
+
+00:05:45.930 --> 00:05:49.530
+ 
+
+
+00:05:50.010 --> 00:05:56.010
+ 
+
+
+00:05:56.010 --> 00:05:59.310
+ 
+
+
+00:05:59.310 --> 00:06:03.660
+ 
+
+
+00:06:04.380 --> 00:06:08.760
+ 
+
+
+00:06:08.760 --> 00:06:12.690
+ 
+
+
+00:06:12.690 --> 00:06:17.490
+ 
+
+
+00:06:17.490 --> 00:06:22.890
+ 
+
+
+00:06:22.890 --> 00:06:29.790
+ 
+
+
+00:06:29.790 --> 00:06:32.790
+ 
+
+
+00:06:32.850 --> 00:06:38.730
+ 
+
+
+00:06:38.760 --> 00:06:43.830
+ 
+
+
+00:06:44.940 --> 00:06:48.780
+ 
+
+
+00:06:48.990 --> 00:06:56.370
+ 
+
+
+00:06:56.400 --> 00:06:58.680
+ 
+
+
+00:06:58.680 --> 00:07:02.670
+ 
+
+
+00:07:03.000 --> 00:07:05.730
+ 
+
+
+00:07:05.730 --> 00:07:10.080
+ 
+
+
+00:07:10.980 --> 00:07:15.810
+ 
+
+
+00:07:15.810 --> 00:07:20.790
+ 
+
+
+00:07:20.790 --> 00:07:23.370
+ 
+
+
+00:07:23.370 --> 00:07:27.600
+ 
+
+
+00:07:27.660 --> 00:07:35.100
+ 
+
+
+00:07:35.130 --> 00:07:39.030
+ 
+
+
+00:07:39.030 --> 00:07:42.120
+ 
+
+
+00:07:42.120 --> 00:07:44.550
+ 
+
+
+00:07:44.550 --> 00:07:48.840
+ 
+
+
+00:07:48.840 --> 00:07:51.930
+ 
+
+
+00:07:51.960 --> 00:07:54.750
+ 
+
+
+00:07:54.750 --> 00:07:57.480
+ 
+
+
+00:07:57.960 --> 00:08:03.000
+ 
+
+
+00:08:03.000 --> 00:08:06.030
+ 
+
+
+00:08:06.030 --> 00:08:08.910
+ 
+
+
+00:08:08.910 --> 00:08:12.060
+ 
+
+
+00:08:12.060 --> 00:08:15.090
+ 
+
+
+00:08:15.090 --> 00:08:19.980
+ 
+
+
+00:08:19.980 --> 00:08:22.350
+ 
+
+
+00:08:22.350 --> 00:08:25.050
+ 
+
+
+00:08:25.050 --> 00:08:29.040
+ 
+
+
+00:08:29.040 --> 00:08:32.070
+ 
+
+
+00:08:32.070 --> 00:08:37.110
+ 
+
+
+00:08:37.140 --> 00:08:43.020
+ 
+
+
+00:08:43.020 --> 00:08:45.930
+ 
+
+
+00:08:45.960 --> 00:08:49.980
+ 
+
+
+00:08:49.980 --> 00:08:52.500
+ 
+
+
+00:08:52.500 --> 00:08:55.080
+ 
+
+
+00:08:55.080 --> 00:08:58.080
+ 
+
+
+00:08:58.080 --> 00:09:00.480
+ 
+
+
+00:09:00.480 --> 00:09:05.310
+ 
+
+
+00:09:05.310 --> 00:09:08.580
+ 
+
+
+00:09:08.580 --> 00:09:11.370
+ 
+
+
+00:09:11.370 --> 00:09:14.970
+ 
+
+
+00:09:14.970 --> 00:09:20.130
+ 
+
+
+00:09:20.130 --> 00:09:23.970
+ 
+
+
+00:09:23.970 --> 00:09:27.870
+ 
+
+
+00:09:27.870 --> 00:09:31.500
+ 
+
+
+00:09:31.500 --> 00:09:35.100
+ 
+
+
+00:09:35.100 --> 00:09:40.680
+ 
+
+
+00:09:40.680 --> 00:09:46.380
+ 
+
+
+00:09:46.380 --> 00:09:50.010
+ 
+
+
+00:09:50.010 --> 00:09:53.400
+ 
+
+
+00:09:53.400 --> 00:09:57.240
+ 
+
+
+00:09:57.270 --> 00:10:00.210
+ 
+
+
+00:10:00.210 --> 00:10:07.620
+ 
+
+
+00:10:07.620 --> 00:10:10.830
+ 
+
+
+00:10:10.860 --> 00:10:15.600
+ 
+
+
+00:10:15.600 --> 00:10:22.470
+ 
+
+
+00:10:22.470 --> 00:10:25.470
+ 
+
+
+00:10:25.470 --> 00:10:29.010
+ 
+
+
+00:10:29.010 --> 00:10:33.510
+ 
+
+
+00:10:33.510 --> 00:10:36.390
+ 
+
+
+00:10:36.390 --> 00:10:38.400
+ 
+
+
+00:10:38.400 --> 00:10:42.840
+ 
+
+
+00:10:42.840 --> 00:10:45.930
+ 
+
+
+00:10:45.930 --> 00:10:49.980
+ 
+
+
+00:10:49.980 --> 00:10:54.240
+ 
+
+
+00:10:54.270 --> 00:10:57.450
+ 
+
+
+00:10:57.450 --> 00:10:59.700
+ 
+
+
+00:10:59.700 --> 00:11:03.930
+ 
+
+
+00:11:03.990 --> 00:11:06.960
+ 
+
+
+00:11:06.960 --> 00:11:10.590
+ 
+
+
+00:11:10.590 --> 00:11:14.100
+ 
+
+
+00:11:14.280 --> 00:11:18.510
+ 
+
+
+00:11:18.510 --> 00:11:22.860
+ 
+
+
+00:11:22.920 --> 00:11:25.590
+ 
+
+
+00:11:25.590 --> 00:11:28.890
+ 
+
+
+00:11:28.890 --> 00:11:32.340
+ 
+
+
+00:11:33.450 --> 00:11:37.140
+ 
+
+
+00:11:37.530 --> 00:11:38.610
+
+
+00:11:40.200 --> 00:11:43.290
+ 
+
+
+00:11:43.290 --> 00:11:46.980
+ 
+
+
+00:11:46.980 --> 00:11:50.430
+ 
+
+
+00:11:50.430 --> 00:11:53.640
+ 
+
+
+00:11:53.640 --> 00:11:58.980
+ 
+
+
+00:11:58.980 --> 00:12:03.330
+ 
+
+
+00:12:03.330 --> 00:12:07.860
+ 
+
+
+00:12:07.860 --> 00:12:11.100
+ 
+
+
+00:12:11.100 --> 00:12:13.860
+ 
+
+
+00:12:13.860 --> 00:12:19.260
+ 
+
+
+00:12:19.260 --> 00:12:23.640
+ 
+
+
+00:12:24.510 --> 00:12:28.560
+ 
+
+
+00:12:28.560 --> 00:12:32.430
+ 
+
+
+00:12:32.430 --> 00:12:36.540
+ 
+
+
+00:12:36.990 --> 00:12:39.480
+ 
+
+
+00:12:39.480 --> 00:12:43.200
+ 
+
+
+00:12:43.200 --> 00:12:45.630
+ 
+
+
+00:12:45.630 --> 00:12:48.870
+ 
+
+
+00:12:48.870 --> 00:12:52.890
+ 
+
+
+00:12:52.890 --> 00:12:55.800
+ 
+
+
+00:12:55.800 --> 00:13:00.360
+ 
+
+
+00:13:00.360 --> 00:13:04.950
+ 
+
+
+00:13:04.950 --> 00:13:07.170
+ 
+
+
+00:13:07.170 --> 00:13:11.790
+ 
+
+
+00:13:11.790 --> 00:13:14.580
+ 
+
+
+00:13:14.610 --> 00:13:17.250
+ 
+
+
+00:13:17.250 --> 00:13:21.240
+ 
+
+
+00:13:21.240 --> 00:13:25.830
+ 
+
+
+00:13:25.830 --> 00:13:29.970
+ 
+
+
+00:13:29.970 --> 00:13:33.120
+ 
+
+
+00:13:33.120 --> 00:13:37.650
+ 
+
+
+00:13:37.650 --> 00:13:41.700
+ 
+
+
+00:13:41.700 --> 00:13:45.150
+ 
+
+
+00:13:45.150 --> 00:13:49.320
+ 
+
+
+00:13:49.320 --> 00:13:52.200
+ 
+
+
+00:13:52.200 --> 00:13:56.670
+ 
+
+
+00:13:56.670 --> 00:13:59.670
+ 
+
+
+00:13:59.670 --> 00:14:05.460
+ 
+
+
+00:14:05.460 --> 00:14:07.830
+ 
+
+
+00:14:07.830 --> 00:14:13.230
+ 
+
+
+00:14:13.230 --> 00:14:15.480
+ 
+
+
+00:14:15.480 --> 00:14:18.180
+ 
+
+
+00:14:18.180 --> 00:14:21.780
+ 
+
+
+00:14:21.780 --> 00:14:23.940
+ 
+
+
+00:14:23.940 --> 00:14:27.570
+ 
+
+
+00:14:27.570 --> 00:14:30.510
+ 
+
+
+00:14:30.510 --> 00:14:34.380
+ 
+
+
+00:14:34.380 --> 00:14:37.800
+ 
+
+
+00:14:37.800 --> 00:14:42.150
+ 
+
+
+00:14:42.150 --> 00:14:45.180
+ 
+
+
+00:14:45.180 --> 00:14:49.350
+ 
+
+
+00:14:49.350 --> 00:14:52.470
+ 
+
+
+00:14:52.470 --> 00:14:59.730
+ 
+
+
+00:14:59.730 --> 00:15:03.750
+ 
+
+
+00:15:03.750 --> 00:15:06.510
+ 
+
+
+00:15:06.600 --> 00:15:09.480
+ 
+
+
+00:15:09.480 --> 00:15:14.760
+ 
+
+
+00:15:14.880 --> 00:15:19.200
+ 
+
+
+00:15:19.200 --> 00:15:21.360
+ 
+
+
+00:15:21.360 --> 00:15:25.230
+ 
+
+
+00:15:25.230 --> 00:15:29.010
+ 
+
+
+00:15:29.010 --> 00:15:32.220
+ 
+
+
+00:15:32.220 --> 00:15:33.990
+ 
+
+
+00:15:33.990 --> 00:15:37.020
+ 
+
+
+00:15:37.020 --> 00:15:39.720
+ 
+
+
+00:15:39.720 --> 00:15:42.390
+ 
+
+
+00:15:42.390 --> 00:15:44.820
+ 
+
+
+00:15:44.820 --> 00:15:47.850
+ 
+
+
+00:15:48.240 --> 00:15:51.120
+ 
+
+
+00:15:51.120 --> 00:15:53.220
+ 
+
+
+00:15:53.220 --> 00:15:55.470
+ 
+
+
+00:15:55.470 --> 00:15:58.770
+ 
+
+
+00:15:58.770 --> 00:16:01.290
+ 
+
+
+00:16:01.290 --> 00:16:06.630
+ 
+
+
+00:16:06.630 --> 00:16:10.260
+ 
+
+
+00:16:10.260 --> 00:16:14.250
+ 
+
+
+00:16:14.250 --> 00:16:17.190
+ 
+
+
+00:16:17.190 --> 00:16:21.900
+ 
+
+
+00:16:21.900 --> 00:16:24.510
+ 
+
+
+00:16:24.540 --> 00:16:28.380
+ 
+
+
+00:16:28.380 --> 00:16:32.130
+ 
+
+
+00:16:32.130 --> 00:16:35.040
+ 
+
+
+00:16:35.040 --> 00:16:37.980
+ 
+
+
+00:16:37.980 --> 00:16:41.550
+ 
+
+
+00:16:41.550 --> 00:16:47.340
+ 
+
+
+00:16:47.430 --> 00:16:50.730
+ 
+
+
+00:16:50.730 --> 00:16:54.870
+ 
+
+
+00:16:54.870 --> 00:16:57.660
+ 
+
+
+00:16:57.660 --> 00:17:00.870
+ 
+
+
+00:17:00.870 --> 00:17:04.230
+ 
+
+
+00:17:04.230 --> 00:17:07.290
+ 
+
+
+00:17:07.290 --> 00:17:11.490
+ 
+
+
+00:17:11.520 --> 00:17:14.580
+ 
+
+
+00:17:14.580 --> 00:17:18.210
+ 
+
+
+00:17:18.210 --> 00:17:21.390
+ 
+
+
+00:17:21.390 --> 00:17:25.440
+ 
+
+
+00:17:25.500 --> 00:17:29.550
+ 
+
+
+00:17:29.550 --> 00:17:31.530
+ 
+
+
+00:17:31.530 --> 00:17:34.410
+ 
+
+
+00:17:34.410 --> 00:17:39.660
+ 
+
+
+00:17:39.660 --> 00:17:43.890
+ 
+
+
+00:17:43.890 --> 00:17:50.100
+ 
+
+
+00:17:50.100 --> 00:17:53.550
+ 
+
+
+00:17:53.550 --> 00:17:58.620
+ 
+
+
+00:17:58.620 --> 00:18:03.300
+ 
+
+
+00:18:03.300 --> 00:18:05.370
+ 
+
+
+00:18:05.370 --> 00:18:08.250
+ 
+
+
+00:18:08.250 --> 00:18:12.540
+ 
+
+
+00:18:12.540 --> 00:18:15.300
+ 
+
+
+00:18:15.300 --> 00:18:17.820
+ 
+
+
+00:18:17.820 --> 00:18:21.600
+ 
+
+
+00:18:21.600 --> 00:18:23.970
+ 
+
+
+00:18:23.970 --> 00:18:26.520
+ 
+
+
+00:18:26.520 --> 00:18:29.610
+ 
+
+
+00:18:29.610 --> 00:18:31.770
+ 
+
+
+00:18:31.770 --> 00:18:37.110
+ 
+
+
+00:18:37.110 --> 00:18:40.800
+ 
+
+
+00:18:40.800 --> 00:18:45.270
+ 
+
+
+00:18:45.270 --> 00:18:47.640
+ 
+
+
+00:18:47.640 --> 00:18:51.660
+ 
+
+
+00:18:51.660 --> 00:18:55.260
+ 
+
+
+00:18:55.260 --> 00:18:59.370
+ 
+
+
+00:18:59.400 --> 00:19:01.890
+ 
+
+
+00:19:01.890 --> 00:19:04.590
+ 
+
+
+00:19:04.590 --> 00:19:09.360
+ 
+
+
+00:19:09.450 --> 00:19:12.990
+ 
+
+
+00:19:12.990 --> 00:19:15.630
+ 
+
+
+00:19:15.630 --> 00:19:18.870
+ 
+
+
+00:19:18.870 --> 00:19:21.240
+ 
+
+
+00:19:21.240 --> 00:19:25.590
+ 
+
+
+00:19:25.590 --> 00:19:29.070
+ 
+
+
+00:19:30.840 --> 00:19:33.690
+ 
+
+
+00:19:33.690 --> 00:19:37.620
+ 
+
+
+00:19:37.860 --> 00:19:41.010
+ 
+
+
+00:19:41.010 --> 00:19:44.130
+ 
+
+
+00:19:44.130 --> 00:19:47.730
+ 
+
+
+00:19:47.730 --> 00:19:51.270
+ 
+
+
+00:19:51.270 --> 00:19:54.360
+ 
+
+
+00:19:54.360 --> 00:19:57.480
+ 
+
+
+00:19:57.480 --> 00:20:00.540
+ 
+
+
+00:20:00.540 --> 00:20:04.140
+ 
+
+
+00:20:04.440 --> 00:20:07.740
+ 
+
+
+00:20:07.770 --> 00:20:11.070
+ 
+
+
+00:20:11.070 --> 00:20:14.250
+ 
+
+
+00:20:14.250 --> 00:20:17.910
+ 
+
+
+00:20:17.940 --> 00:20:21.240
+ 
+
+
+00:20:21.240 --> 00:20:26.790
+ 
+
+
+00:20:26.850 --> 00:20:29.730
+ 
+
+
+00:20:29.730 --> 00:20:33.150
+ 
+
+
+00:20:33.150 --> 00:20:36.810
+ 
+
+
+00:20:36.810 --> 00:20:40.140
+ 
+
+
+00:20:40.140 --> 00:20:43.440
+ 
+
+
+00:20:43.440 --> 00:20:46.320
+ 
+
+
+00:20:46.950 --> 00:20:50.430
+ 
+
+
+00:20:50.430 --> 00:20:54.630
+ 
+
+
+00:20:54.630 --> 00:21:00.180
+ 
+
+
+00:21:00.270 --> 00:21:06.300
+ 
+
+
+00:21:06.300 --> 00:21:10.020
+ 
+
+
+00:21:10.020 --> 00:21:14.760
+ 
+
+
+00:21:14.760 --> 00:21:16.320
+
+
+00:21:17.400 --> 00:21:20.760
+ 
+
+
+00:21:20.760 --> 00:21:23.910
+ 
+
+
+00:21:23.910 --> 00:21:26.460
+ 
+
+
+00:21:26.520 --> 00:21:29.580
+ 
+
+
+00:21:29.580 --> 00:21:33.360
+ 
+
+
+00:21:33.390 --> 00:21:36.840
+ 
+
+
+00:21:36.840 --> 00:21:40.710
+ 
+
+
+00:21:40.740 --> 00:21:45.060
+ 
+
+
+00:21:45.510 --> 00:21:49.530
+ 
+
+
+00:21:49.530 --> 00:21:52.260
+ 
+
+
+00:21:52.290 --> 00:21:55.320
+ 
+
+
+00:21:55.320 --> 00:21:57.480
+ 
+
+
+00:21:57.630 --> 00:22:00.210
+ 
+
+
+00:22:02.160 --> 00:22:05.040
+ 
+
+
+00:22:05.040 --> 00:22:07.770
+ 
+
+
+00:22:07.770 --> 00:22:10.680
+ 
+
+
+00:22:10.680 --> 00:22:13.980
+ 
+
+
+00:22:14.160 --> 00:22:22.230
+ 
+
+
+00:22:22.230 --> 00:22:27.060
+ 
+
+
+00:22:27.060 --> 00:22:32.370
+ 
+
+
+00:22:32.400 --> 00:22:34.770
+ 
+
+
+00:22:34.770 --> 00:22:37.380
+ 
+
+
+00:22:37.380 --> 00:22:39.750
+ 
+
+
+00:22:39.750 --> 00:22:42.000
+ 
+
+
+00:22:42.000 --> 00:22:45.390
+ 
+
+
+00:22:45.390 --> 00:22:48.960
+ 
+
+
+00:22:48.960 --> 00:22:51.960
+ 
+
+
+00:22:51.960 --> 00:22:55.560
+ 
+
+
+00:22:55.950 --> 00:22:58.740
+ 
+
+
+00:22:58.740 --> 00:23:01.080
+ 
+
+
+00:23:01.080 --> 00:23:04.320
+ 
+
+
+00:23:04.320 --> 00:23:08.490
+ 
+
+
+00:23:08.490 --> 00:23:11.970
+ 
+
+
+00:23:11.970 --> 00:23:14.610
+ 
+
+
+00:23:14.610 --> 00:23:17.010
+ 
+
+
+00:23:17.010 --> 00:23:20.730
+ 
+
+
+00:23:20.730 --> 00:23:23.550
+ 
+
+
+00:23:23.550 --> 00:23:27.300
+ 
+
+
+00:23:27.300 --> 00:23:29.670
+ 
+
+
+00:23:29.670 --> 00:23:33.930
+ 
+
+
+00:23:33.930 --> 00:23:37.020
+ 
+
+
+00:23:37.020 --> 00:23:40.860
+ 
+
+
+00:23:40.860 --> 00:23:49.200
+ 
+
+
+00:23:49.200 --> 00:23:52.620
+ 
+
+
+00:23:52.620 --> 00:23:55.200
+ 
+
+
+00:23:55.200 --> 00:23:58.290
+ 
+
+
+00:23:58.290 --> 00:24:00.690
+ 
+
+
+00:24:00.690 --> 00:24:04.530
+ 
+
+
+00:24:04.530 --> 00:24:08.340
+ 
+
+
+00:24:08.340 --> 00:24:13.590
+ 
+
+
+00:24:13.590 --> 00:24:15.960
+ 
+
+
+00:24:15.960 --> 00:24:20.070
+ 
+
+
+00:24:20.070 --> 00:24:22.950
+ 
+
+
+00:24:22.950 --> 00:24:26.820
+ 
+
+
+00:24:26.820 --> 00:24:29.850
+ 
+
+
+00:24:29.850 --> 00:24:33.480
+ 
+
+
+00:24:33.480 --> 00:24:36.780
+ 
+
+
+00:24:36.780 --> 00:24:41.760
+ 
+
+
+00:24:41.760 --> 00:24:45.420
+ 
+
+
+00:24:45.420 --> 00:24:47.880
+ 
+
+
+00:24:47.880 --> 00:24:51.810
+ 
+
+
+00:24:51.810 --> 00:24:54.990
+ 
+
+
+00:24:54.990 --> 00:24:57.930
+ 
+
+
+00:24:57.930 --> 00:25:02.370
+ 
+
+
+00:25:02.370 --> 00:25:06.540
+ 
+
+
+00:25:06.540 --> 00:25:10.080
+ 
+
+
+00:25:10.080 --> 00:25:13.530
+ 
+
+
+00:25:13.530 --> 00:25:16.230
+ 
+
+
+00:25:16.230 --> 00:25:19.920
+ 
+
+
+00:25:19.920 --> 00:25:21.900
+ 
+
+
+00:25:21.900 --> 00:25:24.810
+ 
+
+
+00:25:24.810 --> 00:25:28.530
+ 
+
+
+00:25:28.530 --> 00:25:32.250
+ 
+
+
+00:25:32.250 --> 00:25:35.610
+ 
+
+
+00:25:35.610 --> 00:25:40.080
+ 
+
+
+00:25:40.080 --> 00:25:42.600
+ 
+
+
+00:25:42.600 --> 00:25:45.720
+ 
+
+
+00:25:45.720 --> 00:25:49.140
+ 
+
+
+00:25:49.140 --> 00:25:52.290
+ 
+
+
+00:25:52.290 --> 00:25:55.260
+ 
+
+
+00:25:55.260 --> 00:25:58.770
+ 
+
+
+00:25:58.770 --> 00:26:02.880
+ 
+
+
+00:26:03.030 --> 00:26:06.900
+ 
+
+
+00:26:06.900 --> 00:26:11.160
+ 
+
+
+00:26:11.160 --> 00:26:13.530
+ 
+
+
+00:26:13.530 --> 00:26:16.950
+ 
+
+
+00:26:16.950 --> 00:26:20.040
+ 
+
+
+00:26:20.040 --> 00:26:22.530
+ 
+
+
+00:26:22.530 --> 00:26:25.620
+ 
+
+
+00:26:25.620 --> 00:26:28.740
+ 
+
+
+00:26:28.740 --> 00:26:32.460
+ 
+
+
+00:26:32.550 --> 00:26:36.330
+ 
+
+
+00:26:36.330 --> 00:26:42.540
+ 
+
+
+00:26:42.540 --> 00:26:44.730
+ 
+
+
+00:26:44.730 --> 00:26:50.010
+ 
+
+
+00:26:50.040 --> 00:26:55.650
+ 
+
+
+00:26:55.650 --> 00:26:58.140
+ 
+
+
+00:26:58.140 --> 00:27:03.420
+ 
+
+
+00:27:03.480 --> 00:27:07.140
+ 
+
+
+00:27:07.140 --> 00:27:14.280
+ 
+
+
+00:27:14.670 --> 00:27:21.390
+ 
+
+
+00:27:21.390 --> 00:27:25.920
+ 
+
+
+00:27:25.920 --> 00:27:29.460
+ 
+
+
+00:27:29.460 --> 00:27:32.640
+ 
+
+
+00:27:32.640 --> 00:27:38.910
+ 
+
+
+00:27:38.910 --> 00:27:41.970
+ 
+
+
+00:27:41.970 --> 00:27:44.550
+ 
+
+
+00:27:44.550 --> 00:27:49.170
+ 
+
+
+00:27:49.200 --> 00:27:53.040
+ 
+
+
+00:27:53.040 --> 00:27:56.580
+ 
+
+
+00:27:56.580 --> 00:27:59.760
+ 
+
+
+00:27:59.760 --> 00:28:07.530
+ 
+
+
+00:28:07.530 --> 00:28:11.820
+ 
+
+
+00:28:11.820 --> 00:28:13.770
+ 
+
+
+00:28:13.770 --> 00:28:16.740
+ 
+
+
+00:28:16.740 --> 00:28:20.370
+ 
+
+
+00:28:20.370 --> 00:28:25.770
+ 
+
+
+00:28:26.670 --> 00:28:30.060
+ 
+
+
+00:28:30.060 --> 00:28:33.930
+ 
+
+
+00:28:33.930 --> 00:28:36.810
+ 
+
+
+00:28:36.810 --> 00:28:39.900
+ 
+
+
+00:28:39.900 --> 00:28:47.310
+ 
+
+
+00:28:47.310 --> 00:28:50.070
+ 
+
+
+00:28:50.070 --> 00:28:55.380
+ 
+
+
+00:28:55.380 --> 00:28:58.020
+ 
+
+
+00:28:58.020 --> 00:29:01.410
+ 
+
+
+00:29:01.410 --> 00:29:04.230
+ 
+
+
+00:29:04.230 --> 00:29:09.330
+ 
+
+
+00:29:09.330 --> 00:29:13.050
+ 
+
+
+00:29:13.050 --> 00:29:15.480
+ 
+
+
+00:29:15.480 --> 00:29:20.580
+ 
+
+
+00:29:20.610 --> 00:29:27.090
+ 
+
+
+00:29:27.090 --> 00:29:30.270
+ 
+
+
+00:29:30.270 --> 00:29:35.550
+ 
+
+
+00:29:35.550 --> 00:29:39.990
+ 
+
+
+00:29:40.620 --> 00:29:42.930
+
+
+00:29:44.790 --> 00:29:48.390
+ 
+
+
+00:29:48.390 --> 00:29:53.220
+ 
+
+
+00:29:53.220 --> 00:29:56.550
+ 
+
+
+00:29:56.580 --> 00:30:01.050
+ 
+
+
+00:30:01.050 --> 00:30:04.830
+ 
+
+
+00:30:04.830 --> 00:30:09.120
+ 
+
+
+00:30:09.120 --> 00:30:12.690
+ 
+
+
+00:30:12.690 --> 00:30:15.990
+ 
+
+
+00:30:15.990 --> 00:30:18.900
+ 
+
+
+00:30:18.900 --> 00:30:22.620
+ 
+
+
+00:30:22.710 --> 00:30:25.500
+ 
+
+
+00:30:25.500 --> 00:30:30.000
+ 
+
+
+00:30:30.000 --> 00:30:34.320
+ 
+
+
+00:30:34.320 --> 00:30:37.680
+ 
+
+
+00:30:37.680 --> 00:30:42.450
+ 
+
+
+00:30:42.450 --> 00:30:44.940
+ 
+
+
+00:30:44.940 --> 00:30:47.400
+ 
+
+
+00:30:47.640 --> 00:30:50.790
+ 
+
+
+00:30:50.940 --> 00:30:54.780
+ 
+
+
+00:30:54.780 --> 00:31:00.330
+ 
+
+
+00:31:00.330 --> 00:31:04.140
+ 
+
+
+00:31:04.140 --> 00:31:07.110
+ 
+
+
+00:31:07.110 --> 00:31:10.830
+ 
+
+
+00:31:10.920 --> 00:31:15.030
+ 
+
+
+00:31:15.030 --> 00:31:19.590
+ 
+
+
+00:31:19.590 --> 00:31:22.770
+ 
+
+
+00:31:22.770 --> 00:31:25.650
+ 
+
+
+00:31:25.650 --> 00:31:28.860
+ 
+
+
+00:31:28.860 --> 00:31:33.180
+ 
+
+
+00:31:33.210 --> 00:31:35.850
+ 
+
+
+00:31:35.850 --> 00:31:38.100
+ 
+
+
+00:31:38.100 --> 00:31:41.610
+ 
+
+
+00:31:41.610 --> 00:31:45.300
+ 
+
+
+00:31:45.300 --> 00:31:48.690
+ 
+
+
+00:31:48.690 --> 00:31:52.080
+ 
+
+
+00:31:52.080 --> 00:31:55.920
+ 
+
+
+00:31:55.920 --> 00:31:58.410
+ 
+
+
+00:31:58.410 --> 00:32:03.000
+ 
+
+
+00:32:03.000 --> 00:32:07.380
+ 
+
+
+00:32:07.380 --> 00:32:10.590
+ 
+
+
+00:32:10.590 --> 00:32:13.320
+ 
+
+
+00:32:13.320 --> 00:32:16.560
+ 
+
+
+00:32:16.560 --> 00:32:19.650
+ 
+
+
+00:32:19.650 --> 00:32:24.660
+ 
+
+
+00:32:24.810 --> 00:32:29.790
+ 
+
+
+00:32:29.790 --> 00:32:32.610
+ 
+
+
+00:32:32.610 --> 00:32:36.240
+ 
+
+
+00:32:36.240 --> 00:32:41.340
+ 
+
+
+00:32:41.340 --> 00:32:44.310
+ 
+
+
+00:32:44.310 --> 00:32:47.760
+ 
+
+
+00:32:47.940 --> 00:32:52.830
+ 
+
+
+00:32:52.830 --> 00:32:55.350
+ 
+
+
+00:32:55.380 --> 00:32:58.350
+ 
+
+
+00:32:58.410 --> 00:33:03.150
+ 
+
+
+00:33:03.150 --> 00:33:06.480
+ 
+
+
+00:33:06.480 --> 00:33:10.800
+ 
+
+
+00:33:10.800 --> 00:33:16.050
+ 
+
+
+00:33:16.050 --> 00:33:22.050
+ 
+
+
+00:33:22.050 --> 00:33:26.100
+ 
+
+
+00:33:26.100 --> 00:33:28.890
+ 
+
+
+00:33:28.890 --> 00:33:32.340
+ 
+
+
+00:33:32.340 --> 00:33:35.010
+ 
+
+
+00:33:35.010 --> 00:33:37.620
+ 
+
+
+00:33:37.620 --> 00:33:41.190
+ 
+
+
+00:33:41.190 --> 00:33:47.310
+ 
+
+
+00:33:47.310 --> 00:33:51.840
+ 
+
+
+00:33:51.840 --> 00:33:58.710
+ 
+
+
+00:33:58.710 --> 00:34:03.420
+ 
+
+
+00:34:03.420 --> 00:34:06.360
+ 
+
+
+00:34:06.360 --> 00:34:08.850
+ 
+
+
+00:34:08.850 --> 00:34:12.030
+ 
+
+
+00:34:12.060 --> 00:34:19.620
+ 
+
+
+00:34:19.650 --> 00:34:24.390
+ 
+
+
+00:34:24.390 --> 00:34:29.880
+ 
+
+
+00:34:29.880 --> 00:34:32.940
+ 
+
+
+00:34:32.940 --> 00:34:36.180
+ 
+
+
+00:34:36.180 --> 00:34:39.420
+ 
+
+
+00:34:39.420 --> 00:34:43.320
+ 
+
+
+00:34:43.320 --> 00:34:46.410
+ 
+
+
+00:34:46.410 --> 00:34:49.290
+ 
+
+
+00:34:49.440 --> 00:34:54.060
+ 
+
+
+00:34:54.090 --> 00:34:58.080
+ 
+
+
+00:34:58.080 --> 00:35:03.630
+ 
+
+
+00:35:03.630 --> 00:35:07.080
+ 
+
+
+00:35:07.080 --> 00:35:12.600
+ 
+
+
+00:35:12.600 --> 00:35:16.410
+ 
+
+
+00:35:16.410 --> 00:35:19.740
+ 
+
+
+00:35:19.830 --> 00:35:22.620
+ 
+
+
+00:35:22.620 --> 00:35:26.250
+ 
+
+
+00:35:26.310 --> 00:35:30.780
+ 
+
+
+00:35:30.780 --> 00:35:34.020
+ 
+
+
+00:35:34.020 --> 00:35:37.530
+ 
+
+
+00:35:37.530 --> 00:35:39.840
+ 
+
+
+00:35:39.840 --> 00:35:43.680
+ 
+
+
+00:35:43.680 --> 00:35:47.160
+ 
+
+
+00:35:47.160 --> 00:35:50.040
+ 
+
+
+00:35:50.040 --> 00:35:52.830
+ 
+
+
+00:35:52.830 --> 00:35:55.620
+ 
+
+
+00:35:55.620 --> 00:35:58.890
+ 
+
+
+00:35:58.890 --> 00:36:03.780
+ 
+
+
+00:36:03.780 --> 00:36:06.480
+ 
+
+
+00:36:06.480 --> 00:36:09.150
+ 
+
+
+00:36:09.150 --> 00:36:11.760
+ 
+
+
+00:36:11.760 --> 00:36:17.280
+ 
+
+
+00:36:17.280 --> 00:36:19.950
+ 
+
+
+00:36:19.950 --> 00:36:22.410
+ 
+
+
+00:36:22.410 --> 00:36:26.670
+ 
+
+
+00:36:26.670 --> 00:36:30.330
+ 
+
+
+00:36:30.330 --> 00:36:37.830
+ 
+
+
+00:36:37.830 --> 00:36:44.370
+ 
+
+
+00:36:45.480 --> 00:36:51.390
+ 
+
+
+00:36:51.390 --> 00:36:56.520
+ 
+
+
+00:36:56.520 --> 00:36:59.310
+ 
+
+
+00:36:59.310 --> 00:37:02.070
+ 
+
+
+00:37:02.070 --> 00:37:06.270
+ 
+
+
+00:37:06.300 --> 00:37:10.290
+ 
+
+
+00:37:10.290 --> 00:37:13.590
+ 
+
+
+00:37:13.620 --> 00:37:17.370
+ 
+
+
+00:37:17.370 --> 00:37:20.070
+ 
+
+
+00:37:20.070 --> 00:37:23.340
+ 
+
+
+00:37:23.340 --> 00:37:26.130
+ 
+
+
+00:37:26.130 --> 00:37:31.560
+ 
+
+
+00:37:32.040 --> 00:37:34.890
+ 
+
+
+00:37:34.890 --> 00:37:38.520
+ 
+
+
+00:37:38.520 --> 00:37:44.430
+ 
+
+
+00:37:44.430 --> 00:37:45.150
+
+
+00:37:46.650 --> 00:37:50.760
+ 
+
+
+00:37:50.760 --> 00:37:53.880
+ 
+
+
+00:37:53.880 --> 00:37:56.730
+ 
+
+
+00:37:56.730 --> 00:38:00.510
+ 
+
+
+00:38:00.540 --> 00:38:04.950
+ 
+
+
+00:38:04.950 --> 00:38:08.670
+ 
+
+
+00:38:08.670 --> 00:38:12.180
+ 
+
+
+00:38:12.180 --> 00:38:16.830
+ 
+
+
+00:38:16.830 --> 00:38:20.520
+ 
+
+
+00:38:20.520 --> 00:38:26.250
+ 
+
+
+00:38:26.250 --> 00:38:30.210
+ 
+
+
+00:38:30.570 --> 00:38:32.910
+ 
+
+
+00:38:32.910 --> 00:38:36.180
+ 
+
+
+00:38:36.180 --> 00:38:39.240
+ 
+
+
+00:38:39.240 --> 00:38:42.420
+ 
+
+
+00:38:42.420 --> 00:38:45.960
+ 
+
+
+00:38:45.960 --> 00:38:49.890
+ 
+
+
+00:38:49.920 --> 00:38:53.280
+ 
+
+
+00:38:53.280 --> 00:38:57.420
+ 
+
+
+00:38:57.420 --> 00:39:00.780
+ 
+
+
+00:39:00.780 --> 00:39:04.500
+ 
+
+
+00:39:04.620 --> 00:39:08.880
+ 
+
+
+00:39:08.880 --> 00:39:11.580
+ 
+
+
+00:39:11.580 --> 00:39:15.690
+ 
+
+
+00:39:16.020 --> 00:39:19.410
+ 
+
+
+00:39:19.410 --> 00:39:23.400
+ 
+
+
+00:39:23.400 --> 00:39:27.990
+ 
+
+
+00:39:27.990 --> 00:39:31.380
+ 
+
+
+00:39:31.440 --> 00:39:34.710
+ 
+
+
+00:39:34.710 --> 00:39:39.480
+ 
+
+
+00:39:39.480 --> 00:39:44.220
+ 
+
+
+00:39:44.220 --> 00:39:48.870
+ 
+
+
+00:39:48.870 --> 00:39:52.020
+ 
+
+
+00:39:52.020 --> 00:39:58.050
+ 
+
+
+00:39:58.050 --> 00:40:00.930
+ 
+
+
+00:40:00.960 --> 00:40:03.630
+ 
+
+
+00:40:03.630 --> 00:40:07.890
+ 
+
+
+00:40:07.920 --> 00:40:12.300
+ 
+
+
+00:40:12.450 --> 00:40:15.660
+ 
+
+
+00:40:15.690 --> 00:40:20.640
+ 
+
+
+00:40:20.640 --> 00:40:24.600
+ 
+
+
+00:40:24.630 --> 00:40:27.540
+ 
+
+
+00:40:27.540 --> 00:40:30.330
+ 
+
+
+00:40:30.330 --> 00:40:33.120
+ 
+
+
+00:40:33.120 --> 00:40:36.720
+ 
+
+
+00:40:36.720 --> 00:40:39.720
+ 
+
+
+00:40:39.750 --> 00:40:42.780
+ 
+
+
+00:40:42.780 --> 00:40:45.870
+ 
+
+
+00:40:45.870 --> 00:40:50.760
+ 
+
+
+00:40:50.760 --> 00:40:55.200
+ 
+
+
+00:40:55.200 --> 00:40:59.910
+ 
+
+
+00:40:59.910 --> 00:41:00.840
+
+
+00:41:02.670 --> 00:41:08.730
+ 
+
+
+00:41:08.730 --> 00:41:13.050
+ 
+
+
+00:41:13.050 --> 00:41:13.560
+
+
+00:41:14.010 --> 00:41:17.370
+ 
+
+
+00:41:17.370 --> 00:41:20.190
+ 
+
+
+00:41:20.190 --> 00:41:22.800
+ 
+
+
+00:41:22.800 --> 00:41:23.190
+
+
+00:41:23.580 --> 00:41:25.590
+ 
+
+
+00:41:26.550 --> 00:41:29.730
+
+
+00:41:29.760 --> 00:41:34.560
+ 
+
+
+00:41:34.770 --> 00:41:37.980
+ 
+
+
+00:41:38.040 --> 00:41:41.970
+ 
+
+
+00:41:41.970 --> 00:41:44.490
+ 
+
+
+00:41:44.490 --> 00:41:46.920
+ 
+
+
+00:41:47.130 --> 00:41:49.680
+ 
+
+
+00:41:50.400 --> 00:41:53.400
+ 
+
+
+00:41:53.400 --> 00:41:56.520
+ 
+
+
+00:41:56.520 --> 00:41:59.700
+ 
+
+
+00:42:00.060 --> 00:42:04.080
+ 
+
+
+00:42:04.080 --> 00:42:06.930
+ 
+
+
+00:42:06.960 --> 00:42:10.050
+ 
+
+
+00:42:10.050 --> 00:42:12.720
+ 
+
+
+00:42:13.320 --> 00:42:17.490
+ 
+
+
+00:42:17.490 --> 00:42:19.740
+ 
+
+
+00:42:19.770 --> 00:42:25.290
+ 
+
+
+00:42:25.320 --> 00:42:29.130
+ 
+
+
+00:42:29.130 --> 00:42:32.400
+ 
+
+
+00:42:32.730 --> 00:42:37.380
+ 
+
+
+00:42:37.380 --> 00:42:40.590
+ 
+
+
+00:42:40.590 --> 00:42:42.630
+ 
+
+
+00:42:42.630 --> 00:42:45.150
+ 
+
+
+00:42:45.150 --> 00:42:48.090
+ 
+
+
+00:42:48.090 --> 00:42:51.120
+ 
+
+
+00:42:51.120 --> 00:42:53.940
+ 
+
+
+00:42:53.940 --> 00:42:57.030
+ 
+
+
+00:42:57.030 --> 00:43:00.690
+ 
+
+
+00:43:00.690 --> 00:43:03.720
+ 
+
+
+00:43:03.720 --> 00:43:07.230
+ 
+
+
+00:43:07.230 --> 00:43:11.130
+ 
+
+
+00:43:11.130 --> 00:43:15.300
+ 
+
+
+00:43:15.300 --> 00:43:18.120
+ 
+
+
+00:43:18.510 --> 00:43:22.260
+ 
+
+
+00:43:22.260 --> 00:43:27.090
+ 
+
+
+00:43:27.090 --> 00:43:30.930
+ 
+
+
+00:43:30.930 --> 00:43:33.750
+ 
+
+
+00:43:33.750 --> 00:43:36.120
+ 
+
+
+00:43:36.120 --> 00:43:40.320
+ 
+
+
+00:43:40.320 --> 00:43:42.900
+ 
+
+
+00:43:42.900 --> 00:43:46.050
+ 
+
+
+00:43:46.050 --> 00:43:49.140
+ 
+
+
+00:43:49.140 --> 00:43:53.280
+ 
+
+
+00:43:53.280 --> 00:43:56.730
+ 
+
+
+00:43:56.730 --> 00:43:59.280
+ 
+
+
+00:43:59.280 --> 00:44:04.620
+ 
+
+
+00:44:04.620 --> 00:44:08.130
+ 
+
+
+00:44:08.130 --> 00:44:13.650
+ 
+
+
+00:44:13.650 --> 00:44:16.470
+ 
+
+
+00:44:16.470 --> 00:44:19.950
+ 
+
+
+00:44:19.950 --> 00:44:24.120
+ 
+
+
+00:44:24.120 --> 00:44:28.080
+ 
+
+
+00:44:28.080 --> 00:44:31.770
+ 
+
+
+00:44:31.770 --> 00:44:35.040
+ 
+
+
+00:44:35.040 --> 00:44:37.230
+ 
+
+
+00:44:37.710 --> 00:44:40.350
+ 
+
+
+00:44:40.350 --> 00:44:45.390
+ 
+
+
+00:44:45.390 --> 00:44:48.510
+ 
+
+
+00:44:48.510 --> 00:44:51.450
+ 
+
+
+00:44:51.450 --> 00:44:54.150
+ 
+
+
+00:44:54.150 --> 00:44:57.000
+ 
+
+
+00:44:57.000 --> 00:45:01.020
+ 
+
+
+00:45:01.500 --> 00:45:04.170
+ 
+
+
+00:45:04.170 --> 00:45:07.500
+ 
+
+
+00:45:07.500 --> 00:45:10.830
+ 
+
+
+00:45:10.830 --> 00:45:15.210
+ 
+
+
+00:45:15.210 --> 00:45:20.850
+ 
+
+
+00:45:20.850 --> 00:45:24.000
+ 
+
+
+00:45:24.000 --> 00:45:28.260
+ 
+
+
+00:45:28.290 --> 00:45:31.110
+ 
+
+
+00:45:31.110 --> 00:45:34.350
+ 
+
+
+00:45:34.350 --> 00:45:36.750
+ 
+
+
+00:45:36.750 --> 00:45:39.480
+ 
+
+
+00:45:39.480 --> 00:45:43.560
+ 
+
+
+00:45:43.590 --> 00:45:48.090
+ 
+
+
+00:45:48.090 --> 00:45:51.180
+ 
+
+
+00:45:51.180 --> 00:45:55.500
+ 
+
+
+00:45:55.500 --> 00:46:00.420
+ 
+
+
+00:46:00.420 --> 00:46:04.740
+ 
+
+
+00:46:04.740 --> 00:46:08.910
+ 
+
+
+00:46:08.910 --> 00:46:13.140
+ 
+
+
+00:46:13.140 --> 00:46:15.810
+ 
+
+
+00:46:15.810 --> 00:46:19.740
+ 
+
+
+00:46:19.740 --> 00:46:23.070
+ 
+
+
+00:46:23.070 --> 00:46:27.600
+ 
+
+
+00:46:27.600 --> 00:46:31.470
+ 
+
+
+00:46:31.470 --> 00:46:34.950
+ 
+
+
+00:46:34.950 --> 00:46:38.850
+ 
+
+
+00:46:38.850 --> 00:46:41.940
+ 
+
+
+00:46:41.940 --> 00:46:44.580
+ 
+
+
+00:46:44.610 --> 00:46:49.350
+ 
+
+
+00:46:49.350 --> 00:46:53.640
+ 
+
+
+00:46:53.640 --> 00:46:57.750
+ 
+
+
+00:46:57.750 --> 00:47:00.180
+ 
+
+
+00:47:00.420 --> 00:47:03.270
+ 
+
+
+00:47:03.270 --> 00:47:06.510
+ 
+
+
+00:47:06.510 --> 00:47:11.460
+ 
+
+
+00:47:11.490 --> 00:47:14.280
+ 
+
+
+00:47:14.310 --> 00:47:18.870
+ 
+
+
+00:47:18.870 --> 00:47:22.860
+ 
+
+
+00:47:22.860 --> 00:47:25.650
+ 
+
+
+00:47:25.650 --> 00:47:28.560
+ 
+
+
+00:47:28.560 --> 00:47:31.650
+ 
+
+
+00:47:31.650 --> 00:47:35.970
+ 
+
+
+00:47:35.970 --> 00:47:39.480
+ 
+
+
+00:47:39.480 --> 00:47:43.410
+ 
+
+
+00:47:43.410 --> 00:47:49.560
+ 
+
+
+00:47:49.560 --> 00:47:53.400
+ 
+
+
+00:47:53.400 --> 00:47:56.250
+ 
+
+
+00:47:56.280 --> 00:48:00.450
+ 
+
+
+00:48:00.450 --> 00:48:03.270
+ 
+
+
+00:48:03.270 --> 00:48:06.510
+ 
+
+
+00:48:06.510 --> 00:48:09.780
+ 
+
+
+00:48:09.780 --> 00:48:13.590
+ 
+
+
+00:48:13.590 --> 00:48:16.770
+ 
+
+
+00:48:16.770 --> 00:48:22.140
+ 
+
+
+00:48:22.140 --> 00:48:25.050
+ 
+
+
+00:48:25.050 --> 00:48:28.260
+ 
+
+
+00:48:28.260 --> 00:48:31.620
+ 
+
+
+00:48:31.620 --> 00:48:34.710
+ 
+
+
+00:48:34.710 --> 00:48:36.720
+ 
+
+
+00:48:36.720 --> 00:48:41.160
+ 
+
+
+00:48:41.160 --> 00:48:45.180
+ 
+
+
+00:48:45.270 --> 00:48:48.780
+ 
+
+
+00:48:48.780 --> 00:48:52.680
+ 
+
+
+00:48:52.680 --> 00:48:56.490
+ 
+
+
+00:48:56.490 --> 00:48:58.830
+ 
+
+
+00:48:58.830 --> 00:49:02.220
+ 
+
+
+00:49:02.220 --> 00:49:04.500
+ 
+
+
+00:49:04.500 --> 00:49:07.380
+ 
+
+
+00:49:07.380 --> 00:49:10.560
+ 
+
+
+00:49:10.590 --> 00:49:13.680
+ 
+
+
+00:49:13.680 --> 00:49:15.870
+ 
+
+
+00:49:15.870 --> 00:49:18.840
+ 
+
+
+00:49:18.840 --> 00:49:21.540
+ 
+
+
+00:49:21.540 --> 00:49:24.060
+ 
+
+
+00:49:24.090 --> 00:49:27.600
+ 
+
+
+00:49:27.600 --> 00:49:30.180
+ 
+
+
+00:49:30.180 --> 00:49:32.940
+ 
+
+
+00:49:32.940 --> 00:49:37.260
+ 
+
+
+00:49:37.260 --> 00:49:42.390
+ 
+
+
+00:49:42.390 --> 00:49:45.120
+ 
+
+
+00:49:45.120 --> 00:49:47.880
+ 
+
+
+00:49:47.880 --> 00:49:50.670
+ 
+
+
+00:49:50.670 --> 00:49:56.490
+ 
+
+
+00:49:56.490 --> 00:49:57.600
+
+
+00:49:57.690 --> 00:50:01.710
+ 
+
+
+00:50:01.710 --> 00:50:07.290
+ 
+
+
+00:50:07.350 --> 00:50:11.010
+ 
+
+
+00:50:13.710 --> 00:50:14.640
+
+
+00:50:14.699 --> 00:50:17.999
+ 
+
+
+00:50:19.710 --> 00:50:23.940
+ 
+
+
+00:50:23.940 --> 00:50:27.420
+ 
+
+
+00:50:27.420 --> 00:50:32.820
+ 
+
+
+00:50:32.850 --> 00:50:36.450
+ 
+
+
+00:50:36.450 --> 00:50:40.680
+ 
+
+
+00:50:40.680 --> 00:50:45.600
+ 
+
+
+00:50:45.630 --> 00:50:48.390
+ 
+
+
+00:50:48.390 --> 00:50:50.010
+ 
+
+
+00:50:50.040 --> 00:50:53.190
+ 
+
+
+00:50:53.190 --> 00:50:55.740
+ 
+
+
+00:50:56.910 --> 00:51:02.190
+ 
+
+
+00:51:02.190 --> 00:51:05.370
+ 
+
+
+00:51:05.370 --> 00:51:09.720
+ 
+
+
+00:51:09.780 --> 00:51:11.370
+
+
+00:51:11.849 --> 00:51:17.369
+ 
+
+
+00:51:17.370 --> 00:51:21.870
+ 
+
+
+00:51:21.930 --> 00:51:25.470
+ 
+
+
+00:51:25.470 --> 00:51:26.820
+
+
+00:51:27.360 --> 00:51:29.970
+ 
+
+
+00:51:29.970 --> 00:51:33.660
+ 
+
+
+00:51:33.660 --> 00:51:36.300
+ 
+
+
+00:51:36.300 --> 00:51:39.420
+ 
+
+
+00:51:39.420 --> 00:51:46.380
+ 
+
+
+00:51:46.380 --> 00:51:50.310
+ 
+
+
+00:51:50.310 --> 00:51:53.100
+ 
+
+
+00:51:53.370 --> 00:51:53.820
+
+
+00:51:55.230 --> 00:51:58.290
+ 
+
+
+00:51:58.290 --> 00:52:02.910
+ 
+
+
+00:52:02.910 --> 00:52:05.310
+ 
+
+
+00:52:05.310 --> 00:52:08.130
+ 
+
+
+00:52:08.130 --> 00:52:11.520
+ 
+
+
+00:52:11.520 --> 00:52:17.490
+ 
+
+
+00:52:17.490 --> 00:52:19.290
+
+
+00:52:19.800 --> 00:52:22.080
+ 
+
+
+00:52:22.080 --> 00:52:24.540
+ 
+
+
+00:52:24.540 --> 00:52:27.690
+ 
+
+
+00:52:27.690 --> 00:52:31.590
+ 
+
+
+00:52:32.280 --> 00:52:37.320
+ 
+
+
+00:52:37.320 --> 00:52:41.880
+ 
+
+
+00:52:41.880 --> 00:52:45.330
+ 
+
+
+00:52:45.330 --> 00:52:48.930
+ 
+
+
+00:52:48.960 --> 00:52:52.950
+ 
+
+
+00:52:52.950 --> 00:53:01.110
+ 
+
+
+00:53:01.140 --> 00:53:04.500
+ 
+
+
+00:53:04.500 --> 00:53:09.420
+ 
+
+
+00:53:09.420 --> 00:53:12.840
+ 
+
+
+00:53:12.840 --> 00:53:16.200
+ 
+
+
+00:53:16.200 --> 00:53:19.680
+ 
+
+
+00:53:20.370 --> 00:53:22.500
+ 
+
+
+00:53:22.500 --> 00:53:25.440
+ 
+
+
+00:53:25.440 --> 00:53:29.100
+ 
+
+
+00:53:29.130 --> 00:53:35.370
+ 
+
+
+00:53:35.370 --> 00:53:37.140
+
+
+00:53:37.590 --> 00:53:41.250
+ 
+
+
+00:53:41.250 --> 00:53:44.730
+ 
+
+
+00:53:44.760 --> 00:53:48.510
+ 
+
+
+00:53:48.510 --> 00:53:51.630
+ 
+
+
+00:53:51.630 --> 00:53:57.000
+ 
+
+
+00:53:57.000 --> 00:54:00.360
+ 
+
+
+00:54:00.360 --> 00:54:02.670
+ 
+
+
+00:54:02.670 --> 00:54:07.530
+ 
+
+
+00:54:07.530 --> 00:54:10.920
+ 
+
+
+00:54:10.920 --> 00:54:15.660
+ 
+
+
+00:54:15.660 --> 00:54:19.800
+ 
+
+
+00:54:19.800 --> 00:54:23.460
+ 
+
+
+00:54:23.460 --> 00:54:27.780
+ 
+
+
+00:54:27.780 --> 00:54:30.540
+ 
+
+
+00:54:30.570 --> 00:54:33.330
+ 
+
+
+00:54:33.330 --> 00:54:38.070
+ 
+
+
+00:54:38.070 --> 00:54:41.580
+ 
+
+
+00:54:42.030 --> 00:54:43.560
+
+
+00:54:45.450 --> 00:54:51.600
+ 
+
+
+00:54:51.600 --> 00:54:51.690
+
+
+00:54:51.690 --> 00:54:56.580
+ 
+
+
+00:54:56.580 --> 00:55:00.930
+ 
+
+
+00:55:00.930 --> 00:55:05.070
+ 
+
+
+00:55:05.760 --> 00:55:08.760
+ 
+
+
+00:55:09.480 --> 00:55:12.630
+ 
+
+
+00:55:12.630 --> 00:55:15.570
+ 
+
+
+00:55:15.570 --> 00:55:20.640
+ 
+
+
+00:55:20.640 --> 00:55:24.330
+ 
+
+
+00:55:24.330 --> 00:55:28.800
+ 
+
+
+00:55:28.800 --> 00:55:33.810
+ 
+
+
+00:55:33.810 --> 00:55:39.090
+ 
+
+
+00:55:39.630 --> 00:55:42.030
+ 
+
+
+00:55:43.740 --> 00:55:47.760
+ 
+
+
+00:55:47.760 --> 00:55:54.030
+ 
+
+
+00:55:54.030 --> 00:55:58.920
+ 
+
+
+00:55:58.920 --> 00:56:02.190
+ 
+
+
+00:56:02.190 --> 00:56:03.150
+
+
+00:56:04.380 --> 00:56:07.050
+ 
+
+
+00:56:07.050 --> 00:56:09.720
+ 
+
+
+00:56:09.720 --> 00:56:14.400
+ 
+
+
+00:56:14.400 --> 00:56:18.510
+ 
+
+
+00:56:18.510 --> 00:56:22.980
+ 
+
+
+00:56:23.010 --> 00:56:25.890
+ 
+
+
+00:56:25.890 --> 00:56:29.610
+ 
+
+
+00:56:29.940 --> 00:56:33.480
+ 
+
+
+00:56:33.480 --> 00:56:36.870
+ 
+
+
+00:56:36.900 --> 00:56:39.990
+ 
+
+
+00:56:39.990 --> 00:56:41.550
+
+
+00:56:42.510 --> 00:56:45.720
+ 
+
+
+00:56:45.750 --> 00:56:51.090
+ 
+
+
+00:56:51.120 --> 00:56:56.190
+ 
+
+
+00:56:56.220 --> 00:57:01.860
+ 
+
+
+00:57:01.920 --> 00:57:02.340
+
+
+00:57:02.700 --> 00:57:05.730
+ 
+
+
+00:57:05.730 --> 00:57:07.890
+ 
+
+
+00:57:07.890 --> 00:57:11.100
+ 
+
+
+00:57:11.100 --> 00:57:15.060
+ 
+
+
+00:57:15.060 --> 00:57:19.290
+ 
+
+
+00:57:19.290 --> 00:57:22.980
+ 
+
+
+00:57:23.010 --> 00:57:26.490
+ 
+
+
+00:57:26.490 --> 00:57:28.680
+ 
+
+
+00:57:28.680 --> 00:57:31.800
+ 
+
+
+00:57:31.800 --> 00:57:34.890
+ 
+
+
+00:57:34.890 --> 00:57:37.530
+ 
+
+
+00:57:37.530 --> 00:57:41.490
+ 
+
+
+00:57:41.490 --> 00:57:46.200
+ 
+
+
+00:57:46.200 --> 00:57:50.910
+ 
+
+
+00:57:50.910 --> 00:57:56.040
+ 
+
+
+00:57:56.280 --> 00:57:56.880
+
+
+00:57:57.269 --> 00:58:00.269
+ 
+
+
+00:58:00.479 --> 00:58:02.789
+
+
+00:58:04.110 --> 00:58:09.660
+ 
+
+
+00:58:09.660 --> 00:58:19.560
+ 
+
+
+00:58:19.560 --> 00:58:26.040
+ 
+
+
+00:58:26.040 --> 00:58:31.740
+ 
+
+
+00:58:32.400 --> 00:58:39.510
+ 
+
+
+00:58:39.540 --> 00:58:43.500
+ 
+
+
+00:58:43.530 --> 00:58:45.480
+
+
+00:58:45.900 --> 00:58:48.480
+ 
+
+
+00:58:49.740 --> 00:58:53.610
+ 
+
+
+00:58:53.610 --> 00:58:55.320
+
+
+00:58:55.500 --> 00:58:59.670
+ 
+
+
+00:58:59.670 --> 00:59:05.400
+ 
+
+
+00:59:05.850 --> 00:59:06.630
+
+
+00:59:07.710 --> 00:59:12.150
+ 
+
+
+00:59:12.270 --> 00:59:14.850
+ 
+
+
+00:59:15.030 --> 00:59:19.740
+ 
+
+
+00:59:19.740 --> 00:59:21.270
+
+

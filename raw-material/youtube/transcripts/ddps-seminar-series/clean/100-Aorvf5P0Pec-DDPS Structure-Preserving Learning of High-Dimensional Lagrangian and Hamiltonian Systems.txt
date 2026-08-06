@@ -1,0 +1,1551 @@
+all right welcome everyone to the ddps
+seminar uh before we introduce our
+invited speaker let's go over some rules
+and Logistics first of all uh please
+mute yourself during the talk um but if
+you have questions you can unmute and
+ask questions or use chat room to post
+your questions so that we can address
+them in Q&A session at the end second
+today's ddps seminar is open to external
+audience um so no classifi discussion is
+allowed here and finally The Talk today
+will be recorded and uploaded in our
+YouTube channel that's about it now let
+me briefly introduce our speaker today
+um it is an honor to host Dr Boris
+krammer who is an assistant professor in
+mechanical and aerospace engineering at
+UC San Diego prior to joining UC San
+Diego he spent four years as a
+post-doctoral associate in the
+department of air Aeronautics and
+astronautics and Aerospace computational
+Design Lab at MIT he received his
+master's degree and PhD in mathematics
+from Virginia Tech prior to that he
+studied mathematics in technology and
+mechanical engineering at the University
+of c um
+what K in Germany yeah Germany thank you
+for and he uh is a member of the uh San
+and a senior member of AI AA where he
+also served on the multi- disciplinary
+design optimization and is active in uh
+non-deterministic approaches Tech
+approach technical
+committees he is an 2022 NSF career
+award and won a Department of Defense
+Newton award in
+2020 his research is funded by the
+Office of Naval Research resarch the
+defense um Advanced research project
+agency and the N National Science
+Foundation his research interests are to
+develop computational methods and
+numerical analysis for control
+optimization design and uncertainty
+quantifications of complex and large
+scale systems all right today Boris will
+talk about structure preserving learning
+of high dimensional lagrangian and
+hamiltonian systems please enjoy and
+expect a wonderful talk um now let me
+ask a couple of questions so that um you
+know to make this seminar somewhat
+informal okay first question for you bis
+um obviously you are uh very passionate
+about you know um you know computational
+methods and numerical analysis for
+control optimization and also I know you
+are really into redu do models um is
+there any moment in your life when you
+realize wow this is it this is the field
+I would like to commit my career uh do
+you have that moment and if you have
+would you share that moment with us um
+maybe to to understand a question was
+there a moment where I said I found my
+career I'm happy and I'll stay doing it
+yes yes yes okay um yeah I kind of did
+that when I was uh I think maybe an
+early Master student um starting my PhD
+I did an internship somewhere in
+industry and it really wasn't wasn't
+thrilling me and I felt like there so
+many things to keep answering and to do
+uh research on that I wanted to kind of
+go in this direction and that High
+Fidelity models are everywhere but
+they're not always super practical so
+reduced order modeling is it awesome all
+right well second question for you um um
+as we all heard the you know the
+introduction about you like you've been
+getting a lot of hours and and fundings
+from various resource uh sources um in
+the sense you've been quite successful
+um as an assistant professor as a ear
+career already that's a wonderful job
+any secret any hint for future faculty
+you know person people yeah it's um very
+very good question I thought you gonna
+ask me if the 49ers win the Super Bowl
+but um no
+uh I I think um you know a lot of us is
+keep talking to people um listen to the
+big trends that are happening um there's
+so many great areas to work in at the
+moment it's equally important to work on
+a great problem as it is to work on a
+good solution and I think combining both
+will um has worked well but uh you know
+it's I think it's a good starting point
+good application and good good
+application and good methods yeah good
+good tip and good hint okay the floor is
+yours Boris absolutely thank you so much
+yungo for inviting me here um to give
+this remote seminar and for all the
+attend who I don't see I don't have the
+tiles up here so if you're here and um
+you know I hope it's not U some of it is
+to your interest um my collaborators on
+this work are diverse so we have um from
+different departments uh we have uh M
+the main driver of all of this work is
+uh my post Dr har Sharma he been
+involved in all the papers you'll see
+today in the methodological development
+and then also started collaborating a
+lot more outside of our department um
+with these uh two man Iman um who's a
+graduate student here and Mike tly
+they're both roboticists U with David
+njera and Miche Al tot they're from
+Structural Engineering um they have some
+interesting applications that they want
+to use our methods on and then um XU
+Wang is a collaborator of ours on the
+methodological site at the University of
+South Carolina um this work's been
+funded uh by DOD Newton um so by
+Department of Defense uh by the National
+Science Foundation by the Korean
+Institute for the advancement of
+technology and for the by the office of
+Na
+research um to get us started I think we
+all know uh in this seminar that data is
+becoming more and more accessible we can
+produce more data we can store more data
+and the question is as engineers and
+physicists how can we harness um this
+this data and learn valuable things from
+it while not throwing everything that
+we've developed over the last 100 years
+away um data is often High dimensional
+um but High dimensional complex systems
+often take very long to run so um the
+goal here is if we do have um systems of
+the kind that I have here dynamical
+system that evolves in a nonlinear way
+and might have complex inputs um inputs
+acting C uh on a certain way on the flow
+of the system then what can we do um to
+learn such systems from data um we can
+obviously do machine learning um I'm
+interested in a few other methods um to
+get us really into the predictive regime
+of these things um in general large is a
+topic of discussion that we could
+discuss for an hour now what is large
+but you know if n is reasonably large
+here in my case over a thousand then uh
+most learning methods will not be able
+to learn in Thousand dimensional space
+there will be some sort of a reduction
+um needed in all of these methods um my
+point is and many of us would would
+probably agree in the seminar for
+physical systems we have to incorporate
+knowledge that we know so let's build on
+what we know and let's really combine
+The Best of Both Worlds um now I want to
+talk specifically about structured
+systems um systems that have something
+more than just something uh mathematical
+that we know about them that's just we
+don't just know that they're having
+quadratic or a cubic term but we might
+know that it preserve certain things uh
+for example there could be conservation
+laws that are underlying most of
+physical systems of their derivation
+simple acticity reversibility
+interesting configuration spaces showing
+you a few on top here um plasma if it's
+engineered or solo plasma has these
+properties um I'm showing you later
+something about self- robotic fish
+mechanical system second order
+systems and um maybe there's a long
+history in modeling these things to
+incorporate a geometric structure to
+discretize them correctly in space and
+in time and therefore to get predictive
+simulations for such problems only have
+yet is that these predictive simulations
+can be quite
+expensive what happens the the time
+integrators are generally quite
+expensive they might be implicit and the
+system Dimension is large to comp to
+cover complexity and so what what I'm
+interested in and what we'll be talking
+about it here is um there's a need for
+physics preserving not just informed but
+physics preserving reduced order
+modeling so something that brings down a
+dimension but also preserves the physics
+I'll structure this in two parts uh the
+first part we'll talk about hamiltonians
+and the second part we'll talk about
+lonians I'll hope to spend more time on
+the second part um and two uh citations
+are here I'll also have them up later
+again if you're interested in this so
+I'll start a little bit um more General
+with gradient systems uh actually this
+this is a typo here should be a general
+infinite dimensional gradient system
+where I have a a field wide that
+interested in X is my spatial variable
+um T is a time and basically the
+Dynamics uh as it evolves in time is
+governed by a linear differential
+operator and then a variational
+derivative of this functional H and here
+in my talks specifically I'm breaking up
+H into things that have quadratic nature
+and things that have higher order polom
+or non-p polinomial
+nature now if this L has a specific
+structure for example if it's skew joint
+then we often refer to this system as a
+hamiltonian system the hamiltonian will
+remain constant and we call um the
+partial differential equation
+conservative um if L happens to be
+negative semi-definite or negative
+definite um then we can refer to um H as
+an energy function or as a leop function
+and we could have either respectively
+non-increasing Behavior or a
+monotonically decreasing behavior and we
+would call the PD
+dissipative in structure preserving
+space discretization then you take this
+PD and you move to an OD and you would
+give an OD that looks as follows where
+basically this gradient of this H
+hamiltonian or lapina function appears
+and where D has a very specific
+structure now this is all in very high
+dimensions and we're trying to reduce
+the dimensionality so given some
+trajectory data why at certain time
+steps I would learn would like to learn
+the evolution um of the system so I'd
+like to get a dynamic systems repres
+representation that works in lower
+Dimensions so it's um faster to
+execute to go back to the gradient
+systems for a second there's special
+cases obviously so when um B is Q
+symmetric Q joint anti- symmetric any of
+the three words you can you might be
+familiar with um which really means D is
+minus D
+transpose uh then we call this a
+hamiltonian and what we can show is that
+for any times um such that T1 is less
+than T2 um
+the hamiltonian is conserved so the
+hamiltonian evaluated at the flow y of
+T1 minus the hamiltonian evaluated at at
+the solution at time T1 so T2 minus T1
+if you work out the integral well the
+skew symmetry is exactly what gives you
+the zero here um so you have
+conservation and this is what we want to
+track in numerical solution if D happens
+to be negative semi uh definite or
+negative definite then you have a gr
+gradient flow system and you have a
+dissipation so um the hamiltonan uh a
+solution of time T1 minus or the energy
+at T1 minus the energy at sorry T2 minus
+T1 uh would be less than zero so the
+system dissipates
+energy um and numerical schemes if you
+want to do just PD discreditation they
+would respect this and we want to
+respect these properties in reduced
+order data driven
+modeling so let's focus on this talk on
+canonical hamiltonian systems um just
+for the purpose of the first 10 slides
+uh in Canon systems I can separate uh
+the state into U two distinct physically
+interpretable uh interpretable
+quantities the momentum and a
+generalized
+momentum The Matrix that's in front of
+the gradient of the hamiltonian uh is
+the simple canonical um hamiltonian
+structure it looks like the identity
+minus the identity on the Alp diagonal
+and um and lastly there's a a symmetry
+that we can often use in the full auto
+model operators um that arises from
+space discritization if you're
+interested in other gradient systems
+then you should look at this if you're
+interested in specifically non-canonical
+hamiltonian system then um uh Anthony
+Gruber and and um Irina who I think is
+on this call um have done some work in
+this area to do uh learning of these
+systems so canonical case um what we
+would like to do I would basically like
+to learn a system of the top part uh
+that looks like Q do p dot uh is equal
+to that but I'd like to reduce the
+dimensional lity first I don't want to
+learn in in a thousand Dimension so to
+do that I assume I have data um I store
+snapshots of full order simulations in
+The Matrix q and P just to separate
+these physical
+quantities I have assumed here in this
+talk and we'll relax assumptions as we
+got further into the talk and this first
+part I'm assuming that I know something
+about the nonlinearity in the functional
+so I know something at the PD level I do
+not have to know this at the code level
+but I have to know it at the PD level if
+I know this then I can evaluate um
+non-quadratic terms uh on my state so I
+can build these forcing matrices both
+for a momentum and a generalized
+momentum and I can also build time
+derivatives with a finite for example
+finite differencing scheme um if I have
+noisy data then maybe have to do
+something else um total variation
+differentiation or something else but
+what I do here is I store data I I
+evaluate um something that I know at the
+PD level and I um compute time
+derivatives now I have to reduce my
+dimensionality because n could still be
+in the thousands or 10 thousands or 100
+thousands to do this um here we have to
+be a little bit more careful so we want
+to use proper simplec decomposition that
+was you know um proposed in this paper
+by Pang and Main in
+2016 so basically you want to make sure
+that the projection is onto the the
+right space so that this um that this
+projected Dynamics can still be um
+evolving in a simp simplec flow so here
+the way to do this is um you basically
+compute uh this F Matrix you set these
+two projection Matrix e equal to this F
+Matrix and you get this from this
+cotangent lift
+algorithm now you project you project
+your States linearly again this is not
+Auto encoders nothing else here you can
+project your States linearly you project
+the time derivatives linearly and you
+project the forcing linearly we have
+done other work where we looked at
+manifold um expansions here but for now
+in this talk we'll just focus on linear
+projections so now I have projected data
+um and I need to figure out what do I do
+with this projected data so I know now
+that um this data lives in a low
+dimensional Subspace um I've established
+that now in that low dimensional
+Subspace I impose a
+hamiltonian um so if I work were to
+write things down on paper I would
+arrive at the case that my hamiltonian
+the low dimensional Subspace would look
+like this um it would have you know a q
+transpose DQ Q hat there would be an
+equal part with with um the P variables
+and there would be my nonlinear terms
+now I would also know um from this
+expression these are scalers the
+Hamilton is a scalar function that DQ
+and DP has to be symmetric um and that's
+a knowledge I have to embed in my in my
+optimization I would not see this if I
+go directly to the to the um to the
+governing equations so so here in the
+hamiltonian this becomes evident and so
+therefore we carry this through um my uh
+State Dynamics are now given as
+follows okay so now I have Dynamics uh I
+have a hamiltonian um and now I would
+like to base this off of basically this
+operator inference framework that
+Benjamin pierer and Camin Wilcox um uh
+worked on in 2016 uh which is a really
+great and flexible framework to um to
+efficiently learn low dimensional models
+so now what we do here since in this
+part of the talk I made the assumption
+that I know what the at the PD level
+what what non polinomial terms I have I
+put everything I know on the left hand
+side I put things that I don't know on
+the right hand side which are these
+operators I constrain my optimization by
+symmetry conditions and all I have to do
+is solve for these two um these Le SES
+problems actually separate um so I can
+separate them um as follows for a
+problem in p and in Q and the the pro
+the solution to this problem is actually
+given um by a yapon of equation so you
+can either minimize this with a solution
+of your choice or you can solve a leop
+of equation we found that solving these
+leop of equations with um specific
+symmetry conditions is kind of um a nice
+way of doing
+this okay so now we have a few operators
+and um what we basically have now is a
+reduced aut model we have learned these
+operators had and we have a reduced
+order model um that evolves the reduced
+states with these um with with these um
+symmetric matrices in linear
+terms we studied this for a little bit
+um in terms of what can we say so if you
+had done reduced order modeling which is
+projection based often if you had done
+this in a gurin projection framework so
+if you take your PD you discretise it in
+space you multiply you you have um
+reduced spaces that you want to project
+it on so if you had done this would the
+Learned model from the least SES problem
+be close to the projected model if you
+had done everything
+intrusively and uh while it's not a
+result that has a preasymptotic error
+bound at least it's it tells us that the
+The Operators that you get from
+projection which we call Till The
+Operators are close to the operators
+that we get from learning uh by Epsilon
+and the Epsilon kind of so for every
+Epsilon you can find an r that satisfies
+this the unsatisfactory thing about this
+result is that we don't quite know how
+Epsilon depends on
+R but anyway so in the in ASM totically
+we have this result here that at least
+we learned the right operators um very
+recently we also um looked a little bit
+at um the error that that implies now on
+the solution so if you were to solve
+your full order system from Z to T and
+you solve your reduced system from Z to
+T and you inject this reduced State back
+into the full state with your Matrix
+f um then you can bound this error by
+using some gronell inequalities as
+follows there's a constant that I'm not
+going to go into details in but
+basically the error has three component
+there's a projection error that you have
+in all linear methods um so the error in
+the projection of your
+state um you have so to speak a data
+error um that tells you well how
+accurate is your is your time derivative
+scheme that you have
+approximated and then this is really the
+error we focus on more which is the
+optimization error that tells you well
+how well are you learning structural
+properties of this um Dr Matrix that you
+have
+um and and this is something that we
+study a little bit more in in this paper
+not going to go much into it but I
+wanted to tell you there's two types of
+ways that we can bound the erors and
+there's some lipshits um constants
+involved that uh I I don't have defined
+on the slide so just wanted to bring
+this up so now I want to show you some
+some uh results here um going right into
+what can the hamiltonian operator
+inference 2 uh let's assume I have a
+cubic system cubic shinger equation um
+which has the following time continuous
+hamiltonian so the hamiltonian can be
+broken up as we had it before into a
+quadratic component and here we have a
+quartic
+component um this nevertheless does lead
+to a canonical um hamiltonian PD where
+we have this um canonical Matrix of one
+and minus one um we have spatial
+derivatives those are the things where
+you typically need to understand what
+spatial scheme has been used to discor
+the PD into the OD and then we have um
+simple multiplication of States like Q
+^2 time Q cub and p^2 * Q those are
+multiplications you can perform element
+wise of on any discretized Vector okay
+so that's what I mean these are kind of
+spatially local terms and these are
+terms that need um spatially neighboring
+information to compute
+derivatives um there's invariance of
+motion that are known for this system so
+we'll study those um the the mass for
+example is conserved and the momentum is
+conserved um and they're defined as
+follows so you'll see some plots later
+that look at these invariance of motion
+um we mainly conserve the hamiltonian
+structure um but they kind of will see
+that um at least the mass is perfectly
+conserved and the momentum is is very
+well
+conserved so for a reasonably low State
+um Dimension here so uh 128 uh we look
+at the state error um so the relative
+state eror in training and in
+testing um so in the testing regime I
+think I didn't say what uh what kind of
+times I'm looking at it'll become clear
+in the next
+plot but I'm doing a reduction to either
+to even number of modes between two and
+12 and I compare my learning method with
+an intrusive method um intrusive proper
+symplectic decomposition by peng and M
+so if I had known everything and I
+didn't have to learn it and I have full
+access to my system this is the error I
+would get and if I learn it I'm pretty
+well until about 10 and then my error
+flattens off um in testing we do pretty
+well um comparable to the intrusive
+method um which is quite well but keep
+in mind you know the axes are different
+the testing error of course is larger
+than the training error here
+okay um we'll look at the invariance now
+uh or the hamiltonian first so we look
+at how does the hamiltonian at the full
+order model level uh evolve so H at VY
+hats um so how does it evolve evolve and
+how is it conserve um so if we look at
+the full order model energy um you know
+it's bounded by about 10 the minus 5 and
+it evolves in the cyclic nature that
+black line is the end of our training so
+we train for 20 seconds and we test for
+seconds it's important to notice that
+since we maintain the structure even if
+we go into the predictive regime that
+structure is maintained the model
+remains stable the model remains
+predictive and and keeps its uh its uh
+predictive capability so that's
+important um not all methods uh
+unstructured methods methods that don't
+embed physics are typically not seeing
+that um if we model the the
+reduced um the reduced order model
+hamiltonian um it's a little bit of a
+different way of looking this we also
+conserve this um for for dimensions here
+but but really I think the full AA model
+um is is the right way to look at it was
+there a question I heard a a noise
+someone have a
+question I think it was Noise Okay good
+um now we look at invariance so we look
+at Mass conservation of momentum
+conservation so um again we look at them
+at the high dimensional level at the
+full order model level um the momentum
+on the right side is perfectly conserved
+um you know down to machine Precision um
+and the mass is conserved up to with an
+upper bound of like 10 to the minus 6 uh
+for the for our operator inference model
+and the intrusive model actually
+conserves it perfectly we did not bake
+in any constraints to enforce that um
+but that's kind of a byproduct of
+learning the Hamilton instructure and
+the simplecity
+right okay so this uh wraps up my short
+part about the first 20 minutes about
+hamiltonians and I'd like to spend the
+next 25 to 30 minutes focusing on lrin
+um
+and I'll take combined questions at the
+end if that's okay just to make sure
+we'll get through most of the stuff um
+so now we focus on lanan models uh they
+have uh structures as well and again
+this methodologically this is based on
+the work that har has done and then
+we'll see several extensions and
+actually nice
+applications so why is neine structure
+now important why is that something we
+should focus on well you know classical
+methods here um or a classical example
+is you have a beam what transfers
+vibrations you know it's vibrating it's
+uh supported at both ends and you might
+excite it and you start measuring the
+viations of this um here it's a modeled
+by an Oiler Bly B
+model and now you could say well I know
+I mean it's a mechanical system with
+second order so I could learn a second
+order system so I could do for example
+this method called operator inference I
+could just write X double dot is
+something on the right hand side and
+I'll just learn it um if you do that in
+training everything would look perfect
+to you because you're having a relative
+State error plotted against a reduced
+Dimension So you you're testing
+different reduced models up to order 20
+let's say and you see as you incre
+increase the dimension um your model
+error go your your um State error goes
+down your reduced model in the training
+data produces well um the result that
+your full auto model does okay so now
+you say well what is that any good um I
+want to make predictions
+um and you wouldn't see the error in the
+prediction until a much longer time so I
+think here we trained for like .05
+seconds or or 0.1 seconds so the black
+line is again indicating how long we
+trained so we let this vibrate for a
+little
+bit and then we make predictions um so
+you train and and everything looks good
+here and for a while actually everything
+looks good it looks like your energy
+error is bounded by I don't know 10 the
+minus 5 10 Theus
+4 and then at some point at .8 seconds
+that energy keeps growing which means
+you just ran into this is a this is a
+byproduct of you not conserving the
+hamiltoni uh the lran property correctly
+here the energy keeps growing Solutions
+blow up in finite time and despite you
+learning a second order system um you
+have basically no predictive accuracy at
+some point okay so we need to do
+something let's look at the mechanics of
+this problem um so here we look at right
+down what lren Dynamics are we need a
+finite Dimension we we're in finite
+Dimensions now we need a configuration
+manifold Q we need State space um TQ and
+a lran l which again measures uh is a
+scalar
+quantity if we allow forcing uh we would
+the the oiler lrange equations are
+derived from this lran and external
+forcings as follows we take the partial
+of the lran respect to Q take the
+partial of the lrin with respect to Q
+Dot and we have a d over DT here and
+then forcing act on the right hand side
+um so if we now go to this is the
+general form uh if we focus on simple
+mechanical systems we would there's a
+certain way that the lran splits and
+that the kinetic and the potential
+energy separate um and their dependence
+on Q and Q dot so simple mechanical
+systems the kinetic energy is uh
+quadratic in um in this Q Dot and the
+potential energy is quadratic in Q we
+also know that we Again by these being
+scalers that there would be symmetries
+involved and and we have know something
+about positive definites too forcing on
+this slide I'm telling you uh that
+forcing I model with simple dissipative
+linear forcing um and U I allow a linear
+time dependent input here as well that
+acts on the system if I do this I arrive
+at a simple linear second order system
+but I know about this system that um K
+has a symmetry that M has a symmet
+C actually might also have a symmetry
+depending on how I how I choose it um
+and then I know that there's a linear
+forcing acting okay so that's one way to
+do this I can expand um and also use
+this um oila lrange principle to look at
+nonlinear wave equations so now I'm
+going a slightly uh one level up so I'll
+go to the pte so what if I have a wave
+type equation um so second order in time
+uh onedimensional in space um where I
+have some nonlinear terms um you know uh
+sign Gordon equations being one of an
+example here so I have some nonlinear
+terms here um that um act on the
+potential
+energy so UNL is really this this
+nonlinear term in the potential energy
+okay so if I were to discretise this in
+space with with um a structure
+preserving for example a symmetric
+finite difference or pseudos spectral
+methods then my space discretized
+larangan would basically look at the um
+the Q variables with respect to T it
+would discretize um my spatial
+derivative with a certain discretization
+scheme that this is this Matrix D here
+and I would have my um nonlinear
+potential energy being subtracted here
+this would all lead me this is where I
+want to end up to a system that looks
+like qou dot is KQ K has symmetry again
+this is important um and nonlinear Parts
+if I know that nonlinear potential
+energy then I would get this
+contribution by taking um that that uh
+derivative um we know that this full
+order model conserves the total energy
+which is defined as follows okay um so
+this is a principle that we also want to
+quantities and qualities that we learn
+from this we want to use in learn in the
+model
+learning um so usually when you start
+reviewing you're you're never having all
+of the work there's a large body of work
+in the machine learning community that
+has focused on lran systems for example
+how can you learn them from images um
+how can you learn them if you take
+pictures of robots um I'm focusing here
+on on the model reduction aspects and
+what has been done there um seminally
+intrusive uh projection based methods
+for lran systems came out by the by
+Jerry Marston in 2004 and Kevin calberg
+and a group at um Sandia picked this up
+in 2015 and did some really nice reduced
+order modeling uh for nonlinear lren
+systems um this was intrusively so we
+want to look at non-intrusive things M
+krmer has done EX excellent work there
+and I believe he was a speaker in the
+seminar series too um he uh did some
+nice NE network uh work and then um
+extract by incorporating lran systems um
+and a couple of other people and this
+list could in 2023 keep growing and
+growing um we noticed that that many of
+these look at very low dimensional
+systems so we want to go to to Something
+in the hundreds thousands tens of
+thousands um operator inference is kind
+of were War I feel is uh is is quite
+flexible in learning these things so but
+it doesn't allow for it didn't it wasn't
+written with constraints to start with
+um so really incorporating the lran
+constraints just as we had done in the
+hamiltonian case is what we'll be doing
+in this work um there's also work that
+came out pretty much um simultaneously
+with our work on uh Opera inference for
+linear mechanical systems This was um by
+Peter Benner's group and Pavan coyal who
+I believe was also a speaker in the
+seminar series um so we will embed lran
+structure into this operator inference
+framework now and everything here will
+look very similar to what I've done
+before um again now I only have in the
+lanan I just have um basically one state
+I don't have to separate my states in
+the PS and q's anymore I have a second
+order system so I'm collecting State
+data might collect output data I might
+collect input data depending on if I
+have inputs or if the output is
+different from the
+state I do now I don't have to proper
+simplec decompositions I'm good with
+just a single value decomposition I
+project my data now I'm in the space
+where I can learn things this is a
+manageable Dimension R could be 10 20 30
+and in this Dimension I still need
+derivatives so I need a first derivative
+and I need a second derivative and I
+would compute them with some time
+stepping scheme okay same thing as we
+did before I would now look at well what
+is it that that I need to conserve or
+how would the Dynamics of the lren
+evolve in the space so I write down my
+lren principle um my lrin function um
+very simple here as quadratic we will
+change this to be nonlinear later and I
+allow myself again A reduced forcing
+that looks as
+follows um and then I would again
+recover a lran system that's second
+order um that has certain properties for
+example the symmetric K that allows for
+forcing and has an in output and now
+we're moving pretty much like before we
+set up a constraint optimization problem
+where we have uh constraints on K and C
+to be symmetric positive definite uh and
+things that we have pre-computed and
+obtained from the data are Q double dot
+Q dot q and u we know what inputs we
+have um and then uh lastly we could
+learn the output Matrix ehad if we
+wanted to um we solve these things with
+a constraint with um the CVX toolbox so
+we minimize this problem problem under
+constraints if you want to push it to
+nonlinear wave equation so if you want
+to add some nonlinearity here um then at
+this point again we'll relax this at the
+next level we we would have to know um
+this component of potential energy at
+the PD level if we do this then we can
+evaluate our uh that nonlinearity at the
+state we make the same projection and we
+solve our optimization problem again
+we'll see some results for this later um
+importantly I think really the Symmetry
+and positive definiteness is what gives
+us a long-term predictive
+accuracy if I do this with a sign Gordon
+equation which is you know a
+prototypical test problem for this which
+has this nonlinear wave structure and
+and a a non-p polinomial term on the
+right hand side I'm comparing again
+intrusive with non-intrusive so the
+method we're looking at is a grin
+operator inference um in training uh
+which is 5 Seconds is good in testing
+which is five times longer than the
+training interval we're also doing very
+comp comparable for low order um models
+that go up to to uh R is equal to 15 um
+again axes are different keep an eye
+left is a state error for training
+obviously that is much lower than a
+state error for prediction okay um we
+want to look at energy errors so um we
+see that we have a bounded energy error
+if we do this intrusively the bound is
+somewhere in like 10 the minus 2 if we
+do it non-intrusively with lran operator
+inference we see some some cyclic
+behavior and we would have a a larger
+bound but again for long-term
+predictions here um I'm showing you even
+more so this was trained for 5 seconds
+and tested for 25 seconds here we're
+looking at 5 seconds and I'm showing you
+that for 105 or 110 seconds we can make
+stable predictions and I could run this
+for 300 seconds if I wanted to um that's
+really the the what the structure gets
+you let's look at Solutions um they
+there's uh certain wave type structures
+solons that build up how do we do how do
+we capture them so the full order model
+at 5 Seconds that's the end of training
+at 15 seconds and at 25 seconds that's
+five times past the training interval um
+we're doing pretty well here um the
+green dots are basically showing what
+the curve would look like after this and
+we we capture basically this uh this
+wave pretty well um okay so then we
+wanted to say okay so this is a wave equ
+and let's go back to a mechanical system
+uh the motivating problem here was to
+look at a soft robotic fish um we found
+this in this um this is the group of
+Daniel arus at MIT is doing a lot of
+work on on Soft Robotics and so
+basically this comes is explained nicely
+in this paper so you have these little
+fish and you want to actuate them and
+really the actuation happens along the
+center line of this fish this is the
+important part um and so those are
+swimming around you see a few snapshots
+that uh some milliseconds taking from
+these um uh simulations there obviously
+um these are soft fish made from a
+silicon type material so you really have
+um you have a continum model here that
+you have to deal with um there's a nice
+um cat model that was developed by by
+the group of Thomas Moyer um you can
+find more about this paper from five
+years ago and and basically there's this
+just shows the actuation mechanism so
+you see that tail here um the point of
+interest um is kind of like the motion
+um of the of this uh end point at the
+center line um you have a certain Center
+Line beam that is a reinforcement you
+have a silicon Hull and then you actuate
+um your Chambers sometimes by by
+pressure sometimes um by the pressure of
+a fluid pumping in okay so now we look
+at the quantity of Interest which is the
+this onedimensional quantity at the end
+um so here I have like a sigmoid input I
+look at uh I excite the the fish with a
+with a sigmoid by the way the full order
+model Dimension is 780,000 so this is
+quite large um we have this displacement
+and we show it for the high dimensional
+problem and we show it for a reduced a
+mod model of Dimension two that's pretty
+good um other people have also worked a
+group of Steph um Peter Benner Stephan
+wner has has worked on this um with
+different reduced order models is a
+nicely reducible problem um relative
+errors are
+uh and the energy most importantly here
+we train for one second extrapolated two
+you see the energy doesn't change
+anymore because we have a nicely
+predictive
+model um now we use a step input um so
+this is an a a control in so so we
+trained it with a sigmoid now we test it
+with a step they have very different um
+characteristics and frequencies that
+they excite so even for different inputs
+this works pretty well um we now see the
+step response of the full order model
+and of the two different reduced order
+models um intrusive and non-intrusive
+the displacement errors are probably
+better here to see then to compare all
+these circles and dots um and lastly the
+F energy in both cases remains very nice
+and stable um so so no energy cth or
+anything okay um so that was our
+Benchmark problem and by the way you can
+download this is really nice um you know
+Peter benners group has the more Vicki
+up up so you can download this model if
+you want to and play around with
+whatever method you
+have Okay so this was a benchmark model
+so and and then some of our colleagues
+here in the robotics group at UCSD got
+interested in this and so now I'm just
+showing you five slides or so about
+actually building something like this
+here at UCSD um so here I have some
+videos I hope they're playing yungo
+assured me they would be playing um on
+the left side I'm showing you a video of
+uh a trout that's swimming so this is an
+actual experiment um where you have a
+water tank you have a stream so you kind
+of you know why do fish stream um swim
+up the stream and you have to Trout um
+swimming so let me
+go oh now it doesn't let me see I'll
+show it
+again focus on the left video can
+someone tell me what's the catch of this
+of this left video if someone has seen
+it you will know it if you haven't seen
+it you won't know it uh or maybe make a
+guess
+the fish isn't alive the fish is not
+alive yeah the fish is dead um which
+which really is interesting they put a a
+dead trout in there and just the the
+body motion and the way these fish can
+move allows them to swim with very low
+energy like zero energy up upstream and
+so that's pretty impressive obviously we
+would like to replicate this in
+engineering so on the right side you see
+a video um that actually is from our
+collaborators here at UCSD one building
+over they built this soft robot they
+actuated it with these um uh kind of
+like pneumatic Chambers where they put
+in pressur so these are the control
+signals that you have so you have one
+two three four five six control signals
+I believe you have six controls that you
+can actuate and you see this thing on
+the right hand side is basically moving
+um okay so that's that's that's good so
+they want to actuate this thing um this
+is a soft robots so uh you know it's a
+Continuum model they there there's a
+discretization software it's a little
+tricky to use but we've used the two um
+250,000 Dimensions nice thing is this is
+typically segmented so they produce
+individual segments and kind of patch
+them together um if six controls um
+which are these fluid elastomer
+actuators they kind of also change the
+actuators all the time to get better
+performance and the outputs are the
+center line trajectories um and and so
+basically this is how this looks inside
+uh the fin element model so now what
+they want to do um is they want to do a
+control Loop um more you have a control
+policy that could be nonlinear so it's a
+model predictive control basically
+MPC um that goes into your robot your
+robot is fully
+nonlinear um you have output measurement
+model which are the 40 points along the
+center line and then you need a state
+estimator um so from the output you need
+to reestimate the state and the state
+goes back into control That's a classic
+control Loop this state estimation has
+to happen in real time for this um for
+this robot so that's where we want to do
+a redu AA model um this is a simple
+State estimator I mean controls people
+love linear problems um so this is why
+our operator inference method here will
+look at learning a linear State
+estimation model um so that they can use
+it in control um and and again they
+wrote it as a first order I mean this is
+a time stepping we we kind of did like a
+second order system here to get this um
+discrete time system they ran it and one
+of the things they found here so they
+compared um they got a state estimation
+they did a control policy and then they
+kind of like actuated this robot one of
+the things that they found in simulation
+is a way to control this so they control
+individual Chambers um separately and
+they found that the the top segment has
+to be actuated the heaviest and the tail
+segment has to be actuated the least and
+here's the actuation signals that would
+come out if you use the norm of the
+controls if you use um certain different
+methods to build your state estimator
+I'll talk about this later so what they
+did um they compared three methods
+dynamical mode linear methods because
+they they need this to be linear and
+fast um Dynamic mode decomposition with
+control igen system realization or cman
+identification er um and structure
+preserving operator inference um what
+they did did here on the on the right
+sorry this is a bit grainy um they uh
+compared IG system realization in open
+loop and Clos loop operation dmdc in
+open loop and closed loop and operator
+inference in open loop and closed loop
+and we look at a certain trajectory here
+so the the zeroth output here and we
+look at how this output evolves over
+time and we see that with second order
+operating inference we're doing a very
+good job of tracking this um both in
+open and closed loop uh so the state
+estimator is pretty good um and the
+resulting controllers so this is a good
+model for for what they want to do um
+and in the second this is in training
+and this is in testing so as we go even
+in the predictive scenario sorry again
+it's it's it's kind of grainy um the
+purple curves which are lran operator
+inference really overlap with the ground
+truth quite well this is as accurate as
+a roboticist would would hope for this
+to be um and then we do testing for we
+randomize or they randomize the initial
+conditions and run it for different
+cases um so they get a root mean squared
+area basically and they test in open and
+closed loop and we see that uh Larin
+operate inference does best um in all of
+these test
+scenarios now you ask yourself and and
+this is where I take five more minutes
+um to say okay so so everything was good
+here our takeaways are that they seems
+to be reasonable for the this
+application that they have it works well
+in open and closed Loom um
+but there were a few data sets um where
+the nonlinearity is just so strong um
+that we need to do something about it
+that even a linear State estimator might
+not be good enough um and so in other
+problems aside from the robotics
+applications um for nonlinear waves I
+showed you hamiltonian at the beginning
+we kind of always had to make this
+assumption that we know something about
+the pte hamiltonian uh and that's not
+fully satisfactory but that's what the
+best we could do at the time um so now
+you could ask yourself so then we
+started working with um people in
+Structural Engineering um they wanted to
+use this method but they basically
+enhanced this method to use some more
+machine learning in it to avoid having
+to know things because they work with
+experimental data where they don't quite
+know what the model is so now we augment
+everything I've shown you
+before um I'm looking again at the force
+oil lrange equations um but I'm allowing
+myself um BAS basically more
+nonlinearity I allow myself to have
+again a nonlinear component just like I
+had before in the Lin setting I'm also
+um allowing myself to have this
+nonlinear component in there I have a
+more General viscous dampling than I
+allow myself here as well um so there
+could be other damping terms that are
+not just linear um and ultimately I
+would come up with this lran system here
+that now has highlighted in blue things
+that we that we in collaboration with
+our Structural Engineering colleagues
+have added to this framework so we don't
+have to rely on linearity again
+linearity seemed to be fine for the
+robots it's probably it wasn't fine for
+the vibrational nonlinear vibrational
+tests that um the structural engineers
+were looking at okay so our optimization
+problem now becomes a little bit harder
+um it's not just optimizing over linear
+constrainted operators anymore so not
+optimizing over MC and k um but we also
+have to optimize over these R these
+functions now um so we would like to
+find out which functions do we need
+there um we split this up into two
+things um the first part is we just
+learn the linear parts so we learn um
+the linear part of this problem C and K
+so C and K and in the second step we
+learn the nonlinear perturbations of
+that problem okay and that's where we
+use some structure preserving machine
+learning um to learn the dissipation
+function and the reduced potential
+energy
+functions so now you have to
+parameterize the problem of course I
+mean you can't learn over functions you
+have to parameterize the function so we
+um choose a Neal Network
+representation um which uses actually
+it's these uh multi-layer perceptrons um
+that David felt like they were a good
+way to use but we want to augment them
+with polinomial too oftentimes you have
+polinomial nonlinearity so if that's the
+case you're doing a polinomial
+regression here just of higher order not
+with operator inference we learn linear
+with this we would learn up to I think
+fourth order pooms and if the
+nonlinearity is still different from
+that then these um MLPs kick in okay and
+you can make this eth order if you
+wanted to but um so we parameterized
+this problem obviously now there's a lot
+of free parameters we have to learn
+these Alphas the lambdas the gamas um
+and for the reduced kinetic energy we do
+the same thing um we allow ourselves uh
+so here we only use
+polinomial um and that allows us to get
+the a peration of the identity Mass
+Matrix out which was previously um
+something that we didn't have in the
+framework by Computing the hen of this
+energy okay and now I'll spare you the
+cost function but the cost function is
+basically this function over here we try
+to minimize that error over everything
+um such that we have structure
+preserving constraints so we always um
+want the energy to be positive we can
+never get variables that give us
+negative energies um and um you know we
+want to do the same with like the
+kinetic and potential energy so those
+are the constraints that make this a
+structure preserving method so in two
+minutes I'll show you um the last
+application which we're quite excited
+about so this is the the half break Roy
+beam um which is um you can access again
+the data from um this website here uh
+the method was described in this paper
+um so basically what happens you have
+two cameras high-speed cameras you have
+a beam that's jointed in the middle so
+you have a couple of bolts that go in
+and jointing structure there's obviously
+contact UM and friction and a lot of lot
+of nonlinearity happen in the middle so
+you cannot really understand so so
+writing down the governing equations of
+that joint is really hard um in modeling
+it with linear is also not working so
+that's why we're looking at nonlinear
+methods so these cameras give you um
+Digital Image um correlation
+measurements um because there's like
+sensors that are on top or kind of like
+reflectors so you can measure things
+right um of this beam and you get these
+uh this nice data set in but at the same
+time it's a beam so it's vibrating in
+second order so we can incorporate that
+so on the left side we're plotting now
+this is a unusual plot I would say in
+our community we look at um the position
+versus frequencies so certain
+frequencies of excitation uh frequencies
+of the beam versus position and the
+displacement amplitude um this is the
+experimental data so this is the DIC
+measurements that we have um and on the
+right side so now we take these
+measurements we learn a lrin operator
+inference model that is linear plus a
+structure preserving machine learning
+model so a fully nonlinear Lin model we
+predict things with order three and we
+get what's on the right hand side um our
+Structural Engineering colleagues are
+very happy about this
+um we can look at other things like
+displacement amplitude position and
+damping ratio um so what's the damping
+ratio as a as a function of position as
+you go up and down this half um this
+half beam and we kind of recover that
+pretty well too those are the same
+scalings on the left and on the
+right okay um that brings me to the end
+of my talk before I go to the next slide
+so these are what I wanted to show you
+as um some experimental results as well
+so before I conclude um let me use the
+time to advertise um advertising a
+conference that is very much in the
+theme of this seminar series um which we
+have in San Diego at uh on basically our
+campus um so it's the model reduction s
+good modeling conference it's running in
+San Diego in September 9 to 13th if you
+have nowhere better to be at that time
+you should be here um it's a great time
+to be in San Diego it's a great
+Community um it's a single track
+conference you know usually around 150
+to 200 people um great way to mingle
+with senior faculty Junior faculty meet
+peers everything uh covers all aspects
+of model reductions arrogant modeling
+applications ukq design um you can sign
+up by submitting a talk no paper
+anything just a talk uh onepage abstract
+um at this website uh applica and this
+closes March 1st for graduate students
+that are on here will also make
+available pretty soon um uh some funding
+that we have so that you can apply for
+so to get um travel supplements to come
+to San Diego so we can make this
+affordable for all gra affordable and
+accessible to all graduate students uh
+and early career
+postdocs so now I want to review I've
+shown you that embedding geometric and
+mechanical structure in the case of
+hamiltonian lrin or other gradient
+structures is is really great and it's a
+way that people with physical and
+Engineering knowledge um Can embed what
+what they bring to the table um they
+give us interpretable models that are
+long-term stable um they're accurate um
+and I haven't shown you this much but in
+some of the papers we look at the need
+for training data and we need less data
+to train structure preserving things um
+the methods I developed I want to
+highlight they don't just work on a ond
+test problem we've worked on them on
+experimental problems from structural
+mechanics experimental problems from
+Soft Robotics and so they work pretty
+well there which I'm very happy about uh
+looking ahead I think you know neural
+networks have great expressive nature
+they're not as nice L interpretable that
+as we found as um symbolic expressions
+and so looking at more symbolic forms of
+these nonlinearities would be something
+we want to do and uh extrapolation in
+parameter space is always a big question
+so I'll take any questions here um and
+thank you again for the invitation and
+the last thing I wanted to point out is
+that actually the one of the invited
+keynote speakers is the host of the
+seminar
+you thank you Boris yeah I strongly
+recommend all of you to join this
+conference yeah
+canot emphasize more thank you
+Boris yeah and and also thank you so
+much for the wonderful talk um that was
+really nice let's have a Q&A
+sessions um yeah there is a questions in
+the chat and by
+Jack um he asked would this approach
+work for a high dimensional problem like
+a molecules doing a full dynamical
+calculations of even a small molecule is
+very difficult
+or even an atom a full calculation of
+electronic structure has six n
+Dimensions about
+that yeah obviously I mean in some of
+these uh I mean first of all you have to
+identify if you know you have a
+hamiltonian or a gradient structure or
+lran structure that's something that
+typically you you you would know from
+the physics um dimensionality wise I
+mean you you have to test you have to
+run the simul first and see if there's
+low dimensionality in it um which is
+what what we do with um using the single
+of Val de composition so if you see a
+reasonable decay of singular values then
+you have hope of doing this lower
+dimensional I would expect that's the
+case um but I I can't speak because I
+don't know the application very well
+right it really is uh application
+dependent how the physics allow you to
+approximate this right you have a um one
+of the problem was solving the nonlinear
+series equations and yeah yeah and you
+know the first principle molecular
+Dynamics people they are actually
+simplify it and then come up with a DFT
+like the density functional Theory and
+um they solve it and um I guess there is
+a you know connection between the
+shingle equations and molecular Dynamics
+MH maybe there is something here it can
+propagate to could be yeah yeah and it's
+certainly an area that needs it in terms
+of dimensionality reduction yeah yeah
+yeah and there structure preserving is
+really important so
+um so definitely there is a connection
+so maybe I can ask questions um so you
+you talked about the polinomial
+augmentations at the end close to the
+end and you triy the up to the fourth
+orderer um well I guess you probably you
+know studied lower order try the lower
+order or higher order and then at the
+the new
+net was that WR right yeah yeah
+basically I mean I think we stop
+obviously the the higher order you make
+it the more parameters you get to learn
+um so there's a tradeoff between going
+to 10th order and learning thousands of
+parameters or going to keeping it at
+fourth order um there was
+some radio curve I I presume that we had
+seen there that we felt um p is equal to
+four is a good thing um but I don't have
+the data at the moment I would have to
+ask for this specific data set I would
+have to ask uh David who who did that
+that work why should be equal to four
+good good so you have you know plotted a
+par par front and based on that plot I
+believe so yeah okay sounds good um all
+right any other questions from
+audience
+our group is working on you know energy
+conserving
+intrusive model for Lan problems right
+now um oh nice okay yeah but yours are
+non-intrusive one the one you presented
+today like using the
+inance operator right yeah still I mean
+what you do intrusive uh uh you know
+maybe things can can be done non-
+intrusively too
+um yeah yeah that we should talk that
+yeah
+definitely because I mean in intrusive
+in I mean we are specifically looking at
+the Lan hydrodynamics and there ah okay
+yeah and there we we get like super
+energy conserving so if if you look at
+the energy constraints 16 yeah like
+almost like zero like 10 to 12 10 toga
+13 yeah that's excellent and that's why
+these methods are so I mean so great I
+think yeah yeah yeah so we definitely
+need to talk yeah I mean you know
+intrusive is kind of the I don't know it
+it really is if you can and and you guys
+invest the time to go into your I don't
+know what is it laros or whatever the
+code you have yes yes yes yeah you you
+go into it and you do it I mean that's I
+would stick with that if you can
+there's there's you know but um some
+applications where you can you know
+like those measurements we had or um
+this the soft robotic stuff the software
+is so hard to access that um we've tried
+for half a year to to get it intrusively
+and then we just gave up and said no um
+yeah that's what happened with the
+intrusive method usually yeah you
+demonstrate really well in one uh
+applications and you know in order to
+apply that to other applications you
+have to put pretty much same amount of
+effort implementing it yeah I mean if
+you have your own code it's perfect
+because you understand it but if you
+work with other people's code and what
+we ran into that every time there was a
+software update something didn't work
+anymore so if you have your own code and
+and you have control over that I think
+that's the way to go then yeah yeah
+totally agree um do you can you um
+make some comment about you know the you
+know
+the one of the examples you compare the
+dmdc and the your um the quadratic model
+using the operator inference and you
+know the speed up is comparable pretty
+much yeah there I mean in that case they
+were um this was
+the oh this was in the robot stuff let
+me see here they're all linear methods
+so I mean there there's no difference I
+mean it's just a different way that we
+learn we have constraints in the way we
+learn the linear method and we solve a
+second order system DMD and and er are
+first order like system ID methods but
+once you have the once you have the
+solution here I mean they're all in your
+system so they're all pretty fast there
+there's no difference um the only
+difference I mean when we compare things
+here um we compare actually the best
+model that we can get from any one of
+them so it could be that
+you know DMD needs like 25 modes and we
+need only 12 modes but we compare a 25
+against a 12 mode system because we say
+that's kind of like this is the best
+model this is the best model so let's
+let the two best models compete um but
+nevertheless we we still find that going
+understanding that there is second order
+structure and symmetries is is really
+what gets you
+that awesome
+awesome okay um is there any
+questions from
+audience don't be
+shy they can email me too uh perfectly
+happy with that yeah yeah
+yeah well if not let's let's thank our
+speaker today Boris um thank you so much
+um it was wonderful talk and very nice
+thank you definitely let's keep in touch
+yeah um thanks for the invitations and
+um thanks for everyone taking time this
+morning awesome awesome thank you all
+right by bye
+Boris

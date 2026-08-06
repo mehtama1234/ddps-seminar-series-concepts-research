@@ -1,0 +1,1667 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:04.200 --> 00:00:10.000
+Welcome to the DDPS seminar. Everyone, Before we&nbsp;
+introduce our invited speaker, let's go over some&nbsp;&nbsp;
+
+00:00:10.000 --> 00:00:15.880
+rules and logistics. First, please mute yourself&nbsp;
+during the talk, but if you have questions,&nbsp;&nbsp;
+
+00:00:15.880 --> 00:00:22.000
+you can unmute and ask questions, or use chat&nbsp;
+room to post your questions so that we can&nbsp;&nbsp;
+
+00:00:22.000 --> 00:00:29.680
+address them in Q and A session at the end second,&nbsp;
+today's DDPS seminar is open to external audience,&nbsp;&nbsp;
+
+00:00:29.680 --> 00:00:33.600
+therefore no classified this question is&nbsp;
+allowed. So please watch out. Finally,&nbsp;&nbsp;
+
+00:00:33.600 --> 00:00:39.320
+the talk today will be recorded and uploaded&nbsp;
+in our YouTube channel. That's about it now.&nbsp;&nbsp;
+
+00:00:39.320 --> 00:00:47.520
+Let me briefly introduce our speaker today.&nbsp;
+It is an honor to host Dr Marius jainhofer,&nbsp;&nbsp;
+
+00:00:47.520 --> 00:00:53.480
+who received his PhD from the University&nbsp;
+of Freiburg, Germany, where he researched&nbsp;&nbsp;
+
+00:00:53.480 --> 00:00:59.920
+multi physics models for bone growth under&nbsp;
+the supervision of Professor Patrick donde&nbsp;&nbsp;
+
+00:01:00.640 --> 00:01:08.120
+He then served as a postdoctoral research fellow&nbsp;
+at similar research laboratory in Oslo Norway,&nbsp;&nbsp;
+
+00:01:08.120 --> 00:01:14.960
+focusing on scientific machine learning&nbsp;
+with Professor Kent Andra model. Currently,&nbsp;&nbsp;
+
+00:01:14.960 --> 00:01:22.520
+he is a researcher at the University Hospital&nbsp;
+Freiburg, specializing in AI for healthcare.&nbsp;&nbsp;
+
+00:01:22.520 --> 00:01:27.760
+His ongoing research interests include error&nbsp;
+analysis and optimization of neural network&nbsp;&nbsp;
+
+00:01:27.760 --> 00:01:34.040
+based methods for solving partial differential&nbsp;
+equations. Today, Marius will talk about&nbsp;&nbsp;
+
+00:01:34.040 --> 00:01:41.920
+infinite dimensional optimization for scientific&nbsp;
+machine learning. I'm sure we are going to hear a&nbsp;&nbsp;
+
+00:01:41.920 --> 00:01:48.840
+wonderful talk before I pass the button to Marius,&nbsp;
+as a traditional tradition to the DDPS seminar,&nbsp;&nbsp;
+
+00:01:48.840 --> 00:01:56.200
+let me ask a somewhat informal question so that&nbsp;
+we can we we know something, something, something&nbsp;&nbsp;
+
+00:01:56.200 --> 00:02:05.200
+about Marius somewhat out of The technical&nbsp;
+reason so I happen to know you are very keen&nbsp;&nbsp;
+
+00:02:05.200 --> 00:02:13.980
+to Gita playing, if you can share your favorite&nbsp;
+piece, favorite music you would like to play?
+
+00:02:13.980 --> 00:02:23.240
+Oh, that's that's a difficult&nbsp;
+question. It changes. Yes. Well,&nbsp;&nbsp;
+
+00:02:23.240 --> 00:02:32.040
+let's just go with the classics, which is&nbsp;
+stairway to happen by Led Zeppelin, okay, um,
+
+00:02:32.040 --> 00:02:36.080
+non GitHub, as a non guitar&nbsp;
+player, I never heard of that.
+
+00:02:36.680 --> 00:02:40.960
+Oh, you can, you can. It's a good&nbsp;
+one. You can, you can. Check it out.
+
+00:02:40.960 --> 00:02:46.080
+Okay, I will definitely check it out.&nbsp;
+Well, thank you. The stage is yours. Thank
+
+00:02:46.080 --> 00:02:53.840
+you. Thank you for the nice introduction, and&nbsp;
+let's get started. So today I'll talk about&nbsp;&nbsp;
+
+00:02:54.560 --> 00:03:04.120
+optimization for scientific machine learning.&nbsp;
+And talk will be structured in roughly two parts&nbsp;&nbsp;
+
+00:03:04.120 --> 00:03:10.160
+first, and that's the specialty. Sort of of our&nbsp;
+approach is the function space perspective on the&nbsp;&nbsp;
+
+00:03:10.160 --> 00:03:19.520
+optimization for siml problem problems. And what&nbsp;
+I will propose to you is these kind of problems&nbsp;&nbsp;
+
+00:03:19.520 --> 00:03:27.400
+to adopt an infinite dimensional viewpoint or&nbsp;
+continuous viewpoint, leaving out the answers&nbsp;&nbsp;
+
+00:03:27.400 --> 00:03:35.160
+class. And then develop optimizers, or choose&nbsp;
+optimizers based on the infinite the properties&nbsp;&nbsp;
+
+00:03:35.160 --> 00:03:42.360
+on the on the function space level, and then&nbsp;
+discretize in a certain way that guarantees you&nbsp;&nbsp;
+
+00:03:42.360 --> 00:03:48.840
+that you mimic the function space dynamic. And&nbsp;
+with this principle in mind, we'll see how we&nbsp;&nbsp;
+
+00:03:48.840 --> 00:03:56.480
+can design new algorithms and also understand&nbsp;
+existing ones from that perspective. And then&nbsp;&nbsp;
+
+00:03:56.480 --> 00:04:04.680
+in the next step, with the after designing these&nbsp;
+optimization methods, we'll have a look into how&nbsp;&nbsp;
+
+00:04:04.680 --> 00:04:12.360
+you can scale them to large scale neural networks.&nbsp;
+We'll do that with one specific strategy where we&nbsp;&nbsp;
+
+00:04:12.360 --> 00:04:19.520
+use the Chronicle structure of the linear layer&nbsp;
+Jacobians in the neural networks. The talk is&nbsp;&nbsp;
+
+00:04:19.520 --> 00:04:27.160
+mainly based on these two papers I've linked&nbsp;
+here below one position paper this year's ICML,&nbsp;&nbsp;
+
+00:04:27.160 --> 00:04:34.120
+and then a recent one which is related to the&nbsp;
+second part, which is about the Kronecker factor&nbsp;&nbsp;
+
+00:04:34.120 --> 00:04:42.680
+approximation. So let's dive in. Let's start&nbsp;
+with the function space optimization. And let's&nbsp;&nbsp;
+
+00:04:42.680 --> 00:04:51.120
+clarify, sort of what kind of problems I want to&nbsp;
+talk about. I said scientific machine learning.&nbsp;&nbsp;
+
+00:04:51.120 --> 00:05:01.040
+And for me, or at least for this talk, mainly&nbsp;
+what I have in mind is operator learning. I. But&nbsp;&nbsp;
+
+00:05:01.040 --> 00:05:09.480
+also methods for srodingers equation, the electron&nbsp;
+Schrodinger equation, with that network ansatz can&nbsp;&nbsp;
+
+00:05:09.480 --> 00:05:15.400
+be physics and formula networks, formulations of&nbsp;
+partial differential equations or inverse problems&nbsp;&nbsp;
+
+00:05:15.400 --> 00:05:21.560
+could be deep red, so rational formulations,&nbsp;
+essentially anything that involves PDE terms&nbsp;&nbsp;
+
+00:05:21.560 --> 00:05:30.040
+in the loss function and neural networks, the&nbsp;
+methods will be well suited for all of them.&nbsp;&nbsp;
+
+00:05:30.040 --> 00:05:36.920
+And one observation, so the starting point also&nbsp;
+for our work in this direction is that as soon&nbsp;&nbsp;
+
+00:05:36.920 --> 00:05:45.880
+as you introduce PDEs to objective functions, the&nbsp;
+neural network training gets more difficult. Let&nbsp;&nbsp;
+
+00:05:45.880 --> 00:05:54.200
+me give you an illustration of that statement that&nbsp;
+optimization and sign melt can be quite hard. I&nbsp;&nbsp;
+
+00:05:54.200 --> 00:05:59.640
+have two pictures here for you. Details are not&nbsp;
+so important. Let's look at the first one here.&nbsp;&nbsp;
+
+00:06:00.240 --> 00:06:07.480
+I've taken this from a recent paper, the forward&nbsp;
+laplacian paper. So in this paper, they solve the&nbsp;&nbsp;
+
+00:06:07.480 --> 00:06:16.640
+many electron Schrodinger equation. When I what&nbsp;
+I want to stress here is the sheer amount of GPU&nbsp;&nbsp;
+
+00:06:16.640 --> 00:06:24.440
+hours that I used for single solve. It is in the&nbsp;
+in the 1000s, almost towards 10,000 GPU hours for&nbsp;&nbsp;
+
+00:06:24.440 --> 00:06:31.600
+single problem. And then the other paper is a&nbsp;
+very simple problem. It's just a two dimensional,&nbsp;&nbsp;
+
+00:06:31.600 --> 00:06:39.040
+awesome equation. And with a smooth solution,&nbsp;
+you formulate it and use the pin formulation,&nbsp;&nbsp;
+
+00:06:39.040 --> 00:06:46.160
+and you optimize green is just full batch&nbsp;
+gradient descent, where and red is Adam,&nbsp;&nbsp;
+
+00:06:46.160 --> 00:06:54.400
+and you see huge amount of iterations and you see&nbsp;
+stagnating errors. So what we are going to do here&nbsp;&nbsp;
+
+00:06:54.400 --> 00:07:02.240
+is to abandon first order optimization and look&nbsp;
+into the structure on the infinite dimensional&nbsp;&nbsp;
+
+00:07:02.240 --> 00:07:08.280
+spaces. We want to exploit the geometry that is&nbsp;
+induced by the PDE operators to this to design&nbsp;&nbsp;
+
+00:07:08.280 --> 00:07:20.720
+smarter algorithms. And I have an informal road&nbsp;
+map here for you how to do that. I call it first&nbsp;&nbsp;
+
+00:07:20.720 --> 00:07:29.720
+optimized and discretized. So we are given a syml&nbsp;
+problem, and later also under Network answers. And&nbsp;&nbsp;
+
+00:07:29.720 --> 00:07:36.680
+the first thing we need to do is think about&nbsp;
+the continuous formulation. So we need to&nbsp;&nbsp;
+
+00:07:36.680 --> 00:07:41.920
+formulate a minimization problem. Let's say it's&nbsp;
+a minimization problem. It could be saddle points,&nbsp;&nbsp;
+
+00:07:41.920 --> 00:07:48.120
+route finding, whatever. So it's a minimization&nbsp;
+problem in a Hilbert space age. That's a function&nbsp;&nbsp;
+
+00:07:48.120 --> 00:07:56.080
+space here. So E the energy, that's what we&nbsp;
+want to minimize. So we need clarity about&nbsp;&nbsp;
+
+00:07:56.080 --> 00:08:04.600
+how that should look like. And then after we&nbsp;
+formulated a problem, we'll have a look in what&nbsp;&nbsp;
+
+00:08:04.600 --> 00:08:09.200
+are the properties of E right? And here it's left&nbsp;
+abstract. There is no properties assumed. But in&nbsp;&nbsp;
+
+00:08:09.200 --> 00:08:15.160
+a practical application, it will have properties.&nbsp;
+And based on these properties on function space,&nbsp;&nbsp;
+
+00:08:15.160 --> 00:08:21.960
+we'll decide for an appropriate algorithm set,&nbsp;
+an appropriate iterative algorithm in function&nbsp;&nbsp;
+
+00:08:21.960 --> 00:08:31.800
+space. What I mean by that is you update your&nbsp;
+current iterate by a direction, and you step&nbsp;&nbsp;
+
+00:08:31.800 --> 00:08:37.960
+until you're happy with it, right? But remember,&nbsp;
+this is in function space. This is nothing you&nbsp;&nbsp;
+
+00:08:37.960 --> 00:08:44.040
+can you can practically do and to get something&nbsp;
+back, which is with which you can do in practice,&nbsp;&nbsp;
+
+00:08:44.040 --> 00:08:49.680
+which you can do on your machine, then you need&nbsp;
+to discretize. But notice, this is the last step&nbsp;&nbsp;
+
+00:08:49.680 --> 00:08:56.560
+and discretization here. What I propose is to&nbsp;
+project the update direction. This would be&nbsp;&nbsp;
+
+00:08:56.560 --> 00:09:03.280
+decay on the tension space of your neural network&nbsp;
+answers, or on whatever your answer is. If it's&nbsp;&nbsp;
+
+00:09:03.280 --> 00:09:12.560
+not neural networks, it's also fine. So let's,&nbsp;
+let us put that, make that concrete with a very,&nbsp;&nbsp;
+
+00:09:12.560 --> 00:09:22.000
+very simple example that the example is as simple&nbsp;
+as it can possibly be arguably. So suppose we&nbsp;&nbsp;
+
+00:09:22.000 --> 00:09:28.240
+want to solve Poissons equation on some domain&nbsp;
+omega. We have some forcing data. We have some&nbsp;&nbsp;
+
+00:09:28.240 --> 00:09:40.040
+boundary conditions. That's the starting point.&nbsp;
+Then I reformulate the equation, in this case&nbsp;&nbsp;
+
+00:09:40.040 --> 00:09:45.200
+as a minimization problem. I've chosen here the&nbsp;
+simplest one. This would be physics and formula,&nbsp;&nbsp;
+
+00:09:45.200 --> 00:09:51.400
+networks formulation. But of course you&nbsp;
+could choose a very variational formulation,&nbsp;&nbsp;
+
+00:09:51.400 --> 00:09:59.560
+or you could formulate it as a root finding&nbsp;
+problem. But let's stick with this. So I've chosen&nbsp;&nbsp;
+
+00:09:59.560 --> 00:10:06.880
+here the hill. Which space is h2 this is how it&nbsp;
+looks. No unsat class, no, nothing, just the pure&nbsp;&nbsp;
+
+00:10:06.880 --> 00:10:16.040
+formulation. And then the next step is where we&nbsp;
+decide what optimization algorithm is appropriate&nbsp;&nbsp;
+
+00:10:16.040 --> 00:10:25.440
+for this kind of energy. So let's have a look. The&nbsp;
+PDE is linear, and we use l2 squared around the&nbsp;&nbsp;
+
+00:10:25.440 --> 00:10:34.320
+residual. So that makes this energy quadratic. So&nbsp;
+it's a quadratic function on function space. And&nbsp;&nbsp;
+
+00:10:34.320 --> 00:10:41.160
+as we all know, Newton's method for minimization&nbsp;
+builds at every at where you add that your current&nbsp;&nbsp;
+
+00:10:41.160 --> 00:10:46.200
+iterate, it builds a quadratic model of your&nbsp;
+objective function, and it minimizes that&nbsp;&nbsp;
+
+00:10:46.200 --> 00:10:54.640
+quadratic model. So Newton's method in function&nbsp;
+space for this energy has one step convergence,&nbsp;&nbsp;
+
+00:10:54.640 --> 00:11:00.360
+no matter where you start, and if I write out&nbsp;
+Newton's method in function space, this is the&nbsp;&nbsp;
+
+00:11:00.360 --> 00:11:05.600
+way it looks like. Here's the Fauci derivative&nbsp;
+of our function space guy. This lives in the dual&nbsp;&nbsp;
+
+00:11:05.600 --> 00:11:15.320
+space. Here is the Hessian. This is a bilinear&nbsp;
+form. Or alternatively, it maps from the primal&nbsp;&nbsp;
+
+00:11:15.320 --> 00:11:24.720
+to the dual space. This same thing, essentially.&nbsp;
+And that's how it that's how it looks like. And if&nbsp;&nbsp;
+
+00:11:24.720 --> 00:11:29.400
+your energy looks different, you would probably&nbsp;
+choose something else that you will see an&nbsp;&nbsp;
+
+00:11:29.400 --> 00:11:38.120
+example soon. And still no answers class this is&nbsp;
+coming now. Now it's time to discretize. Now it's&nbsp;&nbsp;
+
+00:11:38.120 --> 00:11:45.480
+time when you choose your answers. And I left the&nbsp;
+ansatz generic. These, you could think of them as&nbsp;&nbsp;
+
+00:11:45.480 --> 00:11:52.600
+neural networks, but you could also think of them&nbsp;
+as finite element functions. Both is covered by&nbsp;&nbsp;
+
+00:11:52.600 --> 00:12:02.280
+by the theory. Then the tension space is given&nbsp;
+by the partial derivatives with respect to the&nbsp;&nbsp;
+
+00:12:02.280 --> 00:12:11.360
+parameters of our access class and the objective,&nbsp;
+the object that we're actually minimizing, which&nbsp;&nbsp;
+
+00:12:11.360 --> 00:12:17.760
+is not no longer posted function space, but posted&nbsp;
+parameter space. This L is the loss function,&nbsp;&nbsp;
+
+00:12:17.760 --> 00:12:25.960
+and it's just pulling back our function space&nbsp;
+energy, or parameter space, capital, theta. And&nbsp;&nbsp;
+
+00:12:25.960 --> 00:12:33.920
+then we discretize Newton's methods. And what do&nbsp;
+I mean by discretize? I mean we use this linear&nbsp;&nbsp;
+
+00:12:33.920 --> 00:12:42.840
+space right, this tangent space. We use it to do a&nbsp;
+Galerkin, a discretization of this by linear form,&nbsp;&nbsp;
+
+00:12:42.840 --> 00:12:49.200
+right? This is just the second derivative&nbsp;
+of e at U, theta, this current iterate.
+
+00:12:49.200 --> 00:12:56.240
+This gives us a matrix G, and then we discretize&nbsp;
+this guy here, too, in a Galerkin sense,&nbsp;&nbsp;
+
+00:12:56.240 --> 00:13:01.960
+right? This comes from a dual space. This is&nbsp;
+like your forcing in a finite element sense,&nbsp;&nbsp;
+
+00:13:01.960 --> 00:13:09.480
+and this is nothing but the Euclidean gradient&nbsp;
+of the loss. And then, if I then just freely&nbsp;&nbsp;
+
+00:13:09.480 --> 00:13:15.160
+translate from Newton and function space to what&nbsp;
+I just did with this Galerkin discretization,&nbsp;&nbsp;
+
+00:13:15.160 --> 00:13:22.440
+I arrive at an optimization algorithm in parameter&nbsp;
+space which is computable. Here I introduced also&nbsp;&nbsp;
+
+00:13:22.440 --> 00:13:32.000
+a step size here. This is sort of the analogy of&nbsp;
+the hessian matrix in this guy. Dagger denotes&nbsp;&nbsp;
+
+00:13:32.000 --> 00:13:37.880
+a pseudo inverse, because I do not know whether&nbsp;
+these guys are linearly dependent or not. Here's&nbsp;&nbsp;
+
+00:13:37.880 --> 00:13:46.600
+the Euclidean gradient. So to make that explicit,&nbsp;
+tying back to the example we had before, and this&nbsp;&nbsp;
+
+00:13:46.600 --> 00:13:53.560
+was our energy, then this matrix G looks&nbsp;
+like this, right? We have the form with the&nbsp;&nbsp;
+
+00:13:53.560 --> 00:13:59.040
+laplacians coming from this term here, and we&nbsp;
+have the boundary conditions coming from here.&nbsp;&nbsp;
+
+00:14:00.840 --> 00:14:09.280
+And now it's time to implement and see how it&nbsp;
+does. And it performs very well. So this what&nbsp;&nbsp;
+
+00:14:09.280 --> 00:14:15.120
+I've just shown you. Is the is the green line&nbsp;
+here, the problem is, again, a Poisson problem,&nbsp;&nbsp;
+
+00:14:15.120 --> 00:14:22.200
+to be consistent with the explanation before. And&nbsp;
+the formulation right was the pin formulation.&nbsp;&nbsp;
+
+00:14:22.200 --> 00:14:26.320
+And maybe, if you've played around with physics&nbsp;
+and formula networks, is sometimes quite hard to&nbsp;&nbsp;
+
+00:14:26.320 --> 00:14:33.160
+optimize them. It's certainly very hard to get&nbsp;
+acceptable or very high accuracies. And here we&nbsp;&nbsp;
+
+00:14:33.160 --> 00:14:40.720
+see a relative l2 error. And of course, on a test&nbsp;
+set of points, not on the ones we've trained on,&nbsp;&nbsp;
+
+00:14:40.720 --> 00:14:46.400
+going down to 10 minus seven, sometimes we see&nbsp;
+10 to the minus eight. And no other method that&nbsp;&nbsp;
+
+00:14:46.400 --> 00:14:55.600
+we've tested and can come close. So why? Why&nbsp;
+do I call that energy natural gradient descent?&nbsp;&nbsp;
+
+00:14:55.600 --> 00:15:01.680
+That's because, when we first discovered this,&nbsp;
+that you could actually. To optimize pins quite&nbsp;&nbsp;
+
+00:15:01.680 --> 00:15:08.600
+well. We had a slightly different perspective.&nbsp;
+We came from a natural gradient perspective,&nbsp;&nbsp;
+
+00:15:08.600 --> 00:15:16.560
+and we thought about the Hessian as remaining&nbsp;
+metric. And later, we realized that you can derive&nbsp;&nbsp;
+
+00:15:16.560 --> 00:15:23.240
+this algorithm from this infinite dimensional&nbsp;
+viewpoint that I've just shown you. And since this&nbsp;&nbsp;
+
+00:15:23.240 --> 00:15:32.560
+was just one example, I tested it on on a bunch&nbsp;
+of linear equations. Also we use the First Order&nbsp;&nbsp;
+
+00:15:32.560 --> 00:15:42.840
+reformulation time dependent ones, and it works&nbsp;
+really well for all of them. We do some tricks,&nbsp;&nbsp;
+
+00:15:42.840 --> 00:15:49.400
+of course. I mean, we do a stabilization, living&nbsp;
+black market kind of stabilization and so on. But&nbsp;&nbsp;
+
+00:15:49.400 --> 00:15:56.520
+we can get very good accuracies with small&nbsp;
+networks already for three dimensional PDE,&nbsp;&nbsp;
+
+00:15:56.520 --> 00:16:01.600
+S and the training time is not horrible. Can&nbsp;
+be seconds to minutes, depending on on your&nbsp;&nbsp;
+
+00:16:01.600 --> 00:16:12.200
+setup and your GPU. So now to really drive that&nbsp;
+idea home, that you can start from the from the&nbsp;&nbsp;
+
+00:16:12.200 --> 00:16:18.840
+infinite dimensional viewpoint, I I want to show&nbsp;
+a different example, which is a non linear PDE,&nbsp;&nbsp;
+
+00:16:18.840 --> 00:16:25.920
+another stokes equation with where we will choose&nbsp;
+a different algorithm on function space to begin&nbsp;&nbsp;
+
+00:16:25.920 --> 00:16:32.880
+with, we'll choose Gauss Newton's algorithm and&nbsp;
+function space. So if this is the PDE, and again,&nbsp;&nbsp;
+
+00:16:32.880 --> 00:16:43.280
+we use a residual formulation. And for simplicity,&nbsp;
+we ignore that. We should add a divergence penalty&nbsp;&nbsp;
+
+00:16:43.280 --> 00:16:53.080
+and the boundary penalty here. Let's just look&nbsp;
+at this. Then this is our formulation. And then&nbsp;&nbsp;
+
+00:16:53.080 --> 00:16:58.840
+we can ask, okay, how should we optimize&nbsp;
+that objective function in function space?&nbsp;&nbsp;
+
+00:17:00.720 --> 00:17:06.760
+Then you see it's a non it is non linear inside&nbsp;
+here, so it loses the convexity in function space&nbsp;&nbsp;
+
+00:17:06.760 --> 00:17:12.800
+because of this non linearity. But it certainly&nbsp;
+is a non linear least squares problem. And if&nbsp;&nbsp;
+
+00:17:12.800 --> 00:17:17.280
+you want to solve non linear least squares&nbsp;
+problem, a good choice is Gauss Newton's method,&nbsp;&nbsp;
+
+00:17:17.280 --> 00:17:23.680
+or labeled markers method, and we do that&nbsp;
+in function space. So it looks like this.&nbsp;&nbsp;
+
+00:17:23.680 --> 00:17:29.120
+You have the linearization of the residual&nbsp;
+after the adjoint. That's what you want to&nbsp;&nbsp;
+
+00:17:29.120 --> 00:17:39.400
+in invert. And this is just for completeness,&nbsp;
+the formula how this form sort of looks like&nbsp;&nbsp;
+
+00:17:39.400 --> 00:17:49.480
+and you choose an ansatz, mu, theta, psi, for&nbsp;
+velocity and pressure. The ansatz is again,&nbsp;&nbsp;
+
+00:17:49.480 --> 00:18:00.120
+same notation as before. The tangent space is&nbsp;
+again the linearization. And then you discretize&nbsp;&nbsp;
+
+00:18:00.120 --> 00:18:08.680
+Gaussian UTZ algorithm, again, using a Galerkin&nbsp;
+onsets. So you get back a matrix G and this is&nbsp;&nbsp;
+
+00:18:08.680 --> 00:18:16.640
+your Euclidean gradient. This is how you get&nbsp;
+the entries of the matrix. So you insert your&nbsp;&nbsp;
+
+00:18:16.640 --> 00:18:22.280
+basis vectors from your Galerkin space that you&nbsp;
+chose in the form. And again, you're left with&nbsp;&nbsp;
+
+00:18:22.280 --> 00:18:29.000
+an optimization algorithm which, now in this&nbsp;
+line, looks exactly as before. But of course,&nbsp;&nbsp;
+
+00:18:29.000 --> 00:18:37.840
+this matrix G comes from a different, infinite&nbsp;
+dimensional optimization algorithm. And again,&nbsp;&nbsp;
+
+00:18:37.840 --> 00:18:43.920
+this works better than than any other optimizer&nbsp;
+we could, we could find, and then we tried. This&nbsp;&nbsp;
+
+00:18:43.920 --> 00:18:51.840
+is an unsteady 3d Beltrami flow. We could get&nbsp;
+accuracy close to single precision. We couldn't&nbsp;&nbsp;
+
+00:18:51.840 --> 00:18:58.720
+get 10 to the minus 10 as before, but it's still&nbsp;
+better by a margin than than any everything else.&nbsp;&nbsp;
+
+00:18:59.920 --> 00:19:07.840
+So to sort of come to a conclusion here is that&nbsp;
+you can use this principle that I've showed you,&nbsp;&nbsp;
+
+00:19:07.840 --> 00:19:14.960
+and you can start with different different&nbsp;
+function space algorithms and to translate them,&nbsp;&nbsp;
+
+00:19:14.960 --> 00:19:24.280
+and as a matter of fact, they often relate&nbsp;
+to a known optimization method in parameter&nbsp;&nbsp;
+
+00:19:24.280 --> 00:19:30.840
+space. Haven't shown you this before, but when I&nbsp;
+introduce Newton, and if you do the computations,&nbsp;&nbsp;
+
+00:19:30.840 --> 00:19:35.240
+you can find out what you actually doing in&nbsp;
+parameter space. Is a generalized gauss Newton&nbsp;&nbsp;
+
+00:19:35.240 --> 00:19:44.400
+method, or if you're solving a saddle point&nbsp;
+problem. This is the La conch Newton method.&nbsp;&nbsp;
+
+00:19:44.400 --> 00:19:51.080
+So you have a you have a constrained optimization&nbsp;
+problem. You use la const formalism. You take,&nbsp;&nbsp;
+
+00:19:52.240 --> 00:19:58.640
+you take the gradient of the lagoon, use&nbsp;
+Newton's method to find the zeros of that&nbsp;&nbsp;
+
+00:19:59.360 --> 00:20:04.040
+gradient. That's what I mean with La corn&nbsp;
+Newton. And if you discretize that in the&nbsp;&nbsp;
+
+00:20:04.040 --> 00:20:09.240
+way I've just shown you, you end up in certain&nbsp;
+situations with competitive gradient descent,&nbsp;&nbsp;
+
+00:20:09.240 --> 00:20:16.320
+which is proposed in a was proposed in a totally&nbsp;
+different community, and gauss Newton function&nbsp;&nbsp;
+
+00:20:16.320 --> 00:20:23.680
+space translates to gauss Newton. So I&nbsp;
+think there's a lot to discover still.
+
+00:20:24.600 --> 00:20:29.960
+And Marius, yes, there's a clarification&nbsp;
+question. I think it's in slide 16. Robert&nbsp;&nbsp;
+
+00:20:29.960 --> 00:20:36.200
+is asking, Is that G or inverse g&nbsp;
+in the update? Oh, not 16 or 1515.
+
+00:20:37.520 --> 00:20:46.400
+Here that the dagger is the pseudo inverse. Yeah,&nbsp;
+you need, you need to invert the matrix. Yes,&nbsp;&nbsp;
+
+00:20:46.400 --> 00:20:57.680
+is it clear or what? Okay, cool. Yeah. I'll talk&nbsp;
+more about this matrix and how, how, uh, costly&nbsp;&nbsp;
+
+00:20:57.680 --> 00:21:05.400
+that inversion is later on. Because I suppose&nbsp;
+that's that's a very, very good question to have,&nbsp;&nbsp;
+
+00:21:05.400 --> 00:21:09.560
+because, of course, there is some price that we&nbsp;
+pay, but I'll talk about, I'll talk about that&nbsp;&nbsp;
+
+00:21:09.560 --> 00:21:22.560
+soon. So I want to, because in the beginning I&nbsp;
+promised that the methods that we derive will&nbsp;&nbsp;
+
+00:21:22.560 --> 00:21:31.240
+provably mimic function space dynamics. So that's&nbsp;
+what we're setting out to prove now, or to look at&nbsp;&nbsp;
+
+00:21:31.240 --> 00:21:38.320
+when, when this is valid. So all the methods&nbsp;
+that I've shown you before are of this form,&nbsp;&nbsp;
+
+00:21:38.320 --> 00:21:44.960
+right? This guy is now, you said, right? We add a&nbsp;
+direction. This is this direction, and I assume a&nbsp;&nbsp;
+
+00:21:44.960 --> 00:21:49.880
+certain structure for this direction of a shade&nbsp;
+derivative. And then you take it back to primal&nbsp;&nbsp;
+
+00:21:49.880 --> 00:21:55.600
+space with the linear map with the inverse of a&nbsp;
+linear map that might depend on your iterate. So&nbsp;&nbsp;
+
+00:21:55.600 --> 00:22:03.720
+I assume this guy, T is linear, continuous,&nbsp;
+at bijective. Everything we've seen before&nbsp;&nbsp;
+
+00:22:03.720 --> 00:22:13.760
+falls into this setting. We also assume that this&nbsp;
+map T is coercive, and if we assume that so the&nbsp;&nbsp;
+
+00:22:13.760 --> 00:22:19.480
+technicalities of what we assumed for T are not so&nbsp;
+critical, but if we assume that, then we can prove&nbsp;&nbsp;
+
+00:22:19.480 --> 00:22:26.800
+the following, which I call the projection theory.&nbsp;
+And let me walk you through this slide. So here is&nbsp;&nbsp;
+
+00:22:26.800 --> 00:22:37.280
+just a repetition of to clarify the notation of&nbsp;
+our generic optimization algorithm. And if within&nbsp;&nbsp;
+
+00:22:37.280 --> 00:22:43.360
+parameter space we follow this algorithm right,&nbsp;
+if we step, theta one, theta two, theta three,&nbsp;&nbsp;
+
+00:22:43.360 --> 00:22:49.760
+and so on. Then we can ask ourselves, what is&nbsp;
+happening on the function space level? What?&nbsp;&nbsp;
+
+00:22:49.760 --> 00:22:57.200
+What do the functions do, and how do they relate&nbsp;
+to stepping with the direction, DK? And you can&nbsp;&nbsp;
+
+00:22:57.200 --> 00:23:05.880
+see here that actually we are stepping exactly&nbsp;
+as the infinite dimensional algorithm. This is&nbsp;&nbsp;
+
+00:23:05.880 --> 00:23:12.000
+the decay. But there is this pi guy with this,&nbsp;
+which is a protection, and this is a Galerkin&nbsp;&nbsp;
+
+00:23:12.000 --> 00:23:21.360
+projection on the tension space. And then there&nbsp;
+is an error which corresponds to the step size&nbsp;&nbsp;
+
+00:23:21.360 --> 00:23:28.440
+and the length of the step. So actually, this&nbsp;
+is what I what I mean when I refer to provable&nbsp;&nbsp;
+
+00:23:29.280 --> 00:23:35.280
+that we follow the functions based dynamics. And&nbsp;
+let me give you a visual visualization of that,&nbsp;&nbsp;
+
+00:23:35.280 --> 00:23:42.560
+of that theory, right? Let's just look at&nbsp;
+the first at the first four images. This is,&nbsp;&nbsp;
+
+00:23:42.560 --> 00:23:48.400
+again, Poissons equation, simple solution. You&nbsp;
+essentially see the solution here, because your&nbsp;&nbsp;
+
+00:23:48.400 --> 00:23:56.240
+theta, you should can. This is at initialization.&nbsp;
+So this network is almost zero. So this direction&nbsp;&nbsp;
+
+00:23:56.240 --> 00:24:03.360
+here is really the perfect update direction. If&nbsp;
+you add this guy onto your current iterate, you'll&nbsp;&nbsp;
+
+00:24:03.360 --> 00:24:11.800
+be at ground truth immediately. So all the other&nbsp;
+update directions you want to match that picture,&nbsp;&nbsp;
+
+00:24:11.800 --> 00:24:18.880
+and this is Newton and function space matches&nbsp;
+perfectly, whereas Newton in parameter space,&nbsp;&nbsp;
+
+00:24:18.880 --> 00:24:25.120
+which is a different algorithm, is clueless and&nbsp;
+gradient descent too. And the same is repeated&nbsp;&nbsp;
+
+00:24:25.120 --> 00:24:32.080
+here. Below this is a covad flow example. So&nbsp;
+another stokes equation, where theta is now&nbsp;&nbsp;
+
+00:24:32.080 --> 00:24:41.360
+somewhere somewhat close to the solution, say, the&nbsp;
+order of a few percent of relative l2 error. So&nbsp;&nbsp;
+
+00:24:41.360 --> 00:24:47.320
+again, this is the perfect update direction. And&nbsp;
+if you look what gauss Newton and function space,&nbsp;&nbsp;
+
+00:24:47.320 --> 00:24:54.400
+or Newton and function space tell you and what&nbsp;
+they propose to step, or what they choose to step,&nbsp;&nbsp;
+
+00:24:54.400 --> 00:24:59.240
+and it matches almost perfectly in the eyeball&nbsp;
+mode, whereas Newton and parameter space or&nbsp;&nbsp;
+
+00:24:59.240 --> 00:25:09.880
+gradient descent. Are not are not promising or not&nbsp;
+good. We also see that in the the optimization. So&nbsp;&nbsp;
+
+00:25:09.880 --> 00:25:17.280
+with that, let's get to scalability, because&nbsp;
+so far, I've just shown you what works well,&nbsp;&nbsp;
+
+00:25:17.280 --> 00:25:20.840
+and these algorithms work so well, you&nbsp;
+get so high accuracy. But of course,&nbsp;&nbsp;
+
+00:25:20.840 --> 00:25:27.400
+there is a price. And the price is that we&nbsp;
+need to invert the matrix in every step,&nbsp;&nbsp;
+
+00:25:28.480 --> 00:25:35.080
+and to go back to the to the managing natural&nbsp;
+gradient, the Newton function space algorithm.&nbsp;&nbsp;
+
+00:25:35.080 --> 00:25:42.000
+The Matrix you need to invert, to assemble, of&nbsp;
+course, to invert, is the following one. And this&nbsp;&nbsp;
+
+00:25:42.000 --> 00:25:51.800
+guy here. But if your answers is non local,&nbsp;
+then this matrix is dense. It is typically&nbsp;&nbsp;
+
+00:25:51.800 --> 00:25:58.240
+rank deficient and ill conditioned. So you have a&nbsp;
+pretty a pretty challenging matrix to deal with.&nbsp;&nbsp;
+
+00:25:59.920 --> 00:26:05.960
+Small scale, small networks are fine. You can&nbsp;
+do an SVD, maybe, maybe because this matrix is&nbsp;&nbsp;
+
+00:26:05.960 --> 00:26:09.840
+positive, semi definite, you regularized it a&nbsp;
+little bit with a ticket of regularization, you&nbsp;&nbsp;
+
+00:26:09.840 --> 00:26:17.000
+had an identity. You could use a Gillespie solve.&nbsp;
+You'll be fine. But as soon as you scale up the&nbsp;&nbsp;
+
+00:26:17.000 --> 00:26:25.400
+size of the networks, this is really challenging.&nbsp;
+So what are our what are our options to scale it&nbsp;&nbsp;
+
+00:26:25.400 --> 00:26:35.320
+up, you can use a matrix, free formulation that&nbsp;
+works this system needs to be solved. You need&nbsp;&nbsp;
+
+00:26:35.320 --> 00:26:46.040
+access to a matrix, vector products. You can get&nbsp;
+them. The details are, for example, in this paper,&nbsp;&nbsp;
+
+00:26:46.040 --> 00:26:52.400
+how to get the matrix vector products. You&nbsp;
+just rely on that. You can reformulate it in&nbsp;&nbsp;
+
+00:26:52.400 --> 00:26:58.240
+parameter space as a gauss Newton matrix, and&nbsp;
+then you can do that. You can use CG, but CG&nbsp;&nbsp;
+
+00:26:58.960 --> 00:27:05.440
+iterates for a long time because the matrix&nbsp;
+is ill conditioned, but at least you can scale&nbsp;&nbsp;
+
+00:27:05.440 --> 00:27:12.200
+up. A different strategy is to derive cheap&nbsp;
+to invert approximations, and this is where&nbsp;&nbsp;
+
+00:27:12.200 --> 00:27:21.280
+I'm going to focus on the rest of the talks. If&nbsp;
+you take derivatives of linear network layers,&nbsp;&nbsp;
+
+00:27:21.280 --> 00:27:27.240
+then you can find Chronica structure in that&nbsp;
+matrix. And this chronicle structure can be&nbsp;&nbsp;
+
+00:27:27.240 --> 00:27:37.200
+leveraged to build an approximation of g. And of&nbsp;
+course, you can also aim to to combine these two,&nbsp;&nbsp;
+
+00:27:37.200 --> 00:27:42.160
+these two strategies, you can build a GP inverter&nbsp;
+approximation. You use it as a preconditioner in&nbsp;&nbsp;
+
+00:27:42.160 --> 00:27:52.960
+your CG. So let's, let's get into the chronic&nbsp;
+effect approximation. So very roughly, what&nbsp;&nbsp;
+
+00:27:52.960 --> 00:28:00.200
+we want to do is we have that matrix G. You think&nbsp;
+of your answers as a neural networks with layers.&nbsp;&nbsp;
+
+00:28:00.200 --> 00:28:08.640
+This is what is one two, capital L corresponds to.&nbsp;
+And you discard cross interaction between layers,&nbsp;&nbsp;
+
+00:28:08.640 --> 00:28:16.040
+then you're left here with that with capital&nbsp;
+L many matrices which are still quite big,&nbsp;&nbsp;
+
+00:28:16.040 --> 00:28:25.160
+and then you aim to approximate them as chronicle&nbsp;
+products of two smaller matrices. You approximate&nbsp;&nbsp;
+
+00:28:25.160 --> 00:28:32.680
+them as chronic effects. Of course, because you&nbsp;
+can, you can change the inverse with with the&nbsp;&nbsp;
+
+00:28:32.680 --> 00:28:42.880
+factors, and this really gives you a dramatic,&nbsp;
+a dramatic speed up in the solving so if you&nbsp;&nbsp;
+
+00:28:42.880 --> 00:28:49.760
+say my my linear map, my linear layer and my&nbsp;
+network maps from Rn to Rm, we're ignoring&nbsp;&nbsp;
+
+00:28:49.760 --> 00:28:58.400
+biases here. Then this matrix, then the block&nbsp;
+matrix up here is of size n times m squared,&nbsp;&nbsp;
+
+00:28:58.400 --> 00:29:05.320
+but the Chronica factors are just n times n and&nbsp;
+m times m. So you have, you have a drastic speed&nbsp;&nbsp;
+
+00:29:05.320 --> 00:29:16.720
+up. You can scale up by a large margin. So how,&nbsp;
+how do you get that chronic structure? I'll show&nbsp;&nbsp;
+
+00:29:16.720 --> 00:29:24.840
+you that within with the with an example where&nbsp;
+the Laplacian terms, so which is again motivated&nbsp;&nbsp;
+
+00:29:24.840 --> 00:29:31.440
+from the Poisson which coming from the Poisson&nbsp;
+equation. So what you can show is that the matrix&nbsp;&nbsp;
+
+00:29:31.440 --> 00:29:38.360
+G, or the layer, that the block matrix correspond&nbsp;
+to a layer, is of that form. So check this is the&nbsp;&nbsp;
+
+00:29:38.360 --> 00:29:50.200
+Jacobian with respect to the L weight matrix.&nbsp;
+Of this expression, transpose times itself.&nbsp;&nbsp;
+
+00:29:50.200 --> 00:29:58.240
+And where you can find chronic structure is&nbsp;
+if you take derivatives of this map, theta&nbsp;&nbsp;
+
+00:29:58.240 --> 00:30:06.440
+now is a weight matrix and. The weight matrix&nbsp;
+to weight matrix times fixed vector. And if&nbsp;&nbsp;
+
+00:30:06.440 --> 00:30:14.480
+you take the Jacobian with respect to this matrix,&nbsp;
+theta, then you'll get Chronica structure. Now if,&nbsp;&nbsp;
+
+00:30:14.480 --> 00:30:22.200
+if you think about chain rule, what we need to&nbsp;
+do to get out this, this chronic structure of&nbsp;&nbsp;
+
+00:30:22.200 --> 00:30:28.880
+in our complicated computation graph is we need&nbsp;
+to know what the children in the computational&nbsp;&nbsp;
+
+00:30:28.880 --> 00:30:37.400
+graph of this map is. So the elf weight matrix&nbsp;
+map to laplacian of u theta at a data point.
+
+00:30:37.400 --> 00:30:50.520
+And I'm not going to go into the details, but what&nbsp;
+how we could disentangle the structure is that&nbsp;&nbsp;
+
+00:30:50.520 --> 00:30:58.840
+we relied on forward mode, or also called Taylor&nbsp;
+mode, out to diff, which is also what is what was&nbsp;&nbsp;
+
+00:30:58.840 --> 00:31:07.120
+recently proposed In the forward laplacian paper,&nbsp;
+which is from the from the VMC community. So let's&nbsp;&nbsp;
+
+00:31:07.120 --> 00:31:17.240
+just look at this graph. Think of a multi layer&nbsp;
+perceptron, theta, are your chainable weights.&nbsp;&nbsp;
+
+00:31:17.240 --> 00:31:25.960
+Just Just ignore biases. This is a weight matrix.&nbsp;
+And we have L many this is your input. So going&nbsp;&nbsp;
+
+00:31:25.960 --> 00:31:33.080
+through here just gives you your neural net&nbsp;
+prediction. And of course, the weight matrix&nbsp;&nbsp;
+
+00:31:33.080 --> 00:31:44.440
+enters as a matrix product to this vector. But of&nbsp;
+course, we do not only want to forward to compute&nbsp;&nbsp;
+
+00:31:44.440 --> 00:31:52.360
+the output of the neural network, but we also&nbsp;
+want to compute first order derivatives and second&nbsp;&nbsp;
+
+00:31:52.360 --> 00:32:02.280
+order derivatives, possibly more. But let's focus&nbsp;
+on that so forward mode as in contrast to to back&nbsp;&nbsp;
+
+00:32:02.280 --> 00:32:08.720
+propagation, you just push everything forward,&nbsp;
+right? You multiply the matrices from the from&nbsp;&nbsp;
+
+00:32:08.720 --> 00:32:17.200
+the other end. So this is what's happening here.&nbsp;
+And when you do when you write out the recursion,&nbsp;&nbsp;
+
+00:32:17.200 --> 00:32:25.120
+you see that the weight matrix doesn't only enter&nbsp;
+into the forward propagation as a matrix product,&nbsp;&nbsp;
+
+00:32:25.120 --> 00:32:32.760
+but it does also enter in the first derivatives&nbsp;
+to integrate and also in the Laplacian So then,&nbsp;&nbsp;
+
+00:32:32.760 --> 00:32:38.760
+if you factor this whole thing exactly as&nbsp;
+the colors indicate, with pink and blue,&nbsp;&nbsp;
+
+00:32:38.760 --> 00:32:46.680
+then you can leverage the chronic structure. And&nbsp;
+I really do not want to go into detail here, but&nbsp;&nbsp;
+
+00:32:46.680 --> 00:32:53.120
+this viewpoint lets us compute exactly how that&nbsp;
+matrix looks. It looks horrible, three sums, a&nbsp;&nbsp;
+
+00:32:53.120 --> 00:33:00.440
+lot of symbols, Chronica structure here. So I note&nbsp;
+this is not an approximation. This really is an&nbsp;&nbsp;
+
+00:33:00.440 --> 00:33:10.200
+equality. And then the cafe approximation, which&nbsp;
+is hand wave, which is hand waving, admittedly,&nbsp;&nbsp;
+
+00:33:10.200 --> 00:33:18.640
+but is put into great use in the deep learning&nbsp;
+community, is to swap the sum and the chronicler,&nbsp;&nbsp;
+
+00:33:18.640 --> 00:33:27.400
+and we also hear drop indices that are different&nbsp;
+from each other. So we really end up with an&nbsp;&nbsp;
+
+00:33:27.400 --> 00:33:35.920
+approximation as exactly as I promised to you.&nbsp;
+So the matrix G can be approximated as a Chronica&nbsp;&nbsp;
+
+00:33:35.920 --> 00:33:46.360
+B. So this was the outline. It's technical. You&nbsp;
+can find the details in our in our recent paper,&nbsp;&nbsp;
+
+00:33:46.360 --> 00:33:54.000
+which is going to be in Europe's and i've showed&nbsp;
+it to you for the Poisson problem. But it does&nbsp;&nbsp;
+
+00:33:54.000 --> 00:33:59.640
+actually work for general non linear PDS. With the&nbsp;
+pin formulation, you could do it for very rational&nbsp;&nbsp;
+
+00:33:59.640 --> 00:34:05.280
+formulations with the Brits method. We haven't&nbsp;
+looked into neural operators. This requires more&nbsp;&nbsp;
+
+00:34:05.280 --> 00:34:12.360
+work, so there we uncertain how it, how it&nbsp;
+would play out. And typically, once you have&nbsp;&nbsp;
+
+00:34:12.360 --> 00:34:20.760
+this approximation for G, there's a whole bunch&nbsp;
+of bells and whistles you put on top of on top of&nbsp;&nbsp;
+
+00:34:20.760 --> 00:34:26.200
+your optimizer would be a trust region method for&nbsp;
+step size choice. You would do exponential moving&nbsp;&nbsp;
+
+00:34:26.200 --> 00:34:32.160
+average for the case matrices, you would maybe&nbsp;
+update them infrequently. So so there are many,&nbsp;&nbsp;
+
+00:34:32.160 --> 00:34:38.520
+many things you can do. And I said, you find, you&nbsp;
+find the details. It's not the pre print at this&nbsp;&nbsp;
+
+00:34:38.520 --> 00:34:45.240
+point anymore. In in this paper here, and&nbsp;
+then I want to show you some experiments,&nbsp;&nbsp;
+
+00:34:45.240 --> 00:34:54.640
+just to illustrate that, that we we keep the&nbsp;
+good performance, or we can reproduce the&nbsp;&nbsp;
+
+00:34:54.640 --> 00:34:59.600
+good performance in the small experiments, but we&nbsp;
+can scale to big networks. So to warm up, here's&nbsp;&nbsp;
+
+00:34:59.600 --> 00:35:07.360
+again, the. Saw equation. The blue lines are the&nbsp;
+methods that do not scale right, that that require&nbsp;&nbsp;
+
+00:35:07.360 --> 00:35:20.040
+a dense matrix that you need to invert. The black&nbsp;
+lines are K fac. The light green line is the CG&nbsp;&nbsp;
+
+00:35:20.040 --> 00:35:27.720
+version of the natural gradient. And then we have,&nbsp;
+first all the methods in red and orange and lbfgs&nbsp;&nbsp;
+
+00:35:27.720 --> 00:35:35.520
+in dark green. And what you see here in the small&nbsp;
+example, this is always relative l2 error over&nbsp;&nbsp;
+
+00:35:35.520 --> 00:35:45.360
+time. The naive way of doing things is actually&nbsp;
+the best one. Whereas as soon as you scale up,&nbsp;&nbsp;
+
+00:35:45.880 --> 00:35:50.920
+this is the dimension. These are the number of&nbsp;
+trainable weights in your neural network. Then&nbsp;&nbsp;
+
+00:35:52.120 --> 00:35:58.000
+at some point you cannot do the naive approach&nbsp;
+anymore, but the black lines always are among the&nbsp;&nbsp;
+
+00:35:58.000 --> 00:36:06.160
+best performing. So now we move up in dimension.&nbsp;
+We do a heat equation in four spatial and one time&nbsp;&nbsp;
+
+00:36:06.160 --> 00:36:16.760
+dimension, and the picture is similar. And&nbsp;
+finally, we've we, we went up to 1 million&nbsp;&nbsp;
+
+00:36:16.760 --> 00:36:22.000
+parameters with a 100 deep soul equation.&nbsp;
+Actually, I believe this experiment is still&nbsp;&nbsp;
+
+00:36:22.000 --> 00:36:27.160
+running here. We did a patient search for the&nbsp;
+hyper parameters. So there's a lot of lot of work&nbsp;&nbsp;
+
+00:36:27.160 --> 00:36:32.680
+that goes on into these numerical experiments,&nbsp;
+and to really fine tune these optimizers before,&nbsp;&nbsp;
+
+00:36:32.680 --> 00:36:38.360
+before then after finding good hyper parameters,&nbsp;
+they're really ready to use. So this is by no&nbsp;&nbsp;
+
+00:36:38.360 --> 00:36:50.000
+means the end of the of the of the sort of journey&nbsp;
+for really making the best out of this optimizer,&nbsp;&nbsp;
+
+00:36:50.000 --> 00:36:58.600
+and then just put it in context, or put this cafe&nbsp;
+in context. This approximation allows us to scale&nbsp;&nbsp;
+
+00:36:59.800 --> 00:37:06.040
+millions of parameters that works really&nbsp;
+well. Our I still call them preliminary,&nbsp;&nbsp;
+
+00:37:06.040 --> 00:37:11.240
+somewhat preliminary, numerical experience. They&nbsp;
+compare favorably to all established optimizers,&nbsp;&nbsp;
+
+00:37:11.240 --> 00:37:18.040
+often outperforming them, and you can do the&nbsp;
+approximation I've showed you virtually to any&nbsp;&nbsp;
+
+00:37:18.040 --> 00:37:27.880
+PDE, but it will be interesting to see more&nbsp;
+equation we are working on that right now.&nbsp;&nbsp;
+
+00:37:27.880 --> 00:37:33.920
+And of course, maybe this is the main point.&nbsp;
+The cafe approximation is not so easy to set up,&nbsp;&nbsp;
+
+00:37:33.920 --> 00:37:41.560
+so you need a dedication to implement that and&nbsp;
+to make it run. And with that, I just want to&nbsp;&nbsp;
+
+00:37:41.560 --> 00:37:51.480
+wrap up and maybe give an outlook I think of what,&nbsp;
+what I what can be done next in sort of that area,&nbsp;&nbsp;
+
+00:37:52.560 --> 00:38:00.960
+and where I think future work is. Future efforts&nbsp;
+are well, well placed. So I think the function&nbsp;&nbsp;
+
+00:38:00.960 --> 00:38:07.680
+space viewpoint is far from exploited. I think&nbsp;
+there's still many things one can do. There's many&nbsp;&nbsp;
+
+00:38:07.680 --> 00:38:12.480
+concepts you can still translate among them,&nbsp;
+for example, trust region methods, infinite&nbsp;&nbsp;
+
+00:38:12.480 --> 00:38:19.360
+dimensional ones, or operator preconditioning&nbsp;
+approaches. I'm also not aware of any convergence&nbsp;&nbsp;
+
+00:38:19.360 --> 00:38:27.440
+theory that really properly separates the&nbsp;
+function space and the parameter space. And&nbsp;&nbsp;
+
+00:38:28.120 --> 00:38:34.000
+I think there's still a lot to do on the case&nbsp;
+side on, just improving the optimizer we've&nbsp;&nbsp;
+
+00:38:34.000 --> 00:38:39.520
+built, we haven't really tried to use it as a&nbsp;
+precondition. And matrix free implementations&nbsp;&nbsp;
+
+00:38:39.520 --> 00:38:44.400
+currently working on a high dimensional PDE&nbsp;
+is like Fokker, Planck, Hamiltonian, Jacobi,&nbsp;&nbsp;
+
+00:38:44.400 --> 00:38:52.320
+Belmont equation, Schrodinger equations. I&nbsp;
+think there is a lot to come. And with that,&nbsp;&nbsp;
+
+00:38:52.320 --> 00:38:58.080
+I want to thank you for your attention and&nbsp;
+happy to take questions. Awesome. Thank
+
+00:38:58.080 --> 00:39:02.920
+you so much for the wonderful talk.&nbsp;
+Very nice, very nice. So let's
+
+00:39:04.280 --> 00:39:12.280
+Yeah, yeah. May I maybe exit full screen mode so&nbsp;
+that I see you if somebody is asking questions, or&nbsp;&nbsp;
+
+00:39:12.280 --> 00:39:18.840
+maybe that's not a good idea, I leave it open so&nbsp;
+that we can go back to slides for the questions.
+
+00:39:18.840 --> 00:39:24.320
+Yeah, the people can unmute themselves&nbsp;
+and then ask questions directly and yes,&nbsp;&nbsp;
+
+00:39:24.320 --> 00:39:34.800
+let's have a Q and A sessions. I can start, I&nbsp;
+guess so for more general, non linear problems,&nbsp;&nbsp;
+
+00:39:34.800 --> 00:39:41.840
+you use switch from the Newton to gauss&nbsp;
+Newton. See, because, you know, to avoid,&nbsp;&nbsp;
+
+00:39:41.840 --> 00:39:47.560
+you know, the computing the full hessian&nbsp;
+informations, because that sum up. I can,
+
+00:39:47.560 --> 00:39:57.440
+I can tell you why we do, why we do that. So when&nbsp;
+the when the objective is non convex, of course,&nbsp;&nbsp;
+
+00:39:57.440 --> 00:40:06.280
+you have no guarantee that your you. Newton matrix&nbsp;
+is definite, right? It could be indefinite. And&nbsp;&nbsp;
+
+00:40:06.280 --> 00:40:12.760
+then you have no guarantee that the what&nbsp;
+you step is actually a descent direction,&nbsp;&nbsp;
+
+00:40:12.760 --> 00:40:20.720
+only if you get close to to the minimizer,&nbsp;
+then you know that Newton's matrix will&nbsp;&nbsp;
+
+00:40:20.720 --> 00:40:30.760
+get definite. And when we do the numerical&nbsp;
+experiments, and we observe precisely that,&nbsp;&nbsp;
+
+00:40:30.760 --> 00:40:37.920
+if we knew use Newton in function space right, and&nbsp;
+discretize it that way and and step, then it's not&nbsp;&nbsp;
+
+00:40:37.920 --> 00:40:43.040
+stable. It doesn't go in the right direction. But&nbsp;
+if you're close to the minimum and use Newton,&nbsp;&nbsp;
+
+00:40:43.040 --> 00:40:49.520
+then it is very close to gauss Newton at function&nbsp;
+space, which is also too expected to be expected.&nbsp;&nbsp;
+
+00:40:49.520 --> 00:40:54.320
+And we found gauss Newton just to be the more&nbsp;
+robust choice, because you always, because&nbsp;&nbsp;
+
+00:40:54.320 --> 00:41:01.960
+you linearize, you always have the guarantee&nbsp;
+that you taking a decent direction. Cool. Very
+
+00:41:01.960 --> 00:41:04.920
+nice, not just for, you know,&nbsp;&nbsp;
+
+00:41:04.920 --> 00:41:09.400
+avoid the avoiding the implementation&nbsp;
+comparison, but it does actually,
+
+00:41:09.400 --> 00:41:16.120
+yeah, I mean, because you compute the&nbsp;
+second the Newton matrix, right, the&nbsp;&nbsp;
+
+00:41:16.120 --> 00:41:24.160
+infinite dimensional object is always something&nbsp;
+that you compute with pen and paper. So there is,&nbsp;&nbsp;
+
+00:41:24.160 --> 00:41:28.840
+there is maybe a little bit. It's maybe&nbsp;
+a little bit more difficult to compute&nbsp;&nbsp;
+
+00:41:28.840 --> 00:41:33.040
+with on pen and paper the Newton matrix&nbsp;
+than to compute the gauss Newton matrix,&nbsp;&nbsp;
+
+00:41:33.040 --> 00:41:38.840
+but it's comparable, and implementation is maybe&nbsp;
+an epsilon more difficult for the Newton matrix,&nbsp;&nbsp;
+
+00:41:38.840 --> 00:41:45.760
+but you can do both, but the performance of the&nbsp;
+Gaussian is just more stable. Okay, wonderful.
+
+00:41:45.760 --> 00:41:50.760
+All right. Stephanie, do you want to&nbsp;
+unmute yourself and ask questions?
+
+00:41:50.760 --> 00:41:56.440
+Thanks for the talk. I was wondering if&nbsp;
+you can comment more on the connection to&nbsp;&nbsp;
+
+00:41:56.440 --> 00:42:01.480
+the natural gradient and Riemann manifold&nbsp;
+you mentioned. That's the angle you came&nbsp;&nbsp;
+
+00:42:01.480 --> 00:42:09.160
+from at the beginning. Did you divert&nbsp;
+from that, or is it still the same
+
+00:42:09.160 --> 00:42:14.560
+so many of the methods I've shown you, maybe I&nbsp;
+go back to a slide where I can easily explain&nbsp;&nbsp;
+
+00:42:14.560 --> 00:42:23.800
+that can be interpreted as maybe that's actually&nbsp;
+a good slide. Yeah, that's a good slide. So many&nbsp;&nbsp;
+
+00:42:23.800 --> 00:42:29.480
+of the methods can be interpreted as a natural&nbsp;
+gradient method, and they can be interpreted&nbsp;&nbsp;
+
+00:42:29.480 --> 00:42:37.240
+as a natural gradient method precisely when&nbsp;
+this T map here, right? This guy is symmetric,&nbsp;&nbsp;
+
+00:42:37.240 --> 00:42:42.280
+right? If this object really here is an inner&nbsp;
+product of function space, then actually you're&nbsp;&nbsp;
+
+00:42:42.280 --> 00:42:49.040
+doing a natural gradient method, or a Romanian,&nbsp;
+right? A Romanian gradient descent method. But&nbsp;&nbsp;
+
+00:42:49.040 --> 00:42:53.960
+there is no need for T to be symmetric.&nbsp;
+If, if you look at saddle point problems,&nbsp;&nbsp;
+
+00:42:53.960 --> 00:43:00.760
+and there was this example of La cons Newton and&nbsp;
+competitive gradient descent, then this T is not,&nbsp;&nbsp;
+
+00:43:01.720 --> 00:43:07.480
+is not right. And then the method you get is not&nbsp;
+a natural gradient method is not the remaining&nbsp;&nbsp;
+
+00:43:07.480 --> 00:43:14.840
+metric that you're using to design, sort of your&nbsp;
+pre condition for your gradient. So we switch to&nbsp;&nbsp;
+
+00:43:14.840 --> 00:43:20.880
+functions based viewpoint because it's, it's more&nbsp;
+general, but everything with the natural gradient&nbsp;&nbsp;
+
+00:43:20.880 --> 00:43:27.720
+descent is still valid, is still a good viewpoint?&nbsp;
+Does that answer your question? Yes, it does.
+
+00:43:27.720 --> 00:43:31.120
+I'm might have some follow up&nbsp;
+questions later on. I think I&nbsp;&nbsp;
+
+00:43:31.120 --> 00:43:34.280
+want to digest that a little bit,&nbsp;
+but I might shoot you an email, if
+
+00:43:34.280 --> 00:43:39.440
+that's okay. Yeah, I'm happy&nbsp;
+to take emails, of course.
+
+00:43:39.440 --> 00:43:47.640
+Awesome. Great. Any other questions? While someone&nbsp;
+has a question, I have another question. So if you&nbsp;&nbsp;
+
+00:43:47.640 --> 00:44:00.560
+go to slide 22 Yes, the size of the matrix is&nbsp;
+proportional to the size of the answers. Yes,
+
+00:44:00.560 --> 00:44:05.800
+exactly, exactly the dimensionality&nbsp;
+of your parameter space. And I'm
+
+00:44:05.800 --> 00:44:12.920
+guessing that's the performance&nbsp;
+of this great gradient descent&nbsp;&nbsp;
+
+00:44:12.920 --> 00:44:20.000
+will depends on the size of the onset&nbsp;
+as well. I mean, more the better. I
+
+00:44:20.000 --> 00:44:24.360
+guess. Say that what will&nbsp;
+depend on the answers as well
+
+00:44:24.360 --> 00:44:27.880
+the performance, like the&nbsp;
+convergence behavior of this. Oh,
+
+00:44:27.880 --> 00:44:34.200
+yeah. So I mean, if, if your answers is&nbsp;
+more expressive than sort of you you expect,&nbsp;&nbsp;
+
+00:44:34.200 --> 00:44:40.360
+right? It's richer you can, you can, you can do&nbsp;
+better, it will always depend on on your specific&nbsp;&nbsp;
+
+00:44:40.360 --> 00:44:47.240
+problem, right? So then you need bigger answers.&nbsp;
+Sometimes the smaller sufficient. Oh, okay, so,
+
+00:44:47.240 --> 00:44:56.000
+so I see the the balancing game here. So you need&nbsp;
+more answers, but if you increase the answers,&nbsp;&nbsp;
+
+00:44:56.000 --> 00:45:00.800
+then your matrix becomes bigger and bigger,&nbsp;
+and you're dealing with the. Science matrix,&nbsp;&nbsp;
+
+00:45:00.800 --> 00:45:06.520
+so it's harder to solve numerically, and&nbsp;
+so they're just there. There must be some&nbsp;&nbsp;
+
+00:45:06.520 --> 00:45:16.920
+sweet spot between those two balancing game. If&nbsp;
+you can comment on that from your experience,
+
+00:45:16.920 --> 00:45:23.680
+yeah, so I can say something. I don't know if&nbsp;
+this will be a perfect answer, but if you're&nbsp;&nbsp;
+
+00:45:23.680 --> 00:45:31.640
+looking into you know simpler problems where&nbsp;
+maybe your solution is not highly oscillatory,&nbsp;&nbsp;
+
+00:45:32.280 --> 00:45:37.960
+but it's okay, somewhat smooth, not too&nbsp;
+complicated. Then we found that you can&nbsp;&nbsp;
+
+00:45:37.960 --> 00:45:44.960
+actually use relatively small networks like&nbsp;
+the default would probably write. You set ups,&nbsp;&nbsp;
+
+00:45:44.960 --> 00:45:50.040
+you set something up in checks or pytorch, and you&nbsp;
+just go big, because the frameworks will do it,&nbsp;&nbsp;
+
+00:45:50.040 --> 00:45:57.240
+and your GPU can do it. But often it might not&nbsp;
+even be needed. And then it's, of course, easier&nbsp;&nbsp;
+
+00:45:57.240 --> 00:46:05.440
+to to get it to run if you, if you reduce the size&nbsp;
+a bit, and these algorithms play nicely with that,&nbsp;&nbsp;
+
+00:46:05.440 --> 00:46:10.200
+with Adam sometimes, or with first stochastic,&nbsp;
+first order methods sometimes you you,&nbsp;&nbsp;
+
+00:46:10.200 --> 00:46:16.440
+you have the feeling you need to go big with&nbsp;
+to make it work, okay. But these also work.&nbsp;&nbsp;
+
+00:46:16.440 --> 00:46:23.000
+Work quite well in a smaller network and a&nbsp;
+smaller in a smaller regime. But of course,&nbsp;&nbsp;
+
+00:46:23.000 --> 00:46:27.200
+if your if your function is complicated,&nbsp;
+if you're solving a many electron schroding&nbsp;&nbsp;
+
+00:46:27.200 --> 00:46:32.200
+equation, there is no way you can use a small&nbsp;
+network. And I think then there is no way around&nbsp;&nbsp;
+
+00:46:32.880 --> 00:46:41.000
+using some approximation of these methods. I&nbsp;
+mean, as a matter of fact, this, this K fac,&nbsp;&nbsp;
+
+00:46:41.000 --> 00:46:49.440
+is, I think, the gold standard for neural network&nbsp;
+based many electron Schrodinger equations. In this&nbsp;&nbsp;
+
+00:46:49.440 --> 00:46:58.400
+community. They do not use PD PDE operators in&nbsp;
+in the preconditioner, they use sort of an l2&nbsp;&nbsp;
+
+00:46:58.400 --> 00:47:06.960
+based version of that. But they found this&nbsp;
+to be crucial to optimize wave functions.
+
+00:47:06.960 --> 00:47:14.320
+Okay, my next question is about the&nbsp;
+Chronicle, you know k factor. You
+
+00:47:14.320 --> 00:47:17.960
+call it k factor, yes, yeah,
+
+00:47:17.960 --> 00:47:23.720
+that's a approximate of the Jacobian,&nbsp;
+the way of computing. So it's,
+
+00:47:23.720 --> 00:47:28.640
+yeah, exactly. So there's two approximations&nbsp;
+that we're doing. There's this matrix G, we do&nbsp;&nbsp;
+
+00:47:28.640 --> 00:47:36.200
+a block diagonal approximation of that matrix,&nbsp;
+and then the diagonal blocks, you approximate&nbsp;&nbsp;
+
+00:47:36.200 --> 00:47:45.040
+them as Chronica products. So it's, it's, it's&nbsp;
+a very aggressive approximation of g, yes, okay.
+
+00:47:45.040 --> 00:47:51.480
+And I'm wondering if it can be, since it is&nbsp;
+approximate, it can be used as a preconditioner. I
+
+00:47:51.480 --> 00:47:55.520
+think it, I think it can, and&nbsp;
+it's relatively high on our&nbsp;&nbsp;
+
+00:47:55.520 --> 00:48:02.240
+to do list to actually try that. Okay. Oh, yeah,
+
+00:48:02.240 --> 00:48:15.000
+any other question from audience, you can&nbsp;
+unmute yourself and then ask questions.
+
+00:48:15.000 --> 00:48:19.840
+Well, if not, let's thank our speaker today. Thank&nbsp;&nbsp;
+
+00:48:19.840 --> 00:48:25.120
+you so much in Europe right now.&nbsp;
+How? What time is it? There? It's,
+
+00:48:25.120 --> 00:48:29.320
+it's 10 to 10 to seven. Oh,
+
+00:48:29.320 --> 00:48:31.680
+10 to seven. Oh, okay, not that bad. I
+
+00:48:31.680 --> 00:48:34.640
+hope you. No, no, not, not bad at all.
+
+00:48:35.840 --> 00:48:42.640
+But I happens to know that Marius has a two kids&nbsp;
+and very young, four years old and six months and
+
+00:48:43.320 --> 00:48:50.040
+they need to go to bed now. Yes, they'll&nbsp;
+require my help. They require your help,&nbsp;&nbsp;
+
+00:48:50.040 --> 00:48:57.320
+but thank you so much for having me in this&nbsp;
+wonderful seminar. Thank you so much. Yeah, well,
+
+00:48:57.320 --> 00:49:07.680
+my last question would be before we head off log&nbsp;
+logo here, obviously, you know the national lab,&nbsp;&nbsp;
+
+00:49:07.680 --> 00:49:16.080
+they deal with the very, very large scale&nbsp;
+problems, and also the complexity is, is the multi&nbsp;&nbsp;
+
+00:49:16.080 --> 00:49:24.520
+physics and multi fidelity, that's sort of the&nbsp;
+problem. So, you know, the it's still questionable&nbsp;&nbsp;
+
+00:49:24.520 --> 00:49:32.880
+your method is how it is applicable to directly&nbsp;
+to those complex problems. I'm sure there's a&nbsp;&nbsp;
+
+00:49:32.880 --> 00:49:41.240
+way to go. I mean, it's more research and more&nbsp;
+development is required. So I'm, I will do my you&nbsp;&nbsp;
+
+00:49:41.240 --> 00:49:51.280
+know, best of you know how we can collaborate or&nbsp;
+bring this you know idea to the multi physics end,
+
+00:49:51.280 --> 00:49:59.200
+yes, if you are interested, if you have a high&nbsp;
+think these neural network based methods for PDS,&nbsp;&nbsp;
+
+00:49:59.200 --> 00:50:05.000
+are you. Especially interesting for high&nbsp;
+dimensional PDE s or maybe potentially high&nbsp;&nbsp;
+
+00:50:05.000 --> 00:50:14.440
+dimensional parameter spaces, if it's if you&nbsp;
+have a realistic problem, yeah, feel free to&nbsp;&nbsp;
+
+00:50:14.440 --> 00:50:22.600
+reach out. We're currently working on a on an easy&nbsp;
+to use pied watch, implementation of the of the&nbsp;&nbsp;
+
+00:50:22.600 --> 00:50:29.320
+capac method that I've shown you. So please let me&nbsp;
+know if you're interested in trying something out.
+
+00:50:29.320 --> 00:50:36.040
+Please reach out. Okay, well, we'll do Wow.&nbsp;
+Thank you so much for the wonderful talk,&nbsp;&nbsp;
+
+00:50:36.040 --> 00:50:41.680
+Marius. And let's thank let's&nbsp;
+applause to our great speaker today,&nbsp;&nbsp;
+
+00:50:41.680 --> 00:50:46.880
+and that was very nice, and we&nbsp;
+learned a lot from you, Maria. So
+
+00:50:46.880 --> 00:50:50.280
+we appreciate it so much. Bye,
+
+00:50:50.280 --> 00:50:54.461
+thank you. Bye, bye.
+

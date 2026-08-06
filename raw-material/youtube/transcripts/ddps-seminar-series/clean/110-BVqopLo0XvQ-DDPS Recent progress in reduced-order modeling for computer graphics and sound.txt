@@ -1,0 +1,1668 @@
+all right uh welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rules and
+Logistics the same rules and Logistics I
+have been um I I have been saying for
+every ddps seminar okay first of all
+please mute yourself during the talk uh
+but if you have questions you can unmute
+and ask questions or use a chat room to
+post your question so that we can
+address them in Q session second today's
+ddps seminar is open to external
+audiences um therefore no classifi
+discussion is allowed and finally The
+Talk today will be recorded and uploaded
+in our YouTube channel that's about it
+now let me briefly introduce our speaker
+today it is an um honor um it's a great
+honor to host Dr Doug James who is a
+professor of computer science at
+Stanford University and a member of
+Stanford's Center for computer research
+in music and Acoustics and the institute
+for computational and mathematical
+engineering uh
+icme uh he has been a Consulting senior
+research scientist at Nvidia research
+since
+2022 he holds three degrees in Applied
+Mathematics including a PhD in uh 2001
+from the University of British Colombia
+in 2002 he joined the school of computer
+science at carneg melon University as an
+assistant professor and later became an
+associate professor of the computer
+science at Corell University his
+research interests include computer
+Graphics computer sound physically based
+modeling and animation and reduced order
+physics models dog is a re Ian of the
+National Science Foundation Courier
+award and the fellow of both the Alfred
+slon foundation and the gugenheim
+foundation he received the ACM seagar uh
+2021 uh computer Graphics Achievement
+Award a 2012 technical Achievement Award
+from the Academia of Motion Picture Arts
+and Sciences for the wavelet ulence and
+2013 katayanagi emerging leadership
+prize from the K melon University and
+Tokyo University of Technology he was
+the technical paper program chair of ACM
+cigar
+2015 and a Consulting senior research
+scientist at Pixar Animation uh Studios
+from 2015 to 2020 all right today doc uh
+we'll talk about recent progress in
+reduced order modeling for computer
+graphics and sounds I'm sure he's going
+to give a v talk no doubt about it so
+please be prepared now let me ask a
+question to dog just to make this St
+somewhat informal is is it okay to ask
+some question dog yeah please by all
+means um you know ask questions at any
+point I'm gonna I'm gonna uh you know go
+through a lot of material and uh think
+of the talk as kind of an advertisement
+for for the material like find the
+details in the paper I just don't have
+time to go through everything but uh but
+by all means if you have questions just
+you know shoot this is fine okay the
+first question is even before you give a
+talk okay the um you
+know I see that you are passionate not
+only the computational science comp
+computer science but also the music and
+if you can share a your favorite music
+piece with us uh
+wow um yes I mean I love uh I guess I I
+love all the things related to site and
+such touch and sound and how that
+relates to math and physics and uh it's
+sort of always been one thing together
+you know I don't know how about uh Paul
+Gilbert's uh curse of Castle Dragon put
+that on if you want to get your energy
+levels up you know that will that will
+get you going in the morning awesome
+okay I don't know know of that music but
+I will definitely try yeah amazing
+guitarist okay thank you stage is yours
+okay great um so thanks for coming to
+the talk everybody um so I I've always
+been excited uh you know for the last
+you know 20 years about reduced order
+modeling about how to make things fast
+by doing things in low Dimensions
+speeding up dynamics of deformable
+models allowing that to be used to do
+faster GPU rendering of the models the
+motion and uh and being able to reduced
+St representations for faster Collision
+processing contact processing supporting
+haptic feedback at kilohertz rates and
+even sound without having to deform
+everything so you know res models just I
+I just love them but some things you
+have to uh you know you need full
+Dimensions to to do if you want a lot of
+details and or things that you haven't
+seen before or don't know what the basis
+is and so that kind of leads to the
+first part of the talk and the second
+part is going to be about about fluids
+and the sounds that water makes and how
+to compute those using reduced order
+models um so let me see how to do this
+okay so um so the I guess I want to
+start by thanking uh you know my PhD
+students so this is worked by two
+amazing PhD students uh the first one is
+ays uh AIS has done a lot of incredible
+work on um simulating deformable models
+and that's related to the progressive
+physics or
+Progressive uh uh methods that she
+developed that's the first part of the
+talk second part is by congre and congr
+has been working on um doing fast
+simulation of fluid sounds and also uh
+GPU Acoustics and things like that to
+basically make the simulation of uh
+everything we can visually animate also
+has sound in a practical way so this
+like the future is includes sound that's
+a first class uh physical primitive um
+okay so to start with this is the the
+the the work on Progressive simulation
+so the basic idea is that we want to be
+able to compute things uh you know
+resolution in a resolution Progressive
+Way and uh and this work was with a
+number of amazing collaborators so in
+particular Danny Kaufman at Adobe it
+also started out with Alec Jacobson and
+Raymond and and others and so um this is
+something that she's been working on for
+a few years now and it's it's really
+coming along the motivation is basically
+you have you know maybe you want to do
+design so you have a scene like this
+uh you want to have like cloth and you
+want to lay things out um with with uh
+to do set design or to make a scene in
+in a 3D modeling tool so there's all
+kinds of materials there's contact uh
+maybe you want to have cloth and shells
+in these sort of environments and being
+able to to manipulate physical models is
+really tedious it's it's often very very
+slow so you have this basic problem of
+speed versus Fidelity which you know
+this is a reduced order modeling session
+so this is the basic story right uh like
+we want you want it to be good but you
+also want it to be fast and there's a
+trade-off you have to make and a lot of
+fun math to keep us employed um but you
+know currently we can do stuff like this
+you know you can pull on a piece of
+cloth and then it can respond in real
+time uh maybe it's on like a GPU or a
+CPU whatever there's some amount of
+parallelism that can be employed and but
+you can't really make a you know it's
+it's it's cool it does this in real time
+but it's also Limited the other kind of
+things we have to deal with are the
+simulators have all kinds of limitations
+so on the left we have like a you know
+animation production quality system
+Houdini uh which allows us to simulate
+this cloth but it's got jittering
+artifacts it's got intersections maybe
+it has other problems depending on your
+parameters that you didn't tune expertly
+on the right is a like the
+state-of-the-art and cloth design tool
+clo Marvelous Designer has all these
+fantastic materials but you know it's
+not stable and maybe it'll blow up in
+some cases so you try again right so how
+do you get all of these things you know
+how do you get uh reliable simulations
+that are are also fast here's like a a
+state-of-the-art simulator based on
+incremental potential contact which is
+kind of like a you know full-blown
+elasticity solver with barrier methods
+that are robust and allow you to make
+sure it'll always work and not die but
+it may take a long long time to get
+these results um so minutes per frame or
+you know hours per simulation but you'll
+get something good but how do you design
+or or or work with that if you're trying
+to do design or animation so the other
+thing that's really important is control
+and um so it's not just that you it's
+not just speed INF Fidelity the point is
+you want to use this for for you know
+art directable physics you want to
+design something you want to make a
+movie you want to do something with a
+human in the loop but if you can't if
+it's so slow you can't do it or if it's
+no good it doesn't matter so here's a
+shot from Incredibles 2 that I know some
+people a Pixar spent a lot of time
+thinking about like you have a scene
+where a character's moving around they
+have clothing and they're interacting
+with cloth you know the sheets and so on
+they're coming on the bed off the bed
+and then at some frame in the middle of
+this animation there's this shot right
+and nothing in this scene is by accident
+you know the way the cloth is exactly at
+her knee line not too high not too low
+and is is you know moving when she comes
+on and off was by was on purpose right
+so how do you make sure things do what
+you want if you're working with a
+physical simulator usually you you start
+integrating with initial value problem
+things go and then you get what you get
+right but you want to control things so
+you need to have uh A system that allows
+you to work with it interactively
+essentially um and people that made the
+shot the TDS you know they have to do
+all kinds of work to design forces and
+ghost forces to push things just right
+and and then they change the resolution
+and hope it works better for the final
+shot and this is really hard uh to do so
+if we want interactiv interactivity and
+high quality these are you know there's
+at odds so um there's no free lunch but
+what we want to do is be able to build a
+tool initially I'm going to talk about
+quasi static simulation so things like
+draping a piece of cloth maybe you want
+to explore different materials things
+that are thin have nice buckling and
+creases like this or maybe you want to
+you know change the materials as you go
+and move things around um so this is
+just initially we're going to talk about
+quasi Statics of cloth things that have
+a flat rest shape and um so how do we
+think of progressiveness in graphics so
+there's all kinds of paradigms for
+Progressive simulation um so on the left
+is like 3D rendering right Monte Carlo
+path tracing you can you can render
+things a course level and then refine it
+and get more detail as you go right and
+on the right we have Progressive me M
+Progressive geometry where you can have
+a mesh you can simplify it you can build
+a hierarchy of meshes and and you can
+refine along the way but this isn't this
+isn't like you know this isn't solid
+mechanics but this is these are are are
+ways people work with Progressive
+representations it's super useful level
+of detail make things fast you can see
+results right away you can try things
+out and then change things if you don't
+get you would like for level of detail
+the current state-ofthe-art of things
+like nanite system and Unreal Engine
+five which uses all all kinds of really
+fine meshes at different levels of
+detail and you can change these on the
+Fly artists you know experts in fluid
+simulation you know they use little
+strokes of paint uh to get the the
+background and then they add more detail
+in a progressive way if you work in
+solids you know then you know you may
+sculpt things in a progressive way to to
+get details where you want them so how
+do we do this for claw simulation uh and
+I want to emphasize that this is
+different from um just the idea where
+you simulate things at a course level
+and then you and then you get something
+and then you simulate in a fine level
+and in the limit you know given some
+Epsilon I'll tell you a Delta and you'll
+get an accurate result we're not trying
+to do uh refinement in a progressive way
+to uh a a limit solution like you do in
+numerical on house we're actually trying
+to progressively refine a thing that
+we're working on which maybe isn't as
+different from from the limit case and
+this is a really important distinction
+um so for example here's a typical
+problem with with direct simulation so
+you you say okay I have to make this
+shot I'm going to throw this blanket on
+this guy and you simulate a cloth being
+put down at a low resolution and you get
+this result you say oh I like this it
+goes under his chin and I don't know if
+you can see my mouse can you see my
+mouse see yep yes yes we can yeah okay
+great so it goes under his chin and he's
+got these nice wrinkles that's this is
+what I want and so then you you change
+the resolution and rerun the simulation
+and wait a long time and you get this
+and this is typical because uh now
+you've got something that just doesn't
+do the same thing it's uh you know it's
+got fundamentally different wrinkles it
+it it caught on the on the guy's nose
+now so the shot is ruined uh so you if
+you run something at a low res and get
+something you like just increasing the
+resolution doesn't give you something
+consistent necessarily right in some
+cases it may but in a lot of cases it
+doesn't so everybody who does fluid
+Dynam knows if you run you know smoke at
+a low res and you get something that
+goes looks nice in this way if you run
+at a high res it may do something
+totally different it may have you know
+all kinds of more vortices and so on and
+that's what you you want you know if
+you're if you're designing something or
+trying to do predictive simulation with
+fluids or solids but for art directable
+physics you want to direct something
+quickly at low res and then refine it in
+a way which adds plausible detail but
+doesn't necessarily do something more
+accurate and different you want it to be
+consistent so this is the fundamental
+challenge that we have to deal with um
+okay so moving along another challenge
+is cascadic methods are a natural
+approach to this so what they do is they
+basically say I have a CO Sim uh it's
+doing something I like now what I'm
+going to do um so I'm say draping this
+piece of cloth on the left I'm going to
+now prolong it to a finer mesh and then
+and then use that as an initial guess
+for the next
+next phase of relaxation say of this uh
+fine level simulation and this is kind
+of like warm starting the the quasy
+static solver and this you know this is
+a reasonable thing to do but the problem
+is the coar model is garbage really and
+um so whatever Kinks and creases and
+locking artifacts this you know coarse
+cloth or shell model has are going to be
+inherited by the warm start to the next
+thing so now you've got this fine level
+cloth model which if it was simulated
+it's uh directly would give you
+something nice like this but now because
+you warm started it you baked in these
+creases and locking the thing is not in
+a very natural state and this is typical
+of these kind of methods um they're
+useful for interactive design because
+they you know allow you to work course
+and go fine but they have all these
+problems and so what we really want is a
+better course model a smarter course
+model that is also consistent with the
+finer scale and then people often you
+know
+multi- grid and multi-level methods are
+are related to this but they're for you
+know linear solvers or say nonlinear
+solvers but they're not fundamentally
+for uh Progressive uh art directable
+physics they're just solvers right but
+we can use them too but they don't they
+don't solve this
+problem okay so the next thing I want to
+talk about is just like how do we get uh
+interact interactive high quality cloth
+well the basic approach to this is
+progressiveness we're going to get both
+of these by using a progressive approach
+and this will also give us control so
+we're going to start with a CO Sim and
+build up in this case a quasi static
+simulation so we'll pose the cloth in
+some way in a coarse scale and then what
+we can do is progressively refine the
+simulation to get something better it's
+not the same thing otherwise why would
+we just do that um it's going to get
+more detail and more you know finer
+wrinkles and things like that but it's
+still going to be consistent with what
+we have so the rough shape of it will be
+consist it's not going to fundamentally
+do something else or pop out or fall
+down or whatever and so this will give
+us a consistent representation across
+scales and it's also the simulator is
+reliable so we're going to use a rock
+solid simulator won't allow any
+intersections or or artifacts and um
+it's going to come at a cost but we're
+going to pay the cost of the fine scale
+and work quickly at the course scale at
+any point in time you can interrupt the
+simulation as it goes from course toine
+and change parameters or work with it
+and then just it'll just go back and you
+can keep doing this over and over again
+and then of course the key thing is that
+we'll have interactive previews at every
+stage of the process so working course
+we'll always be able to see what's
+happening and then we can refine it so
+that's the basic idea of this original
+PCS uh
+method and um so here's the idea of
+consistency so uh a level zero we have
+something like this but as you refine it
+the the simulator gets more detail you
+can see that the the quality of the
+folds are are finer and more resolved
+but the thing is not fundamentally
+buckling or creasing in a different way
+it's doing something that's similar
+maybe you could argue this is not the
+most exciting example you know it's just
+like a handkerchief on a ball right
+nobody's GNA you know go to the movies
+to see just this but it's it's it's
+something that you know is clearly
+consistent in space uh with What's
+Happening Here like you could measure
+the curvature and and Define some
+measure of of consistency which we did
+um the other thing you can do is you can
+you can change the materials as you go
+right so a cool thing about this is that
+you can you know work with one material
+and and then decide you want to change
+it and get results for that too so you
+can be working at a course scale and
+then try out different things and
+rapidly explore the space of of possible
+uh materials and and outcomes which is
+what you want to do for design the other
+thing is that um we don't we can avoid
+the artifacts of coar direct Sims
+because okay so on the left here we just
+have a cloth model uh that's simulated
+at on this mesh and what you see is what
+you get it's simulated in some you know
+it's basically solving a Statics problem
+with a Newton solver and you get
+something like this but it has a lot of
+artifacts that are representative of the
+kind of failures of just really coarse
+cloth
+uh mesh models and uh whereas this one
+here is smarter and the reason it's
+smarter is basically because the coar
+model that we're using here is doing
+multiscale model reduction it's
+basically using it's basically using
+elastic forces and energies defined at
+the finest level mesh and then
+restricting these down to this so it's
+using a much better shape model for its
+elastic energies and so this thing
+behaves like it's actually a finer scale
+model so a a more of a cost to do this
+but it's better than just using the
+course model itself and the other thing
+is that this model because it it knows
+about the fine scale energies will when
+you refine the mesh still behave in a
+similar way so that's going to allow us
+to have consistency across scales
+because the course model is actually you
+know knows about the fine scale model in
+some specific ways and when you refine
+the meshes um then you get something
+here on the right which is consistent
+with what we had on the left okay it
+looks similar uh whereas the one on the
+on the left is is got some different
+artifacts things move around and it's
+not as
+consistent
+um but the also the other thing is that
+when we refine this and solve it at the
+fine scale it is actually a converg
+Newton solution corresponds to a you
+know approximate Minima of the
+energies okay um let me
+see okay so this gives us speed up over
+a direct simulation so here we can we
+can drape the D the PCS simulation out
+of coar scale and then when it gets to
+its a relaxed position then refine it
+and this is better than just uh directly
+working with uh um the fine model itself
+because you know this is just going to
+take a longer time because it's just
+times it's basically just time stepping
+lots of these degrees of freedom in the
+Newton solver um so working course is
+much faster and in some cases it can be
+arbitrarily fast because you can't
+actually get the work done if you're
+working at a course at a fine scale um
+so this is a a sped up a session of of
+somebody working with the system to
+build an example I showed you in the
+very beginning so there's a bust of a of
+a of a character and then this piece of
+cloth is being draped over over it and
+then interactively manipulating it to
+produce what you want so like the
+typical design proc processes you don't
+know what the final outcome is you're
+trying to work with the system and the
+media to figure out what's possible so
+they're changing material parameters and
+um and then they're also changing the
+configuration and moving things around
+so in this case you can translate rotate
+and scale the uh collider and then and
+the system of you know pushes it out in
+this case because you've specified some
+in feasible State and then grab it you
+basically grab the clo and move it
+around like you would in a typical
+system and in this case the the person
+is trying to move the cloth around uh
+the the
+character um and so this is the system
+and so then as you get closer to your
+goal then you can you can go ahead and
+refine the actual resolution and it gets
+of course much slower but by this point
+the person's done so the artist has
+basically found something they like
+they've increase the resolution and then
+they just wait for the the higher
+quality result to to come into play but
+all of the design work is done in a more
+rapid prototyping course
+scale okay so here's the the final
+result so this is what they what they
+designed um and you know it's only
+1.5 a, I know, 1500 triangles and this
+can be solved very quickly with a you
+know direct solver basically and then um
+this gets refined and and the end result
+takes much longer but you know you get
+something that's consistent you have to
+wait but you don't have to you don't
+have any anxiety you just have a coffee
+and relax it's going to work
+out um and here's a final render of that
+of that of that draping
+design so if you tried to work directly
+on the the fine Sim it would be too slow
+if you didn't work on the fine Sim you
+just work work on course schim it
+wouldn't be consistent so this solves
+both those
+problems um so the basic idea of the
+method um I should keep an eye on the
+time because I'm going to run out of I'm
+you know run out of time here um so the
+basic idea of the method is um you
+basically want to take the cloth in some
+initial State and then get to some final
+converge
+State
+um you have a course preview and then
+you can progressively refine this across
+levels in a way that preserves the
+Integrity of the simulation doesn't
+introduce intersections or
+artifacts um so this is done in an
+incremental potential formulation so
+we're basically minimizing some energy
+of the system where you have membrane
+and bending energies of the elastic
+simulation and then you have this
+contact a barrier for contact friction
+and then a strain limiting potential
+which is this is sort of incremental
+potential contact formulation and this
+will guarantee things don't
+interpenetrate and it's solved using a
+uh Newton with line search and some
+robust solver and it may take a long
+time but it'll it'll get there and
+um and in order to to deal with the the
+resolutions we have a prolongation
+approach where you basically have this
+mesh and it's basically subdivided or
+prolonged to a finer a finer mesh and
+then at each level basically you
+essentially want to solve this problem
+where there's a level L you have some
+energy for that level and then you could
+just solve each one of these separately
+and it would kind of look like this um
+and uh you know each one would have a
+different different Minima and we want
+to relate them by this initial guess xar
+which is basically our our warm start um
+but we don't want to do this exactly so
+the problem is if you just solve each
+level's energy separately then you're
+going to have uh some problems the other
+thing um I should mention is that in
+order to make the process coherent in
+time for somebody working with the
+system we have a sort of pseudo Time by
+adding an extra basically penalty term
+which corresponds to like this kinetic
+energy uh thing so you have a ma a mass
+Norm on the change in position which
+basically produces the kinetic energy
+type energy in the system um so the
+problem I talked about before where you
+take a course model and then you refine
+it and use a warm start with this will
+give you artifacts for membrane locking
+because the coar model is is a bad model
+and it's going to put in artifacts that
+when you refine as a warm start will be
+hard to undo so if you like crease or
+knot up your simulation the cloth is
+going to have a hard time undoing that
+and it may just say fine I'll just stay
+here and but it's not a natural state
+for the cloth to have these uh mesh
+artifacts in it from a core scale so
+instead of using each level separately
+what we're going to do is we're going to
+use the fine scale energies at at the
+coarser scales and so in order to do
+that we have a prolongation operator
+which basically refines a a Sol a
+solution or vector from one level to the
+finest level and then what we do is we
+evaluate the contact energies for the
+barrier friction and string limiting at
+the specific scale for the mesh you have
+but the but the you know the membrane
+and and the the bending energies are
+going to be for the finest level okay
+and this will make make it behave much
+better it turns out you could do these
+at a finer scale but it doesn't it's not
+it's not worth it it'll turn out um so
+this will basically will have uh good
+contact handling constraints at the
+current level for this specific geometry
+and then we'll refine uh basically
+evaluate the energies here and those
+will get restricted back in a usual
+multiscale model reduction kind of way
+um and
+so in this case then uh right um so this
+gets all put in a Newton solver and um
+in order to solve this of course you
+have to compute derivatives and HS and
+things like this and so this can get
+expensive so the gradient of the energy
+is just the forces on the system at the
+scale and then the Hest involves two
+parts the first part is going to be uh
+you know the mass Matrix which which is
+just there for for keeping it from you
+know just for for coherence but then we
+have the the potential the gradient of
+the the energies of the fine scale uh
+for the elastic energies and then the
+contact Hess so this one is easy because
+it's at the current level but this one
+involves fine scale information so
+there's the usual kind of you know how
+do you evaluate the stiffness Matrix for
+this reduced system using the fine scale
+model um in this case because we're
+we're just doing a Newton problem we
+could do an inexact Newton solve and
+just use the this Hess at the current
+level and so this is this is a
+simplification which we'll will'll speed
+things up quite a bit um and so then the
+uh you know Newton set proceeds and if
+it's done right you get to a reasonable
+feasible Minima and this is this is what
+the system does and then in order to get
+to the next step um uh you just keep
+doing this incrementally and then you
+convert to the the the solution the one
+thing you have to watch out for is when
+you change from one resolution to the
+next you can mess things up by changing
+the contact state so we have to make
+sure that there's an intersection free
+upsampling that happens and so we do
+this by doing basically a polyhedral
+subdivision we just refine the
+parameterization not the geometry and
+then and then we do a continuous
+Collision detection to to basically
+allow this thing to relax and take its
+natural State and this uh can introduce
+intersections but this is uh if it's
+done properly uh in this way then we
+we're able to you know make sure that
+that we don't mess things up and it has
+to also work for strain limiting because
+if you allow things to get pushed around
+as they change from run resolution to
+neck you could introduce a lot of energy
+by stretching something that doesn't
+want to stretch and so that that energy
+has got to be satisfied too so there's a
+a whole tedious uh sequence of steps
+that allow us to do this but we can
+change resolutions as we go and then if
+you want to go back and fix things you
+can and and so this is uh this is the
+interactive
+workflow um okay how am I doing for time
+so there's some consistency with the
+with the the curvature if we look at
+mean curvature between levels for our
+model uh versus previous cascadic
+approaches we basically win in every
+every scenario that we looked at in the
+paper um it's just a more consistent and
+we can also have nested Collision
+geometry not just a cloth but we can
+have you know Progressive
+representations of scenes that you know
+allow us to um refine the geometry of
+the scene as we go so this helps with
+speeding up Collision detection
+basically
+um so here's a gallery of some different
+simulations that were made changing the
+bending stiffness the materials and then
+here's an interactive workflow so after
+9 Minutes of of working with the
+simulator which is not much time given
+that this to to do the solve it's like
+it's about that time to actually do one
+solve right or um so U you can't work at
+the fine scale if we work in a
+progressive way we can get get the work
+done and here's a a larger scene I'm
+just going to sort of speed this up but
+somebody's you know working with the
+system at course scales and there's
+multiple layered pieces of cloth that
+are sticking together and the thing
+responds in a coarse way and then when
+you stop moving things it starts
+refining and adding more detail until
+you change it again so this it's a fully
+responsive system uh this is a prototype
+it's not a product but you know you get
+the idea and then you have multiple
+pieces of interacting cloth and in the
+final thing you have as many triangles
+as you
+want okay um so this is just for cloth
+uh the next part is for shells and I
+want to go through this more quickly
+because it's more complicated but
+basically these have nons smooth rest
+States so they they have geometry that
+when you refine them they're not just a
+flat piece of cloth that's bent it's got
+some inherent uh nonzero rest angles for
+the for the shells shells are
+interesting they have all kinds of
+interesting behavior um but they're you
+know more more expensive to simulate so
+the usual problem of speed versus
+Fidelity is even more interesting for
+shells so if you if you try to use a
+really course simulation uh you'll miss
+all these fine details and buckling
+effects um that that you need a a resolv
+shell simulation for and you'll get all
+kinds of locking locking effects I'm
+just going to speed this up so here's
+like a a direct simulation at a course
+scale you get all kinds of artifacts
+it's just terrible um so how do you get
+this with the shell simulation um the
+same sort of thing we did before uh only
+works for subdivision connectivity uh
+which also it subdivided a flat shape to
+a flat shape but now with a with the
+shell you know now we can do subdivision
+surfaces but there's no details how do
+we take a a specific detailed mesh and
+work with it in this way we can't assume
+it's a subdivision model um so we want
+to take arbitrary fine geometry and then
+build a hierarchy from that and use that
+in a progressive simulation framework
+but this is difficult because it's not
+just a uh repeated subdivision
+everything's not in plain um okay so
+this is where this method Progressive
+shell quasy Statics comes from still
+quasy Statics but we take a
+highresolution model and decimate it
+using like a a quadric
+simplification class of of method not
+that one exactly and then from that we
+have a hierarchy to refine it and so
+here's a simulation that somebody's
+working with the course model on and
+they can you know pose this character
+however they want and then refine it and
+get the simulation course responding to
+this is like a a shell balloon character
+it has some some
+details okay so at level zero you get
+consistent Solutions as as these things
+evolve and you get extra detail and
+geometry that gets added in it's not
+just a smooth limit surface and it's
+just fundamentally better so the the
+progressive simulation course model is
+smart because it knows about fine scale
+energies so when you refine it it's it's
+consistent as well and it avoids locking
+our effects and we can upsample the
+context so here as we add more detail we
+don't get inter penetrations and even in
+this pretty challenging case uh things
+just resolve and work and so you can do
+something at a course simulation scale
+and then keep increasing resolution the
+contacts get resolved and there's no
+inter penetrations and everything you
+know just works um the details of it are
+are fascinating but also they're going
+to caus me to run out of time uh let me
+see so we're going to do quasi Statics
+again what we really want to do is
+Dynamics that's the next paper uh before
+the bubbles so let me let me just speed
+this up a bit so previously we did quasi
+Statics but now uh this only works for
+subdivision connectivity um so the thing
+we have here are we have the coar level
+proxy energies using fine scale elastic
+uh energy and then we have a safe
+initialization but this only worked for
+in plane stuff um so we could assume
+that we just refined the triangle in
+plain um so now uh we can use uh the
+simplification to get uh a course model
+but to refine it this is a problematic
+thing and we also have to make sure that
+when we when we prolongate it we don't
+introduce inter penetrations which is
+now harder and so those those are the
+two things that this paper does there's
+some prior work I want to skip that
+doesn't solve it messes things up and
+adds ghost forces I skip this and this
+one it makes things dense so we want a
+fast and um sparse prolongation so this
+is based on edge collapse and there's
+basically there's the basic thing is
+that when you want to add an extra
+degree of Freedom back you can do it in
+the plane of the triangle using a
+bicentric intrinsic coordinate but you
+still need to go out of the plane to pop
+the inflate the shell and this is the
+extrinsic prolongation part
+um and so as we do this we basically we
+basically track a local frame of this
+triangle and figure out where the ber
+Center coordinate of the of the
+coordinate is and then we add an
+additional displacement off this in the
+local frame and this is how the
+prolongation works and there's a we show
+that this actually works and it's it's
+stable and gives us good energies which
+is the key thing for simulation um and
+so we're able to then prolongate this
+and add detail and uh and the system uh
+will work in order to initialize it um
+we need to make sure that there's no
+inter penetration introduced and so in
+order to do that as you add more degrees
+of freedom you have to check for
+collisions and when you're doing these
+Edge expansions so that you maintain a a
+feasible simulation with no inter
+penetrations and there's some details
+about how this has to be done in a
+robust way because you could have things
+which are like you know a coar shell
+model which is like a you know some
+origami you know satellite thing all
+packed in and then you want to add
+degrees of freedom and there's no room
+uh you have to make sure that this is
+done robustly and so there's a a part of
+the paper which is dedicated to this
+part to to make sure that you can
+inflate things in a way which uh is done
+safely and uh I won't get into this
+there's a randomized search method that
+guarantees that it works uh and so if
+you if you use this then you're you're
+able to deal with challenging cases like
+the one we saw where you're twisting the
+cloth you can twist it right up and it
+will still figure out how to inflate
+this thing and not introduce any inter
+penetration
+artifacts um let see the paper for
+details it's also
+parallelized um by figuring out local
+regions to to do this okay so once you
+do that then you're able to do
+prolongation with these models they
+preserve the you know classic shell
+energies for symmetric inversions um
+they're they're better than the the the
+previous cloth approach because they
+don't have they have a better better uh
+approximation of the energies at finer
+scales they don't have parameterization
+artifacts as much as Loop subdivision
+did and um so they just do a better job
+of of course approximations to the model
+um and then when you refine them uh
+they're better so here's a a shell model
+with a with a crush
+example and then as you refine the
+simulation from here you know you get
+something that's consistent uh this is a
+Whimsical example where you're
+simulating at a coar scale and then
+refine it and you get something
+consistent uh another inflation
+example and um let me just keep moving
+along in a run out a time
+okay so for
+animation this doesn't address animation
+so previously we just looked at quasi
+Statics and in this new work basically
+we can actually add the Dynamics back in
+so here's a good example where you have
+this character you want to throw them
+through some hoops and you're working
+with the simulation it's incredibly slow
+this is a real-time capture actually
+animating this character in Houdini and
+it doesn't get through the hoop so you
+say oh I need to increase my velocity or
+I need to move the hoop or something
+like this so it's very tedious to get
+these things done but after some work
+you know that you eventually get the
+character to fly through the hoops this
+is using houdin's vum simulator it's a
+position-based dynamic simulator but as
+you increase the resolution the
+simulator changes Behavior so we go to
+the next level it does this and you go
+oh no I just spent like an hour getting
+this guy to go through the dang hoop and
+now you know it doesn't go through if
+you let it go up another level of
+resolution to the full model um this
+solver isn't like consistent across
+scales this is you know a kind of absurd
+example if you had a better simulator
+like IPC or finite element shell model
+it would have less variation but it
+would still be different and so what you
+what you can do at one scale you know we
+can refine quasi statically but how
+about Dynamics how do you refine
+Dynamics and still get something that's
+consistent across scales and this is
+what the progressive Dynamics work does
+you simulate something that scale with a
+enriched course model with this
+multiscale model reduction smarts to it
+and then when you refine it you're going
+to get something that also produces
+qualitatively similar Behavior with now
+more detail and so he still Bonks his
+nose in in the in the way the animator
+wanted and uh as you keep adding more
+and more detail you get to the final
+simulation so this can run you know
+offline but you'll be sure that it's
+going to produce something consistent
+it's not the same as doing the original
+fine scale simulation because it's
+biased to be consistent with the course
+scale model right so this is the key
+thing that gives you
+control and uh and so this works for
+scenes like this one which are really
+complicated on the on the top right you
+know here's these Whimsical Sky Dancer
+uh uh models where everything gets
+designed at the courses scale so that
+it's it's it's got the right materials
+you know if you've never made one of
+these animations before maybe you don't
+know the wind speed to use to get these
+guys to jiggle and dance in a in a in a
+in a fun way um so you have to explore
+at the course scale and then you can
+refine and you'll get something that
+does the same thing not like blows like
+crazy or stretches too much or falls on
+the floor right so you get consistent
+Progressive
+Dynamics okay so I don't have time to
+talk about the details of this and this
+work is just coming out at sigraph this
+summer so uh check out ais's web page
+for the progressive Dynamics work that
+that'll be out uh shortly and that's
+that's it for this part of the talk
+there's a whole bunch of other results
+that show you know basically you get a
+scale a flag model that's consistent
+across scales whereas if you did a full
+simulation just a regular shell
+simulation in Orange here after this one
+uh basically you get something that
+diverges the simulations at different
+levels of detail don't do the same thing
+which is what you'd hope because
+otherwise everybody just do everything
+that course scales um okay so that's the
+end of that part of the talk the next
+part of the talk is this one so I've got
+just a little bit of time for
+bubbles see um maybe I'll just keep the
+questions to the end otherwise I'll I'll
+run out oh take take your time dog
+okay okay so um the last part I just
+wanted to show you some cool work that
+um congre along with other collaborators
+at at Adobe and and Stanford that we've
+done on um making water sounds better so
+I'm super excited about about sound
+synthesis in general and then water
+sounds but here's a here's a experiment
+we did back at Cornell where we recorded
+lots of droplets and bubble sounds and
+the basic problem is that when a
+bubble's created it vibrates very
+strongly du to compress the air and uh
+and the energy of the of the mass of the
+water and it could produce notable
+sounds in particular so basically have
+uh bubbles that have a frequency that's
+inversely proportional to their diameter
+this has been known for almost 100 years
+and um so small bubbles you know produce
+these classic you know musical tones in
+isolation and this can be used to to
+make sounds um but you know people have
+have have studied Bubbles and their
+properties for how the frequencies
+depend on shape how they may couple
+together has been explored more recently
+and there's this great book by uh Tom
+Leighton called the acoustic bubble
+which talks about all kinds of things
+and people care about this a lot because
+for remote sensing for climate models
+understand air ocean uh mixing effects
+is is is absolutely critical to so many
+things we do um in in computer Graphics
+um we had a paper back in 2009 that
+looked about how does how to use bubbles
+to make sound for animations so we
+produce various bubbles using stochastic
+approach where we would look at how some
+particle level set or particles near the
+surface would get mixed into the fluid
+and then use that to generate bubbles in
+a stochastic way and then just use the
+minert bubble frequency just based on
+the in one over the the diameter of the
+bubble and this tended to make the the
+sounds pretty shrill like we ended up
+with a lot of high-pitch sounds it was
+kind of harsh uh you know early sounds
+always bad but uh gets better over time
+and then so follow on work by Moss said
+look they only use this pulsating mode
+of the bubble there's these higher mode
+higher oscillation modes but these
+tended to also introduce higher
+frequency sounds which made that even
+more you know shrill essentially in my
+opinion so this doesn't really solve the
+problem and then in order to figure out
+how to do better we went to full
+two-phase uh flow simulations where we
+had incompressible Bubbles and this you
+know was computed with with a simulator
+called jerus which was very expensive
+ran a supercomputer and we got these
+more higher Fidelity water simulations
+and to see does this make it sound
+better and uh so this was a lot more
+expensive we also had a solver to figure
+out the bubble frequencies based on a
+capacitance solver of associated uh LL
+problem and we get things like this so
+here's what they sound like
+so all of these are you have some watery
+bubbly character but they're missing
+something right um one thing is that the
+frequencies are just generally too high
+there's the other aspect of the
+radiation and the transfer in the air
+domain which I'll talk about a little
+bit later um these ones on the top
+include it this one on the bottom
+ignores it but the problem that we had
+is a lot of these frequencies are just
+higher than we observed in practice and
+and one thing that is happening is if
+you consider a bubble oscillating
+independently it has this damped
+sinusoid kind of behavior um but the
+frequencies are much higher because when
+this bubble is pulsating the coupling
+with the neighboring bubbles has been
+ignored but in practice if you include
+coupling then you get more interesting
+variations in this instead of just a
+ping of a damped oscillator like we had
+before
+here which is kind of digital and and
+shrill um having this coupling gives
+more interesting fluctuations in the
+waveform and it also introduces U more
+effective mass in the systems the
+frequencies are lower and it produces
+lower frequency sounds which is really
+fundamentally important when you go to
+the ocean and hear a giant wave crash
+the bubbles are really tiny if you
+played them all as independent
+oscillators with the one over diameter
+frequency it would be just just shrill
+and and loud as can be but when you
+introduce coupling the ocean gets lower
+frequencies and Roars and this has been
+known in in U uh acoustic bubble
+Community for some time so here's this
+example by Leroy where they basically
+couple a small number of bubbles
+together and you already get reduction
+from 3 khz down to like you know 2 point
+whatever and in practice if you have
+like you know increase the number of
+bubbles in some test volume by factor of
+a thousand you can get a and or like a
+10 times reduction of frequency so
+that'll get you from 2 khz to 200 HZ and
+gives you a low frequency Roar and so
+this is the key thing that we want to
+include and which was missing in all
+these previous works so in this case we
+have an uncoupled simulation on the left
+um which is uh which is coming in and
+and you get something like this in the
+spectrogram and um on the right we have
+a recording of a of a different but
+comparable scenario and what you have is
+this lower frequency lobe that comes in
+have the stuff near the surface which is
+splattering as increasing as it as it
+pours fills up the glass the resonance
+increases but you have this lower
+frequency effect which is we argue due
+to
+coupling and uh so this is what was
+missing before or one of the things that
+is missing and we want to look at
+that um and so here's a here's an here's
+a preview of our results
+I argue that this is fundamentally
+better than what we had before um this
+is being computed with the coupled
+bubble oscillators but also the sound
+radiation is doing a Time domain wave
+equation and here's the previous
+uncoupled results with the better wave
+equation so as it pours in the bubbles
+just all sound the same
+frequency all the time they don't have
+the variation in the pitch um and so you
+can see this down here you can see these
+this cou Ling adds this lower frequency
+lobe which we were hoping to get and at
+any point in the simulation you can look
+at the modes of oscillation of this
+bubble cloud and see what's going on so
+the low frequency mode is lower than any
+of the individual bubbles by quite a
+bit um okay um so these simulations were
+am I doing for time these Sim I'll try
+to make hit the time so these
+simulations were were computed using
+Houdini which is a animation tool that
+was used in industry um so this is like
+a flip simulation which is a fluid
+implicit particle simulation so it's a
+single phase flow the bubbles are
+created using a particle based model
+which stochastically creates Bubbles and
+they they split and merge in some
+procedural way is very ad hoc so the the
+the sound quality is not coming from the
+Fidelity of the simulation this is a
+very low Fidelity particle simulation of
+bubbles uh in this glass pore example
+for example and then the cup Lane is
+basically the thing which makes it sound
+[Applause]
+good okay okay so we introduced a
+practical framework for simil couple
+bubbled sounds it involves a coupling
+model based on the mass Matrix and an
+efficient way to compute Airborne sound
+on the GPU um just to give you an idea
+so the basic uh model of a of a bubble
+is just an independent oscillator so in
+a pressure volume frame we have forcing
+due to pressure and then the volume
+fluctuations of this bubble are are
+modeled here as this V and then so this
+is a simple harmonic oscillator if you
+have a bunch of bubbles they're all
+decoupled simple harmonic oscillators
+and when you introduce coupling the
+pressure from one bubble can can drive
+the other bubbles essentially so um as
+you know it it changes its volume
+there's some you know incompressible uh
+velocity field that causes pressure
+changes elsewhere and so this introduces
+coupling and if you symmetrize the
+system you end up with a a mass Matrix
+formulation something like this so you
+basically have off diagonal entries in
+your mass Matrix coupling these bubbles
+together so this is a weird system
+usually where you know have like you
+know you know used to a sparse stiffness
+Matrix but this is basically just due to
+the gas in surface tension so it's
+diagonal and you have all the off
+diagonal coupling in the mass Matrix
+which is a bit awkward because if you
+want to time step this uh now you have a
+a dense Matrix um so the coupling is
+smaller if they're farther away but
+bubbles come and go so you add a new
+bubble you have to increase the mass
+Matrix size if you they pops or
+something you have to decrease it so
+this is introduces uh changes in this
+and then you have this problem that you
+have the time Step at really high rates
+so this is a an awful space to be in
+like even if you wanted to do a you know
+forward Oiler time step or some you know
+midpoint you'd still have like a dense
+Matrix you have to solve to do an
+explicit Sol method so this is this is
+awful and Tiny time steps so the way to
+deal with this we we factorize the mass
+Matrix cheski and then it's positive
+definite we can interpolate the inverses
+and they'll still be positive so this is
+good um and so this allows us to
+interpolate um these factorizations
+along the way uh to make something go
+fast um The Matrix can still lose
+positive definiteness as bubbles get
+closer um it's not guaranteed so we
+regularize the the symmetrized mass
+Matrix and this we can show this fixes
+it and then you can also do low rank
+update tricks which is um fun um so
+here's Like A reproduction of this
+classic example where they have a bubble
+net and then you can show the modes that
+this system produces uh which correspond
+to what was observed in in the previous
+approach
+experimentally and um these are the
+modes of the of the bubbles in the glass
+example showing a pretty low frequencies
+for for this bubble Cloud the lowest
+mode which allows it to capture these
+interesting effects um the last part is
+just the how to compute the sound in the
+in the air domain we don't listen to
+igen values or bubble frequencies um we
+hear air pressure fluctuations so um we
+took the previous approach where we had
+like a Time domain wave solver with
+basically cut cells and you know ghost
+uh ghost ghost uh pressures and then we
+um basically put this in a a GPU wave
+solver um but the problem with this is
+that how do we do this on like cut cells
+and things like that on the GPU are
+really hard to do so um what we're going
+to do is we're going to um basically
+simplify the way we evaluate the
+pressures we're not using the boundary
+data sorry I'm going trying to go too
+fast here uh um basically evaluate the
+the surface accelerations using a
+simplified model and then in order to
+compute the the the pressure in the air
+domain we use a sample and hold approach
+um to basically solve uh the the the
+waves in the air domain and this is
+because there's so many abrupt changes
+and popping artifacts the previous
+solvers were just not robust they would
+die or they would introduce artifacts
+even if they worked so what we did is we
+we basically just freeze the geometry at
+certain times and then used the the the
+boundary condition model to evaluate the
+boundary data on these Frozen geometries
+and then we use this uh parallel and
+time approach that came up we came up
+with in our previous paper where we can
+uh for each of these Sims they basically
+generate some non-zero data and get a
+sound clip nonzero data sound clip and
+then we sum all these together and then
+we get the sound to each of these
+instances in time it's just like a frame
+based sound rendering approach and so
+each of these Frozen geometries can use
+just a fixed geometry in a GPU solver so
+it's really fast and then we sum these
+together and get the sound and so we get
+a significant speed up and it's a much
+simpler implementation over the CPU
+implementation this was also so this is
+running on a cluster uh in the cloud so
+this is much more expensive than it
+looks but um even still it's just much
+faster uh even on one one GPU okay
+um the coupling simulations are on the
+CPU but you know they're just doing
+cheski and it's very cheap even with h
+this number of
+oscillators um so here's some results
+just visually so as we add coupling we
+get more low frequency lobes in in these
+things more low frequency character uh
+it pushes things down which makes it
+sound a little better and for example in
+these pouring examples you get these
+lower loes of low frequency content
+which makes it better so I encourage you
+to go look at the videos online um you
+can see these uh and hear them at higher
+quality than you can probably see over
+uh over this WebEx call um so here's the
+core example and from a simulation it
+has similar character to a recording
+although recordings are always better
+and and different um for all kinds of
+reasons so anyway so adding cup Lane and
+and improving the efficiency and
+Fidelity of the of the radiated sound is
+is our areas that we can improve um so
+in the end this adds more low
+frequencies makes things sound better
+and makes things faster too and uh in in
+future and ongoing work we're still
+improving this and making it more
+practical we want to be able to do all
+these kind of effects and and and make
+it easy for people to author them but
+also not just do water but everything as
+well and so our current approach is like
+how to make a a unified GPU solver which
+supports everything and doesn't suffer
+from all the complexities of of meshing
+and interface boundary condition
+handling and yeah so that's I think
+that's it uh I'll just end here and uh
+if anybody has any questions I'll be
+happy to answer them so thanks so much
+for having me youngu thank you thank you
+so much for the wonderful talk doc um
+okay so let's have a Q&A sessions does
+anyone have a questions uh you can
+unmute yourself and then ask
+questions um m i I have one questions
+okay the first part of the talk you talk
+about like going from course to the Fine
+scales and you know you know um the
+cloth clo animation since that was the
+the method was applied um I was
+wondering because a lot of U uh
+simulations we are interested in is like
+actual fracture or the crack
+propagations um those technique how can
+be extended to those you know actual
+tearing and not not only the you know
+the
+bending right yeah I think
+um yeah so extending Progressive
+framework uh to to fracture and things
+like that is yeah yeah it's kind of the
+part of the question is like what does
+that even mean right like I I think
+um um you know if it's a dynamic process
+then ex extending it so that you can
+tear things in a coarse way and then
+refine them and get more detail right I
+mean that would that would be a natural
+thing to want to do because the process
+is very expensive and it's also often
+people have artistic goals or um I think
+uh a lot of the way people deal with
+artistic goals for fractures they have
+fracture patterns that they impose or
+they have like enrichment functions
+where they try to make it satisfy
+certain types of interface um uh
+displacements and so on for the fracture
+um yeah I don't know I think that's an
+interesting thing we're interested in
+AIS is actually in the call uh she's
+done a lot of work on trying to extend
+um uh Progressive quasi Statics and
+Dynamics to support volumes and other
+effects so doing fracture and you know
+all these other more complicated
+phenomena is definitely something we'd
+love to be able to do but yeah lots of
+open questions with you know geometry
+for sure got it okay um Chima um you
+rais your hand I'm guessing you have a
+question
+hello um thank you so much for the
+presentation so I can also maybe switch
+on yeah so uh thank you so much for the
+for the presentation it was really
+amazing I enjoyed it a lot and I learned
+many things
+today um I have a question uh about the
+consistency measures of the of the
+methods because um I also am a PhD
+student work with reduction uh methods
+for uh for physics based simulation for
+computer graphics and what we usually do
+is that we when we uh have a reduction
+method then we compare to what the full
+order model solution will give us and
+then we have this error measure let's
+say compared to the full order model
+what what it does but you explained uh
+you showed us that sometimes when you
+have the very fine mesh it does not give
+you the same behavior that that you uh
+that you want and like this is sticking
+on the nose of the armadel M that you
+showed us at the very beginning so I was
+surprised that um a finer mesh would not
+maybe give me the
+the solution that I am aiming uh at so
+if if you can please elaborate on the
+consistency measures because that that
+would be the the main measure and um one
+one more thing that is related to the
+same
+question uh because you also showed us
+that when you change the refinement
+level of the mes it changes Behavior
+so that was just like the whoop jumping
+uh example then how do you control the
+course level mesh where do you start
+from so that you get the level of
+details or the behavior that you are
+aiming at in your simulations okay yeah
+so there's two things happening here so
+on one hand there's like the
+traditional uh you know refinement
+problem that you know predictive
+scientists like yourself have where you
+have a simulation model at some H you
+know discreation level you refine that
+make that smaller and it it converges to
+this true solution right that's you know
+that's a you know well-founded you know
+consistent stability convergence you
+know all that stuff we know and love um
+the thing with Progressive simulation is
+um uh you know as you in that model as
+you refine the the mesh you get just
+different solutions it gets closer to
+the true solution but it's not maybe
+what you want right because you want to
+design at a course scale and and get
+something that you like and then refine
+it but as you refine it it may do
+something different just that's the way
+physics is right and so the the whole
+trick of the progressive formulation is
+to make the course model more expensive
+albeit because it's using some things
+from the fine scale but not everything
+it's not a full fine scale thing it's
+still doing a a low Dimension the Matrix
+problem you solve is still small like in
+dimensional a reduction but it has some
+energies from the fine scale elastic
+part which make it think it's doing
+something better okay and so that allows
+it to behave more like a a fullscale
+model so that when you refine it it's
+still it's still predictive enough that
+it it it behaves in in a similar way but
+it it it's not um basically allowed to
+be to converge to the full thing uh in
+in the for example in the Dynamics case
+and so it's biased the course model is
+better than just a regular course model
+because it's using fine scale energies
+but it's biased in the way AIS is doing
+the optimization for the time stepping
+scheme because it's trying to balance
+two things for the Dynamics for example
+um the Dynamics is balancing one where
+it's just going to take a course
+simulation and then and then prolong it
+refine it so that it's just going up if
+you do that you know the course Sim will
+be prolonged and every frame will
+correspond and look great but when you
+play back that fine scale animation it's
+going to pop and Jitter it'll wrinkle
+this way and that way do it's going to
+be incoherent in time the other scheme
+is just to say well I'm just going to
+you know prolongate the initial thing
+and then run all the simulations at each
+level independently in time time step
+them but now it'll be coherent in time
+but there'll be Divergent across scales
+so so what what the the progressive
+Dynamics approach does it's an Optimizer
+for the time it's basically formulates
+the time stepping scheme as an Optimizer
+which balances two things one you know
+how you're solving say backward Oiler in
+time but also it's balancing how it it
+relates to the course scale basically
+it's you know it's using an initial
+guess that's related to the course scale
+so it's balancing the errors in temporal
+Dynamics momentum and it's balancing
+errors in refinement across scales and
+if it does that right then you get this
+whole uh uh space time you know
+framework
+which is smooth and coherent and that's
+that's but it's not predictive right
+it's not like an accurate simulation
+like you would refine it it's going to
+be biased to the course model so you
+pick a course model which is good enough
+but still fast and then you um and then
+you can refine in this this this
+SpaceTime framework yeah yes and and the
+bias term is is this a string connection
+to the course smesh between the fine and
+and course smesh the
+the uh penality term that you introduce
+at the to the energy I guess with the
+norm x minus XP something like yeah that
+is basically what makes the no so that
+that that term um the the difference in
+the the changes in in the the position
+in a mass weighted Norm basically just
+like you can interpret that as just a
+kinetic energy uh energy um model in a
+if you look at like a position based
+frame formulation of backward Oiler in
+position based optimization so that's
+that's just kinetic energy the thing
+that is in for the progressive Dynamics
+to work in a coherent way is in the
+paper which you know Aris is going to
+put on the web any day now I'm sure so
+check looking forward yeah looking
+forward great thank you for your
+questions thank you all right thank you
+thank you so much is there any other
+questions
+well it's
+at 9 after 10 9 after 11 so it's
+probably a Goods but and if anybody has
+any questions feel free to reach out to
+me or or either of my students and I'm
+sure they'll be able to answer your
+questions yeah yeah thank you thank you
+thank so much for having meu it's great
+to see thank you thank you thank you bye
+bye all right that ends the seminar
+today okay bye bye byebye

@@ -1,0 +1,2814 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:01.949 --> 00:00:06.149
+Unknown: All right. Welcome to
+the DDPS seminar everyone. It is
+
+00:00:06.149 --> 00:00:11.969
+an honor to host the enema. And
+undo Kumar, who is a professor
+
+00:00:11.969 --> 00:00:16.589
+at Caltech and director of ml
+research at Nvidia. She was
+
+00:00:16.619 --> 00:00:22.709
+previously a Principal Scientist
+at Amazon Web Services. And uma
+
+00:00:22.709 --> 00:00:27.569
+is really a pine pine pine
+pioneer pioneer of the neural
+
+00:00:27.569 --> 00:00:31.739
+operators. And today she is
+willing to talk about ml for
+
+00:00:31.739 --> 00:00:37.919
+solving PDS neural operators on
+the function spaces. Yeah, so
+
+00:00:38.039 --> 00:00:40.199
+any maths yeah, thanks for all
+yours.
+
+00:00:40.230 --> 00:00:44.160
+Thank you, Yong Soo, and great
+to be here. Sorry for the delay,
+
+00:00:44.580 --> 00:00:49.470
+you know, the WebEx I haven't
+used in a long time. So some
+
+00:00:50.250 --> 00:00:54.930
+teething problems, but yeah, so
+I'm happy to talk about neural
+
+00:00:54.930 --> 00:01:00.540
+operators, and what is the
+methodology behind it? Why that
+
+00:01:00.540 --> 00:01:03.360
+is suitable for different
+scientific applications,
+
+00:01:03.360 --> 00:01:07.230
+including solving partial
+differential equations? And also
+
+00:01:07.260 --> 00:01:11.400
+why not just the standard neural
+network tools, right, what is
+
+00:01:11.400 --> 00:01:13.440
+special about neural operators?
+
+00:01:14.819 --> 00:01:18.029
+Yeah, so indeed, you know, if
+you want to think about modeling
+
+00:01:18.029 --> 00:01:23.489
+multiscale processes in a
+variety of scientific domains,
+
+00:01:24.179 --> 00:01:26.639
+you know, this is very
+challenging, right? I mean, the
+
+00:01:26.639 --> 00:01:31.919
+scales are enormous, you can go
+all the way down to problems at
+
+00:01:31.919 --> 00:01:36.809
+the quantum level, looking at
+interactions as wave functions
+
+00:01:37.079 --> 00:01:41.609
+between electrons in a molecule
+and using that to predict the
+
+00:01:41.609 --> 00:01:45.749
+properties, especially when it
+comes to designing new drugs or
+
+00:01:45.749 --> 00:01:49.499
+materials. This is important,
+all the way to the planetary
+
+00:01:49.499 --> 00:01:53.879
+scale, if you want to predict
+the weather or climate, how we
+
+00:01:53.879 --> 00:01:59.429
+can look at microscopic
+interactions and the impact it
+
+00:01:59.429 --> 00:02:04.559
+has globally at planetary
+scales. And that's the aspect
+
+00:02:04.559 --> 00:02:07.799
+that is so challenging tomorrow.
+And of course, there's so many
+
+00:02:07.799 --> 00:02:11.819
+other problems in between as
+well, that are multiscale in
+
+00:02:11.819 --> 00:02:16.199
+nature. And this is different
+from text or image processing,
+
+00:02:16.199 --> 00:02:20.549
+right, that we've seen a lot of
+exciting developments. But that
+
+00:02:20.549 --> 00:02:25.469
+doesn't directly translate into
+our ability to model these
+
+00:02:25.469 --> 00:02:31.259
+processes. Text is discrete
+data. Again, image processing.
+
+00:02:32.339 --> 00:02:35.279
+Typically, you'll just think of
+doing that at one fixed
+
+00:02:35.279 --> 00:02:38.729
+resolution. Right, and it's
+object centric and natural
+
+00:02:38.729 --> 00:02:44.699
+images, you are main goal is to
+reduce from this pixel space to
+
+00:02:44.789 --> 00:02:47.729
+some low dimensional
+representation that is centered
+
+00:02:47.729 --> 00:02:50.879
+around objects, you know, for
+instance, segmenting the objects
+
+00:02:50.879 --> 00:02:55.319
+being able to recognize the
+objects. So that's where a lot
+
+00:02:55.319 --> 00:03:00.689
+of the focus is on, right, going
+from these pixel dimensions to
+
+00:03:00.689 --> 00:03:04.019
+low dimensional space. On the
+other hand, if you think about
+
+00:03:04.019 --> 00:03:07.679
+these multi scale processes,
+there's information in all
+
+00:03:07.679 --> 00:03:13.679
+scales, right. So you cannot
+quick, easily read use it to
+
+00:03:13.709 --> 00:03:16.769
+some high level representation,
+like we do with image
+
+00:03:16.769 --> 00:03:20.669
+processing. And so we need to
+think of different frameworks to
+
+00:03:20.669 --> 00:03:26.819
+be able to nicely capture all of
+the scales and do high fidelity
+
+00:03:26.819 --> 00:03:31.559
+modeling. And as an example, I
+want to show the challenges in
+
+00:03:31.559 --> 00:03:36.629
+modeling climate, are the one
+big source of uncertainty. In
+
+00:03:36.629 --> 00:03:39.959
+fact, the biggest source of
+uncertainty is the presence of
+
+00:03:39.959 --> 00:03:44.189
+these low lying clouds, what we
+call stratocumulus. Clouds, and
+
+00:03:44.189 --> 00:03:48.599
+the turbulence in them. So the
+ability to model the turbulence
+
+00:03:48.599 --> 00:03:54.329
+at very fine spatial and
+temporal scales is important. In
+
+00:03:54.329 --> 00:04:01.859
+order to get very, you know, the
+right answers, or the in these
+
+00:04:01.859 --> 00:04:07.559
+micro scales, ultimately impact
+the macro behavior. And what my
+
+00:04:07.559 --> 00:04:11.069
+colleague tapeo Schneider
+estimates is, you really need to
+
+00:04:11.069 --> 00:04:16.409
+go down to one meter spatial
+resolution, planet wide. And
+
+00:04:16.409 --> 00:04:20.639
+that requires about 100 billion
+times more computing than what
+
+00:04:20.639 --> 00:04:24.629
+we have today. And so if you're
+trying to do standard numerical
+
+00:04:24.629 --> 00:04:28.469
+methods, and we need to go to
+these fine scales, it's just
+
+00:04:28.469 --> 00:04:33.299
+very out of reach to be able to
+do that, right in a brute force
+
+00:04:33.299 --> 00:04:38.069
+manner. And so right now, our
+capabilities are barely getting
+
+00:04:38.069 --> 00:04:42.479
+to one kilometer, right. So
+that's also not fully there, we
+
+00:04:42.479 --> 00:04:46.619
+are still getting to that
+resolution. And so there's a big
+
+00:04:46.619 --> 00:04:50.519
+gap between what we can do
+today, versus what we really
+
+00:04:50.519 --> 00:04:54.689
+need to do to capture the fine
+scales and climate modeling. And
+
+00:04:54.689 --> 00:04:58.019
+so that's just one of the
+examples. The same is true with
+
+00:04:58.589 --> 00:05:02.249
+quantum chemistry or multitude
+of other examples I showed you,
+
+00:05:02.249 --> 00:05:08.639
+we cannot get to the level of
+computation needed to capture
+
+00:05:08.639 --> 00:05:13.229
+all the scales of the problem.
+And also, you know, in this
+
+00:05:13.229 --> 00:05:16.859
+case, we are going from bottom
+up physics, right, so we are
+
+00:05:16.859 --> 00:05:19.919
+starting with partial
+differential equations, each
+
+00:05:19.919 --> 00:05:24.209
+time, we are redoing all of the
+computations to get us to the
+
+00:05:24.209 --> 00:05:28.289
+answers. So the question is,
+what is the role of data driven
+
+00:05:28.289 --> 00:05:34.469
+methods that could learn from
+previous data, and be able to do
+
+00:05:34.469 --> 00:05:39.269
+these computations much faster.
+So, this is where I think
+
+00:05:39.269 --> 00:05:44.039
+machine learning can have a very
+big impact, you know, helping us
+
+00:05:44.279 --> 00:05:49.979
+build on top of accelerated
+computing, you know, GPUs are
+
+00:05:49.979 --> 00:05:54.149
+indeed the workhorse of AI. So
+getting all those hardware,
+
+00:05:54.149 --> 00:05:57.989
+accelerations and efficiency,
+and of course, supercomputing
+
+00:05:57.989 --> 00:06:02.099
+scale. So we'll use all of that.
+But machine learning is really
+
+00:06:02.339 --> 00:06:05.849
+the enabler of that scale,
+right? It's going to help us
+
+00:06:05.849 --> 00:06:11.189
+leapfrog and get us very big
+speed ups, in terms of being
+
+00:06:11.189 --> 00:06:15.629
+able to do much faster
+computations. If we can avoid
+
+00:06:15.629 --> 00:06:20.309
+the fine grid required for
+numerical methods and get away
+
+00:06:20.339 --> 00:06:24.359
+with coarser grits, we get away
+with not having to do
+
+00:06:24.359 --> 00:06:28.769
+intermediate iterations and get
+to the answers faster. Because
+
+00:06:28.769 --> 00:06:32.519
+we learn the features that are
+relevant to that domain, then we
+
+00:06:32.519 --> 00:06:36.839
+can really leapfrog in our
+computational abilities. And I
+
+00:06:36.839 --> 00:06:40.799
+think that's the promise. And we
+will also see in many
+
+00:06:40.799 --> 00:06:44.849
+applications, we are able to get
+very impressive speed ups. And
+
+00:06:44.849 --> 00:06:48.089
+we're able to maintain the
+fidelity or sometimes even
+
+00:06:48.089 --> 00:06:52.709
+surpass it compared to
+traditional methods. Yeah, so
+
+00:06:52.709 --> 00:06:57.659
+let me first start with a
+framework and give an overview
+
+00:06:57.659 --> 00:07:02.159
+of what neural operator is,
+right. So what makes it
+
+00:07:02.219 --> 00:07:05.489
+different from standard neural
+networks, I think I told you
+
+00:07:05.999 --> 00:07:11.339
+just a few slides ago that we
+cannot use the same models as
+
+00:07:11.369 --> 00:07:15.239
+text or image processing,
+because we need to capture all
+
+00:07:15.239 --> 00:07:18.839
+of the scales. And I think
+that's the key difference. If we
+
+00:07:18.839 --> 00:07:23.189
+used any of the standard neural
+networks for image processing,
+
+00:07:23.219 --> 00:07:26.789
+whether it's convolutional
+neural network, or vision
+
+00:07:26.789 --> 00:07:32.459
+transformers, they're typically
+trained to work at a fixed
+
+00:07:32.459 --> 00:07:36.569
+resolution. So you have training
+data at one resolution, and you
+
+00:07:36.569 --> 00:07:40.589
+also have testing data at the
+same resolution. On the other
+
+00:07:40.589 --> 00:07:45.269
+hand, if we are thinking about
+solving scientific problems, as
+
+00:07:45.269 --> 00:07:49.379
+I mentioned, we need to capture
+many different scales. And not
+
+00:07:49.379 --> 00:07:54.929
+only that, we need to be able to
+query at any scale, right? So if
+
+00:07:54.929 --> 00:07:58.889
+you use any of the scientific
+methods, any numerical methods,
+
+00:07:59.159 --> 00:08:03.869
+we have the flexibility of
+having different grids, right?
+
+00:08:03.869 --> 00:08:07.289
+So in fact, different problems
+and tell different shapes of
+
+00:08:07.289 --> 00:08:10.379
+grids. For instance, the
+airfoil, you know, typically we
+
+00:08:10.379 --> 00:08:15.389
+have this non uniform grid,
+because you want more finer grid
+
+00:08:15.389 --> 00:08:21.179
+near these sharp points. And so
+this flexibility to go different
+
+00:08:21.179 --> 00:08:25.919
+shapes of grids, as well as
+query at any point, because the
+
+00:08:25.919 --> 00:08:31.019
+phenomenon is no continuous
+domain is important. And so
+
+00:08:31.019 --> 00:08:35.009
+standard neural networks don't
+have that capability. And so the
+
+00:08:35.009 --> 00:08:38.999
+question is, how do we design
+neural operators that can mimic
+
+00:08:39.029 --> 00:08:44.549
+the capabilities of current
+numerical methods, but are also
+
+00:08:44.999 --> 00:08:47.699
+having high fidelity are
+expressive, they're able to
+
+00:08:47.699 --> 00:08:52.109
+capture the multiscale
+phenomena. And they're fast,
+
+00:08:52.139 --> 00:08:56.999
+right? So we need to be able to
+do all of this at once. So
+
+00:08:56.999 --> 00:09:01.709
+that's where our inspiration
+comes from, the ability to solve
+
+00:09:01.829 --> 00:09:05.909
+first linear partial
+differential equations. So as a
+
+00:09:05.909 --> 00:09:10.769
+thought process, if we start
+with asking what is an efficient
+
+00:09:10.769 --> 00:09:14.639
+way to learn solutions for
+linear partial differential
+
+00:09:14.639 --> 00:09:21.359
+equations, you can think of this
+form of the solution right the
+
+00:09:21.359 --> 00:09:24.719
+inverse of differential
+operators the integral operator,
+
+00:09:25.049 --> 00:09:32.699
+and we can look towards building
+a block here that learns to
+
+00:09:32.699 --> 00:09:37.469
+solve this integral linear
+operator. So, this is now a
+
+00:09:37.469 --> 00:09:41.129
+building block that can solve
+linear partial differential
+
+00:09:41.129 --> 00:09:44.819
+equations. For instance, the
+heat diffusion equation is
+
+00:09:44.849 --> 00:09:49.619
+linear partial differential
+equation. And in some cases, we
+
+00:09:49.619 --> 00:09:52.439
+even know this kernel or this
+greens function and
+
+00:09:52.529 --> 00:09:55.889
+analytically. In other cases,
+you have to numerically compute
+
+00:09:55.889 --> 00:10:00.929
+it. But the key is here solving
+linear partial differential
+
+00:10:00.929 --> 00:10:05.909
+equations involves, you know,
+learning the kernel or this
+
+00:10:05.909 --> 00:10:09.989
+greens function and also being
+able to integrate that on the
+
+00:10:09.989 --> 00:10:13.469
+continuous domain. So because
+this integration is over the
+
+00:10:13.469 --> 00:10:17.249
+continuous domain, you can now
+give your input at any different
+
+00:10:17.249 --> 00:10:21.329
+discretization, right, and you
+would still be able to have the
+
+00:10:21.329 --> 00:10:25.649
+output be at any discretization.
+So that's the key difference
+
+00:10:25.649 --> 00:10:30.599
+from a standard neural network
+where the input is only in a
+
+00:10:30.599 --> 00:10:34.679
+fixed discretization of fixed
+grid. Here, we have the
+
+00:10:34.679 --> 00:10:38.639
+flexibility to have the input in
+any point in the continuous
+
+00:10:38.639 --> 00:10:43.079
+domain, because it's computing
+this integration at any point.
+
+00:10:44.039 --> 00:10:47.099
+And so that's the key aspect
+that is,
+
+00:10:48.779 --> 00:10:52.679
+you know, will be different from
+standard neural networks. And
+
+00:10:52.679 --> 00:10:56.279
+also now the question is how do
+we compute this efficiently
+
+00:10:56.279 --> 00:11:00.269
+right. So there is two aspects.
+One is how do we compute this
+
+00:11:00.269 --> 00:11:05.339
+efficiently? The other aspect
+is, how do I extend this beyond
+
+00:11:05.339 --> 00:11:09.479
+linear equations to nonlinear
+equations, you know, so many
+
+00:11:09.479 --> 00:11:13.139
+phenomena of interest that I
+showed you, fluid dynamics for
+
+00:11:13.139 --> 00:11:17.999
+climate modeling, or quantum
+chemistry, right. So, you know,
+
+00:11:17.999 --> 00:11:21.119
+many of the especially
+approximations of that become
+
+00:11:21.119 --> 00:11:27.539
+nonlinear problems. So we need
+to be able to handle non
+
+00:11:27.539 --> 00:11:34.379
+linearity. And so that's where
+we introduce a more general
+
+00:11:34.379 --> 00:11:39.809
+framework that takes these
+blocks that learn integral
+
+00:11:39.809 --> 00:11:44.939
+linear operators, and compose
+that with non linearity. So
+
+00:11:44.939 --> 00:11:49.979
+these compositions of integral
+linear operators with nonlinear
+
+00:11:49.979 --> 00:11:53.249
+activations, you know, they can
+be standard, nonlinear
+
+00:11:53.249 --> 00:11:58.469
+activations, like ReLU, or Gelu.
+Usually Gallo, because we want
+
+00:11:58.499 --> 00:12:01.439
+also second order derivatives,
+right. In many of these
+
+00:12:01.649 --> 00:12:03.809
+differential equations, they
+involve second order
+
+00:12:03.809 --> 00:12:09.029
+derivatives. So we want that
+smoothness. And so we use a
+
+00:12:09.059 --> 00:12:15.239
+function like Gallo, for a
+nonlinear activation. But that's
+
+00:12:15.239 --> 00:12:19.589
+a detail, but the general
+framework is that by composing
+
+00:12:19.589 --> 00:12:23.429
+linear blocks with nonlinear
+activations, we get an
+
+00:12:23.429 --> 00:12:28.199
+expressive model. And this is
+the same philosophy as a
+
+00:12:28.199 --> 00:12:31.799
+standard neural network, because
+even there, you have a linear
+
+00:12:31.799 --> 00:12:35.609
+function and you compose with
+nonlinear activation. The linear
+
+00:12:35.609 --> 00:12:39.779
+function in fully connected
+neural network is matrix
+
+00:12:39.779 --> 00:12:44.039
+multiplication in convolutional
+neural network is convolution.
+
+00:12:44.399 --> 00:12:50.939
+Right, by the same philosophy
+holds here that we compute a
+
+00:12:50.939 --> 00:12:54.929
+linear operator, and then we
+compose with non linearity. The
+
+00:12:54.929 --> 00:12:58.619
+only difference is this is now
+learning a linear operator, as
+
+00:12:58.619 --> 00:13:03.509
+opposed to a linear function. So
+this operator maps a continuous
+
+00:13:03.509 --> 00:13:09.419
+input to an input in a
+continuous domain to an output,
+
+00:13:09.419 --> 00:13:12.209
+which is also a function on
+continuous domain. Right? So
+
+00:13:12.209 --> 00:13:13.739
+that's the main difference.
+
+00:13:13.830 --> 00:13:19.920
+Panama, muddy has a question
+about are the inputs here
+
+00:13:19.920 --> 00:13:23.610
+location time and outputs the
+solution of the equations?
+
+00:13:24.449 --> 00:13:28.739
+So the input can be both space
+and time, right? So to be input
+
+00:13:28.799 --> 00:13:34.469
+is any function on a continuous
+domain? And that domain could be
+
+00:13:34.469 --> 00:13:39.449
+space or time or both, or
+anything else as well. So this
+
+00:13:39.449 --> 00:13:44.369
+general framework as you know,
+that's that's one option. Okay,
+
+00:13:44.399 --> 00:13:48.869
+thank you. Great. And again,
+yeah, if there are further
+
+00:13:48.869 --> 00:13:56.129
+questions here, do feel free to
+interrupt me. So that's the
+
+00:13:56.129 --> 00:14:00.389
+framework. Now, of course, one
+thing I haven't told you is how
+
+00:14:00.389 --> 00:14:06.899
+to learn these integral linear
+operators efficiently. And so
+
+00:14:06.899 --> 00:14:12.329
+one framework that has been very
+successful is what we call for
+
+00:14:12.329 --> 00:14:17.999
+your neural operator where we
+relaxed the kernel to a
+
+00:14:17.999 --> 00:14:23.489
+convolutional kernel. So meaning
+you only look at translations,
+
+00:14:23.519 --> 00:14:28.709
+right. And this is, indeed a
+limitation compared to the
+
+00:14:28.709 --> 00:14:32.639
+general kernel. But because we
+compose it with nonlinear
+
+00:14:32.639 --> 00:14:36.719
+activations, we can show that
+it's still expressive and in
+
+00:14:36.719 --> 00:14:42.089
+fact, you know, both this
+original neural operator as well
+
+00:14:42.089 --> 00:14:46.859
+as the convolution based neural
+operator are both universal
+
+00:14:46.859 --> 00:14:51.269
+approximator errs. So you can
+approximate any nonlinear
+
+00:14:51.299 --> 00:14:55.679
+operator, which is a mapping
+from one function space to
+
+00:14:55.679 --> 00:15:01.289
+another with these frameworks,
+and I think In this is important
+
+00:15:01.829 --> 00:15:08.069
+to be able to capture, as I
+said, any nonlinear operator. So
+
+00:15:08.069 --> 00:15:11.909
+but of course, this I have just
+made this simplification. But
+
+00:15:11.909 --> 00:15:16.379
+what is this bias? Right? Why is
+this more efficient to learn a
+
+00:15:16.379 --> 00:15:20.279
+convolutional operator. So this
+is where we can do change of
+
+00:15:20.279 --> 00:15:24.959
+basis, we can go from
+convolution to element wise
+
+00:15:24.959 --> 00:15:29.069
+multiplication in the Fourier
+domain, for instance. So, we
+
+00:15:29.069 --> 00:15:33.509
+know Fourier basis is a good
+inductive bias for many
+
+00:15:33.509 --> 00:15:37.529
+problems, including fluid
+dynamics, it's been used for
+
+00:15:37.679 --> 00:15:42.599
+numerical methods as well. So we
+can use that inspiration and say
+
+00:15:42.599 --> 00:15:47.069
+Fourier domain is a good
+inductive bias. And not only
+
+00:15:47.069 --> 00:15:51.329
+that, it becomes much more
+efficient to learn the
+
+00:15:51.329 --> 00:15:54.809
+coefficients in the Fourier
+domain, right. So this way, the
+
+00:15:55.199 --> 00:15:58.319
+integration over the continuous
+domain just becomes matrix
+
+00:15:58.319 --> 00:16:04.139
+multiplication. So, this is
+efficient. And we can learn the
+
+00:16:04.169 --> 00:16:09.029
+coefficients in an efficient
+manner. So, that's the principle
+
+00:16:09.029 --> 00:16:13.349
+it's very simple, that we can
+transform our input into the
+
+00:16:13.349 --> 00:16:16.529
+Fourier domain, we learn the
+coefficients in the Fourier
+
+00:16:16.529 --> 00:16:20.969
+domain, and we go back to the
+standard domain. And then we do
+
+00:16:20.969 --> 00:16:24.029
+non linearity in the standard
+domain, which could be space and
+
+00:16:24.029 --> 00:16:30.029
+time. And we then repeat this
+again. So, a few points here,
+
+00:16:30.059 --> 00:16:34.679
+right, so, first of all, you
+know, if he did just this
+
+00:16:34.679 --> 00:16:38.519
+convolutional operator in the
+Fourier domain, without non
+
+00:16:38.519 --> 00:16:42.509
+linearity, that would be
+limiting, right. So, and in
+
+00:16:42.509 --> 00:16:46.259
+fact, that's what the numerical
+methods to they transform to the
+
+00:16:46.769 --> 00:16:51.179
+Fourier domain, and they judge
+to iteration there. On the other
+
+00:16:51.179 --> 00:16:55.079
+hand, we have nonlinear
+activation. So we have the now
+
+00:16:55.079 --> 00:16:58.739
+flexibility to not just, you
+know, it's not just limited to
+
+00:16:58.739 --> 00:17:02.489
+the Fourier spectrum of the
+original signal, we're also
+
+00:17:02.489 --> 00:17:06.179
+learning features over nonlinear
+activations. So that's a
+
+00:17:06.179 --> 00:17:09.239
+benefit. The other benefit, we
+can get us through
+
+00:17:09.239 --> 00:17:14.249
+regularization, or we can
+capture only the low frequency
+
+00:17:14.249 --> 00:17:18.539
+modes in the first layer. So we
+just filter out and only retain
+
+00:17:18.689 --> 00:17:22.139
+low frequency modes here. Of
+course, if you didn't have non
+
+00:17:22.139 --> 00:17:25.589
+linearity, this would be a
+strong aliasing, right. So this
+
+00:17:25.589 --> 00:17:29.789
+will lead to errors. Because
+many signals of interest have
+
+00:17:29.789 --> 00:17:33.089
+high frequency components, so
+you can't just threshold them.
+
+00:17:33.629 --> 00:17:37.379
+But on the other hand, because
+we have nonlinear activations
+
+00:17:37.379 --> 00:17:41.129
+present, we can further
+transform the signal and still
+
+00:17:41.339 --> 00:17:45.389
+have the ability to capture high
+frequency content. And that's
+
+00:17:45.389 --> 00:17:48.839
+why we are able to provide the
+guarantees of universal
+
+00:17:48.839 --> 00:17:53.669
+approximation, even though in
+each layer, we are using a
+
+00:17:53.669 --> 00:17:58.319
+regularization to keep low
+frequency modes. Of course,
+
+00:17:58.319 --> 00:18:03.329
+that's a hyper parameter of how
+much do you threshold to retain
+
+00:18:03.329 --> 00:18:07.229
+low frequency modes? versus how
+many layers do you have, right,
+
+00:18:07.229 --> 00:18:10.829
+so both are hyper parameters, we
+can choose for different
+
+00:18:10.829 --> 00:18:17.249
+problems. But really, the
+benefit is the ability to now
+
+00:18:17.279 --> 00:18:21.539
+make learning efficient, as well
+as key the discretization
+
+00:18:21.539 --> 00:18:25.919
+invariance, meaning I can now
+input my signal at any
+
+00:18:25.919 --> 00:18:30.359
+resolution, or you know, with
+any resolution, I can still
+
+00:18:31.319 --> 00:18:35.069
+capture the signal through
+Fourier transform, right,
+
+00:18:35.069 --> 00:18:38.609
+because I can do Fourier
+transform at any resolution. And
+
+00:18:38.609 --> 00:18:42.719
+that's a key ingredient that
+makes this overall framework end
+
+00:18:42.719 --> 00:18:49.529
+to end discretization invariant.
+By that what I mean is, let me
+
+00:18:49.529 --> 00:18:53.969
+first show you just an example
+of proof of concept in terms of
+
+00:18:54.179 --> 00:18:59.279
+showing how we can, you know,
+train in one resolution and test
+
+00:18:59.279 --> 00:19:01.799
+in a different resolution,
+right, which wouldn't be
+
+00:19:01.799 --> 00:19:06.359
+possible with standard neural
+networks. So we're training
+
+00:19:06.359 --> 00:19:10.079
+using only coarse resolution
+data for this Nabeel stokes
+
+00:19:10.079 --> 00:19:14.429
+equation. And we do that over
+different initial conditions,
+
+00:19:14.759 --> 00:19:18.359
+and then a testing time we
+provide higher resolution
+
+00:19:18.359 --> 00:19:22.409
+inputs, and then we look at how
+well does it predict right and
+
+00:19:22.409 --> 00:19:27.509
+what we see is indeed that does
+predict pretty well. And in can
+
+00:19:27.509 --> 00:19:31.679
+see that in fact, in the
+frequency spectrum as well that
+
+00:19:32.219 --> 00:19:38.159
+the prediction is very graceful,
+even beyond the scene
+
+00:19:38.159 --> 00:19:41.399
+resolution, meaning it
+extrapolates to higher
+
+00:19:41.399 --> 00:19:45.629
+resolution without seeing it
+during training. So this is what
+
+00:19:45.629 --> 00:19:49.829
+we mean by zero short super
+resolution. And you can see that
+
+00:19:49.829 --> 00:19:55.199
+here that you know, there is
+right I mean, these systems are
+
+00:19:55.199 --> 00:20:00.509
+dissipative so you do have to
+see the drop off of the energy
+
+00:20:00.509 --> 00:20:05.249
+spectrum. But, you know, when we
+are given training data at a
+
+00:20:05.249 --> 00:20:09.569
+fixed resolution, we only see
+these wave numbers, right. So
+
+00:20:09.749 --> 00:20:13.799
+these we have no idea what the
+higher wave numbers are. But in
+
+00:20:13.799 --> 00:20:20.789
+cases where there is a nice drop
+off, our framework is able to
+
+00:20:20.789 --> 00:20:26.609
+track that compared to other
+standard frameworks like unit. I
+
+00:20:26.609 --> 00:20:28.259
+think there was another
+question.
+
+00:20:29.940 --> 00:20:37.020
+Yes, there was another question
+by Ahmadi. He said, this also
+
+00:20:37.020 --> 00:20:39.930
+assumes that the set of
+equations that represents the
+
+00:20:39.930 --> 00:20:44.220
+physics in one scale is also
+valid in another scale, right?
+
+00:20:44.790 --> 00:20:48.990
+Yeah, we are currently assuming
+there's only a fixed set of
+
+00:20:48.990 --> 00:20:52.800
+equations, right. So the way I
+mean, I haven't even used the
+
+00:20:52.800 --> 00:20:56.040
+equations, right. So if you're
+using the equations in a physics
+
+00:20:56.040 --> 00:20:59.280
+informed manner, that would
+matter. In this case, we're just
+
+00:20:59.310 --> 00:21:04.050
+giving data, right? There's no
+physics knowledge built into the
+
+00:21:04.050 --> 00:21:08.430
+model. But what really, you
+know, where this will work well,
+
+00:21:08.580 --> 00:21:12.540
+is when there's a nice drop off
+in terms of energy, right? In
+
+00:21:12.540 --> 00:21:15.480
+these higher frequencies. If
+you, for instance, have
+
+00:21:15.480 --> 00:21:19.230
+something very arbitrary like
+this, right, some arbitrary
+
+00:21:19.230 --> 00:21:23.430
+spectrum here, that is having
+very high energy content, you
+
+00:21:23.430 --> 00:21:25.770
+know, we cannot expect to
+capture in because we have
+
+00:21:25.770 --> 00:21:27.960
+absolutely no information about
+that.
+
+00:21:28.470 --> 00:21:31.440
+Alright, he also asked what is
+what is the difference between
+
+00:21:31.440 --> 00:21:34.200
+two scales, backed up by 200?
+
+00:21:34.890 --> 00:21:37.680
+You can see that here, right?
+The wave numbers. So these are
+
+00:21:37.680 --> 00:21:41.160
+the wave numbers we provide, we
+can go all the way up to 200. So
+
+00:21:41.160 --> 00:21:45.120
+we provide a little more than
+what it's 25 wave numbers of 30,
+
+00:21:45.120 --> 00:21:49.740
+something like that. And, and we
+can go much further. We can go
+
+00:21:49.740 --> 00:21:52.740
+to any scale, right? The
+prediction can happen at any
+
+00:21:52.740 --> 00:21:53.190
+scale.
+
+00:21:53.730 --> 00:21:55.680
+Sounds good. Thank you. aneema.
+Yeah.
+
+00:21:58.920 --> 00:22:02.670
+Yeah, so just to kind of make
+this point about discretization
+
+00:22:02.670 --> 00:22:05.760
+invariance, what can we
+guarantee right, as I mentioned,
+
+00:22:06.090 --> 00:22:10.860
+we cannot guarantee that we will
+give you as error free answer at
+
+00:22:10.860 --> 00:22:14.370
+any resolution, because that's
+impossible. If we do not see
+
+00:22:14.370 --> 00:22:17.940
+higher resolution inputs, you
+know, there's no way we can
+
+00:22:18.000 --> 00:22:21.300
+capture all of the information
+about it. On the other hand,
+
+00:22:21.300 --> 00:22:27.510
+what we can guarantee is
+graceful degradation, right?
+
+00:22:27.510 --> 00:22:31.500
+Graceful, like kind of having
+consistent answers, even as we
+
+00:22:31.500 --> 00:22:35.520
+refine the mesh. So the idea is
+you keep refining the mesh and
+
+00:22:35.520 --> 00:22:40.140
+asking, what is the value? At
+any point here, you should
+
+00:22:40.140 --> 00:22:43.320
+converge to a limit. And
+ideally, that limit should be
+
+00:22:43.320 --> 00:22:47.220
+closer to the ground truth
+operator. Right? So so what
+
+00:22:47.220 --> 00:22:50.940
+we're guaranteeing is this kind
+of convergence. And this is
+
+00:22:50.940 --> 00:22:54.300
+something you may not, you know,
+otherwise see in other
+
+00:22:54.300 --> 00:22:58.920
+frameworks. And so just to kind
+of make that point clear, in a
+
+00:22:58.920 --> 00:23:03.510
+standard neural networks do not
+have this ability, because most
+
+00:23:03.510 --> 00:23:07.890
+of them, you can't even query at
+any resolution, right? So the
+
+00:23:07.890 --> 00:23:11.520
+standard architectures expect
+always the resolution to be
+
+00:23:11.520 --> 00:23:17.430
+fixed. Whereas neural operators
+remove that dependence. There's
+
+00:23:17.430 --> 00:23:22.260
+of course, an intermediate step
+where you could use
+
+00:23:22.320 --> 00:23:25.950
+interpolation on top of standard
+neural network. So you train
+
+00:23:25.950 --> 00:23:29.160
+your neural network at a fixed
+resolution, you're using
+
+00:23:29.190 --> 00:23:32.040
+standard fixed interpolation,
+whether it's by linear
+
+00:23:32.040 --> 00:23:35.970
+interpolation or any such
+framework you can use on top
+
+00:23:35.970 --> 00:23:40.050
+where there is no learning for
+interpolation. So, that
+
+00:23:40.050 --> 00:23:44.190
+framework indeed allows you to
+query anywhere in the domain,
+
+00:23:44.520 --> 00:23:48.630
+but it does not guarantee
+universal approximation, because
+
+00:23:48.630 --> 00:23:52.170
+the neural network just learns
+that of fixed scale right. So it
+
+00:23:52.170 --> 00:23:56.190
+is not learning in the function
+space, like we do with neural
+
+00:23:56.190 --> 00:24:00.480
+operators, and that to me, is
+the big benefit we obtain here.
+
+00:24:02.190 --> 00:24:07.770
+Yeah, so just to reiterate, the
+framework of neural operators is
+
+00:24:08.100 --> 00:24:13.860
+taking, you know, ways to
+compute these integral linear
+
+00:24:13.860 --> 00:24:18.480
+operator and composing with non
+linearity to give it both
+
+00:24:18.480 --> 00:24:22.530
+expressivity, but by learning
+blocks that compute integral
+
+00:24:22.530 --> 00:24:26.790
+linear operators, we still keep
+discretization invariance. And
+
+00:24:26.790 --> 00:24:31.740
+so that kind of like, you know,
+ability to have both aspects of
+
+00:24:31.740 --> 00:24:36.540
+discretization invariance and
+non linearity is crucial. So,
+
+00:24:36.540 --> 00:24:40.380
+there's an extensive library, I
+encourage you to go check it
+
+00:24:40.380 --> 00:24:44.100
+out, you know, it's open source
+also contribute to it would be
+
+00:24:44.100 --> 00:24:48.300
+great to hear your thoughts,
+where we do have implementations
+
+00:24:48.300 --> 00:24:51.630
+of the Fourier neural operator
+that I mentioned, but also there
+
+00:24:51.630 --> 00:24:55.380
+are other approaches right in
+order to be able to estimate
+
+00:24:55.380 --> 00:24:59.370
+this for instance, through graph
+based method because you can
+
+00:24:59.580 --> 00:25:06.360
+learn through a graph neural
+network and message passing,
+
+00:25:06.390 --> 00:25:09.930
+what is the relationship between
+nearby points, and then you can
+
+00:25:09.930 --> 00:25:12.810
+turn it into an operator,
+because once you learn the
+
+00:25:12.810 --> 00:25:17.400
+kernel, you can approximate the
+integration as summation. So
+
+00:25:17.400 --> 00:25:21.210
+this works well, if the
+phenomena is fairly local. So
+
+00:25:21.210 --> 00:25:24.960
+it's much harder to do for
+global dependence like in fluid
+
+00:25:24.960 --> 00:25:27.960
+dynamics, because you would need
+the neighborhood to be very
+
+00:25:27.960 --> 00:25:31.770
+large and that is expensive. So,
+I think there are frameworks
+
+00:25:31.770 --> 00:25:34.410
+where the graph based methods
+are effective, and then there
+
+00:25:34.410 --> 00:25:38.760
+are other domains especially
+with where we know the operator
+
+00:25:38.760 --> 00:25:41.910
+is highly non local, where
+Fourier based methods are
+
+00:25:41.910 --> 00:25:47.100
+effective, because you know, we
+can express these kinds of
+
+00:25:47.100 --> 00:25:50.970
+global dependence efficiently
+through Fourier transforms.
+
+00:25:53.340 --> 00:25:58.830
+Yeah, so far, what I mentioned
+was just computing on a, you
+
+00:25:58.830 --> 00:26:03.510
+know, practical implementation
+was computing on a uniform grid,
+
+00:26:03.810 --> 00:26:06.570
+right, because Fourier
+transform, the efficient
+
+00:26:06.840 --> 00:26:10.320
+implementation is fast Fourier
+transform that assumes uniform
+
+00:26:10.320 --> 00:26:14.250
+grid. And if you tried to do
+Fourier transform on non uniform
+
+00:26:14.250 --> 00:26:17.070
+grids showed that our
+algorithms, but those
+
+00:26:17.940 --> 00:26:22.380
+implementations are not
+efficient. And so we wanted to
+
+00:26:22.590 --> 00:26:26.520
+keep the Fourier transform as
+fast Fourier transform on
+
+00:26:26.520 --> 00:26:33.960
+uniform grid, and the way we
+decided to handle non uniform
+
+00:26:33.990 --> 00:26:37.230
+input domains, right, the
+physical space, for instance,
+
+00:26:37.230 --> 00:26:42.750
+this airfoil wing, this is a
+irregular geometry shape. And we
+
+00:26:42.750 --> 00:26:47.670
+also want a grid to be irregular
+to capture that non uniformity.
+
+00:26:48.540 --> 00:26:52.770
+So this is our input domain. So
+what we propose is to learn a
+
+00:26:52.770 --> 00:27:00.180
+deformation from this to a
+uniform grid in a latent space.
+
+00:27:00.480 --> 00:27:04.650
+And we know from topology that
+such deformation sexes, so if
+
+00:27:04.650 --> 00:27:08.910
+you assume this is homeomorphic,
+to Taurus, you can learn that
+
+00:27:08.910 --> 00:27:14.070
+transformation, right. And if
+not, they can also there, you
+
+00:27:14.130 --> 00:27:17.190
+decompose the domain into
+multiple parts and piece them
+
+00:27:17.190 --> 00:27:21.300
+together, which is a detail from
+topology. But the idea is this
+
+00:27:21.300 --> 00:27:24.690
+is very general. So in general,
+you should be able to learn the
+
+00:27:24.690 --> 00:27:28.530
+transformations from a physical
+space that is irregular to a
+
+00:27:28.530 --> 00:27:32.790
+latent space that is regular.
+And so what we do is we learn
+
+00:27:32.790 --> 00:27:38.310
+such deformations point wise.
+And this way, we can go to a
+
+00:27:38.310 --> 00:27:42.540
+latent space, and do efficient
+computations and come back to
+
+00:27:42.540 --> 00:27:47.280
+the standard domain. And so you
+can see that where we credit
+
+00:27:47.280 --> 00:27:53.610
+deformation for plastic fortune
+here, and again, we see the you
+
+00:27:53.610 --> 00:27:57.510
+know, really impressive speed
+ups about 100,000 times speed up
+
+00:27:57.750 --> 00:28:02.220
+over standard numerical methods.
+And you can see the geometry is
+
+00:28:02.220 --> 00:28:06.330
+changing over time, and it's
+able to maintain and do that
+
+00:28:06.330 --> 00:28:14.400
+prediction. So this is another
+example where we, you know, can
+
+00:28:14.400 --> 00:28:19.530
+handle irregular shape, in the
+sense that the fluid is now
+
+00:28:19.530 --> 00:28:23.670
+flowing through a catheter with
+all these triangular shapes,
+
+00:28:23.670 --> 00:28:28.860
+right, so we propose triangular
+shapes as a way to limit the
+
+00:28:28.860 --> 00:28:33.690
+bacterial contamination. So
+what's known as the bacteria
+
+00:28:33.690 --> 00:28:39.450
+swim upstream to the fluid flow,
+and if we can reduce the size of
+
+00:28:39.450 --> 00:28:43.770
+bacteria, by trapping it in
+these triangular places, then we
+
+00:28:43.770 --> 00:28:47.850
+can reduce the contamination.
+And so one benefit with these
+
+00:28:47.880 --> 00:28:52.770
+methods is that we can do
+inverse design very effectively.
+
+00:28:52.770 --> 00:28:56.790
+So not just in was designed any
+kind of inverse problems because
+
+00:28:57.090 --> 00:29:00.570
+the train neural operators are
+differentiable, right? So we can
+
+00:29:00.570 --> 00:29:05.820
+directly get the gradients back.
+And so what we did was to ask,
+
+00:29:05.820 --> 00:29:09.150
+you know, how can I find the
+optimal triangular shape to
+
+00:29:09.150 --> 00:29:13.740
+minimize the bacterial
+contamination. So here, the
+
+00:29:13.740 --> 00:29:16.770
+contamination should be ideally
+zero because we don't want the
+
+00:29:16.770 --> 00:29:20.670
+bacteria going back into the
+patient. And so we were able to
+
+00:29:20.670 --> 00:29:25.500
+do that by doing gradient
+descent, which is very fast and
+
+00:29:25.500 --> 00:29:30.450
+effective. And that's how we,
+you know, we're able to very
+
+00:29:30.450 --> 00:29:34.500
+quickly proposal design and our
+collaborators 3d printed it and
+
+00:29:34.500 --> 00:29:38.340
+tested it in the lab. And this
+is just a visualization of, you
+
+00:29:38.340 --> 00:29:41.070
+know, how we can see many
+particles are getting trapped in
+
+00:29:41.070 --> 00:29:47.700
+these triangular groups. Yeah,
+and so this is another here.
+
+00:29:49.170 --> 00:29:54.750
+demonstration with airfoil. If
+you want to optimize for lift
+
+00:29:54.750 --> 00:29:59.370
+versus drag, right, we can
+directly do gradient descent and
+
+00:29:59.370 --> 00:30:05.190
+come up with Yes, and here we
+are having the simulation of the
+
+00:30:05.550 --> 00:30:08.820
+fluid dynamics around the
+aircraft wing, right. So we are
+
+00:30:08.820 --> 00:30:12.480
+only training for the forward
+model. So in the forward model,
+
+00:30:12.480 --> 00:30:17.490
+we have many different aircraft
+wings, we are predicting how,
+
+00:30:17.790 --> 00:30:22.800
+you know, what is the fluid
+dynamics around that, and, and
+
+00:30:22.800 --> 00:30:25.650
+then we can directly do the
+inverse problems. So, the key
+
+00:30:25.650 --> 00:30:28.740
+is, you don't need to know, what
+is the optimal design when
+
+00:30:28.740 --> 00:30:32.820
+you're doing the training of the
+neural operator. And you can do
+
+00:30:32.820 --> 00:30:38.820
+the inverse and come up with the
+optimal design. So far, I did
+
+00:30:38.820 --> 00:30:41.820
+not incorporate any of the
+physics, I think there was a
+
+00:30:41.820 --> 00:30:46.500
+question earlier asteroid. So,
+you know, how does it capture
+
+00:30:46.500 --> 00:30:54.150
+the different scales. So, in
+terms of if you want to really
+
+00:30:54.150 --> 00:30:58.650
+capture the fine scales, and we
+need to do that with high
+
+00:30:58.650 --> 00:31:03.330
+accuracy, we would need to know
+the equations as well. And so
+
+00:31:03.330 --> 00:31:07.470
+the idea is, if the data is only
+at coarse resolution, I now have
+
+00:31:07.470 --> 00:31:12.960
+the flexibility to express my
+equations at a much finer
+
+00:31:12.960 --> 00:31:18.210
+resolution. And so this way, we
+can capture both data and the
+
+00:31:18.210 --> 00:31:24.390
+equations. And we can get to
+high fidelity results. And so we
+
+00:31:24.390 --> 00:31:28.950
+can then do zero short super
+resolution very well, even at
+
+00:31:28.950 --> 00:31:33.150
+higher resolutions. And we can
+also further fine tune our
+
+00:31:33.150 --> 00:31:36.660
+model, because, you know, during
+training, we have a variety of
+
+00:31:36.660 --> 00:31:40.290
+initial conditions and
+solutions. But at test time, we
+
+00:31:40.290 --> 00:31:43.410
+have a single initial condition,
+right? So we want to do well on
+
+00:31:43.410 --> 00:31:47.430
+this, we can further fine tune
+with the equation loss on this
+
+00:31:47.430 --> 00:31:51.360
+specific instance. And that way,
+we get to a better error.
+
+00:31:53.190 --> 00:31:57.210
+And so we can also do better
+transfer learning with physics
+
+00:31:57.210 --> 00:32:02.490
+based losses, because we can,
+you know, learn the operator
+
+00:32:02.490 --> 00:32:06.180
+safe on one Reynolds number, if
+you want to fine tune on a
+
+00:32:06.180 --> 00:32:10.470
+different Reynolds number, there
+is a distributional shift. But
+
+00:32:10.470 --> 00:32:15.780
+having the equation laws allows
+us to quickly figure out what
+
+00:32:15.810 --> 00:32:19.350
+the distribution change, right,
+what parameter change, and still
+
+00:32:19.380 --> 00:32:23.580
+utilize the information that
+was, you know, in the earlier
+
+00:32:23.580 --> 00:32:31.170
+train model. And so this leads
+to faster convergence. Yeah, so,
+
+00:32:31.170 --> 00:32:36.990
+so far, what I told you was to
+learn deterministic maps between
+
+00:32:36.990 --> 00:32:40.560
+function spaces, right, what
+about learning probability
+
+00:32:40.560 --> 00:32:43.980
+distributions on function
+spaces? And indeed, this
+
+00:32:43.980 --> 00:32:49.650
+directly, you know, asks similar
+questions, as we've seen with
+
+00:32:49.650 --> 00:32:53.640
+generative AI, whether it's text
+generation image generation,
+
+00:32:53.940 --> 00:32:57.360
+right, so they're all learning
+probability distributions? Can
+
+00:32:57.360 --> 00:33:01.530
+we do the same? And indeed, for
+scientific computing, that's
+
+00:33:01.530 --> 00:33:04.590
+very important, right? So
+inverse problems, if you want
+
+00:33:04.590 --> 00:33:08.460
+the posterior of your inverse
+problem, that's a probability
+
+00:33:08.460 --> 00:33:12.300
+distribution naturally, right?
+uncertainty quantification,
+
+00:33:13.260 --> 00:33:16.470
+learning like chaotic dynamics.
+So you want to ask what are the
+
+00:33:16.470 --> 00:33:21.060
+different attractors and what is
+the distribution. So all of this
+
+00:33:21.240 --> 00:33:25.650
+are about problems that require
+probability distribution. And of
+
+00:33:25.650 --> 00:33:28.440
+course, if you're looking at
+stochastic differential
+
+00:33:28.440 --> 00:33:33.150
+equations, or other stochastic
+processes, those are also, you
+
+00:33:33.150 --> 00:33:36.750
+know, involved learning
+probability on function spaces.
+
+00:33:37.110 --> 00:33:43.890
+So what we've recently derived
+is a diffusion model, but now on
+
+00:33:43.890 --> 00:33:50.310
+function spaces. And so we're
+doing that by extending what is
+
+00:33:50.310 --> 00:33:54.300
+known as core function in
+diffusion models in finite
+
+00:33:54.300 --> 00:33:57.450
+dimensional spaces to now score
+operator, right, so this
+
+00:33:57.450 --> 00:34:02.310
+operator maps a function space
+of, of one domain to another.
+
+00:34:02.520 --> 00:34:07.680
+And in this case, what we want
+to do is map instead of Gaussian
+
+00:34:07.680 --> 00:34:12.240
+noise, a Gaussian random field
+to the output distribution. And
+
+00:34:12.240 --> 00:34:15.240
+so this is the key difference
+here. With Gaussian random
+
+00:34:15.240 --> 00:34:19.860
+field, you can now sample at any
+resolution. So you're no longer
+
+00:34:19.860 --> 00:34:23.940
+limited to sampling at the
+resolution of the training data,
+
+00:34:23.940 --> 00:34:28.080
+like we see in image generation
+models. And that's how we can
+
+00:34:28.080 --> 00:34:33.150
+now you know, do this training
+at low resolution and generate
+
+00:34:33.300 --> 00:34:38.310
+high resolution images and still
+get a very good fidelity of what
+
+00:34:38.310 --> 00:34:43.020
+we generate, right. So if you
+now have a density of initial
+
+00:34:43.020 --> 00:34:47.160
+conditions, you want to capture
+that random distribution of
+
+00:34:47.340 --> 00:34:50.940
+solutions for these given
+initial conditions. In this
+
+00:34:50.940 --> 00:34:56.730
+example, you can see that we can
+do very well. So I wanted to see
+
+00:34:56.730 --> 00:35:01.500
+if there are further questions
+before I I maybe showcase one or
+
+00:35:01.500 --> 00:35:05.220
+two examples of using these
+various methods.
+
+00:35:05.250 --> 00:35:08.730
+Yeah. Marty, do you want to
+unmute yourself? I see you
+
+00:35:08.820 --> 00:35:14.820
+please raise your hand. Buddy,
+are you there?
+
+00:35:20.130 --> 00:35:24.870
+I don't, I don't hear. Okay.
+See. Any other questions from
+
+00:35:24.870 --> 00:35:29.070
+audience? anymore? You can move
+on?
+
+00:35:30.120 --> 00:35:33.870
+I think there's, I think there's
+another question.
+
+00:35:35.370 --> 00:35:41.100
+No, yeah. Yeah. Yeah, I don't
+think so you can move on. Okay.
+
+00:35:43.770 --> 00:35:48.480
+Yeah, so to give you some
+examples in OB train, using
+
+00:35:48.480 --> 00:35:53.520
+these four year neural operator
+and its variants on weather
+
+00:35:53.520 --> 00:35:59.160
+data, so but this is era five
+reanalysis data that's available
+
+00:35:59.160 --> 00:36:03.360
+since the 1970s. So having this
+wealth of historical weather
+
+00:36:03.360 --> 00:36:08.070
+data, allows us to train a model
+that's very accurate, as well as
+
+00:36:08.070 --> 00:36:12.660
+fast. So here's a visualization
+of the atmospheric rivers. And
+
+00:36:12.660 --> 00:36:17.730
+you can see that it can capture
+these very wide, you know that
+
+00:36:17.790 --> 00:36:22.440
+those are 1000s of miles wide
+phenomena that has a huge impact
+
+00:36:22.470 --> 00:36:26.400
+on whether there are storms or
+drought in the western coast
+
+00:36:26.400 --> 00:36:31.110
+here. And not only that, it's
+very fast, it's about 45,000
+
+00:36:31.110 --> 00:36:35.850
+times faster than current
+numerical weather models. So you
+
+00:36:35.850 --> 00:36:39.390
+can also see that with
+trajectory prediction, we can
+
+00:36:39.720 --> 00:36:44.730
+predict these wind conditions,
+and the high wind conditions are
+
+00:36:44.760 --> 00:36:49.620
+in purple. And you can see our
+prediction closely follows the
+
+00:36:49.650 --> 00:36:54.060
+trajectory of Hurricane Matthew,
+which was certainly not in the
+
+00:36:54.060 --> 00:36:57.210
+training data, right. So we are
+looking at how well it does on
+
+00:36:57.210 --> 00:37:01.980
+new hurricanes. And it's able to
+give you a good uncertainty
+
+00:37:01.980 --> 00:37:06.210
+bound around the trajectory of
+the hurricane. So these are some
+
+00:37:06.210 --> 00:37:11.430
+more details. And we also have
+some of our models open source
+
+00:37:11.430 --> 00:37:15.930
+there, I welcome you to go check
+it out. And what you can see is
+
+00:37:16.470 --> 00:37:20.850
+the ability to have big speed
+ups over current numerical
+
+00:37:20.850 --> 00:37:25.350
+weather models, and at the same
+time, good accuracy. So What
+
+00:37:25.350 --> 00:37:29.700
+would take hours on a CPU
+cluster for current numerical
+
+00:37:29.700 --> 00:37:34.410
+weather models takes less than a
+second on a single desktop GPU.
+
+00:37:37.290 --> 00:37:41.790
+Yeah, and we continue to improve
+this. I think we just recently
+
+00:37:41.790 --> 00:37:45.570
+talked, I think, yesterday, the
+talk was at Eichler workshop on
+
+00:37:45.570 --> 00:37:49.170
+climate AI, where by
+incorporating the spherical
+
+00:37:49.170 --> 00:37:53.640
+geometry, so instead of the
+Fourier, Fast Fourier Transform
+
+00:37:53.640 --> 00:37:57.600
+on Euclidean space, we now have
+spherical harmonics, and we
+
+00:37:57.600 --> 00:38:01.470
+build that into our model. And
+that leads to even better
+
+00:38:01.470 --> 00:38:05.910
+extrapolation. So you can do
+much longer rollouts than what
+
+00:38:05.910 --> 00:38:11.850
+we had trained for. We trained
+it just for a few time steps of
+
+00:38:11.850 --> 00:38:16.920
+six hours or so. Right. So we
+have very short range training.
+
+00:38:17.100 --> 00:38:20.340
+But we can extrapolate the model
+to long rollouts, and there's
+
+00:38:20.340 --> 00:38:23.820
+good stability. And we continue
+to improve the forecasting
+
+00:38:23.820 --> 00:38:28.410
+skills as well compared to the
+ifs, which is the current
+
+00:38:28.440 --> 00:38:32.580
+numerical weather models. So
+we've also used in a number of
+
+00:38:32.580 --> 00:38:37.290
+other scenarios, to mitigate
+climate change, carbon capture,
+
+00:38:37.290 --> 00:38:42.540
+and storage is a big aspect. So
+how do we model the buildup of
+
+00:38:42.600 --> 00:38:47.670
+pressure as carbon dioxide is
+pumped into these wells. So we
+
+00:38:47.670 --> 00:38:52.050
+are now able to do multi well
+modeling. So being able to look
+
+00:38:52.050 --> 00:38:56.910
+at multiple wells at once. And
+if you have a permeability map,
+
+00:38:56.910 --> 00:39:02.280
+so you know how permeable the
+ground is. And we can then use
+
+00:39:02.280 --> 00:39:06.060
+that as the input. Given a
+permeability map, we have high
+
+00:39:06.240 --> 00:39:10.200
+resolution, a fine grid
+prediction within the wells as
+
+00:39:10.200 --> 00:39:13.410
+well as a coarser grid to
+connect the different wells. And
+
+00:39:13.410 --> 00:39:18.570
+you can see that we can model
+the gas plume evolution as well
+
+00:39:18.570 --> 00:39:24.060
+as the pressure buildup. And we
+can do that over 30 year range.
+
+00:39:24.240 --> 00:39:27.960
+And we can even do further if
+needed. But the key is, you can
+
+00:39:27.960 --> 00:39:32.640
+see that it has a very big speed
+up about 700,000 times faster
+
+00:39:32.880 --> 00:39:38.160
+than current numerical weather
+models. So this are applicable
+
+00:39:38.160 --> 00:39:41.070
+in many other scenarios as well.
+You know, predicting air
+
+00:39:41.070 --> 00:39:45.840
+turbulence for drone flights or
+other flights is important. So
+
+00:39:45.840 --> 00:39:50.340
+we've been testing it in the lab
+by looking at turbulent
+
+00:39:50.340 --> 00:39:54.840
+conditions here and using laser
+laser measurements and showing
+
+00:39:54.840 --> 00:39:59.100
+that we can do very nice real
+time, fluid prediction directly
+
+00:39:59.100 --> 00:40:03.900
+from noisy as experimental data,
+and so we continue to test
+
+00:40:03.900 --> 00:40:08.370
+models like this also in the
+right physical hardware on the
+
+00:40:08.370 --> 00:40:13.380
+lab to see how well we can
+stabilize the airfoil wing and
+
+00:40:13.380 --> 00:40:18.360
+many other cases. So just to
+show like at Caltech, we also
+
+00:40:18.360 --> 00:40:23.670
+have the finery where we can
+test this very carefully on
+
+00:40:23.670 --> 00:40:27.480
+different kinds of wind
+conditions. So I think I already
+
+00:40:27.480 --> 00:40:32.580
+mentioned the catheter before.
+So let me Yeah, so, you know,
+
+00:40:32.580 --> 00:40:37.470
+again, sorry for the delay, but
+I hope you got a good overview
+
+00:40:37.470 --> 00:40:41.100
+of what neural operators are,
+what is the principle behind
+
+00:40:41.100 --> 00:40:45.120
+designing them, and how they
+differ from standard neural
+
+00:40:45.120 --> 00:40:50.220
+networks and their ability to
+capture multiple scales and do
+
+00:40:50.730 --> 00:40:55.710
+inferences in a discretization
+invariant manner. Thank you.
+
+00:40:55.950 --> 00:41:00.060
+Sounds good. Thank you so much
+for the wonderful talk. Anima. I
+
+00:41:00.060 --> 00:41:03.420
+guess, did I miss the the
+question from the Joseph, let's
+
+00:41:03.420 --> 00:41:08.040
+have a q&amp;a sessions. By the way.
+Jews have asked, Are there any
+
+00:41:08.040 --> 00:41:12.540
+special considerations for using
+neural operator operators on
+
+00:41:12.540 --> 00:41:13.800
+inverse problems.
+
+00:41:15.150 --> 00:41:18.540
+Um, so there are different
+options, right, so you can do
+
+00:41:18.540 --> 00:41:24.000
+the, you can learn the neural
+operator for the forward
+
+00:41:24.000 --> 00:41:27.780
+problem, and then just take
+gradients differentiate through
+
+00:41:27.780 --> 00:41:31.860
+the model, or you can directly
+learn the inverse mapping. And
+
+00:41:31.860 --> 00:41:35.490
+so there are both options, or
+you can couple both of them as
+
+00:41:35.490 --> 00:41:39.570
+well. And also, in both of these
+cases, you can ask, you know,
+
+00:41:39.570 --> 00:41:44.400
+how do I also incorporate the
+physics, right, so you can also
+
+00:41:44.460 --> 00:41:48.150
+do the physics informed version.
+And then there is the aspect
+
+00:41:48.150 --> 00:41:52.230
+that to capture the not just
+point estimates, but to get the
+
+00:41:52.230 --> 00:41:55.680
+right proper posterior
+distribution. You know, can we
+
+00:41:55.680 --> 00:41:59.520
+use diffusion models? So what I
+proposed efficient models and
+
+00:41:59.520 --> 00:42:00.630
+function spaces.
+
+00:42:01.560 --> 00:42:06.270
+Thank you. Okay. Another
+question by Hawaii. For the CCS
+
+00:42:06.300 --> 00:42:10.590
+case, the heavier team, try to
+explore the super resolution
+
+00:42:10.590 --> 00:42:12.240
+property of app No.
+
+00:42:13.110 --> 00:42:16.680
+Yeah, we can certainly give
+predictions, but we don't have
+
+00:42:16.680 --> 00:42:19.200
+the ground truth. Right. So we
+are now working with some
+
+00:42:19.200 --> 00:42:22.890
+partners getting real data and
+validating on that.
+
+00:42:24.180 --> 00:42:29.490
+Awesome. Okay, next question is
+by Faisal, what do you need to
+
+00:42:29.520 --> 00:42:33.780
+train the neural operator? Do
+you need the original PDE? Can
+
+00:42:33.780 --> 00:42:35.970
+you learn on noisy ground
+through?
+
+00:42:36.000 --> 00:42:39.540
+Yeah, so we don't need the
+original PDE. Right. So the
+
+00:42:39.540 --> 00:42:44.550
+framework I described is very
+general, the input can be any
+
+00:42:44.550 --> 00:42:47.760
+function on a domain, and the
+output is a function, right? So
+
+00:42:47.760 --> 00:42:51.510
+you're learning that mapping.
+And so you can take some data
+
+00:42:51.510 --> 00:42:54.690
+from solvers, existing solvers,
+like I showed you the Navier
+
+00:42:54.690 --> 00:42:58.320
+stokes example. Or you can take
+the weather example where the
+
+00:42:58.320 --> 00:43:00.900
+data is already there, the
+historical weather data and the
+
+00:43:00.900 --> 00:43:04.860
+reanalysis data and we train on
+it. So it can be very general.
+
+00:43:05.130 --> 00:43:09.480
+Sounds good, okay. The equations
+are there, we can incorporate
+
+00:43:09.480 --> 00:43:12.480
+that as the loss function, in
+addition to data
+
+00:43:13.319 --> 00:43:20.069
+as you go in Pino, right. Okay,
+the next question is by Rudy
+
+00:43:20.069 --> 00:43:24.089
+Pang. And he asked for the
+function mapping to learn from
+
+00:43:24.089 --> 00:43:29.069
+PDE coefficient to solution, any
+ideas what function spaces it is
+
+00:43:29.069 --> 00:43:32.789
+in? And is the mapping unique?
+So for
+
+00:43:32.790 --> 00:43:37.740
+to learn from the coefficients
+to the solutions? You know, the
+
+00:43:37.770 --> 00:43:41.190
+PDE is well posed, you assume
+there's a unique solution,
+
+00:43:41.190 --> 00:43:44.970
+right. But we don't need to even
+assume that as long as we have
+
+00:43:44.970 --> 00:43:49.080
+the data that learns the
+mapping, we can do that. But of
+
+00:43:49.080 --> 00:43:52.680
+course, if it's unique, then you
+have a good error. And you can
+
+00:43:52.680 --> 00:43:53.670
+learn this well.
+
+00:43:54.120 --> 00:43:58.380
+All right. Sounds good. So I
+don't think there is any other
+
+00:43:58.380 --> 00:43:59.640
+questions that have
+
+00:44:00.480 --> 00:44:06.360
+raised their hands. Yeah, for
+the for the FMO can see more
+
+00:44:06.360 --> 00:44:09.630
+about like the boundary
+conditions, especially like non
+
+00:44:09.630 --> 00:44:13.170
+pure periodical boundary
+conditions. And also for the
+
+00:44:13.200 --> 00:44:17.250
+like the, in the carbon storage
+case, you showed that to have
+
+00:44:17.250 --> 00:44:22.530
+like, like the course grades,
+for fields, and also like near
+
+00:44:22.530 --> 00:44:26.280
+the well, like I have the high
+high resolution grades. So how
+
+00:44:26.280 --> 00:44:29.970
+you make the boundary conditions
+consistency between these two?
+
+00:44:30.420 --> 00:44:33.330
+Yeah, that's a good, that's a
+great point. So for the first
+
+00:44:33.330 --> 00:44:37.980
+generally, like for non periodic
+cases, right, the four year
+
+00:44:38.520 --> 00:44:42.060
+branch may not capture that very
+easily. I mean, you can correct
+
+00:44:42.060 --> 00:44:45.300
+that with four year continuation
+methods. And we also propose
+
+00:44:45.300 --> 00:44:48.630
+that but we also have
+alternative branches, so we have
+
+00:44:48.630 --> 00:44:53.760
+skipped connections. And so
+that's a very efficient way to
+
+00:44:53.760 --> 00:44:58.740
+capture non periodic conditions.
+And so we've we have
+
+00:44:58.740 --> 00:45:02.640
+architectures that I handle that
+very efficiently. So in terms of
+
+00:45:02.640 --> 00:45:10.110
+like, for the specific case of
+CCS, what we did was a nested
+
+00:45:10.110 --> 00:45:14.280
+fNo model. So we now have
+different economic models for,
+
+00:45:14.430 --> 00:45:17.040
+you know, within the well versus
+outside, we have multiple
+
+00:45:17.040 --> 00:45:21.930
+levels. And so they just share
+the information across them.
+
+00:45:24.000 --> 00:45:28.740
+That makes sounds good. Thanks.
+Yeah. Have more questions? No.
+
+00:45:28.770 --> 00:45:39.450
+Okay. So fNo is known to require
+many, many data. And from your
+
+00:45:39.450 --> 00:45:43.500
+experience, piano, if you
+incorporate the physics, then do
+
+00:45:43.500 --> 00:45:47.370
+you see that you require the
+last data is required?
+
+00:45:47.549 --> 00:45:51.599
+Absolutely. Our data requirement
+goes down significantly? And of
+
+00:45:51.599 --> 00:45:54.479
+course, it depends on the
+hardness of the problem, right.
+
+00:45:54.479 --> 00:45:58.649
+So, you know, some cases you may
+even do with one data point,
+
+00:45:58.649 --> 00:46:01.739
+that's the physic physics and
+form neural network setting,
+
+00:46:01.769 --> 00:46:05.909
+right? So if the optimization
+landscape is very efficient, you
+
+00:46:05.909 --> 00:46:09.509
+don't need any data at all, you
+can directly solve for the
+
+00:46:09.509 --> 00:46:13.259
+equation loss. And then there
+are others that are high
+
+00:46:13.259 --> 00:46:16.439
+dimensional, very hard, and you
+may need more data. So there's a
+
+00:46:16.439 --> 00:46:18.239
+whole spectrum of problems.
+
+00:46:18.870 --> 00:46:25.560
+Okay. Sounds good. I have just
+clarify qualification questions.
+
+00:46:25.590 --> 00:46:32.460
+You said that people net is not
+discretization independent, I
+
+00:46:32.460 --> 00:46:33.960
+thought heroes discretize.
+
+00:46:33.989 --> 00:46:38.129
+So this is there's a, so the
+original deep on it that was
+
+00:46:38.669 --> 00:46:43.589
+proposed was on assuming a fixed
+input grid. So the input grid
+
+00:46:43.589 --> 00:46:46.499
+was assumed to be fixed, the
+output is also is still a
+
+00:46:46.499 --> 00:46:51.149
+function. So the output is can
+work at any resolution, but the
+
+00:46:51.149 --> 00:46:57.419
+input was a fixed grid. And then
+later on in the solution, others
+
+00:46:57.419 --> 00:47:01.289
+proposed a solution as well to
+fix that. But anyway, I wanted
+
+00:47:01.289 --> 00:47:02.699
+the the original one had.
+
+00:47:03.780 --> 00:47:07.290
+Yeah, I just wanted to clarify,
+Chris. I think the current
+
+00:47:07.290 --> 00:47:10.440
+version of the deponent Yeah,
+that doesn't seem dependent.
+
+00:47:11.010 --> 00:47:16.350
+Okay. Another question from CO
+Juan Chang. What is the
+
+00:47:16.350 --> 00:47:20.760
+regularity assumptions needed in
+the function spaces? If the
+
+00:47:20.760 --> 00:47:25.050
+solution is of low regularity?
+For example, the domain is
+
+00:47:25.050 --> 00:47:28.950
+singular and the function on its
+roof, can the current framework
+
+00:47:28.950 --> 00:47:29.790
+be applied?
+
+00:47:30.150 --> 00:47:34.380
+Yeah. So we are working on like
+kind of extensions of this in
+
+00:47:34.380 --> 00:47:37.830
+terms of practical architecture.
+But there's already theory
+
+00:47:37.830 --> 00:47:41.040
+showing that you can use for
+your neural operator to
+
+00:47:41.040 --> 00:47:46.440
+approximate those well, as well,
+like Sam Lanter and understood
+
+00:47:46.440 --> 00:47:49.620
+have like a recent paper, but
+yeah, this is something we're
+
+00:47:49.620 --> 00:47:50.370
+working on.
+
+00:47:51.630 --> 00:47:52.890
+Okay, yeah. I have
+
+00:47:52.890 --> 00:47:57.840
+another question. For one. Yeah.
+So for the transplant learning,
+
+00:47:58.680 --> 00:48:04.020
+Eve, the differential equations
+are different, like for
+
+00:48:04.020 --> 00:48:06.780
+different problems, do you think
+of that transfer learning is
+
+00:48:06.780 --> 00:48:11.790
+still helpful or not? I know,
+like in the same equations,
+
+00:48:11.820 --> 00:48:16.620
+probably, it's like a helpful
+forum. But But from the point of
+
+00:48:16.620 --> 00:48:18.690
+view of different differential
+equations.
+
+00:48:20.100 --> 00:48:23.370
+Yeah, that's great. And that's
+unclear, right? It's, again, the
+
+00:48:23.370 --> 00:48:27.540
+same as any, you know, what we
+see in other vision domains,
+
+00:48:27.540 --> 00:48:29.940
+like how much is the shared
+features, you might think some
+
+00:48:29.940 --> 00:48:33.810
+of it is still shared? Because
+numerical methods, right, like
+
+00:48:33.810 --> 00:48:38.220
+kind of have similar approaches
+for all these domains. So it may
+
+00:48:38.220 --> 00:48:41.160
+still transfer. But it's a good
+question. You know, how
+
+00:48:41.160 --> 00:48:43.530
+effective it is? We haven't
+tried it so far.
+
+00:48:44.130 --> 00:48:48.390
+Yeah, we've sent comments on the
+Ching chi, I mean, transfer
+
+00:48:48.390 --> 00:48:52.560
+learning not on the neural
+operator, but on the traditional
+
+00:48:52.560 --> 00:48:57.330
+neural network, sensing a sense,
+it hasn't been applied, you
+
+00:48:57.330 --> 00:49:04.620
+know, the quiz or the different
+PDE. And, you know, use that to
+
+00:49:04.830 --> 00:49:09.840
+accelerator on the neural net
+model on a PDE. That hasn't been
+
+00:49:09.870 --> 00:49:13.350
+demonstrated, but I guess it's
+an example by example.
+
+00:49:13.529 --> 00:49:17.189
+Yeah, exactly. But it's I think,
+I think I expect that there
+
+00:49:17.189 --> 00:49:19.769
+should still be an advantage.
+You're Osama
+
+00:49:19.800 --> 00:49:25.380
+Osama useful, right. All right.
+Any other questions from
+
+00:49:25.380 --> 00:49:35.160
+audiences? Oh, yes, we do. Okay,
+as the person from platano when
+
+00:49:35.160 --> 00:49:40.140
+you compare the speed up to you
+consider the training or data
+
+00:49:40.140 --> 00:49:41.220
+generation time.
+
+00:49:41.640 --> 00:49:45.390
+So, you know, no, I mean, these
+numbers, we don't first of all,
+
+00:49:45.390 --> 00:49:49.260
+it's still not a significant
+amount, right. So because to me,
+
+00:49:49.260 --> 00:49:53.910
+data is just something that you
+know, you only do training once,
+
+00:49:53.910 --> 00:49:57.840
+right, and then inference is
+running cost. And so this is the
+
+00:49:57.840 --> 00:50:01.320
+standard way of we would
+evaluate Do any methods so,
+
+00:50:01.530 --> 00:50:05.370
+because also there is cost that
+goes into programming these
+
+00:50:05.370 --> 00:50:10.350
+algorithms even for traditional
+methods, so, so I would just you
+
+00:50:10.350 --> 00:50:14.820
+know, to me that's something
+that guy, you know, happens
+
+00:50:14.850 --> 00:50:19.170
+before the solver comes online.
+But we do report that in our
+
+00:50:19.170 --> 00:50:19.890
+papers.
+
+00:50:20.579 --> 00:50:23.489
+Got it? Another question by
+muddy can the matter the
+
+00:50:23.489 --> 00:50:26.549
+extrapolating new and unseen to
+matrix?
+
+00:50:27.179 --> 00:50:31.589
+Yeah, in the geometric fNo that
+I proposed the ideas. That's how
+
+00:50:31.589 --> 00:50:34.919
+you can see that even online
+changing geometry of the
+
+00:50:34.919 --> 00:50:36.869
+deformation, it's able to track
+
+00:50:37.769 --> 00:50:41.639
+you should have some mapping
+from, you know, once your metric
+
+00:50:41.639 --> 00:50:43.169
+to another that
+
+00:50:44.520 --> 00:50:46.590
+we just learned that we learn
+that.
+
+00:50:47.160 --> 00:50:47.940
+Okay, yeah.
+
+00:50:49.770 --> 00:50:52.770
+All right. different geometries.
+That's how we're able to
+
+00:50:52.800 --> 00:50:53.580
+generalize it.
+
+00:50:55.710 --> 00:50:59.160
+All right. Sounds good. Is there
+any other questions from
+
+00:50:59.160 --> 00:51:06.720
+audience? Now, let's thank our
+speaker aneema for the wonderful
+
+00:51:06.720 --> 00:51:09.780
+talk and, and good discussion
+times, and
+
+00:51:10.770 --> 00:51:13.710
+so on. Thanks, everyone. And
+thanks for sticking around. I
+
+00:51:13.710 --> 00:51:17.730
+really appreciate it. Yeah, and
+I do reach out if you have
+
+00:51:17.730 --> 00:51:18.480
+further questions.
+
+00:51:18.600 --> 00:51:22.950
+That'd be awesome. Okay. Thank
+you. Thank you. Thank you,
+
+00:51:22.950 --> 00:51:25.920
+everyone. We have another TDPs
+seminar tomorrow. So see you
+
+00:51:25.920 --> 00:51:29.460
+tomorrow. Bye now. Thank you.
+Bye.
+

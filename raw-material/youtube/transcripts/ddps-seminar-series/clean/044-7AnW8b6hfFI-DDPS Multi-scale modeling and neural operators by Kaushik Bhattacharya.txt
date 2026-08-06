@@ -1,0 +1,1524 @@
+okay let's start okay um
+welcome everyone to the ddps seminar uh
+before we introduce our invited speaker
+let's go over
+some rules and logistics uh first of all
+please mute yourself during the talk
+unless you have questions if you have
+questions you are welcome to unmute and
+ask
+otherwise please use chat room to post
+your questions so that we can address
+them in 20 session at the end
+second today's gdpr seminar is open to
+external audiences therefore no
+classified discussion is allowed so
+please watch out and finally the talk
+today will be recorded and uploaded
+in our youtube channel uh that's about
+it now let me introduce our speaker
+today it is an honor to hold host
+kaushik
+batacharya who is
+our
+tyson senior professor of mechanical and
+professor of material science as well as
+the vice provost at the
+caltech
+he received his bachelor's degree from
+the indian institute of the technology
+madras india in 1986
+his ph.d
+from the university of minnesota
+minnesota in 1991 and his post-doctoral
+training at the current institute for
+mathematical sciences during 1991-1993
+he joined caltech in 1993
+his research concerns
+the mechanical behavior of materials and
+specifically uses theory
+to guide the development
+development of new materials
+he has received the von carmen medal of
+the society of industrial and applied
+mathematics in 2020 distinguished alumni
+award of the indian institute of
+technology
+in
+the outstanding achievement award of the
+university of minnesota in 2018
+the warner culture medal of the american
+society of mechanical engineering in
+and the graduate student council
+teaching
+and the mentoring award at caltech in
+2013.
+today kaushik will
+give a talk with the title of
+multi-scale modeling and neural
+operators
+please expect a wonderful talk and enjoy
+it
+now without further adieu let me pass
+the button to kausik
+by asking our usual question that is
+what is your favorite things to do other
+than research
+well i'm looking at it i'm actually
+staring out of my window into the
+mountains
+behind so
+going for walks in these mountains is
+probably what i do
+very nice very nice getting some fresh
+air right for sure yeah
+okay the stage is yours
+thank you um thank you
+yang zhu uh it's a great pleasure to be
+here and um even though it's virtual and
+share with you some of
+the kind of fun we've been having over
+the last two or three years
+uh all of this is largely
+a collaboration with andrew stewart
+who's an applied mathematician at
+caltech and anima anand kumar
+who is a computer science also at
+caltech
+along with a large group of really
+wonderful and really sharp students in
+postdocs
+the work i'll talk today about uh
+is largely the work of nikola kovacky
+who's a graduate student in applied math
+with uh
+andrew stewart
+uh brigade liu who is a postdoctoral
+scholar with me
+and is now on the faculty at
+cambridge university
+margaret trottner who is a graduate
+student also with andrew
+zhongyi lee who was a graduate student
+with anima
+kamiya aziz adena shelly who used to be
+a postdoc with anima and now is on the
+faculty at purdue i'll also mention
+works by arju who's a graduate student
+with me
+ying shi tay who is used to be a
+graduate student with me but now at
+livermore
+and akila raja so
+so let me kind of tell you the kinds of
+problems i'm interested in
+one is
+trying to understand the plasticity and
+especially in the context of dynamics
+the plasticity
+of low symmetry materials like magnesium
+magnesium is the lightest metal and has
+very high strength
+to weight ratio
+but it's also very
+um
+it's not ductile so it has very limited
+ductility
+so what we'd like to understand
+and the reason for it is that there's
+very complex
+individual slip systems
+because it's a low symmetric crystal and
+what we'd like to understand is how do
+these flip system affect
+the macroscopic behavior for example
+when i'm doing some kind of dynamic
+impact
+calculation
+as it gets filtered through the
+polycrystalline
+microstructure
+second line of work quite distinct
+but very similar
+problems uh come in
+interested in active materials and in
+particular a class of materials called
+liquid crystal elastomers
+so these are rubber like solids but they
+have pneumatic messages embedded in
+their main rsi chains
+and because of this interaction between
+kind of the entropic rubber elasticity
+and the physics of liquid crystals phase
+transitions and liquid crystals they can
+undergo large spontaneous deformations
+and also form very strange domains
+and have very unusual macroscopic
+properties here i'm showing something
+which happens if i take a rod and i
+twist it
+it ends up buckling in this particular
+way so
+and we're trying to understand the
+macroscopic properties starting from
+this kind of very small scale physics
+which we understand well
+here's another recent work
+uh concerning dft
+over the many years
+michael ortiz and myself have been
+trying to develop a method
+of trying to do dft
+studies of defects like dislocations
+with the far field matter so we would
+like to do
+multi-million atom calculations of dft
+so that you can fully resolve the core
+and one of the ideas is really to do
+some subgrid sampling of the electronic
+fields
+and
+that means that we end up doing a lot of
+unit cell calculations
+and go
+and that provides a kind of predictor or
+a
+pre-conditioner for this method so
+so these are the kinds of problems that
+i'm interested in
+and so let me focus on the one on the
+left
+if i were to do a calculation like this
+classically
+i know the kind of balance laws of
+continuum mechanics
+but then i have to have a closure
+relation which tells me the relationship
+between
+the deformation history at a point which
+i'll call f of time
+and the state of stress
+and classically we have done this by
+empirical constitutive laws and
+they
+have been
+very helpful and useful they're still
+very useful but we'd like to understand
+more especially if you want to do the
+inverse problem of trying to design the
+material
+and multi-scale modeling provides the
+framework and the recipe of multi-scale
+modeling is
+you know the macroscopic
+deformation gradient and its history
+you use that
+in a smaller scale calculation often
+with periodic boundary conditions so at
+the grain scale
+you use this to provide you the boundary
+conditions and then you solve this
+smaller scale physics from there you
+extract the stress history and use that
+in the larger scale problem so it's the
+small scale problem basically provides
+you
+with the
+um small scale problem provides you with
+the closure relation necessary for doing
+the large scale calculations
+okay and of course this is i'm
+describing it only at two scales this
+framework of multi-scale modeling works
+at multiple scales
+you can think of multiple scales going
+all the way from electrons to your
+macroscopic simulation
+and the kind of intellectual
+idea behind multi-scale modeling is that
+any time you only have two skills
+two scales
+really communicating it's a pairwise
+communication where the larger scale
+regulates the lower scale by providing a
+boundary condition
+and then you filter the results of the
+lower scale to the upper scale right and
+so you can use this cascade and
+so coming back to this
+if i want to try and really do this what
+i have to do is i have to do
+a large number of repeated solutions of
+the fine scale problem if i want to kind
+of just take this philosophy and want to
+implement it without thinking
+what is called fe square times what i
+have to do is at each grid point of my
+macroscopic problem
+i have to start a microscopic problem
+solve it and put it back right so you
+really need a lot of repeated solutions
+so of course it's extremely
+computational expensive
+second you have an in problem of
+generating representative
+microstructures because you really are
+not tracking all the details of the
+microstructure of the small scale
+problem
+so based on some average you have to
+somehow generate the small scale problem
+and ultimately
+you're doing these very large
+calculations and you're using only a
+very small portion of the information
+right because you're filtering all this
+away so you're doing these massive
+calculations and then using it
+so
+the kinds of so this is what motivates
+our work
+so
+if i think of this as a
+map from
+the deformation history to the stress
+history can i use
+use learn the solution operator of the
+lower
+scale problem
+using the data generated by repeated
+solutions so i solve this problem
+repeatedly that provides my data can i
+learn this map then
+and in some ways can i also try to learn
+some hidden physics or closure
+relationship
+from this data that i get by retreated
+solutions
+so those are the problems which motivate
+me today
+and that's kind of what i've been trying
+to understand and that's what i'll talk
+to you about today i wanted to
+wanted to emphasize that our goal here
+is really learning the solution operator
+there is a large body of work that is
+coming where you postulate what happens
+here
+and of course you don't know the
+parameterization so you prima you
+develop you postulate a parameterized
+model and use machine learning for
+learning the parameters right
+that's not what i'm doing i really want
+to learn the solution operator so
+so that's something which i wanted to
+emphasize here
+okay
+so this is the problem so i haven't
+given
+an input output map so i'm given the
+strain history initial microstructure
+and i want to find out the stress
+history and the microglia
+the first thing you realize is that this
+is
+in this case it's a strained history so
+it's a function of time
+so that's a function it's not discrete
+data so it's infinite dimensional so the
+maps we are interested in learning
+is from
+one function space to another so we're
+really trying to learn a non-linear
+operator right so these are function
+spaces so these are infinite dimensions
+and i think that's important
+so the data we have is we don't know
+this map but what we are trying to do is
+we know realizations of this map so in
+other words we know pairs
+of input functions f
+and output functions s
+such that s is a function is
+this map
+and f is drawn from some distribution
+which you may or may not know and that's
+something which i'll talk a little bit
+about right
+so that's the data i have
+and what i'm trying to do is to
+find an operator psi which is
+parameterized by some parameter
+parameters theta
+such that
+there is some
+value of this parameter theta star at
+which this operator will approximate
+this operator right
+so the problem of training is the
+following so from this data
+i have to kind of postulate some
+architecture here and use this data to
+find the particular parameterization
+that's the kind of
+math problem i want to do
+so it's completely supervised learning
+with the given data coming from some
+so i'll show you some examples of this
+i'll talk a lot about what i'll call the
+pca net and i'll mention
+some really uh
+recent work ongoing work which we're
+very excited about rn on that and i'll
+make some comments about other operator
+other
+methods of doing this
+so what are the challenges in doing this
+one is of course what is the
+architecture that you should choose for
+doing this
+second
+your data comes from either numerical
+simulations or some experiment and it's
+discrete so you don't really know the
+full function you only often know
+the function sampled on some finite grid
+so you only know it projected on some
+finite dimensional uh grading
+but you might do a simulation i might do
+a simulation it might be in different
+uh
+resolutions so we want the
+operator to really learn the functional
+relationship so we want it to be
+independent of this kind of resolution
+and when i'm trying to use it i might
+want to use the resolution relevant for
+my macroscopic calculation so it's also
+very important therefore that this
+operator that i find really be
+represent the operator and therefore be
+independent of the resolution of the
+data that i have
+and the third kind of challenge is
+really trying to identify the
+the distribution from which the data is
+drawn so that's that's an important
+thing okay
+so the broad so
+so let me begin i'll first begin by
+introducing pcnet the one in which we
+have explored the most
+and then i will generalize down the road
+to a broader architecture
+which has a similar structure so
+again we are trying to map the learn the
+map from one function space to another
+so here's the architecture we're going
+to use
+um and this is just what we postulate
+and
+on the upper right i have noted the name
+of the student that the postdoc who did
+bulk of the work and in this case this
+is really the contribution of
+nick kovacky
+um
+so you have a function space uh so you
+have a map so you have a function space
+f so what we're going to do is to do a
+projection of it to a finite dimensional
+space
+and then i introduce a lifting back from
+this finite dimensional space to the
+original function space so you can think
+of this as the pca
+in which case
+depending on the data you have you
+choose
+a basis set and represent your data and
+that various asset and then of course
+that provides you
+also a lifting operator you could also
+use a
+kind of a deep neural net in terms of an
+autoencoder for example right this is
+the identity map and this is the
+this is the
+small dimensional layer in between
+so that's what we do on on the input
+space
+we do the same on the output space again
+we project and left
+now i have a finite dimensional
+representation of the of the input and
+output space so i can use
+my favorite uh
+deep neural network or graph network or
+whatever architecture i want to use
+right so i'm going to
+right okay and then so the overall
+neural operator then is the projection
+the finite dimensional network and then
+the
+uh lifting
+so i can write it in some compact way in
+this way
+okay
+okay so that's what we're going to do
+and for this we can prove the following
+result so before i show you some
+numerics i'll actually tell you the kind
+of results that we can prove
+so we're going to assume for this
+theorem
+that these are hilbert spaces
+we can now actually extend this result
+to bomback spaces but we're going to
+assume that the input and the output
+spaces
+have
+a hilbert's page structure
+we're going to assume that the map
+that we are trying to approximate is
+lipschitz
+uh we can again uh
+relax this
+uh
+so these are the are the projections and
+the lifting are done through pca mu is a
+probability measure on f which we know
+then we say that given any
+uh
+parameter i can find dimensions for my
+reduct reduce space and a set of
+parameters for my neural network
+such that the expected error
+over all of the space f
+expected over all choices of data
+is going to be bounded
+so that's kind of an approximation
+theorem you can prove
+and
+i'll make a couple of comments notice
+that we assume that we know the
+probability measure from which our data
+is sampled in actual problems that may
+or may not be true
+we need sufficient data for training
+because this is basically saying that
+the only way we can find bound the error
+is by
+taking some expectation over all
+possible data
+maybe i should have also mentioned here
+that
+what you can really do theoretically
+like in all these kinds of approximation
+theorems and
+is really bound the expected error you
+can't really bound the
+absolute error or the maximum error you
+can only bound some expected error
+and you need some regularity in this
+case elections right so
+so let me
+show you a very simple example
+i'm looking i am
+i have this partial differential
+equation so the kind of a simple
+you can call it uh elliptic problem a is
+a positive number
+and we are looking for the map
+from this coefficient a of x
+to the solution u of x right so that's
+the map we are looking for
+a might be in some h minus one you might
+be in some l2 so it doesn't have the
+hilbert's phase structure but okay
+and we're going to sample this from some
+distribution
+so this is a of x
+we solve this problem generate numerical
+solutions on some grid
+or 21 by 421
+we down sample it to some dimension
+and then use that to fit our
+neural operator using a pca dimension
+70 and some things like this okay
+so here's the a of x here's the ground
+truth of some particular u of x so this
+is my data
+and then in this particular case this
+would be what the train operator would
+be and that's the error so this is a
+particular realization but more
+generally let's look at it out here
+okay
+so what i have is the relative test
+error average over so i train it
+over some training data and this is
+really the some separate test data and
+this is the error in the test data
+expected error
+so though i do my simulations of 421
+the data i use is down sample from there
+and i use it for training at about
+at 64. so i downsample it at 64.
+and then i'm going to test it at 64 at
+100 and all these other resolutions all
+downsampled from the original data
+and what you see is that our
+architecture let's look at the blue one
+where the
+lower dimensional was 70.
+you see that basically this does gives
+you and resolution independent
+error
+the error is about five percent and it's
+resolution independent
+now
+after downsample and um
+and when you
+you know computer relative error on the
+higher resolutions
+there is some missing points how how do
+you compute the result
+okay so the original data i generate is
+at a very high resolution 428 that's 421
+squared that's where i did my numerical
+simulation right
+right
+very good
+then what i do is i down sample that to
+right 421 square to 64.
+i train my neural operator
+with that
+right
+and then i test it with
+other test data at 64. but other test
+data at 200 300 and so on so forth
+so what this is showing you is though i
+fitted it though i learned the operator
+with 64
+dimensional data
+the operator actually learned the
+solution operator which is resolution
+independent and so if you have data
+which is uh if you
+test it against data which is at a
+higher resolution it still does it
+and the reason for this and where this
+really this is really where the pca part
+helps
+so when i i'm not training the
+architecture based on
+the data that 64 i have but i did a pca
+which tells me something about the
+distribution of the data and i train my
+neural network on that part so that's
+why it becomes resolution independent
+right and the black dot shows you if you
+don't do this pca step just train it
+directly on this data so
+64 and you see the error really blows up
+as you change resolution
+so what so this architecture that i
+showed you is what enables you to get
+resolution independence
+the neural operator you're you're you're
+learning it's
+it's mapping the continuous space to the
+continuous space that's right okay
+so i would expect that it will fall
+apart if i go close to 421 square
+because that's of course
+the origin that's the only way only
+thing i know about the operator but okay
+but away from there it's quite recent
+if i just did some kind of linear
+regression this would be my error up
+there
+so you do much better than linear
+regression
+hope so
+um okay
+the other thing i'd want to show you is
+something which is quite interesting so
+when you do the pca the blue line so
+let's start with the red line is for 30
+dimensional red reduced to 30 dimension
+if you use 70 dimensions you do better
+the error drops but then if you use 150
+dimensions you actually the error
+increases
+and the reason is that
+at that resolution suddenly your the
+network that you're using and the data
+you're using did not train the network
+well enough
+so here's what shows you
+this
+so for a hundred uh so so this is
+shows you the
+training data set
+and you can see that if your training
+data is small
+with blue
+this is where you get the best
+resolution then you go
+but then if you increase the size of the
+training data you can really reduce uh
+the error
+with using
+uh higher dimensions so what it means is
+that yes you can get better resolution
+uh better learning with a higher
+dimension
+but you that also means that the amount
+of training data you need to train that
+network is much higher
+so that's really a representation of
+this expectation here
+so
+so there's some
+you have to be careful
+that
+if you have a more complex network you
+need more data to trade
+so okay so i showed you some example i
+don't know what this is
+sorry about that
+i showed you an example with um
+the
+uh with this uh elliptic operator this
+is the example from dft work from
+inkshi's thesis
+so i'm here what we're doing is we're
+taking a very simple problem i'm taking
+a unit cell i'm deforming it by some f
+so this is actually just a finite
+dimensional map
+and i calculate the electronic states
+so this is infinite dimensional and i
+want to learn the map from f to this
+electronic states and we use the same
+architecture on this side here we don't
+need any pca because it's already finite
+dimensional but here we do
+and okay so that's what we do the same
+architecture as before so this is the
+ground truth this is the prediction this
+is the error
+and here's really what i found very
+remarkable so we were trying to
+calculate energy
+so this is the ml if i learn the energy
+directly
+this is the
+energy so this is really a map from a
+finite dimensional to a finite
+dimensional so it's a classical neural
+net
+in this particular example you can get
+pretty good errors
+which are acceptable
+but if i learn the electronic fields
+and then use that electronic field to
+calculate the energy you can see i
+really can remarkably reduce the amount
+of error that i have from here to here
+so what it is telling you the fact that
+you can learn this kind of solution
+operator gives you very significant
+error and in a way what it also shows
+you not only that
+you can use ml
+to learn but the solution but you could
+if if you really want very high accuracy
+you can also use it like a
+preconditioner
+so you can
+because the methods you use often are
+iterative and so if you have a good
+initial guess or a preconditioner that
+is a very significant thing and in a way
+i interpret this machine learning as a
+preconditioner because we do one
+self-consistent loop after that
+so the third example i want to go and
+i'll spend some time on this and really
+talk about multi-scale modeling is
+crystal plasticity
+and so
+what you have is you have a unit south
+here some three by three or two by two
+unit cell
+you have multiple grains
+and in each grain you have a very large
+number of slip systems and twin systems
+in this case each grain had something
+like 48 twin and slip systems so because
+this is a symmetric crystal
+so all the grains have the same physics
+but their orientation is different
+you're given this stress history and
+you're trying to predict uh sorry the
+strain history of the deformation
+gradient history and you're trying to
+predict the stress
+right
+so the initial microstructure is given
+we subject it to some deformation and we
+are trying to predict the stress
+okay so that's what okay so this is your
+strain history this is the stress
+history
+so the question is what is the sample or
+what is the distribution from which i
+want to sample my deformation gradient
+history right and this is the sampling
+we chose
+we took this time interval 0 to t
+chopped it up into n segments
+and then we did a gaussian process on
+that and smoothed it so it can go up and
+down in each of its components
+that's what we chose
+we tried both
+having kind of
+uniform time segments
+and
+random time segments and i'll show you
+both
+that's how we generate the data
+and i'm going to show you data for both
+2d fft full resolution calculations and
+3d
+where the data is generated by taylor
+averaging
+so that's kind of
+what we did okay
+now notice that what i have really is
+i need the stress
+the deformation gradient history up till
+time t and i give you the time t
+but the architecture i have is for
+functions from one fixed interval to a
+fixed interval so that's what we are
+that's what our data is
+and we're learning this function so in
+some ways there is no reason why this
+operator would have to be causal but the
+physics is constant right so
+uh
+so that's something
+the we don't assume that
+our architecture is causal and one of
+the tests would be whether we learn
+causality from the data
+okay
+so here's kind of the example so this is
+the input
+and you can this is the output so this
+is the truth and the approximation so we
+do reasonably well both with fixed and
+random
+and this shows you some summary of how
+well we do in learning and let me focus
+on the 3d
+so if both your
+test data and training data
+is
+sampled on a random
+intervals
+then
+with training with 30 000
+packs
+gives you a pca error of about 10
+percent uh gives you not a pc error but
+it gives you a total error of about 10
+so that actually 10 looks large but it
+actually looks something like this so
+you get very reasonable solutions from
+this
+okay
+again the same thing that we have
+checked with resolution
+so this is what you would get
+um it's the error is resolution
+independent and again you see with the
+different
+pca dimensions you get
+different errors
+now one point i wanted to make here was
+that the error really comes from the
+okay so we have errors of the pca and we
+have errors at the neural network and
+the errors large errors are really on
+the neural network the pca error is here
+this is the total error so the dominant
+source of the error is in the training
+of the neural network
+here's some kind of common
+paths which we use in mechanics to
+test constitutive models so those are
+some facts
+and here's showing you that
+even though our architecture is not
+causal the data teaches the network uh
+the operator the causality so
+so here's
+multiple paths all of which up till time
+tb are the same and then they diverge
+and we find that you see that
+this is the learned
+you all these paths
+remain exactly the same up till that
+point and then
+the div
+so despite the fact that we're training
+on the whole interval
+in this region where all the paths were
+the same all the responses are the same
+showing that it really did learn
+causality here's the other test
+i have multiple tests where
+each of them the first one goes up till
+here then oops sorry
+uh departs
+then the second part goes up till here
+and then departs the third part goes up
+to there and then departs and again you
+see that it really does learn
+in the causal part in the parts which
+are common it actually follows this
+common trajectory and departs only when
+the input trajectory departs
+so
+you can do other obvious checks learning
+symmetries learning other things that we
+know from kind of physics that should be
+true and it
+all of that works very well
+we also then went ahead and then they
+said okay let's really try to see
+whether i can use it in an fv square
+mapping
+what we did was we wrote our
+neural operator as a
+user material in abacus why abacus
+because that's what we wanted that's
+what we used
+and uh so basically now we have an ml
+surrogate
+which is serving as our material model
+uh
+and here's some simulation so this is
+the kind of punch with
+so you train the vu mat with
+and once you write it you can change
+boundary conditions you can do punches
+with different plate thickness you can
+do the taylor impact again with
+different size and
+you can look at it in many different
+ways and it's
+it works quite well so what's the cost
+so this is the cost
+so let me look at the taylor anvil
+we ran it on a single processor using
+abacus if i use a classical constitutive
+model like johnson cook
+it in this particular processor it took
+about 50
+seconds
+if we did our
+trained view mat it takes about nine
+times that and it's the same thing for
+the plate impact and we have tried many
+ways many other problems and it's always
+factors somewhere between factor eight
+to ten somewhere in there
+okay you have to pay a one-time
+offline cost for
+one time cost for training the data and
+that was 10 to the six
+and the offline training
+the so offline cost of generating the
+data which was 10 to the 6
+and the offline cost of training which
+is 10 to the 4 but on a gpu so you let's
+take it back to 100 just to kind of
+okay this is large
+but on the other hand if i really did a
+concurrent or an fe square calculation a
+single calculation would have taken me
+10 to the 8.
+so i'm getting the accuracy of
+concurrent model which would have cost
+me 10 to the 8 at a cost which is
+comparable to the traditional model so
+this really is an effective architecture
+and i'll show you
+another architecture soon which we're
+working on at the moment where
+this number gets knocked down to
+something which is very comparable to
+this
+so this becomes an effective tool for
+doing multi-scale modeling okay
+so that's what i wanted to say so it's
+an effective approach so you can really
+get accuracies comparable to concurrent
+multi-scale
+with the cost of traditional
+constitutive relation
+but there are problems with the
+architecture i showed you
+you really have to know the entire
+history so you somehow have to know the
+duration a priority
+and so if you want to do a calculation
+which is longer than that
+you can't use this network so that's one
+problem so one question you can ask is
+can i learn a markovian approximation
+where
+given the current state i can predict
+the update
+and we'll come back to that in a second
+in this particular case i have to
+train a material model for every virgin
+material because i'm mapping the strain
+history to the stress history so one of
+our active areas of work is try to
+understand
+what about the microstructure what is
+we have to keep track of which what
+aspects of the microstructure do we have
+to keep track of
+okay then there is also
+in the
+large scale problem we
+in the fine scale problem
+we did not keep track of inertia so
+that's uh
+okay so we'll have to
+figure that out and okay
+there are other applications which we
+have which we're working on but i want
+to focus a little bit on this can i find
+a markovian approximation or in some
+ways it's also related to the next
+question here can you learn something
+hidden about the physics that you didn't
+know about
+so we thought about it and so again
+we're trying to learn
+what i showed you was learning
+the entire map now the question is can i
+learn it from an update if i give you a
+strain update
+can you calculate the stress update from
+a model like this
+well you need something about
+the state of the microstructure so you
+need something about the current state
+and it has to give you the new state so
+but i don't want to make an assumption
+of it i don't want to make this known a
+priory i would like to learn it so the
+question is can i also learn this hidden
+state variable
+so we took some
+inspiration from mechanics how we
+formulate macroscopic models and we said
+okay let's try the following
+architecture
+i'm going to say that the stress at time
+t
+will depend on the deformation gradient
+at time t
+some rate of change of deformation
+gradient at time t
+some hidden variable c
+and the hidden variable
+evolves according to some first other
+dynamics so it's some kind of overdone
+over-damped dynamics for the
+hidden variable it's a very common
+structure that we use in mechanics and
+material science
+so landau ginsberg models all of these
+we use so can we see whether
+that architecture works
+of course the point is we don't know the
+function f and g
+and we don't know the hidden variable
+zeta
+right
+so what we would like to learn is
+use our training data set to learn
+these functions f and g
+theta
+and this hidden variable
+c
+uh zeta sorry uh this in variable zeta
+so that's what we'd like to do and when
+we started testing it on some simple 1d
+viscoelastic models
+so okay so it's 1d so the stress depends
+on the elastic modulus which might be
+spatially dependent
+and some viscosity which again might be
+spatially dependent
+so in this case
+with we can prove an approximation
+theorem with this particular
+architecture
+where we use very essentially some of
+the
+features of this model
+but this is what we learn
+so if i don't use any hidden variable
+then i get a large error if i use one
+hidden variable i get a smaller error
+and more or less the data in this
+particular example
+you learn from using
+about three hidden variables so it
+begins to learn the data with three
+hidden variables
+the architecture i used here was strain
+rate dependent
+but suppose i don't have this
+it turns out that
+it becomes the error becomes resolution
+dependent whereas
+if i use the strain rate
+in my architecture it becomes resolution
+independent and
+we know from the approximation theorem
+that that has to be the case so this is
+kind of the numerical test
+we also did this on 1d viscoplasticity a
+very simple model
+and
+so here
+there's no averaging so we know that
+there is only one state variable and the
+question is can you find it
+and we can show that the error best
+approximation is with one
+hidden variable
+and in fact the hidden variable up to
+some in essential constant tracks the
+plastic strain which is the hidden
+variable in the model that i start so i
+want to emphasize that what we are
+providing it is
+epsilon as a function of t and sigma is
+a function of t and it is learning
+epsilon p from that data
+and we have now extended it to 3d poly
+crystals and are implementing it and
+we're trying to understand
+the errors and in fact our preliminary
+tests as i mentioned earlier are really
+very encouraging where we are able to
+learn a lot about the macroscopic
+plasticity
+so we are following a similar approach
+in trying to learn
+the texture problems so to try to learn
+the dependence on the microstructure
+and so hopefully in about a year or a
+couple of years we'll have some
+uh
+be able to update you
+so um in the last five minutes or so um
+if if i may or
+i'm happy to stop here or
+wanted to make a couple of comments
+about uh
+physical hat yeah
+thank you about a more general how this
+fits into a more general i showed you a
+couple of particular architectures but i
+wanted to make you a uh comments about
+the more general about neural operator
+so we've been this is the kind of maps
+that we are interested in from some
+function space to another
+and so as a general architecture this is
+what we have been studying
+so if you recall in the pcnet i had a i
+had a projection here and a lifting here
+and then i had a neural net in the
+middle
+so more generally what we want to do is
+the following
+so we still have some kind of linear
+operator but it's local so in other
+words
+if i give you some
+function it
+p only b at any point x only acts at
+that point x so it's a very local
+operator
+the middle layer is you have some
+activation function your favorite one
+then you have a local operator l some
+bias w so
+that is exactly what i showed you
+but then we add a non-local integral
+operator here
+right so at any given point
+kv returns a value which samples not
+only x but all its entire neighborhood
+and the other one you could do is rather
+kv would be the inverse fourier
+transform of a linear transform of the
+fourier transform of v
+right so it would be something like that
+okay
+and for this we can go ahead and prove
+an approximation theorem
+it says that if f and s are bonus spaces
+and phi is continuous on these bondok
+spaces and maps between monarch spaces
+we need some technical hypothesis which
+um
+i've omitted
+then you can prove
+an approximation theorem that we do
+indeed have a neural network and a
+training which provides you with an
+error and here it is the soup error over
+some compact set
+so this holds for the previous pc and
+net as well and so this is actually
+so it extends the previous theorem but
+it extends to
+all theorems all kind of architectures
+of this class
+which
+so i thought i'll show you one example
+of this it's the so-called what we call
+the graph kernel network
+where okay so we have an integral
+operator
+and okay i don't know how to my data is
+already might be discrete so and i don't
+want to evaluate this whole integral so
+we do some nistrum approximation at some
+points
+and then i can also incorporate
+multi-grid structure to it so basically
+the
+the value at this point comes so in
+other words the value at this point
+comes from some neighboring points here
+it comes from some other neighboring
+points here you can use multiple
+resolution and this gives you a very
+strong architecture
+it turns out that you can show that
+the mod if
+okay so you can show that this requires
+much less data to train
+you can get super resolution
+but it turns out that the evaluation of
+networks like this is much more
+expensive so in the case of multi-scale
+modeling where i want to use this in a
+larger scale model and i have to use it
+evaluated repeatedly it becomes
+completely prohibitive
+but in areas where i'm trying to learn
+from sparse data
+where i might have some on
+data from a smaller resolution and i'm
+trying to understand the solution
+operator this becomes an extremely
+powerful method and that's something
+as a way of doing
+multi-resolution calculation and that's
+something that we have been kind of
+trying to explore
+and some other comments i wanted to make
+but uh
+i'll skip over that
+and i'll stop here
+uh
+with a list of
+much of this work actually all of this
+work is certainly available in pre-prep
+some of it is published but much of it
+is available in preprint form of the
+archives so i'll leave this slide up and
+i'm happy to answer any questions or
+um
+uh receive any comments and suggestions
+thank you thank you
+thank you so much for the wonderful talk
+kaushik um i loved it a lot we do have a
+question from um
+so rav
+he asked can an operator that maps
+multiple input functions to multiple
+output functions b learned this way
+it means pca nat
+and would there need to be any
+assumption on the spaces that the input
+and output functions need to lie in
+okay
+so the answer to the first part of the
+question is yes so
+you know um
+i if i have multiple input functions and
+multiple output functions i'll think of
+that as a higher dimensional input
+function and a higher dimensional output
+function if i can think of that way this
+architecture works there's no
+limitation on the dimension of the input
+function so in fact
+when i talked about the strain space to
+stress space
+i'm mapping from a nine dimensional
+space to a nine dimensional space so
+okay
+and
+in the case of the dft calculation for
+example my output was multiple things
+multiple components of the electronic
+structure and you can you can use this
+now
+as i mentioned
+you're
+you're learning so you really need to
+know somehow the distribution from which
+your data is coming from right and you
+need to know that you're sampling
+a meaningful sample that your sample
+size is
+test
+size is
+sufficient
+and while we have these universal
+approximation theorems
+they tell they tell you about existence
+right it tells you that there exists
+something it doesn't tell you how to
+find it or when it is sufficient right
+and that's one of the kind of big open
+questions in the field and
+everything we do suffers from that as
+well
+all right sounds good okay another
+question from king kai
+can you also uh comment on the fourier
+neural operators and also the neural
+operators on nonlinear ptes
+yeah so on the fourier neural operators
+and the
+graph kernel
+operators
+uh
+we have tested this on
+okay
+a linear pde but the map is non-linear
+right it's from the coefficient to the
+solution so that's the one i showed you
+in fact actually maybe i will i think i
+have a backup slide from our recent
+paper there
+yeah so i had this so this was the
+solution from
+the error in the solution from the
+uh
+a of x to you so that's
+the pd is linear but the the mapping i'm
+trying to learn is non-linear
+and okay so
+this is resolution various resolutions
+and these are the errors for a given
+data set so and this was a very small
+data set
+and
+you know the fourier neural operator and
+the graph neural operator really does
+very well
+because you're really learning in
+essence the greens function of the
+solution operator so with very small
+amounts of data you can really learn it
+it provides super resolution as i showed
+um but
+you have to take a free transform so
+that's expensive or you have to evaluate
+a cur you know you have to do an
+integral operator so it's expensive so
+in the context of multi-scale modeling
+it's not the greatest thing but if
+you're really trying to learn the pde
+um we have also done this uh for
+learning the burgers equation and then
+uh and navier stokes and once again the
+fourier neural operator does very well
+in those
+pdes
+um and the graph kernel does um not as
+well but very good uh as well so these
+numbers are representative of not only
+this example but the burgers equation
+and uh
+and
+and uh
+navier stokes with uh
+with limited um
+reynolds number i actually forget of the
+top of my head what the maximum reynolds
+numbers we went to
+okay
+thank you so much
+my question is can you go back to the
+slide
+okay slide
+20. you go yeah
+oh yeah here um so you you compare the
+the computation of course the various
+computational quotes that
+that is nice
+and i have a two questions on on this
+slide and the first one is the offline
+data
+well generations and offline training
+it's it's a multi-scale so you you train
+the um
+the neural net on on the on the micro
+scale it is the you know the small
+compared to the the macro scale system
+levels
+that's right so i i was expecting
+you know
+somewhat efficient training procedure
+because the data size you're dealing
+with is smaller but maybe you are
+you need a lot of data
+so yes okay very good question um so
+what we needed in this case
+with this pca net architecture was
+uh of the order of 10 000 i don't
+remember exactly the number 10 000
+trajectory so i had to do 10 000
+calculations
+and this is the estimated cost on a
+single cpu right i mean that so i wanted
+to keep everything so i said okay if it
+if i had done each of these calculations
+on a single cpu what would it cost and
+that was this 10 to the six to generate
+the data
+add them up okay now
+of course i can do this trivially
+parallely because it's independent
+realizations
+right right
+and
+with the kind of um
+recurrent neural operators we find
+much better accuracy with just 400
+trajectories because it's
+it's learning much more the structure of
+the problem here it is not learning the
+structure of the problem
+so
+in this particular case this number is
+large
+uh
+but i think
+uh
+this is something we can knock down with
+a better architecture and also underst
+doing better data science of trying to
+sample in a better way okay i guess it
+can be improved
+absolutely and uh for the problem with
+the rno net some of the tests we're
+doing you knock it down by a factor uh
+by
+it's about of the order of um
+of a thousand if i remember correctly so
+it's knocks down by fact uh by
+uh 10 to the three
+okay sounds good so yeah my second
+question on this slide is okay so you
+nicely have the comparison between the
+concurrent multi-scale and
+your data-driven
+the multi-scale
+the results
+on the computational cost how about the
+accuracy
+um
+so how different are they
+okay good question uh
+we never did the concurrent multiscale
+right this is the estimated based on the
+number of elements and the number of
+realizations i would have to do
+but but i expect accuracy to be good
+because what i've done is i've i have
+done a lot of testing of the model
+itself
+right so the model itself is very
+accurate
+and so basically
+it's basically replacing one material
+model with another
+and if the material models are the same
+the integration schemes are the same i
+would expect the same accuracy so
+while in this context i have not done
+the full comparison
+um
+i would expect even in this that would
+be the case we have done the full
+comparison
+in simpler 1d problems and it bears it
+out very okay
+you know being at a university i don't
+always have the computational resources
+that you guys have so yeah well
+multiscale is not something i could
+yeah simulate
+yeah well for that and um we can
+collaborate of course
+i would be delighted to do that yeah we
+do have machines and you do have the
+algorithms so we can of course now yeah
+now i would love to do that yeah
+all right sounds good all right um
+thank you so much how is there any other
+questions from audiences that you can
+unmute yourself and
+directly
+if you do have one
+otherwise let's thank our speaker for
+the wonderful talk and i loved it i
+learned a lot and i especially like the
+the pre-conditioner
+the perspective um
+so
+very
+very well done thank you so much
+it's a pleasure and
+if you don't mind at some point you
+might sending me the link of the talk
+yeah yeah i will definitely do so yeah
+great thank you
+bye thank you thank you

@@ -1,0 +1,1622 @@
+awesome all right uh welcome to the ddps
+seminar everyone before we introduce our
+invited speaker let's go over some rules
+and Logistics first of all please meet
+yourself during the talk unless you have
+questions if you have questions if you
+have a questions you are welcome to mute
+and ask otherwise please use chat room
+to post your questions so that we can
+address them in Q a session at the end
+second today's gdps seminar is open to
+external audiences therefore no
+classified discussion is allowed
+please watch out finally The Talk today
+will be recorded and uploaded in our
+YouTube channel that's about it now let
+me introduce our speaker today it is an
+honor to host the Spencer uh Prince uh
+bringelson who is an assistant professor
+in the College of computing at Georgia
+Tech previously he was a senior
+postdoctoral researcher at Caltech with
+Team Colonius a visiting the researcher
+at MIT with tami's sepsis and a
+postdoctoral researcher at the center
+for extra scale simulation of plasma
+coupled combustion with Carlos Pantano
+and Dan bodony he received his PhD and
+Ms in theoretical and applied mechanics
+from the University of Illinois at
+Urbana Champaign in 2017 and 2015.
+[Music]
+uh working with the Jonathan Floyd
+in 2013 he received Bachelor's in
+science degree in both mechanical
+engineering and Mathematics from the
+University of Michigan Dearborn
+Spencer won a few hours like the young
+investigator award from Oak Ridge
+National Lab the UIUC outstanding
+dissertation award and the UIUC hasn't
+arrived over the full research and fluid
+dynamics today Spencer will talk about
+comparative physics informed
+networks which is a very interesting
+topic please enjoy and expect a
+wonderful talk now without the further
+due let me test the button to Spencer by
+asking one random question really really
+random questions
+uh the random question is what is the
+most
+irrational superstitions you have if you
+have one most irrational superstition
+that I have I'm not a very superstitious
+person yes
+um
+I guess maybe most scientists aren't uh
+I don't know how to answer that question
+uh let me ask another question okay uh
+you got it uh I have a superstitious
+that Consciousness is not real uh how
+about that
+oh okay it's a weird that's that's a
+weird it's a weird weird answer but uh I
+think it's uh it may be a somewhat
+controversial one so uh I think it makes
+sense yeah it's a perfect answer well
+the we are the question okay uh if the
+Stacy is yours
+thank you young Sam uh okay uh well
+thanks everyone for having me uh that's
+it and thanks for the uh nice
+introduction uh so physics informed
+neural networks are a Hot Topic as uh
+yongsu has alluded to
+um and so we're gonna get down to some
+nitty-gritty details here about what I
+think is going on in this research area
+and
+um maybe some of the problems that exist
+and some potential solutions to them
+um which I understand is a bit vague but
+uh we'll get there
+um all right first uh we'll do the
+acknowledgments at the beginning so I
+don't forget uh so really the brains
+behind this operation are two
+outstanding students uh SI Zhang and
+Joshua Authority uh they are two great
+students that work in my research group
+I also have an outstanding collaborator
+uh Professor Florence Schaefer uh who is
+also in uh the same Department as I am
+and is sitting a couple of offices away
+from me right now
+um so I'm very uh grateful for them and
+they uh contributed to this work as well
+um and there's a paper that is
+associated with much of this work that
+you can refer to as as you see fit
+um it's on the archive and it was just
+accepted to iClear uh 2023.
+okay uh so let's first do just a quick
+overview of what type of physics and
+form neural network is um even though
+maybe many people know but we'll do a
+quick introduction
+um so the idea of a physics form neural
+network is simply that
+um number one uh your task is that you
+want to solve a pde and uh the way
+you're going to do it is you're going to
+encode the solution to that pde into a
+neural network the neural network
+doesn't necessarily have a very
+complicated topology it's in many cases
+just a multi-layer perceptron though
+some people have experimented with
+different types of architectures but at
+the end of the day it's just a neural
+network in which you are encoding the
+solution to a pde via training
+um and and that's it
+um and then so in the way that this is
+done is that the loss function for the
+training of this pde is simply the mean
+squared error so the a difference
+between the exact solution to the pde
+and and the one that you observe so this
+is but and so the magic of this or the
+seaming magic of this is that through
+back propagation you can get the all of
+these that you can accumulate the
+derivatives to any partial differential
+equation you may have on hand or
+ordinary differential equation
+um such that you don't actually need to
+really have any data on hand all you
+really need to have is the pde and then
+I can then formulate what Solutions are
+I can create a neural net I train a
+neural network to represent its solution
+which is a really um uh clever little
+trick
+um that uh sort of bypasses problems of
+oh well how do I come up with so-called
+you know truth data and so on and so
+forth and because of its Simplicity this
+is why uh it's it's it's so uh popular
+seemingly these days
+but no I I thought um I'd be remiss
+without doing a little bit of uh of
+archeology here
+um so the idea of introducing
+um physic physical constraints in this
+case a partial differential equation
+um but of course one can imagine other
+physical constraints
+um being integrated into a artificial
+neural network is actually a rather old
+idea or at least rather old by uh by
+neural network standards artificial
+neural network standards and the
+research in the field so if we actually
+go back to 1994 Thompson and Kramer they
+introduced these ideas of intermediate
+variables and residual modeling as a way
+of actually solving uh for for models
+and now they weren't necessarily solving
+pdes that may have been beyond their
+computational capabilities at the time
+but they had this very similar
+fundamental idea
+um and so and so that was uh quite
+interesting and it didn't really gain a
+tremendous traction at the time but they
+had seemingly the core idea there that
+that seems to come ever so naturally to
+us once once you're told it at the very
+least
+um there's also this idea of
+physics-based pre-processing where you
+um inject some prior physical knowledge
+and then and then you train your neural
+network model
+um so you do this sort of ahead of time
+instead of during training
+um and so that that also has been around
+for a long time uh at least since 1998
+if not earlier
+um and so humans that we have this idea
+that if our neural network isn't really
+doing what we want um maybe what we can
+do is we can just inject some Physics in
+some sense or some sort of mathematical
+representation of that physics and that
+will make things better
+and so uh it turns out that that idea is
+not uh extremely new
+uh and we can go on and on in 2005 uh uh
+folks came up with the idea of a finite
+element neural network where all of the
+weights that compose the neural network
+were actually pre-computed because
+people had an idea of what they should
+be to begin with because people under
+have understood finite element methods
+for a long time so people tried that as
+well and had some success
+um and then we go further and further
+and there's some work in 2007 where
+people are incorporating physical models
+as neural network constraints and had
+more and more success as as more
+computational resources were available
+so here we're looking at something like
+a constitutive law on the top in order
+to get some temperature of a material
+um so none of these specific
+applications for ideas notwithstanding
+the reason that perhaps
+um they uh didn't get a ton of traction
+is because uh maybe we just weren't
+quite ready for them
+um and or we didn't both in terms of
+sort of computational horsepower or in
+terms of uh the software tooling needed
+in order to make them easy to create
+um but it just so happens around uh
+maybe the mid 2010s that these types of
+tools became uh common
+um so I'm thinking of things like pie
+torch and tensorflow and so on as well
+as gpus started exploding onto the scene
+where now sort of everyone can have
+access to a GPU or a small cluster of
+gpus in order to train these things and
+between the two it sort of was just the
+right sort of mixture of things in order
+to pop out these things deemed physics
+informed neural networks which is a
+quite similar idea but it was just
+really came in at the right time and um
+and uh and showed all sorts of uh great
+examples about what these things can do
+and uh so this is of course the the
+quite now uh famous paper of veracity
+prayer decaris and George carnidakis
+that I think many of us are familiar
+with
+so pins pop into the scene in 2019
+though the archive version of their
+paper was I believe 2017.
+um and so since then we've had a bit of
+a research explosion in this area
+basically all of these papers in this
+review so you can find this on the
+archive and this is a separate paper
+um our our uh are are purporting to to
+try to sort of hammer away at um at
+we're attempting to to hammer away at
+this problem and in in in all sorts of
+from from basically every different
+angle
+um and I think we're we're going to get
+to in this talk we're going to get to
+the point of why so many of these papers
+exist why we're looking at uh there's
+references here at least on this slide
+into the 300s
+um so part of this is because uh that
+this tool is powerful but part of it is
+because it actually needs some help
+um so I'm going to get to that uh next
+okay so uh so this is to to bring us
+back uh after this uh uh short uh
+history lesson
+um this is again what a physics informed
+neural network looks like and um and uh
+I'll recall to you that uh this MSC here
+stands for mean squared error so this is
+like an L2 error on basically the
+difference between the solution
+um or the residual of a pde so maybe you
+want to focus on this part where my
+pointer is this F minus LaPlace U so
+here we're just solving a poisson-like
+equation so this is the pde residual and
+then this other term is just uh sitting
+in for the boundary conditions perhaps
+it's not especially important
+um but here this thing in the loss
+function which is really the main meat
+of what makes up a neural network and
+it's certainly how it is trained is
+is what's going on here and so uh I I
+suggest and I I hope to show some
+evidence that
+um this is actually part of the Crux of
+of what will become a problem
+okay so the problem here is that
+um these physics-informed neural
+networks if I give them a pde if I give
+them the new base Stokes equations if
+they give if I give it even seemingly
+sometimes quite benign pdes or even Odes
+then it will struggle to come up with a
+accurate representation for the solution
+it will the lot and what I mean by that
+is essentially that the loss function
+will actually not decrease
+um uh to a very low level so here we're
+thinking about something on the order of
+like one percent L2 error
+um and of course it can be much worse
+than this there are some cases where
+some pdes just do not train at all so
+you start off with some error and then
+nothing basically nothing happens as you
+go through training and this is well
+documented I put some example papers
+here there's probably been even more
+since since I first created this slide
+like a couple months ago so
+um so uh this is this is well documented
+and the question is well what's going on
+here why can't I train my neural network
+my PIN to represent this pde wouldn't it
+be so great if I could and it turns out
+that and it's not really clear what the
+reason is because it's sometimes sort of
+butts its head in uh into
+um
+it butts its head into seemingly benign
+pdes whereas for a more complicated
+looking pde everything is just fine and
+if you get also in the training error is
+quite low and everyone's happy
+um so the the question is what what is
+going on here
+so how do we fix this thing and I hope
+to to talk about that next
+okay so
+um my suspicion here uh which I hope to
+convince you of is that uh the main
+cause of this problem is that these
+problems are poorly conditioned so the
+pin loss function is this L2 like error
+or this squared error involving
+differential operators of course they
+can be of higher differential order
+which would only make the problem worse
+um and so but then at the end of the day
+the problem we're actually trying to
+solve so if we just think about this in
+the context of a discretized linear
+problem and discretize linear
+differential operator so something again
+seemingly benign in this case a poisson
+equation
+um then uh then this is the problem that
+you're trying to solve here right and so
+we know that this is the solution to
+this minimization problem and if you put
+this thing through gradient descent this
+is going to be essentially what gets
+computed and and the problem that that
+tries to get solved now and and you're
+solving here for you that's the solution
+field that you want and you can have the
+once you actually have that thing you
+can evaluate it anywhere in say space or
+if this was the time dependent you could
+evaluate it in time
+um and so on and so forth
+um but uh but if if we remember our uh
+numerical linear algebra we see that
+there's something quite uh nasty about
+this this this problem
+um which is that this a transpose a
+inverse is actually a quite nasty thing
+this is akin to solving the normal
+equations for a linear system
+um which squares the condition number of
+that operator so if a is encoding any
+differential information this is we are
+now squaring that condition number which
+is something that we all learned that we
+we don't want to do
+um sometime when during our schooling uh
+and so this is essentially what's
+happening every step through uh
+evaluating the loss and doing your
+gradient descent or however you would
+like to optimize your uh your neural
+network your your PIN
+okay so this uh seems to be a key uh a
+problem to what's going on
+um and so uh instead a way to fix this
+um partially is to get rid of this L2
+type business
+um but the problem is that you don't
+really want to give up this L2 type
+property because it has this nice
+convexity properties and and L2 is nice
+for all sorts of other reasons so you
+don't really want to leave the L2 space
+um and instead you'd like to solve this
+in perhaps a different way and so this
+is where
+um uh where I think a reformulation of
+it of otherwise the same problem uh is
+beneficial and so here we are recasting
+the same problem as instead a Mini Max
+minimization problem so the a Mini Max
+uh prop solution to the same problem so
+here we um are minimizing now the
+solution to this pde where here Pi steps
+in as the solution uh so this is still
+the pde residual in the parentheses and
+then B serves as something that looks
+like a discriminator that is imposing
+penalties onto this thing and so this is
+a so-called Mini Max problem where the D
+is trying to penalize solutions that are
+um uh porcelain uh is trying to is
+trying to penalize mistakes that are
+made by the approximation pi and vice
+versa Pi is trying to minimize the term
+that are in parentheses such that this
+is this is small and so this is a back
+and forth game that is going on between
+these two agents
+um and so if you recast this Minimax
+game into its linear formulation which
+is is what's shown here
+um then it turns out that the condition
+number of this linear system has the
+same condition number as original
+derivative operator and so things are uh
+are better posed
+um and so that can uh save quite a bit
+of of heartache and I'll I hope to show
+you some examples about why why uh that
+that are compelling that suggests that
+this is important
+okay
+um so the next question is that uh that
+we need to implement this thing
+um so we have here this Mini Max game in
+the top left here's our pde residual for
+our sort of toy pde the or uh our
+poisson problem and we have our
+discriminator hanging out here and this
+is what the architecture looks like so
+now we have two multi-layer perceptrons
+in this case
+um one serves as the neural network
+representing the discriminator and the
+other serves as what we uh what is our
+our good friend the pin that is going to
+give us the solution uh in this case Pi
+but otherwise they're up to
+um the same business except that they
+are now competing but now we see that
+the loss function looks a little bit
+different we have products here for
+example between D the discriminator and
+the the residual between the
+um uh the residual of the pde that we
+hope to solve so we see that this no
+longer looks like an L2 type mean
+squared loss function this looks
+different
+um
+so that's what the architecture looks
+like and now the the next question is
+how does one actually go about
+optimizing such a a type of game between
+this discriminator and this pin Network
+um and so that's where this idea of
+competitive optimization comes in so it
+turns out that this is a quite necessary
+task and I'll make the argument for that
+in a moment
+um but what one can imagine in the C pin
+instance that's what we call it these
+competitive pins is that the
+discriminator is acting as one agent
+that is trying to do what's in its best
+interest which is to penalize the
+mistakes of mismatching mismatching the
+solution to the pde and the Y is the
+actual PD residual which is trying to be
+as small as possible so these this X and
+Y these two agents X and Y are in
+competition with each other
+okay and so one can think about this as
+sort of like a cat and a mouse where the
+mouse is this Agent X and the Y is the
+is the cat
+um and uh and they're each hoping to
+minimize their respective loss functions
+f and g because the cat wants to get The
+Mouse and the mouse does not want to be
+gotten by the cat uh so both so um so
+the thing to notice here is that the
+loss of each of these the F's and the
+G's depends on what the other one does
+and so it turns out that this is rather
+important so what they the cat or what
+the mouse does influences what the cat
+should do next and vice versa so um and
+this can go back and forth actually if
+you think about this in sort of finite
+time steps Um this can go back and forth
+sort of infinitely many times like what
+would I do if what would if if he knew
+what I was going to do and back and
+forth and back and forth and back and
+forth until you reach an equilibrium
+okay but we're going to get to that a
+little bit more uh in a moment
+um but uh but I'd like to get into just
+a little bit more detail here because I
+think it's helpful
+um so one one thing to notice here is
+that these two agents they have
+conflicting goals so what what is good
+for the mouse is bad for the cat and
+vice versa which is uh shown here as uh
+the they are basically in essence uh
+opposite uh types of loss functions
+which again are akin to our sequence
+instance
+and um and so one way of viewing this is
+okay well why can't I just do my regular
+gradient descent type of algorithms or
+something like them in order to solve
+this problem so let's look at what
+regular gradient uh descent or what I
+like to call simultaneous gradient
+descent looks like for for such a
+problem with two agents so here we have
+the update on X and uh on the left and
+the update on y on the right and so what
+you see is that the um what what the X
+will do only depends on what what the Y
+did at the previous step so the next the
+basically the update only depends on why
+at the previous step and vice versa y
+only depends on what x did at the
+previous step
+okay and so we can see that if one
+actually goes through with this strategy
+that is in these that's embodied in
+these two little equations that this
+strategy actually diverges even on uh
+quite simple examples so if the loss
+function of F the agent f is just this
+inner product between X and Y which
+happens to be at odds with the loss
+function of G so let's just Define this
+so there's like a triple equality here
+um as minus G because they want to do
+opposite things they have opposite
+objectives then
+um this this thing even diverges here
+and so that's what's shown in the
+picture where here basically the the
+state of the agent X and the agent Y is
+plotted on this two-dimensional axis so
+that makes up one Circle here and then
+the arrow represents the direction that
+the basically
+um the the loss functions are pointing
+you in
+but we see that this this basically
+diverges in this spiral-like fashion and
+the reason for that is because for
+example if agent F were to play in a in
+for example in this in rock paper
+scissors if the agent
+um uh F were to play Rock then the agent
+y word r would know then next to pick
+paper and then after agent F observes
+that agent y or or Jeep pick paper it
+would then pick scissor and back and
+forth and back and forth and back and
+forth and Not only would you not
+converge but you would actually diverge
+in this sort of spiral like fashion so
+this type of typical gradient descent
+does not work on these types of of game
+formulations that I've laid out in the
+previous slides
+okay so then the question is how does
+one uh linearize a game such that we can
+get some type of uh gradient descent
+descent like algorithm because we know
+they are useful uh in order to carry out
+uh this optimization in a way that
+doesn't have these nasty properties and
+perhaps one that's even kind of good
+um so one idea is to just have uh one
+agent so and where the optimal strategy
+is just the regularized linear local
+approximation of what it should be doing
+and the other is to have two agents
+where the optimal strategies are
+linearized local approximations for both
+of the agents
+um but then the the question remains how
+do you actually linearize in order to uh
+to deal with these problems and so I'm
+going to briefly go through the math of
+of how these terms show up and hopefully
+that uh makes things uh a bit more uh
+interactive here and more interesting
+and so here let's look at um what what
+is basically essentially uh
+straightforward gradient descent
+um on the uh the update to Agent X and
+the update to agent y on the top and
+bottom respectively
+um and so uh here well what we see is
+that if this is linear for one agent
+then it is actually linear for two
+agents so this is just the gradient what
+you're looking at at the top is just the
+gradient descent update for um so how X
+should change and uh here this is just
+sort of the the truncated Taylor series
+um so you have the argman of the
+objective function f
+um and then you have your your gradient
+terms and X and Y that show up evaluated
+of course at x sub k y sub K and then
+you have this regularization term that
+basically
+um uh enforces or penalizes good or bad
+behavior which looks like this inner
+product term so this this sort of
+corresponds to how big of a step you
+would take given the the confidence that
+you have in your in your objective
+function and the same thing is on the
+bottom except now we're looking at G's
+instead of F's and we're looking at y's
+instead of x's but otherwise things are
+the same and we still end up with these
+two terms showing up here except again
+with with the G
+okay and so I think the the interesting
+part that will that will come up here is
+that if you do this with sort of normal
+gradient descent uh then uh and you and
+you linearize this problem what you will
+find is that all of these cross terms
+the terms that perspective that that
+potentially could give the information
+about what the the cat should do knowing
+what the mouse would do and what the
+mouse should do knowing what the cat
+should do
+um are actually banished because this
+term does not depend on Y and then this
+term is evaluated such that uh is not
+evaluated at any uh this derivative
+vanishes because it's constant with
+respect to X
+um and and vice versa here so this term
+ends up being a constant it goes away
+this derivative with respect to X goes
+away and so the only terms that you hold
+on to are the normalization terms of
+course and then these highlighted terms
+that are basically what we already went
+through they're the terms that say okay
+well well I'm the cat so I know that I
+should be doing such and such
+um but it's not taking in this this
+intrinsic missing information about
+um what the cat would do knowing what
+the what the mouse would do and vice
+versa there's no sort of cross terms
+that exist here so this actually just
+turns into and the same goes for the
+mouse on the bottom
+um and so this just turns into
+simultaneous gradient descent once again
+but then the interesting part is that
+there's there's no reason there's
+there's actually additional terms that
+could be kept that are linear here so
+the additional terms are these cross
+derivatives
+um and in this case D X Y of the the
+second derivative operator that are
+shown in the middle here and these
+represent what the cat would do knowing
+what the mouse would do and vice versa
+and they show up in both the bot the top
+and the bottom terms one thing to notice
+here is that even though this represents
+a a Hessian it only represents the off
+diagonal terms so
+um and so the there's um this is still
+linear it is not uh non-linear and it
+doesn't result in any uh other nasty um
+uh second order derivatives
+okay and so this this allows them
+basically both to peek at each other and
+go back and forth
+um uh back and forth in order to uh to
+to make basically the best update and
+now
+um and so this is uh an interactive type
+of procedure
+um now there's only one step left in
+this in this business which is
+um to find the Nash equilibrium which is
+that if I know that you know that I know
+that you know about the steps that I'm
+going to make next then you can iterate
+this over and over and over again to
+find the Nash equilibrium where it no
+longer makes sense for me to move in a
+certain direction because knowing what
+you would do next I would do nothing
+different and vice versa
+um so uh in this case both players are
+satisfied with their positions and then
+you make an update and so it turns out
+that you can just get this from a
+truncated Lu decomposition and taking
+that to an infinite power and then you
+get the Nash equilibrium and so this
+thing serves as the new update rule that
+makes up the basis of cgd or competitive
+gradient descent so this is just the
+thing that that serves as our new update
+Rule and we argue that this is a natural
+generalization of gradient descent to
+multiple agents without bearing uh undue
+computational costs or anything nasty
+like that
+okay so that's how we actually go about
+our
+um our optimization procedure and that
+uh it turns out that the Nash
+equilibrium of this game actually is the
+exact solution to the pde so um so
+there's actually no conflict there that
+that's actually a a nice uh mathematical
+fact that can be proved
+okay so how does this thing perform I I
+purport that uh this is uh such a such a
+nice idea or something that uh I guess I
+should show some evidence that it has
+some some nice features
+um so here what we do is um the number
+of forward we count the number of
+forward passes instead of the number of
+epochs because in the C pins procedure
+one has to account for this Hessian
+Vector product this which is associated
+with these cross terms that I mentioned
+that that make cgd what it is instead of
+just simultaneous creative descent so
+instead in order to fairly uh take uh
+take into account the computational cost
+we count the number of forward passes as
+opposed to the number of epochs
+um and then we plot that against the L2
+relative error which is nominally what
+you actually care about
+um and we see that
+um even on a 2d poisson problem a nice
+uh smooth one nothing particularly nasty
+about it over about uh one two three
+like four there's a magnitude the PIN
+instance had the traditional pin trained
+with a regular gradient descent here
+with Adam basically with its special
+update rule has decreased by less than
+an order of magnitude over all of those
+forward passes in terms of L2 relative
+error whereas the C pin is able to get
+down to single Precision error so this
+is carried out on a single Precision
+Hardware so this is actually as good as
+we can hope to do and it does it in an
+efficient way as well so so it works
+here nicely
+um and then the other
+um uh argument that one uh may be
+thinking about making is is is along the
+lines of
+um well what about uh you're you're
+saying you're using Adam
+um well maybe I should just be using
+some orders of other special
+um Optimizer and that will take care of
+the problem
+um and we we actually did an ablation
+study uh on a whole slew of different
+algorithms both the most popular ones
+and other ones that people more modern
+ones that people uh argue for and we
+found that this red curve which is the
+one that I presented before
+um called a cgd
+um which uh where the a is in a
+particularly important but the point is
+that it outperforms
+um in a quite meaningful way all of
+these other uh other things other
+optimizers
+um
+which is great uh and I also mentioned
+the difference between forward passes
+and uh epochs or iterations uh so you
+see if we actually just take into
+account iterations then uh then our
+method here in red looks even better but
+I think that's a bit of an unfair way of
+thinking about it but I put it there
+just for reference
+okay I have one more slide
+I think
+um and it's on the base Stokes so
+there's been all sorts of efforts on
+trying to train Nevada Stokes and all
+sorts of papers just about training pins
+on Nivea Stokes and so we thought we
+would give it a go
+um and so uh my argument here is that
+over all of these orders of magnitude of
+forward passes basically the pin is not
+training at all so this is being trained
+on a uh to solve a steady uh cavity flow
+problem a lid driven cavity flow problem
+and um it it decreases in relative error
+by like a factor of of like two over all
+of these forward iterations the the
+physics informed neural network with
+Adam and to be clear again I'm only
+showing the best results for the physics
+and form neural networks with for the
+various optimizers I'm not showing the
+ones that do worse
+um and but for the C pin we do get
+convergence it's a bit noisy which I
+have some ideas about why that may be
+but
+um uh suffice it to say that it does
+seem to be converging all be it quite uh
+slowly so this requires a bit more
+attention about what could be going on
+here but it has some similar
+characteristics
+okay so uh so that's basically the end
+of of my talk and I hope I left enough
+time for uh questions
+um the key takeaways here is that
+there's a training problem that is
+associated with this um this squared
+loss function and that remedying the
+squared loss function is not maybe as
+trivial as it seems and it involves sort
+of actually changing the architecture of
+how one goes about solving this problem
+and using sort of a little bit more
+specialized uh optimization methods
+there are a bunch of good results that
+we have for other equations that I
+wouldn't burden you with showing you
+solutions for the burgers equation
+Schrodinger Allen con equation and so on
+and so forth so we do quite well for
+those as well
+um and uh and the new gay Stokes also
+does well but uh needs a bit more
+attention that we're looking into so the
+code for this is openly available under
+MIT license you're welcome to to have it
+and play around with it if you if you
+see fit
+um so I'd like to thank you for your
+time and for the invitation I hope this
+was uh in any way interesting
+um and I am of course happy to take uh
+your questions
+thank you thank you so much for the
+wonderful talk Spencer very informative
+and
+um easy to follow
+um
+in my opinion and also there were like
+tons of discussions in the chapter
+follow every single things but um let's
+let's do this in Q a session
+um let's give a you know the chance to
+ask questions in you know in verbally
+um hopefully their Sound Works let's
+start with a Mark Miller
+um if you're okay to mute yourself and
+ask your question directly that would be
+wonderful sure maybe I'll just ask the
+last one great talk I I wasn't able to
+follow all of it but I I really enjoyed
+it uh so I had a silly question here
+towards the end what do you have a sense
+of maybe what the total flop count is
+for Solutions via cpin versus
+traditional numerical Solutions the same
+quality
+yeah good question so we try to take
+that um into account with our our
+business of forward passes versus
+iterations here
+um so actually what's going into this
+forward pass computation is we actually
+we aren't taking into account
+um per se the exact Lop count because
+that uh could could become a bit more
+complicated one thinks about that people
+are doing you would you would normally
+do this on gpus so I I'm not sure that
+that flop count per se is the the
+perfect metric but um but instead what
+we do is we just take into account the
+nominal number of of sort of operations
+that are required in order to do the the
+Hessian Vector product which is the main
+thing that actually changes the the cost
+between the regular pin and the C pin so
+that's the main difference and that is
+the thing that we add to the cost which
+gives this difference between the plot
+on the left and the plot on the right in
+terms of Shifting the spread curve to
+the right
+um as well as the yellow curve that's
+somewhat less less important
+okay Mark Marcus you know talking about
+the traditional numerical methods like
+the final element finite Difference by
+the way oh are you talking if oh sorry
+if you're yeah yeah yeah thank you sorry
+I totally misunderstood no problem no
+problem it's when I it's one I totally
+get all the time so I can so yeah yeah
+yeah so you're yeah the question then is
+um if I understand correctly is
+um well what if I want to just solve the
+same problem using a finite element
+method um to solve the pde in the same
+way
+um so I uh I totally sympathize with
+everyone that wants to do this and I
+actually suggest you do do it um if you
+uh have a traditional solver to solve
+via finite elements or something your 2D
+person equation and you're happy with
+that it will actually be much faster to
+deal with that than to deal with
+training a pin and solving it that way
+not only will you get smaller errors in
+your traditional solver but you will um
+solve it faster now the the and what I
+what I sort of hit here and maybe I
+should have shouldn't have is that
+um the real value value in these pins
+things in in my view and maybe other
+people have other views but the main
+value is that these things are useful
+for many query problems many query
+meaning that I can train this pin to
+also be uh be parametric so you know you
+can imagine the flow over an airfoil and
+then I train this pin on a whole bunch a
+whole bunch of pdes where the where the
+parameter is say the angle of attack and
+now I can probe that thing as basically
+for free because the thing is
+represented as this small compact nice
+little neural network but if you want to
+solve a million uh finite elements
+solve the final element equations a
+million times for different angles of
+attack then then I would argue that
+that's that's not really a very fruitful
+way to go and the the more promising
+area here is these many query problems
+super thanks so much really enjoyed it
+thank you
+uh let's go to Majid Majid um
+for you uh hello can you hear me yep
+yeah yeah
+um so I didn't actually write any
+questions in the chat uh but I can ask
+you a question if if that's okay yeah go
+ahead go ahead yeah thanks for a great
+talk actually I mean I there's a study
+it feels a little bit different from
+many other applications so it's nice to
+get to the root of the problem with pins
+um my question is uh so uh the problems
+that you showed here like the 2D
+problems
+um I'm just wondering do you think
+finding the best Optimizer will solve
+all the problems with pins or using
+neural networks to solve pdes
+um for instance for let's say problems
+that they have time component or 3D or
+where they have high frequencies and
+things like that
+um yeah I guess my question is like what
+so
+um I see there can be one problem with
+optimization right and they can be one
+problem with neural network not being
+expressive enough to solve every kind of
+pdes that we deal with so just wanted
+wondering about your comments you know
+like your thoughts on that
+okay yes thank you for your question I
+think I understand it so
+um the so there's a couple things first
+uh number one I I should say I don't
+purport uh uh and I hope I didn't give
+the impression that I I that we're
+somehow solving every pin problem that
+that exists
+um uh just maybe a couple of the ones
+that people have been
+um noticing uh often
+um and that seemed to be uh uh uh
+important to getting to the bottom of
+some of these other things
+um so that's that's the deal with this
+this conditioning that can be solved via
+a Mini max type of of architecture and
+then uh competitive Optimizer
+um so that can be what's solved there
+now um regarding your sort of other
+questions
+um whether one is
+um
+whether whether one is thinking about
+higher dimensional problems so the part
+of the reason I actually didn't solve
+show higher dimensional problems is that
+higher dimensional problems are actually
+easier for a a pin like uh thing or
+really any type of neural network uh uh
+type architecture because they don't
+suffer from the cursive dimensionality
+in the same way that a traditional
+solver would so if you had for example
+and and a lot of people do this and
+perhaps it's a bit unfair
+um for them to do so but point is that
+as you go to higher and higher
+Dimensions so if I think of like the 10d
+poisson problem all of a sudden a neural
+network type solution for that problem
+actually looks very very competitive
+compared to any type of traditional
+solution to that problem because as the
+the expressivity of the neural network
+remains intact but the uh expressivity
+or the the amount of operations that one
+would have to do to solve this in a in a
+sort of normal numerical methods way
+does not and it scales um to the power
+of that Dimension so that's a nasty
+problem and uh and and actually that's
+another place maybe if I were to add
+another bullet point uh down here to
+this slide it would be also useful for
+many dimensional problems um and so if
+those are interests of you to you then
+uh things like these types of neural
+network expressivities things are are
+quite attractive
+um the other uh point you made uh was
+just regarding expressivity in terms of
+what if my
+um my solution to my pde has let's say
+some really nasty features some highly
+oscillatory features or something like
+that does the neural network have enough
+expressivity in order to accommodate for
+those kinds of solutions at least if
+that if I'm understanding the point
+correctly exactly and and I think so
+there's a couple of things one is that
+this um there's this idea of uh that the
+neural networks serve as universal
+approximators so and so which I think in
+many cases is used as a bit of a red
+herring but the point is that uh but but
+the point is still true is that um the
+price efficiently deep and wide neural
+network any type of solution can be
+expressed
+um so so that's that is true and now now
+what in more practical terms if if one
+had a really nasty equation and would
+would
+um how how big would the neural network
+have to be and would it be worth making
+a neural network that large in order to
+get that kind of expressivity
+um is a question that I'm not really
+prepared to answer but it would
+um but at in some limit it would be able
+to do so
+interest thank you thank you for your
+comments great talk thank you
+okay thank you uh let's move on to
+repang I know he just commented on it
+but um let's give him a chance oh okay
+thanks thank you thank you if I can ask
+uh some questions this is a very great
+talk I'm very interested in this topic I
+think my first question is uh actually
+on on that's on the slide you you are
+showing here I think at the very
+beginning of your talk you said some
+good features of of pin because you
+don't need the uh much data and you have
+some information in the back propagation
+I think I didn't hear that very well can
+you can you please uh comment on that
+again
+uh absolutely yeah so this comes down to
+the Crux of what a pin actually is
+um which is the idea that I'm what I
+want to do is I want to solve a pde so
+what I'm showing here is a a toy pedia a
+poisson problem so I have the laplacian
+of U equals f
+um and so I'm just basically sticking
+this thing into the loss function or the
+error the mismatch the mismatch and the
+residual basically
+um is going into the loss function and
+these are just the the first term here
+is just associated with boundary
+conditions so maybe
+um maybe we can forget that for the
+moment
+um so that's the idea of a pin and then
+the reason that this all sort of works
+out nicely is because
+um one can one doesn't need any data
+because one can obtain these derivatives
+so in this case I need the second
+derivatives with respect
+um with respect to the independent
+variable operating on u in order to
+compute the laplacian right but the
+thing is through uh back propagation I
+can get I can just basically do auto
+grad to get all of those derivatives for
+free so this comes to the case where
+um uh where I I don't actually need uh
+some sort of data or anything I can
+automatically compute what those
+derivatives should be and I can just
+take them into the loss function
+so basically back propagating through
+the neural network to compute what the
+what the derivatives are
+so in bad times you can approximate or
+you can put a any sort of pde into this
+thing
+gotcha thank you
+um my second question is I think uh you
+showed one of the problem in not
+achieving high accuracy in pin is the
+the loss function so you have you
+because we monitor this residual yeah
+especially in this linear algebra sense
+a u equals to F I think a lot of
+traditional methods like gymras is also
+a minimization problem based on residual
+the based on the residual Norm
+um doesn't seem is too much a problem
+for krilloff method or other traditional
+numerical method but it seems like the
+conditioning is a really
+a pain in this context do you have
+comments on that
+uh yes right so good point um yeah so uh
+yeah so one can argue about whether or
+not
+um whether or not this problem of this
+this sort of square condition number is
+pervasive to all minimizers or whether
+one can just somehow uh pick a better
+minimizer and and be okay
+um part of the thing here is that this
+is and that's part of the limitations of
+this linear algebra example is that is
+is just a linear algebra example and if
+one wanted to do this on the actual uh
+sort of through the neural network then
+then um something like cry Lobster's
+based method would not be appropriate
+um
+and uh NGM res wouldn't suffer in the
+same way
+um so basically the only way as far as
+I'm aware to get around this is to give
+away the P equals two Norm to give or to
+give away any p uh P even Norm
+um and uh and to settle with like a P1
+Norm but that has its own problems to
+settle for an odd for an odd Norm
+uh that that that would be a solution
+but I think but it comes with other
+problems that um I think would not be
+conducive to to the type of things that
+people usually care about
+okay all right thank you thank you
+okay thank you uh let's move on to John
+Ragusa let's
+we're giving you a chance to ask
+questions John
+hey thank you great talk I liked it a
+lot very interested in pins
+I also have lots of issues with paint so
+maybe I'll send you an email later but
+let me just ask a couple of questions if
+there's time have you tried cases uh
+where the PD has greatly varying
+coefficients let's say for example as in
+a you know heat conduction problem but
+you have conductivities in different
+materials and the conductivity is maybe
+vary by Factor let's say a thousands of
+really severely heterogeneous cases
+um
+can see the pins approach seems to
+always find solutions that are overly
+too diffusive and they don't have sharp
+gradients uh be interested to know what
+you think of of those more real life
+situations worked with heterogeneous
+problems
+uh yeah if you have a problem that can't
+uh that you can't normalize the scale so
+you I guess you have these uh nasty sort
+of rough coefficients that you're
+talking about then
+um so the the quick answer is no I
+haven't tried it
+um uh and and maybe I should
+[Music]
+um
+uh
+and whether or not I suspect that
+something like what I presented is is
+somehow a cure to that or not
+um
+I I don't I don't know I mean the like
+your comments about the the fact that
+your your PIN result gives on this type
+of uh highly heterogeneous problem gives
+a say overly diffusive solution or
+something like this
+um it's not I guess one would first have
+to know what what to really attribute
+that problem to
+um which can be a challenge but I mean
+it it's not clear to me immediately
+whether that's due to maybe
+um whether or not the pin has been
+sufficiently trained
+um and so the loss function is
+sufficiently low because another thing
+that is is is at least intellectually
+interesting about pins is that they can
+come up with solutions to pdes because
+there's no data involved right so they
+can come up with Solutions of pdes that
+are also that are that are solutions
+um but they just aren't the one that you
+were thinking you would get uh so so so
+people have actually used this to fine
+to like show that maybe you can actually
+get like non-unique solutions to things
+like the nevastatic equations so
+actually a recent uh some recent papers
+on on the Millennium prize type problems
+for NVA Stokes have uh have touched upon
+that um so that's another possibility
+um but unfortunately I I can't really
+speak much more to uh to to the to the
+type of uh problem you're talking about
+no worries I think I'll send you an
+email later today or maybe this weekend
+I'll tell you a few things about what
+I'm what I'm doing and what the issues
+I'm having now I have another quick
+question if you you allows me is it okay
+okay very very quick what do you think
+what do you think of training the new
+generation of of graduate students on on
+those tools should they also learn
+traditional methods or is it or is it
+going to be a thing of the past I'm just
+curious what your opinion is on this
+training them to do what to do these
+kinds of neural network type things you
+mean yeah yeah you know maybe there
+would be a less an emphasis on learning
+uh you know finite elements find a
+different type of schemes of you know
+what what we call traditional methods
+what do you think would this takeover is
+there room for both techniques who oh
+well is there some some tension in
+between the two what's your opinion
+uh I think um people are trying these
+things because they partially because
+they're trendy and partially because
+they've run out of other options but of
+course yes young young folks coming into
+grad school
+um want to try the trendy things that's
+uh that that has always been the case
+and um and and and pins is definitely
+not the first example of that
+um and and sometimes these things prove
+to uh stand sort of the test of time so
+to speak and uh and and sometimes they
+do not
+um so I I guess I don't claim to have
+any any more Clairvoyance than that
+um but uh uh I do think that uh I mean
+the only the only thing I think is that
+uh anything that involves not uh
+thinking about the the math Behind these
+things in some sort of careful way is uh
+very risky because you end up in this
+situation where your results may not be
+good and you have no way to reason about
+um why they aren't good and so if you
+don't understand the map then you're
+you're really out of luck because the
+neural network also is opaque so it
+doesn't offer you
+um it doesn't offer you some sort of
+something some other information in
+which you can
+um sort of inform your priors and and
+make a better choice about a model or a
+differential equation or something like
+that
+yeah thank you so much
+thank you all right thank you let's move
+on to Henry
+um Henny are you there oh hi hi I'm here
+can you hear me yeah
+oh sure hi uh yeah thank you thank you
+for the talk uh I just wonder so you use
+the PD residual as your loss function
+that you want to minimize in your
+problem so I was just wondering what are
+your thoughts on like does it make sense
+to use like a physics based functional
+like for example like for the diffusion
+equation you can Define the
+thermal dissipation functional and then
+you can just minimize that to get your
+solution for diffusion equation like the
+what are your thoughts on you're using
+that as your loss function
+uh right so a pin in this context at
+least only purports to be able to only
+purports to be solving a pde that is
+prescribed and now what you're I think
+alluding to is the idea of adding
+additional terms that are associated
+with the physics that may also be
+relevant and so one can of course pile
+on these sort of additional constraints
+and terms in the in soft terms into the
+loss function in the hopes of getting a
+better result
+um but then it's just a matter of what
+do you consider a better result
+um if what people have have been playing
+around with this idea if I go back to
+um here
+um what what basically uh there there's
+whole there's whole spaces here where
+people are thinking about physics guided
+loss functions right all the way down
+here so all of these papers are thinking
+about how do I add things to that are
+relevant to the physics that are maybe
+aside from just the pde and um if
+there's one thing that I've learned it's
+that these things are a bit
+um hard to say uh
+they I think they kind of missed the
+point that if the neural network is is
+behaving appropriately and in a way that
+you expect then you don't need these
+things
+um and so and so in a sense they're kind
+of uh stop Gap sort of solutions to get
+something that looks kind of how you
+want it to look
+um but if but otherwise if it's if it's
+not giving you the solution that you
+expect that then maybe there's something
+more interesting going on
+um which is what we found and I think it
+I think that that's actually why the
+things that are shown in the slides here
+um have gone sort of unnoticed for so
+long because people were thinking about
+these other types of things and not just
+thinking about like what is like the
+actual math going on in this thing
+hmm
+okay oh thanks thanks thank you okay
+let's move to Walid are you there
+yes thank you for the opportunity and
+thank you for that great presentation
+I'm really glad that someone is finally
+addressing the Lost functions and the
+optimization issues associated with pens
+my question my first question is in
+regards to the boundary conditions
+you're using for the poissons equation
+if you can describe them briefly
+uh I believe that we just did um
+periodic no uh I think uh no no sorry
+just uh dear slay boundary conditions
+um correctly on that problem
+it would be interesting to see if you
+can use some human boundary conditions
+with sources on sinks because that could
+be a very challenging problem
+uh my second question is in regards to
+mixing the other types of uh
+losses and the loss functions so if you
+had some data so you have a different
+type of uh let's say a mean square error
+with the min max loss function is that
+something that's possible
+uh yes it's certainly possible
+um either a priority or rape historiore
+I mean that's the other part of what was
+actually inside of the uh the the paper
+here
+um so uh yes you certainly can add these
+other data data constraints so if you
+know that
+um that uh the data is is is whatever it
+is then you can add you can add it to
+perhaps do better do better here in
+terms of your training and get a better
+result
+um the only concern that I I I sometimes
+have about mixing and matching these two
+things is that the data comes with its
+own
+um uncertainties and whether or not the
+data is behaving exactly as the pde that
+you stick in this loss function is may
+not be always clear
+um so whether or not it's obeying the
+exact uh you know incompressible in the
+base Stokes or something to this effect
+um is is that always obvious and if that
+is the case then you could end up with
+sort of tension between these two
+different types of loss function that
+may not give the results you expect
+um and but that that's that's like a pin
+thing not necessarily
+um something specific to the type of
+architecture that I was talking about
+all right thank you very much thanks
+great talk question
+thank you
+okay uh John
+are you there
+oh baby he's not there uh but he left
+the chat in the chat um great talk can
+you please share the paper and the code
+in the in the chat yeah so uh well uh I
+don't have access to the chat at the
+moment but uh they're they're here and
+if this is important then they'll be
+they'll they'll be available they're
+awesome they're also just on my website
+so yeah all right sounds good uh feijo
+are you there
+oh um just a very um question so can
+this idea of
+um
+[Music]
+regression problems
+can it be applied to what yeah
+sorry say it again
+regression oh General regression
+problems
+um yes
+um yes it can it's just that I'm not
+sure the benefits are are so obvious
+um uh it depends on what kind of
+regression problem you have but if uh I
+mean if for if if the regression problem
+is solving is is uh has the same types
+of uh poor conditioning then one can
+certainly reformulate this sort of loss
+function this way
+um
+and so that yeah so there's there's many
+applications of this type of uh
+competitive uh tension that give that
+that are useful
+um and one can find them in the in the
+papers that are referenced in our paper
+uh of which there are many
+um and uh you can uh and you can have a
+look and and see there there really are
+quite a few I just didn't have enough I
+have time to talk about all of them
+all right um thank you
+um
+are you there
+uh he's not there all right uh so that's
+the all I have from the chat but
+is there anyone who wants to ask
+questions or need yourself and do so
+that's a quick question yeah go ahead
+yeah this is Andrew Gillette I really
+enjoyed your talk thank you uh I'm
+curious there's some work that was like
+gradient informed pin where they uh you
+know do slightly better than pin results
+by incorporating gradient information
+um have you compared your work to that
+and and if so how did it compare
+uh no kidding uh we compared our work to
+many different what I would call uh
+training tricks
+um where uh One ads basically one's
+trying to accelerate training or somehow
+ameliorate these costs that uh that are
+uh that show up
+um in order to to get better results and
+so there's a whole sort of alphabet soup
+of different pin methods
+um and uh uh and so it's true that I
+think these gradient things do give
+better results
+um there's there's I guess two things I
+would note the the first is that uh none
+of them seem to to my eye to actually
+address what is the actual problem
+um and so I mean if you can get a better
+solution without addressing the actual
+problem then I think I mean that's fine
+but uh at the very least I wanted to to
+note it uh to note that this is what
+what is likely going on
+um and uh and the other is that uh these
+um many of these other sort of training
+tricks that
+um that that one of which you're
+alluding to um but but there are others
+um uh like um like uh
+like mini batching and and all these
+other things
+um we've tried some of them because
+reviewers wanted to see them
+um but in principle they can all be just
+added to our method anyway so uh in some
+sense they're in different categories
+makes sense thank you thank you sounds
+good well um it's 7 after 11. uh Spencer
+thank you so much both
+staying with us for the extra time
+um of course I'm glad I was able to get
+to some of these questions ah wonderful
+okay so I'm sure there are more
+questions but let's wrap up here and
+then um oh yeah say hi to someone
+that's a good to meet you here yeah yes
+hope you're having a good time at
+Lawrence Livermore on your in your first
+week
+yeah it is his first week yeah I am
+having a good time here yeah
+very good awesome uh well thank you
+Spencer again uh let's think um I'll
+close one more time and uh yeah I mean I
+hope
+uh you will increase the collaboration
+with the Lawrence Livermore National Lab
+as well I mean as you do with other
+other National Lab right or preacher and
+the San Diego National Guard right
+please consider us okay
+yeah so it'll be my pleasure
+all right sounds good okay let me push
+the stop button for the recording

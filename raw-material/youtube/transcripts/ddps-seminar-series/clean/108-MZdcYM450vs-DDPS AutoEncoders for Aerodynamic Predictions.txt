@@ -1,0 +1,1586 @@
+okay welcome to the ddps seminar
+everyone below uh before uh we introduce
+our invited speaker let's go over some
+rules and Logistics first of all uh
+please mute yourself during the talk uh
+but if you have questions you can unmute
+and ask questions or use chat room to
+post your questions so that we can
+address them in Q&A session at the end
+second today's ddps seminar is open to
+external audience uh therefore no
+classified discussion is allowed so
+please watch out finally The Talk today
+will be recorded and uploaded in our
+YouTube channel that's about it uh now
+now let me briefly introduce our speaker
+today it is an honor to host Dr Gian
+Luca yino who is the director of The
+Institute for computational mathematical
+engineering and a professor in the
+mechanical engineering department at
+Stanford University he received his PhD
+in Italy from the polych uh Poly
+Technical D Bari um before joining The
+Faculty at Stanford in 2010 uh 2007
+since 2014 he is the director of the
+peap center at Stanford funded by the US
+Department of energy focused on multif
+physics simulation uncertainty
+quantification and exess scale Computing
+he received the presidential Oly career
+award for scientists and engineer years
+award and he is a fellow of APs today
+Jan luuka will talk about Auto encoders
+for aerodynamic predictions which is a
+exciting topic so please expect a
+wonderful talk from him now let me ask a
+question to Gian Luca if that is okay
+with you is it okay asking you one
+question absolutely okay yes okay in
+audience there are many students and O
+career researchers to this ddps seminar
+uh who are currently working on
+computational and data science if you
+give them some sort of career advice
+what kind of advice would you
+provide that's a that's a great question
+as a start um I I I'll say something
+that I tell most of the students that
+pass through through icme and through
+Stanford which is um everything that
+that you do in research should be driven
+by C I it you should be really have uh
+open mind in terms of uh asking
+questions um and and I think that should
+be a real passion uh in the sense that
+it should be a natural tendency to sort
+of be curious and and try to get to the
+bottom of what is that you're seeing why
+it's happening and that Curiosity can
+really drive you to give to get sort of
+a a a a learning in in terms of the work
+that you're doing that can be really
+very very powerful so curiosity as a as
+a m main driver in what we do in
+research is is critical absolutely thank
+you thank you so much for the the
+wonderful answer okay the stage is
+yours thank you very much uh thank you
+uh for for the invitation and uh uh
+thank you for joining um my as I
+mentioned as as was mentioned I I'm
+going to talk about out and corders uh I
+wasn't sure about again the the
+composition of the audience so this talk
+is going to be uh relatively high level
+to give you some of the basic ideas of
+of the work that we have been doing and
+I'm happy to discuss this in more
+details either during the Q&A or maybe
+afterwards you can feel free to reach me
+uh if you have if you have questions so
+um the first thing I want to say is that
+uh um my uh presentation is going to be
+a little bit different than what I
+typically do in uh uh in my daily work
+as as was mentioned I'm the director of
+the peace up Center at Stanford and this
+is actually a slide that represents the
+work that we're doing in that Center has
+to do with um ignition laser induced
+ignition of uh uh rocket engines uh
+you're seeing a a a a steel uh
+visualization and then animation of the
+combustion process and we're working on
+um exascale Computing platforms to do
+the simulations at scale there is a
+component of this project that has to do
+with uh machine learning and a certainty
+quantification that obviously connect
+the the uh presentation today but I'm
+not going to really give you any details
+of this work if you're interested again
+I'm I would be very happy to to discuss
+it um afterwards um and so instead today
+what I want to tell you is really a
+story uh about a project that I started
+when I was in sabatical a couple of
+years ago now three years ago um and
+started really as a curiosity try to
+learn more about some of these um
+algorithm that we all hear a lot about
+um and uh uh the project Revol around
+aerodynamics which is sort of the work I
+was doing at the time and uh a specific
+class of algorithms that many of you
+might be familiar with but to sort of
+introduce them I'll I'll sort of use a
+very very sort of simple um uh simple
+connection to tools that instead we use
+perhaps uh every day in our life you
+know the the the simplest uh uh approach
+that you can think of in in this real is
+jzip jzip is as you familiar with is a
+compression to tool allows you to take a
+big file and reduce its size um and it's
+a relatively straightforward and
+relatively uh innocent tool is actually
+very sophisticated very effective um and
+it's what What's called the lossless
+direct compression so allows you to go
+one way uh meaning from the original
+file to the compressed file but also
+come back with the exact reconstruction
+of the original file okay if you want to
+uncompress it or unzip it now this is as
+I said a a tool that we're all familiar
+with perhaps another tool that is uh
+again in the in the same spirit so a
+compression tool but that many of you
+might be familiar with from perhaps U um
+application is the singular value de
+composition a singular value DEC
+composition is again typical s similar
+compression tool where you start from an
+object in this case an image it can be a
+different uh it might not be necessarily
+an image but perhaps a matrix or just a
+file and the idea is that you take this
+image and you compress it reduce its
+size by um performing a matrix
+decomposition in in in in terms of
+linear algebra and this Matrix
+decomposition leads you to a reduced
+representation in this case that uh has
+a effective size that's about one10 of
+it um and the advantage with respect to
+the previous tool is that it has a
+tunable parameter which is the number of
+singular value that you preserve this is
+the amount of compression that you forc
+in the algorithm and as you reduce that
+number in this case it's 30 singular
+values if you reduce it to six or even
+lower to one obviously you obtain a much
+more compressed representation but
+obviously also you lose information
+you're not representing that uh original
+object in the same way but again you you
+achieve a very high level of compression
+now the problem with this is that this
+is a a compression that is that is lossy
+in the sense that you're losing
+information and doesn't allow you to go
+back to the original version of the
+image but it is a very powerful uh
+method is actually used you know in
+almost every um uh algorithm that has to
+do with large uh large data set at least
+in a linear sense and it provides you
+what um is can be referred to as a
+latent representation the singular value
+as sort of a new representation of the
+original data that has captur of the
+features some of the character of the
+original image now what I want to talk
+about today is actually a version of
+this process which is based on machine
+learning which is the the basis of an
+out encoder an out encoder is a
+compression algorithm very similar to
+what I described before but it's a much
+more powerful because of the uh of the
+um uh generality of the the
+representation that it uses allows you
+to take again now not just one image but
+perhaps a large number of images in this
+case uh mnes is a classical um uh
+database a classical test set for for
+machine learning that includes 70,000
+images so a very large uh amount of data
+in this case equivalent pixel is sort of
+a representation of how much data we
+have and allows you to actually uh uh
+compress it in a very reduced form and
+and regenerate some of the um uh images
+or perhaps generate a large set of
+images based on again a representation
+in terms of feature that is very very
+compressed in this case with only two
+latent variables we are able to actually
+reproduce the entire data set in a in a
+sort of a relatively uh effective and
+accurate way again it's similar to
+before is a lossy compression it cannot
+really reconstruct exactly the original
+images but it is very powerful and and
+is based on a representation that uses
+nonlinearity as opposed to SVD that
+instead only uses linear operations so
+what I want to talk to you today is
+really um AO encoders apply to
+aerodynamics again I don't know how much
+you are familiar with aerodynamics but
+uh this is a typical application of of
+uh in the aerodynamic context this is
+flow over a a um full uh uh aeronautic
+configuration a a um a typical test case
+in uh in aerodynamic analysis um and
+today we can do this simulation fairly
+effectively uh and accurately so we can
+actually reproduce for example the lift
+characteristics of of a full uh airplane
+very accurately all the way uh from low
+angle of attack to high angle of attack
+which is the the angle the incidence
+that the air the the airplane has with
+the incoming flow um and the prediction
+in this case can be run on a large scale
+system in this case Summit about 100
+gpus with a uh relatively small uh uh
+wall clock time so with with good good
+turnaround um now unfortunately although
+this is the state of the art and we are
+very very um uh we can predict very
+accurately what happens in the physics
+the problem is that we can still we are
+still Limited in the number of
+calculations we can do for example for
+design and so the the idea is to try to
+use knowledge and and these methods like
+how encoders and other compression
+strategy to build databases of these Cal
+ation and then perhaps generate new
+cases that have not been directly
+simulated through um through H
+simulation so that's sort of the the
+reason why we started this project to
+try to build tools that allow you to
+take some of these data sets and
+compress it and allow it to generate
+additional additional data additional
+information so just to to uh summarize
+sort of what we typically do in
+aerodynamic simulation in all physics
+simulations uh this is sort of the
+process we start from uh basic
+principles we build a conceptual model
+which is a set of PDs typically we
+cannot really obtain Solutions directly
+and so we go through a discretization
+and a computational algorithm to
+actually find an approximate solution
+and we use superc computers to solve the
+corresponding uh numerical uh
+computational problem that emerges from
+that algorithm and that allows us to
+actually compute compute the the
+quantity of interest and the solution we
+care about and the the point I want to
+make here is that this is a a a typical
+uh deduction process that we follow from
+Theory to actual data so the the
+framework is generic is general and the
+uh example that we obtain is actually
+one specific instance of the
+solution now the the other thing I want
+to and then I'll stop in terms of the
+physics of the problem at least in
+general is that I'm going to show you
+results for two different scenarios the
+first is when we actually operate the um
+uh an F in this case or you can think of
+it as a wing of the airplane um in a
+steady fashion as we change the angle of
+attack we obtain a curve which is the
+blue one here which sort of represents
+the fact that for low angle of attack
+the behavior is basically linear the
+lift increases with the angle of attack
+in a linear fashion and then it reaches
+a limit which is a sto where the the
+phenomenon becomes nonlinear and the
+lift starts decreasing now a different
+story which I which I also use to
+illustrate the results here is what
+happens when you have an unsteady motion
+so the the airfall goes to a a periodic
+motion of changing a Neal attack but you
+see that the behavior in this case is
+the black curve here is similar in the
+sense that you have a a linear increase
+of the lift and then eventually the the
+lift drops and you have this sort of
+unsteady behavior that then turns back
+into into the uh the the low angle of
+attack as you sort of oscillate between
+positive and negative angle of attack so
+I'm going to show you these two regimes
+because um the both the the steady and
+unsteady results to illustrate the power
+of some of the methodology that I'll
+I'll describe
+afterwards um so let's let's talk about
+machine learning now in in a general
+setting compared to what I shared to you
+before the approach is very different in
+this case we don't start from first
+principles from physical understanding
+and conceptual model we actually start
+from data from examples we build a
+statistical representation of the data
+that can be very sophisticated or uh um
+you know in a sense relatively simple
+then we train the model in this case we
+actually compute the parameters
+corresponding to that statistical model
+and then we are able to uh for example
+recognize uh classify the images that we
+get so the data the examples we get or
+perhaps produce new new examples uh I to
+trivialize this um the simplest example
+of data driven model is regression in a
+regression setting we assume a function
+that represents the data at least that
+we believe represents the data in this
+case a quadratic function and the
+objective of the algorithm is to find
+the coefficients a0 A1 A2 that
+approximate or minimize the
+approximation error with respect to the
+data of this model with respect to the
+data once we have completed that that
+process which obviously is the uh the
+training phase in a in a machine
+learning paraland then we have a method
+and approach that allows us to generate
+new data meaning that with the new X we
+can compute that new F ofx which
+represents Now new data that is unseen
+that is not being part of the training
+so this is the simplest model obviously
+the models we de typically deal with and
+in particular the models that I'll talk
+about have millions of parameters order
+10 million parameters they're much more
+complicated than a quadratic function
+they're still no linear but obviously
+have much more complexity embedded in it
+but in principle I have the same spirit
+in the sense that you start from initial
+guesses of this parameter then use the
+data to actually learn what the best fit
+and the best parameters will
+be uh from the process that I described
+this is actually an induction process so
+we go from data to an actual theory in
+quote obviously it's not a theory per se
+but gives you sort of the sense that we
+don't start from assuming uh knowledge
+of the problem necessarily we start from
+example and we try to build a knowledge
+uh uh a posterior
+and and so to illustrate this the
+simplest example that we started from
+was a database of flow geometries this
+is an example that you see in literature
+these days there have been many U uh
+similar sort of applications in this
+case the the geometries are very simple
+they're Bluff bodies just you know uh
+two-dimensional Bluff bodies and the and
+these are represented in the first
+columns here the first and third columns
+they're basically just a a
+representation of the geometry and the
+second column is actually the velocity
+distribution uh so red implies low
+velocity the wake and then the flow
+around this geometry is captured through
+velocity magnitude now if you pass these
+images very much like we pass the uh M
+the the digits uh in the in the original
+example we can actually then build a
+representation where we can accurately
+predict what happens around uh new cases
+geometries that have not been part of
+the database and everything looks
+reasonable in this case um you can
+actually show that uh uh the true
+solution actually is close to the
+predicted solution you can quantify the
+errors and so on and so forth and and it
+seems like everything seems to be pretty
+trivial now again talking about the the
+answer I gave before curiosity right
+this seems to be all done well the the
+uh first thing we tried is to push the
+algorithm and see what happens if you do
+something a little bit different that
+was not anticipated when you built this
+and the simplest thing I could think of
+is what happens if you have multiple
+bodies so rather than one now I give the
+outter encoder more geometries so in
+this case again the training was done
+before with single bodies and I'm asking
+the out encoder to uh extract a new data
+set now on a geometry that is completely
+different completely outside of the
+scope now if you look at the results
+here and you know that that was the part
+that was uh interesting to us it's very
+difficult to now obviously you know this
+is the prediction so you you might argue
+we don't know if it's accurate or not we
+could compute the true solution but just
+looking at it you actually cannot tell
+if this solution is right or wrong it's
+very reasonable it's you know seems to
+be capturing the fact that there is some
+interaction between these objects again
+it's not something that was coded
+already in the training set but it seems
+to be reasonable and looking at the true
+solution there is clearly some
+discrepancies but they they're not you
+know completely
+off right so the the interesting thing
+here is that the uh the idea is we
+wanted to perhaps uh break the algorithm
+and at first glance is difficult to
+guess if the algorithm was actually
+broken or not um and and so this sort of
+stimulated the question of how can we
+build confidence in these algorithms so
+that the results that we obtain are
+actually results that we can interpret
+even in the absence of the true output
+right in some cases we don't want to be
+need to compute the output every time we
+want to check the solution so how can we
+build automatically confidence in the
+prediction of these methods and so this
+how the the entire project started and
+how we sort of trying to go to a method
+where uh we build some a process in the
+construction of this outen Cod that
+allows us to really interpret the
+results of the of the uh process in a
+way that is informing the confidence we
+have in the
+output so just to to um uh sort of
+summarize what the out encoder is as I
+mentioned is is a compression technique
+uh the basic idea is that you are trying
+to to build an algorithm that reproduces
+the input so you the input and the
+output are basically the same the same
+information and you're going through a
+bottleneck you're basically
+compressing the information to uh to as
+smallest possible set which is sort of
+this red bottleneck in the middle which
+is sort of U uh called in in the in the
+uh machine learning par the Lattin space
+the Latin Vector um and the user
+controls the compression uh compression
+um size right so like in the SVD you you
+control how many um uh singular value
+you you retain uh to represent the rank
+of the problem in this case you keep a
+certain size for this latent Vector uh
+the way we construct the out encoder is
+that we include both convolutional
+layers and um and fully connected layers
+uh the reason is because physically we
+expect the input to be uh aerodynamic
+flow Fields so we want to make sure that
+there is invariance that is embedded
+into into the network and also coupling
+between information in the data that we
+are providing and so we have we kept
+both a convolutional uh a set of
+convolutional layer and set of coupling
+layers uh and there are obviously many
+variants in the literature of the outen
+coders I'll tell you a little bit of the
+flavor that we are using but we have
+done extensive comparison also to other
+type of outen coders that I won't
+discuss here um but I'm happy to again
+uh discuss it in more in more details so
+specifically in the way we built this
+framework we want it to be very
+principled in the way we actually
+approach the problem and so there are
+effectively four steps the first step is
+the construction of the database um and
+the the second is the actual training so
+the the uh machine learning training of
+this network the third is what we call
+latent space conditioning and and is a
+way to map the uh database inputs to the
+latent Vector uh that is done after the
+training so this is a um a step that
+does not affect the training itself and
+then finally once you have completed
+this you have now a methodology that
+allows you to do predictions meaning
+that you can uh uh generate new
+geometries or new problems uh and and
+create uh Solutions out of that and
+typically only this only involves the
+decoder so the second part of the of the
+uh Network that we have we have
+constructed so just to give you a little
+bit more details of exactly what what
+we're talking about the the first step
+is to actually the construction of the
+database what we have done in these
+problems is to build databases of airf
+geometries um at uh different geometries
+different iall thickness for different e
+attack and typically we uh limit the
+number of cases quite substantially so
+we typically have an order of 30 or so
+cases um to do the entire process so
+we're not uh talking about extensive
+data sets and the reason is because
+eventually we want to move towards very
+high fidelity uh data sets and so we are
+expecting that order of 100 is really
+the limit of what you can generate both
+in terms of uh computational costs but
+also in terms of
+storage um there are some details of how
+the actual data sets are are um uh
+transferred to the to the uh machine
+learning tools so basically how we
+organize the database that I can talk
+more about it in in the in the uh at the
+end but in general we do need to build a
+representation that is amable to to a
+machine learning tool so we have to
+summarize these data sets into uh
+basically a single vector or basically a
+single tensor that captures the solution
+in uh in space but also in terms of
+different variables for example density
+momentum temperature and so
+on now the the training itself is a uh I
+mentioned already is an autoencoder uh
+we typically because of the limited data
+set that we use limited size of data set
+we have also a relatively small number
+of parameters order 10 Millions um and a
+very very small latent Dimension this is
+this has been our goal to sort of make
+sure that the latent space is as small
+as possible um and uh uh for example
+this is an a learning um uh a Lo a loss
+function for um uh for um for our
+problem for this problem that mention
+that I'm mentioning here at uh different
+values of the latent space different
+sizes of Lent space so as you can see
+for P1 and P equal 2 effectively the um
+the loss function stalls uh does not
+really uh decrease anymore after uh
+about 500 EPS whereas uh as you increase
+the the the latent size the um um the
+loss function uses a little bit more uh
+although effectively after three four
+and five at three four and five
+effectively reach the same level of
+convergence and effectively the out and
+coders perform in the same way meaning
+that uh a dat in size of three for
+example two or three is sufficient
+actually to summarize and compress the
+information that we are giving the
+reactivity out coder at least with a
+fixed
+architecture now let me say a few words
+about the mapping the uh latent space
+conditioning so the basic idea is that
+the outen coder only has access to the
+flow Fields the entire solution but
+doesn't know anything about how that
+solution has been generated what are the
+inputs for that for that uh particular
+uh data set that we're considering and
+so what we are doing in this case is
+that we are actually building a mapping
+between the true inputs so for example
+the angle of attack and the latent
+Dimension the latent uh vectors uh the
+latent uh quantities so this is a
+typical example of this of this mapping
+where we have an out encoder of size
+three so three latent variables and what
+we do is that we map the two inputs of
+the database in this case the thickness
+and the angle of attack these are all
+the solution that we generate to build a
+database onto the latent value Ables and
+and this allows us then to uh go from
+the input variable to the latent
+variables and then eventually to through
+the decoder through the actual uh
+solution uh synthetic solution or the
+the reconstructed Solutions and so just
+to um complete then once you have this
+map this conditioning or this mapping
+between the input and the latent
+variables then you can really generate
+new Solutions and uh because you can uh
+extract for example a new um uh air for
+at a given thickness for all the angle
+of attack and then you can build an
+actual solution and this is an example
+of of this case of this dyamic Soul case
+where the airf is oscillating uh at
+different angle of attack and this shows
+the comparison of the Mac number one of
+the quantity of Interest comparing the
+actual solution the cfd will be the true
+the true solution that again is not uh
+um used in this case um and the
+synthetic solution which is the result
+of the outen coder now in this actually
+this particular case the Naka 002 was in
+the training data set so this is one of
+the cases that has been seen by the by
+the um out encoder um but you can do the
+same thing with a case that has not been
+seen so this is the NAA 0020 is beyond
+sort of the scope of the database or the
+the training set and the results again
+are are reasonable so what you're seeing
+again is the comparison of the synthetic
+and the true solution now we can argue
+if the results are actually as accurate
+as possible and and so on but remember
+that my goal here was not necessarily to
+get the best possible out encoder but to
+try to understand if we can build
+confidence in these results and so I'll
+I'll actually start going in that
+direction by explaining or trying to um
+illustrate what is the out qu learning
+so the first thing to to keep in mind is
+what is the physical behavior that we
+expect and this I showed you this before
+these curves before uh this is uh
+effectively the main quantity of
+interest for different angle of attack
+what is the lift coefficient generated
+by different airs and what you're seeing
+here is the linear regime a low angle of
+attack where actually all the the airs
+behave in the same way they have exactly
+the same lift coefficient and then
+things change when you reach the sto
+where the effect of the thickness of the
+airfall actually is is clear here and so
+the the first question is um are we
+actually able to distinguish between
+this linear and nonlinear Behavior
+within the latent space that the outon
+coder is recognizing again remember that
+we're not giving the outon coder the um
+knowledge of this quantity we are just
+giving the flow field to the out encoder
+to compress well it turns out if we
+actually look at at what's happening um
+actually let me skip this um let me go
+directly to this um if we show if we
+look at the latent space in this case
+for a AO encoder with Dimension two so
+even smaller than what I was describing
+before this is what the latent space
+looks like like these are the variable
+V1 and V2 the two latent variables and
+this is now colored in terms of the
+thickness of the air flow but also in
+terms of the angle of attack in the
+sense that you see that for low angle of
+attack we have actually a linear
+Behavior a linear correlation between V1
+and V2 the latent space is very well
+sort of ordered very um uh neatly spaced
+um and it sort of represents the linear
+and nonlinear behavior in a in a
+relatively straightforward fashion you
+see that there are obviously more
+complexity when the angle of attack
+increases but you still see a very clean
+difference between all the the airfall
+thickness so you can easily imagine that
+you can go back from this latent space
+to any uh airfall either within these
+airfall that we actually included in the
+database or outside there is a very
+clear way to sort of build a a broader
+set of
+solutions now the the the thing that is
+that again drives that drove my
+curiosity in this case is okay this is
+an out encoder with P equal 2 which
+seems to be reasonable what happens if P
+equal 1 if I try to compress it even
+more now the expectation is that if I
+compress it even more it shouldn't work
+because I do have at least two degree of
+freedom in the original database that I
+built thickness angle a to and and so P
+equal one should fail well it turns out
+it does fail but fails in a very you
+know acceptable and interpretable way so
+what happens is that if I only have one
+latent variable P equal 1 V1 and I try
+to uh compare it to the angle of attack
+see what happens in terms of the angle
+of attack what I see is that for low
+angle of attack effectively
+V1 uh shows a single curve that is
+linear behavior and correspondingly I
+know that there is no effect of the
+thickness and so effectively is able to
+compress it up to a certain angle of
+attack because it's true that for low
+angle of attack the out should be able
+to compress those solution very
+effectively as we increase the angle of
+attack now the second variable the
+second degree of Freedom starts to
+become important and in fact as you can
+see here the uh there are multiple value
+of V1 for the same angle of attack which
+means that effectively the out encoder
+is failing it cannot compress the
+solutions at the angle of attack because
+there is the need of an additional
+degree of Freedom that I'm not allowing
+the out CER to have and so this again in
+terms of interpretability is a perfect
+example of what is um the limit uh of
+what you can compress and you can
+interpret that that limit very
+effectively now um the the other case
+that that is interesting is to see what
+happens in the case where you have
+unsteady behavior and again this is the
+same curve I was showing you before the
+lift in this case I'm I'm changing
+sinusoidally the angle of attack so
+there is a cycle that uh that we obtain
+for the lift coefficient and this cycle
+all all
+shows some interesting differences
+between the airs that have um low
+thickness 0012 and 0014 the th airfall
+compared to the th airs the th airs you
+see have a very smooth curve the red and
+green whereas the black and blue have
+sort of these U unsteady Behavior this
+more complex behavior that has to do
+with the physics of the problem which is
+the U presence of a a Vortex separation
+at the Leading Edge for Te Air Force and
+not and the same thing not present for
+for Te Air Force well if we look at
+latent variables in this case we sort of
+see a similar Trend in the sense that um
+the the these are now uh um the plots of
+V1 with respect to V3 and V1 with
+respect to V2 so it's a p equal three AO
+encoder but as you can see the green and
+the red actually have relatively
+simple curves that that are shown here I
+mean these are trajectory obvious in
+three in in three dimensions
+whereas the blue and the black have a
+very very different behavior for a a
+certain uh component of the cycle that
+corresponds to that that separation so
+once again the outon quer is actually
+representing the the physics of these
+different aold differently simply by
+trying to compress that information and
+this is again sort of an automatic
+result of of the compression strategy
+rather than something that we are
+imposing or we are uh exposing the out
+encoder directly
+uh now just to conclude this part this
+is again uh just to illustrate that is a
+a very effective way of actually
+reconstructing geometries and and
+reconstructing solution in this case the
+cost of one reconstruction is a fraction
+of a of a uh of a second um on a on a
+single GPU compared to many hours uh on
+uh uh on uh uh on you know of the
+original calculation so this is
+effectively achieving what we want which
+which is a a very fast methodology to
+compress these
+Solutions but now uh one other one
+aspect that I want to point out which is
+a little bit different than the
+classical out encoders is the way we
+actually perform in the training um so
+the the process is called or at least we
+called it the sequential training
+process where the idea is that we always
+build a sequence of Auto encoder we
+start with with P equal one uh
+onedimensional uh latent space and then
+we we increase the size uh partly to
+check the convergence we want to know
+what is the minimum size of out encoders
+that will give you a good convergence
+from a from a a loss perspective but
+also good accuracy but the idea that we
+had was that rather than discarding the
+information of the the uh smaller outen
+coders as we increase the lat in space
+we actually want to keep that
+information in the spirit of uh what we
+do for example with singular value DEC
+composition which affect effectively
+allows us to build uh formally
+orthogonal latent spaces right each each
+latent dimension in that case the
+singular values are corresponding to an
+orthogonal decomposition uh um of of the
+Matrix itself now in this case we cannot
+do exactly the same because of the
+linearity but we are actually using the
+low order latent space to condition the
+variables in the I order latent space so
+that there is a sort of a consistent
+consistency between latent spaces of
+different dimension and uh this from a
+practical perspective helps for a
+convergence um perspective but also
+allows us to build sort of an
+understanding a a a a hierarchical
+understanding of what's happening to to
+the latent spaces and to the information
+that we're adding into into the latent
+uh latent
+spaces um this also allows us to do a
+comparison a direct comparison between
+uh what we do with SVD and what we do
+with these out encoders so um for
+example in this case I'm showing you uh
+what happens if we do SVD versus an out
+encoder for the same uh for a for a
+similar data set of of airf um and this
+shows again that from a linear
+perspective you get a good compression
+but the latent space is actually not
+very well organized you see actually
+that um some of the uh red uh here or
+the the dark red actually uh wrap around
+the others these are colored with the
+with different airs and and so we are
+expecting that it's difficult to
+actually interpolate between solution in
+the linear setting whereas It's
+relatively easy to do it in the in the
+nonlinear case in the out encoder and
+more importantly um if we actually look
+at the the ability to compress uh the
+solutions the out encoder is a very
+effective in compression in compressing
+the the data set already with a size of
+two P equal 2 whereas the SVD require a
+much much larger size to get to similar
+compression quality and this is actually
+measured in this case with explained
+variance but you can take other metrics
+and and show that effectively the
+nonlinearity in the outen coder really
+uh Fosters this compression because some
+of the rank of these data sets is not
+very low is not as low as as we would
+like it to be so the the linear
+compression is not are not as
+effective okay let me switch gear and
+talk about the uncertainty
+quantification part which is the last
+part part that that we focused on which
+is sort of driving this this idea of
+building confidence so the the first
+thing I want to say is that we have
+uncertainty also in in physics based
+calculations this uncertainty can be
+driven by real uncertainty what I call
+external uncertainty on the physical
+inputs for example if we don't know the
+geometry very accurately of the problem
+of interest and uh there is uncertainty
+due to internal sources this have to do
+with for example modeling assumptions
+that we make in this model and the the
+way we approach uh the uncertainty in
+this setting is to actually uh uh
+perform typically an ensemble of
+simulations so rather than one
+simulation we perform a a large number
+of simulations typically and by U
+constructing uh either uh probability
+distributions on those simulations or
+perhaps more sophisticated construction
+we can actually build uh probability um
+uh or probabilistic uh estimation of the
+quantity of Interest so that we can
+build uh confidence intervals now for
+for the out encoders we have a similar
+or in general machine learning we have a
+similar setting where we have external
+uncertainties exactly in the same way
+that affect physical inputs and then we
+have internal uncertainty which have to
+do with modeling assumptions which in
+this case for example can be the type of
+architecture we're using the number of
+convolutional layers we're using and so
+on but in addition to what we had before
+we now have the data the learning data
+actually is a major source of
+uncertainty because we don't know how
+much data we need we don't know for
+example um if we cover the entire space
+of of uh uh data set that we need to
+actually make the prediction of interest
+and so the the question becomes how can
+we actually quantify the uncertainty in
+this setting and in a very similar way
+to what we do in physics models we
+actually build an ensemble of outen
+coders so what we do is that we
+typically train um many many out
+encoders uh that have different
+architecture and so on on the same data
+sets and then we try to build
+probabilistic information of the output
+so let me give you um a summary of what
+we actually do so in this case uh we
+built a data set again with very few
+cases about 30 um but with something
+very intentional that was built into the
+data set which is the idea that we want
+to do prediction both in an extrapolar
+context so for example for angle of
+attack Beyond 30° so we don't have data
+in that setting but we also left a gap
+intentionally in in a range of angle of
+attacks to see what happens with sort of
+an interpolative Behavior but in the
+absence of
+data um the the type of uncertainty we
+consider are typically geometry for the
+external uncertainty for the internal
+uncertainty everything that has to do
+with the architecture of the network the
+parameters in the network and the data
+that we're using so for example how much
+data that we have in the in the in the
+training set as well and then the the
+basic idea as I mentioned is to train an
+ensemble of out encoders and then build
+probability distribution on the outcomes
+all these uh emble
+Set uh and and just to show you directly
+what the answer is this is sort of the
+the final the you know one of the
+solutions that we obtain um again is
+reported in terms of the lift
+coefficient for one of the airs what
+your what I'm showing you here is the
+the true prediction or the the the
+ground truth is the r is the red line
+here um the black line is the mean of
+the The Ensemble of the outen coders and
+the the the blue plot the blue range is
+actually the confidence interval that we
+obtain is also reported here in terms of
+the uh size of the confidence interval
+so in this case low confidence interval
+um so small size of the confidence
+interval means high confidence in the
+results and what you can see as expected
+is that we have a large uh confidence
+interval so low confidence in general in
+the region of extrapolation Beyond 30°
+as you can see the prediction gets uh
+low and lower confidence as we as we
+move out but also similarly a very large
+confidence interval so very low
+confidence interpretation in these
+interpolatory regions that sort of again
+illustrates how important it is to sort
+of carefully construct data sets if we
+want to do predictions with with the
+with confidence now the the advantage of
+this meod is that you know in addition
+to to sort of a a global metric like
+this we can actually uh also check the
+importance of each component of the uh
+out encoder that we built so for example
+the effect of adding convolutional layer
+the effect of adding or reducing the the
+number of uh um connecting uh uh neurons
+in the in the connected layers or the
+size and the quality of the training
+sets now in this particular case the the
+main takeaway is that the effect of the
+lack of data within the in Interpol
+region or the extrapolate region is the
+dominant one but there are a lot of
+other things that you can learn in cases
+in the situations where instead you have
+sufficient amount of data you can see
+how at a certain level the the amount of
+data is sufficient that you get better
+and better confidence in in general in
+the prediction as you um um uh increase
+the number of data um the the other
+thing I wanted to point out is that we
+have used the a we have not used a
+convolutional uh sorry a variational out
+encoder because we wanted to effectively
+build probabilistic information for the
+latent space directly and because we
+built uh hundreds of outo encoders that
+have all the same size of the latent
+space then we can build for example the
+um statistics in this case the average
+and the standard deviation of the latent
+space variables and again this represent
+again the pr Ence of lack of data and
+and uh um and clearly identify regions
+where we can actually uh go back and
+improve our data set so that we can
+improve the confidence of the results so
+the idea is that this is a process that
+can be done repeatedly to get more and
+more confidence in the
+results and so the the um we we also
+perform simulations where we actually
+introduce an external uncertainty so for
+example the geometry and we compare the
+uncertainty induced by that that uh
+uncertain geometry either through
+physics simulation or through these uh
+um out encoders and the results are very
+consistent so what we see is that um the
+main the the uncertainty due to the
+geometry which is reported in this case
+with the with dash line in terms of
+confidence is actually very good there
+is very little little uncertainty
+induced by the geometry and this
+uncertainty is actually capture
+correctly both uh through the out
+encoder and through actual simulations
+through the the the simul the the direct
+cfd simulations but this uncertainty is
+actually much smaller than the
+uncertainty induced by the um
+architecture of the outo encoder and so
+you see the BL the the blue curve which
+is the total uncertainty and so this
+again tells you that in this particular
+case the the most important um uh source
+of uncertainty is the data set and you
+need to train it out outon coder in a in
+a more comprehensive way to get to get
+better confidence in the predictions but
+but you see able to uh compare uh
+compare
+both um so the the uh what I showed you
+is sort of an approach to build a data
+driven model with small data set in a
+principal way so carefully uh selecting
+and proceeding through steps and and
+this shows that effectively are these
+out encoder uh out encoders are very uh
+effective compressing um compressing
+tools uh again this is consistent with
+what is available in the literature um
+and the the difference here is the idea
+that using the terministic out encoders
+so not variational out encoders helps
+you separating the sources of
+uncertainty because you can identify now
+uncertainty both in the latent variables
+so probabilistic representation of those
+but also directly separating for example
+the effect of the architecture um and in
+this case at least in our setting in our
+uh range the limited data set is the
+most critical source of uncertainty um
+there is a lot of work that is currently
+goinging I'm not going to give you too
+much detail I just want to mention that
+we are working both on three-dimensional
+geometries uh more complex geometry we
+are very interested in multifidelity and
+there is a a very nice um extension to
+this work that that we're completing
+right now that addresses multifidelity
+and then effectively the the real time
+Computing for doing for doing Maneuvers
+is is what is our ultimate goals um and
+um uh maybe the one thing I'm I'm going
+to share with you is um how we are doing
+the multifidelity which is perhaps the
+most interesting part um so the basic
+idea of the multifidelity is that rather
+than um uh uh taking advantage of of low
+Fidelity data set to add to the to the
+solutions um can be effectively very
+useful and the way we are doing it
+through um the the same concept of
+sequential training so what we are doing
+is that we are training the first out
+encoder with for example nonviscous
+solution all or solution of this problem
+and this gives us an outon code that
+effectively can reproduce the solution
+and then we are adding additional uh
+data um and you know for example rant
+data viscus calculations and we are
+increasing corresponding in the the the
+latent space but by conditioning so that
+we are still representing the the uh
+effect of the oler solution directly the
+in the case and what we see is that for
+low angle of attack so in the regions
+where we don't expect a lot of um uh lot
+of inaccuracy given by the Aller
+solution we actually have the fact that
+the latent space is actually consistent
+in the in the two cases but the added
+variables effectively um are
+representing the the viscosity the
+effect of viscosity and so the idea is
+that we can separate very neatly very
+clearly the effects of um low Fidelity
+versus I Fidelity directly by
+conditioning the latent space and this
+is work in progress but I think is very
+promising especially for complex
+application where building databases of
+I Fidelity can be uh quite daunting and
+quite
+complex okay I'll I'll stop here I have
+some references here um but again I'm
+happy to to answer question and also
+connect afterwards if you have if you
+have more information and I do want to
+acknowledge etor s who is a who was a um
+PhD student at University of napl that
+spent some time with me here on campus
+at Sanford and continues to work on on
+this top
+um and and both the architecture and the
+application in
+aerodynamics okay um I I'll stop here so
+thank you for for your attention and um
+I'm happy to the questions thank you
+thank you so much for the wonderful
+wonderful talk Jan that was awesome um
+we already have a two questions from
+from in the chat uh box I can I can no
+no I I just opened it I can see it do
+you want me to start from there okay
+yeah so start from the first question
+from Maya yeah okay how does the method
+handles noise in the input training of
+testing data perhaps okay that's a great
+question now um I should have said this
+before we are targeting numerical
+simulations for this so we haven't
+effectively uh studied the effect of
+imperfect measurements because again
+we're are hoping that this is a method
+to compress uh simulations at least the
+way we designed it but one thing that we
+did which is very interesting inter in
+is that when we started the project we
+started to work um because it's a
+convolutional network with image images
+uh in our inputs and images by virtue of
+going you know translating between say a
+cfd solution to um for example uh RGB
+maps and going through Contour levels
+introduced actually noise it's very
+specific noise it's not you know random
+noise but it is
+and it is an approximation it turns out
+that we notice that the latent spaces
+are actually quite affected by simply
+having you know for example a conversion
+to RGB or a conversion into Contours
+rather than row values of the inputs and
+so what we found is that and this is
+probably what you'll see when you have
+noise so what happens is that the latent
+space representations are not as clean
+as the one that we have if you have
+noise and so it might be more difficult
+to interpret it especially in the in the
+ssense of you know um enormous amount of
+data so that that has been our our
+experience at least and I imagine I
+haven't done it with with actual
+gaussian noise or or real noise but I
+think the effect will be the same so the
+the noise in the input will be directly
+represented in the latent space in in
+terms of clean lless and this is part of
+the reason why convol why variational
+outen coders tend to be popular in that
+setting because you sort of account
+immediately for that noise uh as I said
+we wanted to be very clean in terms of
+the inputs that we
+generated okay how does the
+computational cost hopefully I answer
+the question um how does the
+computational cost of the out encoder
+compared to that of a run fluid
+simulation of FL full um yeah I had I
+maybe flashed this to quickly so for
+steady
+calculation um The Well unsteady
+calculation the the the range the the
+ratio of cost is uh many many order of
+magnitude as as we as
+one would expect um this action
+increases even more these are two-
+dimensional cases as you go through
+three-dimensional cases and perhaps try
+to capture even more sort of detailed
+Solutions the expectation is that more
+and more the the factor the multiplier
+will be will be large uh obviously on
+the other end if you're doing
+two-dimensional steady perhaps course
+simulations in runs the the the
+differential is not that large but in
+our examples it's still you know
+multiple order of magnitude
+and this is the cost of evaluation
+obviously there is the training cost
+which is you know added to to that but
+if you're talking just about evaluation
+for a new case obviously the multiplier
+is many many
+order I I think
+the the Mark is asking about the
+training cost okay the training cost so
+the the training cost you know again uh
+our strategy has been to use very uh
+small data sets so we're talking about
+less than 100 data sets and so the cost
+is never larger than than you know few
+hours uh on on typically on single gpus
+we we did not really have to to go much
+higher now we expect again as the
+database increases not in terms of
+number of cases but in terms of details
+because now we're using perhaps
+threedimensional data set and so on we
+we are uh obviously seeing much uh
+larger cost but still on single GPU
+we're still talking about order of hours
+not no more than that
+thank you okay so uh how can you predict
+two different values for the same angle
+attack for noise up and now down motion
+from the snapshot trading
+um oh that I see I see that's a that's a
+good question so um what we do is that
+we we use batches and the batches
+actually include uh three cases so we
+typically have um a sort of a implicitly
+we are giving a a Time variation in the
+setting that that you know gives a
+difference between say you know nose up
+and nose down um so we're not formally
+giving the Dynamics the full Dynamics
+but we are capturing sort of
+instantaneously if you like a DDT uh a
+changing time um of of the actual
+solution so that has been uh that has
+been a a you know one one idea obviously
+that we we were trying to pursue is to
+build Dynamic models in the latent space
+um but rather than providing full
+information about trajectory we wanted
+to just give uh sort of bursts just very
+very short time duration for the for the
+batches and and that seems to be at
+least for this case is sufficient now um
+I can anticipate that you know this is I
+should mention this uh this problem in
+this problem there is an extra degree of
+Freedom which is the frequency uh in
+time so the What's called the reduced
+frequency right is you know it's not
+only a range of angle of attack is how
+quickly you're going through those angle
+of attack so everything that we've done
+here is fixing that frequency so that we
+don't have an additional degree of
+freedom but if you do have that
+additional degree of Freedom our
+expectation is that you need to provide
+more information you need to provide
+some sort of uh rate of change of angle
+of attack with time to be able to
+actually do the prediction in this case
+that was fixed and so we um we sort of
+assume that that was sort of
+known hopefully that anwers your
+question um oh wow there are a lot of
+questions okay lost lost track where am
+I but Jo next question is by Joel okay U
+just learning about but from what I seen
+variational more ideal for Generation
+does a basic will will here du to the
+more Nar yes absolutely so the the basic
+idea here is that we have um a very
+clean data set so we don't have noise
+and and so this in this way the
+variational auto encoder um does not
+really provide a lot of advantages in
+this
+case thing that is important that we
+didn't want to assume um a probabilistic
+description say Gan model or mixture of
+gence and so on in the latest space
+because we wanted to inform that through
+our emble of a coders so our idea is
+that you know the the probabilistic
+information with space come from the
+combination of all these uh Ensemble or
+all these outo coders in The Ensemble
+rather than through an anets on the
+probabilistic model for the for the
+Laten variables hopefully that answers
+the
+question next one is by
+khid uh can you please explain a little
+about sequential training for the multi
+do we train the L data with
+and yes uh exactly so what we do is that
+we uh Train by using the low Fidelity in
+this case low Fidelity means inv visit
+non viscosity High Fidelity means with
+viscosity but you can imagine a
+different setting but the basic idea is
+that we train first on the low
+Fidelity and then what we do is that we
+add to this low Fidelity cases di
+Fidelity so we have for each um you know
+we we have um the the two data sets sort
+of combined together okay and then what
+we do is that we condition the first
+variables in the latent space using the
+previous results and we build basically
+representation of the you know full data
+set now the the key here is that we
+tried both by making each case so each
+time we have an IID case the question is
+if we need to have a low Fidelity
+corresponding or not and it turns
+actually actually for at least for this
+problem that was not that critical even
+if we don't have a corresponding low
+Fidelity the the two latent spaces you
+know can be combined in a very clean way
+without without too much trouble but I
+expect in some other situation you will
+need to be able to differentiate between
+low Fidelity and I Fidelity and discard
+the low Fidelity cases whenever you have
+an i Fidelity so that you you Neely sort
+of distinguish the two kind of
+information at least for the examples I
+gave you that was not necessary but as I
+said that's work in progress so we'll
+see a little bit more as we expand the
+scope of of some of those
+analysis and and and you're right I
+think the challenge is how complex is
+the physics that you're adding or
+another way to say it is how good the L
+Fidelity modeling that you're using is
+because if the LA Fidelity modeling is
+very inaccurate and very uh unable to
+reproduce some of the features then it's
+very likely that the conditioning is is
+really not very helpful because you are
+not you know not able to use much of the
+information from the roid so I I think
+the challenge there is to understand
+from looking at the latent space
+especially in the low Fidelity and in
+the mix space sort of the the combined
+space if that information is actually
+interpretable that will give you a set
+of uh at least some confidence in the
+outcomes right if there is no real
+connection between the two then likely
+what this means is that your low
+Fidelity model is not a very good
+representation very useful
+representation for the for the combined
+for the physical
+problem okay uh let's see where am I uh
+Chris uh next is Chris yes with your
+metal multi for nois experimental data
+for instance could you add a new latent
+parameter uh but have it to be a
+variational latent parameter and keep
+the
+real oh that's an interesting idea that
+there is no reason not to um in fact uh
+one of the things you can do is that you
+can actually build a a um variational
+Auto
+encoder but where you condition for the
+first variables you condition the the
+variance to be zero and so naturally it
+will be sort of variational only for the
+final set set of variables right so the
+same ideas you can definitely use it we
+haven't tried it I I don't know if it
+will be easy or not but at least
+conceptually yes you can definitely do
+that and it will be actually very
+interesting to try um because as you say
+there are some additional you know now
+now what I said before we don't want to
+use you know variational out inorder
+because our data set is clean now
+obviously multi that's not the case
+anymore right you the data set is not
+really clean because the low Fidelity
+cases have errors with respect to the
+High Fidelity cases that are not really
+captured in the inputs and so the
+variational the additional the
+variational V the the the variance in
+the latent space might actually help
+with that so it's it's a really good
+idea in fact maybe we should talk more
+about that afterwards if you if you're
+interested
+um so I copied the Wesley's questions oh
+okay the plot show are clcd polars if
+the integr equality is the goal would
+the training benefit of worson from oh
+great question yeah um the the reason
+I'm so I would the
+let's say I don't know we tried
+originally to build out encoders with
+only the the um integrated quantities in
+mind um and as you can imagine it's
+relatively easy to do that um but what
+we wanted to do here instead is to
+reconstruct the flow fields and we are
+extracting the lift and Drug from the
+flow fields from the actual pressure
+that is that is reconstructed so this is
+effectively a harder problem because we
+are not you know con straining the the
+pressure Distribution on the airf or the
+integrated quantities um but the reason
+why we want to do this is because again
+remember this is a a process of
+compression of those flow Fields so we
+don't know exactly how these flow fields
+are going to be used and so we don't
+want to limit oursel to just the the
+aerodynamic coefficients we just want to
+reconstruct typically the velocity
+fields and so for for us the goal was to
+reconstruct the fields we are just using
+the lift and the drag as a as a way to
+summarize it
+um what difference does the training
+process have for 3D unsteady turbulent
+flow um so at least in our project what
+we are doing thre dimensionality doesn't
+change anything obviously the complexity
+of the geometry the size of the data set
+that's fair uh but you know there is
+nothing that that changes um unsteady
+per se is not a problem as I mentioned
+as long as these are um reasonably well
+um uh described uh flow field in terms
+of times and data sets in terms of times
+I think we can we can handle it
+turbulence is a different story in the
+sense that if you're interested in the
+time varying behavior of a turbulent
+flow so the
+instantaneous I would argue that
+probably the amount of data required is
+way more than what we are thinking here
+so what we are doing here is to try to
+represent the statistics of a turbulent
+flow so say a time average solution of a
+turbulent flow uh and in that sense I
+think the solutions are expected to be
+smooth changing smoothly on a on a large
+time scale and so we're expecting that
+to be possible even in a more complex
+turb flow say computed through a a larg
+simulation for example but we're not I
+mean at least at this point these
+methods are not targeting the
+instantaneous variation of a turbulent
+of a turbulent flow that will be at
+least in terms of complexity and size
+really Beyond sort of the scope of what
+we trying to do and there are obviously
+you know both in the labs and and around
+are a lot of efforts in that direction
+and and you will see easily that you
+know going to these low dimensional
+latent spaces is really not practical
+for for those cases the Dynamics we know
+the Dynamics in a turbulent flow are
+much much higher Dimension than than two
+and three so the whole scope of of the
+problem will
+change okay well I I think that was the
+that was it from the chat room but is
+there any question from audience who
+wants to unmute yourself and then ask
+question
+questions if there are please do
+so well I guess we uh we don't have um
+audience with the question who wants to
+unmute um well then well thank you so
+much for the wonderful presentations and
+Q&A session it was it was awesome and
+very smooth well thank you very much
+appreciate it and thank you again for
+the invitation and for the attention
+thanks that's awesome um Jan would you
+mind sharing the the slide with me uh
+sure no no problem I'll send it to you
+okay awesome well thank you for the one

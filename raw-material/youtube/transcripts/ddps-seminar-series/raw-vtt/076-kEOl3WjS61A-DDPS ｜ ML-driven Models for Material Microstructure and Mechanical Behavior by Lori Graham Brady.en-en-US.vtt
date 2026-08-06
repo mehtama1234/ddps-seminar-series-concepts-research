@@ -1,0 +1,3755 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.949 --> 00:00:05.909
+All right. Okay. Welcome everyone to the DDP seminar. today. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk unless you have questions. If you have questions, you're welcome to unmute and ask otherwise, please use the chat room to post your questions so that we can address them in q&amp;a session at the end. Second, today's DDPS seminar is open to external audiences. Therefore, no qualified discussion is not allowed. Finally, the talk today will be recorded and uploaded in our YouTube channel. Alright, let's introduce our speaker today. It is an honor to host Laurie Graham Bradley, who is a professor and former chair of the civil and System Engineering Department at Johns Hopkins University with secondary appointments in mechanical engineering and material science and engineering. She currently serves as director of the Center on AI for materials in extreme environments and Associate Director of the Hopkins extreme materials Institute. Our research interests are in machine learning enabled mechanics models, uncertainty quantification, computational stochastic mechanics, multiscale modeling of materials with random micro structures, and the mechanics of failure on the high rate loading. She has received a number of awards including the Presidential Early Career awards of scientists and engineers, the Walter Hoover Civil Engineering Research prize and William Higgins award for excellence in teaching. She is a fellow of the ASC Engineering Mechanics Institute and the US association for computational mechanics. Today, Laurie will talk about ml driven models for material microstructure and mechanical behavior. Please enjoy and expect a wonderful talk now without further ado, let me pass the baton to Lori by asking one random question. Today's random question is where is your favorite place in the world? Wow. Other than here in my home? That's a tough one. I've been to so many beautiful places over the years. I got to pick one. I got to pick one. Well, I got married in Lake Placid, New York. So and I have a lot of family history there. So Lake Placid is, is a happy place for me. If anybody hasn't been there, I suggest you go visit. Alright, sounds good. Okay, stage is yours. Great. Thank you. So thank you, Jung Soo for inviting me. And I appreciate everybody who is here. And I hope I can deliver on the wonderful talk that Jung Soo just promised. But it's a pleasure to talk to all of you. And I wanted to start by giving some, sorry, some credit to the people who actually did a lot of the work here, including my group, including the PhD students and postdoctoral scholars, some of which I think might be online right now. So they'll catch me if I say something wrong. And as well as some of the staff that have been really supportive of what we're trying to develop here at Hopkins. So the motivation for all of this is thinking about high throughput data driven design. So I'm going to talk a little bit about something that we're building here called the AI for materials design, in extreme environments, AIMD facility, and right now it's under construction. So I wish I had some beautiful pictures of the lab itself. But right now, it's pretty much drywall is getting home at the moment. But it's a 2300 square foot facility, and it will integrate material science, data science, AI and robotics. And it's specifically targeting right now metal alloys, although we're talking a little bit about ceramics at the moment too, but what does it have? So, in terms of fabricating and processing materials, we are planning or we are using sputter deposition to generate thick foils of these alloy specimens using high throughput carrot X ray characterization, where we can use for example, X ray diffraction to understand the crystal structure, and maybe a little bit about average grain size and X ray fluorescence to understand the chemistry of the specimens that we're looking at. And then finally, thinking of extremes, there's high throughput laser shock. So with that, we're looking at being able to run tests, multiple tests a minute and characterize things like spa stir lengthen ETL and some equation of state parameters. So that's on the sort of physical side, all of this is getting integrated. Okay, all of this is integrated through robotic automation. So maybe I'll give you some fun videos of what we're talking about here. So this is what the layout will look like. It's sort of a J shaped conveyance that will move specimens from one piece of equipment to another. And the robotic arms will be placing the equipment in and removing the, or placing the material in and removing from the equipment. And this is what it looks like. In reality, this is actually at the vendor, they're still working out some of the kinks and we'll be delivering it when the room is ready for it. And the roboticist and our team, Axel Krieger has developed some simulations. So on the left, you're seeing just a video of what we call the robotic arms dancing, but it gives you an idea of that there's sort of multiple things happening at the same time. And if you look at one particular equipment, so this is the x ray system, and going through the simulation of how do you get a small specimen? How do you pick it up? How does it get transmitted into the equipment, with an X ray, you have a very small aperture, you don't want a lot of open apertures to the out the environment outside for safety reasons. So that actually takes a lot of work to think through those processes. So we have a lot of robotics in play. The other piece that's really taking a lot of time is thinking about data. And I think this is a huge challenge for everybody. There's a coordinated data, there's controlling the equipment, the metadata about the materials, gathering, and organizing and collecting the results that we can use to make on the fly decisions about the processes that were the experimental processes. And so just to give you some idea of all that's involved in the data, on the left hand side is representing physical systems. So profilometry, laser shock, X ray systems and robotics. In the middle is the host machine, this is the machine that's controlling everything. And so you can see the little person is it and the application service as and then there's all these acronyms here, data services in the middle that's basically distributing and moving data. And then arch is the sort of off site facility where we send data in there is an AI driver in there that we're working on local computing. And so just to give you an idea, if you come up with a script of something very simple to do, all the steps of where data has to fly from one place to another in this system, we have to think through all these connections, and make sure that they're all formatted in a consistent way. So never underestimate the data management process. But beyond that, to get to the meat of what I want to talk about is that that AI driver in there is going to need fast computational models, and some measures of uncertainty in order to be able to make effective decisions. Now, the models actually don't have to be perfect, what they need to be able to do is say that the model will predict that situation A is better or different or worse than situation b. But it doesn't necessarily mean that the model has to be able to predict the result down to you know, precision 10 to the minus eight. It's really, in this environment, kind of a design discovery environment. It's a prediction of will something change. So we can be a little bit looser, and how we the criteria we put on our models. So what are the opportunities here and why now so why develop something like AMD? And I will know that there are a lot of AI for materials facilities out there that are really successful. I think what's different about ours is that we're trying to capture extreme environments, dynamic environments, and that's traditionally something that hasn't been easy to do in a high throughput setting. So I think the opportunities here are a few that there's certainly a greater ability to develop new materials. So things like additive manufacturing, and advances in sputter deposition, really enable a lot of new materials. There's high throughput characterization and testing. We're talking about processes that traditionally might take hours or days being able to be done in seconds. Minutes. Or alternatively, maybe surrogate tests that are very fast, that we hope represent something about a larger system. We have more computational power than ever, I always put an asterisk on this statement. Because no matter what we always want more computational power. We have, as scientists and engineers, we have the ability to fill the available computational power with no problem. And I think that could go on to infinity. And then finally, the uncertainty quantification tools are maturing. And I don't mean to claim this as a mature field. But it's, you know, all the good works been done. But it's gotten to the point where it's actually practicable, you can actually start implementing UQ practices in real problems. And so just the low res showing one example, a very complex model. So in red, I'm going to give the counterpart to each of those opportunities, sort of the challenge that it presents, we can develop many more new materials, but it creates an enormously high dimensional design space. So if you think about an ATA that has, say, five element components, there's an enormous number of possible combinations of those. And certainly the full continuum of all the proportions of those high throughput characterization and testing is terrific, it creates large quantities of data that we have to deal with, we have to deal with data flows, and typically that data is low fidelity. So you're balancing sort of high throughput, low fidelity data with a little bit low fidelity, or high fidelity, but very sparse data. And so there's a tricky balance there. True multi scaling, real models of these systems are often computationally infeasible, even with a lot of computational power. So we need clever ways to attack that. And finally, UQ adds cost. We're finding some very good tools, but but it is costly. So I can't address all of those in this talk. But I do want to think about the issue, the slow models do create a bottleneck for design decisions. So if I'm thinking about our aim D facility, if the laser shock system is sort of asking, is it worth testing this particular specimen, and I send it to a model that takes 24 hours to answer, then I'm getting no value from the fact that laser shot can happen in minutes. And so I don't want my models to be so slow that any decision that's made is waiting on some long, slow running model, and need have fast decisions. So I think today, I'll focus on these two particular pieces. One is, how can we enhance the data we have? So for example, can we enhance high for low fidelity data to create high fidelity data? And how can we address multi scaling in a way that's efficient? So I'll start with the first one is kind of a talk in two parts. So here's our problem statement. If we're given limited, three dimensional, or even only two dimensional data, could we reconstruct a three dimensional microstructure? Or better yet an ensemble of those? So often, in particularly in a high throughput setting, you're not given three dimensional information? Is there a way for us to take the two dimensional information and generate micro structures that have similar characteristics? So again, our goal is to generate an ensemble of micro structures that match what are key characteristics of the microstructure? They're not the same microstructure, a different instantiation of the same kind of microstructure. And one challenge we face is that traditional stochastic simulation does not work well. So there are a couple of challenges here, say a binary material like this is very non Gaussian and its distribution, right? It's basically two Dirac delta functions, which is maybe the extreme of non Gaussian unity. So things like translation processes to generate microstructures won't work, or at least won't work very well. The other issue is that these kinds of irregular microstructures aren't as simple as maybe a model where you'd say I'm going to put, you know, circular inclusions down in space randomly. You can't use that here. So what are some descriptor descriptors that we might want to think about? One could be something like the two point probability function, which basically asks if I Put a vector down randomly in the space, what's the probability that its two endpoints lie in poor space. And so on the right upper right, you can see basically, a typical probability function, its maximum is at delta x delta y both equaling zero, meaning you're comparing the point to itself. So it makes sense, those are appointed very well correlated to itself. And that sort of correlation dies off as you go further away from the the vector gets longer and longer. Another characteristic you might think about is a pore size distribution, which basically says if you pick a random point in the pore space, what is the distance to the closest solid space. And a typical function looks something like what I'm showing here kind of starts at a peak at zero and dies out as you go to longer and longer distances. Now, a problem here is this. Two point probabilities don't often capture all the characteristics. So these are some results from actually a fairly old paper, where a student and I were working on a simulated annealing approach to simulate these micro structures. And we wanted to match the two points, statistics. So the upper row is the original image. The second row is a simulated image. And the two points statistics are the same between the first and the second row. And what you see is it's okay for the circular inclusion microstructure on the left the first one. But if you look at the other three, there's a lot of information lost shapes conductivity, you see glimmers of what the original microstructure was, but it's really not the same at all. And we kind of hit a point where we said, Well, we tried using three point correlations, and then improve the problem improve the simulation somewhat, but it was incredibly slow to do that. And in the end, it came down to the things that we see as people who say, Well, this is more squiggly, or that's more connected. But that's not so easy to quantify. So the what is missing question kind of hung out there, until we started looking at some of the tools out there related to machine learning. So the idea here is to use transfer learning. The VGG 19 network is a network that's commonly used for recognizing objects. So is this a picture of a cat or a truck or an airplane. And it performs that recognition through a series of finding just all sorts of features, I don't even know there's no way to describe them physically. But it just works with that image and identifies all the relevant features that would make it categorize into being a certain object. So you can think of the same thing with microstructure we input a microstructure image. And the VGG 19 model gives us a sense of the feature maps, a bunch of aspects that we don't necessarily know how to describe, but they're quantifiable. And so how we can use those networks is let's say we have a target image, that we will need to create another image with the same characteristics. So we can take the target image and run it through the VGG 19 model. And we can do the same thing with a simulated image. And we can just start with white noise, and compare the grim basis Graham gram matrix for each of them. And the loss is the difference between those. So that last tells you how far away is my sort of initial simulation from the target. And there are other things that we can add to this loss function like total variation, which is basically penalizing individual pixels, like noise. So it's a way of sort of reducing noise in the image, but you can put whatever you want into this loss function. combine it together to identify total loss, different again, essentially difference between the target and where you are with your current image, and asked Have I minimize, have I? is the loss less than some threshold? If it is, well, great, we're done. We have a reconstructed microstructure that has a lot of the statistics or the characteristics of the original. If not, then I need to update and basically the algorithm uses a gradient based optimization, sort of an atom optimizer to update that image and then we do the comparison again, and we just keep going and iterating and changing that image until it matches our target image in some reasonable way. This actually was drawn from some work by A way Chen's group at Northwestern where they just looked at the gram matrix loss, and we've been playing with what goes into the loss function, in addition to that. Alright, so I'm gonna do something there. So this optimization based reconstruction, we match the statistical descriptors. And the VGG 19 feature maps from the target. Another thing that we added to the loss function was the two point probability. So we wanted to actually minimize the difference in the two point probability between the original and the reconstructed. And on the right, you can see sort of a target. On the left is a quick GIF of an image going from white noise converging to a simulated microstructure. So you can see what happens is it iterates through this process from basically right now for fuzzy white noise through to a final image. And our final image, we get a very good match and things like the two point probability function and the pore size distribution function. So those basic statistics look really good. Now, that was just a single image. And other thing we thought about was, we have a sample that it's actually a CT scan of a three dimensional porous ceramic, and it has 180. It's one of its dimensions at 185. So we took each of those slices, and treated it as one sample from the material. So I think the way to think about this is, you have a material, that's all, you know, some bulk of material, it's all the same material. But if you looked at the microstructure in one region, and in another region, you will get different micro structures. And so we wanted to capture that variability. So we went slice by slice. And you can see that there's a variation in porosity, and correlation length, and in mean pore size across all of these and again, this is the experimentally obtained data, the slices. Our question was, do the reconstructed microstructures capture this. And so what we did was for each slice, target slice, we generated a simulated slice. Again, you can see the target and the simulated are not the same thing, but they're statistically similar. And we went did that over the full 185 slices. And here, we're comparing the Ricans distribution of porosity, coral length, correlation, length and mean pore size in the reconstructed in green, and the target in blue. And if you look at the means and the variances below each plot, you can see that we're essentially matching definitely the mean, with almost essentially no error and the variance very well. And each of these distributions, and the distributions match over each other quite well. Now, again, there's a statistical sampling. That happens here, that would mean that we wouldn't expect the distributions to be exactly on top of each other, because these are different instantiations of similar statistics. So we match those statistics. But is that really sufficient? And that was a question that we asked ourselves. And we thought about the idea that that reason, you would typically want to generate these virtual microstructures like this is because you're using them to model something. So you're, you would typically simulate a microstructure, put it through some sort of finite element model to develop some sort of prediction. And so we thought, probably a good way to test this is to look at some average properties that would be predicted, based on finite element models of the microstructure. So what we did is for every microstructure that we simulated, we put it into a finite element model, with different properties for the black and the white phase. And I can't remember exactly, I remember that the black phase was typically high values, and the white phase was low, we didn't do full on pours, but she doesn't think was like a low stiffness or low conductivity. And so then we predict the stress distribution, the heat flux distribution, and the discharge distribution associated with each of those models. And overlaid that with predictions from finite element models of the original microstructures. And again, you see there's an excellent match in the mean and the variance of these quantities. Thermal conductivity probably struggles the most, and maybe if I go back to that result for a second, you can see the thermal conductivity in the middle. It's very low. localized sort of paths of heat flux. So we would expect that that would be a little more difficult to predict than, for example, the Youngs modulus, which is like an average sort of quantity. So that shows up here, but even with thermal conductivity, there's a really strong match between the simulated and the actual microstructure statistics. So, what have we accomplished here? If you compare this to simulated annealing, which was sort of the more traditional approach, the transfer learning here was orders of magnitude less time, and achieve significantly superior results. So at some point, we just ran out of patience with the simulated annealing and cut it off before it converged all the way. But this was, we're talking hours versus minutes. And the difference here, so you know, a couple orders of magnitude faster, to get a very good multi loss based reconstruction on the left. And we also were able to apply this to a variety of multi-phase materials, thinking of polycrystal and kinds of materials and get different kinds of micro structures. If you think about look at the top and the bottom, they're both poly crystalline, but they have sort of different kinds of features, and we're able to capture that. So that's 2d. It's interesting from the perspective of being able to generate an ensemble of, of microstructures. But really, I think, what's more exciting is the idea of being able to go to full three dimensional microstructure simulation. So we go back to the 3d reconstruction. So this is our basic image. This is again, that porous ceramic, we've been working with the images around 10 to the eighth, eighth voxels. If we were to try to deal with this full 3d structure and optimize it, we'd be updating about 10, Meg's of data at every optimization loop would be pretty much memory intensive. And furthermore, the VGG 19. And similar models aren't really yet trained for 3d images. So instead, what we're doing is working with 2d slices of this image. And that's much more easily parallelized. So I'll show you some of the results here. So here's the idea. Think about this 3d structure, you start with white noise, that's our starting condition. So every pixel is randomly assigned black or white, independent of the pixels around it. And first, we start thinking in the xy direction, and we take each of those white noise images, we run it through our VGG 19 model, the Transfer model. And we update it so that it turns into what's viable as a microstructure in the 2d slices. Now, of course, one slice is independent of the next. So you have like, within the slice, it looks good. But across the slices, it won't look as good. But so right now we have, at this point, a deck, think of a deck of cards, each card has a reasonable microstructure. But it's not necessarily correlated to the microstructure through the cards. So you would end up with something like this, actually, it'd be even worse in the first step, because they'd be totally uncorrelated, but you have this sort of banded pneus, that happens, right? Because what you did to one slice was independent of what you did to the previous slice and slice after it. Um, so this interlayer noise occurs. But it does converge over iterations, if we do the following. If we take, say, the slices with a light blue, and now that's our deck of cards in that direction. And we take each of those sort of banded noisy images, we make that the initial condition for another transfer model, transfer learning model, we generate microstructures in that direction. And then we go to the dark blue direction, because now that's a little bit banded in strange looking, and we do the same thing, we go through each slice. So that's kind of highlighted here. This is going in the x z direction, we basically update the microstructure in that x, z direction. And then we update the slices in the y, z direction. So in the process of doing this, what happened in the xy direction, now we've kind of messed up what was originally a pretty good looking set of microstructures within each plane. So what we'll do is now go pass through again, go in the x, y direction, in the z direction in the y, z direction, maybe do three full passes, five full passes. But what ends up happening is, as you move forward, you're having to change fewer and fewer voxels. So you're starting to see convergence in all three directions, that ultimately plays out into a good 3d model based on the 2d image. So again, this is starting from a single 2d image and saying, if I assume that the statistics are the same in all the directions, I can go ahead and generate a 3d microstructure based on those images. I could also have three images, one in one in the xy direction, one that's collected in the y, z direction, and one that's collected in the z direction, if it's an an isotropic material. And I could follow the same process and generate an an isotropic 3d microstructure. So I'm not limited to just isotropic. But that's what I showed here. Okay, so the statistics of these 3d microstructures look pretty good. They get better and better as we iterate more through the model, this is after three passes, if we went through five passes, they might even get closer. So by three passes, I mean that we went direction 1233 times, so sort of nine passes through in different directions. And the pore size distribution also looks very good in this 3d structure. We also use this to look at polycrystalline microstructure. So we have, we only had the 2d slice that you see above the upper left. And from that, we generated a three dimensional volume. That's statistically, it has the same characteristics as the 2d slice. And actually, if you look at the grain size distribution from A to D cut outs of the 3d volume, they match almost imperceptibly that almost exactly was the target. So these efficient simulations, why do we want them, there are a few different reasons. One is, the experiments are typically limited in the amount that can be observed. Right, so maybe you have a system that can only look at 128 by 128 pixels or so you're limited in the volume of material that you can characterize at a given resolution. But what this tool allows you to do is to actually generate then similar microstructures, that are larger, you could go smaller to but I think larger is probably more motivating. So you're not as limited in a model based on the experimental observations, you're not so limited by what the experiment is able to resolve. Another piece that this enables is looking at the uncertainty that's induced by microstructure. So you can generate an ensemble of micro structures, and therefore get an ensemble of responses. So you can actually use that to feed a model that would create your would generate some sort of uncertainty quantification. And then the third reason, or the third value of this is the ability to go from a 2d image to a set of similar 3d microstructures. So if you have a 2d reading of even in different directions of what a particular material looks like, you can come up with a reasonable representation of what the 3d microstructure might be. So that's my pitch for one piece of trying to enhance data that's serving a data driven system like this. Yes. This is a good time to ask about the first part. Yeah, sure. I have a question. No, the transfer learning the VGG 19 model you you're using, it is setting some multiple loss functions, and you have to minimize it. You said you use the dance algorithm that takes that takes time, right? So the computational cost of that it's not free. So when you compare that competition, of course, to the 3.3 point, you know, the method of request reconstructing the microstructure i, which one is more expensive, but but you're aiming to come up with a more efficient method. So I guess transfer learning must be more efficient. In some sense. It is it's it's significantly more efficient. So in the leading annealing kinds of approaches is that you're, you're typically doing some sort of pixel swaps, maybe in batch, but you're kind of taking small numbers of pixels and you perturb them. And then you ask is this new version closer than the old version? But there's no gradients in it. So I think what makes this approach faster is using the gradient based optimization step. Okay. So it's sort of more intelligently updating the microstructure, then. I see. But But still, it still takes time, right? Those Those VGG 19 model to solve that to minimize the loss functions. It does. It's not like seconds. Yeah, right. Right. Right. Yes. So I would compare to to coin method, that's, that's faster, much faster. Yeah. So it's, you can accomplish a ballpark, you can accomplish what it would take an hour to do with a simulated annealing kind of approach. It's in probably, I don't know, half a minute. Now, over a large number of these, and over a large number of, you know, as you try to converge it, it still adds up. So I'm not saying that it's free. It's not something that comes up with no effort at all. But it just massively cuts down. I mean, honestly, how we got here was we were trying to use simulated annealing for simulating a 3d microstructure. And it just was impossible. We couldn't get it to go where we wanted it to go. And so my clever student went out and found some interesting results in the literature. And we've we started to pull from that and actually found it just made all the difference in the world. Sounds good. Okay. How many? Do you have a lesson? Yes. Hi, thank you. This is very interesting. I just have a maybe simple question. I've never done anything about this before. It doesn't make sense, or is it efficient to like, reconstruct these micro structures from case space? Like, I would imagine that two similar micro structures would have similar distribution in case space. Does that make sense? Have you considered something like that before? I haven't considered that? That's a good question. I haven't done another reason why I'm thinking about case space is that I would maybe also assume that if you do a 2d slides, and then you measure, like the case, space distribution, then if you want to extend it to 3d, you can just simply extend that distribution in the other direction. And then, I don't know, like, I'm just thinking on the fly now. Yes. Does that mapping work? Well, in a binary system? I actually don't know that. This is just all my imagination, actually. So I was just wondering if you considered it in case space? It's it's actually it's a very good thought. I think what would come up? Is these binary 01 systems are tricky. Oh, so you can match the statistics, but there's a lot of there will be a lot of noise and things that you don't catch. Yeah. Right. Yeah. Thanks. All right. Sounds good. I guess. I don't know. We can move on to the second part of you. Excellent. Okay. Well, and certainly if if people think of questions during the second part on the first I'm happy to, yeah. Yeah. Sounds good. All right. So the next step is thinking about multi scaling, and how could we have you how can we use machine learning for multi scaling problems? And so the idea here is what we need is something fast a surrogate that can enable real time decisions and be able to link scales and maybe even provide some UQ This is actually a graphic that I I lifted from Kaushik Bhattacharya at Caltech that I like just the concept of you have a large box, you know, large processor that can map inputs x two outputs y, but you want some sort of small fast, the Raspberry Pi that can nap from some inputs to outputs in a much faster way. And so your focus just on mechanics of simple two phase materials to demonstrate an approach through machine learning. So let me start just first with an overall problem statements, you have some sort of structure with some sort of load on it. In this case, it's some sort of varying pressure load. And that structure at the macro scale has a micro scale that for now, we're assuming is some sort of simple two phase composite. And so if you wanted to go full on naive, you would say, well, I need a full scale finite element model of this system. Within each element, there is a local microstructure. And I'm going to mash that whole thing, all of those 10,000 elements. And I can come up with something like let's say this is a stress distribution. So yellow indicates high stress, blue indicates low stress. And we capture the macroscale variations and stress, but we also capture things like, make a little laser pointer here, to, you know, force chains that travel through some of these fiber arrangements. Now, clearly, we all know this, I think anybody who's done any significant computational modeling, that's just not the way to go, we can't resolve everything at one scale and the next scale, at least not for really interesting problems. So the conventional multiscale FDM approach is to say, well, I'm going to take each element, and I'm going to extract its microstructure. Use that to homogenize the material and figure out some effective properties. So right now I'm sticking with linear elasticity. future direction as we move into nonlinear actually future slash current, but I don't have results for that, that I'm going to show today. So let's just stick with linear elasticity. And the material could be orthotropic, and come up with these effective properties. You put those back into your finite element model for each element. And you can get a distribution of average stresses. And you can see that there's not a lot of variability in this, that doesn't come from the macroscale loading, though there are areas in here and in here, where there's some effect of those variations in microstructure. But it's pretty small variations. What you can do now is take each element and say, well, this element is undergoing some strain state that's predicted by the model. And given that strain state, I'd like to figure out what is the stress at the microscale and each of those elements. So there's basically a downscaling step going from the upper scale to the lower scale. And so using a finite element model, you would take the microstructure apply that strain that's associated with that element, that state of strain, and you predict some stresses coming out of it. And this is nice, because it's parallelizable, it reduces the computational time. But it is still a lot of finite element analyses. And it turns out to be still quite costly. And, in particular, you're having to sort of resolve sufficiently the inter fiber regions with enough of a fine enough mesh to get some realistic results. So what we're looking at is a representation that maybe uses some finite element results. So you do need the finite element results as training data, but then being able to just take an arbitrary microstructure. And from that, sort of take it in squeeze it into a cube that Wally does with it, and spit it out into some stress. So an output stress distribution. So the first thing we need is the training data. And so I'll walk through that, and then I'll walk through the architecture that we're talking about for the machine learning. Um, so from the training data, we need of finite element model of the microstructure. So for each microstructure, you can imagine that we could apply a unit tensile strain, and come up with three this is a plane stress problem, the way I've we've formulated it, that you have three different stresses coming from that the to axial plus the shear. And then you could apply a unit shear strain. And again, get three stress distributions could also do strain distributions, if that's of interest. And so now for each microstructure in your training data, you'd have six sort of output data associated with that. So we want to train the model to be able to go from microstructure to those six outputs. So we ran 50 models of the microstructure, and got basically 50 times six stress distributions. And then we were able to do one sort of cute trick that helps. So think about the original microstructure. This shows just six fibers, that's only for illustration, our actual calculations have more fibers in each one, but this just makes it easier to see. So you have an original microstructure that maps to some stress distribution, imagine that this is maybe an axial strain. And this is distress in that axial direction, I can take that same microstructure, if I were to flip it around the vertical axis, the stress distribution would just be also flipped accordingly. So because everything about the problem is symmetric, it's symmetric loading, I can do the same thing, I can flip it around the horizontal axis, again, I just, if I say the microstructure or the upside down of what it was before, the stress distribution would just be the upside down of that. And then I can do it one more time flipping again, about the vertical axis. And so basically, each piece of data, I can turn into four pieces of data. It's there's no free lunch. This is it helps. But it's not the same as having an independent piece of data. But it actually does give quite a bit of information to the model. So it's, it would say the model, the model doesn't know the physics, it might look at the stress distribution on the upper left and think, Well, something happens typically in the upper right corner of these models. And what these other pieces will do is sort of eliminate some of that bias, let's see is that cemetery. Alright, so we have an augmented data set, now we have four times 50, microstructures, and four times 50 times six data, even though we only ran 50. And so the architecture we're looking at is called a unit. It's a form of a convolutional neural net. The idea is you have an input, image and output stress tensor fields. And the mapping between those is through a series of convolutions going down to a latent space, that then is decoded back up to the output. And then there is what are called the skip connections that basically recognize that there is some form to the microstructure that should influence what the results look like. And so it kind of brings some of the microstructure and output connections into play. And so what we're doing when we train basically is training all the weights in this encoder decoder process. And then we get an input to output mapping. Of course, once trained, running any image through this is like a trivial computational effort. So unit predictions, this is a microstructure that was not part of our training set. And this is the prediction of the stress distribution that came out of that unit model. So the upper row corresponds to a unit tensile load, and the lower bottom row corresponds to unit shear strain. And we can do a comparison between finite elements. And unit again, this is not part of the training set. So for this microstructure, the finite element prediction is shown on the left the unit prediction shown in the middle. And then this gives us a sense of the absolute error. The error is small, there's one region where it's higher than the rest, but even there, it's less than 10% error. So that's the stress in the direction of the strain, the transverse stress and the shear stress, and so we have very good agreement between them. Similarly, if we apply a shear strain, we have very good agreement between the two axial and the shear stress. And since I started with linear elastic problems, I can take advantage of superposition. So I can say the total strain is a sum of factor tensor tensile loading plus the shear loading to give me any general loading condition I've got so if my finite element model has a certain strain state, I can use superposition to find the stresses for that arbitrary strain state. So very simple for finite four element finite element model. I don't suggest a four element model to anybody but this is just a nice illustration under tensile loading, the unit can predict the stress distribution in each of those four regions under Unit loading. And use that take the averages of those to find the constitutive relations for each of the elements. When those are put back into the finite element model, it gives us an average strain tensor for every element, and or average stress. That is the result of variations in the microstructure from one element to the next, we apply those strains, sorry, to the unit model, and we get a stress distribution. And putting it all together, it looks like this. So this is, again, purely using the unit model. There's no finite element in here other than the finite element model two by two elements, the macroscale. And if I compare that to a full scale finite element model where the fibers are all exactly resolved, I have really great agreement. And this was like trivial on the right, this is a two by two finite element model with like simpler implementation of the unit. The only difference you see is along here, where there's the element boundary. But that's a problem in any multi scaling. paradigm. So if we use Fe squared, we would have the same thing. Anytime you extract part of the model and analyze it separately, you'll have some dis continuity at the interface. So we can show the same thing for something with a much more refined mesh. This is the true stress map from the full finite element model. This is predicted from the unit model. This on the right, took seconds to run this on the left took days to run. But you get all the same kinds of force chains that you can see. And actually, one thing I should point out is you can kind of see a grid here, because there are no fibers on the boundaries in the way we train the model. Since then, we did an analysis where we looked at fibers that cross boundaries, it doesn't create any problems for the unit. So we can vary the volume fraction, we can vary the fibers sizes, we can put the fibers at the boundaries. This is all from a single trained unit model. And the predictions sort of this is I should have labeled the sorry, the left I think is the finite elements in the right is the unit model, we get excellent results in all these cases. So we can apply this to an arbitrary geometry, basic ideas, macroscale behavior to homogenize and get our sort of average stress or strain state, run that through the unit model is trivially fast to run and get our microscale behavior and put that back and we get a much richer picture of the overall stress distribution in this system. Yeah, so to conclude, this deep learning is terrifically fast, and it's accurate for predicting the microscale stresses. It provides a really efficient multi scaling approach or a composite, and some things that are in progress. And elasticity and or dynamic behavior, we're tackling by treating that as sort of a an added dimension to the problem. So it's another dimension that we'll have to train for. We could also look at three dimensional microstructures. So this was really just showing you 2d. It also enables deep learning based uncertainty quantification, both in terms of uncertainty of the model predictions. Also another piece of this is we're looking at uncertainty quantification for the CNN architecture. So what kinds of uncertainties are introduced by even using this model. And then finally, the the animation is showing you how quickly we can analyze the system just moving fibres around, right, so we can get the updated stress distribution very fast. This made us think that there's a real opportunity for thinking about topology optimization here, where you could think about what what should be the placement of inclusions in a two phase system that would maximize or minimize some particular behavior? So those are all the things that we're thinking about. This is actually a picture of the lab I was describing earlier, the AIMD lab when it becomes available, so I don't think there'll be shadowy figures hanging out so much when it's up and running. So we're looking forward to that sometime this summer. It's gotten a lot of support from the university and Army Research Labs has been a big supporter Read this. And it's all run through the center and AI for materials in extreme environments. So thank you. Any questions? Thank you. Thank you so much for the wonderful talk. Laurie. We do have a question, Adam, just raise your hand. Can you unmute and ask question? Yeah. Can you guys hear me? Yes. Hi, Laurie, this is very exciting, very awesome talk. So it seems like superposition is doing a lot of the legwork here for you to be able to take the data that you're training for all those simple strain states and extrapolate. So can you talk a little bit about your strategy, when you go into nonlinear regimes or plasticity, something like that? And are you just going to need way more data? Or what what's going on there? Yeah, it's a good question. So there's a couple of different ways to think about it. One is if, if you knew, if it's just a problem of it being inelastic, and you know, the load path you're traveling through, it's actually not too bad of a problem, because you can train it. For example, we could treat the the results as a three dimensional entity, right? Where you have each slice in three dimensions is the state as you're loading up. Yeah. So you could capture that behavior. And that's actually quite doable. And we've been able to accomplish some some work there. The challenge, I think, in multi scaling is that you don't know the load path a priori. So you don't know this integration point is gonna go up here and over here and down. And so I think there has to be some training over possible viable load paths. And or what I think is actually more hopeful, is to think of it the same way finite elements does, right. So you're in a certain state right now. And you're advancing forward in a particular load step. So you'd have to think about, can I train my model to understand what happens in in a load step? So that it's not like having to think about the whole path, the load path that it follows? Does that make sense? Yeah. So that's at least one more dimension to your problem, but possibly more? Yeah, it's tricky, I think, in the multi scaling. So it's something that we're trying to wrap our heads around right now. And I do think that the incremental approach is probably the load incremental approach is the way to go. Okay, thank you very much. Thanks. Sounds good. I have a maybe brilliant idea, too. I love it. So if you go to slide 61. So in order to enrich the data to train the unit, you you, you know, take advantage of the symmetry, right? Okay, on top of that, you can enrich more by just, you know, translating the microstructure by translational translational symmetry, basically, so you have a small units, and then that's just looking at that individual chunk in discrete sense. Why don't you smoothly move? Right, that will create a lot more data, and you do have the corresponding stress fields? Right. So that's another way of enriching the data. And then, you know, as everyone knows, you net or any other neural network, Big Data helps, right. So I think that will improve the unit and performance by end. Yeah, yeah, you're thinking kind of a moving window over. Exactly, exactly. Yes. And, you know, continuation. On to the Adams questions, if you go to the time dependent path dependence, the material, you said that, you're going to introduce the time window, right there, you can also think about moving the time window, likely. Start with a some small time window, I mean, you do have the data for the longer longer time, but make it short, and then just translate slowly. Those chunk, and then, you know, build the unit on three dimensional X, Y and, and that time domain, and that's another video. But when you slide the window, what the boundary condition, like, because I assume that here for each little blog, you apply some kind of uniform boundary condition. Then when you slide the window, the solution is not a solution of that particular boundary condition. Is that correct? That's right. So yeah, I think you wouldn't have the same. So what's consistent here is that the boundary condition is always that uniform strain boundary condition. And we would lose that in a moving window. But in a sense, the flip. So something I didn't really touch on here is you can train this model on these relatively small, I wouldn't say six fibers, but maybe 20 fiber model, those are pretty quick analysis to do, and you can perform a number of them. What's interesting about it is that it captures enough of the local physics, that it actually has potential to be applied to a much larger domain. So in in a sense, that sort of the reverse of what you're saying, you can say that you can actually use training on the small pieces to tell you something about a large piece without even creating, necessarily the multiscale. Like, without the full multiscale finite element framework around it. It turns out, it tells you a lot about the statistics locally, even in a larger system. Making sense. And the other issue, I think with the time, I think you get your point about sort of averaging over time, the challenge you've run into there is that it's not statistically homogeneous. It's changing with time. So what's happening in this part of the time might be very different than what's happening here. So yeah, it's a good thought, though. It is potentially brilliant, I have to think. Sounds good. Hopefully, it remains to be brilliant. All right. Is there any other question? I just wanted to say to Henry's point that once you go into a nonlinear regime, you're not able to cleanly superimpose the simple strain boundary conditions anyway. So knowing as long as you know what the stress and strain on the boundary of your window are, and you track that as well in the data, that might not be a huge problem. That's a good point. If there's an advantage to having a large system that you have a model of and then you want to sort of locally average across, you absolutely could you could measure the stresses and strains on the boundaries of those local regions, just the same way. So now the idea remains to be brilliant, I think. All right. Sounds good. All right. We have a question from see one. Tony, do you want to unmute yourself and ask? Yes. Thanks, Larry, for the great talk. Yeah, I learned a lot. But I want to ask about the comparison of the fella element prediction. And then unit prediction, I think is first lies behind this, but I'm not sure. So I want to ask if you have any insights on how to incorporate such like over sampling techniques in the unit model to suppress the resonance along along the boundaries, as we do in most multiscale methods? So I'm not sure I completely got the question. You were talking about the issue of maybe let me go to uh, yeah. I'm not sure if people here. Yes. So you said there's some, like, discrepancies along the boundaries. I, I don't know if it if we describe the same same issues with the same terms in like reservoir simulation, and in like materials as but so I think this is called a resonance effects in multi scale file, and then methods when they apply to like reservoir simulations. So we have like over sampling methods to try to reduce the resonance error, but I'm not, I want to ask if this applies to your problems. And do you have any insights on how to incorporate these techniques in the unit model? You should be able to actually do the same thing, right? So you could build the unit model to represent let's say, you know, oversampled region. And then there's, you'll have overlap between regions. But you can do the same sort of, I would imagine even just sort of linear filtering, right, you could sort of average the results from two overlapping subsequent unit models, which I believe that's what's done in the multiscale finite elements to or some, you know, more complex version of that. But yeah, we didn't even think about that. And as I say, I kind of didn't touch on the fact that we found that in fact, the unit model is More powerful than we thought. And we don't necessarily have to even stick to this finite element construct to get some pretty interesting results. But we just those results aren't quite there yet. So I wasn't ready to bring them up today. But I think you're hitting on exactly what we found, too. There is some way to use over sampling to kind of smooth out some of these discrepancies at the element boundaries. I see. Yeah, sounds good. Okay. Question from Tom. Tommy, do you wanna meet? Hi, Laurie, thanks. It was a great talk. Have you applied any of these methods to carbon fiber composites? Seems like that would be an easier problem, because you have the fibers that would transmit stresses. Yeah, we didn't actually go to a specific composite system here, right here, I think it was some generic composite with. I can't ever remember the contrast ratio, maybe 10 to one or 15 to one or something like that. But there's absolutely no reason it could be applied to any combination of now elastic properties that we'd like. So it could absolutely be a carbon fiber composite. And I think, actually think about real composites, I think going to a three dimensional system is really exciting, because then we could start getting into things like weave and waviness and some of the out of plane behavior. That's really important. Thanks, Lori. Thank you. Is there any other questions from the audience? Well, if not, let's thank Laurie for the wonderful talk and wonderful q&amp;a sessions. And hopefully there after this talk, there will be some collaboration is going to go on between Lawrence Livermore, and Lori, your groups. That's the whole idea. I hope so. I enjoyed this very much. And absolutely. I hope anybody who has any questions should feel comfortable getting in touch with me. And, you know, maybe I would even pass you on sometimes to some of my students and postdocs who could really get into. They know all of the details. Awesome. Awesome. Well, thank you, Laurie. Thanks so much. Thank you
+
+
+00:00:05.909 --> 00:00:10.919
+ 
+
+
+00:00:10.919 --> 00:00:14.009
+ 
+
+
+00:00:14.009 --> 00:00:18.569
+ 
+
+
+00:00:18.569 --> 00:00:21.089
+ 
+
+
+00:00:21.119 --> 00:00:24.269
+ 
+
+
+00:00:24.269 --> 00:00:28.499
+ 
+
+
+00:00:28.529 --> 00:00:33.929
+ 
+
+
+00:00:33.959 --> 00:00:39.599
+ 
+
+
+00:00:39.629 --> 00:00:45.449
+ 
+
+
+00:00:45.869 --> 00:00:50.459
+ 
+
+
+00:00:50.459 --> 00:00:55.949
+ 
+
+
+00:00:55.949 --> 00:00:59.609
+ 
+
+
+00:00:59.609 --> 00:01:03.329
+ 
+
+
+00:01:03.329 --> 00:01:07.649
+ 
+
+
+00:01:07.679 --> 00:01:13.889
+ 
+
+
+00:01:13.919 --> 00:01:18.359
+ 
+
+
+00:01:18.899 --> 00:01:22.589
+ 
+
+
+00:01:22.979 --> 00:01:25.949
+ 
+
+
+00:01:25.949 --> 00:01:29.519
+ 
+
+
+00:01:29.519 --> 00:01:33.299
+ 
+
+
+00:01:33.299 --> 00:01:38.039
+ 
+
+
+00:01:38.039 --> 00:01:41.969
+ 
+
+
+00:01:41.969 --> 00:01:46.829
+ 
+
+
+00:01:46.829 --> 00:01:51.449
+ 
+
+
+00:01:51.449 --> 00:01:56.459
+ 
+
+
+00:01:56.489 --> 00:01:59.939
+ 
+
+
+00:02:00.059 --> 00:02:05.189
+ 
+
+
+00:02:05.219 --> 00:02:08.939
+ 
+
+
+00:02:08.939 --> 00:02:12.239
+ 
+
+
+00:02:12.239 --> 00:02:18.209
+ 
+
+
+00:02:18.209 --> 00:02:21.869
+ 
+
+
+00:02:22.949 --> 00:02:23.699
+
+
+00:02:25.139 --> 00:02:28.919
+ 
+
+
+00:02:28.919 --> 00:02:30.479
+
+
+00:02:30.480 --> 00:02:32.820
+
+
+00:02:33.300 --> 00:02:36.540
+ 
+
+
+00:02:36.540 --> 00:02:40.110
+ 
+
+
+00:02:40.110 --> 00:02:44.670
+ 
+
+
+00:02:44.670 --> 00:02:46.020
+
+
+00:02:46.050 --> 00:02:48.870
+ 
+
+
+00:02:49.530 --> 00:02:54.210
+ 
+
+
+00:02:54.210 --> 00:02:58.710
+ 
+
+
+00:02:58.710 --> 00:03:03.210
+ 
+
+
+00:03:03.270 --> 00:03:08.190
+ 
+
+
+00:03:08.700 --> 00:03:13.710
+ 
+
+
+00:03:13.710 --> 00:03:18.600
+ 
+
+
+00:03:18.600 --> 00:03:21.210
+ 
+
+
+00:03:21.210 --> 00:03:24.840
+ 
+
+
+00:03:24.840 --> 00:03:29.280
+ 
+
+
+00:03:29.610 --> 00:03:33.270
+ 
+
+
+00:03:33.270 --> 00:03:40.710
+ 
+
+
+00:03:40.710 --> 00:03:44.070
+ 
+
+
+00:03:44.070 --> 00:03:46.890
+ 
+
+
+00:03:47.700 --> 00:03:52.140
+ 
+
+
+00:03:52.170 --> 00:03:55.320
+ 
+
+
+00:03:55.320 --> 00:03:57.810
+ 
+
+
+00:03:57.810 --> 00:04:01.140
+ 
+
+
+00:04:01.140 --> 00:04:04.410
+ 
+
+
+00:04:04.410 --> 00:04:09.030
+ 
+
+
+00:04:09.030 --> 00:04:11.910
+ 
+
+
+00:04:11.910 --> 00:04:15.990
+ 
+
+
+00:04:16.020 --> 00:04:20.610
+ 
+
+
+00:04:20.610 --> 00:04:25.050
+ 
+
+
+00:04:25.050 --> 00:04:30.090
+ 
+
+
+00:04:30.090 --> 00:04:34.440
+ 
+
+
+00:04:34.440 --> 00:04:37.560
+ 
+
+
+00:04:37.560 --> 00:04:40.590
+ 
+
+
+00:04:40.590 --> 00:04:44.250
+ 
+
+
+00:04:44.250 --> 00:04:48.450
+ 
+
+
+00:04:48.450 --> 00:04:52.230
+ 
+
+
+00:04:52.230 --> 00:04:55.980
+ 
+
+
+00:04:55.980 --> 00:05:00.720
+ 
+
+
+00:05:00.750 --> 00:05:07.140
+ 
+
+
+00:05:07.500 --> 00:05:13.320
+ 
+
+
+00:05:16.680 --> 00:05:21.330
+ 
+
+
+00:05:21.330 --> 00:05:25.800
+ 
+
+
+00:05:25.800 --> 00:05:28.950
+ 
+
+
+00:05:28.950 --> 00:05:33.120
+ 
+
+
+00:05:33.120 --> 00:05:36.480
+ 
+
+
+00:05:36.480 --> 00:05:39.540
+ 
+
+
+00:05:39.540 --> 00:05:43.350
+ 
+
+
+00:05:43.350 --> 00:05:45.960
+ 
+
+
+00:05:45.960 --> 00:05:48.120
+ 
+
+
+00:05:48.120 --> 00:05:54.360
+ 
+
+
+00:05:54.420 --> 00:05:58.380
+ 
+
+
+00:05:58.380 --> 00:06:00.900
+ 
+
+
+00:06:00.900 --> 00:06:04.560
+ 
+
+
+00:06:04.560 --> 00:06:08.190
+ 
+
+
+00:06:08.190 --> 00:06:11.550
+ 
+
+
+00:06:11.550 --> 00:06:16.860
+ 
+
+
+00:06:16.860 --> 00:06:20.040
+ 
+
+
+00:06:20.040 --> 00:06:24.120
+ 
+
+
+00:06:24.120 --> 00:06:30.990
+ 
+
+
+00:06:31.020 --> 00:06:34.800
+ 
+
+
+00:06:34.800 --> 00:06:39.180
+ 
+
+
+00:06:39.180 --> 00:06:45.840
+ 
+
+
+00:06:45.840 --> 00:06:48.690
+ 
+
+
+00:06:48.690 --> 00:06:51.870
+ 
+
+
+00:06:51.870 --> 00:06:54.990
+ 
+
+
+00:06:54.990 --> 00:06:58.320
+ 
+
+
+00:06:58.320 --> 00:07:03.120
+ 
+
+
+00:07:03.120 --> 00:07:07.530
+ 
+
+
+00:07:07.530 --> 00:07:11.850
+ 
+
+
+00:07:12.270 --> 00:07:15.060
+ 
+
+
+00:07:15.060 --> 00:07:22.680
+ 
+
+
+00:07:22.680 --> 00:07:25.680
+ 
+
+
+00:07:25.680 --> 00:07:30.690
+ 
+
+
+00:07:30.690 --> 00:07:34.650
+ 
+
+
+00:07:34.650 --> 00:07:38.040
+ 
+
+
+00:07:38.040 --> 00:07:41.760
+ 
+
+
+00:07:41.760 --> 00:07:45.870
+ 
+
+
+00:07:45.870 --> 00:07:50.400
+ 
+
+
+00:07:50.400 --> 00:07:53.040
+ 
+
+
+00:07:53.040 --> 00:07:58.200
+ 
+
+
+00:07:58.200 --> 00:08:01.200
+ 
+
+
+00:08:01.200 --> 00:08:04.410
+ 
+
+
+00:08:04.410 --> 00:08:08.670
+ 
+
+
+00:08:08.670 --> 00:08:14.580
+ 
+
+
+00:08:14.910 --> 00:08:18.810
+ 
+
+
+00:08:18.810 --> 00:08:23.550
+ 
+
+
+00:08:23.550 --> 00:08:27.870
+ 
+
+
+00:08:28.350 --> 00:08:32.940
+ 
+
+
+00:08:32.940 --> 00:08:37.650
+ 
+
+
+00:08:37.830 --> 00:08:41.850
+ 
+
+
+00:08:41.850 --> 00:08:45.870
+ 
+
+
+00:08:45.870 --> 00:08:49.410
+ 
+
+
+00:08:49.410 --> 00:08:53.910
+ 
+
+
+00:08:53.910 --> 00:08:57.690
+ 
+
+
+00:08:57.690 --> 00:09:01.290
+ 
+
+
+00:09:01.290 --> 00:09:07.260
+ 
+
+
+00:09:08.790 --> 00:09:13.740
+ 
+
+
+00:09:13.740 --> 00:09:17.250
+ 
+
+
+00:09:17.250 --> 00:09:19.350
+ 
+
+
+00:09:19.350 --> 00:09:23.190
+ 
+
+
+00:09:23.190 --> 00:09:25.470
+ 
+
+
+00:09:25.470 --> 00:09:27.930
+ 
+
+
+00:09:27.930 --> 00:09:32.790
+ 
+
+
+00:09:32.790 --> 00:09:36.120
+ 
+
+
+00:09:36.930 --> 00:09:39.570
+ 
+
+
+00:09:41.040 --> 00:09:45.000
+ 
+
+
+00:09:45.720 --> 00:09:50.670
+ 
+
+
+00:09:50.670 --> 00:09:53.190
+ 
+
+
+00:09:53.190 --> 00:09:56.790
+ 
+
+
+00:09:56.790 --> 00:10:02.940
+ 
+
+
+00:10:02.940 --> 00:10:07.500
+ 
+
+
+00:10:07.500 --> 00:10:12.600
+ 
+
+
+00:10:12.600 --> 00:10:15.240
+ 
+
+
+00:10:15.240 --> 00:10:18.390
+ 
+
+
+00:10:18.810 --> 00:10:23.280
+ 
+
+
+00:10:23.280 --> 00:10:25.980
+ 
+
+
+00:10:25.980 --> 00:10:31.110
+ 
+
+
+00:10:31.110 --> 00:10:33.360
+ 
+
+
+00:10:33.360 --> 00:10:36.600
+ 
+
+
+00:10:36.600 --> 00:10:39.660
+ 
+
+
+00:10:39.660 --> 00:10:42.600
+ 
+
+
+00:10:42.600 --> 00:10:49.950
+ 
+
+
+00:10:49.950 --> 00:10:55.500
+ 
+
+
+00:10:55.800 --> 00:10:57.690
+ 
+
+
+00:10:57.690 --> 00:11:01.140
+ 
+
+
+00:11:01.140 --> 00:11:05.070
+ 
+
+
+00:11:05.070 --> 00:11:08.160
+ 
+
+
+00:11:08.160 --> 00:11:12.660
+ 
+
+
+00:11:12.660 --> 00:11:15.330
+ 
+
+
+00:11:15.330 --> 00:11:20.490
+ 
+
+
+00:11:21.570 --> 00:11:24.630
+ 
+
+
+00:11:24.630 --> 00:11:27.330
+ 
+
+
+00:11:27.330 --> 00:11:30.240
+ 
+
+
+00:11:30.240 --> 00:11:33.660
+ 
+
+
+00:11:33.660 --> 00:11:39.030
+ 
+
+
+00:11:39.030 --> 00:11:43.020
+ 
+
+
+00:11:45.630 --> 00:11:49.950
+ 
+
+
+00:11:49.950 --> 00:11:53.700
+ 
+
+
+00:11:53.700 --> 00:11:58.920
+ 
+
+
+00:11:59.520 --> 00:12:03.960
+ 
+
+
+00:12:03.960 --> 00:12:10.140
+ 
+
+
+00:12:10.140 --> 00:12:12.870
+ 
+
+
+00:12:12.870 --> 00:12:17.070
+ 
+
+
+00:12:17.070 --> 00:12:24.570
+ 
+
+
+00:12:24.570 --> 00:12:29.700
+ 
+
+
+00:12:29.700 --> 00:12:33.330
+ 
+
+
+00:12:33.330 --> 00:12:38.250
+ 
+
+
+00:12:38.250 --> 00:12:41.700
+ 
+
+
+00:12:41.700 --> 00:12:44.430
+
+
+00:12:46.049 --> 00:12:51.809
+ 
+
+
+00:12:51.809 --> 00:12:56.489
+ 
+
+
+00:12:56.489 --> 00:13:00.239
+ 
+
+
+00:13:00.239 --> 00:13:05.369
+ 
+
+
+00:13:05.369 --> 00:13:11.729
+ 
+
+
+00:13:11.729 --> 00:13:17.549
+ 
+
+
+00:13:17.699 --> 00:13:22.229
+ 
+
+
+00:13:22.229 --> 00:13:27.779
+ 
+
+
+00:13:27.779 --> 00:13:31.979
+ 
+
+
+00:13:31.979 --> 00:13:37.229
+ 
+
+
+00:13:37.229 --> 00:13:39.809
+ 
+
+
+00:13:39.809 --> 00:13:43.289
+ 
+
+
+00:13:43.289 --> 00:13:47.279
+ 
+
+
+00:13:47.309 --> 00:13:51.449
+ 
+
+
+00:13:51.449 --> 00:13:55.439
+ 
+
+
+00:13:55.439 --> 00:13:58.439
+ 
+
+
+00:13:58.439 --> 00:14:02.669
+ 
+
+
+00:14:02.669 --> 00:14:05.999
+ 
+
+
+00:14:05.999 --> 00:14:11.249
+ 
+
+
+00:14:11.249 --> 00:14:16.409
+ 
+
+
+00:14:16.409 --> 00:14:20.489
+ 
+
+
+00:14:20.489 --> 00:14:24.719
+ 
+
+
+00:14:24.719 --> 00:14:28.559
+ 
+
+
+00:14:28.559 --> 00:14:32.729
+ 
+
+
+00:14:32.729 --> 00:14:37.349
+ 
+
+
+00:14:37.349 --> 00:14:40.319
+ 
+
+
+00:14:40.319 --> 00:14:43.109
+ 
+
+
+00:14:43.109 --> 00:14:48.479
+ 
+
+
+00:14:48.479 --> 00:14:54.119
+ 
+
+
+00:14:54.119 --> 00:14:57.749
+ 
+
+
+00:14:58.109 --> 00:15:03.239
+ 
+
+
+00:15:03.239 --> 00:15:06.989
+ 
+
+
+00:15:06.989 --> 00:15:11.009
+ 
+
+
+00:15:12.959 --> 00:15:16.499
+ 
+
+
+00:15:16.499 --> 00:15:20.099
+ 
+
+
+00:15:20.099 --> 00:15:23.459
+ 
+
+
+00:15:23.459 --> 00:15:26.969
+ 
+
+
+00:15:26.969 --> 00:15:30.629
+ 
+
+
+00:15:30.629 --> 00:15:35.399
+ 
+
+
+00:15:35.399 --> 00:15:38.069
+ 
+
+
+00:15:38.069 --> 00:15:42.329
+ 
+
+
+00:15:42.329 --> 00:15:48.059
+ 
+
+
+00:15:48.059 --> 00:15:53.639
+ 
+
+
+00:15:53.699 --> 00:16:01.049
+ 
+
+
+00:16:01.049 --> 00:16:05.639
+ 
+
+
+00:16:05.639 --> 00:16:08.939
+ 
+
+
+00:16:09.149 --> 00:16:12.329
+ 
+
+
+00:16:12.329 --> 00:16:15.779
+ 
+
+
+00:16:15.779 --> 00:16:18.209
+ 
+
+
+00:16:18.209 --> 00:16:23.579
+ 
+
+
+00:16:23.579 --> 00:16:27.089
+ 
+
+
+00:16:27.089 --> 00:16:30.089
+ 
+
+
+00:16:30.089 --> 00:16:34.199
+ 
+
+
+00:16:34.199 --> 00:16:36.989
+ 
+
+
+00:16:36.989 --> 00:16:42.809
+ 
+
+
+00:16:42.809 --> 00:16:44.999
+ 
+
+
+00:16:44.999 --> 00:16:49.289
+ 
+
+
+00:16:49.289 --> 00:16:52.799
+ 
+
+
+00:16:52.799 --> 00:16:56.099
+ 
+
+
+00:16:56.099 --> 00:17:02.129
+ 
+
+
+00:17:02.159 --> 00:17:05.729
+ 
+
+
+00:17:05.729 --> 00:17:08.519
+ 
+
+
+00:17:08.549 --> 00:17:13.799
+ 
+
+
+00:17:13.799 --> 00:17:18.539
+ 
+
+
+00:17:18.539 --> 00:17:22.919
+ 
+
+
+00:17:22.919 --> 00:17:28.499
+ 
+
+
+00:17:28.529 --> 00:17:32.819
+ 
+
+
+00:17:33.419 --> 00:17:40.979
+ 
+
+
+00:17:40.979 --> 00:17:44.729
+ 
+
+
+00:17:44.729 --> 00:17:47.549
+ 
+
+
+00:17:47.549 --> 00:17:51.479
+ 
+
+
+00:17:51.479 --> 00:17:54.299
+ 
+
+
+00:17:54.299 --> 00:17:57.329
+ 
+
+
+00:17:57.329 --> 00:18:01.919
+ 
+
+
+00:18:01.919 --> 00:18:07.169
+ 
+
+
+00:18:07.169 --> 00:18:08.849
+ 
+
+
+00:18:08.849 --> 00:18:15.779
+ 
+
+
+00:18:15.779 --> 00:18:19.679
+ 
+
+
+00:18:19.679 --> 00:18:23.039
+ 
+
+
+00:18:23.039 --> 00:18:26.669
+ 
+
+
+00:18:26.669 --> 00:18:32.579
+ 
+
+
+00:18:32.579 --> 00:18:37.979
+ 
+
+
+00:18:37.979 --> 00:18:40.859
+ 
+
+
+00:18:40.859 --> 00:18:44.849
+ 
+
+
+00:18:45.269 --> 00:18:49.649
+ 
+
+
+00:18:49.649 --> 00:18:52.829
+ 
+
+
+00:18:52.829 --> 00:18:58.169
+ 
+
+
+00:18:58.439 --> 00:19:02.369
+ 
+
+
+00:19:02.369 --> 00:19:04.919
+ 
+
+
+00:19:04.919 --> 00:19:13.289
+ 
+
+
+00:19:13.289 --> 00:19:15.899
+ 
+
+
+00:19:15.899 --> 00:19:19.679
+ 
+
+
+00:19:20.159 --> 00:19:26.789
+ 
+
+
+00:19:26.789 --> 00:19:29.669
+ 
+
+
+00:19:29.669 --> 00:19:33.269
+ 
+
+
+00:19:33.269 --> 00:19:38.009
+ 
+
+
+00:19:38.009 --> 00:19:42.209
+ 
+
+
+00:19:42.629 --> 00:19:47.009
+ 
+
+
+00:19:47.009 --> 00:19:49.619
+ 
+
+
+00:19:49.619 --> 00:19:55.559
+ 
+
+
+00:19:55.559 --> 00:20:00.689
+ 
+
+
+00:20:00.689 --> 00:20:03.749
+ 
+
+
+00:20:03.749 --> 00:20:07.049
+ 
+
+
+00:20:07.049 --> 00:20:09.089
+
+
+00:20:12.330 --> 00:20:17.430
+ 
+
+
+00:20:19.980 --> 00:20:23.130
+ 
+
+
+00:20:23.130 --> 00:20:27.570
+ 
+
+
+00:20:27.570 --> 00:20:30.180
+ 
+
+
+00:20:30.180 --> 00:20:33.180
+ 
+
+
+00:20:33.180 --> 00:20:35.940
+ 
+
+
+00:20:36.000 --> 00:20:39.660
+ 
+
+
+00:20:39.660 --> 00:20:46.260
+ 
+
+
+00:20:46.260 --> 00:20:50.880
+ 
+
+
+00:20:50.880 --> 00:20:53.970
+ 
+
+
+00:20:54.450 --> 00:20:58.410
+ 
+
+
+00:20:58.410 --> 00:21:04.020
+ 
+
+
+00:21:04.020 --> 00:21:06.780
+ 
+
+
+00:21:06.780 --> 00:21:09.570
+ 
+
+
+00:21:09.570 --> 00:21:14.310
+ 
+
+
+00:21:14.310 --> 00:21:20.880
+ 
+
+
+00:21:20.880 --> 00:21:25.710
+ 
+
+
+00:21:25.740 --> 00:21:29.130
+ 
+
+
+00:21:29.130 --> 00:21:34.740
+ 
+
+
+00:21:34.740 --> 00:21:37.860
+ 
+
+
+00:21:37.860 --> 00:21:40.740
+ 
+
+
+00:21:40.740 --> 00:21:43.710
+ 
+
+
+00:21:43.710 --> 00:21:46.380
+ 
+
+
+00:21:46.380 --> 00:21:51.270
+ 
+
+
+00:21:51.270 --> 00:21:55.470
+ 
+
+
+00:21:55.470 --> 00:22:00.270
+ 
+
+
+00:22:00.600 --> 00:22:03.510
+ 
+
+
+00:22:03.510 --> 00:22:07.650
+ 
+
+
+00:22:07.650 --> 00:22:11.280
+ 
+
+
+00:22:11.280 --> 00:22:15.390
+ 
+
+
+00:22:15.690 --> 00:22:20.070
+ 
+
+
+00:22:20.070 --> 00:22:23.940
+ 
+
+
+00:22:23.940 --> 00:22:28.680
+ 
+
+
+00:22:28.680 --> 00:22:33.330
+ 
+
+
+00:22:33.330 --> 00:22:36.660
+ 
+
+
+00:22:36.660 --> 00:22:42.030
+ 
+
+
+00:22:42.060 --> 00:22:45.420
+ 
+
+
+00:22:45.420 --> 00:22:52.170
+ 
+
+
+00:22:52.320 --> 00:22:56.520
+ 
+
+
+00:22:56.520 --> 00:23:01.290
+ 
+
+
+00:23:01.290 --> 00:23:04.890
+ 
+
+
+00:23:06.150 --> 00:23:09.360
+ 
+
+
+00:23:09.360 --> 00:23:12.090
+ 
+
+
+00:23:12.090 --> 00:23:19.410
+ 
+
+
+00:23:19.410 --> 00:23:24.570
+ 
+
+
+00:23:24.570 --> 00:23:28.440
+ 
+
+
+00:23:28.560 --> 00:23:32.370
+ 
+
+
+00:23:32.700 --> 00:23:35.130
+ 
+
+
+00:23:35.130 --> 00:23:39.360
+ 
+
+
+00:23:39.360 --> 00:23:42.720
+ 
+
+
+00:23:42.720 --> 00:23:47.070
+ 
+
+
+00:23:47.070 --> 00:23:49.740
+ 
+
+
+00:23:49.740 --> 00:23:53.400
+ 
+
+
+00:23:53.400 --> 00:23:56.580
+ 
+
+
+00:23:56.580 --> 00:24:00.960
+ 
+
+
+00:24:00.960 --> 00:24:06.000
+ 
+
+
+00:24:06.000 --> 00:24:08.130
+ 
+
+
+00:24:08.130 --> 00:24:11.640
+ 
+
+
+00:24:11.640 --> 00:24:14.820
+ 
+
+
+00:24:14.820 --> 00:24:18.270
+ 
+
+
+00:24:19.440 --> 00:24:25.110
+ 
+
+
+00:24:25.110 --> 00:24:28.740
+ 
+
+
+00:24:29.340 --> 00:24:37.590
+ 
+
+
+00:24:37.680 --> 00:24:40.560
+ 
+
+
+00:24:40.620 --> 00:24:45.270
+ 
+
+
+00:24:45.300 --> 00:24:49.560
+ 
+
+
+00:24:49.560 --> 00:24:54.150
+ 
+
+
+00:24:54.150 --> 00:24:58.050
+ 
+
+
+00:24:58.050 --> 00:25:01.920
+ 
+
+
+00:25:01.920 --> 00:25:05.370
+ 
+
+
+00:25:05.370 --> 00:25:08.250
+ 
+
+
+00:25:08.250 --> 00:25:12.930
+ 
+
+
+00:25:12.960 --> 00:25:15.990
+ 
+
+
+00:25:15.990 --> 00:25:20.190
+ 
+
+
+00:25:20.220 --> 00:25:21.960
+
+
+00:25:25.050 --> 00:25:31.710
+ 
+
+
+00:25:31.710 --> 00:25:35.610
+ 
+
+
+00:25:35.610 --> 00:25:39.750
+ 
+
+
+00:25:39.750 --> 00:25:43.170
+ 
+
+
+00:25:43.170 --> 00:25:45.480
+ 
+
+
+00:25:45.480 --> 00:25:48.690
+ 
+
+
+00:25:48.690 --> 00:25:57.300
+ 
+
+
+00:25:57.330 --> 00:26:00.150
+ 
+
+
+00:26:00.150 --> 00:26:04.440
+ 
+
+
+00:26:04.440 --> 00:26:10.290
+ 
+
+
+00:26:10.290 --> 00:26:13.320
+ 
+
+
+00:26:13.320 --> 00:26:15.660
+ 
+
+
+00:26:15.660 --> 00:26:19.050
+ 
+
+
+00:26:19.050 --> 00:26:22.050
+ 
+
+
+00:26:22.050 --> 00:26:28.890
+ 
+
+
+00:26:28.890 --> 00:26:31.500
+ 
+
+
+00:26:31.500 --> 00:26:39.720
+ 
+
+
+00:26:39.720 --> 00:26:42.840
+ 
+
+
+00:26:42.840 --> 00:26:47.040
+ 
+
+
+00:26:47.040 --> 00:26:50.010
+ 
+
+
+00:26:50.010 --> 00:26:53.700
+ 
+
+
+00:26:53.700 --> 00:26:59.160
+ 
+
+
+00:26:59.160 --> 00:27:03.540
+ 
+
+
+00:27:03.540 --> 00:27:06.540
+ 
+
+
+00:27:06.540 --> 00:27:12.420
+ 
+
+
+00:27:12.420 --> 00:27:16.560
+ 
+
+
+00:27:16.560 --> 00:27:19.620
+ 
+
+
+00:27:19.620 --> 00:27:24.840
+ 
+
+
+00:27:24.840 --> 00:27:30.270
+ 
+
+
+00:27:30.270 --> 00:27:34.920
+ 
+
+
+00:27:34.920 --> 00:27:38.190
+ 
+
+
+00:27:38.190 --> 00:27:43.680
+ 
+
+
+00:27:43.680 --> 00:27:48.390
+ 
+
+
+00:27:48.390 --> 00:27:52.530
+ 
+
+
+00:27:52.530 --> 00:27:59.310
+ 
+
+
+00:27:59.340 --> 00:28:04.020
+ 
+
+
+00:28:04.020 --> 00:28:08.010
+ 
+
+
+00:28:08.010 --> 00:28:11.460
+ 
+
+
+00:28:11.460 --> 00:28:15.570
+ 
+
+
+00:28:15.570 --> 00:28:19.740
+ 
+
+
+00:28:19.740 --> 00:28:23.370
+ 
+
+
+00:28:23.370 --> 00:28:28.650
+ 
+
+
+00:28:28.650 --> 00:28:31.620
+ 
+
+
+00:28:31.620 --> 00:28:34.170
+ 
+
+
+00:28:34.170 --> 00:28:37.230
+ 
+
+
+00:28:37.230 --> 00:28:40.980
+ 
+
+
+00:28:40.980 --> 00:28:45.660
+ 
+
+
+00:28:47.280 --> 00:28:50.760
+ 
+
+
+00:28:50.760 --> 00:28:55.170
+ 
+
+
+00:28:55.170 --> 00:28:59.610
+ 
+
+
+00:28:59.610 --> 00:29:03.240
+ 
+
+
+00:29:03.240 --> 00:29:07.890
+ 
+
+
+00:29:08.220 --> 00:29:14.550
+ 
+
+
+00:29:14.550 --> 00:29:17.040
+ 
+
+
+00:29:17.040 --> 00:29:20.940
+ 
+
+
+00:29:20.940 --> 00:29:24.870
+ 
+
+
+00:29:24.870 --> 00:29:28.740
+ 
+
+
+00:29:28.740 --> 00:29:32.790
+ 
+
+
+00:29:32.790 --> 00:29:37.110
+ 
+
+
+00:29:37.110 --> 00:29:41.880
+ 
+
+
+00:29:41.880 --> 00:29:44.550
+ 
+
+
+00:29:44.550 --> 00:29:50.010
+ 
+
+
+00:29:50.010 --> 00:29:54.150
+ 
+
+
+00:29:54.150 --> 00:29:58.170
+ 
+
+
+00:29:58.170 --> 00:30:02.190
+ 
+
+
+00:30:02.190 --> 00:30:06.210
+ 
+
+
+00:30:06.210 --> 00:30:08.700
+ 
+
+
+00:30:08.700 --> 00:30:17.100
+ 
+
+
+00:30:17.970 --> 00:30:23.100
+ 
+
+
+00:30:23.100 --> 00:30:27.150
+ 
+
+
+00:30:27.150 --> 00:30:32.790
+ 
+
+
+00:30:32.790 --> 00:30:37.560
+ 
+
+
+00:30:37.560 --> 00:30:41.730
+ 
+
+
+00:30:41.730 --> 00:30:44.700
+ 
+
+
+00:30:44.700 --> 00:30:48.900
+ 
+
+
+00:30:48.900 --> 00:30:53.010
+ 
+
+
+00:30:53.010 --> 00:30:55.830
+ 
+
+
+00:30:55.830 --> 00:31:02.070
+ 
+
+
+00:31:02.070 --> 00:31:06.930
+ 
+
+
+00:31:06.930 --> 00:31:10.530
+ 
+
+
+00:31:10.530 --> 00:31:13.320
+ 
+
+
+00:31:13.320 --> 00:31:20.280
+ 
+
+
+00:31:20.280 --> 00:31:24.630
+ 
+
+
+00:31:25.200 --> 00:31:29.910
+ 
+
+
+00:31:29.970 --> 00:31:36.930
+ 
+
+
+00:31:36.960 --> 00:31:40.860
+ 
+
+
+00:31:40.860 --> 00:31:46.260
+ 
+
+
+00:31:46.260 --> 00:31:50.730
+ 
+
+
+00:31:50.730 --> 00:31:55.350
+ 
+
+
+00:31:55.350 --> 00:32:01.230
+ 
+
+
+00:32:01.800 --> 00:32:05.880
+ 
+
+
+00:32:05.880 --> 00:32:13.980
+ 
+
+
+00:32:13.980 --> 00:32:18.780
+ 
+
+
+00:32:18.780 --> 00:32:22.770
+ 
+
+
+00:32:23.160 --> 00:32:28.860
+ 
+
+
+00:32:28.860 --> 00:32:33.750
+ 
+
+
+00:32:33.750 --> 00:32:35.910
+ 
+
+
+00:32:35.910 --> 00:32:39.600
+ 
+
+
+00:32:39.600 --> 00:32:44.280
+ 
+
+
+00:32:44.310 --> 00:32:48.630
+ 
+
+
+00:32:48.630 --> 00:32:52.980
+ 
+
+
+00:32:52.980 --> 00:32:55.560
+ 
+
+
+00:32:55.560 --> 00:33:01.950
+ 
+
+
+00:33:01.950 --> 00:33:06.030
+ 
+
+
+00:33:06.030 --> 00:33:08.820
+ 
+
+
+00:33:08.820 --> 00:33:13.080
+ 
+
+
+00:33:13.080 --> 00:33:16.530
+ 
+
+
+00:33:16.530 --> 00:33:20.730
+ 
+
+
+00:33:20.730 --> 00:33:23.820
+ 
+
+
+00:33:23.820 --> 00:33:29.850
+ 
+
+
+00:33:29.850 --> 00:33:34.770
+ 
+
+
+00:33:34.770 --> 00:33:37.770
+ 
+
+
+00:33:38.160 --> 00:33:43.080
+ 
+
+
+00:33:43.080 --> 00:33:51.360
+ 
+
+
+00:33:51.360 --> 00:33:56.820
+ 
+
+
+00:33:56.820 --> 00:33:59.580
+
+
+00:34:00.990 --> 00:34:06.750
+ 
+
+
+00:34:06.750 --> 00:34:12.690
+ 
+
+
+00:34:12.690 --> 00:34:18.330
+ 
+
+
+00:34:18.330 --> 00:34:21.420
+ 
+
+
+00:34:21.420 --> 00:34:29.550
+ 
+
+
+00:34:29.550 --> 00:34:33.870
+ 
+
+
+00:34:33.870 --> 00:34:39.600
+ 
+
+
+00:34:39.600 --> 00:34:45.360
+ 
+
+
+00:34:45.360 --> 00:34:49.530
+ 
+
+
+00:34:49.560 --> 00:34:54.090
+ 
+
+
+00:34:54.090 --> 00:34:54.840
+
+
+00:34:55.080 --> 00:35:00.990
+ 
+
+
+00:35:01.020 --> 00:35:06.930
+ 
+
+
+00:35:07.230 --> 00:35:10.950
+ 
+
+
+00:35:10.950 --> 00:35:13.380
+ 
+
+
+00:35:13.380 --> 00:35:17.820
+ 
+
+
+00:35:17.820 --> 00:35:22.740
+ 
+
+
+00:35:22.740 --> 00:35:25.650
+ 
+
+
+00:35:25.650 --> 00:35:29.880
+ 
+
+
+00:35:29.880 --> 00:35:33.510
+ 
+
+
+00:35:34.560 --> 00:35:39.930
+ 
+
+
+00:35:40.350 --> 00:35:46.170
+ 
+
+
+00:35:46.170 --> 00:35:46.800
+
+
+00:35:46.800 --> 00:35:51.420
+ 
+
+
+00:35:54.090 --> 00:35:57.150
+ 
+
+
+00:35:58.440 --> 00:36:06.000
+ 
+
+
+00:36:06.000 --> 00:36:08.940
+ 
+
+
+00:36:08.940 --> 00:36:14.460
+ 
+
+
+00:36:14.460 --> 00:36:18.840
+ 
+
+
+00:36:18.840 --> 00:36:22.440
+ 
+
+
+00:36:22.650 --> 00:36:25.350
+ 
+
+
+00:36:25.350 --> 00:36:29.700
+ 
+
+
+00:36:29.700 --> 00:36:33.060
+ 
+
+
+00:36:33.060 --> 00:36:36.240
+ 
+
+
+00:36:36.240 --> 00:36:39.930
+ 
+
+
+00:36:39.990 --> 00:36:45.000
+ 
+
+
+00:36:45.000 --> 00:36:48.870
+ 
+
+
+00:36:48.870 --> 00:36:52.200
+ 
+
+
+00:36:52.710 --> 00:36:54.120
+ 
+
+
+00:36:54.509 --> 00:36:58.109
+ 
+
+
+00:36:58.529 --> 00:37:03.179
+ 
+
+
+00:37:03.179 --> 00:37:07.739
+ 
+
+
+00:37:07.739 --> 00:37:14.099
+ 
+
+
+00:37:14.099 --> 00:37:18.689
+ 
+
+
+00:37:18.689 --> 00:37:22.829
+ 
+
+
+00:37:22.829 --> 00:37:28.679
+ 
+
+
+00:37:28.679 --> 00:37:30.419
+ 
+
+
+00:37:30.870 --> 00:37:34.680
+ 
+
+
+00:37:39.810 --> 00:37:44.790
+ 
+
+
+00:37:44.790 --> 00:37:51.360
+ 
+
+
+00:37:51.360 --> 00:37:55.140
+ 
+
+
+00:37:55.170 --> 00:38:01.050
+ 
+
+
+00:38:01.050 --> 00:38:07.140
+ 
+
+
+00:38:07.140 --> 00:38:11.250
+ 
+
+
+00:38:11.370 --> 00:38:11.970
+
+
+00:38:13.140 --> 00:38:16.020
+ 
+
+
+00:38:20.790 --> 00:38:25.080
+ 
+
+
+00:38:25.080 --> 00:38:27.960
+ 
+
+
+00:38:27.960 --> 00:38:28.890
+
+
+00:38:29.640 --> 00:38:32.400
+ 
+
+
+00:38:32.400 --> 00:38:42.750
+ 
+
+
+00:38:42.750 --> 00:38:46.500
+ 
+
+
+00:38:46.500 --> 00:38:53.070
+ 
+
+
+00:38:53.100 --> 00:38:53.760
+
+
+00:38:55.650 --> 00:38:59.430
+ 
+
+
+00:38:59.430 --> 00:39:01.680
+ 
+
+
+00:39:02.190 --> 00:39:06.360
+ 
+
+
+00:39:06.360 --> 00:39:08.910
+ 
+
+
+00:39:10.500 --> 00:39:12.000
+
+
+00:39:13.680 --> 00:39:17.250
+ 
+
+
+00:39:17.280 --> 00:39:21.300
+ 
+
+
+00:39:21.300 --> 00:39:26.820
+ 
+
+
+00:39:26.820 --> 00:39:30.630
+ 
+
+
+00:39:30.660 --> 00:39:36.750
+ 
+
+
+00:39:36.750 --> 00:39:40.710
+ 
+
+
+00:39:40.710 --> 00:39:44.880
+ 
+
+
+00:39:44.910 --> 00:39:50.220
+ 
+
+
+00:39:50.580 --> 00:39:57.360
+ 
+
+
+00:39:57.390 --> 00:40:03.660
+ 
+
+
+00:40:04.380 --> 00:40:07.530
+ 
+
+
+00:40:07.530 --> 00:40:13.530
+ 
+
+
+00:40:13.530 --> 00:40:16.050
+ 
+
+
+00:40:16.410 --> 00:40:19.620
+ 
+
+
+00:40:19.620 --> 00:40:23.730
+ 
+
+
+00:40:23.730 --> 00:40:27.000
+ 
+
+
+00:40:27.000 --> 00:40:31.500
+ 
+
+
+00:40:31.500 --> 00:40:35.400
+ 
+
+
+00:40:35.400 --> 00:40:39.510
+ 
+
+
+00:40:39.510 --> 00:40:43.290
+ 
+
+
+00:40:43.290 --> 00:40:49.080
+ 
+
+
+00:40:49.080 --> 00:40:51.330
+ 
+
+
+00:40:51.330 --> 00:40:54.480
+ 
+
+
+00:40:54.480 --> 00:40:57.300
+ 
+
+
+00:40:57.300 --> 00:41:02.040
+ 
+
+
+00:41:02.040 --> 00:41:09.240
+ 
+
+
+00:41:09.240 --> 00:41:17.280
+ 
+
+
+00:41:17.940 --> 00:41:21.240
+ 
+
+
+00:41:21.450 --> 00:41:23.640
+ 
+
+
+00:41:23.640 --> 00:41:26.730
+ 
+
+
+00:41:26.730 --> 00:41:32.880
+ 
+
+
+00:41:32.910 --> 00:41:36.030
+ 
+
+
+00:41:36.030 --> 00:41:39.390
+ 
+
+
+00:41:39.390 --> 00:41:45.330
+ 
+
+
+00:41:45.330 --> 00:41:48.300
+ 
+
+
+00:41:48.300 --> 00:41:53.160
+ 
+
+
+00:41:53.160 --> 00:41:56.280
+ 
+
+
+00:41:56.280 --> 00:41:59.550
+ 
+
+
+00:41:59.550 --> 00:42:02.190
+ 
+
+
+00:42:02.190 --> 00:42:05.760
+ 
+
+
+00:42:05.760 --> 00:42:09.930
+ 
+
+
+00:42:10.470 --> 00:42:14.790
+ 
+
+
+00:42:14.790 --> 00:42:18.480
+ 
+
+
+00:42:18.480 --> 00:42:21.780
+ 
+
+
+00:42:22.110 --> 00:42:24.960
+ 
+
+
+00:42:24.960 --> 00:42:28.200
+ 
+
+
+00:42:28.200 --> 00:42:34.080
+ 
+
+
+00:42:34.080 --> 00:42:40.230
+ 
+
+
+00:42:40.230 --> 00:42:44.640
+ 
+
+
+00:42:44.640 --> 00:42:47.730
+ 
+
+
+00:42:47.730 --> 00:42:50.250
+ 
+
+
+00:42:50.250 --> 00:42:55.620
+ 
+
+
+00:42:55.620 --> 00:42:58.230
+ 
+
+
+00:42:58.230 --> 00:43:01.230
+ 
+
+
+00:43:01.350 --> 00:43:04.560
+ 
+
+
+00:43:04.560 --> 00:43:08.310
+ 
+
+
+00:43:08.310 --> 00:43:11.820
+ 
+
+
+00:43:11.820 --> 00:43:17.190
+ 
+
+
+00:43:17.190 --> 00:43:21.210
+ 
+
+
+00:43:21.210 --> 00:43:25.980
+ 
+
+
+00:43:25.980 --> 00:43:32.700
+ 
+
+
+00:43:32.700 --> 00:43:36.570
+ 
+
+
+00:43:36.570 --> 00:43:43.230
+ 
+
+
+00:43:43.230 --> 00:43:47.970
+ 
+
+
+00:43:48.030 --> 00:43:52.950
+ 
+
+
+00:43:52.950 --> 00:43:58.500
+ 
+
+
+00:43:58.500 --> 00:44:02.850
+ 
+
+
+00:44:02.850 --> 00:44:05.700
+ 
+
+
+00:44:05.700 --> 00:44:07.620
+ 
+
+
+00:44:07.620 --> 00:44:10.800
+ 
+
+
+00:44:10.830 --> 00:44:15.600
+ 
+
+
+00:44:15.600 --> 00:44:20.430
+ 
+
+
+00:44:20.430 --> 00:44:24.570
+ 
+
+
+00:44:24.570 --> 00:44:28.770
+ 
+
+
+00:44:28.770 --> 00:44:32.760
+ 
+
+
+00:44:32.760 --> 00:44:40.770
+ 
+
+
+00:44:40.770 --> 00:44:43.590
+ 
+
+
+00:44:43.590 --> 00:44:48.270
+ 
+
+
+00:44:48.300 --> 00:44:51.540
+ 
+
+
+00:44:51.570 --> 00:44:55.260
+ 
+
+
+00:44:55.260 --> 00:44:58.170
+ 
+
+
+00:44:58.170 --> 00:45:05.670
+ 
+
+
+00:45:05.730 --> 00:45:11.670
+ 
+
+
+00:45:11.670 --> 00:45:17.460
+ 
+
+
+00:45:17.490 --> 00:45:20.520
+ 
+
+
+00:45:20.520 --> 00:45:24.090
+ 
+
+
+00:45:24.120 --> 00:45:26.970
+ 
+
+
+00:45:26.970 --> 00:45:30.090
+ 
+
+
+00:45:30.090 --> 00:45:35.010
+ 
+
+
+00:45:35.010 --> 00:45:40.290
+ 
+
+
+00:45:40.290 --> 00:45:42.870
+ 
+
+
+00:45:42.990 --> 00:45:47.190
+ 
+
+
+00:45:47.190 --> 00:45:50.940
+ 
+
+
+00:45:50.940 --> 00:45:55.860
+ 
+
+
+00:45:55.860 --> 00:45:59.550
+ 
+
+
+00:45:59.580 --> 00:46:03.810
+ 
+
+
+00:46:03.810 --> 00:46:07.380
+ 
+
+
+00:46:07.380 --> 00:46:11.130
+ 
+
+
+00:46:11.130 --> 00:46:15.180
+ 
+
+
+00:46:15.180 --> 00:46:20.820
+ 
+
+
+00:46:20.820 --> 00:46:27.930
+ 
+
+
+00:46:27.930 --> 00:46:33.480
+ 
+
+
+00:46:33.480 --> 00:46:37.470
+ 
+
+
+00:46:38.040 --> 00:46:41.310
+ 
+
+
+00:46:41.310 --> 00:46:44.190
+ 
+
+
+00:46:44.190 --> 00:46:48.330
+ 
+
+
+00:46:48.840 --> 00:46:52.470
+ 
+
+
+00:46:52.470 --> 00:46:58.050
+ 
+
+
+00:46:58.050 --> 00:47:02.100
+ 
+
+
+00:47:02.310 --> 00:47:07.440
+ 
+
+
+00:47:07.470 --> 00:47:12.720
+ 
+
+
+00:47:12.720 --> 00:47:17.190
+ 
+
+
+00:47:17.190 --> 00:47:23.580
+ 
+
+
+00:47:24.030 --> 00:47:29.400
+ 
+
+
+00:47:29.760 --> 00:47:35.430
+ 
+
+
+00:47:35.490 --> 00:47:38.220
+ 
+
+
+00:47:38.220 --> 00:47:41.610
+ 
+
+
+00:47:42.360 --> 00:47:47.460
+ 
+
+
+00:47:47.460 --> 00:47:50.790
+ 
+
+
+00:47:50.790 --> 00:47:57.150
+ 
+
+
+00:47:57.150 --> 00:47:59.640
+ 
+
+
+00:47:59.640 --> 00:48:06.120
+ 
+
+
+00:48:06.210 --> 00:48:10.740
+ 
+
+
+00:48:10.770 --> 00:48:17.520
+ 
+
+
+00:48:17.970 --> 00:48:21.000
+ 
+
+
+00:48:21.000 --> 00:48:26.010
+ 
+
+
+00:48:26.010 --> 00:48:29.370
+ 
+
+
+00:48:29.370 --> 00:48:32.220
+ 
+
+
+00:48:32.250 --> 00:48:38.130
+ 
+
+
+00:48:38.130 --> 00:48:41.430
+ 
+
+
+00:48:41.430 --> 00:48:45.990
+ 
+
+
+00:48:45.990 --> 00:48:49.260
+ 
+
+
+00:48:49.260 --> 00:48:52.530
+ 
+
+
+00:48:52.530 --> 00:48:56.130
+ 
+
+
+00:48:56.130 --> 00:49:00.090
+ 
+
+
+00:49:00.090 --> 00:49:05.010
+ 
+
+
+00:49:05.460 --> 00:49:10.890
+ 
+
+
+00:49:11.670 --> 00:49:13.470
+ 
+
+
+00:49:15.090 --> 00:49:18.480
+ 
+
+
+00:49:18.480 --> 00:49:24.960
+ 
+
+
+00:49:24.960 --> 00:49:29.100
+ 
+
+
+00:49:29.100 --> 00:49:34.620
+ 
+
+
+00:49:35.580 --> 00:49:39.180
+ 
+
+
+00:49:39.180 --> 00:49:42.180
+ 
+
+
+00:49:42.180 --> 00:49:46.530
+ 
+
+
+00:49:46.590 --> 00:49:52.290
+ 
+
+
+00:49:52.290 --> 00:49:55.440
+ 
+
+
+00:49:55.440 --> 00:49:58.440
+ 
+
+
+00:49:58.440 --> 00:50:03.420
+ 
+
+
+00:50:03.420 --> 00:50:07.050
+ 
+
+
+00:50:07.050 --> 00:50:12.600
+ 
+
+
+00:50:12.600 --> 00:50:17.640
+ 
+
+
+00:50:17.640 --> 00:50:21.270
+ 
+
+
+00:50:21.270 --> 00:50:26.760
+ 
+
+
+00:50:26.760 --> 00:50:30.000
+ 
+
+
+00:50:30.000 --> 00:50:36.210
+ 
+
+
+00:50:36.210 --> 00:50:41.400
+ 
+
+
+00:50:41.400 --> 00:50:45.900
+ 
+
+
+00:50:45.900 --> 00:50:48.750
+ 
+
+
+00:50:48.750 --> 00:50:54.720
+ 
+
+
+00:50:54.720 --> 00:50:57.870
+ 
+
+
+00:50:57.900 --> 00:51:03.300
+ 
+
+
+00:51:03.300 --> 00:51:06.720
+ 
+
+
+00:51:06.720 --> 00:51:10.500
+ 
+
+
+00:51:10.500 --> 00:51:17.340
+ 
+
+
+00:51:17.340 --> 00:51:21.750
+ 
+
+
+00:51:23.100 --> 00:51:25.560
+ 
+
+
+00:51:25.560 --> 00:51:28.950
+ 
+
+
+00:51:28.950 --> 00:51:34.530
+ 
+
+
+00:51:34.530 --> 00:51:36.900
+ 
+
+
+00:51:36.900 --> 00:51:42.000
+ 
+
+
+00:51:42.000 --> 00:51:47.220
+ 
+
+
+00:51:47.220 --> 00:51:52.020
+ 
+
+
+00:51:52.830 --> 00:51:55.950
+ 
+
+
+00:51:55.950 --> 00:52:02.070
+ 
+
+
+00:52:02.070 --> 00:52:04.830
+ 
+
+
+00:52:04.830 --> 00:52:08.670
+ 
+
+
+00:52:08.670 --> 00:52:12.480
+ 
+
+
+00:52:12.480 --> 00:52:15.570
+ 
+
+
+00:52:15.570 --> 00:52:20.010
+ 
+
+
+00:52:20.010 --> 00:52:23.760
+ 
+
+
+00:52:23.760 --> 00:52:28.320
+ 
+
+
+00:52:28.320 --> 00:52:30.960
+ 
+
+
+00:52:30.960 --> 00:52:34.410
+ 
+
+
+00:52:34.410 --> 00:52:39.900
+ 
+
+
+00:52:40.140 --> 00:52:48.810
+ 
+
+
+00:52:48.810 --> 00:52:52.920
+ 
+
+
+00:52:52.920 --> 00:52:57.900
+ 
+
+
+00:52:57.900 --> 00:53:01.530
+ 
+
+
+00:53:01.530 --> 00:53:09.450
+ 
+
+
+00:53:09.450 --> 00:53:14.280
+ 
+
+
+00:53:14.280 --> 00:53:19.110
+ 
+
+
+00:53:19.110 --> 00:53:23.250
+ 
+
+
+00:53:23.250 --> 00:53:27.120
+ 
+
+
+00:53:27.120 --> 00:53:32.550
+ 
+
+
+00:53:32.550 --> 00:53:35.910
+ 
+
+
+00:53:35.910 --> 00:53:39.780
+ 
+
+
+00:53:39.780 --> 00:53:44.010
+ 
+
+
+00:53:44.010 --> 00:53:48.780
+ 
+
+
+00:53:48.780 --> 00:53:52.590
+ 
+
+
+00:53:52.590 --> 00:53:56.580
+ 
+
+
+00:53:56.580 --> 00:54:00.300
+ 
+
+
+00:54:00.300 --> 00:54:02.760
+ 
+
+
+00:54:02.760 --> 00:54:09.750
+ 
+
+
+00:54:09.750 --> 00:54:12.990
+ 
+
+
+00:54:12.990 --> 00:54:16.950
+ 
+
+
+00:54:16.950 --> 00:54:20.340
+ 
+
+
+00:54:20.340 --> 00:54:24.240
+ 
+
+
+00:54:24.240 --> 00:54:26.580
+ 
+
+
+00:54:26.580 --> 00:54:30.900
+ 
+
+
+00:54:30.900 --> 00:54:35.160
+ 
+
+
+00:54:36.210 --> 00:54:39.330
+ 
+
+
+00:54:39.330 --> 00:54:43.950
+ 
+
+
+00:54:43.950 --> 00:54:48.840
+ 
+
+
+00:54:48.840 --> 00:54:52.980
+ 
+
+
+00:54:52.980 --> 00:54:56.010
+ 
+
+
+00:54:56.010 --> 00:55:00.000
+ 
+
+
+00:55:00.000 --> 00:55:03.510
+ 
+
+
+00:55:03.510 --> 00:55:06.660
+ 
+
+
+00:55:06.660 --> 00:55:07.470
+
+
+00:55:07.680 --> 00:55:11.820
+ 
+
+
+00:55:11.820 --> 00:55:15.510
+ 
+
+
+00:55:15.540 --> 00:55:17.910
+
+
+00:55:17.910 --> 00:55:21.240
+ 
+
+
+00:55:21.240 --> 00:55:26.370
+ 
+
+
+00:55:26.370 --> 00:55:29.190
+ 
+
+
+00:55:29.190 --> 00:55:31.170
+ 
+
+
+00:55:31.170 --> 00:55:35.220
+ 
+
+
+00:55:35.490 --> 00:55:38.760
+ 
+
+
+00:55:38.760 --> 00:55:42.180
+ 
+
+
+00:55:42.210 --> 00:55:43.350
+
+
+00:55:43.800 --> 00:55:47.730
+ 
+
+
+00:55:47.730 --> 00:55:52.680
+ 
+
+
+00:55:52.680 --> 00:55:55.770
+ 
+
+
+00:55:55.770 --> 00:55:58.830
+ 
+
+
+00:55:58.830 --> 00:56:02.670
+ 
+
+
+00:56:02.670 --> 00:56:06.690
+ 
+
+
+00:56:06.690 --> 00:56:11.040
+ 
+
+
+00:56:11.040 --> 00:56:16.350
+ 
+
+
+00:56:16.350 --> 00:56:19.200
+ 
+
+
+00:56:19.200 --> 00:56:22.860
+ 
+
+
+00:56:22.860 --> 00:56:26.760
+ 
+
+
+00:56:26.760 --> 00:56:29.700
+ 
+
+
+00:56:29.700 --> 00:56:32.610
+ 
+
+
+00:56:32.610 --> 00:56:39.600
+ 
+
+
+00:56:39.600 --> 00:56:43.230
+ 
+
+
+00:56:43.230 --> 00:56:46.800
+ 
+
+
+00:56:47.100 --> 00:56:51.360
+ 
+
+
+00:56:51.360 --> 00:56:53.880
+ 
+
+
+00:56:53.880 --> 00:56:59.070
+ 
+
+
+00:56:59.070 --> 00:57:02.430
+ 
+
+
+00:57:02.430 --> 00:57:03.060
+
+
+00:57:03.120 --> 00:57:06.540
+ 
+
+
+00:57:06.540 --> 00:57:07.770
+
+
+00:57:08.760 --> 00:57:14.310
+ 
+
+
+00:57:14.310 --> 00:57:17.520
+ 
+
+
+00:57:18.480 --> 00:57:22.380
+ 
+
+
+00:57:22.440 --> 00:57:25.380
+ 
+
+
+00:57:25.410 --> 00:57:28.020
+ 
+
+
+00:57:28.980 --> 00:57:36.390
+ 
+
+
+00:57:36.390 --> 00:57:37.830
+
+
+00:57:45.510 --> 00:57:50.340
+ 
+
+
+00:57:50.340 --> 00:57:55.920
+ 
+
+
+00:57:55.920 --> 00:58:01.770
+ 
+
+
+00:58:01.800 --> 00:58:06.270
+ 
+
+
+00:58:07.200 --> 00:58:12.450
+ 
+
+
+00:58:12.480 --> 00:58:17.130
+ 
+
+
+00:58:17.160 --> 00:58:23.730
+ 
+
+
+00:58:23.730 --> 00:58:30.180
+ 
+
+
+00:58:30.180 --> 00:58:33.870
+ 
+
+
+00:58:33.870 --> 00:58:38.730
+ 
+
+
+00:58:38.760 --> 00:58:43.320
+ 
+
+
+00:58:44.460 --> 00:58:46.830
+
+
+00:58:46.830 --> 00:58:49.080
+ 
+
+
+00:58:49.170 --> 00:58:55.350
+ 
+
+
+00:58:55.350 --> 00:58:59.100
+ 
+
+
+00:58:59.160 --> 00:59:05.910
+ 
+
+
+00:59:05.910 --> 00:59:11.310
+ 
+
+
+00:59:11.760 --> 00:59:17.160
+ 
+
+
+00:59:17.160 --> 00:59:21.240
+ 
+
+
+00:59:21.330 --> 00:59:27.810
+ 
+
+
+00:59:28.230 --> 00:59:31.950
+ 
+
+
+00:59:31.980 --> 00:59:37.230
+ 
+
+
+00:59:37.230 --> 00:59:41.820
+ 
+
+
+00:59:42.120 --> 00:59:46.380
+ 
+
+
+00:59:46.380 --> 00:59:49.680
+ 
+
+
+00:59:49.680 --> 00:59:53.700
+ 
+
+
+00:59:53.700 --> 00:59:55.170
+ 
+
+
+00:59:55.680 --> 01:00:02.010
+ 
+
+
+01:00:02.040 --> 01:00:04.830
+ 
+
+
+01:00:04.830 --> 01:00:10.200
+ 
+
+
+01:00:10.200 --> 01:00:17.700
+ 
+
+
+01:00:17.700 --> 01:00:21.540
+ 
+
+
+01:00:21.540 --> 01:00:24.660
+ 
+
+
+01:00:24.660 --> 01:00:30.270
+ 
+
+
+01:00:30.270 --> 01:00:35.280
+ 
+
+
+01:00:35.280 --> 01:00:39.510
+ 
+
+
+01:00:39.510 --> 01:00:43.410
+ 
+
+
+01:00:43.440 --> 01:00:45.450
+ 
+
+
+01:00:45.450 --> 01:00:48.420
+ 
+
+
+01:00:48.420 --> 01:00:51.780
+ 
+
+
+01:00:51.810 --> 01:00:56.910
+ 
+
+
+01:00:57.210 --> 01:01:00.900
+ 
+
+
+01:01:00.900 --> 01:01:03.840
+ 
+
+
+01:01:03.840 --> 01:01:10.650
+ 
+
+
+01:01:10.920 --> 01:01:14.130
+ 
+
+
+01:01:14.130 --> 01:01:17.940
+ 
+
+
+01:01:17.940 --> 01:01:21.480
+ 
+
+
+01:01:21.480 --> 01:01:25.530
+ 
+
+
+01:01:25.530 --> 01:01:28.860
+ 
+
+
+01:01:28.860 --> 01:01:30.330
+
+
+01:01:30.330 --> 01:01:33.360
+ 
+
+
+01:01:34.140 --> 01:01:35.880
+ 
+
+
+01:01:37.890 --> 01:01:44.520
+ 
+
+
+01:01:44.520 --> 01:01:46.500
+ 
+
+
+01:01:47.070 --> 01:01:50.340
+ 
+
+
+01:01:50.340 --> 01:01:53.940
+ 
+
+
+01:01:53.940 --> 01:01:57.420
+ 
+
+
+01:01:57.420 --> 01:01:59.550
+ 
+
+
+01:01:59.550 --> 01:02:03.000
+ 
+
+
+01:02:03.060 --> 01:02:04.380
+
+
+01:02:05.070 --> 01:02:09.180
+ 
+
+
+01:02:09.180 --> 01:02:12.690
+ 
+
+
+01:02:12.690 --> 01:02:15.870
+ 
+
+
+01:02:15.870 --> 01:02:20.130
+ 
+
+
+01:02:20.130 --> 01:02:22.050
+
+
+01:02:25.980 --> 01:02:34.050
+ 
+
+
+01:02:34.080 --> 01:02:40.680
+ 
+
+
+01:02:41.010 --> 01:02:43.080
+ 
+
+
+01:02:43.680 --> 01:02:47.790
+ 
+
+
+01:02:47.790 --> 01:02:52.650
+ 
+
+
+01:02:52.650 --> 01:02:56.310
+ 
+
+
+01:02:56.310 --> 01:03:02.460
+ 
+
+
+01:03:02.460 --> 01:03:05.910
+ 
+
+
+01:03:05.910 --> 01:03:09.780
+ 
+
+
+01:03:09.780 --> 01:03:13.470
+ 
+
+
+01:03:13.830 --> 01:03:14.670
+
+
+01:03:17.220 --> 01:03:19.890
+ 
+
+
+01:03:19.890 --> 01:03:23.130
+ 
+
+
+01:03:26.670 --> 01:03:27.600
+
+
+01:03:28.020 --> 01:03:32.040
+ 
+
+
+01:03:33.060 --> 01:03:36.540
+ 
+
+
+01:03:36.540 --> 01:03:43.560
+ 
+
+
+01:03:43.590 --> 01:03:48.840
+ 
+
+
+01:03:48.840 --> 01:03:54.300
+ 
+
+
+01:03:54.300 --> 01:03:58.650
+ 
+
+
+01:03:58.950 --> 01:04:03.690
+ 
+
+
+01:04:03.690 --> 01:04:09.150
+ 
+
+
+01:04:09.210 --> 01:04:11.970
+ 
+
+
+01:04:11.970 --> 01:04:14.250
+ 
+
+
+01:04:15.120 --> 01:04:18.270
+ 
+
+
+01:04:18.270 --> 01:04:22.770
+ 
+
+
+01:04:22.770 --> 01:04:28.530
+ 
+
+
+01:04:28.560 --> 01:04:32.220
+ 
+
+
+01:04:32.220 --> 01:04:35.430
+ 
+
+
+01:04:35.430 --> 01:04:41.970
+ 
+
+
+01:04:41.970 --> 01:04:44.790
+ 
+
+
+01:04:44.790 --> 01:04:49.230
+ 
+
+
+01:04:49.230 --> 01:04:55.260
+ 
+
+
+01:04:55.260 --> 01:04:58.680
+ 
+
+
+01:04:58.680 --> 01:05:02.370
+ 
+
+
+01:05:02.370 --> 01:05:06.150
+ 
+
+
+01:05:06.810 --> 01:05:10.500
+ 
+
+
+01:05:10.500 --> 01:05:13.710
+ 
+
+
+01:05:13.710 --> 01:05:16.800
+ 
+
+
+01:05:16.800 --> 01:05:19.830
+ 
+
+
+01:05:19.830 --> 01:05:23.370
+ 
+
+
+01:05:23.370 --> 01:05:29.010
+ 
+
+
+01:05:30.300 --> 01:05:33.390
+ 
+
+
+01:05:34.050 --> 01:05:37.800
+ 
+
+
+01:05:37.800 --> 01:05:41.610
+ 
+
+
+01:05:41.610 --> 01:05:44.340
+ 
+
+
+01:05:44.370 --> 01:05:49.950
+
+
+01:05:49.950 --> 01:05:55.050
+ 
+
+
+01:05:55.050 --> 01:05:59.550
+ 
+
+
+01:05:59.550 --> 01:06:02.370
+ 
+
+
+01:06:02.370 --> 01:06:07.680
+ 
+
+
+01:06:07.680 --> 01:06:13.140
+ 
+
+
+01:06:13.440 --> 01:06:17.310
+ 
+
+
+01:06:17.310 --> 01:06:20.310
+ 
+
+
+01:06:20.310 --> 01:06:24.120
+ 
+
+
+01:06:24.120 --> 01:06:26.760
+ 
+
+
+01:06:26.760 --> 01:06:31.980
+ 
+
+
+01:06:31.980 --> 01:06:37.140
+ 
+
+
+01:06:38.400 --> 01:06:43.350
+ 
+
+
+01:06:47.040 --> 01:06:50.250
+ 
+
+
+01:06:50.610 --> 01:06:54.600
+ 
+
+
+01:06:54.630 --> 01:06:58.710
+ 
+
+
+01:06:58.710 --> 01:07:03.450
+ 
+
+
+01:07:04.260 --> 01:07:04.890
+
+
+01:07:05.310 --> 01:07:10.050
+ 
+
+
+01:07:10.050 --> 01:07:12.810
+ 
+
+
+01:07:12.810 --> 01:07:17.100
+ 
+
+
+01:07:17.100 --> 01:07:19.950
+ 
+
+
+01:07:19.950 --> 01:07:23.430
+ 
+
+
+01:07:23.550 --> 01:07:26.340
+ 
+
+
+01:07:27.690 --> 01:07:29.970
+
+

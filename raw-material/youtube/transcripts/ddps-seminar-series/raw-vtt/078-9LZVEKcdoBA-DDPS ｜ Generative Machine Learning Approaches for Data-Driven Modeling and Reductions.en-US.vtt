@@ -1,0 +1,3351 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:00.000 --> 00:00:02.940
+Welcome to the DDPS
+seminar, everyone. It is an
+
+00:00:02.940 --> 00:00:06.150
+honor to your host, Paul
+Atzberger, who is currently a
+
+00:00:06.150 --> 00:00:09.630
+professor at the Department of
+Mathematics of University of
+
+00:00:09.630 --> 00:00:11.100
+California, Santa Barbara.
+
+00:00:11.670 --> 00:00:14.640
+All right, thank you, like thank
+the organizers for this
+
+00:00:14.640 --> 00:00:17.760
+opportunity to talk today, I
+thought I would share a little
+
+00:00:17.760 --> 00:00:21.390
+bit of work that we've been
+doing on leveraging recent
+
+00:00:21.390 --> 00:00:24.780
+developments in generative
+modeling, and particular machine
+
+00:00:24.780 --> 00:00:27.450
+learning approaches that have
+been emerging, especially in the
+
+00:00:27.450 --> 00:00:31.500
+deep learning community, for the
+purposes of developing
+
+00:00:31.500 --> 00:00:34.740
+multiscale models, reductions
+and other types of
+
+00:00:34.770 --> 00:00:39.570
+representations for nonlinear
+dynamical systems have larger
+
+00:00:39.570 --> 00:00:42.150
+scientific simulations, you
+know, so fluid mechanics,
+
+00:00:42.390 --> 00:00:45.120
+materials, modeling, and so on.
+So I'm going to talk about a
+
+00:00:45.120 --> 00:00:48.330
+rather sort of small piece of
+the work that we're doing. And
+
+00:00:48.360 --> 00:00:51.330
+this is relatively recent work.
+And I'd be very happy to
+
+00:00:51.330 --> 00:00:55.380
+continue discussions offline
+about various directions and
+
+00:00:55.380 --> 00:00:59.790
+applications. So just to set a
+little bit, the context in which
+
+00:00:59.790 --> 00:01:03.450
+I'm motivated in developing
+these data driven methods, is,
+
+00:01:03.630 --> 00:01:07.920
+what we're really after are ways
+that we can utilize observations
+
+00:01:07.920 --> 00:01:11.730
+either taken from experiment or
+higher fidelity computational
+
+00:01:11.730 --> 00:01:16.170
+simulations, and really use data
+driven perspectives to
+
+00:01:16.200 --> 00:01:19.020
+essentially learn
+representations, which we can
+
+00:01:19.020 --> 00:01:23.100
+use as a simulator either to
+predict future behaviors of the
+
+00:01:23.100 --> 00:01:26.850
+system, or in the context of a
+much larger calculation where
+
+00:01:26.940 --> 00:01:29.370
+perhaps the part of the model
+that we're interested in
+
+00:01:29.370 --> 00:01:31.830
+replacing is very
+computationally expensive to
+
+00:01:31.830 --> 00:01:35.220
+compute at a high level of
+detail. But for the purposes of
+
+00:01:35.220 --> 00:01:38.460
+larger scale phenomena that
+we're interested in a much sort
+
+00:01:38.460 --> 00:01:43.200
+of coarsened or simplified model
+would potentially do the trick.
+
+00:01:43.200 --> 00:01:45.990
+But it might be very difficult
+to arrive at that through kind
+
+00:01:45.990 --> 00:01:49.950
+of traditional asymptotic
+techniques. And so what I'm also
+
+00:01:49.950 --> 00:01:52.680
+interested in is in doing this
+in the context, not only of
+
+00:01:52.680 --> 00:01:55.920
+deterministic systems, but
+stochastic systems. And that's
+
+00:01:55.920 --> 00:01:59.940
+primarily what I'll talk about
+today, I feel like again, to
+
+00:02:00.000 --> 00:02:02.040
+build some context, I need to
+say a little bit about
+
+00:02:02.040 --> 00:02:04.530
+techniques that are out there
+and have been successfully
+
+00:02:04.530 --> 00:02:06.630
+applied for this type of
+problem. So they can kind of
+
+00:02:06.630 --> 00:02:10.080
+compare a little bit and
+contrast some of the objectives
+
+00:02:10.110 --> 00:02:13.440
+of the techniques that we're
+developing. And so there's been
+
+00:02:13.440 --> 00:02:16.140
+a lot of work done over the
+years, of course, a data driven
+
+00:02:16.410 --> 00:02:20.430
+modeling of dynamics, probably
+one of the most notable one is
+
+00:02:20.610 --> 00:02:23.100
+this proper orthogonal
+decomposition. This is
+
+00:02:23.100 --> 00:02:26.940
+essentially a form of principal
+component analysis, where the
+
+00:02:26.940 --> 00:02:30.420
+basic strategy to build up your
+dynamical model, I'm here, I'm
+
+00:02:30.420 --> 00:02:33.120
+just showing a fluid mechanics
+model on the upper right would
+
+00:02:33.120 --> 00:02:36.030
+be to look at the modes in the
+system, essentially, that vary
+
+00:02:36.030 --> 00:02:37.890
+the most. So essentially, you
+would take your flow field
+
+00:02:37.890 --> 00:02:41.010
+create this very high
+dimensional point cloud, and
+
+00:02:41.010 --> 00:02:43.470
+effectively you're doing
+principal component and on that
+
+00:02:43.590 --> 00:02:46.200
+a really nice development in the
+direction of incorporating
+
+00:02:46.200 --> 00:02:49.590
+dynamics within this kind of
+linear frameworks is the dynamic
+
+00:02:49.590 --> 00:02:54.600
+mode decomposition, introduced
+by Schmid in 2010. And lots of
+
+00:02:54.600 --> 00:02:57.780
+developments by by various
+groups and communities,
+
+00:02:57.780 --> 00:03:01.920
+including Bronto, and Coots, in
+various directions. And again,
+
+00:03:01.920 --> 00:03:05.340
+this is a linear based model.
+Again, that's there's a lot of
+
+00:03:05.340 --> 00:03:08.160
+advantages. Having linear base
+models, they're much more
+
+00:03:08.160 --> 00:03:11.130
+straightforward to build theory
+for and, you know, potentially
+
+00:03:11.130 --> 00:03:13.770
+computationally efficient, that
+more efficient than training,
+
+00:03:13.770 --> 00:03:17.040
+let's say, deep neural networks.
+And so the basic idea in things
+
+00:03:17.040 --> 00:03:20.100
+like dynamic mode decomposition
+is you're basically going to
+
+00:03:20.100 --> 00:03:22.410
+take dynamical information into
+account by saying, well, which
+
+00:03:22.410 --> 00:03:26.250
+modes are sort of most
+indicative of that prediction of
+
+00:03:26.250 --> 00:03:28.590
+what's going to happen in the
+future over some set of
+
+00:03:28.590 --> 00:03:31.470
+snapshots. So you're basically
+looking for, again, the sort of
+
+00:03:31.470 --> 00:03:34.890
+best linear model and kind of
+the best basis in order to try
+
+00:03:34.890 --> 00:03:38.610
+to align your your linear
+predictor with the underlying
+
+00:03:38.640 --> 00:03:41.520
+data observations. There has
+also been really nice work done
+
+00:03:41.550 --> 00:03:45.990
+on using symbolic approaches,
+essentially, l one regression
+
+00:03:45.990 --> 00:03:49.830
+things like the lawsuit combined
+with the symbolic dictionaries,
+
+00:03:49.830 --> 00:03:51.990
+and that's a way that you can
+overcome some of the issues that
+
+00:03:51.990 --> 00:03:54.810
+I mentioned in these previous
+linear models. And again, lots
+
+00:03:54.810 --> 00:03:57.750
+of successes and nice
+applications of these
+
+00:03:57.750 --> 00:04:01.050
+techniques. And but you know,
+this has the drawback that you
+
+00:04:01.050 --> 00:04:03.630
+do need an sufficiently
+expressive library so that you
+
+00:04:03.630 --> 00:04:06.840
+can have coverage over the space
+of potential dynamic
+
+00:04:06.840 --> 00:04:09.840
+representations that are
+relevant for your system. So my
+
+00:04:09.840 --> 00:04:12.540
+main point of mentioning these
+approaches, I just want to give
+
+00:04:12.540 --> 00:04:14.970
+kind of some context of what's
+out there. And it kind of just
+
+00:04:14.970 --> 00:04:18.630
+helps set a little bit, the the
+overarching environment in which
+
+00:04:18.720 --> 00:04:21.330
+we're trying to develop these
+data driven techniques, I'm also
+
+00:04:21.330 --> 00:04:23.910
+gonna incorporate noise. So
+they'll also be a generative
+
+00:04:23.940 --> 00:04:26.940
+component that I'll be talking
+about in detail. And so the
+
+00:04:26.940 --> 00:04:31.410
+objective is, try to not just
+recapitulate the behavior that
+
+00:04:31.410 --> 00:04:33.930
+you're seeing in the training
+set, but really learn for
+
+00:04:33.930 --> 00:04:37.350
+intrinsic model, so that you can
+make either longer term
+
+00:04:37.350 --> 00:04:40.350
+predictions, or ideally, in the
+context of a lot of these
+
+00:04:40.350 --> 00:04:43.200
+scientific computing
+applications, be able to replace
+
+00:04:43.230 --> 00:04:45.960
+one of your more expensive
+models with one that's much
+
+00:04:45.960 --> 00:04:49.830
+cheaper by a longtime simulator.
+And so that poses a lot of
+
+00:04:49.890 --> 00:04:53.040
+challenges from the data driven
+modeling perspective, because,
+
+00:04:53.280 --> 00:04:56.760
+you know, depending on how you
+go about this, your model class
+
+00:04:56.760 --> 00:04:59.340
+might not have certain intrinsic
+properties that we're used to
+
+00:04:59.340 --> 00:05:01.560
+when we design into our
+numerical methods, you know,
+
+00:05:01.560 --> 00:05:04.740
+such as things like stability,
+which obviously be very
+
+00:05:04.740 --> 00:05:07.890
+important for longtime
+prediction. Also, another
+
+00:05:07.890 --> 00:05:11.430
+challenge is incorporating prior
+knowledge to the extent that we
+
+00:05:11.430 --> 00:05:14.130
+can, we often know a lot about,
+you know, the physics of the
+
+00:05:14.130 --> 00:05:17.610
+system or other mathematical
+structure in a system. And so
+
+00:05:17.610 --> 00:05:21.270
+we'd also like ways of including
+that as inductive biases in our
+
+00:05:21.270 --> 00:05:24.600
+data driven methods. So we'll
+talk a little bit about where I
+
+00:05:24.600 --> 00:05:26.940
+think there are opportunities to
+do that as well, in some of
+
+00:05:26.940 --> 00:05:29.640
+these nonlinear approximation
+approaches, as I said, these
+
+00:05:29.640 --> 00:05:32.730
+developments in the neural
+networks community in particular
+
+00:05:32.730 --> 00:05:34.710
+generative models, and I'll kind
+of put it in a little bit
+
+00:05:34.710 --> 00:05:38.790
+larger, probabilistic context.
+And and there's a lot of
+
+00:05:38.790 --> 00:05:42.900
+interesting directions, I think
+that this can be pursued for for
+
+00:05:42.900 --> 00:05:45.090
+a lot of the applications that I
+showed on the previous slides.
+
+00:05:45.240 --> 00:05:49.290
+But going beyond, again, that
+sort of linear approximations to
+
+00:05:49.290 --> 00:05:52.650
+that incorporate various types
+of nonlinear approximation
+
+00:05:52.650 --> 00:05:55.800
+classes. So as to motivate the
+examples, and I'll come back and
+
+00:05:55.800 --> 00:05:58.680
+I'll give some results for
+these. One of which is, you
+
+00:05:58.680 --> 00:06:02.070
+know, basically systems
+identification, or extracting
+
+00:06:02.070 --> 00:06:04.440
+state information, which is
+important in many different
+
+00:06:04.470 --> 00:06:08.460
+problems, including things like
+control. And the objective here
+
+00:06:08.460 --> 00:06:12.000
+basically, is to learn key
+parameters, from observations of
+
+00:06:12.000 --> 00:06:15.000
+the dynamics. These things go
+by, you know, many different
+
+00:06:15.000 --> 00:06:17.790
+names, depending on the
+community this. Now what we're
+
+00:06:17.820 --> 00:06:19.920
+trying to utilize here, as I
+showed in the upper right, just
+
+00:06:19.920 --> 00:06:22.530
+a little animation, if I'm
+trying to learn, for example, in
+
+00:06:22.530 --> 00:06:26.010
+this Orenstein lindbeck process,
+you can think of it intuitively
+
+00:06:26.010 --> 00:06:29.190
+from the mechanics point of
+view, as a bead spring system,
+
+00:06:29.370 --> 00:06:31.860
+where I'm trying to learn
+simultaneously, the stiffness,
+
+00:06:31.860 --> 00:06:35.940
+the damping and the temperature
+of the system, you know, what we
+
+00:06:35.940 --> 00:06:39.690
+want to do is somehow probe the
+dynamics in a way that would be
+
+00:06:39.690 --> 00:06:42.270
+indicative of those different
+properties. So there's going to
+
+00:06:42.270 --> 00:06:44.160
+be an interesting challenge,
+whenever you're trying to
+
+00:06:44.160 --> 00:06:47.790
+estimate a model from the
+dynamics that you may, you have
+
+00:06:47.790 --> 00:06:50.640
+to be careful basically, that
+you're probing the dynamics on
+
+00:06:50.880 --> 00:06:53.940
+the appropriate timescales, and
+that you have sufficient
+
+00:06:53.940 --> 00:06:58.740
+coverage over the response range
+that would be sensitive to those
+
+00:06:58.770 --> 00:07:01.560
+particular parameters. But the
+overall objective here is to try
+
+00:07:01.560 --> 00:07:04.050
+to learn dynamical
+representations from
+
+00:07:04.380 --> 00:07:08.610
+observations, sample
+trajectories. Also in reductions
+
+00:07:08.610 --> 00:07:12.270
+and course grading. I'll show an
+example where, you know, we're
+
+00:07:12.270 --> 00:07:14.670
+trying to learn essentially
+unknown force laws. And so how
+
+00:07:14.670 --> 00:07:17.640
+that can be done again, for this
+general perspective. In this
+
+00:07:17.640 --> 00:07:20.970
+case, this would be a
+nonparametric estimation problem
+
+00:07:20.970 --> 00:07:23.880
+where we want to learn an
+unknown force law, for example,
+
+00:07:23.940 --> 00:07:27.660
+in something like lunch, Yvonne
+dynamics, and so problems
+
+00:07:27.660 --> 00:07:30.930
+analogous to this come up in a
+lot of different contexts, in
+
+00:07:30.930 --> 00:07:35.100
+developing again, reductions, so
+that you can simulate things on
+
+00:07:35.190 --> 00:07:38.250
+larger timescales to overcome,
+for example, sources of
+
+00:07:38.250 --> 00:07:41.700
+stiffness, or in coarse grained
+modeling, of course, which is
+
+00:07:41.700 --> 00:07:44.790
+very popular, for example, in
+the material sciences community.
+
+00:07:45.090 --> 00:07:46.710
+So some of the interesting
+things that you could
+
+00:07:46.710 --> 00:07:51.120
+potentially do if you had good
+nonlinear estimation methods is,
+
+00:07:51.300 --> 00:07:54.330
+you know, not have to handcraft
+your estimators for things like
+
+00:07:54.360 --> 00:07:57.330
+the the force law. So one of the
+common ways you might try to go
+
+00:07:57.330 --> 00:07:59.310
+about doing this is to use
+something like maximum
+
+00:07:59.310 --> 00:08:01.920
+likelihood estimation. But of
+course, the immediate challenge
+
+00:08:01.920 --> 00:08:05.940
+you run into in the setting of
+these dynamic representations is
+
+00:08:06.840 --> 00:08:09.330
+that you have to specify
+likelihood functions, you have
+
+00:08:09.330 --> 00:08:11.640
+to compute those potentially on
+very high dimensional
+
+00:08:11.880 --> 00:08:15.570
+probability spaces. And so I'm
+going to show some alternatives
+
+00:08:15.810 --> 00:08:18.660
+to that approach. Alright, so I
+just wanted to give some of the
+
+00:08:18.660 --> 00:08:22.380
+kind of key key motivations here
+and context of where we're
+
+00:08:22.380 --> 00:08:25.710
+trying to develop these
+techniques just to give a, a
+
+00:08:25.710 --> 00:08:28.470
+sort of overview of some of the
+issues that arise. And I think
+
+00:08:28.470 --> 00:08:30.780
+there's a lot of potentially
+interesting ways, again, to
+
+00:08:30.780 --> 00:08:33.900
+leverage a lot of the recent
+developments in the machine
+
+00:08:33.900 --> 00:08:37.530
+learning community. In the case
+of stochastic dynamics, in some
+
+00:08:37.530 --> 00:08:40.680
+sense, we're trying to learn an
+entire ensemble. And so there'll
+
+00:08:40.680 --> 00:08:43.530
+be some interesting issues that
+arise there, given the roles
+
+00:08:43.530 --> 00:08:46.920
+that noise plays in stochastic
+phenomena. And then, of course,
+
+00:08:46.980 --> 00:08:51.000
+as I said before, we'd like to
+do all of this to obtain robust
+
+00:08:51.030 --> 00:08:53.640
+representations that are stable
+for the purposes of either
+
+00:08:53.640 --> 00:08:56.670
+longtime prediction or
+simulation. Alright, so I think
+
+00:08:56.670 --> 00:08:58.980
+I've said, you know, enough at
+the sort of the high level, and
+
+00:08:58.980 --> 00:09:03.630
+I'll start getting into some of
+the more details of the
+
+00:09:03.630 --> 00:09:06.180
+techniques that we're going to
+leverage and did further
+
+00:09:06.180 --> 00:09:08.640
+develop. So if you're not
+familiar with generative
+
+00:09:08.640 --> 00:09:11.190
+adversarial networks, I'm just
+gonna go through really quick,
+
+00:09:11.730 --> 00:09:14.520
+what these techniques are these
+recent developments in the
+
+00:09:14.550 --> 00:09:17.790
+machine learning community,
+closely related to generative
+
+00:09:17.790 --> 00:09:20.700
+modeling statistics. And so what
+I'm going to do is just go
+
+00:09:20.700 --> 00:09:23.400
+through perspective on
+generative adversarial networks.
+
+00:09:23.400 --> 00:09:29.340
+This is basically a way for us
+to train a simulator or an
+
+00:09:29.340 --> 00:09:32.820
+implicit generative model, that
+is this function that I'm
+
+00:09:32.820 --> 00:09:38.370
+showing here, which is g of z.
+And g of z basically has some
+
+00:09:38.370 --> 00:09:42.000
+noise source. And what it's
+going to do is generate a sort
+
+00:09:42.000 --> 00:09:46.020
+of collection of samples. And
+the objective here is to take
+
+00:09:46.020 --> 00:09:50.160
+our training data and take our
+implicit generator and have some
+
+00:09:50.160 --> 00:09:53.820
+way of comparing the samples
+that we get from the the
+
+00:09:53.850 --> 00:09:57.720
+training set with the samples
+that were produced by the
+
+00:09:57.720 --> 00:10:00.450
+generator. Now as I mentioned
+before, you know One way that
+
+00:10:00.450 --> 00:10:02.940
+this is traditionally be done,
+if you know a lot analytically
+
+00:10:02.940 --> 00:10:05.700
+about the generator is you could
+use things like maximum
+
+00:10:05.700 --> 00:10:08.850
+likelihood estimation. But if
+you do that, right, this
+
+00:10:08.880 --> 00:10:11.730
+requires the specification of
+likelihood functions requires
+
+00:10:11.940 --> 00:10:15.750
+you to go and perform those
+calculations during the training
+
+00:10:15.750 --> 00:10:19.680
+loop, which could potentially be
+quite quite challenging. The
+
+00:10:19.680 --> 00:10:23.370
+appeal of doing this adversarial
+training approach is instead of
+
+00:10:23.370 --> 00:10:27.060
+relying on a sort of pre
+specified likelihood function,
+
+00:10:27.240 --> 00:10:29.850
+what we're going to do is
+simultaneously train another
+
+00:10:29.850 --> 00:10:32.970
+model. This could potentially as
+well be a neural network, but
+
+00:10:33.000 --> 00:10:35.730
+can be taken from any model
+class you like. And I'll show a
+
+00:10:35.730 --> 00:10:38.880
+little bit about that in a
+minute. And basically, the job
+
+00:10:38.880 --> 00:10:43.230
+of this discriminator is to
+characterize how closely the
+
+00:10:43.230 --> 00:10:47.970
+samples that were produced by
+the generator differ. And so the
+
+00:10:47.970 --> 00:10:51.120
+discriminator, you can think of
+as playing a role analogous to a
+
+00:10:51.120 --> 00:10:55.320
+classifier. And if I have this
+collection of samples, its job
+
+00:10:55.320 --> 00:10:57.270
+is to say, Well, did those
+samples come from the training
+
+00:10:57.270 --> 00:10:59.850
+set or the generator, if they
+can distinguish that readily,
+
+00:11:00.150 --> 00:11:03.240
+then your you know, your
+generator needs to be improved,
+
+00:11:03.510 --> 00:11:06.330
+you can think of this as kind of
+like a two player game, where if
+
+00:11:06.330 --> 00:11:09.570
+I had a classifier loss, for
+example, the discriminator would
+
+00:11:09.570 --> 00:11:12.990
+be aiming to minimize the loss,
+while the generator would be
+
+00:11:13.020 --> 00:11:16.770
+aiming to maximize that loss for
+the discriminator. And so by
+
+00:11:16.770 --> 00:11:19.080
+making different choices of the
+discriminator, we can actually
+
+00:11:19.080 --> 00:11:23.820
+realize different divergences
+and metrics for comparing the
+
+00:11:23.820 --> 00:11:27.750
+empirical measures of the
+samples of generator with with
+
+00:11:27.750 --> 00:11:30.510
+that of the training data
+distribution. Alright, so that's
+
+00:11:30.510 --> 00:11:34.680
+a quick overview of of GaNS. So
+you have a generator G, what's
+
+00:11:34.680 --> 00:11:37.710
+different from some of the other
+modeling approaches is, we're
+
+00:11:37.710 --> 00:11:40.710
+not actually going to write down
+ever the probability
+
+00:11:40.710 --> 00:11:43.560
+distribution or measure
+directly, we're simply going to
+
+00:11:43.560 --> 00:11:48.390
+have an algorithm that generates
+from some random input samples,
+
+00:11:48.420 --> 00:11:50.850
+and then we're gonna tune
+essentially that algorithm, so
+
+00:11:50.850 --> 00:11:54.060
+that it produces high quality
+samples that agree with the
+
+00:11:54.060 --> 00:11:56.910
+training set, and then
+discriminator, the simplest case
+
+00:11:56.910 --> 00:11:59.520
+would be a binary classifier,
+which I'll use for illustration,
+
+00:11:59.520 --> 00:12:02.970
+and then I'll, I'll show how we
+can extend that. And for the
+
+00:12:02.970 --> 00:12:07.080
+purposes of these learning of
+dynamics, if it were a binary
+
+00:12:07.080 --> 00:12:10.440
+classifier, basically, the idea
+would be it would give us a
+
+00:12:10.440 --> 00:12:13.740
+number, maybe between zero and
+one telling us the probability
+
+00:12:13.740 --> 00:12:16.740
+that it thinks it was produced
+by the data distribution versus
+
+00:12:16.740 --> 00:12:21.210
+produced by the the implicit
+generator. So I'm going to write
+
+00:12:21.210 --> 00:12:23.910
+these probability densities down
+for the purposes of having a
+
+00:12:23.910 --> 00:12:27.270
+theoretical perspective. But in
+practice, you're only going to
+
+00:12:27.270 --> 00:12:32.160
+be working with samples from G
+and D will only be operating on
+
+00:12:32.190 --> 00:12:38.220
+sample sets from from G and the
+in the training set. So
+
+00:12:38.250 --> 00:12:40.680
+basically, you can think about a
+little bit like a it's like a
+
+00:12:40.680 --> 00:12:44.400
+little game where G is kind of
+acting like a counterfeiter, D
+
+00:12:44.400 --> 00:12:47.670
+is kind of a classifier, seeing
+whether this is real or fake.
+
+00:12:47.670 --> 00:12:50.550
+And your job is to create such
+good samples again, that the
+
+00:12:50.550 --> 00:12:53.610
+discriminator can't can't tell.
+Alright, and well, we'll see
+
+00:12:53.610 --> 00:12:58.080
+what that how that plays out
+mathematically, in a little bit.
+
+00:12:58.350 --> 00:13:01.590
+And, and that'll inform our
+choices for the discriminator
+
+00:13:01.590 --> 00:13:04.140
+model classes. All right, so the
+way that we're going to
+
+00:13:04.170 --> 00:13:07.950
+typically play this game is what
+we'll do is we'll have a
+
+00:13:07.950 --> 00:13:11.040
+synthetic data set, which is a
+mixture of samples that are
+
+00:13:11.040 --> 00:13:16.080
+taken from the generator samples
+that are taking from the from
+
+00:13:16.080 --> 00:13:20.190
+the training set, and those get
+mixed together. And we put label
+
+00:13:20.190 --> 00:13:22.740
+one on everything from the
+training set, and we put labels
+
+00:13:22.740 --> 00:13:28.140
+zero on everything from the
+implicit generator, and now in
+
+00:13:28.140 --> 00:13:33.570
+leverage results from the
+classification theory to create
+
+00:13:33.600 --> 00:13:38.010
+a loss function for the
+discriminator Model D. And so
+
+00:13:38.010 --> 00:13:41.610
+they score of the discriminator
+is basically going to be, you
+
+00:13:41.610 --> 00:13:45.570
+know, the 01 loss for assigning
+the correct labels to those
+
+00:13:45.570 --> 00:13:48.420
+sample points. Now, if we look
+at it from, you know, point of
+
+00:13:48.420 --> 00:13:52.230
+view of let's say, the Bayesian
+classifier, you can see that if
+
+00:13:52.230 --> 00:13:55.350
+d of x is interpreted as a
+probability, the ideal way to
+
+00:13:55.350 --> 00:13:58.950
+try to classify would be for D
+to estimate the probability that
+
+00:13:59.160 --> 00:14:01.710
+the label is one given that
+sample point because you know,
+
+00:14:01.710 --> 00:14:04.110
+you could have that both the
+generator and the data
+
+00:14:04.110 --> 00:14:06.690
+distribution produce the exact
+same sample, of course, in
+
+00:14:06.690 --> 00:14:08.760
+practice, there'll be a little
+bit of smoothness that needs to
+
+00:14:08.760 --> 00:14:12.480
+come into the problem, you know,
+where you want this for x's that
+
+00:14:12.480 --> 00:14:14.970
+are close that they have the
+appropriate probability
+
+00:14:14.970 --> 00:14:17.850
+assigned. And then one minus d
+is basically the probability of
+
+00:14:17.850 --> 00:14:21.030
+the label y was assigned. So of
+course, the Bayes classifier
+
+00:14:21.030 --> 00:14:23.790
+would be to just take the arg
+max of that conditional
+
+00:14:23.940 --> 00:14:27.510
+probability, what we're
+basically trying to do is
+
+00:14:27.510 --> 00:14:31.350
+develop an algorithm to find
+effectively that Bayesian
+
+00:14:31.350 --> 00:14:36.090
+classifier for this mixed
+synthetic data set which which
+
+00:14:36.090 --> 00:14:38.340
+is acting in for the class of
+ours point of view is
+
+00:14:38.340 --> 00:14:42.270
+effectively like a training set.
+But I call it synthetic training
+
+00:14:42.300 --> 00:14:45.810
+or synthetic label data, just
+not just to distinguish the
+
+00:14:45.810 --> 00:14:48.480
+original data from this
+synthetic one that we're using
+
+00:14:48.480 --> 00:14:53.280
+for the purposes of the GaNS.
+And so if we mixed together one
+
+00:14:53.280 --> 00:14:56.190
+half probability, the things
+from the generator and one half
+
+00:14:56.190 --> 00:14:59.610
+probability from the the
+original training data, this
+
+00:14:59.610 --> 00:15:02.040
+would be the gist distribution
+that we're training the
+
+00:15:02.040 --> 00:15:05.100
+discriminator over. And the
+Bayes classifier actually can be
+
+00:15:05.100 --> 00:15:08.100
+worked out analytically to be
+this. So it'll essentially just
+
+00:15:08.100 --> 00:15:12.630
+be the probability of the data
+distribution generating that
+
+00:15:12.630 --> 00:15:15.750
+sample over the sum of the
+probabilities of the data in the
+
+00:15:15.750 --> 00:15:20.190
+model distributions having
+generated that probability. So
+
+00:15:20.220 --> 00:15:24.120
+you can see that the optimal if
+we were to actually perform all
+
+00:15:24.120 --> 00:15:28.290
+of our optimization perfectly,
+the best discriminator, the one
+
+00:15:28.290 --> 00:15:31.560
+that would minimize the loss,
+the 01 loss would be given by
+
+00:15:31.560 --> 00:15:35.160
+this analytic expression here.
+Of course, in practice, we don't
+
+00:15:35.160 --> 00:15:37.980
+get that. But some interesting
+outcomes you see is that if I
+
+00:15:37.980 --> 00:15:40.590
+had that the data is crucial in
+the model attribution lined up
+
+00:15:40.590 --> 00:15:43.740
+perfectly, I would have that
+this d of x is one half. And
+
+00:15:43.740 --> 00:15:46.320
+that kind of means that the
+discriminator was maximally
+
+00:15:46.350 --> 00:15:50.550
+confused, didn't know whether it
+should assign a label of zero or
+
+00:15:50.550 --> 00:15:53.400
+one is the way you can
+intuitively interpret that. So
+
+00:15:53.400 --> 00:15:55.710
+if you now go and you get a
+little more mathematical about
+
+00:15:55.710 --> 00:15:58.710
+what we're actually computing,
+here, we have this objective
+
+00:15:58.710 --> 00:16:02.340
+function, the theta d, here are
+the parameters for the model
+
+00:16:02.340 --> 00:16:05.640
+class of the discriminator. And
+the theta g, here are the
+
+00:16:05.760 --> 00:16:08.370
+parameters of the model class of
+the generator, what we're
+
+00:16:08.400 --> 00:16:12.930
+basically minimizing in the loss
+function is this expectation of
+
+00:16:12.960 --> 00:16:17.670
+the log label probability here,
+this is the usual 01 loss, this
+
+00:16:17.670 --> 00:16:21.570
+is what that that amounts to.
+And now if you break it down for
+
+00:16:21.570 --> 00:16:24.360
+what we have, for the synthetic
+set dataset, you'll see that it
+
+00:16:24.360 --> 00:16:27.870
+breaks into these two parts. And
+this is the typical loss that
+
+00:16:27.870 --> 00:16:30.450
+would be used for discriminator.
+In something like, again, now
+
+00:16:30.450 --> 00:16:32.820
+we're gonna see, there's some
+drawbacks to this. And I'm gonna
+
+00:16:32.820 --> 00:16:35.880
+have to reformulate the GaNS for
+the purposes of learning these
+
+00:16:35.910 --> 00:16:38.940
+stochastic systems. But I wanted
+to kind of show you the sort of
+
+00:16:38.940 --> 00:16:42.780
+standard and original
+formulation before I do those
+
+00:16:42.780 --> 00:16:45.450
+modifications. So at the end of
+the day, what you'd be doing is
+
+00:16:45.450 --> 00:16:49.110
+trying to find an ARG min of
+this objective function to get
+
+00:16:49.110 --> 00:16:52.440
+your discriminator. Basically,
+you're trying to have the best
+
+00:16:52.470 --> 00:16:55.980
+classifier possible given that
+synthetic data set, and then the
+
+00:16:55.980 --> 00:16:58.920
+generators job is basically to
+try to mess up the
+
+00:16:58.920 --> 00:17:01.800
+discriminators ability to
+achieve a low loss. In other
+
+00:17:01.800 --> 00:17:05.670
+words, make your sample so good
+looking that the discriminator
+
+00:17:05.670 --> 00:17:09.180
+really can't tell between the
+samples it's producing, and
+
+00:17:09.180 --> 00:17:12.330
+those of the data distribution.
+So that's sort of the underlying
+
+00:17:12.330 --> 00:17:15.000
+strategy. And this is how it
+plays out mathematically, I've
+
+00:17:15.000 --> 00:17:17.670
+used a little bit of a modified
+objective here just to avoid
+
+00:17:17.670 --> 00:17:20.610
+some issues with vanishing
+gradients. But nonetheless,
+
+00:17:20.610 --> 00:17:23.550
+that's what this objective is
+ultimately achieving, when you
+
+00:17:23.580 --> 00:17:27.270
+arg max it with respect to the
+generators, parameters, you
+
+00:17:27.270 --> 00:17:30.150
+know, very prone to oscillations
+if you use kind of this
+
+00:17:30.180 --> 00:17:33.570
+alternative descent asset. But
+anyway, I just wanted to mention
+
+00:17:33.570 --> 00:17:35.760
+what the typical training
+objective is. And we're going to
+
+00:17:35.760 --> 00:17:39.870
+use some analytic techniques to
+work around that issue of
+
+00:17:39.870 --> 00:17:43.590
+oscillations that arises, I'm
+just showing an example with
+
+00:17:43.890 --> 00:17:46.200
+learning something which is
+relatively simple, which is a
+
+00:17:46.200 --> 00:17:49.350
+Gaussian. But the key point I
+really want to make here is you
+
+00:17:49.350 --> 00:17:52.620
+don't know in advance,
+typically, what is a good noise
+
+00:17:52.650 --> 00:17:56.820
+noise source. And so the real
+sort of issue here is the noise
+
+00:17:56.820 --> 00:17:59.460
+source I took to be a uniform
+distribution, I want to compute
+
+00:17:59.460 --> 00:18:02.790
+something like a Gaussian,
+you'll see that even trying to
+
+00:18:02.790 --> 00:18:06.570
+train a model that's this
+simple, GaNS runs into some and
+
+00:18:06.570 --> 00:18:09.390
+you see immediately that you get
+a lot of oscillations during
+
+00:18:09.390 --> 00:18:12.060
+training. And really what's
+going on here is it's very
+
+00:18:12.060 --> 00:18:16.140
+difficult often in ganz to to
+resolve the tails, especially if
+
+00:18:16.140 --> 00:18:19.620
+you don't have a decaying noise
+source. But you know, you could
+
+00:18:19.620 --> 00:18:22.290
+replace this obviously, with a
+Gaussian noise source, and you'd
+
+00:18:22.290 --> 00:18:25.320
+very readily be able to learn
+the model. But this is really
+
+00:18:25.320 --> 00:18:27.510
+the scenario that you often
+encounter in practice is the
+
+00:18:27.510 --> 00:18:31.410
+noise source often needs to
+undergo some pretty radical
+
+00:18:31.410 --> 00:18:35.340
+transformations in order to
+realize the target probability
+
+00:18:35.700 --> 00:18:39.480
+distribution. So we want to be
+very careful about the the
+
+00:18:39.480 --> 00:18:42.270
+objectives that we're using to
+train the GaNS. And there's this
+
+00:18:42.270 --> 00:18:46.200
+issue of oscillations if we use
+simply this relaxation, this
+
+00:18:46.200 --> 00:18:48.900
+gradient descent for
+discriminator, great asset for
+
+00:18:48.900 --> 00:18:52.380
+the generators. And so what
+we've done is introduced a way
+
+00:18:52.380 --> 00:18:56.460
+to modify the standard
+formulation of GaNS to
+
+00:18:56.460 --> 00:18:59.160
+incorporate some additional
+features to deal with some of
+
+00:18:59.160 --> 00:19:02.280
+those issues related to
+oscillations to deal with some
+
+00:19:02.280 --> 00:19:05.490
+of the issues related to the
+noise that I mentioned, as well
+
+00:19:05.490 --> 00:19:08.670
+as the the high dimensionality.
+And so we refer to this as
+
+00:19:08.670 --> 00:19:13.020
+stochastic dynamic GaNS. So the
+basic objective, again, is to
+
+00:19:13.020 --> 00:19:17.910
+learn implicit generator, a
+generative model GMC here, x
+
+00:19:17.910 --> 00:19:20.550
+would now be the trajectories
+and we'd like to be again,
+
+00:19:20.760 --> 00:19:24.690
+sample bass, so we'll use this
+setup with discriminators. Now,
+
+00:19:24.720 --> 00:19:27.810
+if you observe stochastic
+trajectories, the reason why I
+
+00:19:27.810 --> 00:19:31.770
+can't just use the standard GaNS
+formulation is the dynamic
+
+00:19:31.890 --> 00:19:34.110
+trajectories would be very, very
+high dimensional random
+
+00:19:34.110 --> 00:19:37.050
+variables. And so you can
+imagine it being very prone to
+
+00:19:37.050 --> 00:19:40.170
+not having good sample coverage.
+In fact, if you do the standard
+
+00:19:40.230 --> 00:19:43.350
+against formulation that I
+showed before, you can show that
+
+00:19:43.890 --> 00:19:46.830
+that loss that you ultimately
+get is based on callback leibler
+
+00:19:46.830 --> 00:19:49.050
+divergence, you have to be very
+careful about probability
+
+00:19:49.050 --> 00:19:52.560
+distributions being absolutely
+continuous with respect to the
+
+00:19:52.560 --> 00:19:56.250
+other. And so as a consequence,
+getting coverage in the sample
+
+00:19:56.250 --> 00:19:58.860
+space would be quite challenging
+when you go to very high
+
+00:19:58.860 --> 00:20:00.870
+dimensions. And so we're We're
+gonna do is we're going to use
+
+00:20:00.870 --> 00:20:04.590
+the probabilistic structure that
+we often know in advance about
+
+00:20:04.590 --> 00:20:07.680
+dynamical systems, for example,
+you know, if we're looking at
+
+00:20:07.680 --> 00:20:11.250
+something like longevity
+dynamics, we know that the new
+
+00:20:11.250 --> 00:20:15.060
+state is likely to depend on
+some previous number of states,
+
+00:20:15.060 --> 00:20:17.850
+in that case, two states. And so
+what I'm gonna do is I'm going
+
+00:20:17.850 --> 00:20:21.570
+to develop my learning methods
+over the class of general M
+
+00:20:21.570 --> 00:20:25.140
+step, stochastic integrators.
+And that's going to be the model
+
+00:20:25.140 --> 00:20:27.840
+class, essentially, for my
+implicit generators. And by
+
+00:20:27.840 --> 00:20:30.660
+doing that, I can sort of build
+in various inductive biases,
+
+00:20:30.810 --> 00:20:34.350
+including a learning within,
+let's say, the framework of
+
+00:20:34.350 --> 00:20:36.870
+numerical methods, which are
+known to be stable, at least for
+
+00:20:36.870 --> 00:20:40.830
+sufficiently small time steps.
+And, and basically, from that, I
+
+00:20:40.830 --> 00:20:43.530
+can then learn my
+representations in a way where I
+
+00:20:43.530 --> 00:20:48.210
+have a viable candidate
+simulator in hand. So from the
+
+00:20:48.240 --> 00:20:50.460
+modeling point of view, or
+probabilistic point of view, you
+
+00:20:50.460 --> 00:20:53.940
+can think about us learning over
+essentially, probabilistic
+
+00:20:53.940 --> 00:20:57.870
+graphical models, where we're
+going to allow for state k,
+
+00:20:57.930 --> 00:21:02.400
+there to be a dependence on the
+previous steps. Okay, so that's
+
+00:21:02.400 --> 00:21:04.740
+going to be the basic way that
+we deal with some of these high
+
+00:21:04.740 --> 00:21:07.260
+dimensionality issues. And then
+I'll talk about how that
+
+00:21:07.260 --> 00:21:10.230
+probabilistic structure, not
+only can we use for the full
+
+00:21:10.230 --> 00:21:14.370
+trajectory, but we also can look
+at trajectory fragments, as the
+
+00:21:14.370 --> 00:21:17.160
+signatures that we use in the
+discriminator to drive the
+
+00:21:17.160 --> 00:21:20.580
+generator towards the data
+distribution samples. So the key
+
+00:21:20.580 --> 00:21:23.130
+idea here is really we want to,
+we want to be completely sample
+
+00:21:23.130 --> 00:21:26.910
+based, so we can avoid having to
+specify likelihood functions. So
+
+00:21:26.910 --> 00:21:29.460
+throughout, there will be no
+likelihood function. So you can
+
+00:21:29.460 --> 00:21:32.070
+think about these as being
+methods that are alternatives to
+
+00:21:32.070 --> 00:21:33.900
+maximum likelihood estimation.
+Alright, so learn
+
+00:21:33.900 --> 00:21:37.140
+representations I'm going to use
+as my model class stochastic M
+
+00:21:37.140 --> 00:21:43.110
+step methods. So just to get
+some notation specified. This is
+
+00:21:43.110 --> 00:21:46.710
+just saying that voting this
+probabilistic graphical
+
+00:21:46.710 --> 00:21:49.560
+structure I'm showing here on
+the right, we'll have that state
+
+00:21:49.590 --> 00:21:54.660
+j depends on the previous M
+states, you can think of SY j
+
+00:21:54.690 --> 00:21:59.370
+minus one as the update from
+time step, or step j minus one
+
+00:21:59.370 --> 00:22:03.690
+to J, omega j, here will be the
+sample point because we're
+
+00:22:03.690 --> 00:22:06.180
+dealing with a stochastic
+process. And then the P here
+
+00:22:06.180 --> 00:22:09.360
+will be whatever parameters we
+have of the system. So these
+
+00:22:09.360 --> 00:22:12.270
+could be your weights of neural
+networks, or they could be
+
+00:22:12.420 --> 00:22:15.060
+parameters of the physical
+system that you'd like to learn
+
+00:22:15.060 --> 00:22:17.460
+from your trajectory
+observations also allow the
+
+00:22:17.460 --> 00:22:20.670
+parameters to influence the the
+initial conditions, where you
+
+00:22:20.670 --> 00:22:24.810
+could think about that is coming
+from some ensemble for the
+
+00:22:24.840 --> 00:22:26.790
+initial conditions of the
+system. Alright, so that's the
+
+00:22:26.790 --> 00:22:29.340
+basic setup in the model class
+that we're going to use for our
+
+00:22:29.340 --> 00:22:32.820
+implicit generators. And this
+provides all kinds of ways to
+
+00:22:32.820 --> 00:22:35.850
+incorporate prior knowledge,
+physical principles, we can sort
+
+00:22:35.850 --> 00:22:39.000
+of design into this update all
+kinds of features, I'm going to
+
+00:22:39.000 --> 00:22:42.780
+replace the standard kind of
+Jenson Shannon divergence
+
+00:22:42.780 --> 00:22:45.000
+approach of the original GaNS
+formulation with another
+
+00:22:45.000 --> 00:22:47.400
+approach that's kernel based.
+And that will also provide some
+
+00:22:47.400 --> 00:22:50.400
+other ways to incorporate
+inductive biases. And then as I
+
+00:22:50.400 --> 00:22:53.490
+said before, this encodes
+essentially these probabilistic
+
+00:22:53.490 --> 00:22:57.510
+dependencies. So we're not
+learning over the general space
+
+00:22:57.540 --> 00:23:00.900
+of you know, our n times d
+random variables, we're really
+
+00:23:00.900 --> 00:23:05.520
+learning over this class of
+graphical models. Now, once you
+
+00:23:05.520 --> 00:23:08.880
+do that, there's also a way to
+introduce different training
+
+00:23:08.880 --> 00:23:12.150
+protocols realize you can train
+this quite effectively, not just
+
+00:23:12.150 --> 00:23:15.360
+using the full trajectory data,
+but also using things like
+
+00:23:15.360 --> 00:23:17.910
+conditional distributions, or
+even just marginal
+
+00:23:17.910 --> 00:23:21.360
+distributions. And this allows
+for potentially big reductions
+
+00:23:21.570 --> 00:23:23.580
+in the number of dimensions you
+have to deal with during the
+
+00:23:23.580 --> 00:23:26.490
+training process, because you
+can utilize trajectory
+
+00:23:26.490 --> 00:23:30.060
+fragments. And so I'll show some
+results there, as well as
+
+00:23:30.060 --> 00:23:35.190
+downsampling by using different
+timescales tab. So the overall
+
+00:23:35.730 --> 00:23:39.180
+objective then is going to be to
+develop appropriate
+
+00:23:39.210 --> 00:23:43.170
+discriminators and critics for
+this sort of dynamic scenario.
+
+00:23:43.470 --> 00:23:46.620
+Currently, what we're developing
+are methods within the context
+
+00:23:46.650 --> 00:23:51.270
+of generalized moment methods or
+maximum mean discrepancy. And,
+
+00:23:51.300 --> 00:23:54.000
+and we found in practice, this
+seems to lead to some nice
+
+00:23:54.000 --> 00:23:57.150
+results with respect to avoiding
+some of those oscillations like
+
+00:23:57.150 --> 00:24:00.540
+I showed you in the standard
+GaNS formulation. Alright, so
+
+00:24:00.540 --> 00:24:03.600
+those three training protocols,
+I'll just say a little bit about
+
+00:24:03.600 --> 00:24:05.790
+them briefly, because they'll
+kind of come back when I develop
+
+00:24:05.790 --> 00:24:09.480
+some of the algorithms. So in
+the full trajectory case,
+
+00:24:09.480 --> 00:24:13.650
+essentially, what we're going to
+think of as the implicit
+
+00:24:13.890 --> 00:24:18.630
+generators distribution would
+just be essentially the sequence
+
+00:24:18.660 --> 00:24:22.620
+of snapshots of the dynamic
+trajectory. And of course,
+
+00:24:22.620 --> 00:24:25.110
+that's going to be very high
+dimensional. And that's not very
+
+00:24:25.110 --> 00:24:28.530
+desirable in training. Because,
+you know, again, getting sample
+
+00:24:28.530 --> 00:24:31.830
+coverage in a high dimensional
+space is, is quite challenging.
+
+00:24:31.830 --> 00:24:36.120
+So you need rather large batches
+to get meaningful comparisons.
+
+00:24:36.360 --> 00:24:40.500
+So what we're going to do often
+is downselect in two different
+
+00:24:40.500 --> 00:24:44.160
+ways, delta t here that I
+mentioning, doesn't necessarily
+
+00:24:44.160 --> 00:24:47.400
+have to be the time step of the
+M step generator. This could be
+
+00:24:47.400 --> 00:24:50.700
+much larger time step so that
+you're only sampling at you
+
+00:24:50.700 --> 00:24:54.270
+know, select times and that way
+you can get sensitivity to the
+
+00:24:54.270 --> 00:24:57.360
+dynamic responses on large
+timescales, but the underlying
+
+00:24:57.360 --> 00:25:02.070
+Numerix is using a much smaller
+or substep. And so that's the
+
+00:25:02.070 --> 00:25:04.500
+strategy we will typically use
+with these full trajectory
+
+00:25:04.500 --> 00:25:07.800
+approaches. And that's what's
+being denoted here by this tau
+
+00:25:07.800 --> 00:25:11.010
+that you're seeing there. And so
+the conditional methods, as the
+
+00:25:11.010 --> 00:25:13.650
+name implies, this will be where
+we'll use a trajectory
+
+00:25:13.650 --> 00:25:16.260
+fragments, this would be most
+appropriate where we're able to
+
+00:25:16.260 --> 00:25:20.760
+generate entries of the training
+set from something like a high
+
+00:25:20.760 --> 00:25:23.070
+fidelity simulation. So these
+would start off with like the
+
+00:25:23.070 --> 00:25:26.370
+same local initial conditions
+and then evolve for some period
+
+00:25:26.370 --> 00:25:28.770
+of time, it's kind of like a
+little local burst, if you like,
+
+00:25:29.070 --> 00:25:32.610
+of trajectories. And then of
+course, you're learning these
+
+00:25:32.610 --> 00:25:36.090
+probability distributions, which
+are conditionals, on those
+
+00:25:36.090 --> 00:25:38.820
+different samples for the
+initial conditions, and that
+
+00:25:38.820 --> 00:25:42.450
+that has, obviously training
+benefits. Again, if you have
+
+00:25:42.450 --> 00:25:46.650
+some control over initializing
+the training data set data, and
+
+00:25:46.650 --> 00:25:49.650
+then the marginals don't require
+that the marginal simply just
+
+00:25:49.650 --> 00:25:54.150
+take a fragment of the
+trajectories. And essentially,
+
+00:25:54.150 --> 00:25:57.600
+you're just trying to learn
+marginal distributions for some
+
+00:25:57.600 --> 00:26:00.870
+specified ranges, you can either
+do it as kind of like a sliding
+
+00:26:00.870 --> 00:26:04.560
+window, or you could have it at
+one specific time. So the main
+
+00:26:04.560 --> 00:26:06.810
+point I really want to make is
+there's all kinds of interesting
+
+00:26:07.320 --> 00:26:10.770
+variations and combinations of
+what I've specified here, that
+
+00:26:10.770 --> 00:26:13.980
+can be used to greatly improve
+potentially training when you're
+
+00:26:13.980 --> 00:26:16.680
+trying to learn these stochastic
+dynamical models. And so I'll
+
+00:26:16.830 --> 00:26:20.460
+focus on these kind of three
+standard cases. Alright, so for
+
+00:26:20.460 --> 00:26:22.980
+the generator loss, I'm going to
+reformulate it. So I'm not
+
+00:26:22.980 --> 00:26:26.520
+simply using a 01 classifier,
+and this is with the objective
+
+00:26:26.520 --> 00:26:28.920
+of trying to get a little bit
+more information about the
+
+00:26:28.920 --> 00:26:33.090
+dynamical track trajectories
+that can be used as a learning
+
+00:26:33.090 --> 00:26:35.790
+signal in the gradient of the
+generator. And so what I'm going
+
+00:26:35.790 --> 00:26:39.690
+to do is, instead of using just
+a sort of binary classifier, I'm
+
+00:26:39.690 --> 00:26:44.040
+instead going to learn a critic
+or a discriminator. That is
+
+00:26:44.280 --> 00:26:50.310
+essentially a function, which is
+going to aim to distinguish
+
+00:26:50.310 --> 00:26:52.530
+between the two probability
+distributions. So you can think
+
+00:26:52.530 --> 00:26:56.700
+about this function as basically
+being like a signature that
+
+00:26:56.700 --> 00:27:01.260
+tells me how different these two
+random variables are, where the
+
+00:27:01.260 --> 00:27:05.340
+function is restricted to come
+from some range of features or
+
+00:27:05.340 --> 00:27:09.180
+functional forms. And I'll get
+into that in more detail. From
+
+00:27:09.180 --> 00:27:11.730
+the probability and statistics
+literature. This is what's known
+
+00:27:11.730 --> 00:27:14.550
+as an integral probability
+metric. Depending how you choose
+
+00:27:14.550 --> 00:27:18.330
+this model class fancy if you're
+you can get all kinds of
+
+00:27:18.330 --> 00:27:21.030
+interesting metrics, including
+the Kentaro vix metric
+
+00:27:21.030 --> 00:27:24.780
+associated with optimal
+transport, like the Wasserstein
+
+00:27:24.780 --> 00:27:27.870
+metric, for example, that would
+be the one Lipschitz functions
+
+00:27:27.900 --> 00:27:31.200
+for its constant less than or
+equal to one, you can make other
+
+00:27:31.200 --> 00:27:35.940
+choices to get other well known
+metrics and divergences, the
+
+00:27:35.940 --> 00:27:38.070
+choice that we're going to make
+here and again, the whole
+
+00:27:38.070 --> 00:27:40.350
+purpose of this is to compare
+the empirical distribution of
+
+00:27:40.350 --> 00:27:43.560
+the generator and the training
+set, we're going to use a
+
+00:27:43.830 --> 00:27:48.930
+reproducing kernel Hilbert space
+for F, for f here, and we're
+
+00:27:48.930 --> 00:27:52.200
+looking at all of the functions
+that have norm in that space
+
+00:27:52.200 --> 00:27:54.450
+less than or equal to one. So
+there's a number of nice things
+
+00:27:54.450 --> 00:27:57.300
+that happen if we use that
+depending on our choice of
+
+00:27:57.300 --> 00:28:02.160
+kernel. This, of course, can
+give us rather rich ability to
+
+00:28:02.160 --> 00:28:06.630
+distinguish between probability
+distributions, while at the same
+
+00:28:06.630 --> 00:28:09.480
+time having some other structure
+which we can utilize for the
+
+00:28:09.480 --> 00:28:12.990
+purposes of training from these
+finite sample sets. A lot of
+
+00:28:12.990 --> 00:28:16.140
+what will happen here is, it'll
+be similar to doing something
+
+00:28:16.140 --> 00:28:19.530
+like a kernel density estimate
+of the two distributions and
+
+00:28:19.530 --> 00:28:21.720
+kind of comparing their
+difference. But of course, what
+
+00:28:21.720 --> 00:28:25.620
+currently you choose will affect
+what's being emphasized in those
+
+00:28:25.620 --> 00:28:29.160
+comparisons. So the key property
+that I'm going to use for that
+
+00:28:29.160 --> 00:28:32.190
+kernel for now, I'll just leave
+the kernel generic. And I'll say
+
+00:28:32.190 --> 00:28:34.290
+a little bit more about what we
+use, when I get into the
+
+00:28:34.290 --> 00:28:36.510
+examples is we'll use the fact
+that if we're going to
+
+00:28:36.510 --> 00:28:39.960
+reproducing kernel Hilbert
+space, then we can evaluate the
+
+00:28:39.960 --> 00:28:44.430
+function f at a particular value
+x, by simply taking the inner
+
+00:28:44.430 --> 00:28:48.330
+product of f with the kernel.
+Now using that property, if I
+
+00:28:48.330 --> 00:28:52.200
+substitute that in above here,
+it actually can be, I can
+
+00:28:52.200 --> 00:28:55.920
+simplify the form of this
+optimization problem that I need
+
+00:28:55.920 --> 00:28:59.850
+to solve. I'll use the notation
+up, you can think about this as
+
+00:28:59.850 --> 00:29:02.790
+an embedding of the first
+probability distribution, and mu
+
+00:29:02.790 --> 00:29:05.400
+Q as an embedding of the second
+probability distribution into
+
+00:29:05.400 --> 00:29:10.170
+the reproducing kernel Hilbert
+space, I can use that along with
+
+00:29:10.170 --> 00:29:13.920
+this kernel property to
+basically commute the the inner
+
+00:29:13.920 --> 00:29:17.130
+product with the expectation.
+And if I do that, then this
+
+00:29:17.130 --> 00:29:19.920
+integral probability metric that
+I get can be expressed in this
+
+00:29:19.920 --> 00:29:23.880
+form. This is what's known as
+maximum mean discrepancy. And
+
+00:29:23.880 --> 00:29:28.590
+you can see readily now that
+optimizing over all norm one
+
+00:29:29.130 --> 00:29:32.730
+functions would be given by
+simply taking the direction of
+
+00:29:32.730 --> 00:29:35.610
+that second vector or that
+second function. And that's
+
+00:29:35.670 --> 00:29:38.790
+simply given by the difference
+between the embeddings over the
+
+00:29:38.790 --> 00:29:42.150
+norm of the embeddings. And so
+when you work it all out, you
+
+00:29:42.150 --> 00:29:44.730
+know, again, going back and
+using this property of kernels,
+
+00:29:44.850 --> 00:29:50.820
+you can express this as the sum
+of kernel expectations. Now, all
+
+00:29:50.820 --> 00:29:53.370
+that looks great. The one
+drawback of course of this is
+
+00:29:53.370 --> 00:29:56.160
+that these are second order
+statistics and we'll talk about
+
+00:29:56.160 --> 00:29:58.470
+how we'll deal with that in a
+little bit. And so this provides
+
+00:29:58.470 --> 00:30:01.410
+us then from A sample based
+point of view, this would
+
+00:30:01.410 --> 00:30:06.060
+provide us with a loss function
+for our generator, in
+
+00:30:06.060 --> 00:30:10.800
+particular, we can take this
+expectation quantity, let's just
+
+00:30:10.830 --> 00:30:13.620
+square it to get rid of the
+square root. Since at the end of
+
+00:30:13.620 --> 00:30:17.220
+the day, we're interested in
+doing optimization minimizing
+
+00:30:17.550 --> 00:30:20.910
+and and then we can use this
+unbiased estimator here, which
+
+00:30:20.910 --> 00:30:24.660
+would then give us a sample
+based estimate of the MMD. And
+
+00:30:24.660 --> 00:30:27.600
+so that's what we're going to
+use for our generator loss. This
+
+00:30:27.600 --> 00:30:31.110
+is basically a way of
+determining the discriminator
+
+00:30:31.110 --> 00:30:34.410
+analytically, so I don't have to
+go through a separate training
+
+00:30:34.680 --> 00:30:37.680
+or optimization problem, like I
+did in the standard GaNS
+
+00:30:37.680 --> 00:30:41.250
+formulation. So now that takes
+the discriminator optimization
+
+00:30:41.250 --> 00:30:44.910
+part out of the problem. And now
+I can focus on simply minimizing
+
+00:30:45.090 --> 00:30:49.200
+or minimizing the objective for
+the implicit generator. And so
+
+00:30:49.200 --> 00:30:51.720
+that'll boil down to this loss
+function, which I'm showing
+
+00:30:51.720 --> 00:30:55.710
+here, which will amount to
+essentially the the the
+
+00:30:55.740 --> 00:30:59.070
+empirical estimator for the MMD
+that I'm showing in the upper
+
+00:30:59.070 --> 00:31:02.820
+right. And this is just
+computing NMD, the unbiased
+
+00:31:02.820 --> 00:31:06.870
+estimator for effectively those
+empirical distributions of G and
+
+00:31:06.870 --> 00:31:09.720
+D. Alright, so that's going to
+be the overall loss that I'm
+
+00:31:09.720 --> 00:31:13.650
+going to use in my generative
+formulation. Now, it boils down
+
+00:31:13.650 --> 00:31:17.280
+to how do I actually compute
+this in practice for performing
+
+00:31:17.460 --> 00:31:20.280
+training using things like
+Stochastic gradient descent, and
+
+00:31:20.280 --> 00:31:22.680
+so what's really crucial here is
+that I'd be able to compute
+
+00:31:22.680 --> 00:31:25.320
+gradients of that loss function
+efficiently. And it turns out
+
+00:31:25.320 --> 00:31:28.110
+that if I use just standard back
+propagation methods of the
+
+00:31:28.110 --> 00:31:30.180
+computational collagraphs, it
+should become prohibitively
+
+00:31:30.180 --> 00:31:34.020
+large for backprop. So I'm going
+to make use of more mathematical
+
+00:31:34.020 --> 00:31:37.800
+structure of this loss function.
+And so the first observation is
+
+00:31:37.800 --> 00:31:40.140
+just to note that we have to do
+these double sums over the
+
+00:31:40.140 --> 00:31:43.680
+samples not very computationally
+efficient, again, if we were to
+
+00:31:43.680 --> 00:31:47.670
+use sort of direct backprop on
+the computed expressions, but we
+
+00:31:47.670 --> 00:31:50.280
+have a lot of probabilistic
+dependency or that we know in
+
+00:31:50.280 --> 00:31:53.340
+advance, we know that the sample
+points, for example, come from
+
+00:31:53.340 --> 00:31:57.900
+those M step updates, we know a
+lot about the structure of the
+
+00:31:57.900 --> 00:32:00.540
+objective function coming from
+the the kernel evaluations that
+
+00:32:00.540 --> 00:32:04.410
+I showed you before. And so, you
+know, again, high dimensions,
+
+00:32:04.620 --> 00:32:07.650
+having to deal with these second
+order statistics. And that's
+
+00:32:07.650 --> 00:32:09.750
+what I'm going to address next.
+So the basic approach that we're
+
+00:32:09.750 --> 00:32:13.740
+going to take is closely related
+to Agile methods. And we're
+
+00:32:13.740 --> 00:32:18.930
+going to use that in a judicious
+way, both for computing aspects
+
+00:32:18.930 --> 00:32:22.380
+of the second order statistics,
+as well as the dependence on the
+
+00:32:22.380 --> 00:32:25.050
+stochastic trajectories. And in
+this way, then we'll have a
+
+00:32:25.050 --> 00:32:28.890
+viable training protocol for
+learning over those M step
+
+00:32:28.890 --> 00:32:33.600
+methods with these MMD losses.
+So just to give a quick overview
+
+00:32:33.600 --> 00:32:37.380
+of those techniques, what we're
+doing is, we're ultimately
+
+00:32:37.410 --> 00:32:41.130
+trying to compute gradients of
+an expectation. And so the way
+
+00:32:41.130 --> 00:32:43.470
+that we'll look at this from a
+mathematical perspective is
+
+00:32:43.470 --> 00:32:45.900
+we'll build all of the
+dependencies into the parameters
+
+00:32:45.900 --> 00:32:48.660
+p that we're trying to learn
+into the random variable. So
+
+00:32:48.660 --> 00:32:52.320
+we'll assume there's some base
+measure, I call that omega, you
+
+00:32:52.320 --> 00:32:56.040
+can view then the expectation,
+on our case, it's the MMD, that
+
+00:32:56.040 --> 00:32:59.370
+we're taking expectations of the
+stochastic trajectories are
+
+00:32:59.370 --> 00:33:02.100
+being generated by an implicit
+generator that has some
+
+00:33:02.100 --> 00:33:05.430
+parameters p. So the random
+variable is what has the P
+
+00:33:05.430 --> 00:33:08.100
+dependence, not the base
+measure. And in that case, then
+
+00:33:08.310 --> 00:33:12.990
+we can compute taking gradients
+in the expected quantity with
+
+00:33:12.990 --> 00:33:16.740
+taking expectations of the
+gradient of the random variable,
+
+00:33:16.740 --> 00:33:19.200
+essentially. So that's just the
+key assumption that we're going
+
+00:33:19.200 --> 00:33:22.380
+to make an our notation,
+essentially, or formulation. And
+
+00:33:22.380 --> 00:33:25.800
+of course, what we're doing here
+is a discrete approximation of
+
+00:33:25.950 --> 00:33:30.600
+that expectation and follows, as
+shown here on the right to
+
+00:33:30.600 --> 00:33:33.210
+effectively being able to
+compute gradients of the sample
+
+00:33:33.210 --> 00:33:35.550
+terms. Okay. So now if you look
+at the gradients of the sample
+
+00:33:35.550 --> 00:33:39.090
+terms, the problematic part is
+having to create gradients in
+
+00:33:39.090 --> 00:33:42.690
+the stochastic trajectory
+components. And if you were to
+
+00:33:42.690 --> 00:33:45.000
+go through again, and kind of do
+this in a straightforward way,
+
+00:33:45.000 --> 00:33:47.160
+using the chain rule, this
+becomes rather expensive,
+
+00:33:47.160 --> 00:33:50.460
+because you would compute
+gradients and all the different
+
+00:33:50.460 --> 00:33:53.580
+stochastic trajectories, and
+then ultimately contract them
+
+00:33:53.700 --> 00:33:57.000
+with these partials x and v. And
+so it turns out, and this is an
+
+00:33:57.000 --> 00:34:01.140
+insight that's used in Agile
+approaches, control theory and
+
+00:34:01.140 --> 00:34:04.320
+other areas, it turns out that
+because you're doing this
+
+00:34:04.320 --> 00:34:08.520
+contraction, there's actually an
+alternative formulation of the
+
+00:34:08.520 --> 00:34:11.880
+contribution of this term. And
+I'll walk you through how that
+
+00:34:11.880 --> 00:34:15.360
+plays out in the context of, of
+our methods. So the challenge is
+
+00:34:15.360 --> 00:34:17.790
+to compute efficiently the
+contributions of those gradients
+
+00:34:17.790 --> 00:34:22.260
+in p of the sample set. So as
+you adjust the parameters of the
+
+00:34:22.260 --> 00:34:24.900
+stochastic model, right, that's
+going to affect all of the
+
+00:34:24.930 --> 00:34:27.060
+samples that are produced. And
+that's what we need to deal
+
+00:34:27.060 --> 00:34:28.560
+with. So the alternative
+approach that we're going to
+
+00:34:28.560 --> 00:34:31.500
+take is going to be based on an
+Agilent formulation. And really,
+
+00:34:31.500 --> 00:34:34.650
+what we're going to utilize is
+the fact that if you look at the
+
+00:34:34.650 --> 00:34:37.530
+solution to that M step method,
+you see that it solves this
+
+00:34:37.530 --> 00:34:41.370
+implicit equation here. And so
+we're F has these components.
+
+00:34:41.430 --> 00:34:45.120
+And if we do that this implicit
+formulation allows us to utilize
+
+00:34:45.120 --> 00:34:48.600
+the implicit function theorem,
+which basically says that if we
+
+00:34:48.600 --> 00:34:51.600
+take a derivative in the
+parameters, we can express it in
+
+00:34:51.600 --> 00:34:54.360
+this way using the total
+derivative, and we can actually
+
+00:34:54.360 --> 00:34:57.960
+solve for XP in terms of
+derivatives of f. So we've kind
+
+00:34:57.960 --> 00:35:01.830
+of shifted everything off to the
+Let's hit function f, instead of
+
+00:35:01.830 --> 00:35:05.670
+having to compute in terms of x
+p directly, and that has a bunch
+
+00:35:05.670 --> 00:35:08.880
+of nice properties, as you'll
+see, because now what I can do
+
+00:35:08.880 --> 00:35:12.600
+is I can contract this
+expression quite readily. And
+
+00:35:12.600 --> 00:35:15.090
+often I'll get a problem that's
+much easier to solve than if I
+
+00:35:15.090 --> 00:35:17.730
+had constructed all of those
+explicit gradients. Alright, so
+
+00:35:17.730 --> 00:35:20.880
+then x p can be expressed in
+terms of the G Cobian. In this
+
+00:35:20.880 --> 00:35:25.230
+way, in terms of derivatives of
+the implicit function, f.
+
+00:35:25.320 --> 00:35:28.170
+Alright, so I've just copied
+that over here on the left. And
+
+00:35:28.200 --> 00:35:31.080
+the Agilent approach is to
+compute them the full derivative
+
+00:35:31.320 --> 00:35:35.550
+by plugging in this expression
+for x p, and then just
+
+00:35:35.550 --> 00:35:38.790
+rearranging the order in which
+you're going to do the
+
+00:35:38.790 --> 00:35:42.150
+contractions. And if you do
+that, then you can show that
+
+00:35:42.300 --> 00:35:45.630
+this whole expression will boil
+down to essentially contracting
+
+00:35:45.630 --> 00:35:50.760
+a vector r with F p, where r
+satisfies this equation. So the
+
+00:35:50.760 --> 00:35:53.130
+real challenge, then I would
+say, is to come up with an
+
+00:35:53.130 --> 00:35:56.010
+efficient way to compute each of
+the steps in this gradient
+
+00:35:56.010 --> 00:36:00.060
+computation, which is to compute
+g x f x, that gets you the G
+
+00:36:00.060 --> 00:36:05.160
+Cobian. Have an efficient solver
+for our then compute GP FP. And
+
+00:36:05.160 --> 00:36:07.980
+then now you get your full
+gradient through combining those
+
+00:36:07.980 --> 00:36:11.730
+terms with that solution, or
+it's really the computation of
+
+00:36:11.760 --> 00:36:15.090
+our that's typically the part
+that that can get
+
+00:36:15.090 --> 00:36:17.610
+computationally expensive. I'll
+show you in the context of these
+
+00:36:17.610 --> 00:36:20.130
+M step methods, we actually can
+get very efficient algorithms,
+
+00:36:20.130 --> 00:36:23.850
+in fact, a solver which amounts
+to solving a system of
+
+00:36:23.850 --> 00:36:27.210
+recurrence equations to
+construct that vector. Alright,
+
+00:36:27.210 --> 00:36:31.680
+so that's the objective, and an
+old that will be used to compute
+
+00:36:31.740 --> 00:36:34.800
+the gradients of these empirical
+estimators of the expectation.
+
+00:36:34.890 --> 00:36:37.530
+Alright, so just to get through
+that the second order
+
+00:36:37.530 --> 00:36:39.900
+statistics, I don't want to say
+too much about that, you can
+
+00:36:40.050 --> 00:36:42.510
+basically use the chain rule.
+And again, if you judiciously
+
+00:36:42.510 --> 00:36:45.360
+look at what you get, it turns
+out that you can reduce things
+
+00:36:45.360 --> 00:36:49.920
+to essentially doing an adjoint
+method on this linear function.
+
+00:36:50.250 --> 00:36:52.800
+I won't say very much about it,
+but you can use the technique
+
+00:36:52.800 --> 00:36:55.170
+that I showed you on the
+previous slide, to construct
+
+00:36:55.170 --> 00:36:59.040
+them derivatives of the
+overarching loss. So the real
+
+00:36:59.040 --> 00:37:02.010
+challenge then comes up to
+having effective adjuvant
+
+00:37:02.010 --> 00:37:05.310
+methods for the stochastic
+trajectories. And so I'll focus
+
+00:37:05.310 --> 00:37:08.610
+on that just in the interest of
+time. And so up there on the
+
+00:37:08.610 --> 00:37:11.130
+upper left is the gradient
+method. This is the implicit
+
+00:37:11.130 --> 00:37:13.920
+formulation, including the
+initial conditions, I'll go
+
+00:37:13.920 --> 00:37:15.750
+through this rather quick
+because I do want to have
+
+00:37:15.780 --> 00:37:18.270
+sufficient time to talk about
+results, you can look at our
+
+00:37:18.270 --> 00:37:22.080
+paper for a lot of the details,
+but just some notation, f j, D
+
+00:37:22.080 --> 00:37:26.490
+will be the the implicit
+equation for the J step and DT
+
+00:37:26.490 --> 00:37:29.250
+component. And then when I take
+the derivative, I'll just put
+
+00:37:29.250 --> 00:37:32.280
+that second index there. So
+putting all these pieces
+
+00:37:32.280 --> 00:37:36.390
+together, what you basically
+have to compute is for these
+
+00:37:36.390 --> 00:37:39.870
+implicit equations, you have to
+compute the following two
+
+00:37:39.870 --> 00:37:43.380
+Cobian, that's done rather
+straightforwardly using these
+
+00:37:43.380 --> 00:37:48.390
+FJD f k, d prime terms. And you
+take the transpose, this gives
+
+00:37:48.390 --> 00:37:51.600
+you a set of linear systems, I'm
+going to break the our vector
+
+00:37:51.600 --> 00:37:55.200
+down into components
+corresponding to this steps at
+
+00:37:55.200 --> 00:37:57.330
+the end of the directory all the
+way back to the beginning. So
+
+00:37:57.330 --> 00:38:00.000
+what I'm really utilizing here
+is that probabilistic dependency
+
+00:38:00.000 --> 00:38:03.360
+that I have, in particular, the
+form of these updates, and so if
+
+00:38:03.360 --> 00:38:07.470
+I do that, I can first compute R
+n, then use that to compute r n
+
+00:38:07.470 --> 00:38:10.560
+minus one all the way down to R
+zero, put all those together
+
+00:38:10.560 --> 00:38:13.530
+composite that will get me R.
+And I can use that in my
+
+00:38:13.530 --> 00:38:16.530
+gradient calculation to get the
+updates. So that's the strategy
+
+00:38:16.530 --> 00:38:18.690
+here, I realize I'm going a
+little quick, but I just in the
+
+00:38:18.690 --> 00:38:22.260
+interest of time, want to go
+through this briefly. And I'll
+
+00:38:22.290 --> 00:38:26.280
+refer you to the paper for a
+more in depth discussion. So at
+
+00:38:26.280 --> 00:38:30.690
+the end step, you basically have
+this particular equation for the
+
+00:38:30.690 --> 00:38:33.660
+RN components, you can solve
+that outright in terms of
+
+00:38:33.660 --> 00:38:37.440
+derivatives of fee. Now you have
+that if you go to step n minus
+
+00:38:37.440 --> 00:38:41.340
+one and minus two, and so on
+back, you can again solve
+
+00:38:41.400 --> 00:38:44.820
+directly for our k d, you put
+everything here on the right
+
+00:38:44.820 --> 00:38:48.510
+hand side, notice those indexes
+are plus one, plus L, so you
+
+00:38:48.510 --> 00:38:51.000
+have those in hand from the
+previous step. And then of
+
+00:38:51.000 --> 00:38:53.820
+course, if you're more than m
+steps away from the end point,
+
+00:38:54.000 --> 00:38:57.300
+then you get this generic
+formula that, again, allows you
+
+00:38:57.300 --> 00:39:00.420
+to solve for RK in terms of the
+previous iterates that you
+
+00:39:00.420 --> 00:39:02.460
+already have in hand. So this
+gives you a very efficient
+
+00:39:02.460 --> 00:39:05.850
+solver now to get our and that's
+sort of the key component in our
+
+00:39:05.970 --> 00:39:09.780
+gradient calculations for doing
+Stochastic gradient descent of
+
+00:39:09.780 --> 00:39:12.630
+this this generative modeling
+approach. Alright, I'll refer
+
+00:39:12.630 --> 00:39:14.490
+you to the papers again, for
+details there.
+
+00:39:14.790 --> 00:39:16.800
+And I've already said a lot
+about the training protocols.
+
+00:39:16.800 --> 00:39:20.040
+And these can be obviously
+adapted and applied quite
+
+00:39:20.040 --> 00:39:22.800
+readily within each of these
+contexts. Alright, so let me in
+
+00:39:22.800 --> 00:39:24.840
+the remaining conference, talk a
+bit about some of our early
+
+00:39:24.840 --> 00:39:27.360
+results with these methods. As I
+mentioned, it's pretty recent
+
+00:39:27.450 --> 00:39:30.210
+and ongoing work. So the first
+problem I mentioned was learning
+
+00:39:30.240 --> 00:39:33.960
+parameters of mechanical
+systems. And in particular,
+
+00:39:34.320 --> 00:39:37.710
+we're going to look over the
+model class of longin dynamics,
+
+00:39:37.890 --> 00:39:41.730
+these will be inertial Orenstein
+lindback processes. So you think
+
+00:39:41.730 --> 00:39:44.760
+about that bead spring system.
+And the objective here is from
+
+00:39:44.760 --> 00:39:47.400
+observations of the
+trajectories, essentially to
+
+00:39:47.400 --> 00:39:51.240
+learn the stiffness, damping,
+and the fluctuation related
+
+00:39:51.240 --> 00:39:54.600
+terms and I'd like to do that
+simultaneously using this
+
+00:39:54.600 --> 00:39:57.180
+generative approach. The
+challenge of course, with that
+
+00:39:57.210 --> 00:40:01.050
+is dimensionality. These are
+basically what the A observables
+
+00:40:01.050 --> 00:40:03.270
+are I don't have a lot of time
+to go into detail here. But you
+
+00:40:03.270 --> 00:40:05.610
+can see that there are different
+timescales at which those
+
+00:40:05.670 --> 00:40:08.850
+different parameters are
+sensitive. And that does play a
+
+00:40:08.850 --> 00:40:12.270
+role in how you ultimately
+formulate those, those training
+
+00:40:12.300 --> 00:40:15.540
+protocols that I was referring
+to. And I'll refer to the paper
+
+00:40:15.540 --> 00:40:18.540
+again for some more in depth
+discussion of that and be happy
+
+00:40:18.540 --> 00:40:21.090
+to talk offline. So I just want
+to point that out qualitatively,
+
+00:40:21.090 --> 00:40:24.630
+you see that the way that will
+manifest is when we're observing
+
+00:40:24.660 --> 00:40:26.730
+and doing our training, if we
+use, for example, the
+
+00:40:26.730 --> 00:40:30.570
+conditionals. And the marginal
+distributions, we're essentially
+
+00:40:30.570 --> 00:40:33.360
+trading over observations that
+are analogous to what I'm
+
+00:40:33.360 --> 00:40:36.300
+showing here on the right. All
+of this is done for a three
+
+00:40:36.300 --> 00:40:39.900
+dimensional system, we're using
+Rational quadratic kernels, I
+
+00:40:39.900 --> 00:40:42.810
+should mention. And there's an
+important role at this timescale
+
+00:40:42.810 --> 00:40:46.590
+tau that we subsample on plays
+in the training protocols. So
+
+00:40:46.590 --> 00:40:48.900
+here's some quantitative
+results, I'll just start with
+
+00:40:48.900 --> 00:40:52.650
+the stiffness. You can see as we
+vary tau, we're able to get this
+
+00:40:52.680 --> 00:40:55.770
+quite accurately estimated. We
+estimate its stiffness,
+
+00:40:55.770 --> 00:40:58.380
+temperature damping
+simultaneously, something
+
+00:40:58.380 --> 00:41:00.780
+interesting happens in the
+training and that just like with
+
+00:41:00.810 --> 00:41:03.960
+maximum likelihood estimation,
+there's a tendency to get pulled
+
+00:41:03.960 --> 00:41:06.210
+towards a local minimizer, where
+if you make the temperature very
+
+00:41:06.210 --> 00:41:10.050
+large, of course, that will make
+the training data quite
+
+00:41:10.050 --> 00:41:13.380
+plausible on your model, but in
+a suboptimal sense, one of the
+
+00:41:13.380 --> 00:41:16.080
+nice things about the MMD that
+we noticed is that once the
+
+00:41:16.080 --> 00:41:18.630
+stiffness seems to get within
+the right ballpark, it gets
+
+00:41:18.630 --> 00:41:23.010
+pulled away from that kind of
+local minimizer towards then the
+
+00:41:23.010 --> 00:41:25.050
+correct temperature, as you're
+seeing here in this particular
+
+00:41:25.050 --> 00:41:28.830
+training run. And similarly with
+the with the damping, um, so you
+
+00:41:28.830 --> 00:41:31.110
+can see that there's also
+interesting sensitivity on the
+
+00:41:31.110 --> 00:41:33.270
+timescales here and just
+comparing the different
+
+00:41:33.300 --> 00:41:36.870
+protocols full conditional
+marginals for a relatively large
+
+00:41:36.870 --> 00:41:40.980
+sampling timescale versus a
+small sampling timescale, you
+
+00:41:40.980 --> 00:41:43.350
+can see that that plays
+significant role in the accuracy
+
+00:41:43.350 --> 00:41:45.120
+of the result, especially when
+we look at something like the
+
+00:41:45.120 --> 00:41:49.440
+conditionals, we get very good
+accuracy for large timescales,
+
+00:41:49.440 --> 00:41:51.810
+because there's sufficient
+sensitivity to stiffness,
+
+00:41:52.050 --> 00:41:55.320
+whereas if we go to a very small
+timescales, essentially, that
+
+00:41:55.320 --> 00:41:57.510
+learning signal that you would
+get for determining stiffness
+
+00:41:57.510 --> 00:42:00.210
+parameter is getting washed out
+by other things like the thermal
+
+00:42:00.210 --> 00:42:03.210
+fluctuations and the damping. So
+so these are important hyper
+
+00:42:03.210 --> 00:42:05.400
+parameters to keep in mind when
+when training on these
+
+00:42:05.400 --> 00:42:08.940
+stochastic systems, this dish
+shows we get a very accurate
+
+00:42:08.940 --> 00:42:11.940
+result for stiffness, we
+similarly did a study with
+
+00:42:11.940 --> 00:42:14.700
+temperature, this is all all the
+parameters are changed, train
+
+00:42:14.700 --> 00:42:17.160
+find simultaneously, we're
+finding temperatures are much
+
+00:42:17.160 --> 00:42:20.640
+more challenging for him to pin
+down in detail, partly because
+
+00:42:20.640 --> 00:42:24.150
+it can make up some of the
+discrepancy between the models
+
+00:42:24.240 --> 00:42:26.610
+by simply increasing the noise.
+So if we don't have perfect
+
+00:42:26.610 --> 00:42:29.430
+overlap between the training
+samples and the generated
+
+00:42:29.430 --> 00:42:32.550
+samples, it can kind of make
+those things line up and agree.
+
+00:42:32.700 --> 00:42:35.430
+So it might be picking up simply
+on the sampling error. And
+
+00:42:35.430 --> 00:42:38.280
+that's something we're currently
+investigating. For many training
+
+00:42:38.280 --> 00:42:40.860
+runs, we'll see the behavior
+that we're seeing in terms of
+
+00:42:40.860 --> 00:42:43.410
+epochs here, but for some of
+them, they fail for the reasons
+
+00:42:43.530 --> 00:42:47.250
+that I've limited. Similarly, we
+can estimate the damping
+
+00:42:47.250 --> 00:42:50.730
+parameter. And again, you see
+some sensitivity there on the
+
+00:42:50.730 --> 00:42:54.060
+timescales at which the dynamics
+are probed. And so we see that
+
+00:42:54.060 --> 00:42:56.430
+each case is different pros and
+cons to those different training
+
+00:42:56.430 --> 00:43:01.020
+protocols. But the SD, again,
+you can mix and match are choose
+
+00:43:01.020 --> 00:43:04.440
+between those approaches, as
+well as tuning that timescale
+
+00:43:04.440 --> 00:43:07.590
+tab. This is just showing real
+quickly some results for
+
+00:43:07.620 --> 00:43:11.250
+learning models where there's
+unknown force laws. And so in
+
+00:43:11.250 --> 00:43:14.850
+this case, we have observations
+of a particle system. And we're
+
+00:43:14.850 --> 00:43:18.420
+going to learn over the modeling
+class, again, inertial launch
+
+00:43:18.420 --> 00:43:21.150
+have on dynamics. And really the
+objective here is to learn
+
+00:43:21.330 --> 00:43:25.920
+neural network representation
+for the unknown force law. Here,
+
+00:43:25.950 --> 00:43:28.890
+I'll assume for now in this
+study that the damping and the
+
+00:43:28.890 --> 00:43:32.340
+thermal parameters are known.
+But you also could try to learn
+
+00:43:32.340 --> 00:43:34.440
+those simultaneously as well.
+But again, you have that
+
+00:43:34.440 --> 00:43:37.230
+challenge of these very sort of
+high dimensional probability
+
+00:43:37.230 --> 00:43:41.490
+spaces. But that graphical model
+structure will be utilized to
+
+00:43:41.580 --> 00:43:45.690
+exploit that those dependencies.
+So here on the left is showing
+
+00:43:45.840 --> 00:43:48.600
+the kinds of observations we
+have, obviously many more than
+
+00:43:48.780 --> 00:43:52.290
+just these three or four
+samples. But just to show you
+
+00:43:52.290 --> 00:43:55.290
+what the datasets look like that
+we're training from, essentially
+
+00:43:55.290 --> 00:43:59.220
+an ensemble of trajectories of
+that nature, you'd be learning
+
+00:43:59.250 --> 00:44:02.550
+from observing those dynamics
+and the right learning over
+
+00:44:02.550 --> 00:44:04.890
+chattery fragments. So do that
+with the conditional and the
+
+00:44:04.890 --> 00:44:07.590
+marginals. So this is just
+showing some results. This is
+
+00:44:07.590 --> 00:44:11.280
+the case of we're doing a radial
+symmetric, double, well,
+
+00:44:11.340 --> 00:44:14.970
+potential. This is showing the
+force law that we're targeting.
+
+00:44:15.210 --> 00:44:18.390
+We're using a neural network
+representation for this neural
+
+00:44:18.390 --> 00:44:21.210
+network. So we're training,
+again, using the back custom
+
+00:44:21.210 --> 00:44:24.150
+back propagation approach, as I
+showed before, and this is
+
+00:44:24.150 --> 00:44:26.970
+showing the model that we
+learned. And really, I think the
+
+00:44:26.970 --> 00:44:30.930
+advantage of these approaches is
+that we're not reliant on things
+
+00:44:30.930 --> 00:44:34.440
+like the system having Aquila
+grated, which would be required
+
+00:44:34.440 --> 00:44:37.830
+for for techniques that make use
+of sort of a priori knowledge of
+
+00:44:37.830 --> 00:44:40.410
+the marginals, we also can deal
+with systems that are
+
+00:44:40.410 --> 00:44:44.550
+potentially not in equilibrium,
+because the primary driver of
+
+00:44:44.550 --> 00:44:47.880
+the statistics that we're trying
+to align are the the intrinsic
+
+00:44:48.120 --> 00:44:50.760
+launch Yvonne dynamics and so on
+the right is just showing
+
+00:44:50.760 --> 00:44:53.340
+training the double well
+potential. And then the way
+
+00:44:53.340 --> 00:44:55.920
+we're going to characterize this
+is in terms of the L one error
+
+00:44:55.920 --> 00:44:57.750
+of the radial distribution
+function. This is not something
+
+00:44:57.750 --> 00:45:00.750
+that was used in the training,
+which is to have on reliable
+
+00:45:00.750 --> 00:45:03.420
+test errors, which would govern
+a lot of the statistics
+
+00:45:03.420 --> 00:45:05.970
+ultimately of that model that
+you've learned. And I'll just
+
+00:45:05.970 --> 00:45:08.910
+show some quick results for
+that. This is just showing on
+
+00:45:08.910 --> 00:45:12.060
+the left the the learned model.
+So you can see that we get
+
+00:45:12.060 --> 00:45:18.060
+viable long time simulators. And
+on the right is, is showing the
+
+00:45:18.060 --> 00:45:23.730
+other training dataset. And
+again, this is just showing some
+
+00:45:23.730 --> 00:45:27.570
+quantitative results. And again,
+we did some studies, as we vary
+
+00:45:27.570 --> 00:45:31.020
+the temporal sampling parameter.
+So I won't go into a lot of
+
+00:45:31.020 --> 00:45:33.480
+detail there, which is to show
+that yeah, we're able to learn
+
+00:45:33.480 --> 00:45:37.200
+nonlinear force laws. And we're
+kind of pushing this in a number
+
+00:45:37.200 --> 00:45:40.740
+of directions to improve both
+the dimensionality and the
+
+00:45:40.740 --> 00:45:43.020
+complexity of the problems that
+we can deal with. But I hope
+
+00:45:43.020 --> 00:45:46.050
+this gives kind of a proof of
+concept of some of the recent
+
+00:45:46.050 --> 00:45:48.840
+work that we've been doing. I'd
+be happy to talk more about that
+
+00:45:48.900 --> 00:45:52.080
+offline. I'll refer you to the
+papers. So thanks again for
+
+00:45:52.080 --> 00:45:54.480
+having me. Look forward to
+continuing discussions.
+

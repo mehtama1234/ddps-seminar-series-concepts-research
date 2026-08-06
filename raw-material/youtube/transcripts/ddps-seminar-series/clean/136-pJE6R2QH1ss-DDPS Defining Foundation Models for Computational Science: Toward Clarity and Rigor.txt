@@ -1,0 +1,1451 @@
+Welcome to the DDPS seminar everyone.
+Before we introduce our invited speaker,
+let's go over some rules as usual.
+First, please mute um during the talk.
+But if you have immediate questions,
+you're welcome to unmute and ask or you
+can use the chat room to post your
+questions. There will be also an Q&A
+session at the end. Second, today's
+seminar is open to external audience, so
+no classified discussion is allowed.
+Finally, the talk will be record and
+upload to our YouTube channel. Now let
+me introduce our speaker. It is an honor
+to host our own Dr. Yonu Choy, a staff
+scientist at Lawrence Smith labs center
+for applied scientific computing where
+he develops efficient foundation models
+for computational science. His research
+focused on creating surrogates and
+reduce order models to accelerate time
+critical simulations in areas such as
+immerse problems, design optimization
+and uncertainty qualification.
+He has pioneered advanced ROM techniques
+including machine learning based
+nonlinear manifolds, space-time ROMs,
+component wise ROM automization and
+latent space dynamics identification and
+currently lead the librom team in
+datadriven game modeling. His
+contributions extend to open source
+projects such as librom, pilrom,
+lagosm, lassi and many more. Yu earned
+his bachelor from Cornell and his PhD
+from Stanford and he was a postto at
+Sandia less and Stanford University
+before joining Lawrence lith mole lab in
+2017.
+Today he will talk about defining
+foundation models for computational
+science toward clarity and rigor. Please
+enjoy the wonderful talk. Now without
+further ado let let me hand it over to
+you. Well, thank you Uni
+>> for nice introduction and hosting me uh
+in DDPS seminar. I love DDPS seminar
+series.
+>> My pleasure.
+>> Thank you. Thank you. Well, um yes,
+thank you. Thank you for uh attending my
+talk everyone. Uh today I'm going to
+talk about uh defining foundation models
+for computational science and we are
+actually calling for more clarity and
+vigor. Um, of course, uh, this work, uh,
+was not possible without these awesome
+co-authors. So, I definitely need to
+recognize them. All right. Uh, I'm sure
+uh, everyone here heard about foundation
+models these days. It is definitely a
+buzz word. Uh, because of that, perhaps
+the the term foundation model is the
+most controversial phrase in
+computational science right now. So many
+papers and preprints are uploaded these
+days claiming that their models are
+foundational. Um
+are they really foundational? By the
+way, um here are some typical types
+which people claim that they their
+models are foundational models. Um they
+take scientific data of course and train
+their models. Um popular models are
+transformers uh graph neural network FNO
+for neural operator and debon nets and
+there are many others once they are
+trained um almost like the off the
+shelves they can predict new solutions
+which is great and they can predict them
+pretty fast which is also great.
+However, once some problem setups
+change, for example, changing geometric
+domain or boundary condition, initial
+condition, these models typically need
+to be uh retrained. Uh some people argue
+that they can do uh some fine-tuning
+through the transfer learning, but even
+the transfer learning can take hours and
+hours if not days. Um it is the case
+especially when a single training point
+size is huge. Uh for example imagine
+that you are using 5D toulence
+simulation um uh data on tokome device.
+Uh one single data point for this
+particular problem is at least gigabytes
+if not terabytes. it is pretty much
+impossible to finish you know transfer
+learning really really fast or real time
+due to this humongous data size. Um so
+generalizations to different task is
+pretty much impossible. So these models
+lacks generalizability and you know uh
+it feels almost awkward to call them
+foundation models. Well, then why do
+people so badly want to label their work
+a foundation model? And do we even have
+a shared definition of what a foundation
+model is in computational science? These
+questions are what I want to talk about
+today. At the end of the day and
+throughout the talk, I hope to spark a
+some fruitful discussions and questions
+>> [snorts]
+>> um that we can talk about. All right. Uh
+let's deal with uh the first questions.
+Why do we so badly want to label our
+model as foundational? I guess it's
+obvious. It is because the impact of
+current foundation models is huge such
+as GPT5 uh in CHP right now and birth
+and clip for language and vision models.
+Um you know it is basically changing the
+way we live right now. Um Stanford
+scholars wrote a uh preprint the title
+uh of own the opportunities and risks of
+foundation models. There they define the
+foundation models as any model that is
+trained on broad data generally using
+selfs supervision at scale that can be
+adapted for example fine-tuning to a
+wide range of downstream tasks. For
+example, um the broad data include text,
+images, speech, uh structures, data, 3D
+signals and many others. You collect
+these big data to pre-train a model.
+Then the pre-trained model is adapted to
+wide range of tasks such as question
+answering, sentiment analysis,
+information extraction, etc., etc.
+Well, people are impressed by these
+models because they show immersion
+behavior that is they can do the tasks
+that were not explicitly trained to do.
+Well, um Tom Brown currently in
+anthropic and his co-authors describe
+this emerging behavior in their paper uh
+language models of view shot learners as
+following. I'm I'm paraphrasing.
+uh the unprecedented scale of GPT3 using
+175 billion parameters has shown that
+large language models can generalize to
+a wide variety of task without task
+specific training. They adapt at
+inference time through natural language
+prompts or a handful of demonstration
+through few shot learning achieving
+reasonable performance on many tasks
+they were never explicitly trained to
+do. I guess this emerging behavior can
+be described as generalization to
+diverse unseen downstream uh tasks.
+Because of this fascinating emerging
+behavior or foundation models in AI
+field, it makes sense that people want
+to label their models as foundation
+model. However, unfortunately, we do not
+have a single shared definition of
+foundation models in computational
+science. But one thing is clear um when
+we define foundation models for
+computational science we must explicitly
+include this generalization capability
+otherwise it should not be called
+foundational.
+Let's look at the computational science
+science our own uh community. Uh we do
+have the concept of foundational methods
+in computational science right I mean
+for example finite element methods um
+finite volume methods which is popular
+for fully simulations finite difference
+method or spectral method and many
+others. Uh these methods are called
+foundational because they have several
+features to be called foundational I
+guess. Uh for example universality or
+problem independent structure in
+foundation mode methods um use general
+strategy that apply across many areas.
+For example in finite owner method we
+always build the weak form and
+discretize the domain. this fundamental
+framework stays the same. uh while a
+user only needs to change the inputs
+like the material properties or boundary
+conditions
+and thanks to the great mathematicians
+uh such as Hilbert Current and John
+Vanimman uh these methods are supported
+by a mature mathematical theory concepts
+like convergence stability and error
+analysis are well defined and studied
+right and third software reusability
+once implemented methods like uh finite
+element method or finite volume method
+can be reused across many different
+problems by simply changing inputs such
+as geometry or mesh. The solver code
+doesn't need to rewriting. This is this
+is great for general purpose framework
+like and also extended to the high
+performance computing and uh tackle
+truly large scale problems. This is this
+is very awesome.
+Okay. So when you define foundation
+models in AI sense and in computational
+science sense, ideally we would like to
+reflect those characteristics from both
+fields and you know embedded that in our
+definitions. That is exactly what we did
+in our recent preprints. And here is our
+version of definition. Um let's see you
+are going to agree with it or not. Here
+we go. A foundation model in
+computational science is a datadriven
+model trained on a broad distribution of
+scientific application types or physical
+systems which exhibits wide
+generalization capability across
+scientific problems, computational
+domains, tasks and physical conditions
+without requiring retraining from
+scratch or structural modification and
+serve as a reusable basis. As you can
+see, we have uh listed five key features
+in the definition. The first one is
+datadriven. Of course, it's got to be
+data driven otherwise it's not
+foundation model in AI sense, right? And
+those data has to be broad enough. I
+mean you could use uh you you should be
+able to use the data uh from the
+solution of the Navia stocks uh
+simulations, Maxwell equations, wave
+transport, poison burgers and elast
+elasticities and and and and so on and
+on and on and [clears throat] once you
+train uh your model um you know using
+those broad data sets generalization
+capability should show up. Um I mean
+this generalization capability is a
+feature of both AI and computational
+science, right? I mean your model should
+be able to tackle um you know problems
+with diverse boundary conditions and for
+different parameters and not only for
+the uh the prediction of the for
+uh calculations but also inverse
+calculation right not just for the uh
+single physics but also for multifysics
+and for different equations right I mean
+you use uh different uh diverse data so
+it should be able to tackle different
+types of the equations and also as you
+change the geometry of the domain uh it
+should be also still be able to solve
+the uh the underlying problem and not
+only the fold simulations that uh
+deterministic problem uh but also
+quantify some uncertainty and of course
+you should be able to scale up uh to
+truly large scale problem uh even though
+your model might have been trained with
+a small scale problems. Um
+and um all of this capability should be
+done uh with minimal uh fine-tuning like
+almost like the no training from the
+scratch. That was the feature of the
+current foundation models like uh chipt
+has for example and reusability should
+be uh once it is trained the pre-trained
+model should be reusable for many
+different tasks and that's a feature of
+both AI and computational science. Okay.
+In addition to these five features in
+the definition, we listed four
+additional desirable characteristics
+mainly because we would like to add
+features from our traditional
+computational science. Um first one
+would be scientific consistency. Uh the
+model should respect physical laws and
+principles like conservation, symmetry
+or invariance. I mean this in this
+consistency builds interpretability and
+credibility and um and many many good
+things. I mean without you know this
+physical law satisfaction and yeah it's
+we shouldn't call uh the foundation
+model um you know we shouldn't call our
+model foundation models our opinion.
+Okay. Then next the mathematical rigor
+why where possible the model should be
+supported by rigorous ma mathematical
+analysis like stability convergence or
+wellposeness and analysis just like the
+foundational methods um in you know the
+finite element method or finite volume
+method right and the third robust
+extrapolation um well reemphasizing the
+broad generalizability in another words
+I mean it should make reliable
+predictions beyond its training region
+um across new domains, boundary
+conditions or longtime uh dynamics. Um
+fourth uh is really um not coming from
+the computational side but coming from
+AI side data scalability because it
+deals with the data. Ideally um as you
+know increase the quality uh data and
+use that in your training of your model
+hopefully the performance of the model
+should improve. Um
+okay so we have just presented our own
+definition and desirable
+characteristics. Now you may ask and
+often we get this questions from people
+uh after those people read our uh
+preprint. The the most frequent question
+is is this foundation model even
+realizable? Can you actually build a
+model that satisfies all these criteria?
+Right? I mean the definitions and traits
+sound awesome following traits from
+foundation models both in AI and
+computational science. I mean it it
+sounds like it's it's got to be that
+right and but if you are actually
+familiar with how computational science
+works in general at first glance it
+seems daunting and almost impossible to
+build a model that satisfies all these
+criteria. Why? It is simply because
+computational science is not like
+building a language model or visual
+models. They are two different things.
+Okay, let's see what are uh the
+difference and you know you know that
+causes some challenges to us to build a
+truly foundation models in computational
+science. Okay, first one is massive data
+point size. Unlike tokens or image
+patches in natural language processing
+or vision, a single scientific data
+point can be millions or even trillions
+of values uh just like the uh the 5D
+uh turbulent simulations um in tokcom
+device which I have shared right with
+you guys. And this overwhelms memory,
+limits batch size and and slows training
+and risks overfeitting right and the
+second challenge would be the expensive
+fine-tuning. I mean because of the data
+is so humongous and um you know because
+you have to deal with a different PD
+types or different geometry or different
+mesh resolution your downstream task um
+it will be very inefficient and third
+challenge data and heterogeneity
+um scientific problems vary across
+quantities dimensions depending on
+dynamics and the governing physics some
+data are scalers some are vectors even
+answers. Well, designing one
+architecture to cover all these diverse
+um type of data pretty pretty difficult
+and crucial the lack of standard uh
+standard standardized data sets unlike
+NLP and vision you know they have a
+standardized data sets and community can
+share them through the you know common
+those data sets and they can compete and
+improve their uh model but in compet
+computational science we don't have a
+large public data sets across uh physics
+domains well there are some attempts to
+you know address that issues uh the
+example is the well the github
+repository which is available publicly
+right now and they collected many many
+different scientific data at one places
+and I see that uh the computational um
+science community already using those
+data and try to improve their uh models
+and compare that with other people's
+models and you know do the fair
+comparison. So that kind of efforts we
+need to keep uh pushing uh to improve.
+Okay. Mesh and geometry dependency. Um
+as you all know like simulation data
+depends heavily on mesh and geometry and
+the physics informed constraints as we
+have um you know um uh alluded uh the
+scientific system must obey the
+conservation laws but a lot of blackbox
+approach um it does not um it their uh
+[snorts] simulation just uh in eyeball
+norm looks good but that's not enough
+for the scientific applications. Some
+some are related issue would be the
+trust and interpretability.
+High stakes science demands
+interpretable and verifiable models. Of
+course um you know again pure blackbox
+approaches are uh simply no good for
+that. And uh the multiscale and the
+longtime behavior many systems can spend
+multiple scales in space and time.
+Capturing longterm dynamics in one model
+is extremely challenge. uh with all
+these challenges it um it is very much
+just justifiable uh for people to feel
+that this definition we have introduced
+and bring up to you guys uh is almost
+impossible right so uh we had to provide
+at least one framework uh which can
+potentially realize a foundation model
+that satisfy all these characteristics
+that is why we have introduced
+datadriven finite element methods DD FM
+framework in our reprint
+as the name indicates DDM datadriven
+final method. It was inspired by
+traditional finite element method FEM
+which is one of the foundational uh
+method in computational science as I
+already said. So let's go over how the
+traditional FEM works. Um what do you
+do? You pick an elements. Um let's say
+you have picked a tetrahedral element
+that will serve as a local
+representations whatever the global
+domain uh solutions you you are going to
+uh solve for. The second you assign a
+usually typically polomial basis to
+represent the solutions within that
+local representations.
+Um and then you collect all those many
+many elements and glue them together
+assemble a global uh discretized
+computational domain and you'll solve
+underlying partial differential
+equations representing your uh the
+physics problem you wanted to solve. And
+once you solved it, it'll give you uh
+the values of the unknown coefficient in
+front of the polomial basis. And with
+that values you can reconstruct uh the
+solutions any time and any space and
+very powerful very powerful tool indeed
+it's a foundational methods in
+computational science everyone agrees
+with that uh because it has a
+universality characteristics. It can
+solve virtually any complex physical
+problems with high precision and it's
+definitely uh supported by mathematical
+rigor and once the fan code is
+implemented and it is widely widely
+reusable to many different tasks right I
+mean we do that like as Lawrence limo
+national lab also relying heavily on
+this fam to solve very important physics
+and engineering problems like how the
+that fusions and poke collapse and 3D
+shape charts and uh many others are uh
+we are relying on uh this FVM um to
+tackle and you know improve and come up
+with a scientific discovery. Uh however
+there is a problem uh as you can already
+see from this slide individual
+simulation is taking really really long
+like some of them takes weeks and days
+and um you know many hours even using
+the hyperformance computing um you know
+we have at Lawrence Leong National Lab
+and if you think about the reasons why
+it's so uh it's clear that uh the uh you
+know uh the the polomial basis we are
+using is generic representation. It does
+not know anything about the problem or
+what you are going to solve etc etc. So
+in order to improve the accuracy you
+have to use a finer mesh or if you want
+to uh keep the uh element size
+relatively large then you need to use
+the higher order polomial and inevitably
+unfortunately uh that leads to a large
+scale system of equations you have to
+solve every iterations every time steps
+and etc etc. So and you have to come up
+with the preconditioners and so on and
+so on. So it takes long time. So in
+order to address that and also in an
+effort to build a foundation model which
+satisfies all those definitions I have
+laid out uh in previous uh slides we
+came up with the datadriven final method
+and basically it's following the
+traditional final method procedure
+except the uh the polomial basis. We use
+datadriven basis. So since it is
+datadriven it's you know knows uh about
+the problem you're going to solve
+through data. So it's not generic form
+uh as polomial basis and um hopefully it
+knows about the problem. The quality of
+the datadriven basis is going to be
+better than polomial basis. And once you
+have replaced the polomial basis with
+the datadriven basis the rest of the
+procedure is the same as the pretty much
+same as uh the traditional final method.
+you know collect them together form a
+global domains uh extrapolation in space
+right and and then you solve the uh
+governing equations so it is indeed
+using both data and physics um it's a
+fused fusion method u of using both uh
+data and physics okay a lot of benefit
+comes out of it um simply um because of
+the fact that we are building a data
+view basis in a local region local
+element uh as a representations.
+The immediate things you can see is that
+uh you do not have to generate the data
+in the global domain on the complex
+geometry. You only need to generate the
+data on this unit cell or component or
+subdomain or small element uh size uh
+which it will be very efficient and you
+can actually generate big data because
+you you know those you know just
+generating those data in the small
+domain is you know people can easily do
+that. Uh so obviously uh this tackles
+the one of the challenges we have
+mentioned like you know each uh single
+data point size being large for
+computational science right uh by
+breaking this global domain into small
+pieces like the element um you know the
+data generations you have to do does not
+have to be uh big uh it can be small
+just like the large language models and
+the visual models, they deal with the
+patches and uh very small stuff and DDFM
+allows you to deal with a small stuff
+and therefore the training a datadriven
+basis coming up with a um datadriven
+basis is is very naturally efficient.
+Okay. Okay. As I said the quality of the
+datadriven basis um uh is probably
+better than the polomial basis. So uh it
+can um use a larger scale elements and
+then um um that uh leads us to solve a
+much larger scale problems right and uh
+because you can use a larger element
+size you can take a larger uh the time
+steps and that leads you to uh solve a
+longer time uh simulations that's good.
+Okay, let's go more in depth in uh DDM
+training assembly and prediction
+procedure. In training, as I said, you
+can finally generate big data because
+the data generation is done in a small
+local domain. You can include diverse
+geometries, mesh types, boundary
+conditions, parameters, etc., etc. And
+also you can u solve many different
+PTEs. This PD type one could be n
+stocks. PD2 could be maxwell equation.
+PDN would be uh you know transport
+equation and so on and on and so on then
+uh use this data to build a datadriven
+basis and several ways of building this
+datadriven basis are possible so that's
+why we are calling this DDFM as a
+framework not a specific method um and
+I'm I'm going to um you know elaborate
+on what kind of the ways of the building
+the datadriven basis are possible in
+next slide but once Once you build those
+datadriven basis, uh we do global
+assembly, right? Just to follow the
+traditional final method uh procedure,
+you form a global domain for uh any
+arbitrary geometric shape by collecting
+and gluing many uh the datadriven
+elements together. You could potentially
+deform the original element shape uh to
+fit into a global domain by mapping from
+reference to computational domain just
+like the traditional binary method does.
+And um there are different uh types of
+assembly uh uh approach is possible just
+like the fine animal method uh as well
+the conforming or the non-conforming
+assemblies are possible. So the examples
+of the non-con non-conforming would be
+you know following the discontinuous
+gakin approach and once the global
+domain is formed you can also um you can
+solve the underlying governing equations
+numerically right using these datadriven
+elements instead of polomial basis.
+Again because you are solving a physics
+problem the solution you get will be
+consistent with any underlying physics
+laws you have used to solve you know
+come up with a governing equations right
+so it's a scientifically consistent
+okay let's go into some more details as
+I promised um what are uh several ways
+to build a those datadriven basis the
+first one would be compression based
+approach where you use some compression
+techniques tech such as singular value
+de composition or tensor de composition
+uh that are linear compression based or
+thanks to the neural net and you can use
+autoenccoder which is probably the most
+popular uh way of compressing these days
+in nonlinear fashions and you could use
+those techniques to come up with a
+compact social representations for each
+element right and then uh the sparse and
+symbolic uh regression based Uh this is
+very interesting one as well and we are
+actually exploring this route right now.
+Uh where you use um data to come up with
+a some sort of functional
+representations or even you know some
+sort of governing equation like that uh
+partial differential equations or
+ordinary differential equations in that
+elements and then use that as a kind of
+governing equations and you assemble
+them together. So that's perfect uh for
+when you do not have the governing
+equations available. You only have the
+data for the small scale. Then you can
+still use those small scale data as a
+patch and come up with a some identified
+human identify or the algorithm that
+identify the governing equations and you
+can use that governing equations to
+assemble them. Pretty cool idea. Okay.
+The third one is implicit neural
+representation or neural operator type
+where you build input output mapping in
+a mesh free fashions. These are um by no
+means very popular these days. ANO and
+deepones and many other neuro operators
+are uh um are are those types of method
+and uh um you could come up with a
+hybrid mixed u basis as well. Well, I
+mean you could um combine you know any
+of these two uh or you could even
+combine with a traditional polomial
+basis with this data view basis and com
+you know merge the the benefits of two
+and then even strengthen the the
+representations and that concept is very
+similar to the generalized final method
+or enriched fin method right where the
+generic polomial basis is augmented to
+additional basis to improve the
+accuracy. Okay. um
+this DDM
+um which which I have just described
+does have surprising similarity in
+procedure to natural language models. So
+you probably uh got hinted uh already
+from you know some of the um you know
+the the remarks I have made uh in
+previous slides. And if you think about
+it what does large language models do?
+They take many hex data from internet or
+books or various sources and breaks down
+into small pieces and they call it a
+token. If you think about it this is a
+updown procedure. And then what does uh
+LLM do? It assembles those small pieces
+together to form a sentence and
+paragraph or even a whole chapter of a
+book. Um they do that using attention
+and reasoning mechanism. This is a
+bottom up uh procedure, right? But if
+you think about it the DDM or even
+traditional final methods once you have
+a geometric domain on which you would
+like to solve a physics problem you
+break it down into small pieces and each
+piece uh being called either subdomain
+or elements we have been um and this is
+topdown procedure right and then the
+DDPM builds a data view basis for each
+element and local representation
+assemble them to form a global domain
+again and predict the uh physics
+solutions and as you can see this is
+bottom up procedure. So do you see the
+similarity between large language models
+and DDM framework? Um and so maybe I can
+end the talk today and here just
+claiming that oh DDM is foundation
+models uh um maybe not um maybe I need
+to uh demonstrate more.
+We do have some preliminary results uh
+of the DDM. It is preliminary. So we do
+not claim that we have completed the
+development of the DDFM framework and
+now you know we are claiming oh this is
+true foundation models. No no no we are
+not doing that but um uh we are not yet
+there. Uh but we are going toward there
+um okay so this evidence of the
+preliminary results hopefully will show
+you why we are claiming that. Okay, the
+first uh example uh is going to be
+lattice type structure problem. Uh this
+will demonstrate the extrapolation in
+space and also extensions to not only
+the fold simulation but also the inverse
+problem once you know the datadriven
+element uh is trained. Okay. So lettuce
+type structure
+um you know I'm talking about like some
+structure which can be formed by
+repeatedly using this you know this uh
+components like let's say str elements
+and joint elements. So because those two
+components are repeated uh in the
+lettuce structure we can use those two
+elements as a datadriven element right
+and you form and generate a lot of data
+on those components and we use the
+compression technique to come up with a
+datadriven basis and once that
+datadriven basis is constructed and you
+assemble them together to form this type
+of lettuce structure I mean there are
+many other lettuce structure
+um which you can form with these two
+components. Uh right but just to for the
+demonstration this is one let structure
+you can form. Of course you would like
+to apply some pressure force or the
+boundary conditions um to do some
+displacement analysis or stress
+analysis. And if you actually solve this
+same system using monolithic traditional
+finite anom method you need to solve for
+2.7 million degrees of freedom. However,
+because uh the compact solution
+representation through the datadriven
+basis for each element uh is a compact
+representations uh if you solve this
+problem with the DDM, you only need to
+solve for 3,872
+uh degrees of freedom. And once you
+solve it, um it means the DDM is going
+to give you like thousands of speedups
+and less than 1% relative error. That's
+that's um you know uh that's awesome.
+But because it's very fast, we were able
+to not only solve a forward displacement
+analysis or stress analysis, we were
+actually was about to solve a was was
+able to solve a inverse problem as well.
+uh like design optimization problem like
+you know asking you know questions of
+okay minimize the uh the weight of this
+overall let structure but still you know
+to hold this pressure force and the
+boundary condition can you do that and
+the design optimization inverse problem
+lets you do that this video shows you
+the progress of those uh the shape of
+that let structure removing those parts
+which is not necessary with a blue color
+and um you know still gets a you know
+gets you that optimal solutions with
+thousands of speed up um uh accuracy. So
+this um example demonstrate extraolation
+in space like the generalizations
+capability and also extensions to not
+only the the fold simulations but also
+the uh you know the inverse inverse
+problems. How about you know
+generalization to a much bigger domains
+or much you know different geometric. Um
+you know as you can see uh you could
+come up with a different type of lettuce
+structure by introducing m much many
+more components and you can just reuse
+the pre-trained datadriven basis. You
+don't have to retrain them just you know
+just off the shelves just grab it and
+then use that for different geometry
+problem and you can actually solve it uh
+um still get the thousand speed up and
+relative error less than 1% um you know
+performance and you can also solve a you
+know uh the inverse problem design
+design optimization problem and come up
+with a optimal design etc etc. Okay. Um
+you might ask okay this problem is
+simple is a linear you know time
+independent problem. How about the
+nonlinear problem? Yes we have
+demonstrated the DD fan framework in uh
+nonlinear problems. Uh here is porous
+media nebia stocks uh uh problems and um
+because there are different obstacle
+shapes in the por media simulations we
+come up with a five different elements
+datadriven elements with a different
+obstacle shape and you build a
+datadriven basis for each one of them.
+Um as you can see you know we do not
+have to solve this gigantic global
+domain systems to come up with a data.
+We can just use the small domain and
+then generate a lot of data on that each
+element and um again use the compression
+techniques to come up with a datadriven
+basis. You assemble them together and
+then um you know you form a global
+domain and you solve a you know apply
+the boundary conditions and you solve
+this problem. We were able to get 25
+times speed up compared to the
+traditional finite element method and
+less than 1% relative error. Okay. How
+about time dependent problem right? Um
+yes we were able to do so. Um this time
+2D spatially distributed disturbance
+burgers flow here we don't have any we
+are not dealing with a porse media uh
+simulation. So um only one single
+elements uh was um enable us to come up
+with a you know you know this this
+datadriven basis for for this particular
+problems. Of course we uh train the data
+as basis using the small domain and then
+once that is trained we can uh collect
+many many of those and uh build a um you
+know this much bigger uh problems and
+again we got like thousands of speed up
+and less than 1% relative error. Um how
+about like generalization to different
+source functions? I mean so in order to
+demonstrate that we use the uh typical
+senosidal source functions to generate
+the datadriven basis uh the trained
+datadriven basis and then of course if
+you use the similar type of source
+functions it it does work. Uh but um
+even for the um different source
+functions appending the exponential
+functions on there and then make it the
+the global domains uh the solution
+manifold to be somewhat more spiral and
+still was able to uh get uh the you know
+accurate solutions. I think the relative
+error was 0.7% or something like that.
+Um so it works for different source
+function and uh ultimate demonstrations
+um for different partial differential
+equations and um you know here just to
+demonstrate that we collect uh the datas
+from two different types of the PTE like
+the quazone which is uh parabolic and
+the burgers uh which is hyperbolic and
+combine them and uh build a single
+datadriven basis and then use that to
+solve either both pos equations or
+burgers equations um we were able to do
+so with very high accuracy and also um
+you know extrapolation in spa space uh
+which we have been um you know
+demonstrated so far is also possible
+just using one single datadriven basis.
+So hopefully this demonstrations um you
+know
+uh you know make you you know agree with
+that DDM can be a foundation model in
+computational science. I mean at least
+it tours in in the right directions uh
+because it allows a local training small
+and and the uh global assembly and we
+demonstrated the cross domain
+generalizations right uh the parabolic
+and the hyperbolic um one single data
+driven basis were able to tackle that
+and once that data basis is uh trained
+you you can reuse that to solve many
+different task uh and problems guys and
+was was able to demonstrate the
+space-time extrapolations and also
+because you know the it it solves a um
+the physics problem at the end you know
+the solution is scientifically
+consistent and you could see that from
+the accuracy like less than 1% relative
+error. um it's you know kind of showing
+that it's a scientific consistency
+consistency excuse me and just like the
+finite uh traditional finite element
+method um you know it's it can be easily
+supported by the mathematical vigor
+right uh those convergence analysis uh
+welloseness analysis and stability
+analysis since the DDFM is following the
+very similar framework as the
+traditional final method we could borrow
+those uh the theory and then use that uh
+for our benefits. Of course there are
+difference. So we should be able to do
+um come up with a new and modified
+analysis but we don't the point is um we
+don't have to start from the scratch.
+Okay look for DDFM to be a foundation
+model. Uh a lot of work needs to be
+done. So uh we are calling out for the
+collaborations. Uh we have a small
+group. So uh we cannot do all these
+developments um by ourselves. Um so more
+collaboration is going uh is is welcome.
+uh some some of the things there are
+many works we need to do is some of the
+works is you know enabling the
+scalability of course if you even though
+the each data uh datadriven element is
+bigger than traditional finite element
+um as you uh introduce many many
+elements like that to solve a truly
+large scale problems the system of
+equations at the end of the day in DDFM
+you have to solve is large scale too so
+most likely you need to come up with a
+preconditioner but the structure of the
+system is different enough from
+traditional final method. um you know
+the the structure is a block very block
+dense uh structure you are going to see
+in in the system new type of
+preconditioner is needed and as I
+mentioned um you know some mathematical
+uh theory needs to be u you know needs
+to be explored and also like adaptive
+refinement uh adaptive mesh refinement
+strategy that sort of uh strategy can be
+also applied to to the DDFM as well by
+come up with some error indicator uh to
+find out where in in the domain is going
+bad and we can actually uh do different
+types of refinement and you know h
+refinement or p refinement here in the
+DDM sense would be you know increase the
+dimension of the datadriven basis right
+and also we have to explore the uh
+different types of assembly and we are
+looking at different types of the
+non-conforming uh assembly right now. um
+and um software re usability I mean all
+those implementation has to be user
+friendly um it's got to be accessible to
+the domain scientists um and they should
+be able to offtheshelf just change the
+input files and should be able to tackle
+many different types of the problems
+right okay um so with that I guess I can
+finish my talk here is the preprints um
+um you know a lot more details are
+written in this preprints and So I
+welcome everyone here to go into that uh
+you know to find out those details and
+as a team uh the libron team uh we try
+to make our the resources available to
+uh everyone. Uh so we do have some
+YouTube tutorials talking about you know
+datadriven video models and surrogate
+models and some uh t you know typical uh
+techniques widely used in in our
+community so that you can get familiar
+with it. It's the individual YouTube
+tutorial is not that long like 5 minutes
+10 minutes. So uh so you don't have to
+spend a lot of times watching it. Uh but
+I think it's very useful and uh we have
+a libram.net that web page which
+collects all those uh informations about
+the resources including the GitHub
+repository of many many source codes we
+have developed so far and uh the Libram
+some of the codes we have developed C++
+so always compiling C++ code is a the
+hassles uh but if you have happens to
+have a AWS cloud computing access then
+there is a Libra version which is
+already compiled for you so you don't
+have to worry about the compiling and
+generate many many results uh which is
+um you know demonstrated in this libr.
+web page. Okay, with that um let me
+acknowledge some funding um and um you
+know
+yeah wrap up the talk. Thank you for
+listening.
+>> Okay. Um thanks for the wonderful talk
+and the summary of the team's reio. Uh
+since I'm part of this work, I will be
+stepping back from asking questions to
+ensure we can focus on the insights from
+the audience. So if you have any
+questions, um I see a few already I
+guess um comments and thoughts. Please
+feel free to unmute yourself. Um
+>> you may want to call out the name. Yeah,
+probably let's start with a question in
+the chat chat room. Uh, a building
+asked, do you see a single foundational
+model being able to generalize across
+different physical problems such as gas
+against liquid flows?
+Uh well that yeah that's good questions
+and um I mean DD fan I mean which we are
+advertising right now. Um
+uh we are trying to uh build a single
+foundation model which can be
+generalized to uh across many different
+physics problem in PTE sense like the
+partial differential equation sense. I
+mean even there you know so many
+different physics problem is represented
+by different partial differential
+equations right uh as long as you know a
+single foundation model can handle those
+different types of PTE I mean I truly
+believe that you know um that is true
+foundation models so and that's what DDM
+is aiming uh aiming to accomplish I mean
+there are many other foundation models
+um in different domains right for
+example material science um uh where
+they look at the molecular dynamics and
+uh try to come up with a you know
+appropriate potentials calculation of of
+the potentials with single model they
+use GNN and they use transformers etc
+and I do believe that they can be called
+uh as a foundation model within that
+domain uh that limited domain uh so as
+long as you you you um uh clearly state
+that okay what do what do you mean by
+foundation model um you know in which
+domain which specific uh areas I think
+yes I mean you can you can you can come
+up with a single uh foundation models
+which which can which can u deal with a
+many different problems yeah
+>> okay uh I saw a few more questions in
+sharing but let's give a chance to for
+the audience who raised hands Uh I'm
+going to call names that appear in
+order. So with Jeremy,
+>> hi uh Yang Su this is a nice talk. Um I
+guess
+>> um you know the you know that uh you
+know historically this is is you know
+related to the structural you know to
+what we used to call substructuring.
+>> Yeah. Yeah. Yeah. But um I guess the one
+thing that is kind of which is the
+problem there and the problem not
+necessarily the problem but the
+challenge here
+>> comes down to the fact that if you make
+a macro element
+>> right
+>> um
+>> uh it's it's going to be valid basically
+for a certain set of
+um
+inputs. uh you you know the you had an
+example where you were training it based
+upon homogeneous flow you know at the
+inlets and outlets right
+>> yeah right um and of course you know you
+can train it for some
+some subset of more general outflow
+conditions right inflow conditions
+>> but eventually if you make it if if you
+want to make that um macroelement, you
+know, as general as the finite element
+method that was underneath it, you'd
+have to have,
+>> you know, a vast array of those.
+>> Yeah.
+>> Right. Right. So the challenge which has
+always been the kind of the challenge
+for these um for these substructuring
+methods uh really does come down to you
+know the first question is error
+estimation. Yeah.
+>> Right. And then the second question is
+okay after you've done you say oh you we
+got some error now how do we go back and
+>> you might say add basis functions
+retrain etc.
+>> But you know those are the challenges. I
+mean it's again it's it's you know it's
+interesting and and nice stuff. I just
+you know if you make that if you make
+that macro element as general as the
+finite element method that you came back
+from you end up with something that's
+basically the same order of complexity.
+So that's where the you know the
+challenge is is to you know figure out
+how to start basically with a simplest
+lowest order thing you might say and
+then have some adaptivity to try to pull
+in what's what's necessary
+you might say. Yeah, I mean yeah those
+challenges you have just listed
+I totally agree with you that's a
+challenge and but at the same time I
+think that's an opportunity
+>> and uh thanks to this you know great
+improvements and you know a lot of
+things going on in AI uh world you know
+thanks to the neural net representations
+and those um you know the expressibility
+ility of each uh substructure um
+solution representation can be greatly
+improved um by you know borrowing those
+uh architectures.
+Um and as you mentioned that you know
+that error analysis uh which can we once
+it is established then as you said we
+can go back and then use that uh
+analysis to guide us you know how to
+improve the um you know data sampling
+for examples and improve the you know
+the expressibility of the neuron net um
+I probably wouldn't have came Oh, we
+couldn't probably come up with this you
+know so-called the DDFM framework and
+claiming that oh these could be
+foundation models if there were no like
+resources available like the neuronet
+and transformers and uh etc which is has
+been developed in AI AI side. uh thanks
+to those uh the developments now we can
+borrow those things and then try to
+address the challenges you have uh
+mentioned. So I I think there's there's
+a great possibility and we have a great
+hope um to believe that those challenge
+can be eventually addressed in in very
+you know [clears throat]
+constructive and structured manner. Um,
+we'll see. We'll see.
+>> Right. Thank you so much. I got to run
+to another meeting. So, thank you so
+much.
+>> Thank you.
+>> Um,
+she uh do you want to ask a question if
+you want to please unmute yourself?
+>> Yeah, sure. Uh, thank you for the great
+presentation. I really enjoy it and
+I really enjoyed uh your presentation.
+uh and yeah uh as a domain scientist
+myself I I think the most part that I
+really like is that you know there's no
+need to retrain this model when I want
+to use it because you know in many case
+you know there are many great machine
+learning models that I want to use
+>> but uh then I have to start with the
+training uh which you know often they
+could act as like deal breaker to me
+>> exactly
+>> at least to me
+>> so uh one question I have is
+[clears throat]
+not a computer scientist. Is this might
+be a live question but uh I was
+wondering uh if it is possible to let
+this DDFM
+uh to use or to focus on subset of PDEs.
+>> [snorts]
+>> uh
+>> as you indicated earlier you know
+different problems have focus on
+different pds
+>> and I was thinking of some cases like
+you know turbulence and climate as I'm
+in the climate field uh both turbulence
+scale and climate scale are both are
+using nav toxication but
+>> uh while turbulence is focusing on more
+on like energy propagation from large
+scale to small scale
+>> but climate is less focusing on this
+small case but more focusing on energy
+conservation overall. So in that case
+different subset of PDS are going to be
+used or prior prioritized.
+>> So I was wondering if uh that kind in
+that kind of case this
+user can like give a comment like oh
+focus on this PD instead of
+ignore or give less priority to this
+opt.
+>> Yeah. Yeah. Yeah. Yeah. Exactly.
+Exactly. Um I mean as you can see from
+our demonstrations like this individual
+elements uh they differ by just by
+looking at it the shape is different
+right? I mean some of them does not have
+holes some of them has circular hole
+star shape. And I mean if you go to the
+lettuce type structure um examples I
+show the actual shape of each element is
+it can be um what is it this polygon uh
+name how many edges are there I'm really
+bad at um the geometry I got to go back
+to the middle school and then
+anyway um so it can the shape and the
+the the nature of that datadriven
+element could differ by by many
+different factors like and one of the
+factors could be PTE and I do think that
+we can we we the nice thing about the
+DDFM is you can come up with a tailored
+datadriven basis which can be more
+specialized to specific PT as you just
+mentioned. I mean if you just
+[clears throat]
+stay in one um the fluid reason I mean
+even the CFD computational science I
+mean the computational fluid dynamics
+you have a subsonic flow transic flow
+supersonic flow and all those different
+types of flow you actually come up with
+a different treatment of the finite
+element method if you are using the
+final method right I mean if you're
+using finite volume method you you you
+basically come up with a tailored the
+treatment of those different um the
+flows although the underlying the
+framework is the same. So at DDM you
+could view it as um the you know similar
+[clears throat and snorts] um you know
+the framework is the same and everything
+is um sim the similar but you could come
+up with a tailored data basis for the
+subsonic transic and supersonic or the
+climate science and the uh or the um you
+know turbine uh the simulations etc. Yes
+I mean I totally agree with you.
+>> Thank you sir. Thank you.
+[clears throat]
+>> Okay. Um,
+so, uh, I know we have overrun a little,
+but there are few more interesting
+questions in the chat room. So, I'll
+read out one by one.
+>> Yeah.
+>> Nicholas asked, "Hi, a very interesting
+and clear talk." Thank you. How much of
+what you present is tied to the F method
+as compared to say final volume method
+or others?
+>> Oh, yeah. Thank you for asking that.
+actually
+uh it's not like strongly tied. Uh the
+reason we are calling that datadriven
+final method is the the the framework is
+kind of following this procedure is kind
+kind of following the finite element
+method. However, uh for example, this
+um you know demonstration we have shown
+you this individual data uh has been
+generated by using finite difference
+method and then all those assembly and
+um you know system of you know resultant
+system of equations we we had to solve
+in DDM also follow the finite uh
+difference uh discretization. So
+>> yeah, it's it doesn't um thank you for
+the questions. It the DDFM does not
+strictly tie to the FEM. It's just a
+naming. Um you could bring the f uh
+finite volume method or you could even
+bring the spectral method or element
+wise or the finite difference method and
+many other discretization method and
+apply that in in the framework of the EG
+plan.
+>> I hope that answers Nicholas's question.
+Um the next question is from Adam. Do
+you think the frontier large language
+models like CHBT are the appropriate
+space to build computational science
+foundation models?
+Well, I mean they are as I um explained
+the although DDM and the large language
+models are similar um you know the top
+down and bottom up analogy I made um but
+you know in the challenge part it is
+very different enough right um so
+I mean we could borrow the concept of
+the large language models and then bring
+into uh to build a our own foundation
+models in computational science But I
+don't think is you know you know
+directly just off the shelf you know
+grab the large language models and then
+use that in um um as a basis for the
+computational science. So you you do
+have to uh modify and um cause the
+computational science is different from
+large language models for many different
+reasons uh which I have listed in in
+here. So yes I I I think we we can
+borrow the concept but the um yeah I
+don't think we can use that as a
+offtheshelf as a base.
+>> Okay. Um the next question is from Alex.
+For the topology optimization problem
+was the optimization method gradient
+based? Have you attempt to extend the
+topology optimization to nonlinear or
+temporal problems?
+>> Oh yeah. Well I mean we want to go
+there. Yes, definitely. Uh we did use
+the gradient based optimi optimization
+solver. Uh so um you know individual uh
+the elements datadriven basis we had to
+come up with a gradient of those um with
+respect to appropriate u variables and
+uh you know glue glue them together um
+and following the adjoin uh the
+formulations to come up with a gradient
+for whatever the objective functions and
+constraints we have imposed. So uh yes
+and and um we would like to extend it to
+the nonlinear uh temporal problems in
+topology optimization that would be that
+would be fantastic but I mean we do have
+a limited number of people I mean Alex
+if you're um in that field let's do that
+together.
+>> Yeah. Okay. Uh
+Johans asked, "Hi, it's a great talk.
+I'm curious if DDFM can be extended to
+integral PDEs which are inherently
+global problems." Uh yeah I means yeah
+if that integral is has to be the global
+um and and there's no really a way of
+breaking down breaking down into the
+subdomains
+uh because of the nature of the
+formulations
+uh probably it's hard to do so but you
+know I mean that's um integral PTE I do
+believe that you know each self-domains
+you can bring those techniques in uh
+handle the integral PDEs and if we can
+come up with a way of assembling them
+together uh not breaking those in
+inherently uh global nature uh because
+at the end of the day what DDPM does is
+actually solving the global problem
+anyway I mean the the the things the DD
+uh datadriven basis needs to represent
+is just a local representations but it
+it works together with other datadriven
+elements um in that global domain. So um
+probably there's a way of extending the
+DDM to the integral PDS. I I do believe
+that but I we have to look into the
+details. Always the devil is in details.
+So
+okay uh the one last question I see in
+the chat room is from Zenus. For ARM
+foundation models, one of their key
+capabilities enabling flexible
+generalization is their ability to
+utilize a provided problem context to
+condition their responses such as the
+context provided within user prompts.
+>> So the definition of computational
+science foundation models also
+incorporate a similar similar capability
+to flexibly leverage adapt to different
+program contests.
+>> Yeah. Yeah. Yeah. Um I mean that's what
+we try to contain in our own definition
+of foundation model in computational
+science and uh as a you know potential
+demonstration of that definitions uh
+through DDM
+uh you know I totally agree with you you
+know that uh the context um I mean we
+intentionally use existing governing
+equations as a context right I mean when
+they do the assembly um you know to come
+up with a global representations of the
+paragraph or the you know the chapters
+in the book you know as as a cohesive um
+um you know representations
+>> in DDM in computational science uh the
+one thing we can use is existing
+governing equations which actually
+describing your underlying physics and
+you can use that to you know come up
+with a global representation so so
+there's a great analogy between large
+language models and DDM there as well
+Okay. Um I guess we have quite many
+questions already. Let's thank you again
+for the great talk and the audience who
+raised excellent questions and foster
+feral discussions here. Uh we might not
+get to all of your questions and
+comments today particularly the deeper
+force this hot topic often inspires. So
+please feel free to email and the team
+offline with any specific questions or
+ideas. Okay. Uh let's call this meeting.
+Thank you.

@@ -1,0 +1,2680 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:02.639 --> 00:00:11.459
+And then introduce the Alright. Welcome everyone to the DDPS seminar. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk. On this you have questions. If you have questions, you're welcome to unmute and ask. As otherwise, please use chatroom to post your questions so that we can address them in the q&amp;a session at the end. Second, today's GDPs seminar is open to external audiences. So no classified discussion. And finally, the talk today will be recorded and uploaded in our YouTube channel about it. Now, let me introduce our speaker today it is an honor to host in Lyon, with a call a visiting assistant professor of Mathematics at the Department of Mathematics of Purdue University. She earned her PhD degree in mathematics from the Chinese University of Hong Kong in 2021. On the supervision of Professor Jun Zhao, abroad research area is in computational and applied mathematics. Her current research interests include ill posed inverse problems, machine learning, numerical methods for partial differential equations and scattering theory. Today in we'll talk about data assisted algorithms for inverse random source scattering problems. Please enjoy and except a wonderful talk. Now without further ado, let me pass the baton to Ian by asking one random question as usual, today's random question is, where is your favorite place in the world? Well, third place if you don't specify the location for this, of course, we'll be home with my loved ones. As long as it says my loved ones is a home that no matter where it is, on Valencia mentioning a lot location, the city, Maggie Hong Kong at this moment. Hong Kong is a nice city. I've been there once. All right, stage is yours. I'm not sure screen. Okay, first of all, Sam is standing next to us. So for your kind invitation and introduction. So, as just as I just mentioned, I'm a second year postdoc at Purdue University right now. And the one I'm very glad to be able to share with you our latest work on data assisted algorithms for inverse random sauce problems. This is a joint work with Professor Jung, Hwan and pitching linguist who is who I'm currently working with Al Purdue. Now, I will start with a brief overview of what I will be talking about in the next 45 minutes. We are interested in the inverse random source problem. So generally speaking, is A inverse problem. And for inverse problems, mathematically speaking, we try to determine the unknown coefficients in a partial differential equation, whereas the exterior measurements, this could be explained with this diagram here. Now, if you're interested in certain physical phenomenon, and it could be modeled by a partial differential equation, then the physical properties of that media will go into this partial differential equation as some coefficients in that equation. Now, if you have the equation have the coefficients that you need, you can numerically solve it with FANUC unmanned phantom volume difference, and after solving it, you have the numerical solution to that equation. Now, the thing I just described is what we call the racks problem, we simulate something solve for solution. The corresponding inverse problem will be you don't know about the physical products, you don't know the information about the medium, and but you have the exterior measurement of the quantity which is the solution of the direct problem. And with this exterior measurement, and our understanding of that partial differential equation, we trying to reconstruct that physical property of our interest. Now, this figure on the right hand side is one device for solving the inverse problems. That's the electrical impedance tomography COVID is a medical imaging type of problem. We attached current around the human body, we inject currents, we attach to this Black Scholes inject currents from this electrodes and then we will measure the voltage induced by the current. And, of course, this would be, we don't want to include that measurement in this case, right. So with the boundary measurement, we will be able to reconstruct the medium coefficient inside the human body, this is governed by some elliptic equation. That's one concrete example of inverse problem. Now, the difficulty of solving inverse problem, there are several, typical difficult that is, the first one will be, it's possible that given the measurements of the solution that we collect, you cannot unit determine the physical property. And another thing is that it's possible that this inversion this reconstruction is very unstable. If you have little noise, a little perturbation on the measurement measurement you collect, we will get very different or reconstructed coefficient, that's not something we want, because the noise in measurement are not avoidable. And also in your class large scale computations, you might need to compute some large scale problems, or you need to repeat it slowly. So being the direct problem to get a good reconstruction, and also, of course, and certainly, like you cannot say for sure that you have an accurate model, and you cannot make sure that you don't have uncertainty from the environment. These are the possible difficulties when solving an inverse problem. Now, when it comes to our problem, the inverse source problem, there exists some traditional methods to solve it, that is purely based on the physical path, the understanding of the differential equations. If we want to reconstruct this target source distribution, or the left hand side, the reconstruction we get with the traditional mess, would be like this is actually an acceptable reconstruction, because I need to emphasize that the measurement we have will be the just exterior, maybe on the surface of a certain domain. So it's not an easy problem. And this type of reconstruction is already quite well, you can tell tell that there are sort of circles, it's just that it's not overly accurate. Although traditional method works, there are several limitations, like it only works for certain cases. And I will explain when it works, and when it won't work in the following sections. But it has several limitations. And, of course, we want to have a more accurate reconstruction. That's when we consider can we use some data assisted approach to tackle this difficulties. And that's why we propose a two stage data assisted method for the first stage, we use some method inspired by the traditional ones, we use the physical information to from the boundary measurement, we get some approximation of the coefficient and in the second stage, now, from the approximation to the exact coefficient, it becomes an image to image types problem. Now, this is a widely started topic in computer vision. And that gave us the that means we have different algorithms that we can try, if that will improve the approximation. And we compare the performance of principal component analysis based regression or Islam, your net based regression picks two picks, and there's different types of neural networks. I will further explain this figures in the numerical experiments part, but is this just a compilation of the reconstruction using different types of data assisted algorithms as the second stage? Physical best numerical model is accurate and justified, because we know that model, but they may not be available as if we have some constraints that whether you can use the traditional method or not. And data can be appropriately incorporated to address this difficult that is, and how to combine traditional methods and a data driven method is an important research question. And machine learning techniques in computer vision are useful for imaging problems, especially for the image to image tasks. With this operations will propose our method which successfully combined the physical information and the data we have. So now, let's get started going to details about this board that I've mentioned. Now, the first question was out The scattering problems the inverse random source problem and the title is one of inverse scattering problem scattering problem concern the interaction between waves and medium wave propagation happens everywhere, we could be talking about acoustic waves, electromagnetic waves, elastic waves, etc. I'm talking now the source of some acoustic waves, and use the light everywhere light electromagnetic waves, and the settings may like this, you have a point source access here, it will induce some electrical like electric field with noted by E, when that electric field of field propagates, it could interact with something like this that will be offset ago, it may not penetrate this obstacle. So, we need to add some boundary condition around it. And the web will propagate and it will cross this interface as and it must have different medium coefficients above and below us. So, the wolfelt, of course, become different. And this process like, Oh, if we know about words, source know the obstacle, now the interface, then solving for the wavefield II, that's the direct problem. And the corresponding inverse problem will be maybe we don't know where is that source or maybe we don't know where is that of circle but we have the measurement of the Winfield e around this plane gamma one, then we'll try to reconstruct to recover was a source for where we are as an obstacle or the shape of this interface as that will be England's problem. Now, inverse scattering problem can be categorized, insert into three types. The first class will be inverse medium problems. It's widely used for geophysical evaluation, seismic imaging, actual sound tomography or biomedical images. If we are considering this type of applications, we have our GM here the SYNACK upon sauce that will be acoustic with and we can measure from the hydrophones here, measure the wavefield then we want to surf the waves propagate along all the three layers of mediums, and we want to recover the medium coefficients of this medium that will tell us the progress of this mediums. Another type inverse of circle problems is for ridden sonar, submarine detection, non destructive testing, remote sensing, etc. This stimulus setting as the previous one, we still have a ship here we want to, we still measure the wellfield above the sea and we want to recover the shape of the seafloor, that seafloor tomography. Now this time we're interested in that surface. And the last class will be inverse solve problem that is the type of problems we mainly focus on in this work. Inverse source problems are used for medical imaging, antenna design and synthesis. This two figures illustrate the Ameche tomography, which is another type of medical tomography problems, we have a device like this and we will collect the electromagnetic field around the head. And with when we recover the source that induce the electromagnetic field that we measured, we will know the top versus source how that is distributed, will give us the give the doctor the information to tag on last certainly there is. Now, still one ingredient in the title that I haven't mentioned, that's randomness, where needs to take randomness into consideration, in a sense that inverse problems can involve uncertainties due to the unpredictability of the environment, incomplete knowledge of the system, random noise of the measurements, or fine scale fluctuation in simulation. That, again, as I'm talking I'm the source of acoustic word, but they're also our conditioner or refrigerator near me, they're also making some they're also sauce and they're the noise. A component might um combinate the sauce that we want to reconstruct. So the unpredictability of the environment needs to be considered and it will goes into the differential equation, things will become a stochastic differential equation. And here's a list of several of incompressible based off researchers while working on the inverse problems involving randomness, and increasing interest in both theoretical and numerical status of the random inverse problems now, I really need to show some partial differential equations. Now, inverse random solves problems and our consideration is governed by this stochastic impulse equation. So, Sam Haas equation comes from the wave equation is a time harmonic form of the wave equation, and that is to model the acoustic wave or electromagnetic waves in certain constraints. Now, for this equation that you denotes, the wave field that we can measure will fill you and this callback denotes the wave number, it's a constant positive number related to the property of the wellfield. This EDA, it reflects the property of any homogeneous medium, it's a function can base different value at different location. And rather than set F is the source that induce such a field when there's ads this one line which are called Somerfield radiation condition, to ensure that this direct problem has a unique solution, that's it, we know kappa will knock it out, we're not f solving for that wolfelt u is a well posed problem when this Sommerfeld relation condition, it basically tells us that when the welfare propagates far away from the origin, it will decay in a certain rate. Now stochastic part comes from the source if the source arm if we model it as a random function driven by an additive wise noise. That is, as is equal to a deterministic function g plus deterministic function edge times the what's nice. Here G and H are two deterministic global functions and need to advertise that if the right hand side is only a deterministic function, then the problem is well started that direct problem is a common one. But if we add a whatnots to it, the all the previous theoretical results need to be checked again, because we don't even have a weak solution to this equation. And we all have the mouth solution, but the truth we can justify that it has a continuous modification. The related regularity results as shown in this to work. Now correspond the inverse problem. If we have measurements of this irradiated will filter you on the boundary of the ball with this are at fan that many with numbers, we want to recover the statistic properties of the source. That is we want to recover the average G and the variance at school. Now, the problem, although this looks like it's a simple equation, but different cases for the reconstruction related to this medium coefficient either, we're not going going to reconstruct this either, but it will cause a difference when we do the reconstruction. If this either equal to zero, that is homogeneous media and our consideration is the rather easy problem. And for the second case, this data is not equal to zero, but we know that distribution of data then this is a slot. This is a more difficult question to answer. Can we recount work F. And for the circus, we know that Ada is not equal to zero, but we don't know the distribution of ADA that is we have unknown inhomogeneous media, can we recover F for this circus is there there exists previous methods for some of them, Okay, this one we have homogeneous made. The way to tackle it is to formulate it as an integral equation and use Cosmos method to to reconstruct the source. But second case, it another equal to zero, but we know the distribution, we can solve an eigenvalue problem and then use Cosmos muscle to reconstruct it. For circuits. That's an open problem. Like we have either we don't we don't know either. We don't know source, and we don't know source is how to recover that source as a result, the information of the media and that's where our muscles would work. Now, because as I mentioned, the tradition In a mask, further case one will become the first stage of our product method we proposed. So, we are, for the next section, I will give you a detailed explanation about how the first how the traditional method works for the first case. Now, solution to that hamotzi equation with homogeneous Smith have this type of solution formula that you execute solutions will be represented with this integral of small g and capital G and this integral between the bass noise and fundamental solution G is a fundamental solution in two dimensional case it will be handled function. Next, we can take expectation and variance on both sides of this solution formula and fix the real politic as the first line takes the imaginary part forgets the second line, take variance from both sides and detox the imaginary part from the real part we get the third line. Now, for this three equations, the same I colored as blue will be the micro we can take measurements throughout this wave field and the same colored right. The other sense we want to reconstruct. So, all three equations can be represented as an operator equation that AJ represented rather than that this integral operators we have polar information about the kernel of them. The reason why I need to do this detection, this combination of the low part and the imaginary part of the virus is that this one has is this, this battery discretize this power to get a better post ha it has singular value decays more slowly than with a single imaginary or single real part. Now, not forget about the PDE. Now, we are just recovering this unknown G or H which is a cue here, from the measurement of the boundary data with finite many different boom numbers TJ, recover Q from P, that's a sampling our trapo loss right. Now, we're going to use the regularized block Kosmos method to solve it. And so the inner iteration will do this type of update. And this could be illustrated with this diagram here was initial gas Q zero, we projected onto the solution playing corresponding to the first operator quotient integral operator equation, and then we project it to the second solution hyperplane. And to the third, do this iteratively initially, eventually, it will converge to the solution we want. That's the regularized Cosmos message. Here we add this gamma as a regularization parameter. Because this AJ AJ star is still your post your conditioned matrix. Now, I've been talking about this tradition of muscle the limitations to it, as I mentioned. Recall, recall that this PJ what we call the measurement comes from the left hand side of this equation, we need to take expectation and variance of the measurements were collected. And this could be achieved by taking a lot of realizations and use the sample mean, right? That means there's no way that you can get a great approximation with without a large number of realizations, actually, more than one solid realizations are needed to reconstruct the average and even more to achieve satisfied reconstruction of the variance. And here is some figures to illustrate this facts. This is the root cause to target we want to reconstruct the source we want and this is the reconstruction with 10 globalization, this is with 100 this one with one solid realizations. And you can see that we have to use enough realization to gather satisfactory reconstruction. And secondly, the sequence qk we get from Cosmos maths, it will converge to a minimum norm solution, which is quite blurry. So one here, it's quite blurry. And moreover, forecasts are a when you don't know the distribution of the medium, then you can't do out the integral equation L here this AJ comes from this right hand side. This comes from the fundamental solution, but how to have information of the A partial differential equation to write down the mental solution. And when we have no information about the medium, this can't be derived. And we have some more theoretical results. Related to this limitations, if we use Cosmos muscles to find the limit of that q q k and the arrow for each iteration between the iteration and the minimum norm solution we want can be decomposed into the noise arrow and iteration arrow, the iteration arrow will decay when you have more and more iterations, but the nice arrow according to our analysis, here, it will have an upper bound and this upper bound is proportional to k, which means, if you have noise in your mesh measurements, this PJ it will actually increasing when you do more and more iterations. And this coincide with our numerical results. Like if you use Cosmos, where you do more and more iteration, the measurements will, the noise in the measurement will deteriorate your reconstruction. So, that's why it comes to a lot of iterations. So, our observation will be like this, this thing I just mentioned, those physical best numerical model is indeed accurate and justified, but they may not be available for certain cases, like if we don't have information about the medium, and also the data can be, but we know that data can be appropriately incorporated to address this difficulties. So now let's consider if machine learning techniques could help with this reconstruction. And the physical information that we have could help us to give us a trap prayer or in short, in short distribution of the data are used for the training the second stage. Now, we'll talk about using your natural techniques for direct and inverse problems. A simple approach a direct approach would be taking the measurement as input, take the unknown parameter as output, train the neural network in a regression manner, and know that this is not going to work very well. As I mentioned, the measurement will collect on the boundary of survey of the of the domain and the unknown distribution unknown parameter Why is in the whole domain is that you're using a one dimensional data to reconstruct a two dimensional reconstruction. If you treat it as a blackbox, there's not likely it's not likely that you can success in the recover in the reconstruction process. So, there have been other attempts for the inverse scattering problems. Your we just list for this is just an incomplete list, people try to combine the physical information and data in different ways. And I also need to mention that there are a number of muscles to use the neural network to solve the forward problem to solve the PDE there are also useful to us for inverse problem, because traditional way to solve inverse problem will be casted into a minimization problems and to solve the minimization problem, you need to repeatedly solve the direct problem and this no network related algorithm will accelerate this process. And also to learn that mapping is also kind of 1111 of the operator learning for us as software owner operator and some other acrosomal also works pretty good for this type of problems. And our muscles is different from the previous mentioned once in a sense that we use the physical information in the first stage and to and use the neural network the image to image type of algorithm for the second stage. Not in the first stage, we will use the thing we just mentioned, the cosmos algorithm for the integral equation, getting that TJ the measurements, we don't do a lot of iterations okay, because the more iteration you do the, the larger the noise level noise error will become. So just through several iterations to get an approximation to 00. Now we get the image. So for the second stage, we learn the mapping between the approximation image t zero to the exact G approximated x zero to the exact match with the different math algorithms for the image to image type of problems. And what has to This are four different types of algorithms for the second stage, the first one will be the principal component analysis based regression with some second one based compensation or Koopman operator tap, third one be the unit based regression gruesome and the first one will be it picks two picks your network for the first two of them, we basically just first carry out the dimension reduction and then we have the input and output space and then apply linear regression that different in the sense that the was different way to do the dimension reduction. And you can imagine that third and the fourth one related to neural network works much better than the previous two linear regression type. So, I will mainly focus on the third and the fourth one explain a little bit about how they actually works. Now, you net best regression to be explained with this diagram, unit based neural network the encoder decoder architecture like this now, from here to here from the measurement to the input image, that's where we use the kosmos muscles for the integral equation. Once you get after several iterations, you get a approximation image here from this image to this image, your will be contracting paths and expansion expensive paths. And for each block we have this convolution plus convolution layer batch normalization and riilu layer, the difference between this unit and the traditional convolutional neural network will be we have this state connection here. Therefore, we can preserve the features of the input image with this skip connections, the feature maps are passed to the corresponding layer in the expensive parts where the skip connections and this is widely used muzzle photo medical imaging to do the segmentation for the training process, we will minimize this error one arrow as the loss function not the false algorithm will be fixed takes algorithm is conditional generative adversarial neural network could be illustrated with this diagram for the gang type of neural network we need to train the generator and the discriminator which are two neural networks jointly the input of the generator will be the image and output of the generator will be also image input of the discriminator will be power of image and output output will be a scalar between zero and one. And that jointly trained in the competitive manner as the generator wants to generate the image resemble the target coefficient and the discriminator will attempt to differentiate between the real powers and the generated past by real powers will mean the past coming from the training data and generated pass means that this x and the output of the generator this house will be able to call sick powers. This objective can be achieved by dealing with this loss function. The this is a binary cross entropy type the generator will try will be trained to minimize this one and the discriminator trains to maximum this one is a conditional Gann we need to add another term this term is about the is the loss terms for the generator because we want the generator to sample the arm to mimic the exact coefficient. Now in the pics to pics algorithms, the generators architecture will be again the unit and the patch gang will be used as the discriminator. Now finally, let's present the miracle experiments. For the trainees that we have 2000 samples each with three cylinder inclusions, which are randomly sampled the position radius and magnitude are randomly sampled. The measurements we have will be the same static data of 100 realizations of average reconstruction. And when it one southern realizations for various reconstruction this is this is already one tense of the relation realization needed for satisfactory reconstruction both traditional method and the measurement will be measured as throught 32 uniform distributed points on the circle. Now the source will be the swath of source volume we're seeing This square and we have measurements along this circle at so two point and we have five, we have numbers. Now, some numerical results, this the the average reconstruction in the homogeneous medium from left to right, we have thus the exact source that we want to reconstruct the outrage of the source. Second column is the cosmos reconstruction, the thing we get from the first stage self column will be the PCA based regression results. Post column will be the Copeland BMD tab reconstruction. And this one from units, this column from the pics topics algorithm, we can observe that from here from the left to right, we get more and more complicated model, but we get better and better reconstruction. We'll have a table here. Like for the training time PC and Copeman we use we meet last time and for unit and picks two picks. When you choose 7075 minutes, somebody five seconds and more than 10 minutes for pics to pics does the relative error of the case in this manner, but we will say that pics to pics actually have a slightly larger relative error compared with units. But if you tell from the image, you'll see that is actually gave us all batters give us a sharper edge. Now, this is a variance reconstruction, the reconstruction of edge square is this, this is a rather powder problem. And we have to find those same observation from the left to right, we'll get better and better reconstruction and same observation here from the relative L one arrow. Now, these are experiments for case three. Recall that case three is when you don't know about the media, how to the reconstruction of the source and the not existing traditional muscle force. But this is our reconstruction. The first two rows are about our reconstruction. And these two rows about the various reconstruct this is average this for veterans from the left to right, we do get better and better at construction. If you compare this figure with the previous figure, it will say that's the cause master construction, the same we get from the first stage this are much worse than the previous ones, because we don't actually know the exact model because we don't know the model. But the first stage is based on the fundamental solution of the homogeneous. So there's but still even with a much worse initial condition, the with the help of this data assist algorithm we get ready good reconstructions. Now, this is a generalization test. Recall that for the training data set, we use the three inclusions type the cylinder inclusions, and if we test our result for the last year, we have five center inclusions, and from the this row, we have those simplified font on top, we have ellipse, insights, little ellipse shaped inclusions, still get pretty good reconstructions. Okay, and here I conclude with some ongoing and future work. As I mentioned, there are all different types of scattering problems. And the inverse source problem we just mentioned is actually linear taps. And here we consider the inverse of circle problems, that is this differential equation under consideration, we want to recover the shape of this B. And this is a clearly nonlinear problem. And this is the reconstruction we have we also use some some traditional muscle not integral correlation, but some direct probing tap with, with the measurements we collect, we could get this type of reconstruction from the traditional method, then we'll learn the mapping from this one to the exact coefficient and this is a reconstruction we can get with with the same amount of training data and we can see that the only difference between the extract of circle distribution and reconstruction we get and some other ongoing work will be the theoretical analysis for the stability estimate for this type of immerse random source problems which are off grid off grid theoretical interest And here are some references for the works that I've just mentioned. Okay, then that's all I need to talk about. Thanks for being here. Okay, thank you so much for the wonderful talking. Very nice result. Very impressive results. All right, so let's have a q&amp;a sessions. Anyone who has questions, you can unmute yourself and then ask questions. I guess while you're preparing your questions I can ask question here. So if you go back to slide 28, I believe. So there's a the comparison of the results will be, you know, among four different the data driven approach data assisted approach. Here, you said the time of the unit is 74, and picks two picks is seven 200 729. That's the training time. Yeah, that's for training. And when you do the training, I assume you use a lot of data. Yeah. In supervised manner. Yeah. And once you are done with the training, you know, actual, this predictions were evaluation of that. The source locations were the source times. It's it. It's very fast, right? Yeah. Testing takes no time. Like, for the first stage, yes, you still need to do the Cosma. But it takes not comparable to the training time. And when the second stage, you already gets the train network. So takes no time. Yeah, so I mean, looks like there is an offline and online. Yeah. Yeah. Where you can collect the data from that a physics based inverse problem? Yeah. And you match those with a known source arms. And that you train the unit and picks two picks. And once that is done, you can try that on to new source transferred. Because there is a two stages, the first stage, you still have to solve inverse problem, you know, in traditional way, right? Yeah, that takes time. Yeah, that takes takes a little time, because it's a solving. So basically, we just solve this equation, right? And we solve it with Cosmos, if we only do several iterations, then this thing takes takes no time, because this is not really that large. Is not that large. How does the size of a determines now. So for example, here, we have in our look at Psalm 64 times 64 pixels. So the inputs of this, this matrix will be this Q That's from the unknown G or H. So it will have 64 times 64 as the as the the, the one side of the matrix, and for another part lb, PJ, that's a boundary measurement. So that would be 64 times four, one. And that's what that's from the boundary measurement when use our 32 measures points. So that's actually just sort of certitude. Okay. And the A matrix here is dense matrix. So it will be with these types of pronouns. So yes, it's a data matrix. Yeah. So the if the pixel size is bigger, that dense matrix becomes bigger. Yeah, I guess. As long as we deal with a two dimensional image, I guess it we can handle that. The other difficulty also lies in the power involved. Like for each sample, we need 100 or 100 lactations for each realization Ewing to solve the forward problem once so for each sample, you need to solve it 1000 times. Yeah, yeah. Yeah, that's a problem. Yeah. Yeah. Well, that's the problem of any data driven approach. generating data is not an easy task. All right. Sounds good. Is there any questions from audiences? Audience? While it's not, I have one more question. So if you can clarify, you know, how you apply the Kumaun. Time, mon type, data assisted methods. So PCA, it's clear to me, you do some sort of SVD? Yeah, yeah. So, for PCA, yeah, we listed we just brought them as vectors and concatenates, the two beds for pizza, you just do it separately, do the SVD decomposition for the input image, list it once. They said, so for matrix and we severally, do SVD for the output image once. And we need use that use sigma waiting conversation with the new the redacted dimension redacted, new eight will be you transpose the data and b and sigma inverse from the other from the difference? of the foot? Yeah, that is, to me, but the common man type? Oh, yeah. You come up with some linear operator? Right? Yeah, that's once and that's why I have a little bit doubt about how to say it and the name of this algorithm we do. So we don't actually have the dynamic system. Yeah. But we're just, there's just one staff dynamic system from from from like, here to here. So we just see it as a one step dynamic system. Okay, and then you have a bunch of different the previous step, and then, you know, next step, and you just pair them. Yeah, come up with the approximate linear operator. That's, that's what you do with a man operator? Okay. Got it. Okay. Have you have you tried, you know, completely getting rid of the physics, the first stage, that will be that will be very hard, that will be very hard to try any luck to start with, if you don't use the first stage, what you have is the just, I don't have the figures showing the solution. But if you have this type of source, the solution will be the oscillating with distribution. And what you have is only the source, there will be a circle when measured around the circle, it will be just a curve, even if you have five curves, because we will have five real numbers is how to get from the curve to the whole interior distribution. Is that dimension salt match? I see. All right. Okay, we have a question from outro. Do you wanna unmute and ask? Yes. Actually, the first stage was you do three iteration iterative solution. How do you select stopping criterion? How to decide when to stop iterations? Yeah, that's a great question is how to decide because we have some sort of radical result here that it sucks because the noise comes from the measurements noise and also the error of the P comes from the mean value mean? sample mean is so it's unavoidable so it will increase the noise will increase. So it's hard to decide. So eventually, we decided just to do fabrication for five iterations and stop and that's why you don't have a very good reconstruction here but it's not guaranteed that you do more iteration you will get a better one it might get even worse reconstruction choice just beside to always that real steps. Once you get reasonable initial approximation, we stop Could you please show that slide to is Liam Say that again? Could you please show the slide when you which bounce your URL reconstruct? No, no, not previous previous videos somewhere in the beginning at The beginning your show to just recently, when I asked you about a slide, I picked him up middle as the sun goes up the error is increased. Yeah, that's in that here. Yeah. So, totally to this day you have two Sigma Gamma here, which is which? Yeah, this Sigma Gamma is related is the smallest nonzero singular value of this operator comes from the. So it's all these metrics that are related to something about the current chair and chair that delta gamma, this one is top with a nod to the Alto arrow. So this one is fixed, we know that it exists. know a little bit distant system system of equations. So the J is your data, right? P J, S comes from our measurement data. Yeah, so p j is just one data point. It's a scalar. Right? To check it Oh, it's from here. So vector after this growth has so back to black so the two by one vector. Okay, so Okay, so it's vector one position, okay. And Q is your image right? Here is us our q is our image that we want. So basically, a j is your operator, like three dimensional operator, which maps two dimensional image to one dimensional vector? Right. Correct. Thank you. Thank you very much. Very interesting. Thank you. I agree. It's a very interesting work. Any other question? Well, if not, let's thank our speaker in half for the wonderful talk. Yeah, thank you so much, saying thank you. And after this talk, hopefully, you know, you know, fruitful collaborations will set up and, yeah, let's hope for that. Okay. Thank you. And thank you, everyone.
+
+
+00:00:11.459 --> 00:00:15.209
+ 
+
+
+00:00:15.209 --> 00:00:18.239
+ 
+
+
+00:00:18.239 --> 00:00:22.049
+ 
+
+
+00:00:22.049 --> 00:00:25.889
+ 
+
+
+00:00:25.949 --> 00:00:29.459
+ 
+
+
+00:00:29.459 --> 00:00:33.689
+ 
+
+
+00:00:33.869 --> 00:00:38.069
+ 
+
+
+00:00:38.069 --> 00:00:42.659
+ 
+
+
+00:00:42.659 --> 00:00:47.879
+ 
+
+
+00:00:47.879 --> 00:00:51.629
+ 
+
+
+00:00:51.629 --> 00:00:55.709
+ 
+
+
+00:00:55.709 --> 00:01:00.149
+ 
+
+
+00:01:00.149 --> 00:01:04.379
+ 
+
+
+00:01:04.409 --> 00:01:11.009
+ 
+
+
+00:01:11.009 --> 00:01:16.379
+ 
+
+
+00:01:16.409 --> 00:01:19.949
+ 
+
+
+00:01:19.949 --> 00:01:23.939
+ 
+
+
+00:01:23.939 --> 00:01:27.359
+ 
+
+
+00:01:27.359 --> 00:01:34.349
+ 
+
+
+00:01:34.349 --> 00:01:38.519
+ 
+
+
+00:01:39.359 --> 00:01:43.139
+ 
+
+
+00:01:43.139 --> 00:01:46.289
+ 
+
+
+00:01:46.289 --> 00:01:48.959
+ 
+
+
+00:01:49.529 --> 00:01:51.749
+ 
+
+
+00:01:52.860 --> 00:01:59.340
+ 
+
+
+00:01:59.340 --> 00:02:03.330
+ 
+
+
+00:02:03.330 --> 00:02:07.200
+ 
+
+
+00:02:07.200 --> 00:02:11.280
+ 
+
+
+00:02:11.280 --> 00:02:11.780
+
+
+00:02:12.630 --> 00:02:16.410
+ 
+
+
+00:02:16.740 --> 00:02:17.880
+
+
+00:02:19.500 --> 00:02:29.340
+ 
+
+
+00:02:29.340 --> 00:02:34.410
+ 
+
+
+00:02:34.410 --> 00:02:37.800
+ 
+
+
+00:02:37.800 --> 00:02:42.330
+ 
+
+
+00:02:42.360 --> 00:02:46.860
+ 
+
+
+00:02:46.890 --> 00:02:50.970
+ 
+
+
+00:02:51.000 --> 00:02:54.990
+ 
+
+
+00:02:55.020 --> 00:03:00.690
+ 
+
+
+00:03:00.690 --> 00:03:05.760
+ 
+
+
+00:03:05.760 --> 00:03:10.950
+ 
+
+
+00:03:10.950 --> 00:03:15.960
+ 
+
+
+00:03:15.960 --> 00:03:20.040
+ 
+
+
+00:03:20.070 --> 00:03:23.640
+ 
+
+
+00:03:23.760 --> 00:03:26.970
+ 
+
+
+00:03:26.970 --> 00:03:31.290
+ 
+
+
+00:03:31.290 --> 00:03:36.750
+ 
+
+
+00:03:36.750 --> 00:03:41.040
+ 
+
+
+00:03:41.040 --> 00:03:45.000
+ 
+
+
+00:03:45.000 --> 00:03:48.480
+ 
+
+
+00:03:48.480 --> 00:03:51.420
+ 
+
+
+00:03:51.420 --> 00:03:54.330
+ 
+
+
+00:03:54.630 --> 00:03:58.200
+ 
+
+
+00:03:58.200 --> 00:04:02.580
+ 
+
+
+00:04:02.580 --> 00:04:07.170
+ 
+
+
+00:04:07.170 --> 00:04:11.790
+ 
+
+
+00:04:11.790 --> 00:04:14.670
+ 
+
+
+00:04:14.670 --> 00:04:18.450
+ 
+
+
+00:04:18.450 --> 00:04:23.310
+ 
+
+
+00:04:23.340 --> 00:04:27.540
+ 
+
+
+00:04:27.540 --> 00:04:31.620
+ 
+
+
+00:04:31.620 --> 00:04:37.470
+ 
+
+
+00:04:37.590 --> 00:04:41.850
+ 
+
+
+00:04:41.850 --> 00:04:45.330
+ 
+
+
+00:04:45.450 --> 00:04:49.710
+ 
+
+
+00:04:49.740 --> 00:04:54.090
+ 
+
+
+00:04:54.090 --> 00:04:57.720
+ 
+
+
+00:04:57.720 --> 00:05:03.240
+ 
+
+
+00:05:03.240 --> 00:05:06.360
+ 
+
+
+00:05:06.360 --> 00:05:09.600
+ 
+
+
+00:05:09.600 --> 00:05:14.040
+ 
+
+
+00:05:14.040 --> 00:05:18.960
+ 
+
+
+00:05:18.990 --> 00:05:23.700
+ 
+
+
+00:05:23.700 --> 00:05:28.350
+ 
+
+
+00:05:28.350 --> 00:05:31.740
+ 
+
+
+00:05:31.740 --> 00:05:36.000
+ 
+
+
+00:05:36.030 --> 00:05:40.560
+ 
+
+
+00:05:40.560 --> 00:05:44.490
+ 
+
+
+00:05:44.520 --> 00:05:48.570
+ 
+
+
+00:05:48.570 --> 00:05:51.720
+ 
+
+
+00:05:51.720 --> 00:05:54.690
+ 
+
+
+00:05:54.690 --> 00:05:58.830
+ 
+
+
+00:05:58.830 --> 00:06:03.330
+ 
+
+
+00:06:03.330 --> 00:06:07.020
+ 
+
+
+00:06:07.020 --> 00:06:11.520
+ 
+
+
+00:06:11.520 --> 00:06:15.720
+ 
+
+
+00:06:15.750 --> 00:06:21.780
+ 
+
+
+00:06:21.780 --> 00:06:24.000
+ 
+
+
+00:06:24.000 --> 00:06:27.360
+ 
+
+
+00:06:27.360 --> 00:06:33.030
+ 
+
+
+00:06:33.030 --> 00:06:37.200
+ 
+
+
+00:06:37.200 --> 00:06:41.490
+ 
+
+
+00:06:41.490 --> 00:06:45.420
+ 
+
+
+00:06:45.420 --> 00:06:50.040
+ 
+
+
+00:06:50.040 --> 00:06:53.940
+ 
+
+
+00:06:54.210 --> 00:06:59.940
+ 
+
+
+00:07:00.150 --> 00:07:04.350
+ 
+
+
+00:07:04.350 --> 00:07:12.060
+ 
+
+
+00:07:12.240 --> 00:07:15.930
+ 
+
+
+00:07:15.930 --> 00:07:19.500
+ 
+
+
+00:07:19.500 --> 00:07:24.900
+ 
+
+
+00:07:24.900 --> 00:07:28.770
+ 
+
+
+00:07:28.770 --> 00:07:33.450
+ 
+
+
+00:07:33.450 --> 00:07:37.350
+ 
+
+
+00:07:37.350 --> 00:07:41.880
+ 
+
+
+00:07:41.910 --> 00:07:46.380
+ 
+
+
+00:07:46.410 --> 00:07:52.530
+ 
+
+
+00:07:52.530 --> 00:07:57.150
+ 
+
+
+00:07:57.150 --> 00:08:00.750
+ 
+
+
+00:08:00.750 --> 00:08:06.660
+ 
+
+
+00:08:06.660 --> 00:08:10.380
+ 
+
+
+00:08:10.980 --> 00:08:14.880
+ 
+
+
+00:08:14.910 --> 00:08:19.950
+ 
+
+
+00:08:20.280 --> 00:08:25.980
+ 
+
+
+00:08:25.980 --> 00:08:30.960
+ 
+
+
+00:08:30.960 --> 00:08:35.190
+ 
+
+
+00:08:35.220 --> 00:08:39.150
+ 
+
+
+00:08:39.180 --> 00:08:42.840
+ 
+
+
+00:08:42.840 --> 00:08:46.440
+ 
+
+
+00:08:46.470 --> 00:08:50.490
+ 
+
+
+00:08:50.550 --> 00:08:54.750
+ 
+
+
+00:08:54.780 --> 00:08:59.790
+ 
+
+
+00:09:02.280 --> 00:09:07.380
+ 
+
+
+00:09:07.410 --> 00:09:12.930
+ 
+
+
+00:09:12.930 --> 00:09:15.570
+ 
+
+
+00:09:15.570 --> 00:09:21.030
+ 
+
+
+00:09:21.030 --> 00:09:25.350
+ 
+
+
+00:09:25.350 --> 00:09:29.280
+ 
+
+
+00:09:29.310 --> 00:09:33.120
+ 
+
+
+00:09:33.150 --> 00:09:36.870
+ 
+
+
+00:09:36.870 --> 00:09:41.370
+ 
+
+
+00:09:41.370 --> 00:09:44.880
+ 
+
+
+00:09:44.880 --> 00:09:47.280
+ 
+
+
+00:09:50.310 --> 00:09:51.060
+
+
+00:09:51.420 --> 00:09:56.460
+ 
+
+
+00:09:56.460 --> 00:10:00.780
+ 
+
+
+00:10:00.780 --> 00:10:06.750
+ 
+
+
+00:10:06.780 --> 00:10:10.890
+ 
+
+
+00:10:10.920 --> 00:10:15.570
+ 
+
+
+00:10:15.600 --> 00:10:19.620
+ 
+
+
+00:10:19.620 --> 00:10:24.390
+ 
+
+
+00:10:24.390 --> 00:10:27.990
+ 
+
+
+00:10:27.990 --> 00:10:31.920
+ 
+
+
+00:10:31.920 --> 00:10:36.480
+ 
+
+
+00:10:36.480 --> 00:10:40.800
+ 
+
+
+00:10:40.980 --> 00:10:45.090
+ 
+
+
+00:10:45.090 --> 00:10:48.660
+ 
+
+
+00:10:48.660 --> 00:10:52.590
+ 
+
+
+00:10:52.590 --> 00:10:57.240
+ 
+
+
+00:10:57.240 --> 00:11:02.730
+ 
+
+
+00:11:02.880 --> 00:11:08.730
+ 
+
+
+00:11:08.730 --> 00:11:14.550
+ 
+
+
+00:11:14.550 --> 00:11:18.600
+ 
+
+
+00:11:18.960 --> 00:11:23.820
+ 
+
+
+00:11:24.330 --> 00:11:27.810
+ 
+
+
+00:11:27.810 --> 00:11:31.350
+ 
+
+
+00:11:31.350 --> 00:11:36.480
+ 
+
+
+00:11:37.200 --> 00:11:41.190
+ 
+
+
+00:11:41.190 --> 00:11:45.300
+ 
+
+
+00:11:45.300 --> 00:11:52.680
+ 
+
+
+00:11:53.370 --> 00:11:57.690
+ 
+
+
+00:11:57.690 --> 00:12:02.250
+ 
+
+
+00:12:02.340 --> 00:12:06.330
+ 
+
+
+00:12:06.390 --> 00:12:10.740
+ 
+
+
+00:12:10.740 --> 00:12:15.300
+ 
+
+
+00:12:15.300 --> 00:12:19.740
+ 
+
+
+00:12:19.740 --> 00:12:24.840
+ 
+
+
+00:12:24.900 --> 00:12:28.680
+ 
+
+
+00:12:28.680 --> 00:12:33.300
+ 
+
+
+00:12:33.300 --> 00:12:38.310
+ 
+
+
+00:12:38.460 --> 00:12:43.980
+ 
+
+
+00:12:43.980 --> 00:12:47.460
+ 
+
+
+00:12:47.490 --> 00:12:51.570
+ 
+
+
+00:12:51.570 --> 00:12:54.900
+ 
+
+
+00:12:54.900 --> 00:13:00.660
+ 
+
+
+00:13:00.660 --> 00:13:04.410
+ 
+
+
+00:13:04.410 --> 00:13:11.070
+ 
+
+
+00:13:11.070 --> 00:13:16.500
+ 
+
+
+00:13:16.500 --> 00:13:21.060
+ 
+
+
+00:13:21.060 --> 00:13:25.950
+ 
+
+
+00:13:26.010 --> 00:13:29.220
+ 
+
+
+00:13:29.220 --> 00:13:33.930
+ 
+
+
+00:13:33.930 --> 00:13:39.840
+ 
+
+
+00:13:39.870 --> 00:13:45.660
+ 
+
+
+00:13:45.660 --> 00:13:49.380
+ 
+
+
+00:13:49.380 --> 00:13:53.160
+ 
+
+
+00:13:53.190 --> 00:13:56.970
+ 
+
+
+00:13:56.970 --> 00:14:04.020
+ 
+
+
+00:14:04.020 --> 00:14:07.860
+ 
+
+
+00:14:08.010 --> 00:14:12.510
+ 
+
+
+00:14:12.540 --> 00:14:16.200
+ 
+
+
+00:14:16.200 --> 00:14:20.220
+ 
+
+
+00:14:20.220 --> 00:14:23.700
+ 
+
+
+00:14:23.700 --> 00:14:29.100
+ 
+
+
+00:14:29.100 --> 00:14:33.030
+ 
+
+
+00:14:33.060 --> 00:14:36.330
+ 
+
+
+00:14:36.330 --> 00:14:42.540
+ 
+
+
+00:14:42.540 --> 00:14:46.140
+ 
+
+
+00:14:46.140 --> 00:14:50.550
+ 
+
+
+00:14:50.550 --> 00:14:53.730
+ 
+
+
+00:14:53.790 --> 00:14:58.890
+ 
+
+
+00:14:59.250 --> 00:15:02.700
+ 
+
+
+00:15:02.910 --> 00:15:07.980
+ 
+
+
+00:15:08.010 --> 00:15:12.990
+ 
+
+
+00:15:13.020 --> 00:15:19.560
+ 
+
+
+00:15:19.560 --> 00:15:23.130
+ 
+
+
+00:15:23.160 --> 00:15:27.960
+ 
+
+
+00:15:28.140 --> 00:15:33.210
+ 
+
+
+00:15:33.240 --> 00:15:38.940
+ 
+
+
+00:15:38.970 --> 00:15:43.680
+ 
+
+
+00:15:44.010 --> 00:15:50.640
+ 
+
+
+00:15:50.640 --> 00:15:54.840
+ 
+
+
+00:15:54.840 --> 00:15:59.250
+ 
+
+
+00:15:59.250 --> 00:16:05.070
+ 
+
+
+00:16:05.130 --> 00:16:10.200
+ 
+
+
+00:16:10.200 --> 00:16:14.160
+ 
+
+
+00:16:14.250 --> 00:16:20.670
+ 
+
+
+00:16:20.670 --> 00:16:25.260
+ 
+
+
+00:16:25.260 --> 00:16:29.460
+ 
+
+
+00:16:29.490 --> 00:16:34.110
+ 
+
+
+00:16:34.140 --> 00:16:38.550
+ 
+
+
+00:16:38.550 --> 00:16:42.960
+ 
+
+
+00:16:42.990 --> 00:16:47.940
+ 
+
+
+00:16:47.940 --> 00:16:55.530
+ 
+
+
+00:16:56.220 --> 00:17:01.260
+ 
+
+
+00:17:01.320 --> 00:17:06.000
+ 
+
+
+00:17:06.000 --> 00:17:11.130
+ 
+
+
+00:17:11.130 --> 00:17:15.540
+ 
+
+
+00:17:15.600 --> 00:17:21.630
+ 
+
+
+00:17:21.660 --> 00:17:26.070
+ 
+
+
+00:17:26.340 --> 00:17:31.260
+ 
+
+
+00:17:31.290 --> 00:17:35.010
+ 
+
+
+00:17:35.070 --> 00:17:39.030
+ 
+
+
+00:17:39.150 --> 00:17:42.660
+ 
+
+
+00:17:42.660 --> 00:17:47.460
+ 
+
+
+00:17:47.490 --> 00:17:53.580
+ 
+
+
+00:17:53.640 --> 00:17:57.690
+ 
+
+
+00:17:57.690 --> 00:18:02.070
+ 
+
+
+00:18:02.070 --> 00:18:07.140
+ 
+
+
+00:18:07.140 --> 00:18:10.830
+ 
+
+
+00:18:10.830 --> 00:18:16.500
+ 
+
+
+00:18:16.500 --> 00:18:21.990
+ 
+
+
+00:18:22.110 --> 00:18:26.190
+ 
+
+
+00:18:26.190 --> 00:18:30.840
+ 
+
+
+00:18:30.840 --> 00:18:35.430
+ 
+
+
+00:18:35.430 --> 00:18:38.910
+ 
+
+
+00:18:38.910 --> 00:18:43.320
+ 
+
+
+00:18:43.320 --> 00:18:48.090
+ 
+
+
+00:18:48.090 --> 00:18:51.090
+ 
+
+
+00:18:51.090 --> 00:18:54.420
+ 
+
+
+00:18:54.420 --> 00:18:59.220
+ 
+
+
+00:18:59.220 --> 00:19:02.460
+ 
+
+
+00:19:02.550 --> 00:19:05.790
+ 
+
+
+00:19:05.790 --> 00:19:06.630
+
+
+00:19:07.920 --> 00:19:12.450
+ 
+
+
+00:19:12.450 --> 00:19:17.190
+ 
+
+
+00:19:17.190 --> 00:19:21.420
+ 
+
+
+00:19:21.420 --> 00:19:27.210
+ 
+
+
+00:19:27.210 --> 00:19:30.090
+ 
+
+
+00:19:30.090 --> 00:19:33.810
+ 
+
+
+00:19:33.810 --> 00:19:39.150
+ 
+
+
+00:19:39.150 --> 00:19:42.060
+ 
+
+
+00:19:42.060 --> 00:19:46.440
+ 
+
+
+00:19:46.440 --> 00:19:51.330
+ 
+
+
+00:19:51.330 --> 00:20:00.120
+ 
+
+
+00:20:00.120 --> 00:20:05.700
+ 
+
+
+00:20:05.730 --> 00:20:11.310
+ 
+
+
+00:20:11.310 --> 00:20:15.930
+ 
+
+
+00:20:15.930 --> 00:20:20.880
+ 
+
+
+00:20:22.230 --> 00:20:27.300
+ 
+
+
+00:20:28.260 --> 00:20:31.710
+ 
+
+
+00:20:31.740 --> 00:20:37.230
+ 
+
+
+00:20:37.230 --> 00:20:40.560
+ 
+
+
+00:20:40.590 --> 00:20:44.370
+ 
+
+
+00:20:44.370 --> 00:20:49.890
+ 
+
+
+00:20:49.890 --> 00:20:54.210
+ 
+
+
+00:20:54.210 --> 00:20:58.350
+ 
+
+
+00:20:58.350 --> 00:21:02.550
+ 
+
+
+00:21:02.550 --> 00:21:06.210
+ 
+
+
+00:21:06.210 --> 00:21:14.850
+ 
+
+
+00:21:14.850 --> 00:21:19.770
+ 
+
+
+00:21:19.770 --> 00:21:23.370
+ 
+
+
+00:21:23.430 --> 00:21:27.840
+ 
+
+
+00:21:27.840 --> 00:21:32.220
+ 
+
+
+00:21:32.220 --> 00:21:36.630
+ 
+
+
+00:21:37.140 --> 00:21:41.010
+ 
+
+
+00:21:41.010 --> 00:21:44.790
+ 
+
+
+00:21:44.790 --> 00:21:49.950
+ 
+
+
+00:21:50.370 --> 00:21:54.780
+ 
+
+
+00:21:54.780 --> 00:21:59.670
+ 
+
+
+00:21:59.790 --> 00:22:06.240
+ 
+
+
+00:22:06.480 --> 00:22:11.820
+ 
+
+
+00:22:11.820 --> 00:22:15.900
+ 
+
+
+00:22:15.900 --> 00:22:21.180
+ 
+
+
+00:22:21.390 --> 00:22:25.050
+ 
+
+
+00:22:25.050 --> 00:22:30.840
+ 
+
+
+00:22:30.840 --> 00:22:36.450
+ 
+
+
+00:22:36.450 --> 00:22:42.360
+ 
+
+
+00:22:42.360 --> 00:22:46.200
+ 
+
+
+00:22:46.200 --> 00:22:50.940
+ 
+
+
+00:22:50.940 --> 00:22:54.810
+ 
+
+
+00:22:54.810 --> 00:22:58.680
+ 
+
+
+00:22:58.680 --> 00:23:03.000
+ 
+
+
+00:23:03.000 --> 00:23:08.040
+ 
+
+
+00:23:08.100 --> 00:23:13.200
+ 
+
+
+00:23:13.200 --> 00:23:19.020
+ 
+
+
+00:23:19.050 --> 00:23:22.440
+ 
+
+
+00:23:22.440 --> 00:23:29.400
+ 
+
+
+00:23:29.400 --> 00:23:34.050
+ 
+
+
+00:23:34.050 --> 00:23:37.920
+ 
+
+
+00:23:37.920 --> 00:23:43.860
+ 
+
+
+00:23:43.890 --> 00:23:49.140
+ 
+
+
+00:23:49.140 --> 00:23:55.410
+ 
+
+
+00:23:55.410 --> 00:23:58.650
+ 
+
+
+00:23:58.650 --> 00:24:02.520
+ 
+
+
+00:24:02.520 --> 00:24:06.000
+ 
+
+
+00:24:06.870 --> 00:24:11.490
+ 
+
+
+00:24:11.490 --> 00:24:14.490
+ 
+
+
+00:24:14.490 --> 00:24:17.460
+ 
+
+
+00:24:17.460 --> 00:24:21.540
+ 
+
+
+00:24:21.690 --> 00:24:27.060
+ 
+
+
+00:24:27.060 --> 00:24:30.690
+ 
+
+
+00:24:30.720 --> 00:24:34.770
+ 
+
+
+00:24:34.770 --> 00:24:37.980
+ 
+
+
+00:24:38.010 --> 00:24:43.560
+ 
+
+
+00:24:43.650 --> 00:24:47.340
+ 
+
+
+00:24:47.340 --> 00:24:52.890
+ 
+
+
+00:24:52.890 --> 00:24:56.940
+ 
+
+
+00:24:56.940 --> 00:25:00.690
+ 
+
+
+00:25:00.690 --> 00:25:04.950
+ 
+
+
+00:25:05.040 --> 00:25:09.000
+ 
+
+
+00:25:09.000 --> 00:25:15.990
+ 
+
+
+00:25:15.990 --> 00:25:22.830
+ 
+
+
+00:25:22.890 --> 00:25:30.660
+ 
+
+
+00:25:31.230 --> 00:25:35.070
+ 
+
+
+00:25:35.070 --> 00:25:38.250
+ 
+
+
+00:25:38.250 --> 00:25:41.100
+ 
+
+
+00:25:41.100 --> 00:25:47.010
+ 
+
+
+00:25:47.160 --> 00:25:51.120
+ 
+
+
+00:25:51.120 --> 00:25:56.430
+ 
+
+
+00:25:56.460 --> 00:25:59.670
+ 
+
+
+00:25:59.670 --> 00:26:02.790
+ 
+
+
+00:26:02.790 --> 00:26:05.610
+ 
+
+
+00:26:05.610 --> 00:26:08.310
+ 
+
+
+00:26:08.310 --> 00:26:12.090
+ 
+
+
+00:26:12.090 --> 00:26:17.550
+ 
+
+
+00:26:17.550 --> 00:26:21.690
+ 
+
+
+00:26:21.690 --> 00:26:27.480
+ 
+
+
+00:26:27.480 --> 00:26:31.410
+ 
+
+
+00:26:31.440 --> 00:26:35.760
+ 
+
+
+00:26:35.760 --> 00:26:38.550
+ 
+
+
+00:26:38.550 --> 00:26:42.720
+ 
+
+
+00:26:42.720 --> 00:26:47.340
+ 
+
+
+00:26:47.550 --> 00:26:50.970
+ 
+
+
+00:26:50.970 --> 00:26:56.280
+ 
+
+
+00:26:56.280 --> 00:27:02.100
+ 
+
+
+00:27:02.100 --> 00:27:05.520
+ 
+
+
+00:27:05.520 --> 00:27:09.990
+ 
+
+
+00:27:09.990 --> 00:27:13.440
+ 
+
+
+00:27:13.440 --> 00:27:17.760
+ 
+
+
+00:27:19.470 --> 00:27:23.850
+ 
+
+
+00:27:23.850 --> 00:27:27.960
+ 
+
+
+00:27:28.200 --> 00:27:32.370
+ 
+
+
+00:27:32.400 --> 00:27:36.930
+ 
+
+
+00:27:36.930 --> 00:27:40.140
+ 
+
+
+00:27:40.140 --> 00:27:44.430
+ 
+
+
+00:27:44.430 --> 00:27:49.320
+ 
+
+
+00:27:49.320 --> 00:27:54.810
+ 
+
+
+00:27:54.840 --> 00:27:58.770
+ 
+
+
+00:27:58.800 --> 00:28:02.910
+ 
+
+
+00:28:02.910 --> 00:28:08.700
+ 
+
+
+00:28:08.700 --> 00:28:12.990
+ 
+
+
+00:28:13.140 --> 00:28:17.400
+ 
+
+
+00:28:17.700 --> 00:28:21.270
+ 
+
+
+00:28:21.420 --> 00:28:25.470
+ 
+
+
+00:28:25.470 --> 00:28:29.550
+ 
+
+
+00:28:29.550 --> 00:28:33.630
+ 
+
+
+00:28:33.630 --> 00:28:38.220
+ 
+
+
+00:28:38.220 --> 00:28:43.830
+ 
+
+
+00:28:43.830 --> 00:28:48.690
+ 
+
+
+00:28:48.720 --> 00:28:52.350
+ 
+
+
+00:28:52.350 --> 00:28:57.000
+ 
+
+
+00:28:57.000 --> 00:29:01.860
+ 
+
+
+00:29:01.890 --> 00:29:06.450
+ 
+
+
+00:29:06.450 --> 00:29:09.450
+ 
+
+
+00:29:10.799 --> 00:29:14.309
+ 
+
+
+00:29:15.299 --> 00:29:19.319
+ 
+
+
+00:29:19.319 --> 00:29:23.549
+ 
+
+
+00:29:23.609 --> 00:29:27.659
+ 
+
+
+00:29:27.659 --> 00:29:31.439
+ 
+
+
+00:29:31.439 --> 00:29:36.299
+ 
+
+
+00:29:36.299 --> 00:29:40.559
+ 
+
+
+00:29:40.619 --> 00:29:45.539
+ 
+
+
+00:29:45.569 --> 00:29:51.329
+ 
+
+
+00:29:51.359 --> 00:29:59.429
+ 
+
+
+00:29:59.429 --> 00:30:03.479
+ 
+
+
+00:30:03.479 --> 00:30:06.959
+ 
+
+
+00:30:06.989 --> 00:30:10.589
+ 
+
+
+00:30:10.619 --> 00:30:15.089
+ 
+
+
+00:30:15.089 --> 00:30:17.879
+ 
+
+
+00:30:17.879 --> 00:30:23.879
+ 
+
+
+00:30:23.879 --> 00:30:28.649
+ 
+
+
+00:30:28.649 --> 00:30:33.149
+ 
+
+
+00:30:33.149 --> 00:30:37.259
+ 
+
+
+00:30:37.829 --> 00:30:42.059
+ 
+
+
+00:30:42.059 --> 00:30:46.589
+ 
+
+
+00:30:46.589 --> 00:30:49.829
+ 
+
+
+00:30:49.949 --> 00:30:53.489
+ 
+
+
+00:30:53.489 --> 00:30:58.469
+ 
+
+
+00:30:58.499 --> 00:31:04.769
+ 
+
+
+00:31:04.769 --> 00:31:09.929
+ 
+
+
+00:31:09.929 --> 00:31:13.109
+ 
+
+
+00:31:13.199 --> 00:31:17.009
+ 
+
+
+00:31:17.009 --> 00:31:20.729
+ 
+
+
+00:31:20.729 --> 00:31:25.529
+ 
+
+
+00:31:25.559 --> 00:31:33.089
+ 
+
+
+00:31:33.989 --> 00:31:37.379
+ 
+
+
+00:31:37.379 --> 00:31:40.679
+ 
+
+
+00:31:40.679 --> 00:31:46.499
+ 
+
+
+00:31:46.499 --> 00:31:50.339
+ 
+
+
+00:31:51.029 --> 00:31:55.019
+ 
+
+
+00:31:55.019 --> 00:31:59.729
+ 
+
+
+00:31:59.729 --> 00:32:04.439
+ 
+
+
+00:32:04.439 --> 00:32:08.159
+ 
+
+
+00:32:08.159 --> 00:32:12.059
+ 
+
+
+00:32:12.059 --> 00:32:18.389
+ 
+
+
+00:32:18.389 --> 00:32:22.169
+ 
+
+
+00:32:22.199 --> 00:32:26.549
+ 
+
+
+00:32:26.549 --> 00:32:32.849
+ 
+
+
+00:32:32.849 --> 00:32:37.169
+ 
+
+
+00:32:37.169 --> 00:32:41.969
+ 
+
+
+00:32:41.969 --> 00:32:45.539
+ 
+
+
+00:32:45.629 --> 00:32:49.349
+ 
+
+
+00:32:49.349 --> 00:32:54.059
+ 
+
+
+00:32:55.169 --> 00:32:59.729
+ 
+
+
+00:32:59.729 --> 00:33:03.989
+ 
+
+
+00:33:03.989 --> 00:33:07.949
+ 
+
+
+00:33:08.219 --> 00:33:13.439
+ 
+
+
+00:33:13.439 --> 00:33:16.379
+ 
+
+
+00:33:16.679 --> 00:33:21.209
+ 
+
+
+00:33:21.299 --> 00:33:26.789
+ 
+
+
+00:33:26.789 --> 00:33:32.249
+ 
+
+
+00:33:32.729 --> 00:33:36.779
+ 
+
+
+00:33:36.779 --> 00:33:40.979
+ 
+
+
+00:33:41.039 --> 00:33:45.389
+ 
+
+
+00:33:45.389 --> 00:33:49.919
+ 
+
+
+00:33:49.919 --> 00:33:56.399
+ 
+
+
+00:33:56.399 --> 00:34:02.849
+ 
+
+
+00:34:02.849 --> 00:34:07.049
+ 
+
+
+00:34:07.049 --> 00:34:12.899
+ 
+
+
+00:34:12.899 --> 00:34:17.009
+ 
+
+
+00:34:17.009 --> 00:34:21.659
+ 
+
+
+00:34:22.169 --> 00:34:26.069
+ 
+
+
+00:34:26.069 --> 00:34:29.369
+ 
+
+
+00:34:29.369 --> 00:34:33.119
+ 
+
+
+00:34:33.119 --> 00:34:36.479
+ 
+
+
+00:34:36.509 --> 00:34:41.879
+ 
+
+
+00:34:41.879 --> 00:34:46.709
+ 
+
+
+00:34:46.709 --> 00:34:51.209
+ 
+
+
+00:34:51.209 --> 00:34:57.029
+ 
+
+
+00:34:57.029 --> 00:35:00.599
+ 
+
+
+00:35:00.689 --> 00:35:05.609
+ 
+
+
+00:35:05.639 --> 00:35:13.469
+ 
+
+
+00:35:13.469 --> 00:35:17.339
+ 
+
+
+00:35:17.339 --> 00:35:22.109
+ 
+
+
+00:35:22.259 --> 00:35:24.959
+ 
+
+
+00:35:24.959 --> 00:35:29.369
+ 
+
+
+00:35:29.399 --> 00:35:34.949
+ 
+
+
+00:35:34.949 --> 00:35:40.139
+ 
+
+
+00:35:40.169 --> 00:35:45.509
+ 
+
+
+00:35:45.629 --> 00:35:50.519
+ 
+
+
+00:35:50.519 --> 00:35:56.339
+ 
+
+
+00:35:56.339 --> 00:35:59.609
+ 
+
+
+00:35:59.669 --> 00:36:03.779
+ 
+
+
+00:36:03.779 --> 00:36:08.039
+ 
+
+
+00:36:08.039 --> 00:36:13.319
+ 
+
+
+00:36:13.319 --> 00:36:16.679
+ 
+
+
+00:36:16.679 --> 00:36:21.239
+ 
+
+
+00:36:21.239 --> 00:36:25.499
+ 
+
+
+00:36:25.499 --> 00:36:29.669
+ 
+
+
+00:36:29.669 --> 00:36:36.839
+ 
+
+
+00:36:36.899 --> 00:36:40.829
+ 
+
+
+00:36:41.099 --> 00:36:45.479
+ 
+
+
+00:36:45.479 --> 00:36:49.019
+ 
+
+
+00:36:49.019 --> 00:36:53.549
+ 
+
+
+00:36:53.819 --> 00:37:00.719
+ 
+
+
+00:37:01.259 --> 00:37:05.339
+ 
+
+
+00:37:05.699 --> 00:37:11.519
+ 
+
+
+00:37:11.549 --> 00:37:14.579
+ 
+
+
+00:37:14.579 --> 00:37:20.129
+ 
+
+
+00:37:20.129 --> 00:37:23.879
+ 
+
+
+00:37:23.879 --> 00:37:28.259
+ 
+
+
+00:37:28.259 --> 00:37:31.529
+ 
+
+
+00:37:31.529 --> 00:37:34.529
+ 
+
+
+00:37:34.529 --> 00:37:39.269
+ 
+
+
+00:37:39.269 --> 00:37:43.109
+ 
+
+
+00:37:43.109 --> 00:37:46.199
+ 
+
+
+00:37:46.199 --> 00:37:50.699
+ 
+
+
+00:37:50.729 --> 00:37:56.939
+ 
+
+
+00:37:57.149 --> 00:38:01.739
+ 
+
+
+00:38:01.739 --> 00:38:08.009
+ 
+
+
+00:38:08.009 --> 00:38:12.239
+ 
+
+
+00:38:12.269 --> 00:38:18.179
+ 
+
+
+00:38:18.179 --> 00:38:23.069
+ 
+
+
+00:38:23.069 --> 00:38:26.999
+ 
+
+
+00:38:27.059 --> 00:38:31.799
+ 
+
+
+00:38:32.519 --> 00:38:36.329
+ 
+
+
+00:38:40.140 --> 00:38:46.140
+ 
+
+
+00:38:46.140 --> 00:38:48.930
+ 
+
+
+00:38:48.930 --> 00:38:53.010
+ 
+
+
+00:38:53.010 --> 00:38:57.480
+ 
+
+
+00:38:57.480 --> 00:39:01.680
+ 
+
+
+00:39:01.680 --> 00:39:07.260
+ 
+
+
+00:39:07.260 --> 00:39:10.920
+ 
+
+
+00:39:10.920 --> 00:39:14.730
+ 
+
+
+00:39:14.760 --> 00:39:19.800
+ 
+
+
+00:39:20.220 --> 00:39:23.100
+ 
+
+
+00:39:23.130 --> 00:39:27.420
+ 
+
+
+00:39:27.420 --> 00:39:31.620
+ 
+
+
+00:39:31.650 --> 00:39:36.360
+ 
+
+
+00:39:36.390 --> 00:39:40.500
+ 
+
+
+00:39:40.500 --> 00:39:43.830
+ 
+
+
+00:39:43.830 --> 00:39:50.490
+ 
+
+
+00:39:50.520 --> 00:39:54.450
+ 
+
+
+00:39:54.480 --> 00:39:57.990
+ 
+
+
+00:39:58.020 --> 00:40:04.530
+ 
+
+
+00:40:06.270 --> 00:40:07.770
+
+
+00:40:12.900 --> 00:40:18.300
+ 
+
+
+00:40:18.300 --> 00:40:18.800
+
+
+00:40:19.710 --> 00:40:23.700
+ 
+
+
+00:40:23.700 --> 00:40:29.520
+ 
+
+
+00:40:29.520 --> 00:40:33.690
+ 
+
+
+00:40:33.690 --> 00:40:39.090
+ 
+
+
+00:40:39.090 --> 00:40:46.590
+ 
+
+
+00:40:46.590 --> 00:40:54.090
+ 
+
+
+00:40:54.090 --> 00:41:01.650
+ 
+
+
+00:41:01.710 --> 00:41:07.440
+ 
+
+
+00:41:07.440 --> 00:41:13.350
+ 
+
+
+00:41:13.350 --> 00:41:18.780
+ 
+
+
+00:41:18.780 --> 00:41:26.160
+ 
+
+
+00:41:26.220 --> 00:41:33.420
+ 
+
+
+00:41:33.420 --> 00:41:40.500
+ 
+
+
+00:41:40.500 --> 00:41:47.910
+ 
+
+
+00:41:47.910 --> 00:41:48.410
+
+
+00:41:48.540 --> 00:41:53.670
+ 
+
+
+00:41:53.670 --> 00:41:58.290
+ 
+
+
+00:41:58.290 --> 00:42:01.950
+ 
+
+
+00:42:01.950 --> 00:42:04.560
+ 
+
+
+00:42:05.640 --> 00:42:10.950
+ 
+
+
+00:42:11.280 --> 00:42:17.310
+ 
+
+
+00:42:17.310 --> 00:42:22.320
+ 
+
+
+00:42:22.470 --> 00:42:30.660
+ 
+
+
+00:42:30.660 --> 00:42:37.230
+ 
+
+
+00:42:37.920 --> 00:42:42.120
+ 
+
+
+00:42:42.120 --> 00:42:45.720
+ 
+
+
+00:42:45.720 --> 00:42:48.540
+ 
+
+
+00:42:48.960 --> 00:42:56.820
+ 
+
+
+00:42:56.820 --> 00:43:00.240
+ 
+
+
+00:43:00.240 --> 00:43:05.640
+ 
+
+
+00:43:05.640 --> 00:43:08.970
+ 
+
+
+00:43:09.030 --> 00:43:09.540
+
+
+00:43:10.890 --> 00:43:16.920
+ 
+
+
+00:43:17.640 --> 00:43:25.650
+ 
+
+
+00:43:25.650 --> 00:43:32.310
+ 
+
+
+00:43:32.310 --> 00:43:37.830
+ 
+
+
+00:43:37.830 --> 00:43:45.480
+ 
+
+
+00:43:45.510 --> 00:43:48.960
+ 
+
+
+00:43:48.960 --> 00:43:53.670
+ 
+
+
+00:43:53.670 --> 00:43:58.470
+ 
+
+
+00:43:58.470 --> 00:44:00.900
+ 
+
+
+00:44:01.260 --> 00:44:06.150
+ 
+
+
+00:44:08.790 --> 00:44:12.990
+ 
+
+
+00:44:17.040 --> 00:44:22.410
+ 
+
+
+00:44:22.440 --> 00:44:29.070
+ 
+
+
+00:44:30.240 --> 00:44:35.040
+ 
+
+
+00:44:35.040 --> 00:44:35.880
+
+
+00:44:38.460 --> 00:44:43.500
+ 
+
+
+00:44:43.530 --> 00:44:48.090
+ 
+
+
+00:44:48.090 --> 00:44:52.770
+ 
+
+
+00:44:52.770 --> 00:44:55.140
+
+
+00:44:55.380 --> 00:44:56.400
+
+
+00:44:58.020 --> 00:45:00.960
+ 
+
+
+00:45:02.399 --> 00:45:06.419
+ 
+
+
+00:45:06.419 --> 00:45:10.709
+ 
+
+
+00:45:10.889 --> 00:45:13.529
+ 
+
+
+00:45:21.239 --> 00:45:25.049
+ 
+
+
+00:45:25.139 --> 00:45:34.139
+ 
+
+
+00:45:34.139 --> 00:45:39.809
+ 
+
+
+00:45:39.839 --> 00:45:40.589
+
+
+00:45:43.320 --> 00:45:49.170
+ 
+
+
+00:45:49.170 --> 00:45:55.800
+ 
+
+
+00:45:55.800 --> 00:46:00.330
+ 
+
+
+00:46:00.360 --> 00:46:06.150
+ 
+
+
+00:46:06.150 --> 00:46:12.510
+ 
+
+
+00:46:12.510 --> 00:46:19.590
+ 
+
+
+00:46:19.590 --> 00:46:26.400
+ 
+
+
+00:46:26.430 --> 00:46:33.990
+ 
+
+
+00:46:34.770 --> 00:46:35.270
+
+
+00:46:35.340 --> 00:46:41.550
+ 
+
+
+00:46:41.550 --> 00:46:45.179
+ 
+
+
+00:46:45.179 --> 00:46:48.719
+ 
+
+
+00:46:49.199 --> 00:46:53.939
+ 
+
+
+00:46:53.939 --> 00:46:57.419
+ 
+
+
+00:46:57.599 --> 00:47:02.609
+ 
+
+
+00:47:02.699 --> 00:47:10.079
+ 
+
+
+00:47:12.750 --> 00:47:17.820
+ 
+
+
+00:47:17.820 --> 00:47:22.470
+ 
+
+
+00:47:22.590 --> 00:47:27.300
+ 
+
+
+00:47:27.300 --> 00:47:37.380
+ 
+
+
+00:47:37.410 --> 00:47:42.150
+ 
+
+
+00:47:42.150 --> 00:47:44.340
+
+
+00:47:45.449 --> 00:47:49.409
+ 
+
+
+00:47:49.439 --> 00:47:52.559
+ 
+
+
+00:47:52.679 --> 00:47:57.719
+ 
+
+
+00:47:57.719 --> 00:48:01.649
+ 
+
+
+00:48:01.649 --> 00:48:05.549
+ 
+
+
+00:48:05.549 --> 00:48:09.299
+ 
+
+
+00:48:09.299 --> 00:48:13.499
+ 
+
+
+00:48:13.499 --> 00:48:17.159
+ 
+
+
+00:48:17.159 --> 00:48:22.319
+ 
+
+
+00:48:22.379 --> 00:48:23.699
+
+
+00:48:24.900 --> 00:48:34.680
+ 
+
+
+00:48:34.680 --> 00:48:37.410
+
+
+00:48:37.830 --> 00:48:42.150
+ 
+
+
+00:48:42.150 --> 00:48:46.140
+ 
+
+
+00:48:46.140 --> 00:48:47.910
+
+
+00:48:48.840 --> 00:48:54.420
+ 
+
+
+00:48:54.420 --> 00:48:58.020
+ 
+
+
+00:48:58.020 --> 00:49:02.730
+ 
+
+
+00:49:02.730 --> 00:49:07.290
+ 
+
+
+00:49:07.290 --> 00:49:12.510
+ 
+
+
+00:49:12.510 --> 00:49:15.690
+ 
+
+
+00:49:15.690 --> 00:49:20.340
+ 
+
+
+00:49:20.340 --> 00:49:25.710
+ 
+
+
+00:49:25.710 --> 00:49:28.350
+ 
+
+
+00:49:28.350 --> 00:49:31.500
+ 
+
+
+00:49:31.710 --> 00:49:37.140
+ 
+
+
+00:49:37.440 --> 00:49:39.570
+
+
+00:49:41.310 --> 00:49:44.520
+ 
+
+
+00:49:46.380 --> 00:49:47.400
+
+
+00:49:47.730 --> 00:49:52.710
+ 
+
+
+00:49:52.710 --> 00:49:56.430
+ 
+
+
+00:49:56.460 --> 00:50:00.570
+ 
+
+
+00:50:06.299 --> 00:50:12.389
+ 
+
+
+00:50:13.440 --> 00:50:23.970
+ 
+
+
+00:50:24.030 --> 00:50:24.530
+
+
+00:50:25.380 --> 00:50:29.610
+
+
+00:50:30.810 --> 00:50:36.810
+ 
+
+
+00:50:36.810 --> 00:50:37.310
+
+
+00:50:38.130 --> 00:50:43.110
+ 
+
+
+00:50:43.110 --> 00:50:49.590
+ 
+
+
+00:50:49.590 --> 00:50:55.380
+ 
+
+
+00:50:55.530 --> 00:51:01.230
+ 
+
+
+00:51:01.230 --> 00:51:04.860
+ 
+
+
+00:51:04.890 --> 00:51:05.670
+
+
+00:51:07.080 --> 00:51:15.840
+ 
+
+
+00:51:15.840 --> 00:51:17.580
+
+
+00:51:17.580 --> 00:51:21.240
+ 
+
+
+00:51:21.240 --> 00:51:29.520
+ 
+
+
+00:51:29.520 --> 00:51:29.670
+
+
+00:51:29.670 --> 00:51:33.660
+ 
+
+
+00:51:33.660 --> 00:51:35.070
+
+
+00:51:35.100 --> 00:51:41.310
+ 
+
+
+00:51:41.310 --> 00:51:42.600
+
+
+00:51:43.260 --> 00:51:48.180
+ 
+
+
+00:51:48.180 --> 00:51:55.920
+ 
+
+
+00:51:55.920 --> 00:51:59.460
+ 
+
+
+00:51:59.490 --> 00:52:04.830
+ 
+
+
+00:52:05.400 --> 00:52:05.900
+
+
+00:52:08.100 --> 00:52:12.990
+ 
+
+
+00:52:19.290 --> 00:52:22.380
+ 
+
+
+00:52:22.380 --> 00:52:28.740
+ 
+
+
+00:52:28.740 --> 00:52:31.740
+ 
+
+
+00:52:31.740 --> 00:52:38.730
+ 
+
+
+00:52:39.150 --> 00:52:43.020
+ 
+
+

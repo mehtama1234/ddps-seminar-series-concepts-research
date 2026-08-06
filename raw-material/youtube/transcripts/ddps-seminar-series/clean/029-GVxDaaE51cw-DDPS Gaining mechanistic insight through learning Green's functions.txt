@@ -1,0 +1,1626 @@
+all right uh welcome to the ddpa seminar
+everyone let's go over some logistics
+first please mute yourself during the
+talk unless you have questions if you
+have questions you are welcome to unmute
+and i ask
+otherwise please use chat room to post
+your questions so that we can address
+them in q a session at the end
+second today's gdpr seminar is open to
+external audiences therefore no
+classified discussion is allowed
+finally the talk today will be recorded
+and uploaded in in our youtube channel
+uh that's about it now let me introduce
+our speaker today
+it is an honor to host christopher all
+who is a faculty member in the graduate
+fields of applied mathematics and
+theoretical and applied mechanics and
+civil and
+environmental engineering at cornell
+university um personally i i got the
+the bachelor's degree
+in civil and engineering at kona
+university so i'm i'm very fond of that
+place
+and he is a professor in the center for
+applied mathematics and the school of
+civil and environmental engineering his
+research in applied
+mathematics has a focus on inverse
+problems and scientific machine learning
+he received his phd from the university
+of minnesota twin
+cities and his
+master
+masters and bachelor's degrees from
+virginia tech
+today chris will present an interesting
+topic which is gaining mechanistic
+insight through learning green's
+functions uncovering the solutions to
+hidden pdes please enjoy and expect a
+wonderful talk now without further ado
+let me pass the button by
+button to chris by
+asking one random question as usual uh
+since chris is from uh cornell ithaca
+new york what is your favorite things to
+do in itaka
+ah uh running i really enjoy trail
+running
+oh my goodness yeah that's
+it's it's wonderful place to run uh yeah
+especially in the the campus at cornell
+right yeah and
+during the fall too it's lovely
+yeah
+yeah i remember okay it's all yours
+uh thank you so much for that very kind
+introduction yongsu it's uh it's great
+to see uh one of our
+former students
+going on to do such wonderful things and
+i deeply appreciate the uh invitation to
+speak at the ddps seminar and i also
+appreciate everyone listening and as
+young 2 pointed out i'm going to be
+discussing
+[Music]
+how it is you can learn
+interesting things about your system
+through the study of green's functions
+that you uh uncover
+and we're going to talk about different
+ways that you might uncover these
+screens functions
+and so uh it's similar in in spirit to
+sort of pde learning
+and various people have have been
+important on the pde learning front
+hodlibsen at columbia university steve
+brunton and nathan cuts at university of
+washington
+and hayden schaefer and other cornell
+alumnus at carnegie mellon university
+but rather than learning the partial
+differential equation what we want to do
+is learn linear
+solution operators
+compact integral functions integral
+kernels that
+that
+give us
+a different way to
+study and
+understand complex systems
+and so other people have uh looked at um
+learning green's functions in the past
+notably uh lexington at uh in math
+department stanford university uh
+against steve brunton and uh
+nathan cuts at university of washington
+and their deep green paper and then also
+some researchers and at caltech have
+have some research on this idea of a
+neural operator which is inspired by
+green's functions um and that's kosher
+andrew stewart and anima
+kumar and uh but what i'm going to be
+presenting today is is a different take
+on on sort of even what what those folks
+have been doing um rather than trying to
+come up with sort of fast expressive
+surrogates for partial differential
+equations or solutions to partial
+differential equations or
+uh as stand-in forward models what we
+want to do is
+have the computer be our partner in
+scientific discovery
+exploiting or leveraging its pattern
+recognition capabilities
+as a means for understanding
+complexities and subtleties in the
+system by asking it to speak in a
+language that we understand uh the
+language of the universe or mathematics
+and so um the talk is divided into three
+parts today it starts from how physics
+can inspire reduced order models and a
+just-in-time physics modality
+then that led to
+some thinking about how it is we might
+learn green's functions in a non-cyanl
+context so this goes back to about 2012
+before i was thinking about cyan l uh as
+a as a uh interesting thing to pursue
+and then uh the final third of the talk
+will culminate in a uh
+um a use of deep rational networks uh in
+helping us to uh discover and understand
+uh these uh solution operators uh or
+green's functions that apply to some
+hidden mechanism at work in a system
+that we care about
+and as with any research
+i have a series of collaborators who i
+have to acknowledge and thank and the
+first part of the talk um related to
+reduced order models um
+this is conducted with a former phd
+student of mine is now a postdoc at san
+diego state university assilios fuentes
+and then the second part of the talk
+the empirical greens function work is
+carried out with one of my doctoral
+students at the center for applied
+mathematics max jenkin and the very
+talented harsh praveen a doctoral
+student of mine at the school of civil
+environmental engineering and then the
+last third of the talk is a the newest
+work and it's a collaboration between
+uh a very talented doctoral student in
+mathematics at oxford and nicolas lay
+and my good friends in the math
+department at cornell professor alex
+townsend
+and so as i indicated there are three
+major
+parts to this talk just enough physics
+data driven reduced order modeling
+piece and then how that inspired this
+notion of learning what i call empirical
+green's functions or green's functions
+that
+are distilled out of data that we see
+streaming from the response of our
+system
+and then finally
+how it is that we can extend this idea
+of empirical green's functions to a much
+broader context through the use of deep
+learning and that will
+then conclude this the talk today
+and so um the original idea that i had
+um for sort of data inspired reduced
+order modeling came about as a result of
+some work we're doing for the navy the
+office of naval research and the top
+side signatures program uh uh the
+program officer for that is uh dr steven
+russell
+and um
+in that program um there was a desire to
+understand how it is that
+electromagnetic radiation propagates and
+the very complex environment that is the
+lower troposphere of our atmosphere as
+it impinges on the free surface of the
+ocean
+and so this um this lovely photograph of
+this coastal setting uh i like to show
+because it highlights some important
+uh aspects of the complexities that
+occur in this marine atmospheric
+boundary layer or maple
+so to start with we see that this is the
+sun setting and normally we would expect
+the sun to present itself as a
+disk
+and clearly
+as a result of some interesting
+atmospheric phenomenology the disc is no
+longer a disc but has cusps and
+discontinuities
+and other interesting features
+and furthermore we see that there is a
+stratification in the coloring of the
+sun if you notice this and these
+features um are harbingers of things to
+come uh in the next couple of slides so
+i ask you just to remember these
+features of stratification and
+strangeness that occurs with respect to
+the refractive index as a result of the
+roiling mess that is the marine
+atmospheric boundary layer there's you
+know energy and mass fluxes between the
+free surface of the ocean and the lower
+atmosphere it's very very turbulent
+complex
+uh
+medium to study
+so the navy
+was not interested in the optical uh
+propagation properties and then mabel
+but rather they were curious about the
+performance of radar systems uh
+specifically in the x-band of the
+spectrum
+and the x-band
+is a
+presents in a frequency range that
+results in wavelengths uh of the em on
+the order of ten centimeters or so
+and so
+you know normally we could um just
+simply discretize our domain
+and use
+maxwell's lovely
+system of partial differential equations
+and
+have that all that exquisite predictive
+power that's encapsulated in those
+simple expressions
+uh to be able to make a propagation
+prediction let's say in some in some
+domain of interest but in the case of
+the navy
+uh application the domain of interest
+was a box that was 100 meters by 50
+kilometers and so uh the level of
+discretization necessary for this domain
+was
+uh pretty ambitious
+especially since the navy wanted a
+faster than real-time solution and i'll
+explain what i mean by faster faster
+than real time later but it had to be
+done extremely quickly and it just was
+impractical to think that you could
+solve a system that size a discretized
+system this size and a faster than real
+time context additionally
+how is it that you could
+sort of characterize all the subtle
+features of uh refractivity changes um
+point wise in a suitably discretized
+domain okay so this is a challenging
+forward problem
+now
+do it as an inverse problem so what you
+want to do is then run that forward
+query that forward solver as part of
+some sort of
+an optimization scheme to arrive at you
+know a plausible solution to some
+observations you're seeing on a
+particular day and it becomes even more
+difficult as you imagine running the
+forward solver
+tens of thousands hundreds of thousands
+maybe even millions of times
+and so um as somebody who really didn't
+know much about radar systems and had
+only a an elementary level understanding
+of electromagnetic propagation
+i sort of
+thought about this as saying you know
+what if i didn't have an atmosphere i
+would have a very simple case where a
+receiver would inject electromagnetic
+radiation into one end of my box it
+would propagate down range and attenuate
+itself with an inverse square law and at
+a suitably long distance away from the
+transmitter the receiver would
+essentially see a plane wave
+and so i asked the navy i said look what
+is it you really care about what's your
+quantity of interest and they said of
+course we can't tell you but um how
+about you play with this and they said
+why don't you tell us how distorted a
+wave would end up being downrange as a
+result of the presence of the marine
+atmospheric boundary layer
+and so i had this thought that rather
+than studying every bit of
+subtlety at work
+and the forward modeling of the problem
+that you might carry along with the
+maxwell solution
+what if we just uh carried enough
+physical insight uh to make a
+a a
+a rough model that gave us a
+quantitative a quantity of interest a
+prediction on a quantity of interest in
+a way that was technologically useful
+so motivated by that i was thinking that
+this roiling nestled marine atmospheric
+boundary layer could sort of be
+integrated out
+in the spirit of a blurring operator
+like you might see in an imaging problem
+and so the thought was maybe there's an
+integral operator that can map the clean
+image into the blurry image
+and um
+we could use this as a point of
+departure additionally we also know from
+experts domain experts that the marine
+atmospheric boundary layer has this
+stratified property there are these
+layer wise structures that present
+frequently in the
+in in this region of the lower
+atmosphere and so maybe we can exploit
+that too
+in our just enough physics
+representation
+so
+again reminding ourselves or mentioning
+again the idea of a blurring operator or
+uh
+sort of how it is that a point spread
+function might be applied to a clean
+image so let's say that this is the
+clean image and this is a point spread
+function like a gaussian blur or mofat
+blur and then we integrate over the
+clean image
+with this blurring operator and end up
+with some blurry image and that's what
+you would do in a normal uh image
+blurring problem but what now
+if instead we said okay what if we took
+the propagation
+um
+propagation factors in the downrange
+setting that we measured okay the energy
+deposited into the box and said that was
+our without an atmosphere instead that
+was our clean image and then the effect
+of the marine atmospheric boundary layer
+would be in some blurring operator such
+that we would see what the receiver sees
+on a particular day when an observation
+is made
+but now rather than having a small
+support translation and variant kernel
+operator like you would have for a point
+spread
+in an imaging problem i have my kernel
+function supported over the entire
+stratified domain of the marine
+atmospheric boundary layer layer by
+layer and so then the the kernel
+function is expressing what the marine
+atmospheric boundary layer does to a
+vacuum propagation case and turns it
+into something that looks real
+and this is a freed home kernel and so
+freedom integral theory says ah there's
+a spectral decomposition of the kernel
+function in terms of its uh complex the
+complex conjugate of the eigenfunction
+times the eigenfunction divided by the
+eigenvalues
+great but you can't go to the atmosphere
+and say hey what are your eigenfunctions
+and eigenvalues right that's just not
+going to be a thing that uh
+is uh feasible and so what if we replace
+these orthonormal bases orthogonal bases
+these eigenvases excuse me with data or
+empirical
+eigenbases or impuri uh empirical
+eigenfunctions okay
+pod modes
+so if we sort of stare at the response
+of our marine atmospheric boundary layer
+in time
+we can collect an ensemble of data from
+which we can then extract pod modes
+these modes then could be used to
+approximate a blurring operator that uh
+basically is a stand-in for what the
+atmosphere is doing
+furthermore we might have some salient
+physical parameters that are um useful
+in characterizing the environment we're
+seeing ourself in on a particular day in
+the maple it could be something like
+relative humidity temperature barometric
+pressure so it could be a vector
+in any event we can then take these
+orthonormal bases and place them onto
+some
+suitable manifold
+and a non-linear context okay and um we
+might have sort of a series of library
+entries environments that we were able
+to in our time
+at leisure and in safety collect data at
+okay particular theta values a nice data
+one day i think a two day a theta three
+day and so on and we have these bases
+learned and we store them on a manifold
+and then someday we find ourselves in a
+dangerous situation where we have to
+quickly figure out what kind of marine
+atmospheric boundary layer do we have
+today and i need to know fast
+so then maybe we interpolate from the
+ones we've seen
+uh in nice times to
+this place where we are during a
+dangerous time and make an approximation
+of how um the what the em weather is
+like on that particular day
+and so how would you collect data to
+build these uh
+empirical eigenfunctions so if we think
+of
+creating an ensemble on a theta one
+weather day okay our mabel is in theta
+one situation a theta two situation of
+theta m situation then i could take
+measurement realizations measurement one
+measurement two measurement three
+measurement four and one way to think
+about this
+would be that these measurements are
+scintillations on variations on a theta
+one theme
+and a way to think about this is imagine
+you're cooking out on your deck and
+you're looking at your backyard so
+there's the vista of your backyard okay
+and your your grill is hot and you look
+over your grill and sort of this the
+buoyant uh buoyant
+transfer of mass from the heated air up
+into your field of view creates these
+like heat waves i guess we call them
+colloquially but they're density changes
+that impact refractivity so you see sort
+of this wavy image of your backyard
+that's scintillation one another
+realization would be scintillation two
+scintillation three each of these are
+analogous to the snapshot you might see
+of your backyard which theta one you
+look in a different direction and that
+maybe is theta m okay so you have these
+ensembles of data collected and you take
+uh an svd
+and you end up with a um
+a uh
+that didn't work sorry you end up with a
+um
+you end up with left singular vectors
+that you can then use for your proper
+orthogonal nodes
+okay and so we see that
+sort of down here
+and this is a cartoon of the manifold
+interpolation um so uh in in our case
+we're using something called the compact
+stifle manifold and we represent
+our bases
+for our library in blue and we lift
+these to some flat space a tangent space
+where we can do an interpolation and
+restrict back down to
+a point that we would like to know
+something about a just-in-time basis
+that would characterize our marine
+atmospheric boundary layer and this idea
+of manifold interpolation is not new uh
+lots of people have used it before uh
+charles farhad and
+chris onslam wrote a paper a while back
+an aia journal and before that there was
+uh this is in the differential geometry
+literature
+and but the reason i'm showing the
+algorithm here is just to point out to
+you that this is a thin spd that gives
+you the logarithmic lift to the tangent
+space and the exponential restriction
+back from the tangent space to the
+complex default manifold is also
+involving within svd this is very
+efficient to calculate or compute using
+modern numerical
+libraries and so
+it ends up being uh the solution that's
+in this paper that we wrote in the ieee
+transactions review and sciences are
+about sensing
+is a faster than real-time solution for
+characterizing the marine atmospheric
+boundary layer and faster than real-time
+means our
+characterization of the marine
+atmospheric boundary layer is
+carried out on a scale that's much
+shorter
+than the scale
+by which the marine atmospheric boundary
+layer evolves from state to state so we
+characterize it more quickly
+than the time necessary for it to change
+to a new state and that's what that's
+what the aim was
+but
+the reason i'm most excited about
+sharing this with you is it kind of
+inspired an idea in me i started looking
+at the form of this equation and i
+started thinking you know
+this kind of reminds me of a greens
+function if i put a source term here and
+i have an impulse response then i can
+get the solution to a partial
+differential equation so if i can do
+this as a just-in-time physics model
+maybe i could learn the solution of a
+hidden pde governing a system
+for which i would like to know something
+about
+and so moving on to that setting
+if we switch gears now and think about
+some sort of a system a partial that's
+described by a partial differential
+equation
+we have some linear differential
+operator l
+um acting on and and for the sake of
+what i'm going to say now i'll just say
+a scalar field to you
+to produce a source term f
+okay so generally speaking a greens
+function is a classical solution where
+you take the source term integrate
+against this thing called a greens
+function and you end up getting the
+solution to the linear differential
+operator for which g is a right inverse
+okay and so this
+g is essentially a linear point linear
+impulse response function and so um you
+can in some cases you can find these uh
+through inspiration or through tricks
+but other times they're hard to find and
+so um it's kind of interesting to see if
+you can learn these uh through data from
+your system
+and so also with this manifold
+interpolation idea there's this
+potential to extend the green's function
+notion to non-linear regimes by
+essentially sort of learning locally
+linear patches on the riemannian
+manifold and having a green's function
+in the patch and then another patch and
+another patch and sort of leap frogging
+around the parameter space
+of the uh of the solutions using uh
+connections athene connections of a
+certain type
+leviticus connections
+okay
+so how would you do this so first of all
+how would you collect data for a system
+okay so let's say that there we
+hypothesize that there's a partial
+differential equation at work in our
+system and we want to learn its solution
+okay we don't want to learn its pde we
+want to learn its solution operator
+so it could be that we're stuck it could
+be that we have to live with
+whatever
+the system is telling us so it could be
+that we're just passively watching stuff
+happen to the system
+cause
+going on to the system and the system
+responding effect cause and effect data
+from the system and maybe we have no
+control over we just have to live with
+whatever it gives us
+okay in that restricted situation you
+would not learn a good greens function
+you would learn a restricted greens
+function that corresponds to whatever
+sub
+subset of the
+co image
+for the linear differential operator
+you're taking observations from
+so you wouldn't be able to see the
+entire greens function you'd only be
+able to see a narrow piece of it because
+that's all the system is being excited
+to show you
+so in the results i'm going to show
+subsequently we actually excite our
+system using random draws from a
+gaussian process with us with a small
+kernel function and that essentially
+means that our source terms are like
+wiggly spaghetti okay they have lots of
+zero crossings and we we hit our system
+with those the system responds and we
+collect responses under these random
+draws from some gaussian process they
+think why the heck a gaussian process
+and that's a fair question and i'm going
+to ask you to please bear with me until
+i get further into the talk and i'll
+explain where that came from that idea
+of using a gaussian process to excite
+the system okay but
+in any event we excite
+we can ex if we can't control it we'll
+take whatever excitation we can get
+and watch a response if we can excite it
+it would be great if we could excite
+with something high frequency like
+gaussian processes with small with that
+with small with tight covariance kernels
+um then if we assume that our linear
+differential operator is self-adjoint
+which is a very important assumption
+okay then
+our construction of the greens function
+follows that same freedom spectral
+decomposition that i used in the
+just-in-time physics example and so this
+is a serious limitation you know the pde
+has to be self-adjoint for us to learn
+in this way but a lot of important pdes
+and the natural sciences are
+self-adjoint and so it might be okay um
+in the last third of the talk we'll
+relax this requirement okay but for now
+we need it to be
+self-adjoint
+and so in space the pod modes
+are tracking the response the spatial
+response and
+what i'm showing in the subsequent
+results are they're basically spatial
+pdes if we needed to add the time
+variable or space and time um one easy
+way to do it would be to let the pod
+modes still uh sort of
+uh track the spatial response and then
+let the coefficient
+diagonal coefficient matrix sigma k
+have a time dependence and so either at
+every time step we fit a new sigma k or
+in a slowly evolving system we might hit
+epoch by epoch by epoch updating the
+sigma k
+and how do you update a sigma k and what
+does that mean well
+basically we have a loss function that
+we want to satisfy and so what we have
+are
+observations from our system
+and predictions
+under our spectrally composed or
+constructed greens function we know the
+pod modes from the data what we don't
+know are the coefficient the diagonal
+coefficient matrices that give us a
+suitable green's function approximation
+so the way we arrive at this is by
+argumenting a an average least squares
+in an average least squares sense over
+possible
+diagonal coefficient matrices and once
+we have a suitable error
+tolerance achieved we call that our
+z our our coefficient matrix okay that
+corresponds to these pod modes to give
+us a good approximation to a green's
+function
+and that's it okay so there's no machine
+learning here it's just a simple data
+driven
+green empirical greens function
+discovery process
+but how well does it do
+well if we do the hello world of pdes we
+can look at poisson's equation with
+homogeneous duration boundary conditions
+and in this particular case we know the
+green's function so we can sort of see
+how well we do
+and so the greens function we learn from
+the data is shown on the left
+for the poisson problem and then the
+true greens function from the analytical
+form is presented on the right and we
+see that the relative error is somewhat
+modest 0.01
+and so
+it seems pretty good for us
+to our minds
+but then this is noise free what if we
+add some noise how well does it do and
+so
+we added what we thought was a lot of
+noise so we took every sensor
+measurement where a snapshot value was
+collected
+one each per column of our ensemble and
+contaminated it with iid gaussian white
+noise whose standard deviation was
+the average response
+of the entire data ensemble so it seems
+like that's a pretty significant amount
+of noise contamination and the error did
+grow
+between the the empirically discovered
+and the ground truth uh to be three
+times larger than it was before but
+still the relative error is only 0.03 so
+it's fairly modest again
+okay what if we try helmholtz equation
+um it's another pde where we have an
+analytical form and so for this is the
+square root of our eigenvalue uh for
+hold step 15 on the on the unit interval
+with dirichlet homogeneous boundary
+conditions again
+and we can compare to see how well our
+constructed greens function or our
+learned empirical greens function does
+compared to the true green's function
+and once again we see a modest relative
+error at 0.03
+and we can do this for aries equation
+and 1d with theta equals 10. and in this
+case we don't really have an analytical
+form but this is what the method
+uncovers and we see some very
+interesting structures that are present
+in the greens function besides the
+anti-symmetry that's consistent with the
+sulfa joint operator and so um i'll talk
+more about what these symmetries might
+mean later in the talk
+but we could also
+do let's say a multi-physics context
+where we combine poisson and hemholtz
+so one quarter of the domain is hemholtz
+and the other three quarters are poisson
+and
+our snapshot then is a collection of
+this multiphysics behavior and what then
+would we learn and we we do see
+structure in the learn greens function
+uh that is indicative of a diffusion
+operator and the top right
+and something that is very reminiscent
+of helmholtz in the bottom left and so
+you know it it's interesting that you
+know when you have multiple physical
+dominant physical mechanisms at work
+there is uh there is shadows of this
+presence in the greens functions that
+you learn uh with this method
+we can also move to higher dimensions
+instead of being on 1d this is the 2d
+unit disc with uh for poisson
+and we have again an exact greens
+function for this case
+and what you see are slices through the
+learned empirical greens function versus
+the analytical form
+and a different slice through the
+cross-section of the empirical green's
+function
+versus the
+true ground truth case that's
+analytically available to us
+and
+but then what about this idea of
+interpolation
+can we interpolate these empirical
+greens functions to find green's
+functions at places where we have no
+data
+so here is a aries equation in one d and
+for the first aries equation we're
+considering a theta value of one for the
+secondaries equation we're considering a
+theta value of five and the third
+equation at theta value of ten what we
+want to do is find the greens function
+at a value theta value of 7
+but not learned from data we want to put
+it up on the manifold interpolate our
+bases to the 7 location and reconstruct
+the green's function there just in time
+data free okay
+and so we use manifold interpolation on
+the pod modes and we use lagrangian
+polynomials on the diagonal
+coefficient matrices to perform the
+linear interpolation there and so we see
+that the character of the greens
+functions at theta equals one theta
+equals five and theta equals ten
+are very different so our three library
+entries that we're going to be
+interpolating are each quite different
+and so when we interpolate to this new
+location 7
+we see that our
+learned empirical greens function
+is very close to the target
+green's function
+when we when we actually learn it from
+data okay so we we minimize our loss
+function we gen we actually generate
+data from the theta equals seven k so we
+build a green's function so this is the
+built greens function versus the
+interpolated greens function and the
+agreement between the two is uh 0.04 the
+rel and relative error so we feel
+that that's a reasonable um
+reasonably good approximation for this
+type of interpolation when you're not
+using the data to build the use
+but you're still restricted you're
+limited to cases where you know you're a
+self-adjoint partial differential
+operator okay so what if we want to
+relax that
+so
+this work is the work between nicolae
+and alex townsend and i and um
+it it this is now where we move into the
+realm of scientific machine learning
+okay so in this particular context we're
+expressing our our solution
+the scalar val this is you know we have
+vector valued results i'll show you
+later but this is a solution to some
+linear partial differential operator and
+we have our green's function being
+integrated against a source term to
+produce part of the solution and then we
+have what we call the homogeneous
+solution which is the effects of
+boundary conditions other than
+homogeneous dirichlet and
+other types of interface conditions that
+can be injected into the solution okay
+so each one of these
+the g
+and the u homogeneous are their own
+separate neural networks okay and i'll
+explain more about this in a moment but
+for now i want to tell you that we
+excite our systems using draws from a
+gaussian process okay a gp
+and i told you i was going to tell you
+why and so one of the reasons that we're
+doing this is because nicola and alex
+have a
+a lovely theoretical paper uh
+learning elliptic partial differential
+equations with randomized linear algebra
+is available on the archive
+where they
+guarantee that if you over sample
+that you get a rank k approximation uh
+almost surely uh
+a best strength k approximation almost
+surely if you over sample by some small
+p as long as you're um
+with high probability as long as your um
+covariance kernel satisfies certain
+requirements okay and so basically you
+want the the spaghetti in your
+calcium process to be very wiggly
+and the more wiggly it is the fewer
+training pairs you need
+to be able to train the neural network
+and the results i'm going to show
+from here forward we're only using 100
+training pairs uh to get these results
+okay
+and
+so the gp motivation for the gpx
+citations is in the paper by uh nikola
+and alex and the other subtlety uh that
+that's important to point out is that
+the deep networks that we're learning to
+uncover g the green's function and the
+homogeneous solution they are what are
+called rational neural networks and
+these rational neural networks were
+developed by nikola
+and nakatsu casa and also townsend in
+this paper rational neural networks
+that's also available on the archive
+it's the last entry on the bottom of
+this slide
+and these uh rational neural networks
+are very very powerful and helpful to us
+as we try to glean physical insight into
+what's going on mechanistically within
+our system and i'll show why in a minute
+but essentially what's happening is the
+activation functions in the neural
+network typically like relu hyperbolic
+tangent
+we're replacing those by three two
+rational functions okay and it's a
+constant rational function per hidden uh
+layer okay so every hidden unit in the
+hidden layer uses the same 3-2 rational
+activation function so it doesn't add a
+lot of free parameters to the model
+okay so as a cartoon here's what we're
+doing
+in this uh most generalized example of
+learning green's functions we take a
+carefully constructed covariance kernel
+and we
+take random draws
+random spaghetti out of the gaussian
+process we use these random draws as
+excitations on some unknown system and
+we watch how the system behaves under
+these random draws
+these this collection of cause and
+effect data then are the training data
+that we use to train two
+rational deep neural networks one for
+the greens function and one for the
+homogeneous solution
+these
+both are trained off of the same loss
+function inspired by this equation which
+is the solution is the superposition of
+the homogeneous and the green's function
+integration so we have a superposition
+of the homogeneous and the greens
+function
+integration
+compared with
+the response solution and normalized
+okay
+at the end of this the networks contain
+greens functions and homogeneous
+solutions respectively and then we
+extract those into a visual
+form that we can interpret as human
+beings okay and this is a semantically
+rich form for us and it it it's a it's a
+it's an abstract mathematical quantity
+that has deep meaning to us and we can
+study things about
+what we're seeing
+specifically if we have now the greens
+function and the homogeneous solution we
+can look for
+symmetries
+conservations
+in variance that all are present in the
+greens function that tell us important
+things about the linear differential
+operators that then also tells us
+something mechanistically important
+about the physical system
+partial differential equations are the
+language of our natural world if we
+understand things about the solutions to
+these partial differential equations we
+understand something about what's going
+on in that system so there's a there's a
+hint of mechanism in things that we're
+seeing in the solutions that we're
+learning
+we also have the opportunity to watch
+how it is the eigenvalues decay
+within our solutions and also what the
+dominant eigen modes of the green's
+function
+solutions are
+furthermore the use of the rational
+neural networks gives us yet another
+tool for physical insight
+when we look at the clustering of the
+poles of the rational approximant
+they tend to cluster at locations of
+singularity in the actual pro the actual
+function that is being approximated so
+the solution to the pde
+um is have may have a singularity in it
+and the rational poles will cluster at
+the location of that singularity giving
+us and we can study the nature of that
+singularity
+okay so how well does this work so
+here's the the classic self-adjoint case
+that i've been showing you so this is
+the exact analytical form of the greens
+function for the 1d plus song case and
+here's the reproduction using the deep
+neural network okay it looks great so
+what we've already done this okay so now
+we're going to a non-sulfa joint case
+and so here we see advection diffusion
+and in the advection diffusion case we
+have an analytic greens function and a
+learned green's function and we see that
+the deep rational neural network is able
+to do a very good job to the eyeball
+norm at reconstructing this the screens
+function
+and we can do this in two dimensions as
+well so here's the exact on the 2d
+disc unit disc for poisson's equation
+here's the exact greens function two
+slices
+and here's the learned greens function
+for those same slices there's a little
+bit of noise in this in these
+reconstructions because our grid was
+fairly coarse and this was as a result
+of some computational issues that we
+were having in terms of not having
+access to a powerful enough computer at
+that moment
+another interesting example would be
+what i want to call your attention to on
+this top line this top line is an
+advection diffusion 1d induction
+diffusion problem whose coefficient
+functions are such that a viscous shock
+forms
+at the mid
+mid domain of the problem okay and so
+when we learn the green's function with
+this problem we see that there is a
+concentration of energy sort of at the
+mid point of the domain and we have uh
+reflexive symmetry across the green's
+function
+i additionally the homogeneous solution
+clearly shows the step function
+property of the shock
+and
+when we look at the phase portrait of
+the rational neural networks we see the
+poles of the rational functions
+clustering right to the real line at the
+exact location where the um
+where the
+singularity is and the solution okay
+so how robust is this approach when we
+don't have a lot of data how robust is
+it to data sparsity so let's be
+diabolical let's put two black lines in
+our domain
+and exclude
+any data
+from in and around the shock
+front and this uh in this advection
+diffusion problem okay and only learn
+the stuff outside the shock front
+and if we do that the greens function we
+recover is a very good approximation to
+the true greens function reflexive
+symmetry is still present there is a
+concentration of energy in the shock
+region
+and we also see that the homogeneous
+solution is able to recreate the
+step-wise properties of of the
+discontinuity
+and still the rational poles cluster to
+the real line at the location of the
+singularity in the problem of interest
+and then the last one is sort of this
+multiphysics context where we have
+diffusion in one portion of the domain
+and advection in the other portion of
+the domain and we clearly see um the the
+greens function of the diffusion
+operator self-adjoint and the
+non-self-adjoint advection operator
+presenting themselves quite clearly to
+the eye
+and the greens function the homogeneous
+solution agrees well and the rational
+poles converge to the real line at the
+location of the transition in the
+physics and so that's also a helpful
+clue as to something interesting going
+on in the problem
+and we can even sort of tackle weekly
+non-linear cases so what we have here
+is the helmholtz sturm libel and
+bioharmonic operators which are
+themselves linear but we add to them
+a
+a semi-linear
+we make them semi-linear in that the
+leading the the higher order highest
+order derivative the leading term and
+the partial differential equation is
+still linear but the tr the lower order
+terms are non-linear and in this case
+they're cubically non-linear uh with an
+epsilon parameter where epsilon is a
+value between zero and one so some
+people would call this weekly non-linear
+some people call this semi-linear um
+it's non-linear but not really really
+non-linear if that's uh precise enough
+for you
+that's how i like to think of it and so
+what you end up doing is you end up
+learning sort of a locally linear
+approximation to
+hemholtz thermolivable and by harmonic
+in their semi-linear states okay we
+believe that this is important so you
+can get some mechanistic insight from
+what it is that's going on in your
+system at a certain uh parameter value
+by looking at this locally linear
+representation
+and then lastly i wanted to mention that
+we can tackle systems
+so here we have um a stokes flow example
+so stokes flow is a system of partial
+differential equations velocity and
+pressure
+coupled so this is
+an incompressible newtonian context
+where there's a no slip boundary on
+these three walls where my cursor is
+tracing out and a constant velocity
+field across the top some people call
+this the lid driven cavity benchmark
+problem and cfd codes okay and the exact
+velocity versus a learned velocity is a
+good agreement the learned velocity is
+what we get from running our learned
+greens function
+against the source terms and we get a
+excellent fidelity to the exact solution
+but what is most interesting
+for our purposes is this block matrix of
+green's functions so we have sort of
+these dominant
+diagonal terms uh and these cross terms
+which represent the coupling and so we
+can tackle systems of partial
+differential equations
+the result of which is
+sort of a block matrix of of green's
+functions themselves
+and another way to sort of see this more
+clearly
+is with ordinary linear differential
+operators so we have here two second
+order odes that are coupled
+with uh sort of uh since some simple
+little boundary conditions
+and we can then learn the greens
+functions for these guys and what we see
+is we see the nice diffusion operation
+uh diffusion solution that's occurring
+on the one one and the two two block and
+the cross blocks are the coupling
+effects and uh the homogeneous solutions
+for the two cases are also reproduced
+here
+okay so
+systems are also possible
+with this deep learning approach using
+rational neural networks
+and so um
+there's a lot of examples that i didn't
+have time to talk about and they're
+available in our paper on the archive
+it's data-driven discovery of physical
+laws with human understandable deep
+learning um and so i invite you to look
+at that if you're interested um
+additionally if you want to see even
+more examples that are in the paper you
+can visit greenlearning.readthedocs.io
+and if you'd like to try out some of
+these techniques
+they're very easy to use truthfully
+if you'd like to try some of these out
+yourself it's written or you can visit
+nicolas github repo under uh green
+learning and you'll see uh sort of
+python code and uh the ml implementation
+is in tensorflow so if you're
+comfortable with tensorflow that's how
+it's currently set up
+so i would invite you to
+play around with those
+and um
+you know as a final thought i guess i
+would just say that
+i really believe that there's a lot of
+opportunity for a partnership to emerge
+between uh sort of computers with
+machine learning algorithms running on
+them and us as scientists trying to
+understand our natural and technological
+world i feel like the computers have
+this very important capability of
+untangling
+divining untangling things dividing out
+subtle patterns and seeing things that
+are hard for us to see but at the same
+time we need to make them speak our
+language and
+and it's not just our language it's the
+language that
+seems to permeate the universe the
+language of math and not just ones and
+zeros in addition and subtraction but
+complex math fire map so
+having the computers be able to
+beat us having there to be a partnership
+with the computers seems to be a very
+fruitful direction to move in as we push
+the frontiers of scientific inquiry and
+so we're very passionate about that in
+my group and
+and hope to continue working on this for
+quite some time
+and with that i would just say thank you
+very much for your attention and um if
+you have any questions i'm happy to try
+to answer them now or you can if you
+think of them later please feel free to
+email me but thank you so much for your
+attention
+thank you thank you so much for the
+great talk
+thumbs up
+really really great talk i loved it um
+let's have
+a q a session um oh wow great um
+rob
+has asked what ended up happening with
+the
+radar project
+ah so um we continued the radar project
+continued for quite a while uh
+over many years and we we we started
+with this faster than real-time
+sort of just-in-time physics idea then
+we moved to a normal mode approximation
+idea and then we moved to a
+a couple of different machine learning
+approaches with deep networks and
+convolutional neural networks and so we
+we pursued many different flavors of
+faster than real-time inversion schemes
+and um
+i honestly so now we're done
+so we i think we had four projects uh
+doing different things and um i i don't
+know exactly if anything is being used
+uh
+you know it's tough to know right
+because uh this this is a
+they they sort of give you you know you
+give you're given a problem
+that is kind of vanilla and generic
+and then you do your thing and you
+publish your results and maybe someone's
+using it behind the scenes and you just
+don't know about it so i i hope
+somebody's using it so i feel better
+about
+doing the work but it could be that no
+one is using it certainly there are some
+papers about it and if you visit our
+website you can find those papers if
+you're interested
+okay sounds good um
+charlie asked is the shock
+formation example you showed similar to
+self-supervised learning
+not really because you have training
+data right so it's uh unless i'm
+misunderstanding about uh what you mean
+by self-supervised learning but i feel i
+we definitely have training oh you mean
+with the data missing
+that people
+yeah he said yes uh yes the data missing
+because sorry
+yeah i was i'm really surprised that he
+was able to pick up the shock so well
+we were too
+yeah and so i thought you have so little
+data
+right to infer from it and how does it
+know
+where to put the the the discontinuity
+right that's
+yeah yeah no i think i think a lot of
+this uh and i can't recall if nicole i
+think nicole is on the on the uh in the
+meeting and he can correct me if i'm
+wrong
+i believe it has to do with the really
+powerful approximating capabilities of
+the rational neural network so there's
+enough of a shadow
+of this signal
+from the shock
+in the areas where the you know the side
+measurements were made
+that it was
+able to fit a rational function through
+that and i don't know nicola are you
+still out there
+yeah yeah yeah i think it's yeah it's
+correct it's because it has good
+approximation outside of this missing
+data it's kind of fun
+a good interpolant bit in between that
+is like kind of the most simple way to
+interpolate between these points
+okay
+thank you thank you thank you thanks
+nicola
+that sounds like rational neural network
+is pretty powerful
+makes me curious about that yeah yeah
+good paper
+all right next question is um
+again by rob
+he asked what networks approaches did
+you try
+that didn't work at all
+uh what what neural network approaches i
+i think so
+ah
+so
+that
+i
+don't
+have an answer to i i i believe we just
+started with rational networks we in the
+paper we tried relu and we tried other
+activation functions
+but we generally what we were
+how should we say encouraged by was
+we used the same
+four layer 50 for hidden layer 50 hidden
+unit network across all examples and
+never had
+we just ran basically randomly selected
+it and never adjusted it and it just
+always worked
+and so um that was one of the other
+things we found very startling about
+this approach was how robust it was to
+the architecture itself
+we never played with the architecture
+we just used the same thing every time
+and
+and that these are the results and so
+there was no uh cherry picking uh no
+games played it was just
+yeah i've been drawing and that's what
+it was yeah it looks like uh rob has his
+personal experience with a rational
+network and he
+um whenever he uses the
+ingredient descent
+it it fails um
+to result
+near the singularity
+i guess rob you can add more details
+about your plastic experience
+if you are connected connected to the
+sounds maybe
+nicola do you have any thoughts on that
+that to me that doesn't sound like
+anything we experienced do you remember
+seeing anything like that
+uh it may be because in the paper we
+used a second order optimizer as well
+which is uh takes advantage of the
+smoothness of fashion on your network to
+do the optimization so it is able to
+converge to a much better local minima
+than uh quadrant descent
+oh so yeah we we
+thanks nicole so we're combining adam
+with lb
+ldfgs
+uh and during the optimization scheme
+okay well i i hope robin you guys can be
+reconnected
+after this talk and that sounds great
+yeah yeah yeah that's that would be
+wonderful
+uh i have a question another question
+sorry uh okay go ahead yeah what's up i
+mean this is fantastic it's really great
+work and i'm just kind of wondering
+what's the next steps for moving forward
+with this you know with this
+new tool and
+how do you plan to scale this up
+for regular well for that i have i have
+suggestions actually um how about the
+shredding freezinger uh equations that's
+that is a linear
+and
+i'm not sure
+how
+you know the greens functions is the
+analytic rings function is available or
+maybe we can
+automatically
+yeah
+in the supplemental material uh for the
+paper out on archive we do do
+schroedinger's equation
+yeah and so there's a there's an example
+that i would invite you to take a peek
+at
+but maybe in answering charlie's
+question i would say that currently what
+we're doing um
+is to try to see if we can learn
+something new about real from real
+systems and so we're we're looking at uh
+collaborators uh both on the biosciences
+and also um well basically in life
+sciences and biosciences we're looking
+at applications that are related to the
+flight of birds and also um the
+metabolic behaviors of
+microbes and so we just kind of want to
+see if we can actually
+learn something new for a change like we
+we rediscovered we rediscovered
+solutions to pdes where we discovered
+solutions that didn't previously know
+about two pdes but what if we try it
+with system data actual system data what
+could we what could we find out and so
+that's kind of where we're moving it in
+in this at this juncture
+okay thank you so much
+it's good yes
+another another suggestion suggestions
+for the the future work um
+is investigating the scalability of of
+your methods so that it can be
+applicable to larger scale problems
+usually um
+you know
+from the perspective of national lab
+what we are usually dealing with is a
+huge problem um
+so
+you know using hpc and you know making
+the algorithm scalable that's kind of
+one of the big issue
+here so it's fantastic it's fantastic
+that your
+your um
+your work is working really well uh but
+um you know
+for the future uh directions it might be
+really even more fantastic if we can
+make it scalable so that
+we can apply that to larger scale
+problem any comments on that chris
+uh i think you know we
+nikola
+we we bumped into some uh scalability
+issues when we were looking at systems
+and it was primarily related to uh
+gpus and uh what kinds of systems we had
+and we really didn't try
+to access uh we had very modest systems
+and we were able to do you know things
+like you saw with the
+lid driven cavity and so forth but if
+you want to do
+um you know much much bigger systems
+there's you know access to gpu computing
+is a must
+to be able to tackle bigger problems and
+i think that's a common
+uh
+problem with with most with most
+machine learning problems these days
+the issue you know the question also is
+how scalable is sort of these
+off-the-shelf
+uh tensorflow and torch libraries you
+know are they
+truly the state-of-the-art are they open
+source insured because they're kind of
+fun to use but they're like you know
+google and facebook have their own stuff
+you know hidden away that's even more
+efficient i don't know um but that's a
+certainly a question that goes into the
+uh
+you know obviously you know deep mind is
+doing things with protein folding and
+you know
+what are they using to do these enormous
+machine learning runs and how are those
+scaling um you know that i i don't know
+if they're using straight tensorflow or
+not or how they're doing it
+so i'm not sure that i can answer this
+question beyond saying that i think
+you need to deploy like if we were just
+to use the libraries that we have now
+and deploy them on gpus we could tackle
+much much bigger problems but you know
+how scalable are they i really couldn't
+say at this point um nicola is the uh
+the man with the plan when it comes to
+the implementation so maybe he can uh
+add something that i'm missing nicola is
+that true
+yeah it's already running on gpus but we
+don't have large
+access to gpus but the the method itself
+uh should support uh things like domain
+decomposition and all sort of
+optimization we could do to scale a
+problem we could easily do them in the
+composition later
+nice nice um i mean
+lotus livermore we do have a
+huge gpu machine so
+let's
+probably you know future collaboration
+would be wonderful that would be
+fantastic very happy to explore that all
+right sounds good
+okay any other questions from audiences
+no okay so well then with that uh let's
+thank um the chris
+uh for the wonderful talk again and also
+his students nicola to answering the
+questions and thank you so much for the
+wonderful talk and um i hope this you
+know the seminar talk uh is becoming a
+first
+the breach
+you know for the future collaboration
+between you know a lot of external
+forces and lauren's for more foxes with
+you your the research team chris um that
+would be wonderful i'd be very happy to
+explore anything like that that would be
+great again soon
+thank you thank you all right thank you
+so much again
+thank you
+okay bye bye

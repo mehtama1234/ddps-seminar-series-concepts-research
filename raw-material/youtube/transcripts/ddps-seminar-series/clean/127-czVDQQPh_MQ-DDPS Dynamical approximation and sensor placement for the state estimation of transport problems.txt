@@ -1,0 +1,1482 @@
+that is started.
+Um Cecilia, if you can share your uh
+Yes, sir. That would be awesome. While
+you're doing that, let me introduce.
+Okay. All right. Welcome to the DDPS
+seminar everyone. Before we introduce
+our invited speaker, let's go over some
+rules and logistics. First of all,
+please mute yourself during the talk.
+But if you have question you can unmute
+and ask questions or use chat room to
+post your questions so that we can
+address them in Q&A Q&A session at the
+end. Second, today's DDPS seminar is
+open to external audience. Uh therefore
+no classified discussion is allowed. So
+please watch out. Uh finally the talk
+today will be recorded and uploaded in
+our YouTube channel. Okay, that's about
+it. Now let me briefly introduce our
+speaker today. It is an honor to host
+Dr. Cecilia
+Pagani who is an assistant professor in
+the department of mathematics at the
+University of Pisa Italy. After
+obtaining her PhD at the seminar for
+applied mathematics of ETH Jurich in
+Switzerland, she held post-doal
+positions at the Los Alamos National Lab
+in US uh and at the EPFL Switzerland.
+She joined the
+TU Aden Hoben in 2000 2020 as assistant
+professor in the center for analysis
+scientific computing and applications
+and moved to the University of Pisa in
+2023. Her research focus on the u
+development analysis and implementation
+of numerical methods for differential
+equations. In particular, she works on
+numerical discretization and model order
+reduction able to yield approximate
+models possessing uh the same geometric
+structures and physical properties of
+the original models. She's also
+interested in robust numerical methods
+and efficient solvers for fluid and
+kinetic plasma physics and for problems
+arising in computational
+electromagnetics electromagnetism.
+Today's COA will talk about dynamical
+approximation and sensor placement for
+the state estimations of transport
+problems. I'm sure we are going to hear
+a wonderful talk and now let me uh
+before that now let me ask a question to
+Cecilia just to get to know her better
+and make this seminar somewhat informal.
+Uh my question today would be
+[Music]
+um why do you like math? Except the uh
+the reason that
+um you're genetic like you're born to be
+that way. Other other reasons.
+Okay. Well, let let me first thank you
+for the for the very very kind
+introduction and and for the invitation.
+Uh so probably this is the hardest
+question of of my talk or at least I
+hope uh well uh well I'm I'm very much
+fascinating by trying to
+understand things in in in depth. So try
+to somehow uh give a mathematical
+description to things that I cannot
+explain like that you observe or you see
+happening in nature and yeah you want to
+somehow try to see what's what's going
+on. So that's uh I guess my my main
+reason. Um yeah, I mean that answer like
+fascinated in me and I totally agree
+with you. Uh but some people especially
+my kids they don't
+also also my students I think also your
+students. Okay well stage is yours.
+Thank you very much. Thank you once
+again for the invitation. Um so my my
+talk today is uh um is about uh the
+state estimation. So the solution of uh
+uh inverse problems appearing in in
+transport problems and uh the strategy
+we would like to propose is based on a
+sort of a dynamical approach where we uh
+perform an adaptive approximation
+uh of the problem and also of the uh of
+the measurements. Uh so let me first
+mention that this is uh my talk today is
+based on a joint work with Olamoola uh
+from TU and former PhD student with me
+Federico Bismara. Uh so
+um see if I can move my slides. Okay,
+perfect. So the problem uh we're looking
+at is the so-called filtering problem.
+So we have assume we have a special
+domain D and E space B with a certain
+inner product uh just to fix the
+notation and uh uh so the problem is
+assume we want we consider a time
+dependent parametric process. What we
+would like to do is uh to recover uh at
+every time uh an unknown state in this
+space V. So the state associated to an
+unknown parameter that we call theta
+dagger uh from uh m partial observations
+uh given by this uh z i. Um and these
+are um functions of the unknown state
+through uh independent continuous linear
+function as li that uh we are we are
+assumed to to be known. And now you um
+all of you know that uh this is an
+impulse problems in the sense that um
+typically uh partial observation these
+observations are are not enough to
+somehow been able to reconstruct
+um a state um as soon as the dimension
+of the uh of the approximations of the
+space B is larger than than M. So the
+only uh somehow possible way to um
+reconstruct the state the state to at
+least some guaranteed accuracy is to
+impose some prior information on the on
+the state. And uh in the uh in the case
+that we consider here, we assume a sort
+of deterministic setting where we
+consider the state um to be a solution
+of an evolution problem of this form
+where uh this x uh is a general
+differential operator that also we
+assume that encodes uh boundary
+conditions of the problem and uh it
+depends on on this parameter theta. Now
+um so the problem is now the the one of
+uh trying to estimate the state u
+associated with the
+uh special parameter the uh theta
+dagger. Now theta dagger is typically
+unknown. So we cannot simply solve the
+forward problem with the direct method.
+uh but we want to somehow recover the
+state associated to this unknown
+parameter theta dagger by using the
+observation from uh the present time and
+the and the past times and also the fact
+that uh we have a model behind. So uh
+the fact that the state u belongs to um
+the set uh calligraphic m that I will
+use in the following um namely the set
+of solution of the system under
+variation of the parameter. So this is
+seen as a subspace of say continuous
+functions that are continuous in time
+and uh belong to the inverse space. And
+now uh the assumption that we consider
+just to um uh for the ease of uh of this
+um of this talk is that uh the response
+of the sensor. So the measurements are
+somehow um perfect. So they are not
+subject to observation noise and also we
+assume that um what we observe is a a
+function of the uh of the model. So of
+the evolution problem and there is no
+modeling
+error. So now um the the particular type
+of phenomena that we are interested in
+are transport uh transport problems. So
+transport effects are somehow
+challenging for uh for state estimation
+for various reasons. Um let me just
+mention a few and we will um see them in
+more details in in a moment. So the
+first um the first challenge is related
+to the fact that um when looking at
+transport phenomena we typically have uh
+very localized solutions somehow waves
+or wave fronts that are moving in time
+and if we consider it if we consider uh
+specially local measurements say for
+example in this uh plot of say the
+shinger um the solution of the shinger
+equation assume that the crosses are uh
+the sensors locations So if these
+crosses are recording the information of
+the state uh well you see immediately
+that as soon as the support of the
+solution is outside um so the sensors
+are located outside of the support of
+the of the solution then uh they do not
+provide any information on the uh on the
+state. So they they are simply
+ineffective. Um secondly it is uh
+um typically not easy to find uh low
+dimensional approximation of the
+solution set. So remember we want to
+recover uh a particular element of this
+set of uh uh trajectories associated to
+our uh PD and for this we need to find
+somehow an approximation of of this set.
+Um typically finding a low dimensional
+one is not that easy. We will see this
+in a moment. And this is a problem
+because there must be a relationship
+between the number of the measurements
+and the uh
+approx dimension of the approximation
+space to make the problem uh well posed.
+And uh finally um transport effects are
+typically characterized by certain
+physical properties. For example,
+conservation of mass or conservation of
+energies of energy. And this is
+typically hard to preserve when uh uh
+when performing some um reconstruction
+algorithm. So um the goal of of the work
+I'm presenting today is somehow to try
+to come up with a way to address uh this
+uh these challenges. Uh so here's a a
+brief outline. Um so the bas the
+baseline of our method is the so-called
+parameterized background data week uh or
+PBDW uh method for for state estimation
+uh that I will briefly recall and then I
+will move to the uh core part of uh of
+this work uh where um we propose a way
+to dynamically move the sensors um so
+that they provide um reasonable or
+effective information of the dynamics at
+all time times and secondly a way to
+approximate the solution set uh that is
+also adapting in in time. Uh and then we
+will somehow focus on the case of a
+Newtonian system by reformulating
+transport problems in the in the
+framework of of a Newtonian
+mechanics. Okay. So um as a first thing
+let me introduce the so-called
+observation space. So um again we want
+to approximate u an unknown function. So
+the uh state u associated with an
+unknown parameter theta dagger given
+some uh observation m observation. So
+um if we introduce the rits representers
+associated to this uh um to the
+functional uh functionals alli then we
+can introduce the observation space WM
+as the span of these uh risk
+representers and typical examples of um
+of measurements um are given in for
+example in this in this table. So we can
+have pointwise measurements. So in this
+case uh our inverse space will be
+typically uh reproducing kernel inverse
+space and then the measurements are
+really uh pointwise values of the state
+at some sensor location that we call xi.
+Um and uh uh other examples are uh if we
+take for example local averages. Local
+averages in L2 uh then uh we have
+um the risk represent the associated
+risk represents are uh basically the the
+gausian centered in in the sensor
+locations. Or if we consider for example
+as a ilbert space h1 with u zero dish
+boundary conditions then uh we can
+compute the risk representers by solving
+for example uh uh this uh this uh
+problem. Um okay uh how then we can um
+approximate or reconstruct the uh the
+salt state? Well, the the task is to
+build a so-cal uh recovery algorithm.
+So, namely a function that assigns to
+each uh time
+um an approximation of the state the
+unknown parameter theta dagger. So
+basically uh to each time we assign a
+function that uh when evaluated in the
+vectors in the vector of the retro
+presenters then gives us uh an element
+in the ilbert space B and this element
+is hopefully an approximation of the of
+the state that uh that we are looking
+for. Um so of course this is very
+general. Um how should we should we
+construct a recovery algorithm? Well uh
+first of all the construction of a
+should be based on uh on the available
+information of course. So um we need to
+take into account the fact that uh the
+state u um belongs to the
+uh set of trajectories. So the set of
+solution of the of our revolution
+problem and the variation of the
+parameter and also we would like uh a so
+the recovery algorithm to be such that
+uh the reconstruction the so the
+approximation uh that that it provides
+respects some physical properties of the
+of the
+dynamics. Um so just to make um a small
+remark we can also look at this problem
+from a different perspective. So if we
+look at at a stochastic setting then um
+we for example can take as a prior
+information on the state the um the fact
+that this prior information can be
+described by a probability distribution
+on the inverse space B uh supported on
+on M and this is typically induced by a
+probability distribution on the on the
+parameter space that uh that is assumed
+to be to be known. So here we assume
+sort of the deterministic more
+deterministic
+perspective. Uh okay. So how can we uh
+gauge uh the quality of a recovering uh
+algorithm that yet we do not know how to
+construct. So the quality of recovery
+algorithm is measured by the worst case
+reconstruction error and this is defined
+as the um supreum of all elements V in
+the solution set of the uh distance
+between uh V and the reconstruction of V
+associated to the um measurements of the
+risk risk presenters uh given by the
+projection of V onto the observation
+space. Okay. Um now the optimal
+performance among all recovery
+algorithms. Um so the optimal one is
+given by um the function a star uh which
+gives the infom possible recovery
+algorithms
+um of the uh worst uh case
+reconstruction errors uh at all times.
+Okay. So um there's actually um a very
+neat mathematical description of of the
+of an optimal map of an optimal recovery
+algorithm uh which was derived in this
+uh in this work and this is um so the
+the optimal recovery algorithm evaluated
+in a set of risk representers associated
+to certain measurements is given by the
+chip center of uh um of this set uh
+which is nothing but the slice of the
+solution set which agrees with the
+observation. Um so if we look at uh uh
+an example say the our solution set is
+this uh
+um space in in blue. uh then we can take
+slices uh corresponding to different uh
+set of measurements and then um the uh
+optimal recovery algorithm associated to
+a certain measurement is the center of
+the chvy ch ball. So um the the ball
+that fully contains the
+um this slice. Um so the the practical
+issue is that it is typically not easy
+to compute this uh the chbbyev center
+and also um uh most of the time uh the
+solution set as a geometry that is
+either not clear not known or it's
+rather complicated. So um in practice an
+optimal algorithm is not uh is most
+cases not not feasible to to
+compute. Um so to to sort of overcome
+this uh uh this drawback um one
+possibility is to restrict the search of
+the uh recovery algorithms to linear
+recovery maps. And this is the idea the
+idea behind the so-called PBDW or
+parameterized background data week uh
+method. So in this case uh a is thought
+um um among linear uh recovery maps and
+uh the idea is is the following. So
+assume we fix a certain time t. Um the
+method sort of constructs an
+approximation space VN uh which is a
+linear subspace of the ER space V of
+dimension N smaller or equal than the
+number of of measurements N. And then
+this algorithm assigns to each set of um
+to each element of the observation
+space. So to each set of measurements
+um the element uh that minimizes the
+distance um to the approximation space
+bn and at the same time uh it agrees
+with the data. So it agrees with uh uh
+with omega.
+Um so the this problem has uh can be
+shown to uh have a unique minimizer uh
+which is given by uh this element u star
+associated to a certain given time t. Um
+and this is given as the sum of uh of
+three terms where v star of t is the
+minimum is the uh sort of the element of
+the approximation space vn uh whose
+projection into the observation space
+has minimal distance uh to the um to the
+actual
+measurements. Okay. So this um uh this
+minimum
+um as is unique and it exists provided
+that uh n so the dimension of the
+approximation space is smaller or equal
+than m. Um so the um we have enough
+information from the uh from the
+observations and uh beta this beta is is
+positive. Now this beta is an soup
+constant associated with the observation
+space and the uh approximation space and
+it can be thought as the cosinus of the
+angle between uh the observation space w
+and the approximation space uh bn. Okay.
+So
+um basically the the ideal situation is
+when um uh this angle um is zero and uh
+it gets worse and worse as uh as the two
+spaces become orthogonal. So there's a
+second important quantity as you might
+imagine in this uh in this whole
+procedure the fact that uh basically the
+solution of this minimization problem
+minimizes the distance to vn. So, Vn
+must be ideally a good approximation of
+the of the solution set uh
+n. Um
+uh how are these uh quantity uh
+quantities related to the to the quality
+of the of the recovery algorithm? So, we
+have seen that the quality of a recovery
+algorithm is measured by the worst case
+reconstruction error which is again
+given here. And it also can be shown
+that this error is bounded by the
+product of the um what I call the
+approximation error which is the
+distance between the approximation space
+and the actual solution set and the in
+the inverse of of beta of the in
+constant. Uh now these two quantities um
+uh fully depend uh on the uh on the
+approximation space VM and on the uh
+observation space W. So an idea is uh to
+try to come up with um recovery
+algorithm that somehow uh is such that
+uh this quantity this upper bound is uh
+is minimized and uh this can be done by
+controlling uh the choice of the
+approximation space on the one end and
+the observation space on the other. Why
+I'm saying that? Well, um first if we um
+could choose an approximation space,
+then uh the optimal one would would be
+such that the approximation error
+epsilon n is small uh in a sense to be
+fine or as small as possible for any uh
+value of of n. And uh so how do we
+construct then a vn with with such
+properties? There are various uh various
+approaches. One possibility um is to use
+reduced basis methods or other type of
+model order reduction techniques um
+which somehow allow us to have um some
+to achieve the best approximation error
+um of for a given for a given size of
+the approximation space based on some
+information on the on the dynamics or on
+the solution set. The problem is that um
+so in some sense the good thing is that
+the approximation error then it decays
+as the commodoro bandwidth of the
+solution set. Uh the bad thing is that
+when dealing with the transport
+dominated problems then this decay can
+be very slow and this has the problem
+that uh then the approximation can
+become computationally demanding in the
+sense that we might need uh a rather
+large approximation space to approximate
+uh uh the solution of our PD with
+sufficient accuracy. And also on the
+other hand uh remember that we need to
+have a size of the approximation space
+smaller or equal than the number of
+measurements. So if we have a large
+approximation space then we also need a
+lot of measurements which is typically
+not not ideal. So the strategy that we
+pursue is um to
+perform uh a dynamical approximation um
+based on low rank approximation and
+orthogonal schemes uh to update the
+approximation space. So instead of
+taking a global approximation space VN
+uh we construct at each time a new
+approximation space such that um at each
+time at each fixed time t uh the
+approximation error um decays to zero um
+as n grows. Uh this however doesn't give
+us any control in principle or in
+general on the stability constant. So um
+even if we guarantee a a small
+approximation error then uh basically
+anything can happen to the uh to the
+stability constant. Um so how do we
+control the stability constant? Then um
+one possibility is to somehow um choose
+a suitable observation space WM. Indeed,
+if the uh measurements are um give
+specially local information on the on
+the solution as we have seen at the
+beginning and we keep this basically
+this measurement or this uh uh sensor
+location fixing time then if we have a
+traveling way sooner or later uh this
+sensor will capture no information so
+we'll be completely ineffective and this
+translates into the fact that the
+stability constant will uh will go to
+zero as uh as t grows.
+Um so the strategy here is to try to
+move the sensor location to maximize the
+stability constant or in other words
+more more visually we try to move the
+sensor in such a way that somehow they
+follow the um the support of the of the
+solution. Okay. So let's start from this
+last uh objective. So how do we uh
+perform uh dynamical sensor placement?
+Um okay so the objective is to try to uh
+update the observation space WM in such
+a way that um
+uh the stability constant um doesn't
+goes to doesn't go to zero um as as t
+grows. And uh uh the way we we
+formulated this problem is to um think
+of the observation space as a function
+of this x uh which is the sensor
+location. So we uh assume to have m
+sensors located at the points x i and
+now uh we want to change this x i over
+time. So they are function of time in uh
+and this will induce uh immediately an
+update of the obser observation space.
+So let's focus uh on the 1D um 1D case
+just to make the presentation a bit
+easier. So we search for uh uh the
+sensors location optimal path um given
+as a function of time uh so in in a
+certain interval we assume a time step
+for example from t to t plus delta t um
+that satisfies uh this uh uh
+optimization problem. So we are looking
+at the trajectory um that um maximizes
+the the integral uh in time of the
+stability constant uh plus a a sort of a
+stabilization term which somehow um
+controls um the the velocities. So it
+prevents unphysical large uh velocities
+when when lambda is uh um is non zero.
+And in this um uh in this problem so we
+assume that uh the approximation space
+bn is a function of time but it it is
+known in some sense and then uh we think
+of the observation space as a function
+of the of the sensors uh location. So um
+from this uh problem we can derive the
+classical oiler L branch equations and
+then we can solve this uh this evolution
+problem um for the for the new
+trajectory starting from a certain
+initial position and from a certain uh
+initial velocity of the uh of the
+sensors. Um okay how how do we solve
+this problem in practice then? Um it is
+possible assuming that vn um at a
+certain time t is toao sorry is fixed
+and is spanned by uh the basis element v
+i. Um so let's assume that is known we
+will see in a moment how we derive it.
+Now we can write the uh stability um
+constant beta and m
+um by um by involving two uh matrices
+this M and G. These are ground matrices.
+G is in particular the mass matrix
+associated with the space BN and M is
+the uh contains the inner product
+between the projection onto the
+observation space of the basis elements
+of um of BN. Now um then the stability
+constant uh beta and m uh can be shown
+to be the the minimum value of the uh
+matrix given by uh g minus one m and
+this is a function of the of the sensor
+location. So in particular uh as a
+particular case we can also if we
+consider if we have orthonormal sets of
+bases for the observation space and the
+approximation space then uh the problem
+becomes the one of finding the minimum
+value of uh um of the matrix G transpose
+G
+um okay so uh this is the way to uh
+update the uh the sensors location.
+Let's look now at uh how do we change
+the approximation space VN. Um okay so
+the uh the first thing is to somehow
+rewrite the solution set not as a global
+uh sort of a set of the global
+trajectories. So the trajectory is
+associated to uh to all parameters at
+all times. But to somehow slice this uh
+this solution set by looking at local in
+time solutions. Um so we look at this uh
+as a set of of solutions seen as a
+function of the parameter and the space
+but for a fixed time and then at every
+time we approximate the state with um
+linear combination where we have some
+coefficients that depend on time and
+parameter and then we have some basis
+elements and these basis elements are
+also time dependent. So um they somehow
+are allowed to to evolve in time. Um so
+in other words we can think about an
+approximation of the solution set given
+by this uh product of um of a space uh
+bn of t um of dimension n spanned by a
+certain basis and this basis can satisfy
+certain constraints for example
+orthogonality and and so on. we uh will
+see in a moment um what is more
+convenient for our uh setup. And then we
+have a second space uh which is the set
+of basically um uh vectors of
+coefficients um that are for example in
+L2 as a function of of the
+parameter. All right. So now uh how do
+we derive the uh an approximate? So we
+need to sort of reconstruct the state.
+So uh we do not just need the
+approximation space VN but we also need
+to be able to represent the solution of
+our PD uh approximated in this space and
+so the the idea is to uh rely on the
+so-called deranker variational
+principle. So starting from our original
+model uh so you can think of a
+trajectory in um of this model
+associated to a certain parameter as
+this curve for example. Now um if we
+consider an approximation space as MN,
+we can somehow attach the velocity field
+of this flow to any element in this uh
+in this subspace. And now if we use this
+velocity field to describe the motion
+that describe the trajectories then we
+will inevitably go outside of our
+approximation space. So we somehow fix
+uh the dynamics uh by project by
+projecting uh the velocity field uh of
+the original flow into the tangent space
+at at the approximation space. So uh
+basically the der franker variational
+principle determines the approximate
+trajectory in this uh approximation
+space mn uh whose velocity field uh
+satisfy this uh minimization. So
+um uh this orthogonality constraint in
+the tangent space of the uh of the
+approximation um set
+mn. Um so let me
+um let me give a a summary of of what we
+have seen so far. So the algorithm goes
+goes as follows.
+Um we start from some initial
+approximation space VN and observation
+space WM and at every uh time interval
+what we do is we update the sensor
+locations starting from a certain uh u
+from the configuration from the previous
+time step um given the approximation
+space VM. So this is assumed to be known
+and fixed. We obtain new measurements.
+We reconstruct the state using the PBDW
+algorithm and then we update the
+approximation space from TK to TK + one
+and we go on. And now um what can we say
+about the reconstructed solution, the
+reconstructed flow? uh it is possible to
+so to show that uh conservation
+properties uh are satisfied up to uh an
+approximation error which is bounded by
+the reconstruction error of the state
+and also uh some properties of the flow.
+For example, if we want to impose say
+simplecticity
+um can be uh preserved exactly if we are
+able to construct the approximation
+space VN um in in a suitable way. Okay.
+Because we then we can enforce that our
+reconstructed flow uh stays on this
+approximation space. I I have a
+questions previous slide on the summary
+of the algorithm. So f of n is the state
+and wm is the observation. Yes. And you
+assume that the all the initial states
+are known and as well as the
+observation.
+Uh so I'm assuming that at the time zero
+say uh you have some sensors that are
+located and they they have measured uh
+some information on the solution at time
+zero uh on the initial condition. But
+how about the VN? VN. So that the BN is
+say um an approximation space at time
+zero. So this can be constructed say
+from um an initial condition on the uh
+so you have an initial condition that
+depends on parameters. You can for
+example um discretize your parameter
+space uh which you assume known like the
+whole field is known initial condition.
+Yes. At the initial time. Yes. Exactly.
+Yeah. And then subsequent time steps
+um you do not know those the whole field
+but you only know the observations and
+using by updating that basis you hope to
+reconstruct the whole field every time
+step. Yeah that's correct. By by
+changing the um the sampling points
+dynamically. Okay. Yes. So the the thing
+is that at the initial time you might
+not know the uh state associated to the
+exact parameter theta dagger. This is
+this we don't need to assume. We need to
+assume that you know some um initial
+state so the initial state associated to
+certain parameters in your parameter
+space. Got it. Okay. Okay. Okay. Thank
+you.
+Okay. So
+um let me briefly go to the uh situation
+that um uh we want to look at a bit more
+in into details and the sense that um as
+I said at the beginning we are
+interested very much in transfer
+problems and um these are conservative
+processes and as such can be uh uh can
+be seen or reccast as as anonian
+systems. Um so basically this boils down
+to have a uh an operator which
+represents the velocity field of of the
+of the evolution of the flow uh of this
+form. Um where
+um we we make a sort of an assumption
+that uh we consider in in in this
+setting aonian system in canonical form.
+Uh so basically now the idea is to
+consider as a ilbert space um the
+product of uh two spaces v hat. So each
+vhat is an iber space and um uh this uh
+is endowed other than with an inner
+product also with an operator uh this j
+that um acts in this way. So uh is given
+by the identity in the sort of off
+diagonal blocks. So with respect to this
+um vhat cross V hat and uh this poson
+tensor identifies a simple form omega uh
+which is given in this way with respect
+to the inner product on on b and uh this
+h quantity here so this is the fch
+derivative of h uh theta is a a function
+of uh uh it depends on the parameter and
+for each pared parameter it's a conserve
+the quantity. So now the idea would be
+uh can we find an approximation space
+and evolve it in time um uh that it's a
+good approximation of the dynamics and
+somehow preserve this uh uh this
+structure and so the idea is very much
+what we have seen before. We need to
+make some uh very special choices um at
+some point. So uh again what we do is uh
+um we approximate uh the solution at
+each time t um with a linear
+combination. We need um an even number
+of uh of unknown because of the tensor
+structure of of our um ibra space and
+then what we do is exactly as before. So
+we consider an approximation space M2R
+given by uh the product of V2R which is
+the span of some basis elements and we
+ask this basis elements to be uh simple
+uh to be a simple basis and to satisfy
+also orthogonality uh condition with
+respect to the inner product on on B.
+And secondly, we need to um uh ask that
+the set of coefficients uh as a function
+of the of the parameter um uh satisfy a
+certain rank condition um u in
+particular the rank of this uh uh of
+this matrix uh needs to be uh full rank.
+2R and this is necessary to sort of
+endow um to guarantee the uniqueness of
+the representation of each element in
+M2R as the linear combination of certain
+coefficients and certain uh basis
+elements. Um okay so uh to derive the uh
+evolution equation again we apply the
+droational principle. So we somehow um
+minimize approximated dynamics with the
+velocity field uh that
+um uh is orthogonal
+um uh to two elements in the tangent
+space and now this orthogonality is
+taken with respect to the simplectic to
+form or omega. So this is uh the new
+condition. So without going into the
+details of the of the derivation then
+one uh can derive an evolution equation
+uh for the set of basis elements and
+also for the set of coefficients. So the
+basis elements are needed uh to describe
+the approximation space at each time uh
+and the coefficients are needed also for
+the reconstruction of the solution.
+Okay. So in principle uh say for the
+sensor um for the sensor placement we
+only need uh the information on the
+approximation space but then whenever we
+need to reconstruct the solution we uh
+of course we need also to have uh its
+representation. So the the coefficient
+CI C2R
+um all right so let me uh go to um one
+numerical simulation. Uh this is the uh
+nonlinear shortinger equation a simple
+test case in in 1D. uh our inverse space
+is L2 on the domain D given here and um
+we consider as two parameters one is in
+the initial condition and and another
+one is in the uh nonlinear part of the
+uh of the dynamics and then as a
+reference solution so to make a um
+comparison we um run an high fidelity uh
+simulation of the forward problem by
+using a second order um discretization
+in time and and space. Um and for the
+approximate model
+um we solve with a structure preserving
+time integration scheme uh using a
+subset of 100 training parameters and
+the dimension of our approximation space
+will be eight. And for the measurements
+we consider six uh sensors located at
+certain points uh in this uh in this
+interval. and we assume that we can
+somehow record uh the real and imaginary
+part of our um uh of the of the
+solution. So now here um you see um
+uh four plots. So the first column
+refers to the uh PBDW algorithm uh the
+standard one so without uh dynamical
+adaptation of the state and of the
+sensors and the second column uh is in
+instead refers to our algorithm. So in
+the first plot on the on the left you
+see um uh this is basically the uh the
+black dash line is the um is the maximum
+of the hump um that is traveling in the
+um in time and uh so how it's moving in
+the space time space-time domain and the
+uh the color lines refer to the uh
+position of the sensors over time. So
+the sensors are located at certain
+location at the beginning and they
+remain so until the final time and then
+you immediately see here how the
+stability constant va behaves in time.
+So um as long the as the sensors are
+able to somehow capture some information
+on the dynamics things are good somehow
+they're rather mild but then as soon as
+there is um no more information coming
+from the measurements the problem starts
+to become unstable and the beta starts
+to become uh small. Um on the other hand
+if we look at the second column then we
+see that we can achieve
+um a beta that uh doesn't decrease
+considerably uh if we allow the sensors
+to somehow follow the uh the dynamics of
+the of the solution. Um so what about
+the reconstruction error? So in these
+two plots again you see first column the
+traditional static PBDW approach second
+column the uh dynamic one and you see
+three lines um the top one which is a
+red um represents the an upper bound of
+the error. So it's given by the
+um well the middle one is the
+reconstruction error. So what we obtain
+and then uh the upper one is the upper
+bound and the the lower one is a lower
+bound. Uh the lower bound is given by
+the projection error. So the best we can
+do in this approximation space VN and
+the upper one is the projection error
+multiplied by the inverse of the of the
+stability constant. And then you see
+that uh with the static approach then uh
+the error can actually become uh uh
+rather large. it's of the order of one.
+While uh with the dynamic approach we
+can achieve
+um a reasonably small error of course
+depends on the uh on the properties of
+our approximation space also on its size
+but the good thing is that it's it
+remains close to the target. So the best
+we can do with such an approximation
+which is the uh yellow line. Okay.
+Finally, if we look at some qualitative
+um property of the reconstruction, then
+you see um in the top row the real and
+imaginary part of the uh reconstructed
+state for a certain parameter that we
+have uh um fixed and we have run the um
+high fidelity forward problem is the
+black line with um with circles. um the
+red line which basically overlaps the
+dash uh red line is our dynamic
+approach. So basically there is no
+qualitative difference between the two
+uh the reconstructing solution and the
+actual one the solution of the forward
+problem. While um if we use a standard
+uh static PBDW then we observe a somehow
+qualitatively wrong uh reconstructed
+state. And if we look at the yes um so
+this particular numerical examples init
+for the static one the sampling um
+points was skewed to the um the left
+hand side right from 10 to 15 if I
+remember correctly from the previous
+slide what where was the sampling point
+um the obser
+the okay this was the one where we
+somehow make the comparison
+1.04 to 1 point
+what where was the the location of the
+samples for the static
+one is it uniformly is distributed or uh
+yeah it's the same uh yeah 100 uh
+parameters
+I'm I'm talking about the observation ah
+the observations see yes these are uh
+the sensors location
+and it's skewed um to bottom and that
+corresponds to the the numerical results
+you're showing. Yes. Yes. That's skewed
+to the one side, right? Yeah. Yeah.
+Okay. That that was what I was asking.
+Okay. Okay. And and then that's why um
+um Yeah. Can you go back to where you
+were? Uh this one. Yeah. Yeah. Yeah.
+That's why you know the glue in the
+middle it was not doing well. Um
+probably they they didn't have the
+observation. Yes, exactly. Because this
+is at at the final at the final time. So
+yeah. Yeah. The information is really
+not uh um the sensors are providing no
+effective information on the dynamics.
+Yeah. Which makes sense. Yeah. Totally
+makes sense. Yeah.
+All right. Don't sorry to interrupt. Uh
+no not at all. Um so even if we look at
+the Hamiltonian conservation so um if
+you look at the first plot on the uh
+left um well you see that um the blue
+line so the one associated with the
+classical static uh sensors location uh
+gives becomes unstable. So the
+Hamiltonian is uh is not conserved.
+Um concerning the dynamic approach then
+well from this plot you think it is
+exactly conserved. So it is definitely
+um gives better results but if we look
+at the muttonian error so the plots on
+the right then we observe that um uh the
+error is so the Hamiltonian is not
+conserved to machine precision uh but it
+has an error and this error is
+proportional to the reconstruction
+error. So we can guarantee that this
+error is bounded uh by the
+reconstruction
+error. Okay. So
+um let me wrap up and uh uh so I I've
+presented a possible way to um solve the
+filtering problem with the PBDW uh
+algorithm um with dynamical
+approximation and sensor replacement.
+Um the key the key points are uh
+evolving uh approximation space and
+these allow lowdimensional
+um approximations. Uh also moving the
+sensors is playing a crucial role to
+guarantee good reconstruction and also a
+stable one especially in transport
+dominated problems or problems where we
+have a um very localized solution. And
+it is also possible to incorporate some
+physical properties of the u of the
+dynamics um if the this dynamical
+approximate models and approximation
+space are constructed with certain uh
+built-in uh properties. Um so there are
+many possible extensions. So we have
+considered the problem of state
+estimation. uh one could also think
+about how to do the uh parameter
+estimation in uh in this context. Um so
+in the in this numerical test that I've
+shown we have assumed that we know the
+uh we can somehow measure um the real
+and imaginary part of our solution. This
+this might not be possible or also um
+one might need to work with nonlinear
+observations. And then what how do we
+extend this uh uh this method to this
+case? Um also we would like to have
+somehow a sort of feedback um uh loop in
+the sense that we would like to have the
+evolution of the approximation space to
+be informed um uh of the local
+reconstruction say um uh in time in real
+time. Um I'm sure there are many more uh
+open questions. Uh uh with this I I uh
+would like to conclude and thank you
+very much for your attention.
+Fantastic. Wonderful talk Sicilia. Thank
+you so much. Um okay, let's have a Q&A
+session. Car I see the Carlos hands up.
+Do you want to Hello. Uh can you hear
+me? Yes sir. Yeah. Um so I wanted to ask
+kind of maybe a stupid question but uh
+when it comes to let's say industrial
+applications or practical applications
+uh what kind of um framework would you
+envision these working? Um do you see
+any particular problems where this kind
+of moving sensors could be applied and
+what would the let's say control loop uh
+look
+like? Um so all right um well at the
+moment this this old setup has been
+tested for uh academic problems where we
+also assume to be to have uh
+measurements that are given by exact
+evaluation of the uh of the solution of
+our model. Um so the kind of setting
+where where this kind of approach would
+perform best is exactly when uh you have
+um dynamics that uh sort of uh transport
+effect. So solutions that are all
+localized and they are moving in time
+but also in situation where you can
+somehow afford to move the sensors
+because this might not be always the
+case and this I do understand. Um so if
+uh if one has the chance to move um the
+sensors so to somehow take measurements
+over time um at different locations uh
+then uh this this would be good if the
+solution is uh is very localized and
+this provides um a sort of um algorithm
+to sort of be able to trace where the
+solution is moving in space.
+Nice. Thank you very much. Thank you.
+Very very well. Um very well done.
+Um I have some questions if not if there
+is no other questions. Um please hands
+up or put your questions in the in the
+chat room if you do. Um meanwhile I
+would like to ask bunch of questions.
+very exciting and very interesting
+topic. It's in spirit pretty similar to
+gapy pod gapy proposed de composition in
+a sense that it's it uses some basis and
+then uh it lets you reconstruct the
+whole field using just sampled points
+but the difference I clearly see that um
+you do not have to well I mean it's a
+dynamic it's adaptive you you you allow
+your your sample points to be moved
+around depending on where the fields are
+moving
+uh based on the reconstruction you have
+done and also um you do not assume the
+basis
+um to be constructed you know knowing
+the the snapshots from other parameter
+space like everywhere in space and time
+you only assumed maybe some initial
+conditions you use the snapshots to
+construct the basis so in that sense
+it's more more general than gap I I I
+see. Um so very fascinating. Um if if
+you can comment on the difference
+between your meth algorithm and gap that
+would be awesome. Uh yeah. So in so in
+this setting if we look at the uh
+evolution of our approximation space
+basically we
+um this is not data driven in in a sense
+uh in the sense that we do not need to
+have um right information on the
+dynamics or on the solution set except
+as you said from some initial condition.
+Yeah, at some parameter but then we
+basically adapt on the fly based only on
+the PD sort of on the information that
+comes from the um from the dynamics. So
+in some sense if you want to have a a
+purely datadriven blackbox approach this
+is not possible because you need somehow
+to have an information on the
+differential operator on the velocity
+field of the flow. But this vice versa
+doesn't need any prior information right
+any well not prior in the you need it in
+the sense of the inverse problems but
+you don't need for the approximation any
+information on the dynamics uh nor
+locally uh not even globally as would
+pod or gapy pod uh do
+yeah well okay related to the uh carosis
+questions in order to
+apply this method to let's say some sort
+of experiments. Um and the fields are
+like very transport dominated orction
+dominated. Um then but the experiment is
+like is moving pretty fast. Uh in order
+to incorporate that situations your
+algorithm computational post has to be
+pretty um pretty real time.
+Right. Yes. And yeah, can you comment on
+that? What is the computational cost
+then? Can can it be applied to that real
+time experiment? Um you know uh yeah
+okay so um if you have a dynamics that
+is moving uh fast then uh basically what
+uh you have basically two options. Let's
+say uh you can um have a rather large
+approximation space and then somehow
+afford a larger time steps ideally so
+that uh with a larger approximation
+space you can hopefully capture more
+dynamics.
+um uh or otherwise which is basically
+the the idea behind the uh this
+dynamical approach is that you would
+update uh your space very frequently. Uh
+but the fact that somehow your
+approximation is based on um a slice of
+the solution set at a given time. Um if
+your solution is somehow as a
+lowdimensional representation as a
+function of parameter for fixed time
+then you can have a cheap
+representation. So um uh bn with n small
+um that is however changing rather fast.
+um then you could argue that uh uh then
+this n um might not might be suitable at
+the beginning of the simulation but then
+you might need a larger approximation
+space then yeah there are there are
+algorithm
+with that are rank adaptive in the sense
+that you can also update the size of
+your approximation space say enlarging
+it or um shrinking it depending on on
+the dynamics
+Okay, thank you Sius. Um, Tony, I I see
+your hands up. Uh, do you want to unmute
+and ask? Sure. Thanks. Yeah, thanks
+Cecilia for the wonderful talk. Uh, so
+uh while the method clearly avoids the
+uh full stage solves and leverage the
+low approximation space, I still have a
+question regarding the computational
+efficiency. Maybe I missed something. So
+given that this approach involves
+recomputing the projections and the
+sensor placement online, I'm wondering
+if it does not have the usual
+computational gain as in the classical
+offline online splitting in the usual
+reducal models. So I want to ask if you
+have observed practical runtime benefits
+in your experiments.
+Um okay. So um uh two things maybe um
+are so the first one is that um if you
+have um a sort of a nice problem in the
+sense of being reducible in the sense of
+uh uh being in the situation where your
+uh model order reduction um algorithm
+ensures that the approximation uh the
+approximation error uh decays as the
+column of RO bandwidth of the solution
+set and your solution set um as a
+cologar bandwidth that decays
+exponentially fast. For example, say you
+are in a
+um elliptic parabolic type of framework
+then um you might have incredible speed
+up with the classical offline online uh
+approach and uh that's unbeatable. Uh
+the thing is when you consider transport
+dominated problems uh then this
+commodoro bandwidth can decay uh
+extremely slow and the thing is that you
+um then you need an extremely large
+approximation space. So then the gain
+online is not that clear in the context
+of reconstruction state reconstruction.
+This is also a problem because then we
+need really a lot of measurements if we
+have a large approximation space and
+this would be a an extremely um costly
+uh type of uh algorithm. So an offline
+online splitting uh would would not uh
+uh pay off. instead of uh if you if you
+do this sort of uh adaptivity
+um then you can guarantee that uh uh
+this adaptation has a cost. Uh this this
+is for sure. So I agree with you. But
+the fact that you can allow small
+approximation space and small
+observation spaces is what um is what
+makes it um sort of um the performances
+are are are very good in this sense.
+This is of course a problem dependent
+kind of answer. So
+um then of course we could do argue
+which problems are
+um lead to to to which kind of
+performances.
+I see. Thank you.
+Okay. Um thank you.
+Um okay. So my qu next question is
+obviously um if you increase the number
+of observations or sampling points uh
+that will improve the um probably the
+accuracy
+um of the reconstructions. Um have you
+probably you probably have done that um
+you know study like empirically or
+theoretically. Uh yes. Uh so yes that's
+true. Um
+um we also have a sort of a target error
+associated with also the quality of the
+approximation space and this is
+basically uh independent of the
+observation. So yes and then we have to
+somehow take care of uh of both and on
+the other end it's also a trade-off
+between accuracy and computational
+efficiency. So that's always the
+uh sort of uh criterion with which we
+try to somehow select the number of uh
+um observations and the number of um uh
+and the size of the approximation space.
+Sure. Um have you done any systematical
+um study on that?
+Not yeah not really I would say. Um
+okay.
+Okay. But that would be interesting
+future direction as well, right? Yeah.
+Yeah. Absolutely. And practical. Um
+yeah. And in order to be practical, my
+next question would be um extension to
+2D or 3D problem. Um any difficulty
+you envision? So we we have
+um numerical tests in in 2D. So it it
+works uh comparable to the 1D case. I
+think the 1D is very nice for um
+presentation purposes because you really
+see the sensors um the effect of moving
+the sensors in the uh quality of the
+reconstructions. So it in 2D we haven't
+we have observed similar behavior. We
+haven't done any 3D simulations to be
+honest. So in principle I don't see any
+um great obstacle but u we don't have
+tests.
+Okay. Uh Carlos
+hi. Um so I was thinking in terms of the
+of the case of like a static sensors
+right so dynamical sensors clearly the
+problem is that obviously the the most
+of the of the wave let's say is moving
+out of the of the region that you're
+covering. Um would you have any kind of
+way to to like quantify or compare let's
+say what is the coverage that you will
+need to have with a static static
+sensors over your let's say expected
+domain uh versus um you know less
+dynamic sensors but that move u with a
+wave like is there you know like any
+kind ofistic about like what would be
+the tradeoffs there like
+uh so if I understand correctly you mean
+um maybe placing a static sensor answers
+but in such a way that globally they
+cover uh yeah yeah so basically kind of
+what what are your let's say aristics in
+terms of like how densely placed do
+those static sensors need to be um to be
+comparable to to the dynamic ones like
+let's say for example in the case that
+you had if you had uh let's say exactly
+the same number of sensors but you
+distributed them let's say uh in the
+whole range of your expected let's say
+final dom domain. Um yeah, what is the
+loss of performance let's say of that
+versus the same number of sensors more
+closely tracking
+the okay? Yeah. So the thing is that in
+so if you look at the tests what what we
+have done is um say here um somehow very
+simple situation they are very
+concentrated around the initial state
+and
+then pretty soon uh the support of the
+solution is outside basically the u the
+range of the of the sensors. So the
+thing is that even if we distri if you
+distribute them say in this range say
+020 where uh the support of the solution
+is somehow moving. Uh the thing is that
+some of them uh will somehow be well let
+me pass the term be switched off at some
+point and this is an effect on the
+stability because somehow um your your
+observation space becomes smaller in the
+sense that um not all the sensors are
+playing the role and this causes
+instability in the reconstruction. Um so
+of course this will be probably less
+dramatic.
+um we haven't we haven't done extensive
+simulations uh uh for this kind of
+setup. So this definitely another
+interesting thing to look at. So the
+somehow decay will not be I would guess
+not as dramatic as here. Uh but
+definitely um you you will observe
+instabilities because sensors are are
+just some of them will be switched off.
+Say you you put some of them here in
+zero then those will uh um will give no
+information pretty soon and some others
+will just give some information at say
+time 10 but coming from something that
+is already affected by um a
+reconstruction that is already affected
+by a rather large error.
+Yeah. Yeah. you know that that I mind
+that will be obviously was I mind that
+will be a trade-off in between let's say
+the number of sensors that you will need
+a statically to kind of like densely
+cover the domain versus yeah like using
+less sensors that actually can move with
+the solution. Yeah. Okay. Yeah. Then you
+would need a lot of sensors you mean or
+more sensors and then yeah say try to
+cover the the whole sort of region. Um
+yeah this this we haven't tried but yeah
+then of course it's uh
+um you still will observe instabilities
+because some sooner or later some will
+will become ineffective. Um yeah to
+which extents the beta will behave uh in
+will goes to zero. uh this is would be
+interesting to look at
+u kind of let's say corlary to that
+would you then expect in higher
+dimensional cases this will be more of a
+problem just because of you know curse
+of dimensionality and you know like
+needing more sensors to cover let's say
+the same space in higher dimensions
+would you then let's say expect the
+dynamical um the dynamical uh algorithm
+to perform better computationally you
+know as the as the number of dimensions
+goes up or yeah I mean I I would expect
+the dynamical approach to you see even
+in 1D uh well adding a lot of sensors is
+expensive. So um having few of them that
+follow the dynamics
+um to me seems uh uh the best option and
+yeah I do agree that as you go higher in
+in the dimension of the um of the space
+dimension uh yeah this
+this yeah this is a problem and also um
+well the other thing that uh might be
+problematic is that you need some
+information on the dynamics right
+beforehand because otherwise How do you
+put the sensors at the beginning? While
+with this dynamic approach, you you just
+need somehow to know the the the model
+that is behind, but you don't know you
+don't need to know how the solution will
+look like at say time 20. Okay. Okay.
+Yeah, that makes sense.
+Awesome. Okay. I think you have you know
+described how the you know dynamic
+sensor location is determined. um based
+on the stability the beta um if you go
+back to slides 12 or 13 uh that would be
+awesome. Uh
+there it
+that to quantify the stability you do
+not need to know about your um system
+like for example like governing
+equations of the shielding equations you
+you do not have to know about it you
+only need to observe it and you you you
+can still quantify that uh stability
+constant right yes I agree there's um so
+at least in our approach there's a
+dependence amount on the problem because
+of the approximation space. Um so the
+approximation space moves uh according
+to uh to the model that is behind. uh so
+if we change the shinger equation with a
+different equation then the bn will be
+different and will also evolve
+differently and then also the beta will
+be affected by uh by this
+uh yeah in order to be more general
+probably that dependent if you can get
+rid of that dependency and just purely
+um you know quantified by you know the
+the reconstruction instructions and all
+those uh the observations you have
+collected that would be even more
+generalizable I would say. Yeah. Yeah.
+But but that would be hard to do. Um but
+there there must be some way around I
+hope because I I I really think that
+this is pretty good directions to
+pursue. Um and I I truly believe that it
+has a a lot of applications out there
+especially in engineering side where
+they do the a lot of um
+experiments. Um well okay well we wow
+it's 16 after 11 a.m. here uh in Italy.
+How what time is it? Um it's uh 16 plus
+8 p.m. 8:00 p.m. Oh okay. Well, thank
+you so much for the wonderful talk and
+the nice u you know Q&A sessions. Thank
+you very much. It was very um wonderful.
+Um well with that we can end the
+um the the seminar. Let me push the stop
+button.
+Because

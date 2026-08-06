@@ -1,0 +1,1802 @@
+All right. Um, welcome to the DDPS
+seminar everyone. Before we introduce
+our invited speaker, let's go over some
+rules and logistics. First of all,
+please mute yourself during the talk.
+But if you have questions, you can
+unmute and ask questions or use chat
+room to post your questions so that we
+can address them in Q&A session at the
+end. Second, today's DDPS seminar is
+open to external audience. Uh,
+therefore, no classified discussion is
+allowed. So please watch out. Finally,
+the talk today will be recorded and
+uploaded in our YouTube channel. Um
+that's about it. Now let me briefly
+introduce our speaker today. It is an
+honor to host Raphael Pastori who is an
+assistant professor in Georgia Tech. He
+earned his PhD in applied mathematics
+and master's degree in statistics from
+Harvard University in 2020. Prior to
+Georgia Tech, he was a post-doal
+associate at MIT mathematics where he
+worked closely with the MIT IBM Watson
+AI lab. Raphael's research focuses on
+scientific machine learning at the
+intersection of applied mathematics and
+machine learning and inverse design uh
+via scientific uh machine learning and
+large scale electromagnetic design.
+Today Rafael will talk about input space
+scientific uh machine learning for PTE
+constrained optimization of geometries
+which sounds pretty interesting. So I'm
+sure we are going to hear a wonderful
+talk. Now let me ask a a questions uh
+Rafael if it is okay somewhat informal
+questions.
+>> Sure.
+>> Uh to get to know you better and uh make
+this seminar somewhat informal. uh um if
+you can share like how you got into this
+field and what motivated you and you
+know what makes you the most excited
+about the work you are doing right now
+if you can share some some personal
+story that would be awesome.
+>> Yeah. Yeah. Uh actually I I I tackled
+that in my next slide so if I can start.
+>> Oh you do? Okay. Yeah just go ahead.
+Yes. Perfect.
+>> So hi. Thank you. Hungsu for the
+invitation. Um I really appreciate it.
+Um the title is a mouthful but I'm going
+to speak about uh input space scientific
+machine learning for PD constraint
+optimization and I will focus on
+geometries. Um and so I I'm I'm going to
+I'm going to explain a little more how I
+got into this by uh uh uh
+repeating uh uh parts of my resume uh
+but but also explaining like what
+happened during those lines. And so uh I
+started my PhD in 2014 uh in applied
+mathematics and I focused I was uh
+originally a physics student. So I came
+in as a physics student and um I was uh
+really interested in uh this uh optical
+devices called optical metaurfaces. So I
+did my my uh uh uh training in France
+where there was a lot of mathematics and
+physics and I had just an interest in
+devices and and and uh and and and uh um
+and and design. And so when I when I
+when I joined I joined as a actually as
+a physics student and not an applied
+math student. And um I was I was I was
+noticing that uh in the lab I joined for
+those optical method surfaces there were
+still a lot of uh uristic based
+optimization. And I was wondering like
+why are we not using the math like
+Maxwell's equation or linear equations
+should not be like impossible to
+leverage for like PD constraint
+optimization with a more like
+mathematical approach and then I
+realized that like actually it was a
+difficult problem because it was a there
+was a a computational bottleneck. It was
+a difficult simulation problem before
+even being able to optimize it. And so I
+switched to applied math. uh then I
+reapplied and uh switched to the apply
+math apply math program and focused on
+like uh creating uh scalable approximate
+solver uh for uh optical meta surfaces.
+Uh and then um I continued uh doing that
+in in my posto at MIT. Um but uh in in
+fact in my uh scalable approxim
+approximate solver one of the uh key
+component was to replace uh it was
+basically a de composition methods that
+would break the design domain in uh uh
+many many small subdomain simulation and
+the key accelerating component was to uh
+train a datadriven model of the
+subdomain simulations. uh so it could uh
+it was it was a a fitting a good
+datadriven problem and that's kind of
+how I got into surrogate models. So at
+first my first surrogate models were um
+I don't know if I talk about this today
+but uh were polomials so they were not
+really they were datadriven but they
+were not really machine learning they
+were just traditional by math um and
+then I was like I I hit the curse of
+dimensionality and that's how I got into
+scientific machine learning and tried to
+do uh data efficiency and that was uh
+that was the the what I got uh that was
+most of my research in scientific
+machine learning in during my my postoc
+and Since then, so I I started with
+solvers, then I was like, "Oh, I can
+accelerate with machine learning." And
+since then, since I started my my
+faculty position, well, I continue
+trying to accelerate PD solutions, but I
+I also value um the fact that uh we have
+great solvers for PTE uh and that like
+they they have the the the nice property
+especially for Maxwell's equation, but
+also others that like they certify the
+physics, right? we know that like the
+output is physical and and and and
+generalization is really something I've
+been struggling with in in uh in my uh
+uh uh scientific machine learning
+research. So I was like oh how can I uh
+how can I uh uh leverage this uh uh this
+scientific machine learning while still
+using uh PD solvers uh that that are uh
+certified. And so that's how I got into
+uh MLN PD constraint optimization that
+I'm going to talk about in the second
+part of my talk today. Uh I also uh in
+my in my group have a research interest
+in uh end toend optimization and code
+design. So where you're trying to
+optimize a physical device that uh needs
+to obey partial differential equations
+but also end to end with uh uh software
+postprocessing from the data you gather
+from that device. uh and also have an
+interest in a more u uh uh uh uh
+scientific machine learning problem
+which is how to bridge uh theorydriven
+and and datadriven models and that's
+more for like model discovery and and
+and and modeling in general for very
+complex systems. Um I'm going to talk
+about the ML and NPD constraint
+optimization today. And one last point I
+wanted to make was that like I I am
+doing a tenure track and so um it means
+that I will have a tenure case coming up
+in 2028. So if you receive an invitation
+to review my case, please send back
+something. You can say like I don't like
+what Rafael does, but like send back
+something.
+That's that's very important for the
+dinner case. Uh anyways, so just to uh
+thank you for that question. I really
+appreciate it. Uh so uh um I want to
+frame a little bit like what I'm what uh
+what I want to talk about today. The
+idea is like we want to to discover a
+geometry. So we geometry by geometry I
+mean like the distribution of materials
+that will constitute a device later that
+you can fabricate through maybe additive
+man manufacturing 3D printing or even
+lithography depending on the
+application. Um and so you're in that
+situation where you have a
+parameterization of a geometry this
+vector P and you want to find the
+geometry the vector P that will maximize
+a function of physical fields. So we
+want to find a geometry that that's
+optimized that uh that PTE solution
+here. This this f uh I will limit it to
+scalar functions because we care about
+like maximizing one property.
+Of course the physical fields are
+highdimensional and so the impact of
+that kind of research is to produce a a
+physical and fabricable design that
+would solve an engineering problem. Um
+and just like quickly uh for uh uh the
+uh people who think that like maybe like
+considering any scalar functions uh uh
+might be limiting um uh you can have
+like multiple goals uh uh that you need
+to take into account in your
+optimization. Uh but by setting it uh as
+a a scalar optimization uh you you can
+still do that. uh you just need to check
+to to to pick what is the goal you
+really want to maximize and and
+understand what are the goals that are
+more um you know uh uh uh constraints
+like criteria criteria that you need to
+meet and those can be uh enforced as
+nonlinear constraints to your design. So
+here I kept like a it's still a fairly
+general uh uh uh problem formulation.
+These are u a few uh devices that I uh
+uh uh have worked with or I am currently
+work working with uh uh to just to try
+to uh give a a little more substance to
+those geometries that I'm talking about.
+So this is a an example of optical
+metaurface. It's a really nice uh art
+rendering of of a meta metaurface. It's
+basically uh uh using um scattering
+properties of light to shape uh
+transmitted or reflected lights from
+those uh uh uh nanoructures.
+Um and they they they uh they've been
+around for more than a decade now. um
+and and they're very compact in contrast
+to um uh you know usual u traditional uh
+uh um optical devices which rely more on
+propagative properties of light and so
+they are usually thicker. Um I've worked
+also on thermal design here to imagine
+like that's that's basically a a
+material you're trying to to optimize uh
+its uh uh uh heat flux at some points
+and what you can do is like punch holes
+uh at different places uh and and you
+want to know like where do you punch
+holes in order to to get to your to your
+heat flux. So some thermal design. I am
+currently working on mechanical uh
+design and and mechanical metamaterials.
+And fairly recently I also had a a a
+chemistry application where uh we were
+still optimizing um
+an optical uh um an optical device uh
+this this meta surface again. But the
+goal here was chemistry. So it was a
+nice end to end optimization of uh of of
+optics and chemistry. Okay. And so uh um
+I my my my talk is about input space uh
+machine learning uh uh uh and so I
+wanted to also define what I mean by
+input space. So the the the
+you know I'm going to talk al so the the
+the input space by what I mean uh with
+in input space is that we're trying to
+do some uh uh uh uh representation or
+machine learning of the input to a PD
+solver. So how you know uh uh uh how to
+represent the geometry and usually the
+geometry then when you put in the ge PD
+server it will it will uh impact the PD
+solver in its co in the coefficient of
+the PTE and so we we learn a
+representation
+uh uh of the of the input and this is in
+contrast to uh out output space machine
+learning where we learn a representation
+of the solution and so here the goal is
+more to accelerate PD solver. So usually
+when we do up output space machine
+learning we're trying to replace that PD
+solver
+u and uh and the good thing with the
+output space machine learning which is
+not what I'm going to do today uh um is
+that like it applies to many things you
+can do PD constraint optimization but
+you can also do decision making control
+and uncertainty quantification using a
+similar model so like you have like a
+lot of usability from it has had some
+success in the past with alpha food and
+things like that. But but to me there
+are there are a few drawbacks uh uh um
+and and it's it's definitely not an
+obsolete field. It's it's a very
+thriving field. But I'm going to talk
+about input uh space machine learning
+today because of those drawbacks is that
+often we're trying to rediscover some
+known physics through data. So you know
+like if we already know the physics why
+do we need to rediscover rediscover it?
+I already mentioned it. um there's this
+this lack of generalizability and if we
+use a solver for optimization and it's
+not generalizable and the the design we
+end up uh having with this model uh is
+where the model is is not physical then
+we end up with a non-physical design and
+and that's not very useful and and so
+and that's also related like the those
+type of models they're hard to certify
+uh or even to verify uh uh uh when
+you're using them to make sure that like
+they're they're giving you a a
+meaningful result. So input space
+machine learning is what I'm going to
+talk about today. We're trying to learn
+a representation of the input of a PD
+solver. And so this is uh uh more likely
+to work uh to to have a to have impact
+on PD constraint uh design. At least
+that's the focus I've had. I haven't
+extended it to decision making control
+or UKQ. Um and part of the reason is
+that we still have this this idea of
+input space uh machine learning is that
+like at least at optimization time you
+still have a solver in the loop. We
+still have a PD solver that you need to
+query. Uh so the benefit is that uh you
+need to you you you have your physics
+that is certified because you delegated
+your physics to uh a solver that is
+transparent. Um and uh the question here
+is like well how can we leverage this uh
+machine learning? How can we create a
+representation learn a representation
+that would shorten the lead time to
+discovery?
+And so in that context the baseline
+really is uh um uh uh the is going to be
+the state-of-the-art in optimization
+rather the state of the rather than the
+state-of-the-art art and output space
+machine learning. So I'm going to talk
+about uh the state-of-the-art
+optimization as a baseline today. I'm
+going to uh reduce the scope of my
+method to um uh two cases. Um uh one
+when uh you have a computational
+bottleneck. So uh solving for these
+fields is expensive. It hurts. So you
+don't want to do it like thousands of
+times. Uh but you can still do it
+probably 1,000 times. So, if you can
+just do it three times, I don't think
+the method I'm going to show the method
+I'm going to show today is going to
+work. But if you can still do it like
+hundreds uh or a thousand time uh uh
+then then that that's the that's the
+sweet spot of what I'm going to talk
+about today.
+Um the second the second uh scope uh uh
+is that like uh I'm talking about cases
+where f is is is uh is nasty in a sense
+that like it's non-convex. Uh it might
+have a a landscape that has a lot of
+local optima. Uh why? It's because like
+I'm going to compare myself against
+baselines that are gradient based
+optimization
+um or uh or the state-of-the-art of
+optimization. And then for convex uh
+functions uh or for uh uh um well
+behaved uh functions um uh then you
+might not need to improve the
+state-of-the-art and you might be
+already good with what already exists.
+So that's why I added that that that
+scope qualifi qualification. And um and
+then the last thing is that like the the
+the parameterization of the space this
+geometry that you're trying to define um
+it's non-trivial to parallelize uh to
+parameterize and uh it could be
+represented like in a naive way with uh
+a very highdimensional
+uh physible space like thousands to
+millions to um I'm not going to show it
+today but I have even a design that has
+a billion parameters and So, and so um
+for that reason um the the baseline I'm
+going to uh uh compare against really is
+gradient based optimization because
+other methods uh won't scale uh with the
+the this size of input. Uh so so what we
+want to compare against uh is gradient
+based optimization which which scales
+because uh even for PTE actually that's
+my next point. um we have efficient ways
+to compute uh uh the the gradients uh uh
+regardless of the number of parameters
+and that's solving
+a a related problem which is the the
+adjoin simulation and for you all I give
+a just a refresher and maybe an insight
+on what the adjint method is. Um this is
+this is uh actually uh the the idea to
+understand is is quite simple. So I like
+to to I teach that that those slides but
+I I I I think it's it's nice to to go
+over it real quickly. So here and I
+apologize I I changed the notation
+already but here we try to optimize this
+uh p uh that is the parameterization of
+the geometry uh we try to find the the
+the parameterization p to maximize the
+the the objective function g of x and p.
+uh and so x are uh solutions to the pd
+fields and uh in what I told you before
+really p will affect uh g only through x
+so it would be really like g in
+parenthesis a g of x of p well but what
+what I what in what I've presented just
+before and so as I said like uh your
+your uh x is a solution to a pde here
+just for simplicity I present the
+reasoning for uh linear PTE and like
+where you already have uh uh discretized
+your PD and and that's how you would
+solve a linear system I I show uh just
+after uh that that you you can relax
+that to nonlinear problems so you can
+compute that efficiently gradients to
+nonlinear problem as well and so now you
+want to get the gradients of uh your
+objective with respect to uh your
+parameters and so for this you you just
+have a chain rule and in that chain
+chain rule. The the problematic term is
+this one. G the derivative of the
+partial derivative with respect to x
+times the partial derivative of x with
+respect to p. Uh with a little bit of
+matrix uh uh calculus uh we can find
+that like the the the derivative of the
+the field with respect to one of the
+pixel one of the parameters pi would
+look like this. And so this term becomes
+this one here at the bottom. And if you
+look at it a little bit, if we
+parenthesize it that way, what it looks
+like is P solves. So we we're solving P
+is the dimension of the of the vector P.
+We need to do P simulations.
+Uh A minus one times like and and we
+have this this right hand term. So
+that's not very efficient because if I
+have a billion parameters in P now I
+need to do a billion simulations just to
+get the great one single gradient. But
+the magic of the adjint method is just
+that we re reparize
+this this this uh uh this term here into
+uh the into the the right hand drum of
+uh the right hand side of this equation.
+And what we see now is that when we re
+reparize this what we we what we
+discover is that like oh we could do it
+as like solving a single simulation. Now
+it's not exactly the same simulation and
+then we just need to multiply by a
+matrix. So that's that's where there's
+no magic in the uh method. It's just uh
+the chain rule and reparenthesizing.
+And so from this uh uh uh uh from this
+term we we derive the adjint simulation
+the adjint simulation which is such and
+that's where we see actually why it's
+called the adjint simulation because the
+adjint simulation is basically the same
+linear simulation but instead of taking
+the PD operator we take here it's it's
+transpose but if it was complex it would
+be its adjint
+and then uh we obtain that way once we
+compute our single adjint simulation we
+we we obtain that way very efficiently
+the gradient that we care about.
+Um so that's uh I'm not entirely sure
+why it's repeated but that's that's
+that's the gist of it and and and really
+because the the derivative operator is a
+linear operator. This extends to uh
+nonlinear uh PDEs. Uh this will still
+the adjint simulation will still be a
+linear solve and that comes really from
+the fact that the the derivative
+operator is a linear operator. So well
+so gradient based optimization is nice.
+It has this this uh efficient
+computation of the gradient. So that's
+why it scales um and it's a an efficient
+way to get to a local optimum.
+But um and so that's why as I said out
+of scope of this project uh are uh
+methods that that are non-gradient based
+because uh they would converge too
+slowly. At least that's the assumption I
+make here. Um and so what is the what is
+wrong with the state-of-the-art then? So
+there are a couple things that I think
+are problematic with this this
+state-of-the-art um for PD constraint
+optimization of functions that are very
+non-convexed. Um and uh the the major
+problem I have with it is that it's
+essentially me memoryless. What do I
+mean by that? I mean that when you
+when you have done an optimization run.
+So within optimization run, you might
+you might use uh uh uh uh information
+across uh iterations. But once you're
+done and you've you've arrived to a
+local optimum and you're not happy with
+that local optimum, which happens uh
+often for very non-convex functions,
+then you need to start from scratch with
+another initial guess. And you can
+really use the information of all those
+PTE solves that you've done for your
+first optimization run. Uh and as a
+reminder, each optimization steps uh
+they can be costly because they require
+at least two PD simulations. The the
+forward simulation to evaluate the cost
+function and the adjint simulation to
+evaluate the gradient. And so the
+today's agenda is to uh look at input
+space machine learning uh for two goals.
+one is to accelerate the simulation uh
+via surrogate models and the second is
+via enhancing exploration of the
+physible space. So on accelerating
+simulation via uh surrogate models, it's
+usually what I would call output space
+machine learning but I have an and and
+there is a lot of work in that space on
+physics informed neural networks which
+basically gives you a solver that is
+datadriven not necessarily the fastest
+but it has the benefit of solving an
+inverse problem as fast as the forward
+sol uh problem. So it can be useful
+sometimes in th in those settings. Um
+you have operator learning and there are
+like end-toend methods uh uh that can
+that can uh use this this this uh uh
+surrogate models of the output space.
+I'm going to focus on this uh physics
+enhance deep surrogate because even
+though there are some models that that
+try to just accelerate the prediction of
+the function it is somehow some input
+space machine learning and so I wanted
+to to al to to start with that. So what
+is a surrogate model? Um well if I I'm
+going to use an illustrative example
+with optics here. So I if I if I wanted
+to get the transmission through that
+structure. This is a 2D structure that
+is repeated at infinity left and right
+and you have incoming light coming from
+the bottom and you're trying to compute
+the complex transmission at the top. Um
+well uh what you could do is just uh
+have that computational domain with
+peric boundary condition solve maxwell's
+equation here held equation and then
+from the fields you computed uh you get
+the transmission coefficient the idea of
+a surrogate model and here I want to
+clarify what I mean by surrogate model
+because it's it's not uh necessarily the
+same as uh uh in the literature for me a
+sur a surrogate model is a datadriven of
+a scalar property of a solution to a
+PTE. So it's just it's just trying to
+predict a property. Here just the
+complex transmission from a
+parameterization of the problem. Here
+the parameterization
+it becomes the input of that surrogate
+model. Here the parameterization has
+like 10 geometrical parameters. It's the
+width of those squares and uh one
+physical parameter which is the
+frequency of the incoming light. And so
+the the the circuit model what does it
+do? it it it basically evaluates
+uh uh uh the a datadriven model that
+will give you directly the the the
+complex transmission without having to
+go through the step of computing the PTE
+solution. And so because it it skips
+that PD solution part, it's much much
+faster than using a solver. So it
+accelerates inverse design. Verse design
+is another word for PD constraint
+optimization. And
+uh that doesn't tell the whole story
+because there's no free lunch. It's very
+fast at evaluation time. But uh you need
+to in order for your model data driven
+model to be good, you need to train it.
+And so training requires to actually
+simulate the fields many many time for
+many many instances of geometries and
+and frequency of uh input. Um and then
+you try to optimize the global error uh
+of uh your surrogate model in a
+datadriven way. Why the global error?
+Well, because it has to be accurate
+everywhere in the physible space because
+if your optimization converges on a
+point where your uh surrogate model is
+non-physical, then your design is
+garbage. As I already mentioned, that's
+the problem of generalizability.
+And so a good goal for accuracy is to
+reach fabrication error uh or be do
+domin dominated by it because then it's
+no longer your model error that is that
+is dominating there's no free lunch if
+we reuse it enough times then a
+surrogate model might be useful but so I
+I I wanted to to I did an MBA before
+before starting a PhD which is pretty
+uncommon. something that I liked uh and
+learned from my MBA is that um you know
+we put very clearly cost comparisons and
+uh uh and so that's what I tried to make
+because you know in scientific machine
+learning less now but at some point I
+thought it was it was useful to just uh
+be as clear as that um we want to have a
+method that cost less than the
+state-of-the-art so the state-of-the-art
+would be to use a solver call it uh r
+time that's the number of iteration on
+our gradient based optim optimization
+and then we get to our design. Uh the
+cost of the surrogate model is of course
+like we would need to call a surrogate
+model our time as well but we need to
+add the cost of training that surrogate
+model otherwise we uh introduced a
+method that is good that is more uh
+expensive than the state-of-the-art and
+we want to reduce costs and so just uh
+just uh writing this very clearly we can
+already motivate what is the what are
+the res research question for datadriven
+surrogate model uh We want this we want
+to satisfy this inequality. So we want
+uh here are our research questions. uh
+we want to be able to minimize training
+data because here the cost of training
+is dominated by generating the data
+which is solving the the PTE many many
+times and and computing the the the
+property and and also we want to
+accelerate evaluation so that like we
+really gain at evaluation time compared
+to so uh solving the the the solution as
+I said before a good datadriven model uh
+doesn't necessarily require uh uh neural
+networks or machine learning in general
+eneral uh chibichef polomials are
+actually very good for a smooth
+function. They're exponentially
+convergent but they require the right
+choice of training points u uh so and
+we'll see really briefly today that the
+choice of points matters um also in
+machine learning but here you can see
+like for the about the same number of
+points using the same polomials if you
+use linearly spaced points instead of
+chbbyef points then chbbyf polinomials
+do very poorly right you can see this
+stronger phenomenon where like it's
+really bad towards the end of the
+interval and and that is catastrophic
+for your go global error right because
+if you end up with a design uh that is
+in that region uh your design is very
+non-physical and it tells you it I like
+the the example of polinomials because
+it tells us a lot um it it also
+introduces the curse of dimensionality
+uh the number of training data we need
+uh uh of uh uh for for our polomials uh
+is a power of the number uh of the
+dimension of the input and so that
+doesn't scale very well and so the idea
+is like okay well we if we cannot do a
+chiff interpolation
+and we still want more parameters which
+we do because there's another key
+concept from optimization which is the
+blessing of dimensionality which means
+that when we have more degrees of
+freedom we tend to do better uh how can
+we uh get more degrees of freedom and
+the idea is that well maybe neural
+networks can help because they tend to
+alleviate uh they tend to alleviate the
+curs of dimensionality without solving
+it completely but alleviate it maybe
+better than polomials and so it's a
+problem of accuracy versus training cost
+now I'm putting pictures of Andre Mar
+and Jim clerks Maxwell why and they
+don't look happy as you can see uh why
+well they they worked really hard to to
+find for example the equations of lights
+Maxwell's equation. Um, and now we're
+talking about uh rediscovering
+uh their their their work through data.
+It seems a bit wasteful. And so the idea
+of the physics enhance deep surrogate
+that I'm going to introduce next is to
+put the PTE back inside the the blackbox
+model. So uh physics enhance deep
+surrogate was published a couple years
+ago in nature machine intelligence.
+And so the idea is like we have a
+parameterization of the geometry. Here
+is just a card of the geometry. Really
+the in the results is going to be this
+uh this illustrative example I presented
+earlier with 10 parameters in the
+geometry. We have an accurate Maxwell
+solver. Uh thanks to it we compute the
+transmission and we're trying to
+reproduce that data. The link between
+geometry and complex transmission.
+the uh the machine learning baseline
+that we use is to just have uh the same
+parameterization as as input and train
+to uh um predict the complex
+transmission with a neural network. And
+so the idea of PES is to open the black
+box. The first thing we do with PES is
+to put a solver back inside the the box.
+So the the last layer of the of the of
+the model is a solver. But how is it
+like gaining us anything? Well, it's
+gaining us something because it's a low
+fidelity solver. So, it evaluates much
+faster than the the high accuracy
+solver. Uh, unfortunately, it's also
+very wrong. So, if we just use our low
+fidelity solver to compute the complex
+transmission, we would have terrible
+accuracy with errors like up to 100%.
+because the in the case of Maxwell's
+equation because the those those uh
+those low fidelity solvers they in max
+equation have resonances it's resonance
+phenomena and those low fidelity solver
+they usually get those resonances wrong.
+So if you're if you're if you get your
+resonance wrong very quickly you have
+very large errors. Um so why am I uh
+presenting this in an input space
+machine learning uh uh presentation?
+It's because the method the the key of
+the method is to leave the physics to
+the neural to to leave the physics to
+the solver and with the neural network
+just trying to find what is the input
+that will make that solver accurate not
+for the full solution but just for the
+complex transmission for that uh uh
+scalar property. And so that's the whole
+idea of pets. We have this uh uh uh uh
+end to end training of a uh neural
+network generator uh that will discover
+uh the the the geometry transformation
+from the the original parameterization
+to what should be the input geometry to
+the solver to make it accurate for that
+property that we care about. So we were
+very happy with the results um in load
+data regime. That's just for Maxwell's
+equation. Uh uh we we could see um uh uh
+three times improvement here. I want to
+I just want to quickly mention that like
+here we used peds and we also used an
+active learning algorithm that I didn't
+have time to introduce but uh uh that
+just echoes the fact that like the
+choice of points matter. So we really
+want to compare those two methods which
+are using both using active learning
+this this creation of a data set that is
+most informative for the for the model
+we're training we see that like in low
+data regime like we we're three times
+better in accuracy now this is still an
+accuracy that is too high for inverse
+design purpose for PD constraint
+optimization purpose but something we're
+also very excited about this is too
+little data to say anything about
+asmtotics but we could reach the error,
+the fabrication error levels that we
+need uh to be dominated uh by by
+fabrication error and no longer by model
+uh error. And so we could use that model
+for inverse design. We're very happy
+with that. And and to show that like
+this uh uh uh uh is not just for
+Maxwell's equation but for other types
+of PTE. This was uh illustrated on other
+PTEEs as well. The diffusion equation
+and the reaction diffusion equation. An
+interesting thing is that the reaction
+diffusion equation is a nonlinear PTE as
+you can see with this nonlinear term and
+the low fidelity solver was no long not
+only a relaxation of the discretization
+it was a coarse finite difference solver
+instead of a fine enough uh resolution
+but it was also a relaxation of the
+physics. We did a linear relaxation of
+the physics uh here using just a
+diffusion equation instead of the
+reaction diffusion equation for the
+diffusion and reaction diffusion
+equation. This is what the geometry
+looked like. We had dish durishly
+boundary conditions and this structure
+in the in the geometry. And you can see
+that diffusion and reaction diffusion
+equation don't give the same solution
+for the same geometry. And so the the
+results here is that we could disc
+decrease
+the evaluation costs
+uh so by you know 500 times to 10,000
+times. Um and uh we could so so that's
+good. That was uh going back on my
+little like business like equations. Uh
+we reduced the valuation time. That was
+good. We also wanted to reduce the the
+the data cost. uh and the data
+generation cost. And what we can show is
+that by multiplying the number of
+training data by 100 uh the neural
+network only baseline could still not
+reach the the the error uh reached by
+pets. So we have at least a reduction of
+uh uh two orders of magnitude in in data
+uh cost needed. And so uh with with such
+a a method we're much more likely to
+make uh um to make a surrogate model
+worth it. Now I want to switch gear a
+little bit though it's still input space
+machine learning and I want to talk
+about uh enhancing the exploration of
+the feasible space. So hopefully here
+this is a familiar architecture. Now I
+have a a latent space uh here it was
+before it was this uh parameterization
+of a geometry. Then I have a
+representation
+and and and what should be familiar is
+that it should be familiar to pens. Here
+we had like the neural network
+generation
+uh of the input to a PT solver and here
+we have our PD solver and then a
+property. The difference here is that
+now the PD solver is not a low fidelity
+PD solver. It is just a regular PD
+solver that is like certifying the
+physics and so we know that we can trust
+this outcome of the prop PD property but
+it comes at a cost. Now we need to solve
+the PTE uh every time we evaluate that
+pipeline and so the goal is to get to a
+good optimum by reducing as much as
+possible the number of calls to the true
+solver. But what we gain is that we know
+for sure that the resulting design will
+be physical. And so this is all
+differentiable. You can uh evaluate uh
+with forward evaluation. You can uh back
+propagate through this. Of course, you
+might need to uh determine your own
+primitive for the the back propagation
+rules on your PD solver by introducing
+the adjoin simulation. That's going to
+be more efficient.
+And so
+you we we we have a we we have that
+system. The question is like well how do
+we do input representation learning
+right? We have that uh that uh uh
+representation that we're now trying to
+learn. We're still doing ML enhancement
+of optimization. Um so we we could we
+could try to have uh uh to to to to get
+uh designs uh that are uh that are per
+high performing and then we try to learn
+a representation a good representation
+of those designs and that would probably
+learn the geometric features that makes
+a good design. Now that's a chicken and
+egg problem because if I had already
+good designs for that property I would
+probably not need to do an EPD uh uh uh
+uh constraint optimization. So we have
+that kind of problem and the method I'm
+going to present next kind of solves
+that problem. But having that
+parameterization here gives us also many
+opportunities. Um it gives us control of
+uh the search space of how we explore
+the physible space. We can maybe like uh
+uh uh infuse some mathematical property
+uh to it. For example, we could reduce
+the dimension. So the input to to this
+representation becomes a lowdimensional
+input instead of a highdimensional
+input. Uh we may leverage pre-trained
+representation and just do uh transfer
+learning and fine-tuning and so we need
+less PD solve to have a better
+parameterization.
+Uh and and another thing is that like
+the uh the the representation is
+independent from the solver that you
+use. So you might use like maybe a a
+suite of solvers uh uh to get to learn
+your parameterization. At least a
+framework like that would be agnostic to
+it. So you could use whatever you
+prefer. I'm going to present in the next
+uh okay six minutes. Is that okay? Yunu
+is it is it okay if I have six seven
+minutes left?
+>> Yeah.
+>> Yeah. Um so this is work that was
+conducted by uh Raza Ma Mazban in the
+group of professor Ali Adibi and
+together we developed this uh this uh
+new method. Uh and so the goal just to
+show like what device we tried to do. We
+had this uh uh uh there was this this
+was published last year. There was this
+uh uh deflector that is useful in
+augmented reality where you're trying to
+send light at a deflecting uh angle that
+is the same for red, green and blue. And
+normally you have chromatic aberration
+and you don't deflect light at the same
+angle. But here we really wanted to have
+a design that would deflect light at the
+same angle for augmented reality
+applications. And the design that we
+have is uh is this kind of a structure
+here that is repeated in a x and y
+direction with a given period uh lambda
+x and lambda y uh and with different
+thicknesses and of course a very uh uh
+complex pattern that is going to be
+repeated and we try to optimize all
+those things to maximize the efficiency
+of the deflection in the angle that we
+care about.
+And so as I said the the the first
+problem we have is the chicken and egg
+problem like how do we create a data set
+uh to learn a representation that would
+uh that that would do just what we need.
+Uh and for this we use the uh uh the
+state-of-the-art of topology
+optimization and and a fact in topology
+optimization is that that that during a
+run in topology optimization two things
+happen. These are uristics understanding
+of what's what what what happens often
+first it tries to find a topology.
+Topology mathematically just means that
+where do you put holes in that in that
+uh uh in that geometry and then it does
+shape optimization. So it changes the
+shape of those poles. So what we did to
+create our data set we didn't do like
+full gradient based optimization runs.
+We stopped them early using this early
+stopping. we stopped when when we
+already had like a topology but not the
+the the shape optimization was not done.
+So you can see here for example this is
+the the uh the evolution of of our
+figure of merit. We're trying to
+maximize what's going on here. We can
+see that where we stop at step 35. We're
+not an optimum, right? Like it's
+probably it could probably do better to
+it's not even local optimum. Doesn't
+look like it. But we stopped there
+because we already have some kind of
+topology that we would that that that we
+would uh uh uh that we can use. Now we
+with that we just created 30 goods good
+good designs. So uh we did 30 * 35 uh *
+two simulations to get the the the
+function evaluation and and and its
+gradient and we augmented the data set
+because 30 good designs was was not
+enough using also a uristic from
+topology optimization which is erosion
+and dilation. So here for example, if
+you look at the white pattern in a a
+black uh uh background, um if this is
+the design we came up with uh uh uh at
+iteration 35, we will also add this
+deated version where we added a little
+bit of uh uh uh uh white everywhere as
+if like you know it grew. Um and also
+this eroded version as if like uh in the
+black area there was a lot of wind and
+it eroded this white structure. So we
+augmented through those uristic our data
+set.
+Okay. Um
+and so
+uh uh so this is this is uh just just uh
+explaining the same the same as what I
+just said. uh and and then we trained uh
+our representation. The representation
+is reducing uh uh the the design space
+from 6,000 degrees of freedom to eight
+degrees of freedom. Um and in order to
+make that uh learning even more
+efficient, we used the vision
+transformer which was pre-trained. So in
+the encoder, most of it was fixed. We
+just learned the last layer uh to get a
+meaningful latent space and then we also
+had to train for the decoder. We trained
+an autoenccoder with most of the encoder
+was already transferred from a vision
+transformer that was just uh trained on
+images uh not really on like uh uh PD
+constraint designs.
+Um and then uh we could uh uh uh try to
+uh uh here we we we we trained our our
+latent space. We have those eight
+parameters here. I'm just showing like
+uh uh uh uh variations of the generated
+designs when we change just one
+parameters and hopefully you can see
+that it really changes uh uh the
+structure as we change each of the
+parameters. It really captures uh
+geometric features which we hope will
+help us uh get to uh good designs more
+quickly.
+And then now we by reducing the the the
+s the the physible space from from uh
+6,000 dimension to just eight uh and in
+fact we added even more like some
+physical parameters that are technically
+difficult to differentiate. They're not
+non- differentiable. is just like from a
+software perspective they're difficult
+to to to differentiate such as um the
+the period of the structure and the
+thicknesses those are slightly harder to
+optimize but we threw those uh uh
+parameters in inside our Bayian
+optimization. So we had trained we have
+trained our our representation and now
+we we enabled Beijian optimization
+directly on that latent space and for
+this every time at every step we
+actually called the the certified
+physics solver we didn't try to uh learn
+uh the physics in a datadriven way we
+just learned in a datadriven way a
+representation of the physics here this
+is a
+uh and so the run of vision optimization
+took 350 iterations. something that is
+interesting. This is colorcoded with uh
+the the the figure of Mary the
+efficiency which is a uh this this worst
+case optimization for those uh for the
+deflection efficiency of those red green
+and blue colors and we can see that at
+first it goes uh and this is just to
+analyze at posterior we did a PCA
+analysis and we're just plotting those
+designs uh on the first and second
+components um and so we can see that at
+first it's uh it's exploring designs and
+then uh like Beijian optimization does
+uh it it started to exploit a little bit
+uh the designs and and found uh one very
+good design.
+Uh here
+uh we also uh to compare uh although we
+also had for comparison the the the the
+uh the paper from uh from last year that
+was using topology optimization for the
+same problem. Uh but in order to compare
+we also did some topology optimization
+runs uh uh um actually is this oh that's
+that's later okay sorry uh that that is
+that is later but uh uh uh with with our
+basian optimization we arrived to very
+good results uh 25% efficiency for red
+24% efficiency for green 24% efficiency
+for blue so it's more or less equal and
+it performs really well the way we would
+want for comparisons with topology
+optimization. We ran uh 70 runs of
+topology optimization and we let it uh
+we let it converge uh um more or less uh
+uh on average it was doing 200
+iterations for each runs. And so it took
+about 14,000 uh simulations to to do all
+those runs. And we can see that this
+problem is a is a non-convex problem.
+It's difficult. You get a lot of local
+optima that are not necessarily very
+good. it still got like some fairly good
+results but the efficiency was not as
+good as like our approach 25 22 but 19%
+for blue
+uh and so here again like that's where
+like I want to show that well we we
+really shortened the lead time to a
+design we reduce the computational cost
+because here uh in our case we did uh
+700 simulations to get our data set and
+then 350 more or less to uh to uh uh uh
+do the basian optim optimization. So,
+we're about at 1,000 simulations. And to
+do topology optimization, we needed to
+do 14,000 simulations. And in real life
+topology optimization, we kind of got
+lucky. We didn't do anything about
+fabrication constraints and ended up
+with Beijian optimization with a
+fabricable design. But in topology
+optimization, often you end up with
+designs that are hard to fabricate. So,
+you need to add this erosion and
+dilation uh optimization where like you
+do the worst case of those three uh uh
+three designs. the design the aerody
+version delayed version and so that adds
+also cost like three more three times
+the number of simulation. So really
+saying that like we reduce by an order
+of magnitude is kind of is kind of nice
+for to. So we really shortened the path
+and this and we could also validate that
+structure. Uh we fabricated it uh and
+and those uh very good design uh results
+that we got for uh uh our design uh
+translated
+uh uh into uh fairly good results. also
+uh definitely better than the former
+state-of-the-art uh in in experimental
+validation. We had a slight degradation
+for blue. Um I think uh uh uh uh if you
+look at the paper which we published on
+archive um uh uh uh we we explained like
+why experimentally and with respect to
+fabrication uh this actually apostereia
+was maybe expected but in any case we
+were very happy because this is a new
+state-of-the-art.
+So hopefully I made a good case about
+MLNP speedd constraint optimization in
+particular uh how uh focusing on this
+input space focusing on uh engineering a
+search search space focusing on
+generating the geometry. So these are
+three ways of saying the same thing. Uh
+really can benefit shorten the path to
+discovery of designs that would be uh uh
+mission critical and important and all
+those designs would be certified by
+physics. I have applications in my
+research in mechanics, optics, uh
+chemistry and thermics like thermal
+property. Uh today I presented about
+optics. Um I'm definitely continuing to
+work in input space representation. I am
+also working on uh leveraging this for
+multifysics application
+uh uh and and and uh uh look more into
+transferring from pre-trained model and
+transferring also knowledge from
+multifidelity knowledge uh models. I
+also have those two other uh uh
+directions and please don't hesitate uh
+to reach out uh if uh if uh you're
+interested in any of those research uh
+directions. I have my email at the end
+of the presentation. I was not alone
+doing this. It takes a village to do
+great research. Uh George Deck, I want
+to particularly thank uh Riza Mazban and
+Professor Aliyah DB uh who uh who were
+my uh close collaborator on that uh uh
+last uh work I showed you and Reza
+really did the the the firstand work. Uh
+and also other collaborators.
+I hope I convinced you that input space
+machine learning has u good uh u uh
+opportunities uh and uh and uh uh please
+don't hesitate to reach out.
+>> Yeah. Well, thank you. Thank you so much
+for the nice talk uh Rafael.
+I I'm sure many of us have enjoyed your
+talk. Um let's have a Q&A sessions.
+Yeah, Kami. Uh you raise your hand. Um
+yeah this
+>> thank you Yungu thank you Rafael very
+interesting talk I really enjoy it. Uh I
+have a question about pets physics
+enhance deep surrogate. In one of your
+slide you mentioned that pets can can
+kind of open the black box of machine
+learning in the context of XAI. How do
+you think these pets can help us to
+provide physical interpretation for
+hyperparameters?
+>> X AI
+>> yes explainable. how can we use
+>> explanable so that's that's the main
+that's the main uh uh uh I mean that was
+one of the motivation for having the
+output of the model be uh interpretable
+transparent uh we want we want the the
+we wanted the output uh to be uh
+computed from physical fields we have
+this uh although low fidelity solver it
+still solves the governing equations and
+so uh the the the one of the motivation
+uh that I had for for uh this type of
+architecture and why for example I
+didn't do any uh uh uh uh uh correction
+after like you know nonlinear correction
+that would add one more layer of of
+neural network after that the reason why
+I end with the physics is that now I can
+also look into what are the what are the
+solution what are the the PD uh fields
+that led to this prediction. And so I
+wanted to be able to and I'm working on
+it uh uh do some uh uh verification and
+like uncertainty quantification based on
+this physical layer. There is another
+physical layer which is the geometry
+instead I itself. So from that
+information of the geometry uh which is
+interpretable and the physics which is
+also interpretable and understandable uh
+uh uh we're really uh including a lot of
+explanation uh or explanability in the
+model. Does it does it answer your
+question?
+>> Yes. Thank you.
+>> Okay. Thank you. Uh Andre uh do you want
+to unmute and ask?
+>> Yeah. Hi. Can you hear me?
+>> Yes.
+>> Yeah. Thank you. Very nice talk. Uh I
+really enjoyed it. I've thought about
+some of these topics myself. Uh it was
+very nice how you laid it out. My
+question was about in the last example
+that you were discussing. I think I
+heard you say something to be effective.
+We're not learning a surrogate for the
+physics. We're learning a surrogate for
+a representation of the physics. Uh can
+you a little bit or just clarify that
+point?
+>> Yeah. Yeah. Yeah. So a very important
+point that like maybe I didn't make
+across very well is that we leave the
+physics to the solver. Like the machine
+learning doesn't do anything with the
+physics. What it learns is a
+representation of the geometry of the
+input to that solver. But the physics is
+done by the solver. We're no longer
+spending any simulation trying to learn
+something that is already known.
+>> So the surrogate is from the for
+instance latent space parameterization
+to the output and everything else in
+between is
+>> not learned.
+>> So the the the it's not to the output.
+So the output would be the property
+right. So the the representation the the
+output of our ML model is the input to
+the PTE solver. So the output is not
+containing any physics. is just
+containing a geometry and got it
+>> and that's a good thing because geometry
+>> I would say that that's the non that's
+the non reducible common space between
+all PD constraint optimizations
+uh runs right you're working at least
+for geometry you're working with the
+geometry if you start looking directly
+at the solution then it will be PD
+dependent it might be even set PD
+settings dependent but the geometry
+itself is more likely to have
+transferable
+insights from even one PD to the other.
+>> Totally. I agree. Thank you.
+>> Awesome. Jonas, do you want to unmute
+and ask question?
+>> Yes, of course. Uh Raphael, uh thank you
+for that. That was really great. And I'm
+surprised that Lulu has not invited you
+yet to uh or maybe maybe he did invite
+you, but you weren't able to make it for
+a talk at um Foundation's data science.
+um because there's a lot of talks of
+this kind and I'm like
+>> this would be very relevant work because
+of the amount of people who do
+electromagnet magnetics in like physics
+and applied physics departments over
+there at Yale but um anyways uh so um I
+wanted to ask about your use of the
+barial autoenccoder um for generating um
+inverse design um solutions uh so
+>> yeah I was curious because I So I mean
+varial autoenccoder can mean a lot of
+things depending on the prior you set in
+the problem. Um I'm curious because you
+have physical constraints have do you
+consider or did you try to put those in
+the prior you're using here to help
+inform the solutions you're getting?
+>> Do we though do we have physical
+constraints since we're just trying to
+create the geometry? We might have
+fabrication constraints. So that
+actually is a that is a project I'm
+working on like how do you infuse
+fabrication constraints in your
+representation but we don't have
+physical constraints the in a way in a
+way we need to find geometry features
+that are useful for our physics later so
+that's only in that in that uh uh in to
+that extent that we're trying to uh uh
+uh uh train and to end our model but
+really the output is going to be that
+geometry. So, so just just to to uh uh
+uh uh to to to to clarify the point,
+we're working on a geometry. We're
+trying to find geometrical insights and
+that's not going to be as much from uh
+uh you know learning the solution as to
+know like just oh what are the type of
+like shapes or or or uh uh latent
+features that like tend to work well.
+>> Got it. Got it. Sorry, I guess I was
+using physical in a very general sense,
+not necessarily just physics based, but
+>> like what's physically possible as well.
+>> So then then now I'm going to start
+answering your question. Um, so how do
+we learn a representation that is useful
+for our PD problem, right? So to me
+there are two methods to do that uh to
+make sure we learn a representation that
+is relevant for our PD optimization
+problem. The first one is the one I'm
+showing here. it would be an
+unsupervised learning approach. You
+don't have a data set but you're just
+trying to optimize the property
+directly, right? So this of course uh is
+a way to learn a representation uh uh
+and and you have you can create a
+bottleneck or something. The problem is
+that now you have a learning process
+that has a PD solver in the loop and
+that's not even a low low fidelity
+solver in the loop. So you want to
+really make it very efficient and so
+that's why in that approach here we had
+a data set uh approach a supervised
+approach and the way we infuse some uh
+uh information about what is a a
+reasonably good design is uh to do this
+thing this this uh it's it becomes more
+a question of how do I generate a good
+data set without it to cost too much
+because we have this chicken and egg
+problem and so here I would say one of
+uh the important contribution ution of
+that article and if you want to see it,
+this is this art archive article. It's
+currently under review. Um uh it it's
+it's this data generation process here.
+We actually used the state-of-the-art
+topology optimization to find topologies
+that were useful because we thought okay
+topology will already have the
+geometrical content that we t we want to
+we want to use. uh we don't really care
+about going all the way to a local
+optimum because that's just going to
+tweak those features but really we just
+want to know the features and then we're
+going to do our optimization on our
+representation to tweak the features
+afterwards.
+>> Ah I see. So in other words this is
+almost like initial conditions for more
+refined optimization methods that
+already exist.
+>> It's it's one way to say is uh this is a
+transfer learning approach. So instead
+of like here we did 30 runs that we
+stopped early of topology optimization.
+Technically all those runs in the prior
+uh state-of-the-art of gradient based
+optimization none of those runs is
+useful because like they didn't end up
+with a useful geometry. And so with just
+gradient based optimization we just
+would have thrown all that away.
+and and here instead of that we use that
+to create a data to to create a data set
+and learn a representation. Uh so that's
+that's the that's the the yeah that's
+the point I'm trying to make. Yeah.
+>> I see. Okay. That makes a lot of sense
+and I'm looking forward to seeing the
+archive paper then. Thank you.
+>> Yeah. Yeah. It's yeah it's it's already
+on archive. Yeah.
+>> Right.
+>> Awesome. Okay. Sumant do you want to
+unmute yourself and ask questions?
+>> Uh yeah. Uh thank you so much for the
+presentation. I've been following your
+work for for quite some time now. So
+it's it's it's finally a pleasure to
+actually like see you give the talk.
+Thank you so much. So I have a couple of
+questions. The first one is kind of
+building on what Jonas just asked which
+is on the VAE. So uh a lot of work which
+have used VAE for more like physics
+based approaches they don't really use
+the use the like the like the
+traditional way of matching the
+posterior with the with the uh univer
+right. So the the traditional way would
+be using a kale scale divergence to do
+that but some people use other forms of
+loss function for example the MMD loss
+function and stuff like that. So what
+have what have you used or what have you
+what's your experience in that? So here
+we didn't put any uh any further
+regularization on what the the latent
+space is but of course uh I think it
+would be very interesting to learn uh to
+structure that latent space to get
+further insight and make the the the
+representation transparent as well
+understanding like well what actually
+drives the optimization does it does it
+answer a little bit your question
+>> uh can you tell me what's your prior in
+this va
+>> well um
+here really the The optimization process
+we had is like what we we used the the
+vision transformer on image net and we
+fixed the parameters to it.
+>> Okay.
+>> And then we just optimized for uh uh
+just the the simplest vanilla
+autoenccoder. It's not even uh or is it
+varational? Yes, we probably did also
+Yeah, you're right. Like we we also had
+some uh uh we we uh forced a goian in
+the latent space. I'm sorry we did that.
+Yeah. Yeah. Sorry.
+>> Yeah. uh because VA comes from like
+using variation inference.
+>> No, no, you're right. You're right. We
+did force a question in the in the in
+the
+>> Okay, thank you so much. And the second
+question is most uh can you go back to
+the slide where you show the flowchart
+where you first have like you get the
+output of the neural network and then
+use the FD solver on that. Yeah. Yeah.
+This so this is very interesting because
+as you just said you use the neural
+network to have an output and then you
+use the PD solver on that output, right?
+Right. And the neural network is trying
+to achieve something as you said it's
+it's a interpretable representation of
+the of the of the geometry. Right. So
+now uh I mean these I mean I've seen a
+lot of people who have similar
+approaches where they use uh the PD
+solver instead of using an auto diff and
+stuff like that in order to enforce the
+physics right uh but when we do that uh
+the traditional laws that apply to
+numerical methods for example if you're
+using a finite difference solver to
+solve a advction equation then probably
+it's not like like the rules of the
+stability and everything comes into play
+right? So for example, we should not use
+a forward stepping the the forward time
+stepper for that vection term and we
+should not use this for that etc etc.
+But when we use that as a surrogate for
+the autodiff those rules just go away.
+So we can just blindly use a central
+difference method for even time and
+space and stuff like that because right
+now we are not really using the using
+the finite difference in the traditional
+numerical linear algebra kind of a way
+but it's much more in optimization way.
+Did you find something of similar nature
+when you're trying to use that over
+here? I mean, am I able to?
+>> No, we we didn't we didn't I mean, it
+was, you know, it's a similar to
+Maxwell's equation and uh we didn't have
+uh uh well, okay. Uh the only moment
+where this might have happened is during
+our Beijian optimization, right? because
+uh uh uh during the well we we it could
+have happened also during the topology
+optimization but we didn't have the the
+optimization run lead us to uh an input
+that like uh you know the solver doesn't
+converge on uh uh and then in the uh
+Beijian optimization setting uh we also
+did not although it doesn't matter as
+much because you basically you know it's
+more of a sampling based method so if
+one doesn't work like you can you can
+still sample others um But yeah, so does
+it answer your question that like so so
+I would say to to apply that to a system
+where you know there are a lot of
+geometries where like your solver
+doesn't um uh doesn't converge uh you
+know like the the so it's basically you
+have a uh I would say it's in between
+the software issue and and the physical
+issue uh then you need to think about as
+I said the good thing about this
+representation learning is that it's
+agnostic to the solver. So maybe you can
+learn you can you can uh uh uh uh do a
+progression of solvers. Maybe start the
+optimization with like a solver that
+maybe is not as uh accurate but that
+like you know will uh converge every
+time and then like as you fine-tune
+maybe go towards uh a solver where like
+uh you know um you know it's going to
+it's going to be closer to your problem
+but you know you will have also uh uh in
+your batch a few cases that are not
+going to run. So you need to handle your
+errors. Oh, I mean so if I ask this
+question, can I use a second order RK
+method to solve a fourth order equation
+using this?
+>> So again like this is independent of the
+solver. So you can read the solver that
+solves whatever you want.
+>> Okay. Okay. Yeah. Yeah, that's what
+>> Okay. Well, thank you. Uh next question
+is by Jan Van uh Delen. Um if you're
+there um do you want to unmute yourself
+and ask the question yourself
+or do you want me to read your question
+that's on the chat
+box? I can I can read the questions.
+Okay. Thanks for the great talk. In your
+latent space optimization example, how
+much did the size of the latent space
+impact the optimization result or how
+much did the number and quality of
+topology optimization samples impact the
+quality
+>> performance? That's a that's a very good
+question. This this uh this me this
+article is not uh is a is a you know a
+first step. It it it asks it opens more
+a lot of questions. Something we we like
+about that that article uh that I like
+in particular is that like the proof is
+in the pudding too, right? Like using
+this method even though there are still
+open questions on for example like how
+do you use the number of uh latent
+parameters or uh and things like that.
+Uh we still got the new
+state-of-the-art. So that was that was a
+very a very uh you know uh uh impactful
+validation. Uh but but uh um that is a
+good question. I think I think it means
+that you you got the the the
+you you I I delivered the message well
+because those questions are very
+relevant and uh in my opinion uh uh uh I
+don't have a better answer than the
+current literature on autoenccoders and
+choice of variables and things and
+latent variables you know
+>> okay sounds good uh uh next question is
+by Mohammed
+um he's asking in There is a Julia
+package called infinite opt.julia
+that lets you model design problems
+where the control variables is a full
+space or time dependent field. Could
+your latent space plus basian
+optimization workflow serve as a
+practical lowdimensional surrogate for
+that kind of infinite dimensional
+control still allowing PD and
+reliability constraints?
+uh I I would say no because again the
+the here the machine learning is not
+learning a surrogate for the physics
+right it's learning a surrogate for uh
+the the geometry or the the input but uh
+uh I do think right now I presented the
+the within the scope of PD constraint
+optimization of geometry I do think
+there might be uh uh a way of uh uh
+applying that to control so if you have
+a geometry that evolves in time that's
+that's already a control problem I do I
+think there are uh uh ways to leverage
+this type of thinking uh leaving the
+physics to the solver uh but but uh uh
+uh but still using machine learning to
+um engineer the search the search space
+uh I think there there are there are
+probably ways to do it but I haven't
+done it yet.
+>> Okay. Well, there's no more questions
+from the chat but I get to ask one at
+least one questions
+uh finally. Um well I I guess it's not a
+question. It's more like a comment and
+suggestions to add one more item in your
+future directions. I mean it's it's nice
+that you have um introduced a way of
+tackling the input space in the context
+of the PD constraint design
+optimizations
+um in various ways. Um but maybe you
+want to look into how to bring the
+scientific ML in PTE solver itself. And
+if you just looking into traditional um
+numerical method of solving PTE the
+input of that um could be one of the
+input could be you know that basis
+representation like the polomial basis
+representation which you have mentioned
+in your introductory
+uh slide.
+>> Yeah
+>> maybe we can uh change that replace that
+to the datadriven basis in order to
+improve the quality. That's another way
+of bringing this uh scientific ML into
+the numerical solver itself. Uh recently
+we have published a preprint um talking
+about the foundation models in
+computational science and also
+introduced the the framework so-called
+the DDM datadriven final method. um I
+can share the video and um that exactly
+talks about you know that kind of input
+you know it's different from uh your
+input space.
+>> Yeah perhaps you want to look into that.
+Yeah.
+>> Yes. Yes. And I'm familiar with that
+work because uh uh I I I read the the
+preprint. I think you read it. Okay.
+>> Yes. I I I do think there is a you sent
+it to me but but the it was a while back
+the the so the I think there is
+definitely a great opportunity here I
+learn a representation of the input uh
+of u of uh uh the the physical object
+the device right because that's that's
+but um and I'm assuming that like you
+know the solver will do its job
+>> but maybe sometimes you know, we we
+talked about that in Q&A and I think
+it's an important problem. Sometimes,
+you know, you also need to make good
+decisions of hyperparameters in the
+solver to make sure the simulation uh
+doesn't iterate forever or uh to make
+sure the simulation even just converges.
+>> And so
+there are two ways either you could just
+learn a representation to learn this uh
+not just the physics parameter but also
+uh numerical parameters that
+hyperparameters that you need. That's
+one way or you can try to also infer uh
+the the these parameters from the
+lowdimensional representation that you
+create from of the geometry. The
+rational here would be to say well if uh
+those geometries are similar in a sense
+of uh they have they are similar in a
+similar position in the latent space
+then probably the solver will need
+similar hyperparameters
+to uh solve this geometry efficiently.
+So uh I think there there are two ways
+to leverage either you use the me method
+directly on numerical parameters or you
+leverage the learned representation of
+the geometry because in the end uh those
+par those uh those uh uh implementation
+of the solver will really be de
+dependent on the geometry on the mesh
+and things like that and so there
+probably that this latent uh space uh in
+and in particular if it's a compressed
+latent space with low dimensionality um
+uh might help uh also to to infer. So
+there is definitely synergies to do
+there. Yeah, I agree.
+>> All right, sounds good. Well, I let's
+let's end here because we already passed
+like 20 minutes um past the you know the
+promise time ending time.
+>> Well, thank you so much for the nice
+talk. Let's thank our speaker Rafael for
+the nice talk and as well as a wonderful
+Q&A uh sessions. Uh thank you so much
+Rafael.
+So with so with that, yeah, go ahead.
+>> Yeah, hopefully uh if you're interested
+like send me an email. Uh uh I will be
+happy to to answer. I'm open for
+collaborations.
+>> Of course. It looks like the Sumant has
+couple of more questions. So he will
+email you for sure.
+>> Fantastic.
+>> Yeah.
+>> Okay. So with that, let's end our
+seminar today. And let me push the stop
+button for the recording.

@@ -1,0 +1,2486 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:03.887 --> 00:00:09.440
+Music. Welcome to the DDPS seminar. Everyone.&nbsp;
+Before we introduce our invited speaker,&nbsp;&nbsp;
+
+00:00:09.440 --> 00:00:14.280
+let's go over some rules and logistics.&nbsp;
+First, please mute yourself during the talk,&nbsp;&nbsp;
+
+00:00:14.280 --> 00:00:22.080
+but if you have a sense, unmute yourself and&nbsp;
+ask questions, or we can wait until the end&nbsp;&nbsp;
+
+00:00:22.080 --> 00:00:29.160
+to the Q and A sessions. Second, today's&nbsp;
+GDPs seminar is open to external audience,&nbsp;&nbsp;
+
+00:00:29.160 --> 00:00:33.160
+therefore no classified discussion&nbsp;
+is allowed. So watch out. Finally,&nbsp;&nbsp;
+
+00:00:33.160 --> 00:00:40.760
+the talk today will be recorded and uploaded&nbsp;
+in our YouTube channel. That's about it now,&nbsp;&nbsp;
+
+00:00:40.760 --> 00:00:48.200
+let me briefly introduce our speaker&nbsp;
+today. It is an honor to host Qing Yao Lai,&nbsp;&nbsp;
+
+00:00:48.800 --> 00:00:56.560
+who is an assistant professor in the Department of&nbsp;
+geophysics and affiliated faculty of the Institute&nbsp;&nbsp;
+
+00:00:56.560 --> 00:01:04.160
+for computational and mathematical engineering so&nbsp;
+called ICME at Stanford. Before joining Stanford,&nbsp;&nbsp;
+
+00:01:04.160 --> 00:01:11.720
+she was an assistant professor at Princeton&nbsp;
+University. She received an undergraduate degree,&nbsp;&nbsp;
+
+00:01:11.720 --> 00:01:21.520
+2013 in physics from National Taiwan University&nbsp;
+and a PhD in mechanical and aerospace engineering&nbsp;&nbsp;
+
+00:01:21.520 --> 00:01:28.520
+from Princeton University. She completed her&nbsp;
+postdoctoral research in geophysics at Lamont&nbsp;&nbsp;
+
+00:01:28.520 --> 00:01:35.200
+Earth Observatory at Columbia University,&nbsp;
+where she received the Lamont postdoctoral&nbsp;&nbsp;
+
+00:01:35.200 --> 00:01:40.720
+fellowship. Our current research focuses&nbsp;
+on enhancing the representation of machine&nbsp;&nbsp;
+
+00:01:40.720 --> 00:01:48.760
+learning models to tackle multi scale problems.&nbsp;
+She was the recipient of the 2023 Google Research&nbsp;&nbsp;
+
+00:01:48.760 --> 00:01:57.360
+Scholar Award and 2024 Sloan research fellowship.&nbsp;
+Today, Yao will talk about machine precision,&nbsp;&nbsp;
+
+00:01:57.360 --> 00:02:05.040
+neural networks for multi scale dynamics. I'm sure&nbsp;
+we are going to hear a wonderful talk from her.&nbsp;&nbsp;
+
+00:02:05.040 --> 00:02:12.520
+But before I pass the button to Yao as a tradition&nbsp;
+to the DDPS seminar, let me ask a question,&nbsp;&nbsp;
+
+00:02:13.160 --> 00:02:19.960
+in somewhat informal questions to her, to&nbsp;
+get to know her, about someone outside of&nbsp;&nbsp;
+
+00:02:19.960 --> 00:02:28.960
+her technical reasons, all right, so I happen to&nbsp;
+know that you like to travel, if you can share&nbsp;&nbsp;
+
+00:02:30.880 --> 00:02:39.480
+the most favorite places you have visited&nbsp;
+so far, and share with us why you think so.
+
+00:02:39.480 --> 00:02:44.840
+Yeah, first of all, thank you. Yong Soo for&nbsp;
+the warm introduction and invitation. I was&nbsp;&nbsp;
+
+00:02:44.840 --> 00:02:54.280
+not expecting a question, I guess the travel.&nbsp;
+I really, really enjoy my travel in Europe in&nbsp;&nbsp;
+
+00:02:54.280 --> 00:02:59.640
+particular, just because I learned&nbsp;
+about it in history in my childhood,&nbsp;&nbsp;
+
+00:02:59.640 --> 00:03:07.960
+and it was just wonderful to see historical&nbsp;
+buildings. You also just distract myself from&nbsp;&nbsp;
+
+00:03:07.960 --> 00:03:14.040
+the daily routine. So that's the part I really&nbsp;
+enjoy. I don't know if this is sufficient. Awesome
+
+00:03:14.040 --> 00:03:21.600
+also, yeah, there's no correct answer here.&nbsp;
+Thank you so much for sharing your experience,&nbsp;&nbsp;
+
+00:03:21.600 --> 00:03:26.440
+traveling, experience, all&nbsp;
+right, the stage is yours?
+
+00:03:26.440 --> 00:03:32.800
+Okay? Yeah, so, yeah, I'm excited to give the&nbsp;
+talk today, and today I'll talk about the work&nbsp;&nbsp;
+
+00:03:32.800 --> 00:03:39.680
+in my group. My group has been developing recently&nbsp;
+to enhance the representation accuracy of neural&nbsp;&nbsp;
+
+00:03:39.680 --> 00:03:45.760
+networks. I hope I can convince you that it is,&nbsp;
+it is kind of problematic that vanilla neural&nbsp;&nbsp;
+
+00:03:45.760 --> 00:03:52.160
+networks suffer to represent multi scale data,&nbsp;
+which motivate us to develop machine precision&nbsp;&nbsp;
+
+00:03:52.160 --> 00:03:58.680
+neural networks. And this work that will discuss&nbsp;
+today was also published in journal computational&nbsp;&nbsp;
+
+00:03:58.680 --> 00:04:09.040
+physics and physical review letters next slide.&nbsp;
+All right, so there has been an emerging trend of&nbsp;&nbsp;
+
+00:04:09.040 --> 00:04:15.280
+research using machine learning models to emulate&nbsp;
+numerical simulations to substantially reduce its&nbsp;&nbsp;
+
+00:04:15.280 --> 00:04:21.360
+computational cost. And success stories include&nbsp;
+the recent bloom of machine learning based weather&nbsp;&nbsp;
+
+00:04:21.360 --> 00:04:27.680
+forecast models. A classical numerical weather&nbsp;
+forecast prediction is made by numerically solving&nbsp;&nbsp;
+
+00:04:27.680 --> 00:04:35.240
+coupled partial deputy equations that describe the&nbsp;
+evolution of states, and that's denoted by z here&nbsp;&nbsp;
+
+00:04:35.240 --> 00:04:42.200
+and in the ML emulator, a physics free machine&nbsp;
+learning model is used to approximate the dynamics&nbsp;&nbsp;
+
+00:04:42.200 --> 00:04:47.640
+that is denoted by f here, which describe the time&nbsp;
+derivative of the state. So the machine learning&nbsp;&nbsp;
+
+00:04:47.640 --> 00:04:53.240
+model will take the states at the previous time&nbsp;
+as input and then predict the state at the next&nbsp;&nbsp;
+
+00:04:53.240 --> 00:04:59.200
+time as output. This approach is very successful,&nbsp;
+and after training with the year five weather,&nbsp;&nbsp;
+
+00:04:59.200 --> 00:05:04.800
+we announced. This data deep mine has shown that&nbsp;
+they're able to use the graph new network to take&nbsp;&nbsp;
+
+00:05:04.800 --> 00:05:09.600
+the states in the current time step and predict&nbsp;
+the next time step, and then take the next time&nbsp;&nbsp;
+
+00:05:09.600 --> 00:05:15.880
+step result to predict the next next time step&nbsp;
+and so on. So they show that this can make 10 day&nbsp;&nbsp;
+
+00:05:15.880 --> 00:05:20.840
+weather forecast with precision that is comparable&nbsp;
+to the state of the art freeze, space, numerous&nbsp;&nbsp;
+
+00:05:20.840 --> 00:05:24.920
+numerical weather prediction model, and this&nbsp;
+takes a lot of time to train, but when once it&nbsp;&nbsp;
+
+00:05:24.920 --> 00:05:31.720
+is trained, it takes negligible amount of time to&nbsp;
+make predictions. So this is just another example,&nbsp;&nbsp;
+
+00:05:31.720 --> 00:05:38.280
+an image of the neural network represented global&nbsp;
+wing field from one of the recent machine learning&nbsp;&nbsp;
+
+00:05:38.280 --> 00:05:47.360
+weather forecast model. And here, if you compare&nbsp;
+with the ground truth training data from numerical&nbsp;&nbsp;
+
+00:05:47.360 --> 00:05:52.800
+weather prediction, now you can see that the&nbsp;
+machine learning based weather forecast can well&nbsp;&nbsp;
+
+00:05:52.800 --> 00:05:59.440
+capture the large scale feature, right? So these&nbsp;
+two wing fields are almost indistinguishable,&nbsp;&nbsp;
+
+00:05:59.440 --> 00:06:05.920
+but the ML based model is missing a lot of the&nbsp;
+fine scale, high frequency details that's present&nbsp;&nbsp;
+
+00:06:05.920 --> 00:06:12.600
+in the numerical data, and even more evident&nbsp;
+in this plot. So here the is the spectrum of&nbsp;&nbsp;
+
+00:06:12.600 --> 00:06:20.360
+the wing field. The horizontal axis is the wave&nbsp;
+number, the vertical axis is the power density.&nbsp;&nbsp;
+
+00:06:20.360 --> 00:06:27.160
+The black line is the spectrum from E verify&nbsp;
+data, and the colored lines are the spectrum from&nbsp;&nbsp;
+
+00:06:27.160 --> 00:06:32.520
+various different machine learning based weather&nbsp;
+prediction model. So you can see that most of the&nbsp;&nbsp;
+
+00:06:32.520 --> 00:06:38.160
+ML based model capture the spectrum at low wave&nbsp;
+number because they capture a large, large scale&nbsp;&nbsp;
+
+00:06:38.160 --> 00:06:44.240
+features. However they deviate from the from the&nbsp;
+spectrum for higher wave numbers. So it's missing&nbsp;&nbsp;
+
+00:06:44.240 --> 00:06:51.640
+all the fine scale, high frequency details. And&nbsp;
+this is even more severe when you look at the&nbsp;&nbsp;
+
+00:06:51.640 --> 00:07:00.920
+prediction in at day 10. So at daytime, a lot the&nbsp;
+mismatch between the ML based model and the ground&nbsp;&nbsp;
+
+00:07:00.920 --> 00:07:13.680
+truth happens at even lower wave numbers. Oops,&nbsp;
+I think, sorry. Are you still seeing my screen?
+
+00:07:13.680 --> 00:07:14.960
+No screen is gone
+
+00:07:14.960 --> 00:07:24.080
+now, sorry, let me reshare again.&nbsp;
+I know what happened. Share Screen.
+
+00:07:24.080 --> 00:07:26.080
+Take your time
+
+00:07:26.080 --> 00:07:29.520
+window, all right,
+
+00:07:30.720 --> 00:07:33.840
+yeah, the first page we are seeing. Yeah,
+
+00:07:33.840 --> 00:07:41.280
+okay, so let me go back to the slide, yeah,&nbsp;
+okay, so what I just described is related&nbsp;&nbsp;
+
+00:07:41.280 --> 00:07:48.200
+to the so called spectral bias of the neural&nbsp;
+network. Special bias refer to neural networks&nbsp;&nbsp;
+
+00:07:48.200 --> 00:07:55.240
+tendency to prioritize fitting functions with a&nbsp;
+certain frequency range, as demonstrated in this&nbsp;&nbsp;
+
+00:07:55.240 --> 00:08:00.280
+2019 paper. I really like this figure. I think&nbsp;
+it's really clear. So here, the blue line is the&nbsp;&nbsp;
+
+00:08:00.280 --> 00:08:05.440
+target function, and the green line, green curve,&nbsp;
+is the new network prediction over iterations. So&nbsp;&nbsp;
+
+00:08:05.440 --> 00:08:11.000
+you can see that the neural network can first fit&nbsp;
+the low frequency function, but then it takes a&nbsp;&nbsp;
+
+00:08:11.000 --> 00:08:18.600
+lot longer to fit the high frequency signals in&nbsp;
+the target function. And this is this is bad news,&nbsp;&nbsp;
+
+00:08:18.600 --> 00:08:24.520
+because problems in the physical sciences often&nbsp;
+exhibit multi scale features, and neural networks&nbsp;&nbsp;
+
+00:08:24.520 --> 00:08:28.880
+are used because of its property as a universal&nbsp;
+function, approximator. However, in practice,&nbsp;&nbsp;
+
+00:08:28.880 --> 00:08:36.000
+neural network often failed to capture fine&nbsp;
+scale details due to its spectral bias. So&nbsp;&nbsp;
+
+00:08:36.600 --> 00:08:44.280
+a popular solution is the so called Fourier&nbsp;
+feature, and this was proposed in 10s et al,&nbsp;&nbsp;
+
+00:08:44.280 --> 00:08:51.760
+2020 paper. This Fourier feature is composed of&nbsp;
+basis functions of cosine and sines, and the maps&nbsp;&nbsp;
+
+00:08:51.760 --> 00:08:58.440
+the input coordinate of the multi layer perceptron&nbsp;
+into this feature before passing the information&nbsp;&nbsp;
+
+00:08:58.440 --> 00:09:05.920
+into the hidden layers of the neural network. And&nbsp;
+the intuition is that you can give some hints to&nbsp;&nbsp;
+
+00:09:05.920 --> 00:09:11.320
+the neural network, that there exists a range of&nbsp;
+frequencies that are relevant to represent the&nbsp;&nbsp;
+
+00:09:11.320 --> 00:09:17.080
+data. So you can see here, this is the original&nbsp;
+image represented by the regular neural network.&nbsp;&nbsp;
+
+00:09:17.080 --> 00:09:22.040
+It looks kind of blurry, just like what we saw&nbsp;
+earlier, but after applying the Fourier spec,&nbsp;&nbsp;
+
+00:09:22.040 --> 00:09:29.360
+the Fourier features, now the new algorithm&nbsp;
+capture all the accurate details in the image.&nbsp;&nbsp;
+
+00:09:31.360 --> 00:09:37.840
+Okay, so that was spectral bias. And now there's&nbsp;
+another additional challenge of machine learning&nbsp;&nbsp;
+
+00:09:37.840 --> 00:09:45.360
+emulators. So this is one of the machine learning&nbsp;
+based emulator, forecast net, and it's prediction&nbsp;&nbsp;
+
+00:09:45.360 --> 00:09:50.640
+out to 30 days, you can see that the error start&nbsp;
+to accumulate, and then the temperature field,&nbsp;&nbsp;
+
+00:09:50.640 --> 00:09:59.400
+just we call it blow up over time. And because&nbsp;
+just recall that, in this case, neural network is&nbsp;&nbsp;
+
+00:09:59.400 --> 00:10:05.800
+used to approach. Approximate the time derivatives&nbsp;
+of the states the dynamics. So if the new network&nbsp;&nbsp;
+
+00:10:05.800 --> 00:10:12.480
+have spectral bias, it could cause errors of&nbsp;
+approximating the states at smaller scales,&nbsp;&nbsp;
+
+00:10:12.480 --> 00:10:17.200
+and this error can be propagated in times, and&nbsp;
+therefore make long term prediction terribly&nbsp;&nbsp;
+
+00:10:17.200 --> 00:10:22.480
+inaccurate. So special bias could be one of the&nbsp;
+reason that can cause the blow up behavior we&nbsp;&nbsp;
+
+00:10:22.480 --> 00:10:31.880
+see in emulators. So to summarize, the big&nbsp;
+questions that I want to discuss today is&nbsp;&nbsp;
+
+00:10:31.880 --> 00:10:37.680
+strategies that can tackle spectral bias of&nbsp;
+the neural network. And another question is,&nbsp;&nbsp;
+
+00:10:37.680 --> 00:10:45.000
+how can we make the neural network approximation&nbsp;
+as accurate as possible. So this is today's&nbsp;&nbsp;
+
+00:10:45.000 --> 00:10:53.040
+outline. I'll first talk about a algorithm our&nbsp;
+group develops that can push the error down to&nbsp;&nbsp;
+
+00:10:53.040 --> 00:10:59.640
+machine precision and tackle the spectral bias.&nbsp;
+And I'll talk about the extension for problems&nbsp;&nbsp;
+
+00:10:59.640 --> 00:11:06.360
+related to PDEs. And this is still preliminary and&nbsp;
+ongoing work. And finally, I'll talk about some&nbsp;&nbsp;
+
+00:11:06.360 --> 00:11:13.440
+challenges and promising promises in this area.&nbsp;
+So okay, so expressiveness of neural network.&nbsp;&nbsp;
+
+00:11:13.440 --> 00:11:21.480
+Now here my postdoc, young, he used a vanilla&nbsp;
+neural network to fit a 1d function. So here&nbsp;&nbsp;
+
+00:11:21.480 --> 00:11:29.400
+he's just a silly analytical function that&nbsp;
+we try to fit. And the y axis is the output&nbsp;&nbsp;
+
+00:11:29.400 --> 00:11:33.840
+neural network output. The X axis is the neural&nbsp;
+network input. The blue line is the function we're&nbsp;&nbsp;
+
+00:11:33.840 --> 00:11:40.200
+trying to fit. The dash red is the neural network&nbsp;
+prediction. So here the loss function quantifies&nbsp;&nbsp;
+
+00:11:40.200 --> 00:11:45.080
+the difference between the ground truth function&nbsp;
+and the neural network prediction. And you can see&nbsp;&nbsp;
+
+00:11:45.080 --> 00:11:51.920
+that with the regular neural network, the error&nbsp;
+can go down to 10 to the minus five. But you know,&nbsp;&nbsp;
+
+00:11:51.920 --> 00:11:57.080
+the question is, why does the error not get&nbsp;
+lower when we train for longer iterations? So&nbsp;&nbsp;
+
+00:11:57.080 --> 00:12:02.920
+here we try increasing the depth of the neural&nbsp;
+network, increasing the width, we were always&nbsp;&nbsp;
+
+00:12:02.920 --> 00:12:09.640
+seeing a saturation of error like this. So the&nbsp;
+question is, why can we what's the minimum error?&nbsp;&nbsp;
+
+00:12:09.640 --> 00:12:13.560
+We can push the error down to, you know, in your&nbsp;
+network, if neural network are truly universal&nbsp;&nbsp;
+
+00:12:13.560 --> 00:12:19.840
+function approximators, it should not have this.&nbsp;
+Should not you should have it can correspond to,&nbsp;&nbsp;
+
+00:12:19.840 --> 00:12:25.880
+it should be able to achieve arbitrary, small&nbsp;
+error theoretically. So here we propose the multi&nbsp;&nbsp;
+
+00:12:25.880 --> 00:12:31.960
+multi stage neural network that use a subsequent&nbsp;
+neural network to effectively learn to correct&nbsp;&nbsp;
+
+00:12:31.960 --> 00:12:38.280
+for the errors from the first neural network. And&nbsp;
+this multi stage neural network can achieve much&nbsp;&nbsp;
+
+00:12:38.280 --> 00:12:44.960
+better precision with less number of total neural&nbsp;
+network parameters and less computational cost&nbsp;&nbsp;
+
+00:12:44.960 --> 00:12:53.360
+compared to a single neural network. I don't know&nbsp;
+why this is happening, but let's go back. Okay,&nbsp;&nbsp;
+
+00:12:53.360 --> 00:12:59.240
+so before going into the detail of the algorithm,&nbsp;
+I want to draw your attention to this very simple&nbsp;&nbsp;
+
+00:12:59.240 --> 00:13:08.760
+explanation of the spectral bias. So here, this&nbsp;
+is the expression of a single layer neural network&nbsp;&nbsp;
+
+00:13:08.760 --> 00:13:16.160
+with input x and output U. Here the W, and these&nbsp;
+are the neural network parameters, and here the&nbsp;&nbsp;
+
+00:13:16.160 --> 00:13:20.280
+loss function quantify the mean square error&nbsp;
+between the neural network output and a ground&nbsp;&nbsp;
+
+00:13:20.280 --> 00:13:29.840
+truth. So here we denote the Fourier transform&nbsp;
+of the function as a u hat and the class function&nbsp;&nbsp;
+
+00:13:29.840 --> 00:13:38.040
+can also be written in as the Fourier transform&nbsp;
+of the neural network prediction. So if we will&nbsp;&nbsp;
+
+00:13:38.040 --> 00:13:44.880
+skip the derivation here, but it can be shown that&nbsp;
+the gradient of the so during gradient descent,&nbsp;&nbsp;
+
+00:13:44.880 --> 00:13:49.560
+we know that the loss function is updated based&nbsp;
+on the gradient of the loss function with respect&nbsp;&nbsp;
+
+00:13:49.560 --> 00:13:54.840
+to the neural network parameters. And can be&nbsp;
+shown that the gradient of the loss function&nbsp;&nbsp;
+
+00:13:54.840 --> 00:14:01.640
+decay exponentially with higher frequencies.&nbsp;
+And this is important because it shows that&nbsp;&nbsp;
+
+00:14:01.640 --> 00:14:07.840
+the gradients become very small for larger&nbsp;
+K and therefore it would take extremely long&nbsp;&nbsp;
+
+00:14:07.840 --> 00:14:14.000
+number of iterations to learn the high frequency&nbsp;
+functions. And this is a simple explanation for&nbsp;&nbsp;
+
+00:14:14.000 --> 00:14:22.360
+the origin of neural networks spectral bias.&nbsp;
+So to mitigate this problem, it's important to&nbsp;&nbsp;
+
+00:14:22.360 --> 00:14:29.040
+rescale the neural network weights. Note that&nbsp;
+in this expression, the exponential decay.&nbsp;&nbsp;
+
+00:14:30.320 --> 00:14:36.920
+In this decay, it is the this factor, the&nbsp;
+frequency, divided by w, that determine the decay,&nbsp;&nbsp;
+
+00:14:36.920 --> 00:14:43.240
+and w is the neural network weight. So if we can&nbsp;
+increase the new and equal weights proportionally&nbsp;&nbsp;
+
+00:14:43.240 --> 00:14:50.240
+with the frequency k that we want to capture. We&nbsp;
+can keep this gradient large for larger k, and&nbsp;&nbsp;
+
+00:14:50.240 --> 00:14:56.680
+this can reactivate the learning of high frequency&nbsp;
+functions. So here in our implementation,&nbsp;&nbsp;
+
+00:14:56.680 --> 00:15:04.080
+we have a scaling factor called cut. And that's a&nbsp;
+multiplier in front of the weights of the neural&nbsp;&nbsp;
+
+00:15:04.080 --> 00:15:10.840
+network that connects the input to the first&nbsp;
+hidden layer. And note that this is similar to&nbsp;&nbsp;
+
+00:15:10.840 --> 00:15:16.840
+the Fourier feature implementation, but here we&nbsp;
+we don't include a cosine activation function,&nbsp;&nbsp;
+
+00:15:16.840 --> 00:15:25.800
+because that's not necessary. So the Kappa is a&nbsp;
+user defined parameter. I can set the value. Large&nbsp;&nbsp;
+
+00:15:25.800 --> 00:15:32.440
+kappa has the effect of rescaling the input x and&nbsp;
+make it easier to learn high frequency functions.&nbsp;&nbsp;
+
+00:15:32.440 --> 00:15:38.360
+So we can see that with large copper, the the&nbsp;
+new network predict new network approximation&nbsp;&nbsp;
+
+00:15:38.360 --> 00:15:45.800
+can fit the target function better. And this&nbsp;
+was also shown by this paper by J tech in&nbsp;&nbsp;
+
+00:15:45.800 --> 00:15:56.120
+2020 in the case when kappa is smaller, is really&nbsp;
+struggling to fit the target function. So however,&nbsp;&nbsp;
+
+00:15:56.120 --> 00:16:00.680
+we are still, even though we increase the Kappa&nbsp;
+you're seeing, we're still missing part of the&nbsp;&nbsp;
+
+00:16:00.680 --> 00:16:07.760
+target function. So here we change the activation&nbsp;
+function from high volume tangent to sine, and it&nbsp;&nbsp;
+
+00:16:07.760 --> 00:16:13.760
+shows that the fitting is much better. Therefore,&nbsp;
+a combination of large scaling factor and the&nbsp;&nbsp;
+
+00:16:13.760 --> 00:16:19.960
+sinusoidal activation function gives much better&nbsp;
+error. And we know that this implementation has&nbsp;&nbsp;
+
+00:16:19.960 --> 00:16:28.400
+a similar training error compared to the Fourier&nbsp;
+feature net. So one thing to be careful with is&nbsp;&nbsp;
+
+00:16:28.400 --> 00:16:36.240
+that the network can start to overfit the data&nbsp;
+if you increase the coupon further. So here we&nbsp;&nbsp;
+
+00:16:36.240 --> 00:16:43.000
+can see that if you just look at the training&nbsp;
+loss I when you increase the scaling factor,&nbsp;&nbsp;
+
+00:16:43.640 --> 00:16:49.880
+you can keep minimizing the loss. So here the&nbsp;
+Kappa is like up to 300 the loss looks very&nbsp;&nbsp;
+
+00:16:49.880 --> 00:16:54.760
+small. However, this is actually quite deceiving,&nbsp;
+because if you look at the actual prediction of&nbsp;&nbsp;
+
+00:16:54.760 --> 00:16:59.600
+the neural network with larger kappa value on&nbsp;
+the higher resolution grid point, you're seeing&nbsp;&nbsp;
+
+00:16:59.600 --> 00:17:04.920
+that it's actually overfitting the function&nbsp;
+and have all these Wiggles. So it's important&nbsp;&nbsp;
+
+00:17:04.920 --> 00:17:13.480
+to know that there's actually a optimal range of&nbsp;
+kappa that works well. Here we show the means,&nbsp;&nbsp;
+
+00:17:13.480 --> 00:17:19.480
+root mean square error of the neural network as a&nbsp;
+function of the scaling factor kappa, and you can&nbsp;&nbsp;
+
+00:17:19.480 --> 00:17:27.640
+see that the optimal kappa is related to the&nbsp;
+dominant frequency in a in a target function,&nbsp;&nbsp;
+
+00:17:27.640 --> 00:17:38.560
+which is denoted by FD, and this is aligned with&nbsp;
+our expectation from the spectral bias analysis.
+
+00:17:40.080 --> 00:17:51.120
+I don't know what happened. Let's keep this is&nbsp;
+somehow like skipping skipping many slides. I'll&nbsp;&nbsp;
+
+00:17:51.120 --> 00:17:57.560
+go back where we are. Okay, here's good.&nbsp;
+Yeah, alright. So, so that was for fitting&nbsp;&nbsp;
+
+00:17:57.560 --> 00:18:04.120
+high frequency functions. Now we have another&nbsp;
+issue, independent issue, to overcome. So when&nbsp;&nbsp;
+
+00:18:04.120 --> 00:18:10.240
+the new network training error is very small, we&nbsp;
+know that the learning become very slow, right?&nbsp;&nbsp;
+
+00:18:10.240 --> 00:18:16.760
+And so here is the main idea of the multi stage&nbsp;
+neural network, inspired by perturbation theory.&nbsp;&nbsp;
+
+00:18:16.760 --> 00:18:22.440
+Here we write the neural network approximated&nbsp;
+function as a superposition of the leading order&nbsp;&nbsp;
+
+00:18:22.440 --> 00:18:30.760
+approximation, u naught and the higher order error&nbsp;
+terms like u1 u2 etc. So here, epsilon one is a&nbsp;&nbsp;
+
+00:18:30.760 --> 00:18:40.240
+small constant, and epsilon is much, much smaller&nbsp;
+compared to epsilon one. The U naught, u1 u2 etc,&nbsp;&nbsp;
+
+00:18:40.240 --> 00:18:47.160
+are the neural networks from different stages. So&nbsp;
+although the first neural network you not doesn't&nbsp;&nbsp;
+
+00:18:47.160 --> 00:18:53.440
+perfectly fit the target function, we can use&nbsp;
+a subsequent neural network you want to learn&nbsp;&nbsp;
+
+00:18:53.440 --> 00:18:59.000
+to correct for the residue from the previous&nbsp;
+neural network. And because here the u naught,&nbsp;&nbsp;
+
+00:18:59.000 --> 00:19:06.560
+u1 u2 are all orders of magnitude one functions,&nbsp;
+so it's easy for neural network to capture all&nbsp;&nbsp;
+
+00:19:06.560 --> 00:19:13.480
+these error terms, instead of having a single&nbsp;
+neural network capturing all the small magnitude&nbsp;&nbsp;
+
+00:19:13.480 --> 00:19:21.760
+details. And note that there, here's a list&nbsp;
+of related work with similar strategies, so&nbsp;&nbsp;
+
+00:19:21.760 --> 00:19:27.760
+sequential residue learning and multi layer neural&nbsp;
+networks. This paper actually was, is also able to&nbsp;&nbsp;
+
+00:19:27.760 --> 00:19:33.960
+get the error down to machine precision. It's also&nbsp;
+the stack networks by Howard at all and precision&nbsp;&nbsp;
+
+00:19:33.960 --> 00:19:39.840
+machine learning. So this is really a, I think,&nbsp;
+a rising trend of research to try to understand&nbsp;&nbsp;
+
+00:19:39.840 --> 00:19:45.720
+what control the error of the neural network&nbsp;
+approximation. Okay, so here is a numerical&nbsp;&nbsp;
+
+00:19:45.720 --> 00:19:53.800
+demonstration. We this is the another 1d target&nbsp;
+function we are trying to fit. And so here show,&nbsp;&nbsp;
+
+00:19:53.800 --> 00:19:59.760
+after one single neural network, the error of the&nbsp;
+first neural network. So the magnitude is about&nbsp;&nbsp;
+
+00:19:59.760 --> 00:20:06.840
+10. To the minus four the x axis is the input of&nbsp;
+the neural network. So we do a Fourier transform&nbsp;&nbsp;
+
+00:20:06.840 --> 00:20:12.840
+of these error and look at it in a frequency&nbsp;
+space. So here you can see the dominant frequency&nbsp;&nbsp;
+
+00:20:12.840 --> 00:20:18.920
+corresponding to the error of this first neural&nbsp;
+network. And then we use a second neural network,&nbsp;&nbsp;
+
+00:20:18.920 --> 00:20:23.520
+a subsequent neural network, to learn to fit&nbsp;
+the error from the first neural network. So&nbsp;&nbsp;
+
+00:20:23.520 --> 00:20:28.400
+now the second neural network with the first one&nbsp;
+altogether has an error that's much smaller, so&nbsp;&nbsp;
+
+00:20:28.400 --> 00:20:33.120
+about 10 to the minus eight. And one thing that's&nbsp;
+interesting is if you look at the frequency of&nbsp;&nbsp;
+
+00:20:33.120 --> 00:20:38.200
+this error of the second new network is actually&nbsp;
+much higher. So we can look at the frequency error&nbsp;&nbsp;
+
+00:20:38.200 --> 00:20:43.400
+in the Fourier space. It corresponds to a higher&nbsp;
+dominant frequency. And then we can repeat this&nbsp;&nbsp;
+
+00:20:43.400 --> 00:20:48.680
+procedure. We use the third neural network to&nbsp;
+learn the to approximate error from the second&nbsp;&nbsp;
+
+00:20:48.680 --> 00:20:56.160
+neural network. And now the residual of the three&nbsp;
+networks combined become 10 to the minus 11. And&nbsp;&nbsp;
+
+00:20:56.160 --> 00:21:02.360
+the same story. You know, after all, the networks&nbsp;
+are stacked together, we can achieve the error&nbsp;&nbsp;
+
+00:21:02.360 --> 00:21:09.800
+that's close to 10 minus minus 13 and the now the&nbsp;
+error has a really, really high frequency. So here&nbsp;&nbsp;
+
+00:21:09.800 --> 00:21:17.520
+is just to show the error of the approximation&nbsp;
+throughout iterations. You can see that the&nbsp;&nbsp;
+
+00:21:17.520 --> 00:21:24.440
+error convergence for this multi staging training&nbsp;
+scheme is a lot faster with training iterations&nbsp;&nbsp;
+
+00:21:24.440 --> 00:21:34.240
+compared to a single neural network. And this is&nbsp;
+just shows that throughout different stages, the&nbsp;&nbsp;
+
+00:21:34.240 --> 00:21:40.680
+error of the approximation gets lower at the same&nbsp;
+time the dominant frequency of the error increase.&nbsp;&nbsp;
+
+00:21:40.680 --> 00:21:46.680
+And this actually, we see that it follows a power&nbsp;
+law with exponent one over six. This exponent is&nbsp;&nbsp;
+
+00:21:46.680 --> 00:21:53.960
+actually quite universal. We see this for various&nbsp;
+different target function that we have tried, and&nbsp;&nbsp;
+
+00:21:53.960 --> 00:22:01.000
+is relatively unchanged with different sampling&nbsp;
+data and different layer, different architecture,&nbsp;&nbsp;
+
+00:22:01.000 --> 00:22:07.320
+different number of layers, number of units.&nbsp;
+I'd love to if you have ideas of how to explain&nbsp;&nbsp;
+
+00:22:07.320 --> 00:22:15.320
+this exponent, I would love to chat more about&nbsp;
+it. Okay, so that was for very simple, right?&nbsp;&nbsp;
+
+00:22:15.320 --> 00:22:24.840
+Like 1d learning 1d function. And here we want to&nbsp;
+see if we can use this idea to learn to the data&nbsp;&nbsp;
+
+00:22:24.840 --> 00:22:34.240
+like the data of flow field. So here my student,&nbsp;
+Jenkin, she used the special methods to create the&nbsp;&nbsp;
+
+00:22:34.240 --> 00:22:42.200
+numerical simulation that solves the this to the&nbsp;
+incompressible equation with Reynolds number 2000&nbsp;&nbsp;
+
+00:22:42.200 --> 00:22:50.120
+and here is the vorticity field that evolved with&nbsp;
+with time the and here is the energy spectrum. So,&nbsp;&nbsp;
+
+00:22:50.120 --> 00:22:57.320
+so we like this example because it has the&nbsp;
+energy spectrum that spans over scales with&nbsp;&nbsp;
+
+00:22:57.320 --> 00:23:03.280
+two orders of magnitude. So it's a simple&nbsp;
+example of a mouse field problem. So here,&nbsp;&nbsp;
+
+00:23:03.280 --> 00:23:11.560
+what we want to do is to just use the amount usage&nbsp;
+network to fit a snapshot of these flow field. So&nbsp;&nbsp;
+
+00:23:11.560 --> 00:23:17.880
+this is the target function of the flow field at&nbsp;
+a particular at a time. And the here is the neural&nbsp;&nbsp;
+
+00:23:17.880 --> 00:23:23.960
+network representation of the data. So the input&nbsp;
+of a new network is the coordinate and the output&nbsp;&nbsp;
+
+00:23:23.960 --> 00:23:31.520
+of a new network is the string function, the flow&nbsp;
+field. And you can see that the difference is&nbsp;&nbsp;
+
+00:23:31.520 --> 00:23:36.880
+quite small. This is the error between the target&nbsp;
+function and the neural network approximation.&nbsp;&nbsp;
+
+00:23:36.880 --> 00:23:42.680
+The magnitude of the error is about 10 to the&nbsp;
+minus four. If you look at this error in space,&nbsp;&nbsp;
+
+00:23:42.680 --> 00:23:49.800
+it's quite interesting. It has these Wiggles. So&nbsp;
+we look at this error in Fourier space, and we see&nbsp;&nbsp;
+
+00:23:49.800 --> 00:23:57.960
+that there's some dominant frequency of the error.&nbsp;
+So here is the spectrum, energy spectrum, of the&nbsp;&nbsp;
+
+00:23:57.960 --> 00:24:02.880
+ground truth data showing black, and the neural&nbsp;
+network data showing blue, and you can see the&nbsp;&nbsp;
+
+00:24:02.880 --> 00:24:10.360
+spectral bias. So the neural network capture the&nbsp;
+small wave number energy spectrum, but mismatch&nbsp;&nbsp;
+
+00:24:10.360 --> 00:24:15.800
+has a mismatch in a high wave number region. Okay,&nbsp;
+so we're going to do the same procedure now. We&nbsp;&nbsp;
+
+00:24:15.800 --> 00:24:22.600
+will use a second neural network to fit the error&nbsp;
+from this first neural network, and this is the&nbsp;&nbsp;
+
+00:24:22.600 --> 00:24:28.560
+error after the second neural network. Now it has&nbsp;
+the magnitude of 10 to the minus seven. And the&nbsp;&nbsp;
+
+00:24:28.560 --> 00:24:34.800
+error of the second neural network now has a&nbsp;
+higher dominant wave number. And we keep this&nbsp;&nbsp;
+
+00:24:34.800 --> 00:24:40.120
+procedure after the third stage, the error can be&nbsp;
+down to close to machine precision of the double&nbsp;&nbsp;
+
+00:24:40.120 --> 00:24:48.640
+floating point 10 to the minus 16, and now has a&nbsp;
+you can see that the energy spectrum, the neural&nbsp;&nbsp;
+
+00:24:48.640 --> 00:24:53.920
+network approximation, correspond to an energy&nbsp;
+spectrum as aligned really well with the target&nbsp;&nbsp;
+
+00:24:53.920 --> 00:25:01.200
+function. So this is just in comparison comparing&nbsp;
+the multi stage. Network with the regular network.&nbsp;&nbsp;
+
+00:25:01.200 --> 00:25:08.920
+We show that in for the energy spectrum, the&nbsp;
+here, the red line is the regular neural network,&nbsp;&nbsp;
+
+00:25:08.920 --> 00:25:14.640
+the green line is the monetization neural network&nbsp;
+that can tackle the spectral bias and agrees very&nbsp;&nbsp;
+
+00:25:14.640 --> 00:25:21.960
+well with the target function. We look at the loss&nbsp;
+convergence compared to the regular single neural&nbsp;&nbsp;
+
+00:25:21.960 --> 00:25:29.040
+network that has a lost loss value that converges&nbsp;
+over iterations with the multi stage neural&nbsp;&nbsp;
+
+00:25:29.040 --> 00:25:36.120
+network, we can achieve unprecedented accuracy and&nbsp;
+down to percentage machine precision of the double&nbsp;&nbsp;
+
+00:25:36.120 --> 00:25:46.960
+precision floating point. Okay, so this is a quick&nbsp;
+summary. So for this data fitting problem, the&nbsp;&nbsp;
+
+00:25:46.960 --> 00:25:53.080
+training data for the highest stage neural network&nbsp;
+comes from the error from the previous stage and&nbsp;&nbsp;
+
+00:25:53.080 --> 00:25:58.120
+the error of the higher stage neural network are&nbsp;
+usually higher frequency functions. So although it&nbsp;&nbsp;
+
+00:25:58.120 --> 00:26:04.000
+is difficult for vanilla neural network to capture&nbsp;
+high frequency data, we can use a scaling factor&nbsp;&nbsp;
+
+00:26:04.000 --> 00:26:11.360
+kappa that can be determined directly using the&nbsp;
+dominant frequency of the residues. And this is&nbsp;&nbsp;
+
+00:26:11.360 --> 00:26:16.240
+exciting for us, because using this multi stage&nbsp;
+neural network, we can tackle the spectral bias&nbsp;&nbsp;
+
+00:26:16.240 --> 00:26:27.760
+and achieve unprecedented accuracy. Okay, is&nbsp;
+doing that again? So, yeah, that was, I want to&nbsp;&nbsp;
+
+00:26:27.760 --> 00:26:35.040
+emphasize that sounds like there's lots of steps,&nbsp;
+but actually all of these steps can be automated.
+
+00:26:35.040 --> 00:26:36.200
+Okay, so,
+
+00:26:37.320 --> 00:26:43.320
+so far we have talked about machine procedure,&nbsp;
+new network for tackling spectral bias, right?&nbsp;&nbsp;
+
+00:26:43.320 --> 00:26:52.000
+And the next question is, can, can we use this for&nbsp;
+PDE problems? Can PD residues also be down, pushed&nbsp;&nbsp;
+
+00:26:52.000 --> 00:26:58.480
+down to immersion precision? So this is a much,&nbsp;
+much harder problem to to investigate, and it's&nbsp;&nbsp;
+
+00:26:58.480 --> 00:27:06.480
+still ongoing work. In particular, I'll, in the&nbsp;
+next few slides, I'll talk about the application&nbsp;&nbsp;
+
+00:27:06.480 --> 00:27:12.480
+of multi station neural network to physics inform&nbsp;
+your networks. So for background information,&nbsp;&nbsp;
+
+00:27:12.480 --> 00:27:17.640
+physics inform your network. Leverage neural&nbsp;
+networks expressiveness to approximate solutions&nbsp;&nbsp;
+
+00:27:17.640 --> 00:27:26.240
+to PDS, and because neural networks are analytical&nbsp;
+functions, is derivatives, and therefore the PDE&nbsp;&nbsp;
+
+00:27:26.240 --> 00:27:33.720
+residues can be calculated exactly using automated&nbsp;
+differentiation and a neural network prediction&nbsp;&nbsp;
+
+00:27:33.720 --> 00:27:41.280
+that makes the PDE residue equal to zero is that&nbsp;
+exactly satisfy The equation. So throughout the&nbsp;&nbsp;
+
+00:27:41.280 --> 00:27:46.640
+training process, the neural network will&nbsp;
+find an approximate representation of the&nbsp;&nbsp;
+
+00:27:46.640 --> 00:27:53.040
+PDE solution by minimizing the loss function&nbsp;
+that include both the PDE residue and the&nbsp;&nbsp;
+
+00:27:53.040 --> 00:27:59.280
+associated boundary conditions. And I should&nbsp;
+add that I think precinct four neural networks&nbsp;&nbsp;
+
+00:27:59.280 --> 00:28:04.800
+are better for solving inverse problems, because&nbsp;
+for forward problems, there are also many other&nbsp;&nbsp;
+
+00:28:04.800 --> 00:28:09.640
+traditional solvers that are much faster than&nbsp;
+pins. And in the next few slides, I will still&nbsp;&nbsp;
+
+00:28:09.640 --> 00:28:16.120
+use forward problem as examples to just explain&nbsp;
+how the multi stage pin works, but in the end,&nbsp;&nbsp;
+
+00:28:16.120 --> 00:28:24.600
+I will talk about the impact of this approach&nbsp;
+for A inverse problem. Okay, so before talking&nbsp;&nbsp;
+
+00:28:24.600 --> 00:28:30.640
+about the detail, I want to emphasize again, the&nbsp;
+importance of the scaling factor. So here is the&nbsp;&nbsp;
+
+00:28:31.240 --> 00:28:39.240
+example of the Poissons equation. And this is nice&nbsp;
+example, because we know the exact solution. So&nbsp;&nbsp;
+
+00:28:39.240 --> 00:28:45.720
+here is the pin solution of the beneath pin to the&nbsp;
+Poissons equation, and it has a prediction error&nbsp;&nbsp;
+
+00:28:45.720 --> 00:28:53.800
+about 10 to the minus four because this solution&nbsp;
+has high frequency features. I want to just remind&nbsp;&nbsp;
+
+00:28:53.800 --> 00:29:01.480
+you that, due to the spectral bias, is harder for&nbsp;
+pin to approximate a solution like this. But what&nbsp;&nbsp;
+
+00:29:01.480 --> 00:29:08.880
+we can do again is to change this scaling factor.&nbsp;
+So here, if we make the scaling factor that's&nbsp;&nbsp;
+
+00:29:08.880 --> 00:29:17.000
+closer to the dominant frequency in this sourcing&nbsp;
+term, six pi, now we can reduce the error by two&nbsp;&nbsp;
+
+00:29:17.000 --> 00:29:25.280
+orders of magnitude just by changing this scaling&nbsp;
+factor. Okay. So, okay. So how do we apply multi&nbsp;&nbsp;
+
+00:29:25.280 --> 00:29:33.160
+stage idea to pins? We know that for the previous&nbsp;
+regression data fitting problem, right, the&nbsp;&nbsp;
+
+00:29:33.160 --> 00:29:38.840
+training data for the higher stage neural network&nbsp;
+comes from the error of the previous stage and&nbsp;&nbsp;
+
+00:29:38.840 --> 00:29:44.520
+that can be calculated if you know the if you know&nbsp;
+the target function, if you know the ground truth.&nbsp;&nbsp;
+
+00:29:44.520 --> 00:29:49.960
+But for solving PDS, we don't know the solution,&nbsp;
+right? We don't we want to find the solution so&nbsp;&nbsp;
+
+00:29:49.960 --> 00:29:55.880
+we do not know the target function. So in the case&nbsp;
+when you don't have any target function, how do we&nbsp;&nbsp;
+
+00:29:55.880 --> 00:30:01.480
+design the higher stage network? What would be the&nbsp;
+training data? So. Okay, so now explain that in&nbsp;&nbsp;
+
+00:30:01.480 --> 00:30:08.400
+the next few slides and using this simple example.&nbsp;
+So here's a simple linear ODE, and again, the&nbsp;&nbsp;
+
+00:30:08.400 --> 00:30:15.920
+residue is just the rewriting the equation here.&nbsp;
+So this example also is quite nice. It has the&nbsp;&nbsp;
+
+00:30:15.920 --> 00:30:21.160
+exact solution, and we will define the solution&nbsp;
+error as the difference between your network&nbsp;&nbsp;
+
+00:30:21.160 --> 00:30:27.800
+predictive solution with this exact solution.&nbsp;
+Exact solution. Again, this gray colored text here&nbsp;&nbsp;
+
+00:30:27.800 --> 00:30:34.440
+that's not going to be seen by the neural network&nbsp;
+I'm showing here, just for validating our result.&nbsp;&nbsp;
+
+00:30:34.440 --> 00:30:43.320
+Okay, so here is the pain result, pain prediction&nbsp;
+compared to the exact solution and after the first&nbsp;&nbsp;
+
+00:30:43.320 --> 00:30:52.880
+stage. So here is the PDE residue as a function of&nbsp;
+input x. And here we did a we look at the residue&nbsp;&nbsp;
+
+00:30:52.880 --> 00:31:00.320
+in a Fourier domain, so we can see its dominant&nbsp;
+frequency. Interestingly, here we can calculate&nbsp;&nbsp;
+
+00:31:00.320 --> 00:31:07.800
+the solution error by comparing the red and the&nbsp;
+blue lines, and then here we this is the solution&nbsp;&nbsp;
+
+00:31:07.800 --> 00:31:14.280
+error. We can also look at the solution error in&nbsp;
+the frequency space. Again, this lower panel in&nbsp;&nbsp;
+
+00:31:14.280 --> 00:31:20.840
+gray here is not seen by the algorithm I'm just&nbsp;
+showing here for for your information. So one&nbsp;&nbsp;
+
+00:31:20.840 --> 00:31:27.080
+thing interesting we see here is that the dominant&nbsp;
+frequency of the PD residue is close to the&nbsp;&nbsp;
+
+00:31:27.080 --> 00:31:33.280
+dominant frequency of the error of the solution.&nbsp;
+Another thing is that the error of the solution,&nbsp;&nbsp;
+
+00:31:34.000 --> 00:31:43.400
+the magnitude of the residue is larger compared to&nbsp;
+the magnitude of the error of the solution. Okay,&nbsp;&nbsp;
+
+00:31:43.400 --> 00:31:50.960
+so we know that to design a multi staging neural&nbsp;
+network, we need to specify the order of magnitude&nbsp;&nbsp;
+
+00:31:50.960 --> 00:32:00.240
+of the error for the second stage solution, which&nbsp;
+is this epsilon one parameter. And the question&nbsp;&nbsp;
+
+00:32:00.240 --> 00:32:07.160
+here is, how do we estimate this magnitude of&nbsp;
+s1 with the absence of ground truth solution?&nbsp;&nbsp;
+
+00:32:07.160 --> 00:32:13.920
+So here we can plug in this solution N sock into&nbsp;
+the original PDE, and by doing so, we can obtain&nbsp;&nbsp;
+
+00:32:13.920 --> 00:32:22.520
+a new PDE where the right hand side is simply the&nbsp;
+PDU residue itself from the original equation. So&nbsp;&nbsp;
+
+00:32:22.520 --> 00:32:29.680
+the first neural networks, PDE residue gives the&nbsp;
+can gives the PDE for the second stage neural&nbsp;&nbsp;
+
+00:32:29.680 --> 00:32:36.600
+network that solves for the highest stage term,&nbsp;
+u1 and moreover, the magnitude of the dominant&nbsp;&nbsp;
+
+00:32:36.600 --> 00:32:44.560
+term in the left hand side, in this case, is this&nbsp;
+first derivative term. This term can be estimated&nbsp;&nbsp;
+
+00:32:44.560 --> 00:32:52.240
+as the magnitude of u1 over X the X length scale&nbsp;
+of u1 which is related to the dominant frequency&nbsp;&nbsp;
+
+00:32:52.240 --> 00:33:00.040
+of u1 so if we want to balance in this equation,&nbsp;
+the dominant terms are these two, highlighted in&nbsp;&nbsp;
+
+00:33:00.040 --> 00:33:07.600
+blue by balancing these two dominant terms, we can&nbsp;
+estimate that the magnitude of the solution error,&nbsp;&nbsp;
+
+00:33:07.600 --> 00:33:14.280
+epsilon one based on the magnitude of the&nbsp;
+equation residue and the frequency of the&nbsp;&nbsp;
+
+00:33:14.280 --> 00:33:23.920
+PD residue. So we have all the information that we&nbsp;
+need to estimate this epsilon one parameter. Okay,&nbsp;&nbsp;
+
+00:33:23.920 --> 00:33:31.840
+and again, all this procedure can be automated.&nbsp;
+So now you might ask, this is works for, you know,&nbsp;&nbsp;
+
+00:33:31.840 --> 00:33:36.680
+OD with first derivative, how about higher&nbsp;
+order derivatives? For higher order derivatives,&nbsp;&nbsp;
+
+00:33:36.680 --> 00:33:44.880
+you can apply this very similar strategy. So here,&nbsp;
+instead of estimating term that has u1 over x,&nbsp;&nbsp;
+
+00:33:44.880 --> 00:33:50.920
+you will have like, one over x to the power of&nbsp;
+n, where n is the number of derivatives in the&nbsp;&nbsp;
+
+00:33:50.920 --> 00:34:01.080
+in this term. Okay, so a natural question is,&nbsp;
+how about non linear equations? Right here is&nbsp;&nbsp;
+
+00:34:01.080 --> 00:34:05.760
+we discussed that in our paper as well. Here is a&nbsp;
+simple example where you have a u squared term in&nbsp;&nbsp;
+
+00:34:05.760 --> 00:34:12.920
+your PDE. It turns out you have a question like&nbsp;
+this. You can just follow the same procedure,&nbsp;&nbsp;
+
+00:34:12.920 --> 00:34:19.440
+and then when you write down the second stage&nbsp;
+PDE to train the second stage neural network,&nbsp;&nbsp;
+
+00:34:19.440 --> 00:34:24.360
+you will see that because the epsilon one&nbsp;
+parameter is much smaller than one. So all&nbsp;&nbsp;
+
+00:34:24.360 --> 00:34:31.160
+these nonlinear terms that involve you one will&nbsp;
+fall into a higher order, epsilon one square term,&nbsp;&nbsp;
+
+00:34:31.160 --> 00:34:37.880
+and this can be generally disregarded. So this&nbsp;
+suggests that although, despite the nonlinearity&nbsp;&nbsp;
+
+00:34:37.880 --> 00:34:43.080
+of the original equation, the governing equation&nbsp;
+for the higher stage network, essentially can&nbsp;&nbsp;
+
+00:34:43.080 --> 00:34:48.840
+become a linear equation because this term is&nbsp;
+negligible. Therefore the similar strategies&nbsp;&nbsp;
+
+00:34:48.840 --> 00:34:59.080
+that I just described would apply here, and here&nbsp;
+I'm just mentioning the basic intuitions of our&nbsp;&nbsp;
+
+00:34:59.080 --> 00:35:05.680
+approach. I. If you want to see more details, you&nbsp;
+can look at section 3.1, point two in our paper&nbsp;&nbsp;
+
+00:35:05.680 --> 00:35:12.560
+for the four more derivations. Okay, so this is&nbsp;
+just you to show the result. Here we have all we&nbsp;&nbsp;
+
+00:35:12.560 --> 00:35:21.120
+need to conduct the multi stage training for pins.&nbsp;
+We know that the frequency. So this is a the the&nbsp;&nbsp;
+
+00:35:21.120 --> 00:35:28.520
+PD we're trying to solve. This is the first stage&nbsp;
+PD residue, and this is the error of the first&nbsp;&nbsp;
+
+00:35:28.520 --> 00:35:34.680
+stage PD solution. We know that the frequency&nbsp;
+of the higher stage solution should be close&nbsp;&nbsp;
+
+00:35:34.680 --> 00:35:41.240
+to the frequency of the residue. And using this&nbsp;
+second equation, we can estimate the magnitude of&nbsp;&nbsp;
+
+00:35:41.240 --> 00:35:46.000
+epsilon one, which is the magnitude of the highest&nbsp;
+solution. So now we have all information needed&nbsp;&nbsp;
+
+00:35:46.000 --> 00:35:52.200
+needed to optimize the second neural network.&nbsp;
+And here we just showing that this works very&nbsp;&nbsp;
+
+00:35:52.200 --> 00:35:59.200
+well. So the prediction from the second stage&nbsp;
+neural network agrees very well with the expected&nbsp;&nbsp;
+
+00:35:59.200 --> 00:36:07.600
+result. And again, the here, the error is not&nbsp;
+provided as the training data, because we don't.&nbsp;&nbsp;
+
+00:36:07.600 --> 00:36:13.960
+We don't the new network doesn't see the data&nbsp;
+when training. The new network can only predict&nbsp;&nbsp;
+
+00:36:16.080 --> 00:36:23.840
+the the solution because it's solving the PD for&nbsp;
+the second stage your network so and here's your&nbsp;&nbsp;
+
+00:36:23.840 --> 00:36:32.160
+show. After two stages, the multi stage solution&nbsp;
+has an error that's close to 10 to the minus 13.
+
+00:36:32.160 --> 00:36:38.280
+And after more stages, the solution can be&nbsp;
+the error of a solution can approach 10 to&nbsp;&nbsp;
+
+00:36:38.280 --> 00:36:44.960
+the power of 16, which is close to machine&nbsp;
+precision of double floating points. Okay,&nbsp;&nbsp;
+
+00:36:44.960 --> 00:36:50.760
+so this is just a quick summary previously for&nbsp;
+regression problem. The training data for higher&nbsp;&nbsp;
+
+00:36:50.760 --> 00:36:56.200
+stages come from the error of the previous stage,&nbsp;
+and that can be calculated from the ground truth&nbsp;&nbsp;
+
+00:36:56.200 --> 00:37:03.080
+target function for ping, the ground truth is&nbsp;
+not available for calculating the error. However,&nbsp;&nbsp;
+
+00:37:03.080 --> 00:37:07.480
+the PDE residue from the previous stage neural&nbsp;
+network can be used to estimate the magnitude&nbsp;&nbsp;
+
+00:37:07.480 --> 00:37:12.280
+and frequency of the higher stage PDE solution.&nbsp;
+And the PDE of the higher stage neural network can&nbsp;&nbsp;
+
+00:37:12.280 --> 00:37:17.160
+be written in terms of the PD residue of the&nbsp;
+previous stage neural network. So we have all the&nbsp;&nbsp;
+
+00:37:17.160 --> 00:37:23.360
+information we need from previous stage to train&nbsp;
+the next stage and perform multi stage training&nbsp;&nbsp;
+
+00:37:23.360 --> 00:37:33.240
+for this important for the physical network.&nbsp;
+Again, all these procedure can be automated. Okay,&nbsp;&nbsp;
+
+00:37:33.240 --> 00:37:42.080
+so this is just to show the scaling of the error.&nbsp;
+Here you can even enhance the algorithm by adding&nbsp;&nbsp;
+
+00:37:42.080 --> 00:37:48.880
+the gradient of the residue in the loss function&nbsp;
+term. It's also called GPMs. So here, if you look&nbsp;&nbsp;
+
+00:37:48.880 --> 00:37:57.640
+at the throughout subsequent stages, the error of&nbsp;
+the solution compared to the dominant frequency&nbsp;&nbsp;
+
+00:37:57.640 --> 00:38:04.560
+of the error, you can see it also follows a&nbsp;
+power law for regression problem we solve the&nbsp;&nbsp;
+
+00:38:04.560 --> 00:38:12.960
+power has like one over six exponent here, with&nbsp;
+the addition of PD loss in the cost function,&nbsp;&nbsp;
+
+00:38:12.960 --> 00:38:22.920
+we have a steeper slope, so it's about close&nbsp;
+to one over eight. Okay, so that was for ping&nbsp;&nbsp;
+
+00:38:22.920 --> 00:38:32.960
+with 1d with ODE. And here is a simple PDE&nbsp;
+example, right? So here we have a diffusion,&nbsp;&nbsp;
+
+00:38:32.960 --> 00:38:39.000
+diffusion equation like this, where we also have&nbsp;
+the have an analytical solution. And here you can&nbsp;&nbsp;
+
+00:38:39.000 --> 00:38:48.160
+see the first stage ping error is about 10 to&nbsp;
+the power of minus four. After three stages on,&nbsp;&nbsp;
+
+00:38:48.160 --> 00:38:55.240
+the error can be pushed down to 10 to the minus&nbsp;
+nine, and this is just to show the same scaling&nbsp;&nbsp;
+
+00:38:55.240 --> 00:39:04.680
+law of the error of the solution versus the&nbsp;
+dominant frequency of the errors. Okay, so this&nbsp;&nbsp;
+
+00:39:04.680 --> 00:39:15.440
+is the introduction of how this multi stage, high&nbsp;
+precision neural network work. And so what can is,&nbsp;&nbsp;
+
+00:39:15.440 --> 00:39:20.080
+you know, all the example I showed so far are&nbsp;
+the example where we already have analytical&nbsp;&nbsp;
+
+00:39:20.080 --> 00:39:27.520
+solutions. So in practice, what can we use this&nbsp;
+high precision neural network for? And here, I&nbsp;&nbsp;
+
+00:39:27.520 --> 00:39:33.480
+want to show example where it can be used to solve&nbsp;
+some very challenging PDE so it can actually be&nbsp;&nbsp;
+
+00:39:33.480 --> 00:39:39.920
+used to find some PDE solutions that are otherwise&nbsp;
+quite difficult to find with classical methods as&nbsp;&nbsp;
+
+00:39:39.920 --> 00:39:50.040
+an example. So I'll talk about the Navier Stokes&nbsp;
+equation. Navier stokes equation is widely used in&nbsp;&nbsp;
+
+00:39:50.040 --> 00:39:56.920
+various applications in science and engineering,&nbsp;
+right for two, more than two centuries. It's also&nbsp;&nbsp;
+
+00:39:56.920 --> 00:40:03.720
+my favorite equations in the world because&nbsp;
+of. Because of its universality. However,&nbsp;&nbsp;
+
+00:40:03.720 --> 00:40:09.960
+there are also many unsolved questions concerning&nbsp;
+the fundamental behavior of the Navier Stokes&nbsp;&nbsp;
+
+00:40:09.960 --> 00:40:18.880
+equation. In particular, we do not know if the&nbsp;
+Navier Stokes equation always exists, a solution&nbsp;&nbsp;
+
+00:40:19.840 --> 00:40:28.360
+that always exists, a solution for any smooth,&nbsp;
+bound initial condition. So one of the pathway&nbsp;&nbsp;
+
+00:40:28.360 --> 00:40:34.600
+to tackle this problem is to find a solution to&nbsp;
+the Navier Stokes equation that can blow up at&nbsp;&nbsp;
+
+00:40:34.600 --> 00:40:41.120
+finite time. If I can find this example, that will&nbsp;
+be a counter example of the statement that navier&nbsp;&nbsp;
+
+00:40:41.120 --> 00:40:48.280
+stokes equation always is a unique and smooth&nbsp;
+solution at any times. So here we want to see if&nbsp;&nbsp;
+
+00:40:48.280 --> 00:40:56.960
+our high precision multi station neural network&nbsp;
+can be used to find blowout solutions. And this&nbsp;&nbsp;
+
+00:40:57.640 --> 00:41:02.720
+question, this open question, are also very&nbsp;
+important for not only for Navier Stokes,&nbsp;&nbsp;
+
+00:41:02.720 --> 00:41:10.280
+but also the Euler equation. Let's go back. So for&nbsp;
+Euler equation, this will be the focus of the next&nbsp;&nbsp;
+
+00:41:10.280 --> 00:41:18.000
+few slides, and this work was also recently&nbsp;
+published in Physical Review Letters. Okay,&nbsp;&nbsp;
+
+00:41:18.000 --> 00:41:25.880
+so this is the Euler equation. It's simply the&nbsp;
+Navier Stokes equation with zero viscosity. A open&nbsp;&nbsp;
+
+00:41:25.880 --> 00:41:33.160
+question for this equation that remains unsolved&nbsp;
+for over a century is whether smooth and finite&nbsp;&nbsp;
+
+00:41:33.160 --> 00:41:40.000
+energy initial condition can blow up in finite&nbsp;
+time. In the past decades, there has been several&nbsp;&nbsp;
+
+00:41:40.000 --> 00:41:46.840
+progress made by direct numerical simulations, and&nbsp;
+that suggests singularity formation for the Euler&nbsp;&nbsp;
+
+00:41:46.840 --> 00:41:54.000
+equation. However, you can imagine that near the&nbsp;
+time of blowing up, near the time of singularity,&nbsp;&nbsp;
+
+00:41:54.000 --> 00:42:00.080
+the time and space resolution needed to&nbsp;
+resolve the dynamics are extremely high,&nbsp;&nbsp;
+
+00:42:00.080 --> 00:42:06.720
+so we need really, really fine resolution to&nbsp;
+resolve the singularity. The smallest length&nbsp;&nbsp;
+
+00:42:06.720 --> 00:42:14.320
+scale and the largest scale can spend over&nbsp;
+more than 12 orders of magnitude. So this is&nbsp;&nbsp;
+
+00:42:14.320 --> 00:42:20.080
+this post and multi scale numerical challenge&nbsp;
+to this problem, and in the next few slides,&nbsp;&nbsp;
+
+00:42:20.080 --> 00:42:27.120
+I will show how we can tackle this problem&nbsp;
+with a multi stage visiting formula network.&nbsp;&nbsp;
+
+00:42:28.600 --> 00:42:35.320
+So we first reduce the dimensionality, so&nbsp;
+we are working in a self similar domain,&nbsp;&nbsp;
+
+00:42:35.320 --> 00:42:40.520
+and here we use a visiting formula network&nbsp;
+to approximate four parameters we want to&nbsp;&nbsp;
+
+00:42:40.520 --> 00:42:47.240
+solve for as a function of two self similar input&nbsp;
+coordinate. So throughout the training iterations,&nbsp;&nbsp;
+
+00:42:47.240 --> 00:42:54.560
+the algorithm will search for the four solution&nbsp;
+profiles that satisfy the self similar eulers&nbsp;&nbsp;
+
+00:42:54.560 --> 00:43:00.560
+equation. And I want to emphasize that this is&nbsp;
+not a this is not a forward problem, because in&nbsp;&nbsp;
+
+00:43:00.560 --> 00:43:07.120
+this set of equation, we have a critical unknown&nbsp;
+parameter. We have a non parameter in the set of&nbsp;&nbsp;
+
+00:43:07.120 --> 00:43:14.600
+equations. So the search for the solution along&nbsp;
+with this unknown parameter is an inverse problem&nbsp;&nbsp;
+
+00:43:14.600 --> 00:43:23.160
+instead of a forward problem. And I will skip&nbsp;
+a lot of numerical details here. These are&nbsp;&nbsp;
+
+00:43:23.680 --> 00:43:31.560
+documented in the supplementary material of our&nbsp;
+paper, but our neural network can see that is&nbsp;&nbsp;
+
+00:43:31.560 --> 00:43:38.200
+again, so this is a loss versus iteration and the&nbsp;
+convergence of the neural network approximation of&nbsp;&nbsp;
+
+00:43:38.200 --> 00:43:44.880
+the solution over iterations, so our new network&nbsp;
+can numerically found. Can you numerically find a&nbsp;&nbsp;
+
+00:43:44.880 --> 00:43:51.640
+set of approximate, smooth, self similar solutions&nbsp;
+that exhibit singularities to the eulers equation,&nbsp;&nbsp;
+
+00:43:51.640 --> 00:43:57.120
+and this is one of the example where neural&nbsp;
+network has found PD solutions that had not been&nbsp;&nbsp;
+
+00:43:57.120 --> 00:44:04.280
+found before with other more classical methods,&nbsp;
+here you can calculate the accuracy of a solution&nbsp;&nbsp;
+
+00:44:04.280 --> 00:44:11.480
+by substitute the neural network of solution&nbsp;
+into the PDE and look at the PD residues. So&nbsp;&nbsp;
+
+00:44:11.480 --> 00:44:17.840
+this quantum, quantum magazine article, this, they&nbsp;
+did a good job explaining the background of this&nbsp;&nbsp;
+
+00:44:17.840 --> 00:44:24.640
+problem and our progress. And Charles Fefferman,&nbsp;
+he's not directly involved in this work. He's&nbsp;&nbsp;
+
+00:44:24.640 --> 00:44:30.280
+the author of the statement of existence and&nbsp;
+smoothness of the Navier Stokes equation. So&nbsp;&nbsp;
+
+00:44:30.280 --> 00:44:39.000
+he mentioned in the quantum article that our&nbsp;
+result is is quantitative and is precise and&nbsp;&nbsp;
+
+00:44:39.000 --> 00:44:45.720
+has a good chance of being made rigorous. So&nbsp;
+this is very exciting to us, because this is a&nbsp;&nbsp;
+
+00:44:45.720 --> 00:44:56.520
+possible strategy to tackle various block problem&nbsp;
+where the classical simulation is difficult. Okay,&nbsp;&nbsp;
+
+00:44:57.040 --> 00:45:05.760
+so just want to sum up by saying that. There has&nbsp;
+been several challenges in this general area of&nbsp;&nbsp;
+
+00:45:05.760 --> 00:45:11.040
+high precision learning, and there are also a&nbsp;
+lot of progress that's been made. So in front&nbsp;&nbsp;
+
+00:45:11.040 --> 00:45:18.040
+different angles, for example, there's many, many&nbsp;
+work that focus on how to enhance the function&nbsp;&nbsp;
+
+00:45:18.040 --> 00:45:25.440
+approximation error. And there are so paper that&nbsp;
+tackles how to do faster optimization, like second&nbsp;&nbsp;
+
+00:45:25.440 --> 00:45:31.160
+order optimization methods. I think Marius is&nbsp;
+actually giving a talk in this seminar series&nbsp;&nbsp;
+
+00:45:31.160 --> 00:45:37.840
+next week. Look forward to that. And there's also&nbsp;
+how to approximate high frequency functions. We&nbsp;&nbsp;
+
+00:45:37.840 --> 00:45:44.880
+already mentioned this paper previously for in the&nbsp;
+context of pin, there's various work that discuss&nbsp;&nbsp;
+
+00:45:44.880 --> 00:45:51.760
+how to determine how to weight different terms&nbsp;
+in the loss function, and the overall goal here&nbsp;&nbsp;
+
+00:45:51.760 --> 00:45:56.920
+is to make the convergence rate in for different&nbsp;
+terms in the loss function roughly comparable.&nbsp;&nbsp;
+
+00:45:57.880 --> 00:46:05.280
+And there's also some work focused on how to&nbsp;
+have a strategy that optimize the sampling&nbsp;&nbsp;
+
+00:46:05.280 --> 00:46:10.120
+of COVID condition point, and how do you&nbsp;
+choose optimal activation functions of&nbsp;&nbsp;
+
+00:46:10.120 --> 00:46:17.360
+neural network? Finally, there are also&nbsp;
+work by Misra that look at, in addition,&nbsp;&nbsp;
+
+00:46:17.360 --> 00:46:23.360
+whether we can say something about the error&nbsp;
+bound of the solution based on the PD residue.
+
+00:46:23.360 --> 00:46:31.460
+Okay, so I'll encourage you to check out all these&nbsp;
+papers and to sum up this talk, which that multi&nbsp;&nbsp;
+
+00:46:31.460 --> 00:46:36.840
+stationary network can boost approximation&nbsp;
+accuracy, it can tackle spectral bias and&nbsp;&nbsp;
+
+00:46:36.840 --> 00:46:43.480
+enhance the neural network precision to machine&nbsp;
+precision. It doesn't it takes less computational&nbsp;&nbsp;
+
+00:46:43.480 --> 00:46:49.960
+cost in a single unit. And this is useful for&nbsp;
+representation, representation and representing&nbsp;&nbsp;
+
+00:46:49.960 --> 00:46:56.480
+flow that exhibit multi scale features. We have&nbsp;
+also applied to find blue solutions to Euler,&nbsp;&nbsp;
+
+00:46:56.480 --> 00:47:03.680
+and this is a challenging multi scale problem in&nbsp;
+the future, we're interested in systematic study&nbsp;&nbsp;
+
+00:47:03.680 --> 00:47:11.120
+of the use of these for various types of PDs, and&nbsp;
+we also want to see if we can use this to improve&nbsp;&nbsp;
+
+00:47:11.120 --> 00:47:17.200
+surrogate models. So how can this, you know, very&nbsp;
+precise neural network you can be How can you be&nbsp;&nbsp;
+
+00:47:17.200 --> 00:47:26.560
+used to help to mitigate error and instabilities&nbsp;
+in the machine learning based emulators. And yeah.&nbsp;&nbsp;
+
+00:47:26.560 --> 00:47:34.440
+So finally, I want to thank my wonderful group&nbsp;
+members. Young Juan is really the core developer&nbsp;&nbsp;
+
+00:47:34.440 --> 00:47:40.400
+of the deep learning algorithm. None of the&nbsp;
+result would be possible without without him and&nbsp;&nbsp;
+
+00:47:40.400 --> 00:47:47.280
+Jenkin and Charles are my students who contributed&nbsp;
+substantially to the deep learning algorithms our&nbsp;&nbsp;
+
+00:47:47.280 --> 00:47:53.400
+code. So many people ask me about the code, and&nbsp;
+it is open source, available. If you want to try,&nbsp;&nbsp;
+
+00:47:53.400 --> 00:48:02.280
+can go to this link, and I'll be very happy to&nbsp;
+answer any questions. Thank you to stop here.
+
+00:48:02.280 --> 00:48:10.240
+Thank you. Thank you so much for the wonderful&nbsp;
+talk Yao that was very informal, and I'm sure&nbsp;&nbsp;
+
+00:48:10.240 --> 00:48:16.880
+everyone here on the lab, okay, let's have a Q and&nbsp;
+A session. Say, I don't see any questions in the&nbsp;&nbsp;
+
+00:48:16.880 --> 00:48:26.760
+chat room, so if you have questions, please unmute&nbsp;
+yourself. Ask questions. Don't be shy. Oh yes,&nbsp;&nbsp;
+
+00:48:27.360 --> 00:48:33.240
+Lucas, just ask the questions. Is that?&nbsp;
+Thanks a lot for the presentation. It&nbsp;&nbsp;
+
+00:48:33.240 --> 00:48:39.800
+was very clear and informative. Where can we&nbsp;
+find the slides of the presentations? Okay,&nbsp;&nbsp;
+
+00:48:39.800 --> 00:48:46.080
+we are going to make this video like the&nbsp;
+recorded video available in the YouTube.&nbsp;&nbsp;
+
+00:48:46.080 --> 00:48:57.160
+You can check it there or Yao, do you&nbsp;
+mind share your slides to audience? Yeah.
+
+00:48:57.160 --> 00:48:59.600
+What would be the best way to do that?
+
+00:49:00.240 --> 00:49:05.720
+You can forward that to me, and then, you know,
+
+00:49:05.720 --> 00:49:10.680
+yeah, I can, yeah. I'll forward&nbsp;
+to the slides. No problem. Yeah.
+
+00:49:10.680 --> 00:49:18.880
+All right, thank you for the question.&nbsp;
+Lucas Jerome, thank you for the
+
+00:49:18.880 --> 00:49:25.760
+presentation. I was just struck a little bit by&nbsp;
+the fact that there's a relationship it seems,&nbsp;&nbsp;
+
+00:49:25.760 --> 00:49:35.080
+between doing the the second level neural network&nbsp;
+and maybe the norm that you're using for the&nbsp;&nbsp;
+
+00:49:35.080 --> 00:49:42.040
+error, right? If you maybe used for the PD, it's&nbsp;
+natural to use like the h1 norm so it can include,&nbsp;&nbsp;
+
+00:49:42.040 --> 00:49:52.320
+like the gradients in the error. So I was just&nbsp;
+wondering if you had some thoughts on that.
+
+00:49:52.320 --> 00:49:55.960
+So I couldn't hear exactly every&nbsp;
+word. Let me try that again.
+
+00:49:55.960 --> 00:49:56.640
+Can you hear me now?
+
+00:49:58.040 --> 00:50:00.560
+Yeah, there's technical.
+
+00:50:00.560 --> 00:50:11.360
+Oh, yeah. So I was just thinking that there's&nbsp;
+a relationship between what you're doing and,&nbsp;&nbsp;
+
+00:50:11.360 --> 00:50:16.760
+like, the choice of the norm you use&nbsp;
+for measuring the error. And, like,&nbsp;&nbsp;
+
+00:50:16.760 --> 00:50:22.600
+in the PBE case, at least it's would be natural&nbsp;
+to use, like, the h1 norm. So you would include&nbsp;&nbsp;
+
+00:50:22.600 --> 00:50:28.360
+the gradients, you know, the difference in&nbsp;
+the gradients and the in the error, which&nbsp;&nbsp;
+
+00:50:28.360 --> 00:50:36.480
+would naturally tend to grab a lot more of the&nbsp;
+high frequency terms. So I just wondered if you,&nbsp;&nbsp;
+
+00:50:36.480 --> 00:50:47.840
+if you had thought about that, and you know, there&nbsp;
+was a relationship there that you had explored.
+
+00:50:47.840 --> 00:50:53.080
+Yeah, you're talking about how how&nbsp;
+to report errors, right? And yeah,
+
+00:50:53.080 --> 00:50:56.200
+because that that how you&nbsp;
+decide on the error, like,&nbsp;&nbsp;
+
+00:50:56.880 --> 00:51:03.640
+determines how the thing is, is trained, right?
+
+00:51:04.320 --> 00:51:07.240
+The error the training is using l2 actually,&nbsp;&nbsp;
+
+00:51:07.240 --> 00:51:15.960
+sometimes we use LP and the pre, yeah, our way&nbsp;
+of that is a good question. Yeah, we can use,
+
+00:51:15.960 --> 00:51:21.320
+if you used L, you know, the h1 norm,&nbsp;
+which is like, just like, you know,&nbsp;&nbsp;
+
+00:51:21.320 --> 00:51:26.800
+the square of that error, plus the square of&nbsp;
+the error and the gradients, then it would&nbsp;&nbsp;
+
+00:51:26.800 --> 00:51:32.360
+naturally, which is not, which is the natural one&nbsp;
+that we use for like, PDS, for like, second order,&nbsp;&nbsp;
+
+00:51:32.360 --> 00:51:41.600
+PDS would would tend to capture a lot of the error&nbsp;
+that just using the l2 norm would miss, right?
+
+00:51:41.600 --> 00:51:45.000
+I think this is a good, good, good, good&nbsp;
+suggestion. Yeah, we couldn't definitely,&nbsp;&nbsp;
+
+00:51:45.000 --> 00:51:49.200
+we, you know, we can definitely help&nbsp;
+calculate H on error without problem,&nbsp;&nbsp;
+
+00:51:49.200 --> 00:51:53.080
+yeah, so, yeah, I will be curious to see
+
+00:51:53.080 --> 00:51:56.840
+there's a, what I'm trying to say, is&nbsp;
+there a relationship between doing that&nbsp;&nbsp;
+
+00:51:56.840 --> 00:52:04.040
+sort of second level of neural&nbsp;
+networks, and including, say,&nbsp;&nbsp;
+
+00:52:04.040 --> 00:52:11.560
+higher order terms in the error metric. But&nbsp;
+both of them are attempting to train towards,&nbsp;&nbsp;
+
+00:52:12.200 --> 00:52:18.800
+you know, something that captures&nbsp;
+high, higher frequency terms, more.
+
+00:52:18.800 --> 00:52:24.640
+Yeah, that's a good that's a good suggestion&nbsp;
+we have not really as calculate, you know,&nbsp;&nbsp;
+
+00:52:24.640 --> 00:52:28.440
+Edge one error so far is still ongoing work,&nbsp;&nbsp;
+
+00:52:28.440 --> 00:52:33.520
+and we're just really looking at a simple&nbsp;
+difference between but, yeah, I see what you&nbsp;&nbsp;
+
+00:52:33.520 --> 00:52:42.280
+I see your point. English is a good thing to&nbsp;
+to do. We can definitely yeah, report, yeah.
+
+00:52:42.280 --> 00:52:46.760
+Thank you, Robert. I know you put&nbsp;
+the question in the chat room,&nbsp;&nbsp;
+
+00:52:46.760 --> 00:52:50.720
+but do you want to unmute yourself and then ask?
+
+00:52:50.720 --> 00:52:53.680
+Yeah, sure. So you mentioned&nbsp;
+at the start of your talk,&nbsp;&nbsp;
+
+00:52:53.680 --> 00:52:59.360
+maybe when you talk after you wanting to&nbsp;
+investigate why you're seeing that alpha&nbsp;&nbsp;
+
+00:52:59.360 --> 00:53:03.400
+coefficient appearing over and over again&nbsp;
+with your graphs. Have you looked into any&nbsp;&nbsp;
+
+00:53:03.400 --> 00:53:08.640
+of the research on the empirical&nbsp;
+scaling laws for neural networks?
+
+00:53:08.640 --> 00:53:17.440
+Yeah, yeah. So the empirical, the empirical,&nbsp;
+deep scaling convergence laws, and that's yeah,&nbsp;&nbsp;
+
+00:53:17.440 --> 00:53:19.920
+what can you remember? What's&nbsp;
+the alpha value on there?
+
+00:53:19.920 --> 00:53:28.520
+So interestingly, the alpha values there seem to&nbsp;
+work something like a condition number, an analog&nbsp;&nbsp;
+
+00:53:28.520 --> 00:53:35.320
+for like mathematical problems, in that they are&nbsp;
+constant for the problem being discussed, but are&nbsp;&nbsp;
+
+00:53:35.320 --> 00:53:40.520
+independent of the network architecture used, but&nbsp;
+only sometimes. There's like research that shows&nbsp;&nbsp;
+
+00:53:40.520 --> 00:53:48.040
+that LSTMs and transformers, for example, have&nbsp;
+a four fold difference in their coefficients.
+
+00:53:48.040 --> 00:53:56.280
+Interesting? Yeah, I think, Oh, here. I think&nbsp;
+there's a there. Yeah, this is something&nbsp;&nbsp;
+
+00:53:56.800 --> 00:54:03.080
+I'm really curious to see, because in our case,&nbsp;
+it's especially quite consistent with what we see,&nbsp;&nbsp;
+
+00:54:03.080 --> 00:54:10.760
+that the independence of the architecture and&nbsp;
+the depth and width, but so I've been looking
+
+00:54:10.760 --> 00:54:15.920
+at it for a while. It's like, you know,&nbsp;
+we can talk afterwards, but basically,&nbsp;&nbsp;
+
+00:54:15.920 --> 00:54:19.080
+the the other questions I had, I just wanted&nbsp;
+to kind of alert you into that, because I think&nbsp;&nbsp;
+
+00:54:19.080 --> 00:54:24.400
+there's a connection to what you're doing there.&nbsp;
+And I also, like, wanted to ask, Do you have any&nbsp;&nbsp;
+
+00:54:24.400 --> 00:54:28.960
+insights about how the size of the network affects&nbsp;
+the frequency response of your networks? If I take&nbsp;&nbsp;
+
+00:54:28.960 --> 00:54:37.600
+my if I say, add 1000 times more parameters to&nbsp;
+my network, can it capture more spectral modes?
+
+00:54:37.600 --> 00:54:45.640
+I really like this question because I had that&nbsp;
+exact same question, like, a year ago, you know,&nbsp;&nbsp;
+
+00:54:45.640 --> 00:54:51.200
+like, if we draw now due to Fourier series,&nbsp;
+right? You would think that more terms you will&nbsp;&nbsp;
+
+00:54:51.200 --> 00:54:57.800
+be able to capture, like, a wide, broader range&nbsp;
+of frequencies. Interestingly, if we let's do a&nbsp;&nbsp;
+
+00:54:57.800 --> 00:55:05.240
+simple test and. Simple thought process, thought&nbsp;
+experiment, if we just have one single hidden&nbsp;&nbsp;
+
+00:55:05.240 --> 00:55:11.480
+layer and then replace all the activation function&nbsp;
+by sign signs. So it's like close to like a&nbsp;&nbsp;
+
+00:55:11.480 --> 00:55:18.960
+Fourier series. And then you ask the question, Can&nbsp;
+increasing number of neurons increase the ability&nbsp;&nbsp;
+
+00:55:18.960 --> 00:55:23.360
+for a neural network to capture higher frequency&nbsp;
+data, the answer is actually no, because that&nbsp;&nbsp;
+
+00:55:23.360 --> 00:55:29.080
+depends on how you initialize the neural network,&nbsp;
+and the ultimate optimization procedure is really&nbsp;&nbsp;
+
+00:55:29.640 --> 00:55:36.400
+the architecture itself is fine, but is the way&nbsp;
+neural network learn how to optimize parameters.&nbsp;&nbsp;
+
+00:55:36.400 --> 00:55:44.000
+That's like limiting its represent representation&nbsp;
+accuracy. So that's why, that's why, in our in our&nbsp;&nbsp;
+
+00:55:44.000 --> 00:55:49.320
+case, we initially, we just increased the depth&nbsp;
+and width. And that has, like, I think you will&nbsp;&nbsp;
+
+00:55:49.320 --> 00:55:55.840
+also see a scaling law actually, right? But&nbsp;
+the exponent is not as large as six. Yeah.
+
+00:55:56.880 --> 00:56:01.880
+The scalings are usually really, really poor,&nbsp;
+like, I wonder. And the session brings into the&nbsp;&nbsp;
+
+00:56:01.880 --> 00:56:06.800
+reason I asked the third question there is, how&nbsp;
+do you apply this idea to a problem where you&nbsp;&nbsp;
+
+00:56:06.800 --> 00:56:11.440
+can't really do a frequency analysis, like, say, I&nbsp;
+wanted to take and do a multi stage neural network&nbsp;&nbsp;
+
+00:56:11.440 --> 00:56:19.960
+for something like an LLM, how could I do&nbsp;
+that without being able to analyze the Kappa?
+
+00:56:19.960 --> 00:56:23.800
+I see that's a very good question. So if
+
+00:56:23.800 --> 00:56:28.520
+you think, I think what the llms are seeing are&nbsp;
+basically the same phenomena that you are seeing&nbsp;&nbsp;
+
+00:56:28.520 --> 00:56:33.440
+on these physics problems, right? They have&nbsp;
+some problem. And you read the studies on how&nbsp;&nbsp;
+
+00:56:33.440 --> 00:56:38.840
+they suddenly, things suddenly grok like it really&nbsp;
+sounds to me, for someone who has a physics basis,&nbsp;&nbsp;
+
+00:56:38.840 --> 00:56:42.920
+as in, they've suddenly discovered a frequency&nbsp;
+mode of the underlying data. And you look at these&nbsp;&nbsp;
+
+00:56:42.920 --> 00:56:47.800
+networks a lot like they usually smooth over noise&nbsp;
+until they suddenly find a signal in the noise,&nbsp;&nbsp;
+
+00:56:47.800 --> 00:56:52.640
+which could be like, analogous to suddenly&nbsp;
+finding the frequency and a feature space where&nbsp;&nbsp;
+
+00:56:52.640 --> 00:56:57.880
+this all suddenly makes sense, but it'd be really&nbsp;
+interesting. And we have lots of problems around&nbsp;&nbsp;
+
+00:56:57.880 --> 00:57:01.880
+here where I'd love to apply a techno like this.&nbsp;
+I've spent, like, you know, two years trying to&nbsp;&nbsp;
+
+00:57:01.880 --> 00:57:07.360
+fit a network to machine precision or something,&nbsp;
+and failing. And like, no one has been able to,&nbsp;&nbsp;
+
+00:57:07.360 --> 00:57:11.560
+like, find a network that can make it like,&nbsp;
+written down. So I'm really excited by this, but&nbsp;&nbsp;
+
+00:57:11.560 --> 00:57:16.800
+we have problems where you can't do a frequency&nbsp;
+analysis to find what the dominant frequency
+
+00:57:16.800 --> 00:57:25.000
+is. I'm, yeah, I'm very interested in and&nbsp;
+intrigued by your question. So in the LFM,&nbsp;&nbsp;
+
+00:57:25.000 --> 00:57:31.600
+then the question is, what's the what does it&nbsp;
+mean when a new network is of low precision? Yeah,&nbsp;&nbsp;
+
+00:57:31.600 --> 00:57:36.480
+right. Like, is it also fitting? Some like, what&nbsp;
+does it mean that? What's the part that's it's&nbsp;&nbsp;
+
+00:57:36.480 --> 00:57:44.000
+not fitting? Yeah, I don't know the answer.&nbsp;
+I'm just curious. Yeah, so we can talk more.
+
+00:57:47.960 --> 00:57:53.080
+All right, thank you for the question&nbsp;
+and answer. That's wonderful. Any other&nbsp;&nbsp;
+
+00:57:53.080 --> 00:58:02.480
+questions from audience? I think William, you&nbsp;
+raised a hand one time and still there. Yeah,
+
+00:58:02.480 --> 00:58:07.720
+I guess it was kind of somewhat related to&nbsp;
+what you were talking about. I was curious if,&nbsp;&nbsp;
+
+00:58:08.600 --> 00:58:13.960
+when you're implementing it, if you needed to&nbsp;
+go through and, like, tune each auto encoder&nbsp;&nbsp;
+
+00:58:13.960 --> 00:58:20.240
+architecture as you're going through and adding&nbsp;
+these extra levels. But it sounds like if you just&nbsp;&nbsp;
+
+00:58:20.240 --> 00:58:24.920
+feed in the data, it doesn't architecture&nbsp;
+doesn't matter if you feed in the errors,&nbsp;&nbsp;
+
+00:58:24.920 --> 00:58:31.480
+the actual architecture doesn't matter that&nbsp;
+much. It's just what you're training on,
+
+00:58:31.480 --> 00:58:39.480
+exactly like the there's no the only thing that&nbsp;
+we have to decide because all the parameters,&nbsp;&nbsp;
+
+00:58:39.480 --> 00:58:47.720
+like the scaling factor that tune the the weight&nbsp;
+of the neural network of the higher stage neural&nbsp;&nbsp;
+
+00:58:47.720 --> 00:58:52.920
+network. Those can be determined just from the&nbsp;
+result of previous stage. So those are not,&nbsp;&nbsp;
+
+00:58:52.920 --> 00:58:56.400
+not really the tuning parameter, but&nbsp;
+one thing we do have to decide is,&nbsp;&nbsp;
+
+00:58:56.400 --> 00:59:05.720
+is one to stop the training of a particular stage&nbsp;
+so that is still, we kind of decide manually,&nbsp;&nbsp;
+
+00:59:06.600 --> 00:59:11.720
+you really good to have a way to automate&nbsp;
+that process. I don't know if that answer,
+
+00:59:11.720 --> 00:59:16.320
+yeah, yeah, definitely. Thank you.
+
+00:59:16.320 --> 00:59:21.800
+I have one questions for the multi&nbsp;
+stage pins. You have to provide some&nbsp;&nbsp;
+
+00:59:21.800 --> 00:59:29.640
+Co Location points as well. Do you see?&nbsp;
+You know your multi stage pins convergence&nbsp;&nbsp;
+
+00:59:29.640 --> 00:59:35.960
+behavior depending on the number of&nbsp;
+CO locations and position location&nbsp;&nbsp;
+
+00:59:35.960 --> 00:59:42.080
+of the CO location points as well? Have&nbsp;
+you probably you have done some studies.
+
+00:59:42.080 --> 00:59:47.560
+This is actually a very important question.&nbsp;
+So if we actually for the ping case, we have&nbsp;&nbsp;
+
+00:59:47.560 --> 00:59:54.560
+done something almost similar to the regression&nbsp;
+problem. The first thing we try is increasing the&nbsp;&nbsp;
+
+00:59:54.560 --> 01:00:00.640
+collocation point, and we see that error doesn't&nbsp;
+really come like an error goes. Down, but there's&nbsp;&nbsp;
+
+01:00:00.640 --> 01:00:08.840
+a limit of the error of this, of the PDE solution.&nbsp;
+So then we know, then, then that's when we know&nbsp;&nbsp;
+
+01:00:08.840 --> 01:00:17.080
+the limitation of the error is no longer coming&nbsp;
+from colocation points. Is the architect. It's&nbsp;&nbsp;
+
+01:00:17.080 --> 01:00:22.520
+the optimization of the network. It's like&nbsp;
+not learning these high frequency features.&nbsp;&nbsp;
+
+01:00:22.520 --> 01:00:26.440
+So then when we add the second stage network, we&nbsp;
+have to still do the same experiment. We have to&nbsp;&nbsp;
+
+01:00:26.440 --> 01:00:31.640
+see make sure we have enough collocation point so&nbsp;
+it's not limited. The accuracy is not limited by&nbsp;&nbsp;
+
+01:00:31.640 --> 01:00:38.880
+the number of collision point. It's limited&nbsp;
+by the optimization of the weight and bias.
+
+01:00:38.880 --> 01:00:43.280
+Also, you're not using the same Co&nbsp;
+Location point set from the previous&nbsp;&nbsp;
+
+01:00:43.280 --> 01:00:50.040
+days. You always go back and then try to&nbsp;
+find out, you know, what is the enough?
+
+01:00:52.640 --> 01:00:55.680
+They don't have to be the same.&nbsp;
+They don't have to be the same. But&nbsp;&nbsp;
+
+01:00:56.320 --> 01:01:02.160
+I think it's easier if we just use the&nbsp;
+highest density of points. Let me like&nbsp;&nbsp;
+
+01:01:02.160 --> 01:01:11.280
+the regression problem. The cop, the downside&nbsp;
+is, is that you increase the computational time&nbsp;&nbsp;
+
+01:01:11.280 --> 01:01:15.280
+if you just use highest possible closure&nbsp;
+and point density in the beginning. So&nbsp;&nbsp;
+
+01:01:15.280 --> 01:01:22.880
+in the beginning you can use less. In the&nbsp;
+higher stage, you need to use more points.
+
+01:01:22.880 --> 01:01:24.040
+Right? Right?
+
+01:01:24.040 --> 01:01:27.640
+I think problem is really not&nbsp;
+it's really too expensive to&nbsp;&nbsp;
+
+01:01:27.640 --> 01:01:31.080
+do this. It's really for this special type of PD,&nbsp;&nbsp;
+
+01:01:31.080 --> 01:01:36.000
+you really need high precision and an inverse&nbsp;
+problem where deriving a joint for this couple&nbsp;&nbsp;
+
+01:01:36.000 --> 01:01:41.560
+of individuals is challenging. That's the type&nbsp;
+of problem where I see it's beneficial, right?
+
+01:01:41.560 --> 01:01:47.400
+Right? I'm just curious. You know,&nbsp;
+the pins usually takes a long time to,&nbsp;&nbsp;
+
+01:01:47.400 --> 01:01:50.560
+you know, get the converts to solutions. How about&nbsp;&nbsp;
+
+01:01:50.560 --> 01:01:58.840
+your multi stage pins? Any benefit&nbsp;
+of accelerating that training at all?
+
+01:01:58.840 --> 01:02:03.560
+So depend on what you meant by accelerate.&nbsp;
+If you ask the for the same precision,&nbsp;&nbsp;
+
+01:02:03.560 --> 01:02:08.600
+what's the computational time compared to the&nbsp;
+regular pin? The answer is yes, it's faster,
+
+01:02:08.600 --> 01:02:10.240
+right? Yeah.
+
+01:02:10.240 --> 01:02:11.120
+But like,
+
+01:02:12.880 --> 01:02:17.480
+if you compare that with a&nbsp;
+traditional PD, is over, then
+
+01:02:17.480 --> 01:02:20.960
+there is definitely not. Like, I don't,&nbsp;
+I wouldn't recommend using this to solve&nbsp;&nbsp;
+
+01:02:20.960 --> 01:02:26.320
+for normal like diffusion equation. That&nbsp;
+was like, we're showing how this work,&nbsp;&nbsp;
+
+01:02:26.320 --> 01:02:31.240
+like a simple example where you&nbsp;
+have analytical solution, right?
+
+01:02:31.240 --> 01:02:38.200
+Alright, thank you. The robot you&nbsp;
+seems to have on other questions.
+
+01:02:38.200 --> 01:02:42.160
+I have like, 18 questions. So that's fine.
+
+01:02:42.160 --> 01:02:44.680
+That's one more. Okay.
+
+01:02:44.680 --> 01:02:50.200
+Well, so like the the last question I have&nbsp;
+there is, what happens? Have you ever had the&nbsp;&nbsp;
+
+01:02:50.200 --> 01:02:55.840
+network predict the Kappa figure for&nbsp;
+you during training of the residual?
+
+01:02:58.440 --> 01:03:01.080
+I think it is kind of being&nbsp;
+predicted by the neural network,&nbsp;&nbsp;
+
+01:03:01.080 --> 01:03:06.720
+because the Kappa is determined from the&nbsp;
+outcome of the previous stage, usually.
+
+01:03:06.720 --> 01:03:11.280
+So if the network could predict the Kappa,&nbsp;
+like if I'm if I'm training the residual,&nbsp;&nbsp;
+
+01:03:11.280 --> 01:03:16.000
+the first residual network and then second&nbsp;
+residual, if they're each picking their own Kappa,&nbsp;&nbsp;
+
+01:03:16.000 --> 01:03:23.600
+that would offer a way for you to apply&nbsp;
+this to problems where there isn't a clear&nbsp;&nbsp;
+
+01:03:23.600 --> 01:03:29.000
+four year analysis analog, because in those&nbsp;
+situations you can't calculate that explicitly,&nbsp;&nbsp;
+
+01:03:29.000 --> 01:03:33.400
+but if the network could find it during its&nbsp;
+own training, that would be given mechanism&nbsp;&nbsp;
+
+01:03:33.400 --> 01:03:39.600
+for this to have way more generalizability&nbsp;
+to a whole host of different problems.
+
+01:03:39.600 --> 01:03:49.360
+I see that's a really, really good point. It&nbsp;
+can, I think so this depends on, I think it's&nbsp;&nbsp;
+
+01:03:49.360 --> 01:03:54.680
+related to the question of the scaling law,&nbsp;
+because the scaling law actually gives you,&nbsp;&nbsp;
+
+01:03:54.680 --> 01:04:00.120
+you can track down the scaling law and then&nbsp;
+find out what's the cop out for the error. So,&nbsp;&nbsp;
+
+01:04:00.120 --> 01:04:05.800
+yes, if you know the error of the first network,&nbsp;
+you can kind of estimate the kata. Yeah, that's,
+
+01:04:05.800 --> 01:04:11.040
+that's, that's a really good point.&nbsp;
+Like, such a cool idea. Okay, yeah,
+
+01:04:11.040 --> 01:04:14.120
+but I still don't, you know. I&nbsp;
+don't know how universe, like,&nbsp;&nbsp;
+
+01:04:14.120 --> 01:04:19.600
+we question I'm really interested in is,&nbsp;
+how, why is there scaling law for this?&nbsp;&nbsp;
+
+01:04:19.600 --> 01:04:25.040
+Like, why is it one over six? Like, we have&nbsp;
+empirically showing like, is it universal? Like,&nbsp;&nbsp;
+
+01:04:25.040 --> 01:04:28.760
+how universal is it? When does it break down?&nbsp;
+Right? This kind of question I'm very interested
+
+01:04:28.760 --> 01:04:33.680
+in. I'm extremely interested in this. Well,&nbsp;
+it's this, the empirical scaling laws,&nbsp;&nbsp;
+
+01:04:33.680 --> 01:04:37.440
+and the fact that these coefficients keep&nbsp;
+appearing over and over again is driving me&nbsp;&nbsp;
+
+01:04:37.440 --> 01:04:42.720
+crazy. And I'm glad that at least someone with&nbsp;
+a mathematical background is looking at it.
+
+01:04:42.720 --> 01:04:46.800
+I'd love to chat more. Yeah, touch.
+
+01:04:46.800 --> 01:04:53.080
+I mean, my follow on questions to that those&nbsp;
+discussions between you would be even though,&nbsp;&nbsp;
+
+01:04:53.080 --> 01:04:59.760
+even though you know those kappa value can be&nbsp;
+induced from the previous training by looking at&nbsp;&nbsp;
+
+01:04:59.760 --> 01:05:08.960
+the. Visual, you know, dynamics, and therefore we&nbsp;
+can apply that to the problems where the four year&nbsp;&nbsp;
+
+01:05:08.960 --> 01:05:20.960
+analysis is not available, but still, LLM, I don't&nbsp;
+see. How is it? It is applicable to there? Well,
+
+01:05:20.960 --> 01:05:26.080
+so it's, there's, there's, there's research&nbsp;
+that shows that they can do like mathematical&nbsp;&nbsp;
+
+01:05:26.080 --> 01:05:34.080
+analysis backing out stuff in llms, and they can&nbsp;
+show that at least English seems to work on a 42&nbsp;&nbsp;
+
+01:05:34.080 --> 01:05:39.240
+dimensional manifold that we don't understand.&nbsp;
+But they can do like analysis of convergent laws&nbsp;&nbsp;
+
+01:05:39.240 --> 01:05:44.920
+and various stuff to show that, hey, like, there&nbsp;
+is like a 42 dimensional space that thought seems&nbsp;&nbsp;
+
+01:05:44.920 --> 01:05:50.200
+to occur in, and with doing vector operations&nbsp;
+in that space, you can do stuff too. So, like,&nbsp;&nbsp;
+
+01:05:50.200 --> 01:05:56.320
+we can't understand it, but there&nbsp;
+is a high dimensional space where,&nbsp;&nbsp;
+
+01:05:56.320 --> 01:06:01.240
+like an FF team should apply. We don't know what&nbsp;
+it is, and the networks can't approximate it well,&nbsp;&nbsp;
+
+01:06:01.240 --> 01:06:09.200
+but like, all these ideas should apply to those&nbsp;
+spaces as well. Like, I think that some, again,&nbsp;&nbsp;
+
+01:06:09.200 --> 01:06:13.280
+I wrote it in the chat. Like, I've tried for&nbsp;
+a while to get networks to do a reversion,&nbsp;&nbsp;
+
+01:06:13.280 --> 01:06:16.920
+a convergence thing, like you're describing,&nbsp;
+and I've never been able to get it to work,&nbsp;&nbsp;
+
+01:06:16.920 --> 01:06:21.760
+just kind of on the side while I'm doing other&nbsp;
+things. I really think the frequency analysis&nbsp;&nbsp;
+
+01:06:21.760 --> 01:06:26.680
+is very, very key to finally getting like a&nbsp;
+spectral and multi scale type thing working&nbsp;&nbsp;
+
+01:06:26.680 --> 01:06:30.680
+here. I think that is the key. Thing is you've&nbsp;
+added something to the network that allows you&nbsp;&nbsp;
+
+01:06:30.680 --> 01:06:35.640
+to capture different modes explicitly, and that is&nbsp;
+what is making the whole process work. And that's&nbsp;&nbsp;
+
+01:06:35.640 --> 01:06:41.200
+what give is giving you convergence factors of&nbsp;
+scaling factors that are factors of 10 bigger&nbsp;&nbsp;
+
+01:06:41.200 --> 01:06:47.240
+than anything else I've seen when I'm looking&nbsp;
+at conversion stuff elsewhere in literature.
+
+01:06:47.240 --> 01:06:53.400
+Well, I mean, that's a cool idea of, you know,&nbsp;
+those English for example, it can be embedded&nbsp;&nbsp;
+
+01:06:53.400 --> 01:07:01.240
+into the 42 dimensional vector space, but I&nbsp;
+still don't see how that is can be used to,&nbsp;&nbsp;
+
+01:07:01.240 --> 01:07:04.640
+you know, provide some residual&nbsp;
+information. So unless there is&nbsp;&nbsp;
+
+01:07:04.640 --> 01:07:11.240
+some sort of governing equations to, you&nbsp;
+know, guide those residuals, yeah, of
+
+01:07:11.240 --> 01:07:17.320
+course. Well, the first example did like&nbsp;
+they showed, example in the beginning,&nbsp;&nbsp;
+
+01:07:17.320 --> 01:07:21.800
+where you get able to do it without having the&nbsp;
+governing rituals, residual equations. You can&nbsp;&nbsp;
+
+01:07:21.800 --> 01:07:26.600
+just look at the residuals for the problem, and&nbsp;
+we have those for things like L stands. So I mean,&nbsp;&nbsp;
+
+01:07:26.600 --> 01:07:30.640
+we have those for every problem, so there's a&nbsp;
+general result from the thing. So even though&nbsp;&nbsp;
+
+01:07:30.640 --> 01:07:35.880
+we don't have the governing equations, the data,&nbsp;
+actual data, can still apply it directly from the
+
+01:07:35.880 --> 01:07:46.360
+data, right? Okay, cool. Any other questions?&nbsp;
+It's past the time. Unfortunately, I'm sure many&nbsp;&nbsp;
+
+01:07:46.360 --> 01:07:55.720
+exciting questions will come up, but we have&nbsp;
+to wrap up soon, so maybe one more questions&nbsp;&nbsp;
+
+01:07:55.720 --> 01:08:05.280
+we can take. Well, if not, let's thank our&nbsp;
+speaker, Yao, for the wonderful talk and&nbsp;&nbsp;
+
+01:08:05.280 --> 01:08:12.000
+wonderful Q and A sessions. And I'm sure that many&nbsp;
+people is going to be interested in your work,&nbsp;&nbsp;
+
+01:08:12.000 --> 01:08:20.960
+Yao and future collaborations hopefully comes&nbsp;
+out, you know, initiated by this seminar.
+
+01:08:20.960 --> 01:08:25.640
+Yeah. Thank you. Lin, thank you, yeah,&nbsp;
+Robert, for the points about LLM. I'm very&nbsp;&nbsp;
+
+01:08:25.640 --> 01:08:28.640
+interested. I need to learn more about it. So,
+
+01:08:28.640 --> 01:08:35.200
+awesome, awesome. Okay, all right. Well, thank&nbsp;
+you. Yeah. With that, we conclude the talk, yes.
+
+01:08:35.200 --> 01:08:40.360
+Thank you. See you. Bye.
+

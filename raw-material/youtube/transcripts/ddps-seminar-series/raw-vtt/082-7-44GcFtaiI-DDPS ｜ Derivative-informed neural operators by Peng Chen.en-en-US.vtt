@@ -1,0 +1,3408 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.800 --> 00:00:05.130
+All right. Welcome to the DDPS seminar everyone. Before we introduce our invited speaker, let's go over some useful rules as usual. First, please mute yourself during the talk. If you have immediate questions, you are welcome to unmute and ask the otherwise, please use the chat room to post your questions so that we can address them in the q&amp;a session at the end. Second, today's seminar is open to external audience, so no classified discussion is allowed. Finally, the talk will be recorded and uploaded to our YouTube channel. Now, let me introduce our speaker. It is an honor to host Peng Chen , who is currently a tenure track Assistant Professor in the School of Computational Science and Engineering at Georgia Tech. Previously, he was a research scientist at the Odin Institute for computational engineering and sciences at University of Austin, Texas at Austin. Before joining UT Austin, he spent a year as besserer and postdoc at ETH Zurich in 2014 to 15. He obtained his PhD degree in computational mathematics from EPFL in 2014. His research is driven by challenging problems in scientific and engineering fields that involve data driven modeling, learning and optimization of complex systems under uncertainty, and focus on scientific machine learning and shutting the quantification, Bayesian inference, experimental design and stochastic optimization. Today, he will talk about derivative informed neural operators, please enjoy the wonderful talk. Now, without further ado, let me hand it over to your Pen by asking a random question. Yeah. So if you could attend a lecture by any scientist in the past or persons who he or she be? Well, that's a very good question. I would say. Well, there are apparently a lot of scientists that I like to learn from and one of, you know, the leading scientists that would be Richard Feynman, physicist. And I learned a bit more about it there, you know, physical background, and, you know, the sort of like a first principle models that, you know, we're approximating today with the DIRECTV environment and your operators. Yeah, that would be definitely a good choice by many others, as well. So thank you. So please go ahead with your talk. Thank you, Tony. Thank you for your kind invitation and also introduction. So today, I'm going to share some recent work on on to routine informed near operators is a class of linear operators, that are designed to address and essentially optimization problems construct constraint either by and large scale partial differential equations, and also was that many different applications as Tony mentioned, and Bayesian inference, optimal experimental design and stochastic optimizations. So this is joint work with a team will go at Georgia Tech, and was professor on Mercatus Jintan, lower Tomas only raspberry and on Bert availa, from UT Austin. So, let me start with a few examples. The first one is the Bayesian inference of Antarctica ice sheet flow. So, here you can see essentially the East our satellite observation of the surface ice flow velocity of Antarctica ice, and over the years, there is accelerated ice sheet flow. And if all there Atlanta ice mountain and getting into the ocean, and there is a significant sea level rise, so care about this problem. Um, so, the model itself can be described by you know, their their nonlinear viscous, incompressible fluid flow, essentially the stock's flow. And uncertainty of the problem depends on you know, the Bessel sliding field essentially is a boundary condition between the boundary sort of like along the boundary of the eyes and land, so, we don't really know about it the vessels sliding field want to infer a dispute from the observation data. And in particular, want to find the maximum of posterior point of this parameter. And here, there's a some reason to work on finding this map point by solving an optimization problem, essentially a Newton best optimization problem. I can see here, this is essentially their map point maximum a posterior point of the parameter at the bottom boundary. Apparently it is a random field it is a random variable at each point and is infinite dimensional after discretization could it be very high dimensional The second example is optimal experimental design for tsunami warning. So, here you can see essentially how to deploy a surface boy and also a smart meter. So, once there is a earthquake in the sea floor, and like the sea Flow Motion, you can quickly detect the acoustic wave from the tsunami here and the surface boy and he can pass it down to their Tsunami Warning Centers. And uncertainty of this problems comes from you know, the slip land earthquake fault. So, essentially their earthquake fault due to this pressure, high pressure that generated the tsunami, it is a dependent on space and time. So, essentially space and time dependent stochastic processes is also quite high dimensional after discrimination. And so, the model can be described by, you know, this elastic acoustic gravity wave equations. And also once there's a tsunami generated, it follows is a shallow water equation. So, it's essentially a tsunami is propagated to the coastal city where he commanded by shallow water equation and the optimization problem is essentially we want to place the sensors This is Sanaa meter and a surface boy in order to detect their Earth crack and also you know, maximum tsunami warning focusing and so, these sensors are actually plastic to maximize the information that it can gain from the sensors. So, the third problem is about stochastic optimization with application for direct yourself assembling material, that is for instance, potentially can be applied in semiconductor error. So, here what you can see is a dye block a polymer. So, you have two segments and have a different like a foster track them to form a different patterns. And so, this patterns can be formed by placing certain guiding posts on certain the Socata guiding post or substrate, so that the materials can fall into the pattern or morphology that you want to Microsoft can be described as either self consistent field theory, or non local uncanny valley equation that I've been working on. So here's one type of target in mythology, and we're complex a certain substrate for instance, here complex a substrate and it will attract the material to form this target in mythology, right and so, the optimization problem would it be to properly design the substrate or another application, the target mythology looks like this one, and then we can replace our guidepost. So, essentially, I want to decide at their locations that the guy post cites that the equilibrium state is driven as close as possible to the target mythology or wherever the problem is, you know, there's a lot of uncertainty in this system too, there is for instance, random initial phase of the materials and the material properties and also their temperatures of this process. So, this uncertainty are also very high dimensional. And for instance, here at a given optimal design, because of this uncertainty, the equilibrium can converge to in a different sort of like stead here you have a standard that you want and that is close to the target of mythology, but however, there are some other equilibriums that are sort of like a defects of the material, you want to minimize this kind of a defects by stochastic optimization problem. So, over this three different examples, we formulated a few like abstract problems, the first one is a forward uncertainty propagation. So you have a complex system described by a mathematical model are you have a steady variable you here and now you have an uncertain parameter represented by Sita, Sita as an all the examples, it couldn't be very high dimensional, and have a certain probability distribution and then can propagated the uncertainty off the parameter served as a system to some quantity of interest. For instance, in a tsunami warning system, you can predict their water and web height or you know the magnitude and so, there's additional variable z z could it be their optimization variable experimental design variable. So, the second problem is based inference to given some data which is typically noisy the data actually you know, a collection of some observation of your static variable you hear and you have additive noise, Absalon follows certain a noise distribution. So, the base inference problem is actually to characterize the posterior distribution of the parameters theta, which is you know, proportional to the likelihood function times the prior. And given the data you can effectively reduce uncertainty of this parameter, and this reduced the parameter. Reduced uncertainty can also be propagated to the or quantity of interest, but one of the problem could be like how do you in the first place collect the data right this is optimal experimental design problem. So, as you can see here we have information again color graphically you represent it by calligraphic view. So, when it maximize this information from our experiment from our sensors, and this is these stands for the experimental design variable and it is averaged with respect to the data or the data. So, essentially, we want to like optimize our sensor locations in order to collect the data to reduce their uncertainty as much as possible as you can see, after the optimal experimental design, you have a reduced the uncertainty for the parameter and again you can propagate it to their point of interest at this stage was a well calibrated model, you can solve the optimization problem. So, you have some quantity of interest, could it be likely that control or design objective and this is still is a random variable, you want to compute a some statistical measure or risk measure, and you want to minimize this risk measure. And there is additional, let's say penalization term or regularization term. And this is the here stands for optimal control or design variable. Alright, so, they're about like, there's four different problems with consider. And there are some common challenges for this problems. The first is the model are typically quite complex, disrupted by partial differential equations have been reviewing for this different examples. And they're expensive to solve and uncertain parameters that they're high dimensional, that could have like a very complex distributions as non Gaussian, multimodal and locally focused locally concentrated for instance, and then additionally the optimization problem including the experimental variable, their control variable design variable, those could also be high dimensional and also non convex. To address this challenge, we exploit the following opportunities the first is we can construct a certain surrogate models with the required accuracy and also this surrogate models can be evaluated very fast and secondarily. So for the high dimensional parameters. And typically the front of the parameter to the solution or to the observables in your inference parameter or to the objective in your control problem, those maps are typically intrinsically low dimensional, how to exploit the the low dimensionality will be one of the opportunities and therefore the optimization problems. Typically, for high dimension or high dimensional optimization problems, we can use a derivative best method or adaptive optimization method, this method are typically dimension independent. Alright, so, let me proceed to this forward problem as essentially the forward uncertainty propagation. And there are many different kinds of, you know, their uncertainty quantification problem, including the model reduction, the polynomial house and recently their new operators. So when approximate the solution operator essentially from the theta to the solution, you are some quantity of interest and map, this quantity of interest, it could be a scalar a vector of function, and when approximated by a neural networks, F, indexed by that neural net web parameters w. And there have been several different New York predators developed over the last few years, including their fear and your predator, which, you know, sort of like transformed their input by fear transformation and building the neural networks in the frequency domain. And also there is a deep own net D proprietary network, where the output is represented by sort of like a linear basis, this base is constructed by so called their trunk net chunk, neural network. And the parameters are mapped through the branch net to the coefficient of this linear basis. And then there's a sequence of development and reduce basis architectures of the neural operators including their so called Deep Learning or reduced auto models, and the PCA networks, which essentially apply the principal component analysis for the projection of the input and output map, and also originally developed this derivative in the form of a projected neural network. And also there are a couple of comparison papers on different new operators, including the following two. One is, you know, the comparison for the full year new operator and depo net. And another is a comparison of including this two different new operator and additionally, there is a PCA net and there's some other reduced basis architectures. So one of the conclusion from this comparisons is, you know, for larger scale and high dimensional problems, especially those problems, intrinsic low dimensionality, this PCA net, and also there's a pod deponent essentially, you perform some projection of your input output to load dimensions. Those new operator tends to be performing the past from the perspective of cost and accuracy trade off. I'm going to explain a bit more about this point. Alright. So, the first development that we had there was under this Socata derivative being formed with a projected neural network. So, essentially, instead of the PCA a net where you projected their input parameters theta into PCA basis or like a Kakuna live expansion bases, we actually project it down to their active subspace, which is computed by forming this Jacoby none of this Q transpose this multiply this Jacobian tacked averages back to their distribution of parameters theta, and then you compute the Eigen value decomposition to tackle eigenvectors at the subspace which is active subspace for there, you know, the output at Q I know projected their parameters into this active subspace. And for the output, it would be their pod subspace, essentially, you collect snapshots of the output and perform the pod or SPD on it and you projected there, I'll put to this basis. And then after the projection we have a neural network sort of like leaving very low dimensional low dimensional input and low dimensional output can construct this neural network was much smaller number of training data. And this also corresponds to the so called encoder and decoder, but this encoder and decoder actually constructed the more explicitly using the projections, and we have error bound for the input in projection trollee by the training Eigen values and essentially the projection error, where if you have a you know, the output the projection from the input and output, measure the our two cents there can be upper bounded by their trading off the Eigen values from the input and output. If this Eigen value is declared pretty fast, then this error could be quite small. Here's a one example on haremos equation. So essentially, here, we have a parameters theta on the velocity, and Adesina is a Gaussian random field. And we have a source term here. And we have observations of a of this state variable along here the surface. And so we have the input of projection, the input parameters mentioned as 16,000. And by projection, we can get it down to let's say, a dimension of eight or 16 or 32, depending on the decay of the Eigen values. And here we have two different neural network. One is our deep net. And also another is without any projection for this, two different neural networks, we have a deep refer them for the neural network has 2000, and also about 24 million. So we have two different projections. As I said, one is the inner the PCA or the cow, you're covering a lot of expansion bases. So this does not reflect any their any of their you know, the solution behavior before the active subspace, you can clearly see some wealth patterns, right. And so here's the accuracy of a neural net neural network approximation was an increasing number of training data. And we have different projections including Active subspace projection, the carry projection, and also was simply draw some random projection basis. And then we have the full space neural network. So the blue line indicates the accuracy by the active subspace projection. So essentially, you can see was a small number of training data, you already arrived at quite high high accuracy, and is better than the other two projections, and is better than the full space and construction for the full space, because you have a lot of deep refer them, you need a lot of training data to arrive similar accuracy. Okay, so here's a sort of like a scalability test, because we have the projection to the same dimensions, it is independent of the input dimension. From the parameters theta, we have either 4000 or 16,000. And before the deep net by projecting to the same dimensions will have the same dimensions for their neural network, but the full space would have different degrees of freedom. And you have a similar behavior for the different projection your networks Okay, so the second problem is about a Bayesian inference. So, here's the abstract formulation of the Bayesian inference, why again is our data observation data living dimension as as could also be quite high and sea days uncertain parameter, we have the from parameter to observable map f f is observation of your static variable right. So, essentially, this alpha depends on your set of variables. And we have added noise, which is a Gaussian distributed as a cover as gamma noise. And a Bayes rule says that the posterior distribution of this is theta, given your data y is actually given by likelihood times the prior The likelihood is that you know, the data are conditioned on the setup. And then this is normalized by this so called model evidence, or normalization constant and is actually the integral of the likelihood function respect to the prior distribution. Since the parameters theta could be very high dimensional, this model evidence term is typically intractable for computation. And there'll be other many different kinds of methods developed for solving Bayesian inference problem, including the Laplace approximation, which is essentially, you build their Gaussian approximation of a posterior at the map point. And there is a MCMC sampling techniques and also many of the variants floating, using, you know, they're derivative information using dimension reduction, and there is a sparse quadrature. So to compute this high dimensional integral, or some other high dimensional integral was back to the posterior, you can apply the quadrature best on sparse grid, and we will have some reason to work on that using Asian best sort of, like, rescaling of the dimensions and sparse quadrature. And then there's a whole class of different variational inference using different transport maps, including polynomials, radial basis functions on neural networks. So, here we focus on just to find that maximum a posterior point, which is used in the Laplace approximation. So assuming we have a Gaussian prior, where we have the means theta zero, and also the covers gamma prior. And so the map point is actually given by the solution of the optimization problem, where the first term is a data misfit, it's a mismatch between the data and also your from parameter to observable map weighted by the noise covers. So, see here, this is the data y, this is essentially the satellite observation of the flow velocity. And so, the second term is a you know, sort of like a regularization term or your prior knowledge, this is a difference between the cedar and mean weighted by the prior covers. And by solving this optimization problem, you get the midpoint maximum or posterior point. So, here you can see and this is a map point 22 from this optimization problem, and then at this midpoint, you can evaluate your forward map from the CETA to f evaluated map point. And this is actually this is an evaluation it was just quite close to the data. But to solve this optimization problem, you need to either use a gradient best or Newton best methods, where you know this Cobian of the forward map is involved or the Hessian is involved if you use a Newton Ambassador method. And then to Well, in order to construct the surrogate for this from parameter to observable map, our new operator on neural networks that should be accurate not only for the map from the CETA to F, but also reliable for the Chekhovian from Sita to the Jacoby of f. So here's our derivative informed a neural operator, we have the same projected a neural network will have input a projection to the C to our as a projection of our Sita by this input a projection basis of SY. And our neural network is evaluated by you know this neural network mapping the button and also your times the spaces of the output basis. So now, to train this neural network, we actually include another term, which is the Jacoby because we want to an accurate Jacobian in our approximation, so the last function essentially includes these two terms. One is the small neural network for the low dimensional input output here, and also their you know, the projected output. And then a second term is the Jacoby and this is Jacoby of the neural network respect to the input, which is the low dimensional input, right? And so you can compute the Jacobian and also projected from the left and right to the low dimensions. Now instead of like a million by million dimensions, you have let's say a 10 by 10 dimensions depending on your number of projection bases. So how does it perform? Let's see for particular inverse problem with the deceit flow, which is quite simple. We have observation points here and is our true state variable and follows elliptic problem, which is like normal diffusion problem with where the CETA is Gaussian disability to as a cover is given as this elliptic operator, the fraction of the alleged lip the operator, which is corresponding to the Martin covers, where I have a delta and the gamma those are positive parameters that can control the correlation and also variance of their random field and also we have a Laplace in term. So now to compute at the map point, but we can replace our forward map the F by our neural network approximation, right this is our approximation of the dyno. And so we can actually solve the optimization problem in low dimensions in their input projected a coefficient dimension coefficient space. For instance, here instead of the original high dimensions, it is simply in the CETA R, which is a projected dimension, let's say instead of millions, it is a 10. And it can solve this optimization problem in a low dimensional space. And you can replace the original forward map by their neural operator. So here are the results. Let's look at the writer first. So we have this array of different quantities that were approximated, including their forward and backward dissolve. And on the right is a without Jacobian training, there's simply like you're just training for the f itself without the Jacoby and it can see there is a decay of air it was increasing number of training samples, this is a relative error. And also you can observe the same for the reduced Jacobian. So here you can see we have the reduced the Jacoby and we want to approximate this reduced digit Cobian. And this is the decay of the reduced Jacobian in red. And then in a green there is the map point. So this is a map that we approximated by solving the optimization problem using the dyno or using their neural network without their Jacoby training. But on the left, we actually included the Giacomin training, we can observe not only the map of the SOF F here and also the reduce the Jacoby they're more accurate than if we do not include the Jacoby information. But more importantly for the map point, it is much more accurate than this map point about a one order of magnitude improvement. So, yeah, this is a you know, using their dyno to find it the map point and via the optimization and here. So, we have a mesh size of 64 by 64 and also tested 428 by 128 you can observe similar behavior and the neural network size is the same because the projection dimension is the same again and all right. So, now, let me come to the third example which is the optimal experimental design problem. So here is in particular, for the optimal sensor placement, for instance, here for the placement of the tonometer on a strategically and the problem can be formulated as to place a certain number of sensors out of a deep candidate of sensor locations, you can have a like really large number of candidate a sensor locations and want to select only a small number are number out of it. So the observable map f is given by the Socata design matrix times the observation at all the candidate sensor locations. So design metric is solve is a matrix of r by D. And as you can see, here, we have a nine kind of that sensor locations, if we selected the first sensor, and the third place, where we have the first row at the third, third column is one. And you know if the second one second sensors pick it up to the fifth point, then the second row has a fifth column one or the others is zero. So essentially, this design metric is is a binary is, in fact a Boolean, and is text value of zero and one, the sum of all the rows is one and a sum of all the columns. Sorry, its sum of all the columns is one sum of other rows is a number between zero and one. In fact, it is either zero or one. So we need to solve our condition problem was back to this design matrix. And here's a one particular formulation which is the best under variance. So, the variance best optimal experimental design, where we have the optimality from the statistic community that a optimality or D optimality. The OPT a optimality is defined as the Tres of the posterior covers. And suppose you have a Laplace approximation, which is you know, the posterior covariance evaluated at a map point and you take the trace of it the trust essentially measures how uncertain it is how much uncertainty you have, you want to reduce this uncertainty by design this video. So, essentially, you want to minimize respect this W. But this tres actually depends on you know, the realization of your data y and also your design and W so essentially boasts a map point and also the covariance will depend on this y and w. So Tech Tech, the average of respect to this wine and this is theta and the D optimality is the determinant of this cover and since that of the Tres, now the posterior covers under the Gaussian assumption, it is given by this term, so you have the hessian of the misfit term, and you have a you know, the hessian of their prior regularization term, which is simply their covariance of the prior inverse, and this will be the Haitian term. So the Hessian term involves a second order derivative, you've actually approximated by gauss Newton Hatian. Here, you only care about it the first order sensitivity information, you have that your Kobe value added the map point and here is that you can transpose this is Jacoby and the noise covers. So essentially, you need to compute this map point, and also the stick Cobian. Repeatedly again, again, for a given data y and also the design W. Apparently, this is quite challenging for large scale, a PDE, constrained, optimal experimental design problem. And so here, more recently, we developed this new Socata to grip teaming formed Jacoby a new operator, where the reason is because our dyno is derivative informed the new operator can compute the map point and pretty well, as we showed before. But however, for the future Cobian, the approximation error is actually quite large, are reduced the Jacobian that we measured is relatively small, but for the computation of the food Jacobian, which is needed here, as approximation is actually quite bad. So we developed this Jacoby new operator, where we perform a kopien projection, first of all projected with Chekhovian projection onto the subspace formed by the active subspace. And then we have reduced that Jacobian. We vectorize it again, for many different snapshots at different locations, and we perform another SPD on it. So essentially another projection, and we can get a relatively small dimensional quantity. Now we'll compute a neural network to approximate that Jacobian. And then we can reconstruct it this Jacoby and for this one, we call this Jacoby newer or brighter. And in fact, you would wonder, you know, here you have a parameter that can project into different subsets right, either a PCA subspace, and also active subspace. And in fact, for the computation of the map point, and also their you know, that Jacobian, the trust and determinant, we need to use a different projection basis for the input. And here's evidence. So on the left, we'll come observe, you know, this is the reconstruction of the map point, you computed the map point, and you project this map point into different bases, either active subspace or their PCs app space, as you can observe here, if you project it down to the PCs, opsbase was increasing number of bases, you get a smaller and smaller error. But if we project onto their active subspace, they're still remains quite large. And while the reason is because the map point is actually is a font, not only with respect to the data, but also there is a regulated regularization term, there's a PCA base is actually the Eigen basis of the prior covariance. And for the Jacoby to solve, you need to project it down to the active sub space in order to get us more approximation error of the Jacoby or reconstruction error further Jacobian. And then because of this, Jacoby depends sensitively on the first order information, right. Okay, so we apply to this, Jacoby Nia or predator for the evaluation of the address and also determining on the left it is a tres, we have a defined element of trust estimation. Essentially, we don't use a surrogate here, we take it as the truth. And we have a neural network of trust estimation, and it can see it is very highly correlated. And we have error, the mean of the error is about less than 1% standard deviations of 1.2%. And for the approximation of the determinant is about a 2.2. Point is for 3%. Also as a standard deviation 2.55%. Essentially, they're very highly correlated. So you can trust your new operator to select your sensors. Okay, now, let me come to the last one of a stochastic optimization problem. And so, as I mentioned before, this stochastic optimization problem can be formulated as you want to minimize a certain control or design Z in a certain admissible set. And you have sort of like a risk measure or statistical measure of your objective function q. And then they have a certain penalization term. Here we consider a special risk measure, which is the so called conditional value at risk. So, let me give you an example here. Here's a density of your queue. It is a one dimensional queue. And so here's the value at risk for given parameter beta. The beta is sort of sort of like the you know, better quintile, here is the the probability. This error is the probability and this one is the quintile, which we'll call this value at risk, the conditional Value at Risk essentially, the average or the anywhere offer this quantity of interest by the quantity of interest larger than this quintile. So essentially you take the average of This curious back to the probability density here. So, the conditional Value at Risk provides a more conservative risk measure. And in fact, it is often used in you know, their financial engineering risk management is also called expected shortfall the loss it varies between four different better if a better equals to zero then essentially you can use the risk neutral approximation risk unusual minimization and if a better because the one essentially care about their extreme case, which is worst case scenario optimization and this is C var can be reformulated as you know the minimization problem, I was back to a certain real number t and then you have here as q minus t, you take the positive part of the thresholded for the positive part. And since this is that stretch holding is non continuous is non differentiable. So, we're sorry it's not there's no Smos if we want to apply any less a gradient or hessian best optimization method we want to do some a smooth approximation as exploit in this resin paper Okay, so, for this oh yo yo problem according to like optimization under uncertainty oh you you problem will develop this so called multi input reduce basis derivative, we found it in your operator. So, the reduced reduced basis is quite clear, we use a reduced basis for input output projection, the bounded input is essentially you know, we have the input of the parameters theta and we do the projection of the parameter into low dimensions, we also have an optimization variable, so, we have multi input right. So, typically, here we can consider either high dimensional optimization variable or low dimensions. And in particular for this work we consider parametric optimization variables instead of function valued optimization variables. So, it becomes a relatively moderated dimensions. And so, now, we use the same pod projection for the output will build a neural network in between and then we also train our neural network by including the Jacoby Ian was back to the optimization variable instead of respect to the parameter now, because we need to solve the optimization with respect to the optimization variable and the Alright, so, now, our data generation and training are both scalable in the sense in our loss function as I briefly mentioned before we project everything down into the low dimensional subspace including their function itself and also digit Cobian. And, so, now, the quantity here in the last function is actually quite as more dimensional, but, one particular point is you have to compute this to Cobian right that you Copening of us back to Z, you have to generate the data, we would have wonder, could it be quite expensive and but, in fact, it is not we can solve it very efficiently by exploiting that joint invest measured. So, essentially here that you're coping data generation tax only this number of additional linearized a PDE solve and this number, you know, the projected a dimension for the output and also the dimension for z. And, so, this Jacoby and projected into their output dimension is given by this one by chain row of tech that Jacobian and you would have you know, this Jacobian of the predicate PD operator respect the state variable and this is actually Cobian was back to z. So, for this problem essentially have to solve because this is this becomes a linearized the PDE operator at a given you know, even if it is the PDF itself it is nonlinear. So, you can solve this sort of like linearize the PDE operator depending on their size of ru and a dz you can solve either here as a sort of like a linearized forward problem or linearized a joint problem and then again, so, you have to solve it for you know, perhaps like a talent or 100 times depending on this dimension right. But in fact, here, this is a SAM linearized operator, you can just factorize it once and reuse it as a director solver or preconditioner. So, here other two examples, let me let me focus on the 2d navier stokes equation to solve the standard PDE you have about 13 seconds. But if a when are you factorization is only three second and after you factorize it a subsequent how you solve for this Jacoby generation TxA a small fraction of the time. So here's that cost accuracy comparison for the audio problem. And on the left, we counted there a computational cost in terms of how many PDE solves that we need. So we have either the new operator as As a surrogate, or we can solve the PDE directly, right as a reference. So in offline, we can generate the data, the solution that you're hoping for the new operator by solving a certain number of PDs. And in offline, we don't have to solve an MPD. If we use a PDE, best that oh, you measured, and in the online, we don't have to solve any PD for the new operator as a surrogate. And above for the PD, the CAS, we need to use some sample average approximation to compute is there a risk measure or the C bar for instance, and then we need to solve a lot of a PDE is each of the optimization step. And for the accuracy, it's essentially an approximation of the CVR. There is a apparently bias from this surrogate right but the variance can be very small, because you can afford to use a lot of samples to evaluate this a C bar, but for the PD UCAS there is no bias, but there is a sampling error, you can only afford it to solve so many PDE is to evaluate the C bar. So there is a stuff like this bias and variance tradeoff. So here for solving this or your your problem, we can use either, you know the surrogate, the new operator or the PDE. And we can measure the total cost divide the number of us that a PDE solves, and the standard PDE solves, I use the for you know the training data generation for the new operator. And also, you have to solve it if you use a PDE best optimization. And then we can solve the problem, we can compute a some reference solution or reference to choose a solution, which is a solve all the PDE best optimization problem with a sample size in the sample average approximation, pretty high 4000. And then now we can compare the C var essentially at optimal controls. And you can measure the relative error against the reference, this is what we're going to do to measure the cost and accuracy trade off. Here's an example which is a flow control or around a bluff body we have a uncertain input velocity field, it is a Gaussian random field, we assume that is only in one direction in their x direction and as a customer and a few it is Martin covers, and we have control variable along this two body which are parametrized by B splines, this phi of z is a control variable and the z z is a parametric control variable. Now I have to define the objective function when is the viscous dissipation objective function which is, you know, the sort of like a symmetric version is the tensive productive take the integral of it. And another tracking type of objective function, you want to minimize the difference between the u velocity and also target velocity, we have a pin elevation on the velocity on the control velocity here with the penalization parameter alpha. So here's our discretization, we use a non uniform mesh, and we just tell her how to find the element. We use alert and Lisa square stabilization for to stabilize the problem. And it was weakly imposed boundary condition for the duration that boundary condition and it also reduce the viscosity and continuation to solve the problem. So here's a full dimension of the static variables are 42,000 and they reduce the dimension is about 200 and the parameter along the boundaries, right it's more it's about one unit one and it was due to their you know projection to this 100 and a control is that 18 dimensional is parametric. So, now, the full neural network architecture is actually quite a small the combined input is 118 dimension, the output is 200 dimension we use hidden layer, the dimension is that 402 hidden layers. And here's the result, we have minimize that viscous dissipation without a control here. And you can see there viscous dissipation is effectively minimize that by solving this problem. Well, let's take a look at it there, you know, the cost, accuracy, comparison or trade off. So here we present three different solvers. One is the PDE solver in black, we don't use any surrogate, but we use like a certain number of sample average approximation samples in order to compute their C bar and this is an increasing number of samples to compute the C bar and this is a total number of PD soft along other optimization steps and this is the relative optimal cost error we can see with increasing number of sample average approximation samples. You can have a smaller error error further optimal cost. And then here we have another two different surrogate Why is it without the Jacoby trainee and when is the wizard your coping training? So here this number is indicated there number of training samples, for instance, here we just 256 training samples we can achieve about at this error that is a comparable to hear the PD solve using this number of PD solves. So essentially there is about one order of magnitude reduction of total number of PD SOPs, including other offline data generation for the surrogate models, and apparently this Chekhovian 20. This dyno is much better than their neuro operator without your COVID. And here's a viscous dissipation. And here's a tracking type for the tracking type, as even more evident is essentially was about 256 training samples that are achieved at the error that cannot be achieved by the PDE solve even up to this number of total PDE solve about a two orders of magnitude more PD solvers, you can still can achieve the same accuracy. So essentially, our Mr. Dyno achieves about like about 100 or 100 to attend to 100 more sample efficiency compared to if just to solve the PDS. Alright, so here's an interesting comparison. So here on the left, which is compare the accuracy for their solution in our to error, right. So with the wizard, your coding training, about 256 samples we about we arrived at about 200 or 2% of error, which is larger than if you're not used to coding training. And but I've ever further Oh, you your problem, if you measure the optimal cost, and is actually smaller than if we do not use your coping trainee. So essentially, this Jacobian trainee, and does not only help to improve accuracy for the solution, but more importantly, it increased their accuracy for the Ojo solution. Alright, so here's a few other computational costs. So for the 2d in every stocks equation, after you construct the one valuation textbook this second, and you can actually evaluate it and batch wise as we did. So about 2000, Assam posts, you can evaluate them together, it only takes about 0.3 seconds. And so essentially there is a acceleration about 100,000 times compared to the PDS off. And so here's the total cost breakdown of the total cost. Let's look again, for the Navier stocks, if you just generated the data of the solution without Jacobian This is the time about a 13,000 seconds to generate the data. If you include that Jakab in data generation, it's only an incremental cost is about 25% more cost 16,000. So essentially, all the costs are actually spent on the data generation, the pre processing for you know the projection and also on the neural network a trainee actually very cheap because we do everything in the reduced the space. Alright, so here's the test Task Force 3d never stops the flow control problem. Again, we have this a similar setup, but it's in 3d. Now, the steady dimensions were merely the reduced the dimension was two years 200 And the parameter along the boundary now is two diecast is a 4000 and it reduced dimensions 100 Again, the control and dimension is about 50. So, each of the forward to solve for this nonlinear 3d navier stokes equation, it takes about 30 minutes using 48 CPU cores. And we generate about 448 samples for the training and after the training we can ship about 1.5% of the error for the approximation of the solution. And then each of the neural network evaluation is about like 10 million times faster than the PD solve. And more importantly, we can solve the ODU problem optimal control problem subject to this uncertainty very efficiently. And here we have an uncontrolled cast for the viscous dissipation and here after their optimization, you have reduced the viscous dissipation and we solve this problem after the construction of a new operator we solve this whole problem under one minute and if you think about it, the one PD is already tech 32nd 30 minutes and this is a very efficient Okay, let me come to my conclusion. So we developed this derivative we formed a new operators and all several of us different variants. And as sort of like the merit of the accurate approximation for their input to output a map right the map offers a solution solve that map of their from the parameter observation optimization variable to their objective function to the observables. So by using the dyno, this approximation becomes more accurate compared to without using that Jacobian training and more importantly, for the JUCO When the salt becomes very useful in the optimization problem and becomes more accurate, and we use the reduced basis architectures, and then we make the trainee in their reduced space, so on this training becomes scalable, as independent of the nominal dimension of the input and output space. And only. And also, we showed that, for this dyno, it only requires a small number for training data for our test cases, compared to without using that Jacobian. And, and also, it is very powerful for all these different optimization problems, including, you know, finding the map point and the inference, optimal experimental design, and optimal control problems on uncertainty. So, this work is sponsored by NSF, DOE and DOD, you can find, you know, pretty much the results in this slides, and this for different papers. Thank you very much for your attention. Thanks. Thank you for the wonderful talk Peng? Yeah, I find it very interesting. I think our audience do as well. So let's go to the q&amp;a section. Yeah, no, right now, we don't have any questions yet. If the audience have a question, please like use the raised hand or feel free to unmute yourself. By me, I can kick off with a question. So I, I myself find that they refuse training very, I mean, crucial and important question to think about in practical applications using all this nonlinear structures. And I'm curious about the details of the Jacobean compression using the basis that you show very, in the very beginning. So in my experience, this derivatives can be much harder to compress than the state variables. So that's it. Yeah. To your problems. Yeah, this is actually a quite a good point. Because typically, for the compression of, you know, this f this map itself, it is a much more, let's say, like, it's much easier than the compression of the Chekhovian. And in our tests that has, this decoding is also is quite hard to compress. That's why we apply this a two layer, sort of like a compression first, and we apply this input projection using this active subspace evidenced by here. And the active subspace is actually quite crucial. If not, then you'll see this reconstruction error is actually quite big if we just use a PCA. And the second day, we do another layer of compression by vectorize, that Jacoby matrix as a vector, and we perform another SVD on it. So this is a compression, like sort of like a two layer compression from very high dimensions as a matrix to small dimensional coefficient vector. I see Yeah, this sounds a very smart idea to like, circumvent those issues. Maybe I can take advantage of your smart idea. And next time when I have to, like do some compression to the derivatives. Yeah, sure. Talk more about it. Yeah. So John has a question. So he asked, When constructing a surrogate is to always sample the observation points uniformly? Yeah, that's another very good question. So in our projection, or construction, we actually we sample that pretty much all uniformly, we draw the samples from, let's say, here, here hear for the construction here, we draw the samples according to their distribution, let's say for the parameters, theta is Gaussian distributed, we draw samples from the Gaussian distribution. But this is not necessarily the most efficient sampling, for instance, in our last class of stochastic optimization, and if we want to sample more meaningful or helpful samples, for the C bar, right, we would draw samples from here instead of a lot of samples here. And but we haven't explored this idea yet. Okay, so thanks for your answer. So I don't see an error question. So maybe I can ask one more about the last very last application that you talked about the Yeah. The oh you like yeah, the authorization? And those are the I see, like, Yeah, this is a fantastic sample, like, I learned a lot, but, so the model problem here is still like, like a static I mean, time independent case. So do you see it like this? I mean, this approach can be extended to like, time dependent problems and what will be the difficulty is there. Yeah, this is excellent question. In fact, for this different cases that I showed, they're all All studies that depends on their, you know, NEAR operator approximation from their input function to output function. We're currently working on time dependent problems. Of course, there's a, first of all, our framework depends on the you know, reduced basis architecture, in time dependent problems, especially for like, for instance, wave propagation. This is an unnecessarily low dimensional, we can perform perhaps some other like encoder decoder with nonlinear dimension reduction. And secondarily, we need to adjust our new operator to also take into account that at that time input, for instance, there are a few different a purchase using like either a depot net, where you have to type in the trunk net, or like the newer PD or newer od type of approach. And there are also some other different approaches that we'll be exploring. I see Yeah, thanks for the answer. Like yeah, I find all the applications very interesting. And yeah, I think many audience in the lab will be interested in like knowing more about your work. So thanks for giving us the talk.
+
+
+00:00:05.520 --> 00:00:09.090
+ 
+
+
+00:00:09.120 --> 00:00:13.410
+ 
+
+
+00:00:13.410 --> 00:00:17.040
+ 
+
+
+00:00:17.070 --> 00:00:21.720
+ 
+
+
+00:00:21.720 --> 00:00:24.870
+ 
+
+
+00:00:24.870 --> 00:00:28.920
+ 
+
+
+00:00:28.920 --> 00:00:33.300
+ 
+
+
+00:00:33.330 --> 00:00:36.360
+ 
+
+
+00:00:36.780 --> 00:00:41.100
+ 
+
+
+00:00:41.100 --> 00:00:46.230
+ 
+
+
+00:00:46.290 --> 00:00:49.740
+ 
+
+
+00:00:49.740 --> 00:00:54.180
+ 
+
+
+00:00:54.240 --> 00:00:57.660
+ 
+
+
+00:00:57.870 --> 00:01:02.340
+ 
+
+
+00:01:02.340 --> 00:01:06.360
+ 
+
+
+00:01:06.360 --> 00:01:11.310
+ 
+
+
+00:01:11.310 --> 00:01:16.440
+ 
+
+
+00:01:16.440 --> 00:01:19.650
+ 
+
+
+00:01:19.650 --> 00:01:22.830
+ 
+
+
+00:01:22.830 --> 00:01:27.240
+ 
+
+
+00:01:27.270 --> 00:01:30.270
+ 
+
+
+00:01:30.570 --> 00:01:33.540
+ 
+
+
+00:01:33.540 --> 00:01:39.090
+ 
+
+
+00:01:39.120 --> 00:01:43.680
+ 
+
+
+00:01:43.680 --> 00:01:47.280
+ 
+
+
+00:01:47.280 --> 00:01:51.720
+ 
+
+
+00:01:51.720 --> 00:01:55.260
+ 
+
+
+00:01:56.430 --> 00:02:04.740
+ 
+
+
+00:02:04.740 --> 00:02:08.430
+ 
+
+
+00:02:08.430 --> 00:02:14.400
+ 
+
+
+00:02:15.180 --> 00:02:19.380
+ 
+
+
+00:02:19.380 --> 00:02:22.830
+ 
+
+
+00:02:23.520 --> 00:02:26.250
+ 
+
+
+00:02:26.250 --> 00:02:29.460
+ 
+
+
+00:02:29.460 --> 00:02:30.150
+
+
+00:02:30.930 --> 00:02:34.650
+ 
+
+
+00:02:34.650 --> 00:02:39.510
+ 
+
+
+00:02:40.139 --> 00:02:43.409
+ 
+
+
+00:02:43.469 --> 00:02:46.889
+ 
+
+
+00:02:46.919 --> 00:02:50.729
+ 
+
+
+00:02:50.729 --> 00:02:54.239
+ 
+
+
+00:02:54.269 --> 00:02:58.109
+ 
+
+
+00:02:58.109 --> 00:03:01.589
+ 
+
+
+00:03:01.589 --> 00:03:04.529
+ 
+
+
+00:03:04.529 --> 00:03:07.919
+ 
+
+
+00:03:07.919 --> 00:03:10.859
+ 
+
+
+00:03:10.859 --> 00:03:16.559
+ 
+
+
+00:03:16.559 --> 00:03:21.809
+ 
+
+
+00:03:21.809 --> 00:03:26.669
+ 
+
+
+00:03:26.669 --> 00:03:31.049
+ 
+
+
+00:03:31.349 --> 00:03:34.649
+ 
+
+
+00:03:34.649 --> 00:03:41.309
+ 
+
+
+00:03:41.309 --> 00:03:46.529
+ 
+
+
+00:03:46.559 --> 00:03:51.119
+ 
+
+
+00:03:51.119 --> 00:03:56.819
+ 
+
+
+00:03:57.269 --> 00:04:00.479
+ 
+
+
+00:04:00.509 --> 00:04:03.599
+ 
+
+
+00:04:03.599 --> 00:04:07.229
+ 
+
+
+00:04:08.249 --> 00:04:11.789
+ 
+
+
+00:04:11.789 --> 00:04:16.019
+ 
+
+
+00:04:16.019 --> 00:04:19.229
+ 
+
+
+00:04:19.229 --> 00:04:23.009
+ 
+
+
+00:04:23.009 --> 00:04:26.309
+ 
+
+
+00:04:27.029 --> 00:04:30.779
+ 
+
+
+00:04:31.139 --> 00:04:34.859
+ 
+
+
+00:04:34.859 --> 00:04:39.419
+ 
+
+
+00:04:40.109 --> 00:04:44.459
+ 
+
+
+00:04:44.939 --> 00:04:48.749
+ 
+
+
+00:04:48.749 --> 00:04:54.329
+ 
+
+
+00:04:54.329 --> 00:04:57.389
+ 
+
+
+00:04:57.389 --> 00:05:01.109
+ 
+
+
+00:05:01.109 --> 00:05:05.819
+ 
+
+
+00:05:05.819 --> 00:05:10.559
+ 
+
+
+00:05:10.559 --> 00:05:14.849
+ 
+
+
+00:05:15.749 --> 00:05:18.809
+ 
+
+
+00:05:18.809 --> 00:05:22.439
+ 
+
+
+00:05:22.439 --> 00:05:26.399
+ 
+
+
+00:05:26.399 --> 00:05:29.999
+ 
+
+
+00:05:30.029 --> 00:05:33.479
+ 
+
+
+00:05:33.479 --> 00:05:37.439
+ 
+
+
+00:05:37.469 --> 00:05:41.609
+ 
+
+
+00:05:41.639 --> 00:05:44.849
+ 
+
+
+00:05:44.849 --> 00:05:49.619
+ 
+
+
+00:05:49.619 --> 00:05:53.519
+ 
+
+
+00:05:53.549 --> 00:05:56.819
+ 
+
+
+00:05:56.819 --> 00:06:01.139
+ 
+
+
+00:06:01.169 --> 00:06:03.779
+ 
+
+
+00:06:05.159 --> 00:06:08.789
+ 
+
+
+00:06:08.819 --> 00:06:11.339
+ 
+
+
+00:06:11.339 --> 00:06:15.329
+ 
+
+
+00:06:15.329 --> 00:06:20.519
+ 
+
+
+00:06:20.549 --> 00:06:25.649
+ 
+
+
+00:06:25.679 --> 00:06:34.319
+ 
+
+
+00:06:34.319 --> 00:06:38.219
+ 
+
+
+00:06:38.219 --> 00:06:41.519
+ 
+
+
+00:06:41.519 --> 00:06:45.509
+ 
+
+
+00:06:45.539 --> 00:06:49.169
+ 
+
+
+00:06:49.169 --> 00:06:53.039
+ 
+
+
+00:06:53.039 --> 00:06:57.479
+ 
+
+
+00:06:57.509 --> 00:07:01.649
+ 
+
+
+00:07:01.649 --> 00:07:07.109
+ 
+
+
+00:07:07.109 --> 00:07:10.109
+ 
+
+
+00:07:10.109 --> 00:07:13.679
+ 
+
+
+00:07:13.679 --> 00:07:17.009
+ 
+
+
+00:07:17.519 --> 00:07:22.739
+ 
+
+
+00:07:22.739 --> 00:07:26.699
+ 
+
+
+00:07:26.699 --> 00:07:30.449
+ 
+
+
+00:07:30.809 --> 00:07:35.339
+ 
+
+
+00:07:35.369 --> 00:07:40.259
+ 
+
+
+00:07:40.259 --> 00:07:44.279
+ 
+
+
+00:07:44.279 --> 00:07:47.159
+ 
+
+
+00:07:47.189 --> 00:07:50.489
+ 
+
+
+00:07:51.689 --> 00:07:56.039
+ 
+
+
+00:07:56.039 --> 00:07:58.229
+ 
+
+
+00:07:58.229 --> 00:08:01.409
+ 
+
+
+00:08:01.409 --> 00:08:04.799
+ 
+
+
+00:08:04.799 --> 00:08:08.819
+ 
+
+
+00:08:08.849 --> 00:08:13.019
+ 
+
+
+00:08:13.019 --> 00:08:16.799
+ 
+
+
+00:08:16.799 --> 00:08:20.939
+ 
+
+
+00:08:21.209 --> 00:08:23.699
+ 
+
+
+00:08:23.699 --> 00:08:25.919
+ 
+
+
+00:08:26.489 --> 00:08:29.639
+ 
+
+
+00:08:29.939 --> 00:08:32.699
+ 
+
+
+00:08:32.699 --> 00:08:37.169
+ 
+
+
+00:08:37.169 --> 00:08:42.299
+ 
+
+
+00:08:42.299 --> 00:08:44.699
+ 
+
+
+00:08:44.699 --> 00:08:48.749
+ 
+
+
+00:08:48.749 --> 00:08:52.439
+ 
+
+
+00:08:52.439 --> 00:08:56.909
+ 
+
+
+00:08:56.909 --> 00:08:59.159
+ 
+
+
+00:08:59.159 --> 00:09:01.799
+ 
+
+
+00:09:01.799 --> 00:09:05.669
+ 
+
+
+00:09:05.669 --> 00:09:08.789
+ 
+
+
+00:09:08.789 --> 00:09:13.349
+ 
+
+
+00:09:13.349 --> 00:09:18.599
+ 
+
+
+00:09:18.599 --> 00:09:22.409
+ 
+
+
+00:09:22.979 --> 00:09:26.489
+ 
+
+
+00:09:26.519 --> 00:09:30.419
+ 
+
+
+00:09:30.419 --> 00:09:34.769
+ 
+
+
+00:09:35.159 --> 00:09:38.819
+ 
+
+
+00:09:38.819 --> 00:09:42.809
+ 
+
+
+00:09:42.809 --> 00:09:45.869
+ 
+
+
+00:09:45.869 --> 00:09:49.049
+ 
+
+
+00:09:49.049 --> 00:09:52.709
+ 
+
+
+00:09:52.739 --> 00:09:56.249
+ 
+
+
+00:09:56.249 --> 00:09:59.189
+ 
+
+
+00:09:59.189 --> 00:10:03.629
+ 
+
+
+00:10:03.629 --> 00:10:07.799
+ 
+
+
+00:10:07.859 --> 00:10:11.279
+ 
+
+
+00:10:11.669 --> 00:10:14.219
+ 
+
+
+00:10:14.219 --> 00:10:17.339
+ 
+
+
+00:10:17.339 --> 00:10:21.059
+ 
+
+
+00:10:21.329 --> 00:10:24.659
+ 
+
+
+00:10:24.659 --> 00:10:29.279
+ 
+
+
+00:10:29.279 --> 00:10:34.079
+ 
+
+
+00:10:34.079 --> 00:10:37.799
+ 
+
+
+00:10:37.799 --> 00:10:40.649
+ 
+
+
+00:10:40.649 --> 00:10:43.649
+ 
+
+
+00:10:44.159 --> 00:10:48.569
+ 
+
+
+00:10:48.569 --> 00:10:51.569
+ 
+
+
+00:10:51.569 --> 00:10:54.599
+ 
+
+
+00:10:54.629 --> 00:10:58.439
+ 
+
+
+00:10:58.439 --> 00:11:01.259
+ 
+
+
+00:11:01.259 --> 00:11:03.779
+ 
+
+
+00:11:03.779 --> 00:11:07.229
+ 
+
+
+00:11:07.499 --> 00:11:11.069
+ 
+
+
+00:11:11.069 --> 00:11:14.459
+ 
+
+
+00:11:15.779 --> 00:11:19.919
+ 
+
+
+00:11:19.919 --> 00:11:23.909
+ 
+
+
+00:11:23.909 --> 00:11:27.419
+ 
+
+
+00:11:27.719 --> 00:11:29.849
+ 
+
+
+00:11:29.999 --> 00:11:32.669
+ 
+
+
+00:11:32.669 --> 00:11:35.219
+ 
+
+
+00:11:35.219 --> 00:11:37.709
+ 
+
+
+00:11:37.739 --> 00:11:43.499
+ 
+
+
+00:11:43.499 --> 00:11:47.219
+ 
+
+
+00:11:47.279 --> 00:11:50.159
+ 
+
+
+00:11:50.159 --> 00:11:53.819
+ 
+
+
+00:11:53.819 --> 00:11:57.809
+ 
+
+
+00:11:57.869 --> 00:12:00.809
+ 
+
+
+00:12:00.809 --> 00:12:04.049
+ 
+
+
+00:12:04.049 --> 00:12:06.629
+ 
+
+
+00:12:06.629 --> 00:12:10.379
+ 
+
+
+00:12:10.379 --> 00:12:13.529
+ 
+
+
+00:12:13.529 --> 00:12:17.069
+ 
+
+
+00:12:17.399 --> 00:12:19.679
+ 
+
+
+00:12:19.679 --> 00:12:23.039
+ 
+
+
+00:12:23.039 --> 00:12:26.819
+ 
+
+
+00:12:26.849 --> 00:12:29.429
+ 
+
+
+00:12:29.429 --> 00:12:32.909
+ 
+
+
+00:12:32.909 --> 00:12:35.999
+ 
+
+
+00:12:35.999 --> 00:12:39.359
+ 
+
+
+00:12:39.599 --> 00:12:40.739
+
+
+00:12:42.570 --> 00:12:47.070
+ 
+
+
+00:12:47.070 --> 00:12:50.280
+ 
+
+
+00:12:50.490 --> 00:12:53.730
+ 
+
+
+00:12:53.730 --> 00:12:56.820
+ 
+
+
+00:12:57.210 --> 00:13:01.200
+ 
+
+
+00:13:01.200 --> 00:13:03.570
+ 
+
+
+00:13:03.570 --> 00:13:06.780
+ 
+
+
+00:13:06.780 --> 00:13:10.380
+ 
+
+
+00:13:10.380 --> 00:13:15.060
+ 
+
+
+00:13:15.060 --> 00:13:18.270
+ 
+
+
+00:13:18.270 --> 00:13:20.640
+ 
+
+
+00:13:20.640 --> 00:13:25.020
+ 
+
+
+00:13:25.170 --> 00:13:28.380
+ 
+
+
+00:13:28.380 --> 00:13:31.800
+ 
+
+
+00:13:31.800 --> 00:13:35.850
+ 
+
+
+00:13:36.630 --> 00:13:40.350
+ 
+
+
+00:13:40.380 --> 00:13:43.500
+ 
+
+
+00:13:43.770 --> 00:13:46.980
+ 
+
+
+00:13:46.980 --> 00:13:50.580
+ 
+
+
+00:13:50.580 --> 00:13:53.670
+ 
+
+
+00:13:53.820 --> 00:13:57.000
+ 
+
+
+00:13:57.000 --> 00:14:01.800
+ 
+
+
+00:14:01.800 --> 00:14:05.100
+ 
+
+
+00:14:05.100 --> 00:14:08.880
+ 
+
+
+00:14:08.880 --> 00:14:11.700
+ 
+
+
+00:14:11.700 --> 00:14:14.910
+ 
+
+
+00:14:14.940 --> 00:14:18.330
+ 
+
+
+00:14:18.330 --> 00:14:22.980
+ 
+
+
+00:14:22.980 --> 00:14:26.820
+ 
+
+
+00:14:27.780 --> 00:14:30.600
+ 
+
+
+00:14:30.600 --> 00:14:33.660
+ 
+
+
+00:14:33.660 --> 00:14:36.810
+ 
+
+
+00:14:36.810 --> 00:14:39.930
+ 
+
+
+00:14:40.050 --> 00:14:42.870
+ 
+
+
+00:14:43.140 --> 00:14:46.980
+ 
+
+
+00:14:46.980 --> 00:14:49.950
+ 
+
+
+00:14:50.370 --> 00:14:54.900
+ 
+
+
+00:14:54.900 --> 00:14:58.920
+ 
+
+
+00:14:58.920 --> 00:15:01.500
+ 
+
+
+00:15:01.500 --> 00:15:05.400
+ 
+
+
+00:15:05.400 --> 00:15:08.580
+ 
+
+
+00:15:08.940 --> 00:15:13.020
+ 
+
+
+00:15:13.350 --> 00:15:19.410
+ 
+
+
+00:15:19.410 --> 00:15:23.190
+ 
+
+
+00:15:23.550 --> 00:15:27.480
+ 
+
+
+00:15:27.900 --> 00:15:31.830
+ 
+
+
+00:15:31.830 --> 00:15:34.920
+ 
+
+
+00:15:34.950 --> 00:15:38.160
+ 
+
+
+00:15:38.160 --> 00:15:41.880
+ 
+
+
+00:15:41.910 --> 00:15:45.600
+ 
+
+
+00:15:45.600 --> 00:15:48.630
+ 
+
+
+00:15:48.660 --> 00:15:53.070
+ 
+
+
+00:15:53.070 --> 00:15:57.900
+ 
+
+
+00:15:57.900 --> 00:16:01.080
+ 
+
+
+00:16:01.080 --> 00:16:04.170
+ 
+
+
+00:16:04.170 --> 00:16:06.990
+ 
+
+
+00:16:06.990 --> 00:16:11.070
+ 
+
+
+00:16:11.580 --> 00:16:15.540
+ 
+
+
+00:16:15.570 --> 00:16:18.270
+ 
+
+
+00:16:18.270 --> 00:16:21.600
+ 
+
+
+00:16:21.600 --> 00:16:24.810
+ 
+
+
+00:16:24.810 --> 00:16:27.150
+ 
+
+
+00:16:27.150 --> 00:16:32.130
+ 
+
+
+00:16:32.160 --> 00:16:35.730
+ 
+
+
+00:16:35.730 --> 00:16:39.240
+ 
+
+
+00:16:39.270 --> 00:16:42.960
+ 
+
+
+00:16:42.960 --> 00:16:47.520
+ 
+
+
+00:16:48.480 --> 00:16:52.590
+ 
+
+
+00:16:52.590 --> 00:16:56.280
+ 
+
+
+00:16:56.280 --> 00:17:00.360
+ 
+
+
+00:17:00.360 --> 00:17:06.150
+ 
+
+
+00:17:06.150 --> 00:17:12.180
+ 
+
+
+00:17:12.510 --> 00:17:17.700
+ 
+
+
+00:17:17.700 --> 00:17:21.570
+ 
+
+
+00:17:21.570 --> 00:17:24.510
+ 
+
+
+00:17:24.510 --> 00:17:28.290
+ 
+
+
+00:17:28.320 --> 00:17:31.680
+ 
+
+
+00:17:31.680 --> 00:17:34.020
+ 
+
+
+00:17:34.020 --> 00:17:39.570
+ 
+
+
+00:17:39.600 --> 00:17:43.710
+ 
+
+
+00:17:43.710 --> 00:17:46.320
+ 
+
+
+00:17:46.320 --> 00:17:49.650
+ 
+
+
+00:17:49.650 --> 00:17:52.650
+ 
+
+
+00:17:52.650 --> 00:17:58.140
+ 
+
+
+00:17:58.170 --> 00:18:01.200
+ 
+
+
+00:18:01.200 --> 00:18:04.800
+ 
+
+
+00:18:04.800 --> 00:18:07.200
+ 
+
+
+00:18:07.200 --> 00:18:10.380
+ 
+
+
+00:18:10.380 --> 00:18:15.210
+ 
+
+
+00:18:15.210 --> 00:18:18.960
+ 
+
+
+00:18:18.960 --> 00:18:21.990
+ 
+
+
+00:18:21.990 --> 00:18:24.360
+ 
+
+
+00:18:24.360 --> 00:18:28.140
+ 
+
+
+00:18:28.140 --> 00:18:31.260
+ 
+
+
+00:18:31.380 --> 00:18:33.810
+ 
+
+
+00:18:33.810 --> 00:18:40.110
+ 
+
+
+00:18:40.110 --> 00:18:43.680
+ 
+
+
+00:18:43.680 --> 00:18:47.250
+ 
+
+
+00:18:47.250 --> 00:18:50.970
+ 
+
+
+00:18:50.970 --> 00:18:55.260
+ 
+
+
+00:18:55.260 --> 00:18:58.560
+ 
+
+
+00:18:58.560 --> 00:19:00.780
+ 
+
+
+00:19:00.780 --> 00:19:02.580
+
+
+00:19:04.170 --> 00:19:09.090
+ 
+
+
+00:19:09.090 --> 00:19:11.580
+ 
+
+
+00:19:13.980 --> 00:19:16.560
+ 
+
+
+00:19:16.560 --> 00:19:20.010
+ 
+
+
+00:19:20.100 --> 00:19:23.790
+ 
+
+
+00:19:24.420 --> 00:19:28.140
+ 
+
+
+00:19:28.170 --> 00:19:31.920
+ 
+
+
+00:19:31.920 --> 00:19:36.720
+ 
+
+
+00:19:36.720 --> 00:19:40.410
+ 
+
+
+00:19:40.410 --> 00:19:43.920
+ 
+
+
+00:19:43.920 --> 00:19:47.850
+ 
+
+
+00:19:47.940 --> 00:19:52.290
+ 
+
+
+00:19:52.290 --> 00:19:56.340
+ 
+
+
+00:19:56.370 --> 00:19:59.670
+ 
+
+
+00:19:59.670 --> 00:20:02.940
+ 
+
+
+00:20:02.940 --> 00:20:07.140
+ 
+
+
+00:20:07.140 --> 00:20:10.500
+ 
+
+
+00:20:10.500 --> 00:20:14.400
+ 
+
+
+00:20:14.580 --> 00:20:17.430
+ 
+
+
+00:20:17.430 --> 00:20:20.310
+ 
+
+
+00:20:20.310 --> 00:20:22.980
+ 
+
+
+00:20:23.160 --> 00:20:27.540
+ 
+
+
+00:20:28.650 --> 00:20:33.090
+ 
+
+
+00:20:33.090 --> 00:20:37.830
+ 
+
+
+00:20:37.830 --> 00:20:41.490
+ 
+
+
+00:20:41.490 --> 00:20:44.910
+ 
+
+
+00:20:45.090 --> 00:20:46.860
+ 
+
+
+00:20:46.860 --> 00:20:51.690
+ 
+
+
+00:20:52.230 --> 00:20:56.970
+ 
+
+
+00:20:57.000 --> 00:21:02.040
+ 
+
+
+00:21:02.040 --> 00:21:04.800
+ 
+
+
+00:21:04.830 --> 00:21:07.260
+ 
+
+
+00:21:07.560 --> 00:21:10.710
+ 
+
+
+00:21:10.710 --> 00:21:16.920
+ 
+
+
+00:21:16.920 --> 00:21:20.940
+ 
+
+
+00:21:20.940 --> 00:21:25.080
+ 
+
+
+00:21:25.080 --> 00:21:30.030
+ 
+
+
+00:21:30.030 --> 00:21:32.520
+ 
+
+
+00:21:32.520 --> 00:21:36.030
+ 
+
+
+00:21:36.060 --> 00:21:40.230
+ 
+
+
+00:21:40.260 --> 00:21:45.600
+ 
+
+
+00:21:45.600 --> 00:21:49.170
+ 
+
+
+00:21:49.260 --> 00:21:54.630
+ 
+
+
+00:21:54.630 --> 00:21:57.870
+ 
+
+
+00:21:57.870 --> 00:22:01.110
+ 
+
+
+00:22:01.260 --> 00:22:05.700
+ 
+
+
+00:22:05.700 --> 00:22:08.910
+ 
+
+
+00:22:08.910 --> 00:22:12.420
+ 
+
+
+00:22:12.420 --> 00:22:16.320
+ 
+
+
+00:22:16.320 --> 00:22:21.120
+ 
+
+
+00:22:21.120 --> 00:22:24.960
+ 
+
+
+00:22:24.960 --> 00:22:29.190
+ 
+
+
+00:22:29.190 --> 00:22:33.450
+ 
+
+
+00:22:33.450 --> 00:22:38.100
+ 
+
+
+00:22:38.160 --> 00:22:42.540
+ 
+
+
+00:22:42.570 --> 00:22:46.230
+ 
+
+
+00:22:46.230 --> 00:22:50.580
+ 
+
+
+00:22:50.760 --> 00:22:54.330
+ 
+
+
+00:22:54.570 --> 00:22:58.080
+ 
+
+
+00:22:58.080 --> 00:23:04.590
+ 
+
+
+00:23:04.590 --> 00:23:08.370
+ 
+
+
+00:23:08.370 --> 00:23:12.330
+ 
+
+
+00:23:12.330 --> 00:23:16.890
+ 
+
+
+00:23:16.890 --> 00:23:20.820
+ 
+
+
+00:23:20.820 --> 00:23:26.160
+ 
+
+
+00:23:26.160 --> 00:23:30.240
+ 
+
+
+00:23:30.270 --> 00:23:32.940
+ 
+
+
+00:23:32.940 --> 00:23:36.630
+ 
+
+
+00:23:36.630 --> 00:23:39.780
+ 
+
+
+00:23:39.780 --> 00:23:44.310
+ 
+
+
+00:23:44.460 --> 00:23:48.300
+ 
+
+
+00:23:48.300 --> 00:23:50.940
+ 
+
+
+00:23:50.940 --> 00:23:54.300
+ 
+
+
+00:23:54.300 --> 00:23:58.320
+ 
+
+
+00:23:58.320 --> 00:24:01.950
+ 
+
+
+00:24:01.950 --> 00:24:04.650
+ 
+
+
+00:24:04.740 --> 00:24:07.920
+ 
+
+
+00:24:07.920 --> 00:24:12.450
+ 
+
+
+00:24:12.450 --> 00:24:15.000
+ 
+
+
+00:24:15.000 --> 00:24:18.840
+ 
+
+
+00:24:18.840 --> 00:24:22.800
+ 
+
+
+00:24:22.800 --> 00:24:26.340
+ 
+
+
+00:24:26.340 --> 00:24:31.350
+ 
+
+
+00:24:31.440 --> 00:24:33.900
+ 
+
+
+00:24:33.900 --> 00:24:36.930
+ 
+
+
+00:24:36.930 --> 00:24:41.850
+ 
+
+
+00:24:41.850 --> 00:24:45.390
+ 
+
+
+00:24:45.390 --> 00:24:52.620
+ 
+
+
+00:24:52.620 --> 00:24:57.450
+ 
+
+
+00:24:57.450 --> 00:25:02.790
+ 
+
+
+00:25:03.030 --> 00:25:07.260
+ 
+
+
+00:25:07.260 --> 00:25:10.110
+ 
+
+
+00:25:10.110 --> 00:25:13.920
+ 
+
+
+00:25:13.920 --> 00:25:17.400
+ 
+
+
+00:25:17.400 --> 00:25:20.820
+ 
+
+
+00:25:21.180 --> 00:25:24.990
+ 
+
+
+00:25:24.990 --> 00:25:30.270
+ 
+
+
+00:25:30.270 --> 00:25:35.550
+ 
+
+
+00:25:35.550 --> 00:25:38.430
+ 
+
+
+00:25:38.520 --> 00:25:41.370
+ 
+
+
+00:25:41.400 --> 00:25:44.370
+ 
+
+
+00:25:44.370 --> 00:25:46.650
+ 
+
+
+00:25:46.680 --> 00:25:50.160
+ 
+
+
+00:25:50.160 --> 00:25:54.270
+ 
+
+
+00:25:54.270 --> 00:25:57.300
+ 
+
+
+00:25:57.330 --> 00:26:01.170
+ 
+
+
+00:26:01.170 --> 00:26:03.210
+ 
+
+
+00:26:03.210 --> 00:26:07.590
+ 
+
+
+00:26:07.590 --> 00:26:12.300
+ 
+
+
+00:26:12.300 --> 00:26:14.880
+ 
+
+
+00:26:14.880 --> 00:26:18.810
+ 
+
+
+00:26:18.840 --> 00:26:22.770
+ 
+
+
+00:26:22.770 --> 00:26:27.420
+ 
+
+
+00:26:27.600 --> 00:26:30.840
+ 
+
+
+00:26:30.840 --> 00:26:33.930
+ 
+
+
+00:26:33.930 --> 00:26:37.260
+ 
+
+
+00:26:37.290 --> 00:26:43.800
+ 
+
+
+00:26:44.730 --> 00:26:48.120
+ 
+
+
+00:26:48.120 --> 00:26:51.720
+ 
+
+
+00:26:51.720 --> 00:26:57.060
+ 
+
+
+00:26:57.060 --> 00:27:01.260
+ 
+
+
+00:27:01.260 --> 00:27:06.840
+ 
+
+
+00:27:07.230 --> 00:27:11.310
+ 
+
+
+00:27:11.310 --> 00:27:16.230
+ 
+
+
+00:27:16.230 --> 00:27:19.980
+ 
+
+
+00:27:19.980 --> 00:27:24.750
+ 
+
+
+00:27:24.750 --> 00:27:28.410
+ 
+
+
+00:27:28.620 --> 00:27:31.530
+ 
+
+
+00:27:31.560 --> 00:27:34.950
+ 
+
+
+00:27:34.950 --> 00:27:38.700
+ 
+
+
+00:27:38.730 --> 00:27:44.640
+ 
+
+
+00:27:44.640 --> 00:27:48.240
+ 
+
+
+00:27:48.240 --> 00:27:53.250
+ 
+
+
+00:27:53.280 --> 00:27:56.670
+ 
+
+
+00:27:56.670 --> 00:28:00.090
+ 
+
+
+00:28:00.120 --> 00:28:05.040
+ 
+
+
+00:28:05.040 --> 00:28:09.210
+ 
+
+
+00:28:09.210 --> 00:28:11.880
+ 
+
+
+00:28:11.880 --> 00:28:15.990
+ 
+
+
+00:28:16.800 --> 00:28:20.850
+ 
+
+
+00:28:20.850 --> 00:28:25.500
+ 
+
+
+00:28:25.500 --> 00:28:29.220
+ 
+
+
+00:28:29.220 --> 00:28:33.060
+ 
+
+
+00:28:33.060 --> 00:28:35.760
+ 
+
+
+00:28:35.760 --> 00:28:38.880
+ 
+
+
+00:28:38.880 --> 00:28:42.030
+ 
+
+
+00:28:42.030 --> 00:28:45.270
+ 
+
+
+00:28:45.540 --> 00:28:49.470
+ 
+
+
+00:28:49.470 --> 00:28:53.700
+ 
+
+
+00:28:53.700 --> 00:28:57.120
+ 
+
+
+00:28:57.150 --> 00:29:00.180
+ 
+
+
+00:29:00.180 --> 00:29:03.780
+ 
+
+
+00:29:03.780 --> 00:29:04.380
+
+
+00:29:06.150 --> 00:29:09.720
+ 
+
+
+00:29:09.720 --> 00:29:12.720
+ 
+
+
+00:29:12.720 --> 00:29:16.800
+ 
+
+
+00:29:16.800 --> 00:29:21.960
+ 
+
+
+00:29:21.960 --> 00:29:25.620
+ 
+
+
+00:29:25.620 --> 00:29:28.920
+ 
+
+
+00:29:28.920 --> 00:29:32.820
+ 
+
+
+00:29:32.820 --> 00:29:38.130
+ 
+
+
+00:29:38.130 --> 00:29:42.810
+ 
+
+
+00:29:42.810 --> 00:29:46.380
+ 
+
+
+00:29:46.380 --> 00:29:49.860
+ 
+
+
+00:29:49.860 --> 00:29:53.250
+ 
+
+
+00:29:53.580 --> 00:29:57.060
+ 
+
+
+00:29:57.060 --> 00:30:00.000
+ 
+
+
+00:30:00.000 --> 00:30:03.750
+ 
+
+
+00:30:03.750 --> 00:30:06.930
+ 
+
+
+00:30:06.930 --> 00:30:09.720
+ 
+
+
+00:30:09.720 --> 00:30:13.170
+ 
+
+
+00:30:13.200 --> 00:30:17.670
+ 
+
+
+00:30:17.790 --> 00:30:22.110
+ 
+
+
+00:30:22.110 --> 00:30:27.360
+ 
+
+
+00:30:27.390 --> 00:30:30.960
+ 
+
+
+00:30:31.050 --> 00:30:35.400
+ 
+
+
+00:30:35.400 --> 00:30:38.760
+ 
+
+
+00:30:38.790 --> 00:30:43.590
+ 
+
+
+00:30:43.590 --> 00:30:47.910
+ 
+
+
+00:30:47.910 --> 00:30:51.270
+ 
+
+
+00:30:51.270 --> 00:30:55.080
+ 
+
+
+00:30:55.080 --> 00:30:58.950
+ 
+
+
+00:30:58.950 --> 00:31:01.590
+ 
+
+
+00:31:01.590 --> 00:31:05.100
+ 
+
+
+00:31:05.130 --> 00:31:09.210
+ 
+
+
+00:31:09.210 --> 00:31:12.750
+ 
+
+
+00:31:12.750 --> 00:31:17.280
+ 
+
+
+00:31:17.280 --> 00:31:20.790
+ 
+
+
+00:31:20.790 --> 00:31:24.510
+ 
+
+
+00:31:24.510 --> 00:31:28.950
+ 
+
+
+00:31:28.950 --> 00:31:33.030
+ 
+
+
+00:31:33.030 --> 00:31:38.250
+ 
+
+
+00:31:38.280 --> 00:31:41.340
+ 
+
+
+00:31:41.340 --> 00:31:45.900
+ 
+
+
+00:31:45.900 --> 00:31:51.420
+ 
+
+
+00:31:51.420 --> 00:31:54.510
+ 
+
+
+00:31:54.690 --> 00:31:59.340
+ 
+
+
+00:31:59.370 --> 00:32:03.360
+ 
+
+
+00:32:03.360 --> 00:32:06.990
+ 
+
+
+00:32:06.990 --> 00:32:10.560
+ 
+
+
+00:32:11.160 --> 00:32:14.520
+ 
+
+
+00:32:14.520 --> 00:32:17.700
+ 
+
+
+00:32:17.730 --> 00:32:20.850
+ 
+
+
+00:32:20.850 --> 00:32:25.320
+ 
+
+
+00:32:25.320 --> 00:32:28.350
+ 
+
+
+00:32:28.350 --> 00:32:31.350
+ 
+
+
+00:32:31.350 --> 00:32:34.860
+ 
+
+
+00:32:34.860 --> 00:32:39.480
+ 
+
+
+00:32:39.480 --> 00:32:42.990
+ 
+
+
+00:32:42.990 --> 00:32:45.990
+ 
+
+
+00:32:45.990 --> 00:32:49.890
+ 
+
+
+00:32:51.060 --> 00:32:53.610
+ 
+
+
+00:32:53.610 --> 00:32:58.080
+ 
+
+
+00:32:58.080 --> 00:33:02.070
+ 
+
+
+00:33:02.070 --> 00:33:05.610
+ 
+
+
+00:33:05.610 --> 00:33:11.220
+ 
+
+
+00:33:11.220 --> 00:33:15.780
+ 
+
+
+00:33:15.810 --> 00:33:18.840
+ 
+
+
+00:33:18.840 --> 00:33:22.290
+ 
+
+
+00:33:22.290 --> 00:33:24.780
+ 
+
+
+00:33:24.780 --> 00:33:29.490
+ 
+
+
+00:33:29.490 --> 00:33:32.910
+ 
+
+
+00:33:32.940 --> 00:33:36.330
+ 
+
+
+00:33:36.330 --> 00:33:40.530
+ 
+
+
+00:33:40.530 --> 00:33:44.220
+ 
+
+
+00:33:44.220 --> 00:33:47.790
+ 
+
+
+00:33:47.790 --> 00:33:53.100
+ 
+
+
+00:33:53.130 --> 00:33:58.650
+ 
+
+
+00:33:58.680 --> 00:34:01.860
+ 
+
+
+00:34:01.860 --> 00:34:06.660
+ 
+
+
+00:34:06.660 --> 00:34:10.860
+ 
+
+
+00:34:10.860 --> 00:34:14.220
+ 
+
+
+00:34:14.220 --> 00:34:19.500
+ 
+
+
+00:34:19.500 --> 00:34:23.610
+ 
+
+
+00:34:23.610 --> 00:34:27.090
+ 
+
+
+00:34:27.360 --> 00:34:32.310
+ 
+
+
+00:34:32.730 --> 00:34:37.110
+ 
+
+
+00:34:37.140 --> 00:34:41.730
+ 
+
+
+00:34:41.760 --> 00:34:45.120
+ 
+
+
+00:34:45.120 --> 00:34:48.300
+ 
+
+
+00:34:48.300 --> 00:34:53.130
+ 
+
+
+00:34:53.130 --> 00:34:56.430
+ 
+
+
+00:34:56.490 --> 00:35:00.930
+ 
+
+
+00:35:00.930 --> 00:35:05.880
+ 
+
+
+00:35:05.880 --> 00:35:10.980
+ 
+
+
+00:35:11.790 --> 00:35:16.110
+ 
+
+
+00:35:16.110 --> 00:35:19.740
+ 
+
+
+00:35:19.830 --> 00:35:22.950
+ 
+
+
+00:35:22.950 --> 00:35:29.040
+ 
+
+
+00:35:29.370 --> 00:35:33.240
+ 
+
+
+00:35:33.270 --> 00:35:36.720
+ 
+
+
+00:35:36.720 --> 00:35:40.950
+ 
+
+
+00:35:41.460 --> 00:35:46.440
+ 
+
+
+00:35:46.440 --> 00:35:49.920
+ 
+
+
+00:35:49.920 --> 00:35:53.880
+ 
+
+
+00:35:53.880 --> 00:35:57.120
+ 
+
+
+00:35:57.120 --> 00:36:02.430
+ 
+
+
+00:36:02.430 --> 00:36:06.060
+ 
+
+
+00:36:06.060 --> 00:36:09.930
+ 
+
+
+00:36:09.930 --> 00:36:13.620
+ 
+
+
+00:36:15.840 --> 00:36:19.950
+ 
+
+
+00:36:20.010 --> 00:36:24.150
+ 
+
+
+00:36:24.150 --> 00:36:27.570
+ 
+
+
+00:36:27.570 --> 00:36:30.780
+ 
+
+
+00:36:30.780 --> 00:36:33.390
+ 
+
+
+00:36:33.390 --> 00:36:37.140
+ 
+
+
+00:36:37.380 --> 00:36:41.070
+ 
+
+
+00:36:41.070 --> 00:36:43.620
+ 
+
+
+00:36:43.650 --> 00:36:47.040
+ 
+
+
+00:36:47.040 --> 00:36:50.310
+ 
+
+
+00:36:50.760 --> 00:36:53.670
+ 
+
+
+00:36:53.670 --> 00:36:56.790
+ 
+
+
+00:36:56.790 --> 00:36:59.910
+ 
+
+
+00:37:00.210 --> 00:37:04.950
+ 
+
+
+00:37:04.950 --> 00:37:08.220
+ 
+
+
+00:37:08.220 --> 00:37:12.900
+ 
+
+
+00:37:12.930 --> 00:37:16.500
+ 
+
+
+00:37:16.500 --> 00:37:19.380
+ 
+
+
+00:37:19.950 --> 00:37:22.710
+ 
+
+
+00:37:22.710 --> 00:37:29.220
+ 
+
+
+00:37:29.220 --> 00:37:33.480
+ 
+
+
+00:37:33.480 --> 00:37:36.540
+ 
+
+
+00:37:36.540 --> 00:37:39.870
+ 
+
+
+00:37:39.870 --> 00:37:45.450
+ 
+
+
+00:37:45.450 --> 00:37:48.540
+ 
+
+
+00:37:48.540 --> 00:37:52.200
+ 
+
+
+00:37:52.200 --> 00:37:55.260
+ 
+
+
+00:37:55.260 --> 00:37:58.230
+ 
+
+
+00:37:58.410 --> 00:38:02.730
+ 
+
+
+00:38:02.730 --> 00:38:05.910
+ 
+
+
+00:38:05.910 --> 00:38:08.340
+ 
+
+
+00:38:08.340 --> 00:38:12.900
+ 
+
+
+00:38:12.900 --> 00:38:17.040
+ 
+
+
+00:38:17.040 --> 00:38:21.240
+ 
+
+
+00:38:21.240 --> 00:38:25.680
+ 
+
+
+00:38:25.680 --> 00:38:29.280
+ 
+
+
+00:38:29.910 --> 00:38:34.230
+ 
+
+
+00:38:34.230 --> 00:38:36.930
+ 
+
+
+00:38:37.560 --> 00:38:41.940
+ 
+
+
+00:38:42.000 --> 00:38:45.390
+ 
+
+
+00:38:45.720 --> 00:38:50.400
+ 
+
+
+00:38:50.400 --> 00:38:54.300
+ 
+
+
+00:38:54.930 --> 00:38:59.580
+ 
+
+
+00:38:59.940 --> 00:39:03.420
+ 
+
+
+00:39:03.420 --> 00:39:05.280
+
+
+00:39:06.599 --> 00:39:10.919
+ 
+
+
+00:39:10.949 --> 00:39:13.529
+ 
+
+
+00:39:13.529 --> 00:39:17.399
+ 
+
+
+00:39:17.639 --> 00:39:20.999
+ 
+
+
+00:39:20.999 --> 00:39:24.689
+ 
+
+
+00:39:24.959 --> 00:39:28.799
+ 
+
+
+00:39:28.829 --> 00:39:33.299
+ 
+
+
+00:39:33.299 --> 00:39:36.509
+ 
+
+
+00:39:36.509 --> 00:39:42.239
+ 
+
+
+00:39:42.239 --> 00:39:47.789
+ 
+
+
+00:39:47.789 --> 00:39:52.589
+ 
+
+
+00:39:52.589 --> 00:39:55.799
+ 
+
+
+00:39:55.799 --> 00:40:00.089
+ 
+
+
+00:40:00.089 --> 00:40:03.839
+ 
+
+
+00:40:03.839 --> 00:40:09.149
+ 
+
+
+00:40:09.149 --> 00:40:11.669
+ 
+
+
+00:40:11.669 --> 00:40:15.299
+ 
+
+
+00:40:15.299 --> 00:40:19.229
+ 
+
+
+00:40:19.319 --> 00:40:21.959
+ 
+
+
+00:40:21.959 --> 00:40:26.489
+ 
+
+
+00:40:26.489 --> 00:40:30.239
+ 
+
+
+00:40:30.269 --> 00:40:33.269
+ 
+
+
+00:40:33.269 --> 00:40:37.949
+ 
+
+
+00:40:37.949 --> 00:40:42.419
+ 
+
+
+00:40:42.419 --> 00:40:45.749
+ 
+
+
+00:40:45.749 --> 00:40:50.009
+ 
+
+
+00:40:50.009 --> 00:40:54.449
+ 
+
+
+00:40:54.449 --> 00:40:58.199
+ 
+
+
+00:40:58.199 --> 00:41:01.829
+ 
+
+
+00:41:01.829 --> 00:41:06.239
+ 
+
+
+00:41:06.239 --> 00:41:10.199
+ 
+
+
+00:41:10.199 --> 00:41:14.489
+ 
+
+
+00:41:14.489 --> 00:41:18.179
+ 
+
+
+00:41:18.179 --> 00:41:21.719
+ 
+
+
+00:41:21.719 --> 00:41:25.199
+ 
+
+
+00:41:25.199 --> 00:41:29.339
+ 
+
+
+00:41:29.339 --> 00:41:32.339
+ 
+
+
+00:41:32.339 --> 00:41:35.999
+ 
+
+
+00:41:36.119 --> 00:41:39.059
+ 
+
+
+00:41:39.059 --> 00:41:45.209
+ 
+
+
+00:41:45.209 --> 00:41:48.209
+ 
+
+
+00:41:48.209 --> 00:41:51.869
+ 
+
+
+00:41:51.869 --> 00:41:58.019
+ 
+
+
+00:41:58.019 --> 00:42:01.289
+ 
+
+
+00:42:01.649 --> 00:42:06.209
+ 
+
+
+00:42:06.209 --> 00:42:11.609
+ 
+
+
+00:42:11.609 --> 00:42:15.809
+ 
+
+
+00:42:16.109 --> 00:42:18.959
+ 
+
+
+00:42:18.959 --> 00:42:23.849
+ 
+
+
+00:42:24.329 --> 00:42:28.409
+ 
+
+
+00:42:28.409 --> 00:42:31.439
+ 
+
+
+00:42:31.499 --> 00:42:36.389
+ 
+
+
+00:42:36.389 --> 00:42:40.349
+ 
+
+
+00:42:40.349 --> 00:42:44.849
+ 
+
+
+00:42:44.849 --> 00:42:48.479
+ 
+
+
+00:42:48.479 --> 00:42:52.019
+ 
+
+
+00:42:52.019 --> 00:42:57.119
+ 
+
+
+00:42:57.119 --> 00:43:01.649
+ 
+
+
+00:43:01.649 --> 00:43:05.339
+ 
+
+
+00:43:05.339 --> 00:43:09.089
+ 
+
+
+00:43:09.089 --> 00:43:11.639
+ 
+
+
+00:43:11.639 --> 00:43:14.759
+ 
+
+
+00:43:14.759 --> 00:43:17.849
+ 
+
+
+00:43:17.849 --> 00:43:20.699
+ 
+
+
+00:43:20.699 --> 00:43:23.939
+ 
+
+
+00:43:23.939 --> 00:43:27.179
+ 
+
+
+00:43:27.179 --> 00:43:30.869
+ 
+
+
+00:43:30.869 --> 00:43:34.409
+ 
+
+
+00:43:34.439 --> 00:43:37.199
+ 
+
+
+00:43:37.199 --> 00:43:41.669
+ 
+
+
+00:43:41.669 --> 00:43:46.859
+ 
+
+
+00:43:46.859 --> 00:43:49.979
+ 
+
+
+00:43:50.069 --> 00:43:53.069
+ 
+
+
+00:43:53.129 --> 00:43:55.739
+ 
+
+
+00:43:55.739 --> 00:44:00.299
+ 
+
+
+00:44:00.329 --> 00:44:05.159
+ 
+
+
+00:44:05.189 --> 00:44:09.539
+ 
+
+
+00:44:09.569 --> 00:44:13.319
+ 
+
+
+00:44:13.319 --> 00:44:16.469
+ 
+
+
+00:44:16.469 --> 00:44:20.099
+ 
+
+
+00:44:20.129 --> 00:44:24.539
+ 
+
+
+00:44:24.629 --> 00:44:29.699
+ 
+
+
+00:44:29.729 --> 00:44:34.499
+ 
+
+
+00:44:34.499 --> 00:44:39.899
+ 
+
+
+00:44:39.959 --> 00:44:44.249
+ 
+
+
+00:44:44.309 --> 00:44:47.729
+ 
+
+
+00:44:47.729 --> 00:44:50.999
+ 
+
+
+00:44:50.999 --> 00:44:53.699
+ 
+
+
+00:44:53.699 --> 00:44:58.739
+ 
+
+
+00:44:58.739 --> 00:45:06.899
+ 
+
+
+00:45:06.899 --> 00:45:10.439
+ 
+
+
+00:45:10.439 --> 00:45:14.099
+ 
+
+
+00:45:14.249 --> 00:45:18.899
+ 
+
+
+00:45:18.899 --> 00:45:23.069
+ 
+
+
+00:45:23.069 --> 00:45:28.499
+ 
+
+
+00:45:28.529 --> 00:45:31.649
+ 
+
+
+00:45:31.649 --> 00:45:35.969
+ 
+
+
+00:45:35.969 --> 00:45:39.209
+ 
+
+
+00:45:39.209 --> 00:45:43.799
+ 
+
+
+00:45:43.979 --> 00:45:47.009
+ 
+
+
+00:45:47.009 --> 00:45:50.519
+ 
+
+
+00:45:50.519 --> 00:45:55.169
+ 
+
+
+00:45:55.169 --> 00:46:00.779
+ 
+
+
+00:46:00.779 --> 00:46:04.589
+ 
+
+
+00:46:04.589 --> 00:46:09.839
+ 
+
+
+00:46:09.839 --> 00:46:12.989
+ 
+
+
+00:46:13.589 --> 00:46:18.179
+ 
+
+
+00:46:18.179 --> 00:46:22.709
+ 
+
+
+00:46:22.709 --> 00:46:26.639
+ 
+
+
+00:46:26.669 --> 00:46:30.179
+ 
+
+
+00:46:30.479 --> 00:46:34.289
+ 
+
+
+00:46:34.289 --> 00:46:38.039
+ 
+
+
+00:46:38.069 --> 00:46:41.069
+ 
+
+
+00:46:41.069 --> 00:46:46.019
+ 
+
+
+00:46:47.249 --> 00:46:52.619
+ 
+
+
+00:46:52.619 --> 00:46:55.829
+ 
+
+
+00:46:55.829 --> 00:46:59.729
+ 
+
+
+00:46:59.729 --> 00:47:05.399
+ 
+
+
+00:47:05.399 --> 00:47:11.339
+ 
+
+
+00:47:11.339 --> 00:47:16.949
+ 
+
+
+00:47:16.979 --> 00:47:21.989
+ 
+
+
+00:47:21.989 --> 00:47:25.979
+ 
+
+
+00:47:25.979 --> 00:47:29.399
+ 
+
+
+00:47:29.849 --> 00:47:35.999
+ 
+
+
+00:47:35.999 --> 00:47:39.839
+ 
+
+
+00:47:39.869 --> 00:47:45.059
+ 
+
+
+00:47:45.059 --> 00:47:47.429
+ 
+
+
+00:47:47.429 --> 00:47:51.089
+ 
+
+
+00:47:51.089 --> 00:47:55.289
+ 
+
+
+00:47:55.289 --> 00:47:57.719
+ 
+
+
+00:47:59.820 --> 00:48:03.480
+ 
+
+
+00:48:03.480 --> 00:48:08.130
+ 
+
+
+00:48:08.130 --> 00:48:10.950
+ 
+
+
+00:48:10.950 --> 00:48:14.040
+ 
+
+
+00:48:14.100 --> 00:48:18.030
+ 
+
+
+00:48:18.030 --> 00:48:21.030
+ 
+
+
+00:48:21.030 --> 00:48:26.070
+ 
+
+
+00:48:26.070 --> 00:48:30.360
+ 
+
+
+00:48:30.360 --> 00:48:35.970
+ 
+
+
+00:48:35.970 --> 00:48:39.840
+ 
+
+
+00:48:39.840 --> 00:48:43.110
+ 
+
+
+00:48:43.110 --> 00:48:47.250
+ 
+
+
+00:48:47.250 --> 00:48:52.230
+ 
+
+
+00:48:52.290 --> 00:48:55.980
+ 
+
+
+00:48:56.010 --> 00:48:59.460
+ 
+
+
+00:48:59.520 --> 00:49:03.360
+ 
+
+
+00:49:03.360 --> 00:49:07.500
+ 
+
+
+00:49:07.500 --> 00:49:11.340
+ 
+
+
+00:49:11.340 --> 00:49:15.210
+ 
+
+
+00:49:15.210 --> 00:49:21.540
+ 
+
+
+00:49:21.540 --> 00:49:27.150
+ 
+
+
+00:49:27.150 --> 00:49:31.500
+ 
+
+
+00:49:31.500 --> 00:49:35.280
+ 
+
+
+00:49:35.280 --> 00:49:38.730
+ 
+
+
+00:49:38.730 --> 00:49:43.770
+ 
+
+
+00:49:44.070 --> 00:49:48.330
+ 
+
+
+00:49:48.330 --> 00:49:52.800
+ 
+
+
+00:49:52.800 --> 00:49:55.710
+ 
+
+
+00:49:55.710 --> 00:50:00.000
+ 
+
+
+00:50:00.000 --> 00:50:02.760
+ 
+
+
+00:50:02.760 --> 00:50:05.970
+ 
+
+
+00:50:05.970 --> 00:50:09.660
+ 
+
+
+00:50:09.660 --> 00:50:13.950
+ 
+
+
+00:50:13.950 --> 00:50:16.260
+ 
+
+
+00:50:16.260 --> 00:50:20.910
+ 
+
+
+00:50:20.910 --> 00:50:24.930
+ 
+
+
+00:50:24.930 --> 00:50:30.570
+ 
+
+
+00:50:30.570 --> 00:50:33.720
+ 
+
+
+00:50:34.230 --> 00:50:36.570
+ 
+
+
+00:50:36.570 --> 00:50:40.080
+ 
+
+
+00:50:40.080 --> 00:50:45.900
+ 
+
+
+00:50:45.930 --> 00:50:50.550
+ 
+
+
+00:50:50.550 --> 00:50:55.050
+ 
+
+
+00:50:55.050 --> 00:50:56.190
+
+
+00:50:59.969 --> 00:51:04.349
+ 
+
+
+00:51:04.349 --> 00:51:07.979
+ 
+
+
+00:51:08.309 --> 00:51:14.909
+ 
+
+
+00:51:14.909 --> 00:51:18.959
+ 
+
+
+00:51:19.019 --> 00:51:24.029
+ 
+
+
+00:51:24.029 --> 00:51:28.949
+ 
+
+
+00:51:28.949 --> 00:51:32.609
+ 
+
+
+00:51:32.609 --> 00:51:35.819
+ 
+
+
+00:51:35.819 --> 00:51:40.169
+ 
+
+
+00:51:40.199 --> 00:51:44.789
+ 
+
+
+00:51:44.789 --> 00:51:50.129
+ 
+
+
+00:51:50.129 --> 00:51:53.159
+ 
+
+
+00:51:53.159 --> 00:51:55.019
+
+
+00:51:56.520 --> 00:52:00.300
+ 
+
+
+00:52:00.660 --> 00:52:05.880
+ 
+
+
+00:52:05.880 --> 00:52:11.490
+ 
+
+
+00:52:11.490 --> 00:52:15.930
+ 
+
+
+00:52:15.930 --> 00:52:19.680
+ 
+
+
+00:52:19.890 --> 00:52:23.940
+ 
+
+
+00:52:23.940 --> 00:52:28.710
+ 
+
+
+00:52:28.710 --> 00:52:33.000
+ 
+
+
+00:52:33.330 --> 00:52:36.000
+ 
+
+
+00:52:36.000 --> 00:52:39.480
+ 
+
+
+00:52:39.510 --> 00:52:43.890
+ 
+
+
+00:52:43.890 --> 00:52:47.910
+ 
+
+
+00:52:48.000 --> 00:52:51.750
+ 
+
+
+00:52:51.750 --> 00:52:56.670
+ 
+
+
+00:52:56.880 --> 00:52:57.480
+
+
+00:52:58.739 --> 00:53:02.579
+ 
+
+
+00:53:02.609 --> 00:53:05.969
+ 
+
+
+00:53:05.969 --> 00:53:09.149
+ 
+
+
+00:53:09.149 --> 00:53:11.579
+
+
+00:53:11.579 --> 00:53:12.689
+
+
+00:53:13.440 --> 00:53:17.700
+ 
+
+
+00:53:17.700 --> 00:53:20.820
+ 
+
+
+00:53:20.850 --> 00:53:21.780
+
+
+00:53:23.520 --> 00:53:28.650
+ 
+
+
+00:53:28.710 --> 00:53:32.190
+ 
+
+
+00:53:32.190 --> 00:53:38.100
+ 
+
+
+00:53:38.100 --> 00:53:40.320
+ 
+
+
+00:53:40.320 --> 00:53:43.260
+ 
+
+
+00:53:43.470 --> 00:53:45.840
+ 
+
+
+00:53:45.840 --> 00:53:49.770
+ 
+
+
+00:53:49.800 --> 00:53:54.750
+ 
+
+
+00:53:54.750 --> 00:53:59.520
+ 
+
+
+00:53:59.520 --> 00:54:03.120
+ 
+
+
+00:54:03.120 --> 00:54:07.140
+ 
+
+
+00:54:07.200 --> 00:54:08.790
+
+
+00:54:11.849 --> 00:54:17.429
+ 
+
+
+00:54:17.429 --> 00:54:22.859
+ 
+
+
+00:54:22.889 --> 00:54:28.919
+ 
+
+
+00:54:28.949 --> 00:54:33.569
+ 
+
+
+00:54:33.569 --> 00:54:37.769
+ 
+
+
+00:54:37.799 --> 00:54:44.039
+ 
+
+
+00:54:44.039 --> 00:54:49.019
+ 
+
+
+00:54:49.019 --> 00:54:52.199
+ 
+
+
+00:54:52.199 --> 00:54:54.059
+ 
+
+
+00:54:54.540 --> 00:54:57.750
+ 
+
+
+00:54:57.750 --> 00:55:01.200
+ 
+
+
+00:55:01.650 --> 00:55:04.290
+ 
+
+
+00:55:04.290 --> 00:55:07.260
+ 
+
+
+00:55:07.260 --> 00:55:12.030
+ 
+
+
+00:55:12.480 --> 00:55:15.840
+ 
+
+
+00:55:15.840 --> 00:55:18.990
+ 
+
+
+00:55:18.990 --> 00:55:21.630
+ 
+
+
+00:55:21.630 --> 00:55:25.830
+ 
+
+
+00:55:25.830 --> 00:55:29.130
+ 
+
+
+00:55:29.580 --> 00:55:33.210
+ 
+
+
+00:55:33.210 --> 00:55:36.900
+ 
+
+
+00:55:36.900 --> 00:55:41.580
+ 
+
+
+00:55:41.670 --> 00:55:46.050
+ 
+
+
+00:55:46.080 --> 00:55:51.090
+ 
+
+
+00:55:51.210 --> 00:55:53.070
+ 
+
+
+00:55:54.510 --> 00:55:58.740
+ 
+
+
+00:55:58.740 --> 00:56:02.280
+ 
+
+
+00:56:02.310 --> 00:56:06.990
+ 
+
+
+00:56:06.990 --> 00:56:10.380
+ 
+
+

@@ -1,0 +1,3408 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:01.800 --> 00:00:05.130
+All right. Welcome to
+the DDPS seminar everyone.
+
+00:00:05.520 --> 00:00:09.090
+Before we introduce our invited
+speaker, let's go over some
+
+00:00:09.120 --> 00:00:13.410
+useful rules as usual. First,
+please mute yourself during the
+
+00:00:13.410 --> 00:00:17.040
+talk. If you have immediate
+questions, you are welcome to
+
+00:00:17.070 --> 00:00:21.720
+unmute and ask the otherwise,
+please use the chat room to post
+
+00:00:21.720 --> 00:00:24.870
+your questions so that we can
+address them in the q&amp;a session
+
+00:00:24.870 --> 00:00:28.920
+at the end. Second, today's
+seminar is open to external
+
+00:00:28.920 --> 00:00:33.300
+audience, so no classified
+discussion is allowed. Finally,
+
+00:00:33.330 --> 00:00:36.360
+the talk will be recorded and
+uploaded to our YouTube channel.
+
+00:00:36.780 --> 00:00:41.100
+Now, let me introduce our
+speaker. It is an honor to host
+
+00:00:41.100 --> 00:00:46.230
+Peng Chen , who is currently a
+tenure track Assistant Professor
+
+00:00:46.290 --> 00:00:49.740
+in the School of Computational
+Science and Engineering at
+
+00:00:49.740 --> 00:00:54.180
+Georgia Tech. Previously, he was
+a research scientist at the Odin
+
+00:00:54.240 --> 00:00:57.660
+Institute for computational
+engineering and sciences at
+
+00:00:57.870 --> 00:01:02.340
+University of Austin, Texas at
+Austin. Before joining UT
+
+00:01:02.340 --> 00:01:06.360
+Austin, he spent a year as
+besserer and postdoc at ETH
+
+00:01:06.360 --> 00:01:11.310
+Zurich in 2014 to 15. He
+obtained his PhD degree in
+
+00:01:11.310 --> 00:01:16.440
+computational mathematics from
+EPFL in 2014. His research is
+
+00:01:16.440 --> 00:01:19.650
+driven by challenging problems
+in scientific and engineering
+
+00:01:19.650 --> 00:01:22.830
+fields that involve data driven
+modeling, learning and
+
+00:01:22.830 --> 00:01:27.240
+optimization of complex systems
+under uncertainty, and focus on
+
+00:01:27.270 --> 00:01:30.270
+scientific machine learning and
+shutting the quantification,
+
+00:01:30.570 --> 00:01:33.540
+Bayesian inference, experimental
+design and stochastic
+
+00:01:33.540 --> 00:01:39.090
+optimization. Today, he will
+talk about derivative informed
+
+00:01:39.120 --> 00:01:43.680
+neural operators, please enjoy
+the wonderful talk. Now, without
+
+00:01:43.680 --> 00:01:47.280
+further ado, let me hand it over
+to your Pen by asking a random
+
+00:01:47.280 --> 00:01:51.720
+question. Yeah. So if you could
+attend a lecture by any
+
+00:01:51.720 --> 00:01:55.260
+scientist in the past or persons
+who he or she be?
+
+00:01:56.430 --> 00:02:04.740
+Well, that's a very good
+question. I would say. Well,
+
+00:02:04.740 --> 00:02:08.430
+there are apparently a lot of
+scientists that I like to learn
+
+00:02:08.430 --> 00:02:14.400
+from and one of, you know, the
+leading scientists that would be
+
+00:02:15.180 --> 00:02:19.380
+Richard Feynman, physicist. And
+I learned a bit more about it
+
+00:02:19.380 --> 00:02:22.830
+there, you know, physical
+background, and, you know, the
+
+00:02:23.520 --> 00:02:26.250
+sort of like a first principle
+models that, you know, we're
+
+00:02:26.250 --> 00:02:29.460
+approximating today with the
+DIRECTV environment and your
+
+00:02:29.460 --> 00:02:30.150
+operators.
+
+00:02:30.930 --> 00:02:34.650
+Yeah, that would be definitely a
+good choice by many others, as
+
+00:02:34.650 --> 00:02:39.510
+well. So thank you. So please go
+ahead with your talk.
+
+00:02:40.139 --> 00:02:43.409
+Thank you, Tony. Thank you for
+your kind invitation and also
+
+00:02:43.469 --> 00:02:46.889
+introduction. So today, I'm
+going to share some recent work
+
+00:02:46.919 --> 00:02:50.729
+on on to routine informed near
+operators is a class of linear
+
+00:02:50.729 --> 00:02:54.239
+operators, that are designed to
+address and essentially
+
+00:02:54.269 --> 00:02:58.109
+optimization problems construct
+constraint either by and large
+
+00:02:58.109 --> 00:03:01.589
+scale partial differential
+equations, and also was that
+
+00:03:01.589 --> 00:03:04.529
+many different applications as
+Tony mentioned, and Bayesian
+
+00:03:04.529 --> 00:03:07.919
+inference, optimal experimental
+design and stochastic
+
+00:03:07.919 --> 00:03:10.859
+optimizations. So this is joint
+work with a team will go at
+
+00:03:10.859 --> 00:03:16.559
+Georgia Tech, and was professor
+on Mercatus Jintan, lower Tomas
+
+00:03:16.559 --> 00:03:21.809
+only raspberry and on Bert
+availa, from UT Austin. So, let
+
+00:03:21.809 --> 00:03:26.669
+me start with a few examples.
+The first one is the Bayesian
+
+00:03:26.669 --> 00:03:31.049
+inference of Antarctica ice
+sheet flow. So, here you can see
+
+00:03:31.349 --> 00:03:34.649
+essentially the East our
+satellite observation of the
+
+00:03:34.649 --> 00:03:41.309
+surface ice flow velocity of
+Antarctica ice, and over the
+
+00:03:41.309 --> 00:03:46.529
+years, there is accelerated ice
+sheet flow. And if all there
+
+00:03:46.559 --> 00:03:51.119
+Atlanta ice mountain and getting
+into the ocean, and there is a
+
+00:03:51.119 --> 00:03:56.819
+significant sea level rise, so
+care about this problem. Um, so,
+
+00:03:57.269 --> 00:04:00.479
+the model itself can be
+described by you know, their
+
+00:04:00.509 --> 00:04:03.599
+their nonlinear viscous,
+incompressible fluid flow,
+
+00:04:03.599 --> 00:04:07.229
+essentially the stock's flow.
+And uncertainty of the problem
+
+00:04:08.249 --> 00:04:11.789
+depends on you know, the Bessel
+sliding field essentially is a
+
+00:04:11.789 --> 00:04:16.019
+boundary condition between the
+boundary sort of like along the
+
+00:04:16.019 --> 00:04:19.229
+boundary of the eyes and land,
+so, we don't really know about
+
+00:04:19.229 --> 00:04:23.009
+it the vessels sliding field
+want to infer a dispute from the
+
+00:04:23.009 --> 00:04:26.309
+observation data. And in
+particular, want to find the
+
+00:04:27.029 --> 00:04:30.779
+maximum of posterior point of
+this parameter. And here,
+
+00:04:31.139 --> 00:04:34.859
+there's a some reason to work on
+finding this map point by
+
+00:04:34.859 --> 00:04:39.419
+solving an optimization problem,
+essentially a Newton best
+
+00:04:40.109 --> 00:04:44.459
+optimization problem. I can see
+here, this is essentially their
+
+00:04:44.939 --> 00:04:48.749
+map point maximum a posterior
+point of the parameter at the
+
+00:04:48.749 --> 00:04:54.329
+bottom boundary. Apparently it
+is a random field it is a random
+
+00:04:54.329 --> 00:04:57.389
+variable at each point and is
+infinite dimensional after
+
+00:04:57.389 --> 00:05:01.109
+discretization could it be very
+high dimensional The second
+
+00:05:01.109 --> 00:05:05.819
+example is optimal experimental
+design for tsunami warning. So,
+
+00:05:05.819 --> 00:05:10.559
+here you can see essentially how
+to deploy a surface boy and also
+
+00:05:10.559 --> 00:05:14.849
+a smart meter. So, once there is
+a earthquake in the sea floor,
+
+00:05:15.749 --> 00:05:18.809
+and like the sea Flow Motion,
+you can quickly detect the
+
+00:05:18.809 --> 00:05:22.439
+acoustic wave from the tsunami
+here and the surface boy and he
+
+00:05:22.439 --> 00:05:26.399
+can pass it down to their
+Tsunami Warning Centers. And
+
+00:05:26.399 --> 00:05:29.999
+uncertainty of this problems
+comes from you know, the slip
+
+00:05:30.029 --> 00:05:33.479
+land earthquake fault. So,
+essentially their earthquake
+
+00:05:33.479 --> 00:05:37.439
+fault due to this pressure, high
+pressure that generated the
+
+00:05:37.469 --> 00:05:41.609
+tsunami, it is a dependent on
+space and time. So, essentially
+
+00:05:41.639 --> 00:05:44.849
+space and time dependent
+stochastic processes is also
+
+00:05:44.849 --> 00:05:49.619
+quite high dimensional after
+discrimination. And so, the
+
+00:05:49.619 --> 00:05:53.519
+model can be described by, you
+know, this elastic acoustic
+
+00:05:53.549 --> 00:05:56.819
+gravity wave equations. And also
+once there's a tsunami
+
+00:05:56.819 --> 00:06:01.139
+generated, it follows is a
+shallow water equation. So, it's
+
+00:06:01.169 --> 00:06:03.779
+essentially a tsunami is
+propagated to the coastal city
+
+00:06:05.159 --> 00:06:08.789
+where he commanded by shallow
+water equation and the
+
+00:06:08.819 --> 00:06:11.339
+optimization problem is
+essentially we want to place the
+
+00:06:11.339 --> 00:06:15.329
+sensors This is Sanaa meter and
+a surface boy in order to detect
+
+00:06:15.329 --> 00:06:20.519
+their Earth crack and also you
+know, maximum tsunami warning
+
+00:06:20.549 --> 00:06:25.649
+focusing and so, these sensors
+are actually plastic to maximize
+
+00:06:25.679 --> 00:06:34.319
+the information that it can gain
+from the sensors. So, the third
+
+00:06:34.319 --> 00:06:38.219
+problem is about stochastic
+optimization with application
+
+00:06:38.219 --> 00:06:41.519
+for direct yourself assembling
+material, that is for instance,
+
+00:06:41.519 --> 00:06:45.509
+potentially can be applied in
+semiconductor error. So, here
+
+00:06:45.539 --> 00:06:49.169
+what you can see is a dye block
+a polymer. So, you have two
+
+00:06:49.169 --> 00:06:53.039
+segments and have a different
+like a foster track them to form
+
+00:06:53.039 --> 00:06:57.479
+a different patterns. And so,
+this patterns can be formed by
+
+00:06:57.509 --> 00:07:01.649
+placing certain guiding posts on
+certain the Socata guiding post
+
+00:07:01.649 --> 00:07:07.109
+or substrate, so that the
+materials can fall into the
+
+00:07:07.109 --> 00:07:10.109
+pattern or morphology that you
+want to Microsoft can be
+
+00:07:10.109 --> 00:07:13.679
+described as either self
+consistent field theory, or non
+
+00:07:13.679 --> 00:07:17.009
+local uncanny valley equation
+that I've been working on. So
+
+00:07:17.519 --> 00:07:22.739
+here's one type of target in
+mythology, and we're complex a
+
+00:07:22.739 --> 00:07:26.699
+certain substrate for instance,
+here complex a substrate and it
+
+00:07:26.699 --> 00:07:30.449
+will attract the material to
+form this target in mythology,
+
+00:07:30.809 --> 00:07:35.339
+right and so, the optimization
+problem would it be to properly
+
+00:07:35.369 --> 00:07:40.259
+design the substrate or another
+application, the target
+
+00:07:40.259 --> 00:07:44.279
+mythology looks like this one,
+and then we can replace our
+
+00:07:44.279 --> 00:07:47.159
+guidepost. So, essentially, I
+want to decide at their
+
+00:07:47.189 --> 00:07:50.489
+locations that the guy post
+cites that the equilibrium state
+
+00:07:51.689 --> 00:07:56.039
+is driven as close as possible
+to the target mythology or
+
+00:07:56.039 --> 00:07:58.229
+wherever the problem is, you
+know, there's a lot of
+
+00:07:58.229 --> 00:08:01.409
+uncertainty in this system too,
+there is for instance, random
+
+00:08:01.409 --> 00:08:04.799
+initial phase of the materials
+and the material properties and
+
+00:08:04.799 --> 00:08:08.819
+also their temperatures of this
+process. So, this uncertainty
+
+00:08:08.849 --> 00:08:13.019
+are also very high dimensional.
+And for instance, here at a
+
+00:08:13.019 --> 00:08:16.799
+given optimal design, because of
+this uncertainty, the
+
+00:08:16.799 --> 00:08:20.939
+equilibrium can converge to in a
+different sort of like stead
+
+00:08:21.209 --> 00:08:23.699
+here you have a standard that
+you want and that is close to
+
+00:08:23.699 --> 00:08:25.919
+the target of mythology, but
+however, there are some other
+
+00:08:26.489 --> 00:08:29.639
+equilibriums that are sort of
+like a defects of the material,
+
+00:08:29.939 --> 00:08:32.699
+you want to minimize this kind
+of a defects by stochastic
+
+00:08:32.699 --> 00:08:37.169
+optimization problem. So, over
+this three different examples,
+
+00:08:37.169 --> 00:08:42.299
+we formulated a few like
+abstract problems, the first one
+
+00:08:42.299 --> 00:08:44.699
+is a forward uncertainty
+propagation. So you have a
+
+00:08:44.699 --> 00:08:48.749
+complex system described by a
+mathematical model are you have
+
+00:08:48.749 --> 00:08:52.439
+a steady variable you here and
+now you have an uncertain
+
+00:08:52.439 --> 00:08:56.909
+parameter represented by Sita,
+Sita as an all the examples, it
+
+00:08:56.909 --> 00:08:59.159
+couldn't be very high
+dimensional, and have a certain
+
+00:08:59.159 --> 00:09:01.799
+probability distribution and
+then can propagated the
+
+00:09:01.799 --> 00:09:05.669
+uncertainty off the parameter
+served as a system to some
+
+00:09:05.669 --> 00:09:08.789
+quantity of interest. For
+instance, in a tsunami warning
+
+00:09:08.789 --> 00:09:13.349
+system, you can predict their
+water and web height or you know
+
+00:09:13.349 --> 00:09:18.599
+the magnitude and so, there's
+additional variable z z could it
+
+00:09:18.599 --> 00:09:22.409
+be their optimization variable
+experimental design variable.
+
+00:09:22.979 --> 00:09:26.489
+So, the second problem is based
+inference to given some data
+
+00:09:26.519 --> 00:09:30.419
+which is typically noisy the
+data actually you know, a
+
+00:09:30.419 --> 00:09:34.769
+collection of some observation
+of your static variable you hear
+
+00:09:35.159 --> 00:09:38.819
+and you have additive noise,
+Absalon follows certain a noise
+
+00:09:38.819 --> 00:09:42.809
+distribution. So, the base
+inference problem is actually to
+
+00:09:42.809 --> 00:09:45.869
+characterize the posterior
+distribution of the parameters
+
+00:09:45.869 --> 00:09:49.049
+theta, which is you know,
+proportional to the likelihood
+
+00:09:49.049 --> 00:09:52.709
+function times the prior. And
+given the data you can
+
+00:09:52.739 --> 00:09:56.249
+effectively reduce uncertainty
+of this parameter, and this
+
+00:09:56.249 --> 00:09:59.189
+reduced the parameter. Reduced
+uncertainty can also be
+
+00:09:59.189 --> 00:10:03.629
+propagated to the or quantity of
+interest, but one of the problem
+
+00:10:03.629 --> 00:10:07.799
+could be like how do you in the
+first place collect the data
+
+00:10:07.859 --> 00:10:11.279
+right this is optimal
+experimental design problem. So,
+
+00:10:11.669 --> 00:10:14.219
+as you can see here we have
+information again color
+
+00:10:14.219 --> 00:10:17.339
+graphically you represent it by
+calligraphic view. So, when it
+
+00:10:17.339 --> 00:10:21.059
+maximize this information from
+our experiment from our sensors,
+
+00:10:21.329 --> 00:10:24.659
+and this is these stands for the
+experimental design variable and
+
+00:10:24.659 --> 00:10:29.279
+it is averaged with respect to
+the data or the data. So,
+
+00:10:29.279 --> 00:10:34.079
+essentially, we want to like
+optimize our sensor locations in
+
+00:10:34.079 --> 00:10:37.799
+order to collect the data to
+reduce their uncertainty as much
+
+00:10:37.799 --> 00:10:40.649
+as possible as you can see,
+after the optimal experimental
+
+00:10:40.649 --> 00:10:43.649
+design, you have a reduced the
+uncertainty for the parameter
+
+00:10:44.159 --> 00:10:48.569
+and again you can propagate it
+to their point of interest at
+
+00:10:48.569 --> 00:10:51.569
+this stage was a well calibrated
+model, you can solve the
+
+00:10:51.569 --> 00:10:54.599
+optimization problem. So, you
+have some quantity of interest,
+
+00:10:54.629 --> 00:10:58.439
+could it be likely that control
+or design objective and this is
+
+00:10:58.439 --> 00:11:01.259
+still is a random variable, you
+want to compute a some
+
+00:11:01.259 --> 00:11:03.779
+statistical measure or risk
+measure, and you want to
+
+00:11:03.779 --> 00:11:07.229
+minimize this risk measure. And
+there is additional, let's say
+
+00:11:07.499 --> 00:11:11.069
+penalization term or
+regularization term. And this is
+
+00:11:11.069 --> 00:11:14.459
+the here stands for optimal
+control or design variable.
+
+00:11:15.779 --> 00:11:19.919
+Alright, so, they're about like,
+there's four different problems
+
+00:11:19.919 --> 00:11:23.909
+with consider. And there are
+some common challenges for this
+
+00:11:23.909 --> 00:11:27.419
+problems. The first is the model
+are typically quite complex,
+
+00:11:27.719 --> 00:11:29.849
+disrupted by partial
+differential equations have been
+
+00:11:29.999 --> 00:11:32.669
+reviewing for this different
+examples. And they're expensive
+
+00:11:32.669 --> 00:11:35.219
+to solve and uncertain
+parameters that they're high
+
+00:11:35.219 --> 00:11:37.709
+dimensional, that could have
+like a very complex
+
+00:11:37.739 --> 00:11:43.499
+distributions as non Gaussian,
+multimodal and locally focused
+
+00:11:43.499 --> 00:11:47.219
+locally concentrated for
+instance, and then additionally
+
+00:11:47.279 --> 00:11:50.159
+the optimization problem
+including the experimental
+
+00:11:50.159 --> 00:11:53.819
+variable, their control variable
+design variable, those could
+
+00:11:53.819 --> 00:11:57.809
+also be high dimensional and
+also non convex. To address this
+
+00:11:57.869 --> 00:12:00.809
+challenge, we exploit the
+following opportunities the
+
+00:12:00.809 --> 00:12:04.049
+first is we can construct a
+certain surrogate models with
+
+00:12:04.049 --> 00:12:06.629
+the required accuracy and also
+this surrogate models can be
+
+00:12:06.629 --> 00:12:10.379
+evaluated very fast and
+secondarily. So for the high
+
+00:12:10.379 --> 00:12:13.529
+dimensional parameters. And
+typically the front of the
+
+00:12:13.529 --> 00:12:17.069
+parameter to the solution or to
+the observables in your
+
+00:12:17.399 --> 00:12:19.679
+inference parameter or to the
+objective in your control
+
+00:12:19.679 --> 00:12:23.039
+problem, those maps are
+typically intrinsically low
+
+00:12:23.039 --> 00:12:26.819
+dimensional, how to exploit the
+the low dimensionality will be
+
+00:12:26.849 --> 00:12:29.429
+one of the opportunities and
+therefore the optimization
+
+00:12:29.429 --> 00:12:32.909
+problems. Typically, for high
+dimension or high dimensional
+
+00:12:32.909 --> 00:12:35.999
+optimization problems, we can
+use a derivative best method or
+
+00:12:35.999 --> 00:12:39.359
+adaptive optimization method,
+this method are typically
+
+00:12:39.599 --> 00:12:40.739
+dimension independent.
+
+00:12:42.570 --> 00:12:47.070
+Alright, so, let me proceed to
+this forward problem as
+
+00:12:47.070 --> 00:12:50.280
+essentially the forward
+uncertainty propagation. And
+
+00:12:50.490 --> 00:12:53.730
+there are many different kinds
+of, you know, their uncertainty
+
+00:12:53.730 --> 00:12:56.820
+quantification problem,
+including the model reduction,
+
+00:12:57.210 --> 00:13:01.200
+the polynomial house and
+recently their new operators. So
+
+00:13:01.200 --> 00:13:03.570
+when approximate the solution
+operator essentially from the
+
+00:13:03.570 --> 00:13:06.780
+theta to the solution, you are
+some quantity of interest and
+
+00:13:06.780 --> 00:13:10.380
+map, this quantity of interest,
+it could be a scalar a vector of
+
+00:13:10.380 --> 00:13:15.060
+function, and when approximated
+by a neural networks, F, indexed
+
+00:13:15.060 --> 00:13:18.270
+by that neural net web
+parameters w. And there have
+
+00:13:18.270 --> 00:13:20.640
+been several different New York
+predators developed over the
+
+00:13:20.640 --> 00:13:25.020
+last few years, including their
+fear and your predator, which,
+
+00:13:25.170 --> 00:13:28.380
+you know, sort of like
+transformed their input by fear
+
+00:13:28.380 --> 00:13:31.800
+transformation and building the
+neural networks in the frequency
+
+00:13:31.800 --> 00:13:35.850
+domain. And also there is a deep
+own net D proprietary network,
+
+00:13:36.630 --> 00:13:40.350
+where the output is represented
+by sort of like a linear basis,
+
+00:13:40.380 --> 00:13:43.500
+this base is constructed by so
+called their trunk net chunk,
+
+00:13:43.770 --> 00:13:46.980
+neural network. And the
+parameters are mapped through
+
+00:13:46.980 --> 00:13:50.580
+the branch net to the
+coefficient of this linear
+
+00:13:50.580 --> 00:13:53.670
+basis. And then there's a
+sequence of development and
+
+00:13:53.820 --> 00:13:57.000
+reduce basis architectures of
+the neural operators including
+
+00:13:57.000 --> 00:14:01.800
+their so called Deep Learning or
+reduced auto models, and the PCA
+
+00:14:01.800 --> 00:14:05.100
+networks, which essentially
+apply the principal component
+
+00:14:05.100 --> 00:14:08.880
+analysis for the projection of
+the input and output map, and
+
+00:14:08.880 --> 00:14:11.700
+also originally developed this
+derivative in the form of a
+
+00:14:11.700 --> 00:14:14.910
+projected neural network. And
+also there are a couple of
+
+00:14:14.940 --> 00:14:18.330
+comparison papers on different
+new operators, including the
+
+00:14:18.330 --> 00:14:22.980
+following two. One is, you know,
+the comparison for the full year
+
+00:14:22.980 --> 00:14:26.820
+new operator and depo net. And
+another is a comparison of
+
+00:14:27.780 --> 00:14:30.600
+including this two different new
+operator and additionally, there
+
+00:14:30.600 --> 00:14:33.660
+is a PCA net and there's some
+other reduced basis
+
+00:14:33.660 --> 00:14:36.810
+architectures. So one of the
+conclusion from this comparisons
+
+00:14:36.810 --> 00:14:39.930
+is, you know, for larger scale
+and high dimensional problems,
+
+00:14:40.050 --> 00:14:42.870
+especially those problems,
+intrinsic low dimensionality,
+
+00:14:43.140 --> 00:14:46.980
+this PCA net, and also there's a
+pod deponent essentially, you
+
+00:14:46.980 --> 00:14:49.950
+perform some projection of your
+input output to load dimensions.
+
+00:14:50.370 --> 00:14:54.900
+Those new operator tends to be
+performing the past from the
+
+00:14:54.900 --> 00:14:58.920
+perspective of cost and accuracy
+trade off. I'm going to explain
+
+00:14:58.920 --> 00:15:01.500
+a bit more about this point.
+Alright. So, the first
+
+00:15:01.500 --> 00:15:05.400
+development that we had there
+was under this Socata derivative
+
+00:15:05.400 --> 00:15:08.580
+being formed with a projected
+neural network. So, essentially,
+
+00:15:08.940 --> 00:15:13.020
+instead of the PCA a net where
+you projected their input
+
+00:15:13.350 --> 00:15:19.410
+parameters theta into PCA basis
+or like a Kakuna live expansion
+
+00:15:19.410 --> 00:15:23.190
+bases, we actually project it
+down to their active subspace,
+
+00:15:23.550 --> 00:15:27.480
+which is computed by forming
+this Jacoby none of this Q
+
+00:15:27.900 --> 00:15:31.830
+transpose this multiply this
+Jacobian tacked averages back to
+
+00:15:31.830 --> 00:15:34.920
+their distribution of parameters
+theta, and then you compute the
+
+00:15:34.950 --> 00:15:38.160
+Eigen value decomposition to
+tackle eigenvectors at the
+
+00:15:38.160 --> 00:15:41.880
+subspace which is active
+subspace for there, you know,
+
+00:15:41.910 --> 00:15:45.600
+the output at Q I know projected
+their parameters into this
+
+00:15:45.600 --> 00:15:48.630
+active subspace. And for the
+output, it would be their pod
+
+00:15:48.660 --> 00:15:53.070
+subspace, essentially, you
+collect snapshots of the output
+
+00:15:53.070 --> 00:15:57.900
+and perform the pod or SPD on it
+and you projected there, I'll
+
+00:15:57.900 --> 00:16:01.080
+put to this basis. And then
+after the projection we have a
+
+00:16:01.080 --> 00:16:04.170
+neural network sort of like
+leaving very low dimensional low
+
+00:16:04.170 --> 00:16:06.990
+dimensional input and low
+dimensional output can construct
+
+00:16:06.990 --> 00:16:11.070
+this neural network was much
+smaller number of training data.
+
+00:16:11.580 --> 00:16:15.540
+And this also corresponds to the
+so called encoder and decoder,
+
+00:16:15.570 --> 00:16:18.270
+but this encoder and decoder
+actually constructed the more
+
+00:16:18.270 --> 00:16:21.600
+explicitly using the
+projections, and we have error
+
+00:16:21.600 --> 00:16:24.810
+bound for the input in
+projection trollee by the
+
+00:16:24.810 --> 00:16:27.150
+training Eigen values and
+essentially the projection
+
+00:16:27.150 --> 00:16:32.130
+error, where if you have a you
+know, the output the projection
+
+00:16:32.160 --> 00:16:35.730
+from the input and output,
+measure the our two cents there
+
+00:16:35.730 --> 00:16:39.240
+can be upper bounded by their
+trading off the Eigen values
+
+00:16:39.270 --> 00:16:42.960
+from the input and output. If
+this Eigen value is declared
+
+00:16:42.960 --> 00:16:47.520
+pretty fast, then this error
+could be quite small. Here's a
+
+00:16:48.480 --> 00:16:52.590
+one example on haremos equation.
+So essentially, here, we have a
+
+00:16:52.590 --> 00:16:56.280
+parameters theta on the
+velocity, and Adesina is a
+
+00:16:56.280 --> 00:17:00.360
+Gaussian random field. And we
+have a source term here. And we
+
+00:17:00.360 --> 00:17:06.150
+have observations of a of this
+state variable along here the
+
+00:17:06.150 --> 00:17:12.180
+surface. And so we have the
+input of projection, the input
+
+00:17:12.510 --> 00:17:17.700
+parameters mentioned as 16,000.
+And by projection, we can get it
+
+00:17:17.700 --> 00:17:21.570
+down to let's say, a dimension
+of eight or 16 or 32, depending
+
+00:17:21.570 --> 00:17:24.510
+on the decay of the Eigen
+values. And here we have two
+
+00:17:24.510 --> 00:17:28.290
+different neural network. One is
+our deep net. And also another
+
+00:17:28.320 --> 00:17:31.680
+is without any projection for
+this, two different neural
+
+00:17:31.680 --> 00:17:34.020
+networks, we have a deep refer
+them for the neural network has
+
+00:17:34.020 --> 00:17:39.570
+2000, and also about 24 million.
+So we have two different
+
+00:17:39.600 --> 00:17:43.710
+projections. As I said, one is
+the inner the PCA or the cow,
+
+00:17:43.710 --> 00:17:46.320
+you're covering a lot of
+expansion bases. So this does
+
+00:17:46.320 --> 00:17:49.650
+not reflect any their any of
+their you know, the solution
+
+00:17:49.650 --> 00:17:52.650
+behavior before the active
+subspace, you can clearly see
+
+00:17:52.650 --> 00:17:58.140
+some wealth patterns, right. And
+so here's the accuracy of a
+
+00:17:58.170 --> 00:18:01.200
+neural net neural network
+approximation was an increasing
+
+00:18:01.200 --> 00:18:04.800
+number of training data. And we
+have different projections
+
+00:18:04.800 --> 00:18:07.200
+including Active subspace
+projection, the carry
+
+00:18:07.200 --> 00:18:10.380
+projection, and also was simply
+draw some random projection
+
+00:18:10.380 --> 00:18:15.210
+basis. And then we have the full
+space neural network. So the
+
+00:18:15.210 --> 00:18:18.960
+blue line indicates the accuracy
+by the active subspace
+
+00:18:18.960 --> 00:18:21.990
+projection. So essentially, you
+can see was a small number of
+
+00:18:21.990 --> 00:18:24.360
+training data, you already
+arrived at quite high high
+
+00:18:24.360 --> 00:18:28.140
+accuracy, and is better than the
+other two projections, and is
+
+00:18:28.140 --> 00:18:31.260
+better than the full space and
+construction for the full space,
+
+00:18:31.380 --> 00:18:33.810
+because you have a lot of deep
+refer them, you need a lot of
+
+00:18:33.810 --> 00:18:40.110
+training data to arrive similar
+accuracy. Okay, so here's a sort
+
+00:18:40.110 --> 00:18:43.680
+of like a scalability test,
+because we have the projection
+
+00:18:43.680 --> 00:18:47.250
+to the same dimensions, it is
+independent of the input
+
+00:18:47.250 --> 00:18:50.970
+dimension. From the parameters
+theta, we have either 4000 or
+
+00:18:50.970 --> 00:18:55.260
+16,000. And before the deep net
+by projecting to the same
+
+00:18:55.260 --> 00:18:58.560
+dimensions will have the same
+dimensions for their neural
+
+00:18:58.560 --> 00:19:00.780
+network, but the full space
+would have different degrees of
+
+00:19:00.780 --> 00:19:02.580
+freedom. And you have a similar
+
+00:19:04.170 --> 00:19:09.090
+behavior for the different
+projection your networks Okay,
+
+00:19:09.090 --> 00:19:11.580
+so the second problem is about a
+Bayesian inference.
+
+00:19:13.980 --> 00:19:16.560
+So, here's the abstract
+formulation of the Bayesian
+
+00:19:16.560 --> 00:19:20.010
+inference, why again is our data
+observation data living
+
+00:19:20.100 --> 00:19:23.790
+dimension as as could also be
+quite high and sea days
+
+00:19:24.420 --> 00:19:28.140
+uncertain parameter, we have the
+from parameter to observable map
+
+00:19:28.170 --> 00:19:31.920
+f f is observation of your
+static variable right. So,
+
+00:19:31.920 --> 00:19:36.720
+essentially, this alpha depends
+on your set of variables. And we
+
+00:19:36.720 --> 00:19:40.410
+have added noise, which is a
+Gaussian distributed as a cover
+
+00:19:40.410 --> 00:19:43.920
+as gamma noise. And a Bayes rule
+says that the posterior
+
+00:19:43.920 --> 00:19:47.850
+distribution of this is theta,
+given your data y is actually
+
+00:19:47.940 --> 00:19:52.290
+given by likelihood times the
+prior The likelihood is that you
+
+00:19:52.290 --> 00:19:56.340
+know, the data are conditioned
+on the setup. And then this is
+
+00:19:56.370 --> 00:19:59.670
+normalized by this so called
+model evidence, or normalization
+
+00:19:59.670 --> 00:20:02.940
+constant and is actually the
+integral of the likelihood
+
+00:20:02.940 --> 00:20:07.140
+function respect to the prior
+distribution. Since the
+
+00:20:07.140 --> 00:20:10.500
+parameters theta could be very
+high dimensional, this model
+
+00:20:10.500 --> 00:20:14.400
+evidence term is typically
+intractable for computation. And
+
+00:20:14.580 --> 00:20:17.430
+there'll be other many different
+kinds of methods developed for
+
+00:20:17.430 --> 00:20:20.310
+solving Bayesian inference
+problem, including the Laplace
+
+00:20:20.310 --> 00:20:22.980
+approximation, which is
+essentially, you build their
+
+00:20:23.160 --> 00:20:27.540
+Gaussian approximation of a
+posterior at the map point. And
+
+00:20:28.650 --> 00:20:33.090
+there is a MCMC sampling
+techniques and also many of the
+
+00:20:33.090 --> 00:20:37.830
+variants floating, using, you
+know, they're derivative
+
+00:20:37.830 --> 00:20:41.490
+information using dimension
+reduction, and there is a sparse
+
+00:20:41.490 --> 00:20:44.910
+quadrature. So to compute this
+high dimensional integral, or
+
+00:20:45.090 --> 00:20:46.860
+some other high dimensional
+integral was back to the
+
+00:20:46.860 --> 00:20:51.690
+posterior, you can apply the
+quadrature best on sparse grid,
+
+00:20:52.230 --> 00:20:56.970
+and we will have some reason to
+work on that using Asian best
+
+00:20:57.000 --> 00:21:02.040
+sort of, like, rescaling of the
+dimensions and sparse
+
+00:21:02.040 --> 00:21:04.800
+quadrature. And then there's a
+whole class of different
+
+00:21:04.830 --> 00:21:07.260
+variational inference using
+different transport maps,
+
+00:21:07.560 --> 00:21:10.710
+including polynomials, radial
+basis functions on neural
+
+00:21:10.710 --> 00:21:16.920
+networks. So, here we focus on
+just to find that maximum a
+
+00:21:16.920 --> 00:21:20.940
+posterior point, which is used
+in the Laplace approximation. So
+
+00:21:20.940 --> 00:21:25.080
+assuming we have a Gaussian
+prior, where we have the means
+
+00:21:25.080 --> 00:21:30.030
+theta zero, and also the covers
+gamma prior. And so the map
+
+00:21:30.030 --> 00:21:32.520
+point is actually given by the
+solution of the optimization
+
+00:21:32.520 --> 00:21:36.030
+problem, where the first term is
+a data misfit, it's a mismatch
+
+00:21:36.060 --> 00:21:40.230
+between the data and also your
+from parameter to observable map
+
+00:21:40.260 --> 00:21:45.600
+weighted by the noise covers.
+So, see here, this is the data
+
+00:21:45.600 --> 00:21:49.170
+y, this is essentially the
+satellite observation of the
+
+00:21:49.260 --> 00:21:54.630
+flow velocity. And so, the
+second term is a you know, sort
+
+00:21:54.630 --> 00:21:57.870
+of like a regularization term or
+your prior knowledge, this is a
+
+00:21:57.870 --> 00:22:01.110
+difference between the cedar and
+mean weighted by the prior
+
+00:22:01.260 --> 00:22:05.700
+covers. And by solving this
+optimization problem, you get
+
+00:22:05.700 --> 00:22:08.910
+the midpoint maximum or
+posterior point. So, here you
+
+00:22:08.910 --> 00:22:12.420
+can see and this is a map point
+22 from this optimization
+
+00:22:12.420 --> 00:22:16.320
+problem, and then at this
+midpoint, you can evaluate your
+
+00:22:16.320 --> 00:22:21.120
+forward map from the CETA to f
+evaluated map point. And this is
+
+00:22:21.120 --> 00:22:24.960
+actually this is an evaluation
+it was just quite close to the
+
+00:22:24.960 --> 00:22:29.190
+data. But to solve this
+optimization problem, you need
+
+00:22:29.190 --> 00:22:33.450
+to either use a gradient best or
+Newton best methods, where you
+
+00:22:33.450 --> 00:22:38.100
+know this Cobian of the forward
+map is involved or the Hessian
+
+00:22:38.160 --> 00:22:42.540
+is involved if you use a Newton
+Ambassador method. And then to
+
+00:22:42.570 --> 00:22:46.230
+Well, in order to construct the
+surrogate for this from
+
+00:22:46.230 --> 00:22:50.580
+parameter to observable map, our
+new operator on neural networks
+
+00:22:50.760 --> 00:22:54.330
+that should be accurate not only
+for the map from the CETA to F,
+
+00:22:54.570 --> 00:22:58.080
+but also reliable for the
+Chekhovian from Sita to the
+
+00:22:58.080 --> 00:23:04.590
+Jacoby of f. So here's our
+derivative informed a neural
+
+00:23:04.590 --> 00:23:08.370
+operator, we have the same
+projected a neural network will
+
+00:23:08.370 --> 00:23:12.330
+have input a projection to the C
+to our as a projection of our
+
+00:23:12.330 --> 00:23:16.890
+Sita by this input a projection
+basis of SY. And our neural
+
+00:23:16.890 --> 00:23:20.820
+network is evaluated by you know
+this neural network mapping the
+
+00:23:20.820 --> 00:23:26.160
+button and also your times the
+spaces of the output basis. So
+
+00:23:26.160 --> 00:23:30.240
+now, to train this neural
+network, we actually include
+
+00:23:30.270 --> 00:23:32.940
+another term, which is the
+Jacoby because we want to an
+
+00:23:32.940 --> 00:23:36.630
+accurate Jacobian in our
+approximation, so the last
+
+00:23:36.630 --> 00:23:39.780
+function essentially includes
+these two terms. One is the
+
+00:23:39.780 --> 00:23:44.310
+small neural network for the low
+dimensional input output here,
+
+00:23:44.460 --> 00:23:48.300
+and also their you know, the
+projected output. And then a
+
+00:23:48.300 --> 00:23:50.940
+second term is the Jacoby and
+this is Jacoby of the neural
+
+00:23:50.940 --> 00:23:54.300
+network respect to the input,
+which is the low dimensional
+
+00:23:54.300 --> 00:23:58.320
+input, right? And so you can
+compute the Jacobian and also
+
+00:23:58.320 --> 00:24:01.950
+projected from the left and
+right to the low dimensions. Now
+
+00:24:01.950 --> 00:24:04.650
+instead of like a million by
+million dimensions, you have
+
+00:24:04.740 --> 00:24:07.920
+let's say a 10 by 10 dimensions
+depending on your number of
+
+00:24:07.920 --> 00:24:12.450
+projection bases. So how does it
+perform? Let's see for
+
+00:24:12.450 --> 00:24:15.000
+particular inverse problem with
+the deceit flow, which is quite
+
+00:24:15.000 --> 00:24:18.840
+simple. We have observation
+points here and is our true
+
+00:24:18.840 --> 00:24:22.800
+state variable and follows
+elliptic problem, which is like
+
+00:24:22.800 --> 00:24:26.340
+normal diffusion problem with
+where the CETA is Gaussian
+
+00:24:26.340 --> 00:24:31.350
+disability to as a cover is
+given as this elliptic operator,
+
+00:24:31.440 --> 00:24:33.900
+the fraction of the alleged lip
+the operator, which is
+
+00:24:33.900 --> 00:24:36.930
+corresponding to the Martin
+covers, where I have a delta and
+
+00:24:36.930 --> 00:24:41.850
+the gamma those are positive
+parameters that can control the
+
+00:24:41.850 --> 00:24:45.390
+correlation and also variance of
+their random field and also we
+
+00:24:45.390 --> 00:24:52.620
+have a Laplace in term. So now
+to compute at the map point, but
+
+00:24:52.620 --> 00:24:57.450
+we can replace our forward map
+the F by our neural network
+
+00:24:57.450 --> 00:25:02.790
+approximation, right this is our
+approximation of the dyno. And
+
+00:25:03.030 --> 00:25:07.260
+so we can actually solve the
+optimization problem in low
+
+00:25:07.260 --> 00:25:10.110
+dimensions in their input
+projected a coefficient
+
+00:25:10.110 --> 00:25:13.920
+dimension coefficient space. For
+instance, here instead of the
+
+00:25:13.920 --> 00:25:17.400
+original high dimensions, it is
+simply in the CETA R, which is a
+
+00:25:17.400 --> 00:25:20.820
+projected dimension, let's say
+instead of millions, it is a 10.
+
+00:25:21.180 --> 00:25:24.990
+And it can solve this
+optimization problem in a low
+
+00:25:24.990 --> 00:25:30.270
+dimensional space. And you can
+replace the original forward map
+
+00:25:30.270 --> 00:25:35.550
+by their neural operator. So
+here are the results. Let's look
+
+00:25:35.550 --> 00:25:38.430
+at the writer first. So we have
+this array of different
+
+00:25:38.520 --> 00:25:41.370
+quantities that were
+approximated, including their
+
+00:25:41.400 --> 00:25:44.370
+forward and backward dissolve.
+And on the right is a without
+
+00:25:44.370 --> 00:25:46.650
+Jacobian training, there's
+simply like you're just training
+
+00:25:46.680 --> 00:25:50.160
+for the f itself without the
+Jacoby and it can see there is a
+
+00:25:50.160 --> 00:25:54.270
+decay of air it was increasing
+number of training samples, this
+
+00:25:54.270 --> 00:25:57.300
+is a relative error. And also
+you can observe the same for the
+
+00:25:57.330 --> 00:26:01.170
+reduced Jacobian. So here you
+can see we have the reduced the
+
+00:26:01.170 --> 00:26:03.210
+Jacoby and we want to
+approximate this reduced digit
+
+00:26:03.210 --> 00:26:07.590
+Cobian. And this is the decay of
+the reduced Jacobian in red. And
+
+00:26:07.590 --> 00:26:12.300
+then in a green there is the map
+point. So this is a map that we
+
+00:26:12.300 --> 00:26:14.880
+approximated by solving the
+optimization problem using the
+
+00:26:14.880 --> 00:26:18.810
+dyno or using their neural
+network without their Jacoby
+
+00:26:18.840 --> 00:26:22.770
+training. But on the left, we
+actually included the Giacomin
+
+00:26:22.770 --> 00:26:27.420
+training, we can observe not
+only the map of the SOF F here
+
+00:26:27.600 --> 00:26:30.840
+and also the reduce the Jacoby
+they're more accurate than if we
+
+00:26:30.840 --> 00:26:33.930
+do not include the Jacoby
+information. But more
+
+00:26:33.930 --> 00:26:37.260
+importantly for the map point,
+it is much more accurate than
+
+00:26:37.290 --> 00:26:43.800
+this map point about a one order
+of magnitude improvement. So,
+
+00:26:44.730 --> 00:26:48.120
+yeah, this is a you know, using
+their dyno to find it the map
+
+00:26:48.120 --> 00:26:51.720
+point and via the optimization
+and here. So, we have a mesh
+
+00:26:51.720 --> 00:26:57.060
+size of 64 by 64 and also tested
+428 by 128 you can observe
+
+00:26:57.060 --> 00:27:01.260
+similar behavior and the neural
+network size is the same because
+
+00:27:01.260 --> 00:27:06.840
+the projection dimension is the
+same again and all right. So,
+
+00:27:07.230 --> 00:27:11.310
+now, let me come to the third
+example which is the optimal
+
+00:27:11.310 --> 00:27:16.230
+experimental design problem. So
+here is in particular, for the
+
+00:27:16.230 --> 00:27:19.980
+optimal sensor placement, for
+instance, here for the placement
+
+00:27:19.980 --> 00:27:24.750
+of the tonometer on a
+strategically and the problem
+
+00:27:24.750 --> 00:27:28.410
+can be formulated as to place a
+certain number of sensors out of
+
+00:27:28.620 --> 00:27:31.530
+a deep candidate of sensor
+locations, you can have a like
+
+00:27:31.560 --> 00:27:34.950
+really large number of candidate
+a sensor locations and want to
+
+00:27:34.950 --> 00:27:38.700
+select only a small number are
+number out of it. So the
+
+00:27:38.730 --> 00:27:44.640
+observable map f is given by the
+Socata design matrix times the
+
+00:27:44.640 --> 00:27:48.240
+observation at all the candidate
+sensor locations. So design
+
+00:27:48.240 --> 00:27:53.250
+metric is solve is a matrix of r
+by D. And as you can see, here,
+
+00:27:53.280 --> 00:27:56.670
+we have a nine kind of that
+sensor locations, if we selected
+
+00:27:56.670 --> 00:28:00.090
+the first sensor, and the third
+place, where we have the first
+
+00:28:00.120 --> 00:28:05.040
+row at the third, third column
+is one. And you know if the
+
+00:28:05.040 --> 00:28:09.210
+second one second sensors pick
+it up to the fifth point, then
+
+00:28:09.210 --> 00:28:11.880
+the second row has a fifth
+column one or the others is
+
+00:28:11.880 --> 00:28:15.990
+zero. So essentially, this
+design metric is is a binary is,
+
+00:28:16.800 --> 00:28:20.850
+in fact a Boolean, and is text
+value of zero and one, the sum
+
+00:28:20.850 --> 00:28:25.500
+of all the rows is one and a sum
+of all the columns. Sorry, its
+
+00:28:25.500 --> 00:28:29.220
+sum of all the columns is one
+sum of other rows is a number
+
+00:28:29.220 --> 00:28:33.060
+between zero and one. In fact,
+it is either zero or one. So we
+
+00:28:33.060 --> 00:28:35.760
+need to solve our condition
+problem was back to this design
+
+00:28:35.760 --> 00:28:38.880
+matrix. And here's a one
+particular formulation which is
+
+00:28:38.880 --> 00:28:42.030
+the best under variance. So, the
+variance best optimal
+
+00:28:42.030 --> 00:28:45.270
+experimental design, where we
+have the optimality from the
+
+00:28:45.540 --> 00:28:49.470
+statistic community that a
+optimality or D optimality. The
+
+00:28:49.470 --> 00:28:53.700
+OPT a optimality is defined as
+the Tres of the posterior
+
+00:28:53.700 --> 00:28:57.120
+covers. And suppose you have a
+Laplace approximation, which is
+
+00:28:57.150 --> 00:29:00.180
+you know, the posterior
+covariance evaluated at a map
+
+00:29:00.180 --> 00:29:03.780
+point and you take the trace of
+it the trust essentially
+
+00:29:03.780 --> 00:29:04.380
+measures
+
+00:29:06.150 --> 00:29:09.720
+how uncertain it is how much
+uncertainty you have, you want
+
+00:29:09.720 --> 00:29:12.720
+to reduce this uncertainty by
+design this video. So,
+
+00:29:12.720 --> 00:29:16.800
+essentially, you want to
+minimize respect this W. But
+
+00:29:16.800 --> 00:29:21.960
+this tres actually depends on
+you know, the realization of
+
+00:29:21.960 --> 00:29:25.620
+your data y and also your design
+and W so essentially boasts a
+
+00:29:25.620 --> 00:29:28.920
+map point and also the
+covariance will depend on this y
+
+00:29:28.920 --> 00:29:32.820
+and w. So Tech Tech, the average
+of respect to this wine and this
+
+00:29:32.820 --> 00:29:38.130
+is theta and the D optimality is
+the determinant of this cover
+
+00:29:38.130 --> 00:29:42.810
+and since that of the Tres, now
+the posterior covers under the
+
+00:29:42.810 --> 00:29:46.380
+Gaussian assumption, it is given
+by this term, so you have the
+
+00:29:46.380 --> 00:29:49.860
+hessian of the misfit term, and
+you have a you know, the hessian
+
+00:29:49.860 --> 00:29:53.250
+of their prior regularization
+term, which is simply their
+
+00:29:53.580 --> 00:29:57.060
+covariance of the prior inverse,
+and this will be the Haitian
+
+00:29:57.060 --> 00:30:00.000
+term. So the Hessian term
+involves a second order
+
+00:30:00.000 --> 00:30:03.750
+derivative, you've actually
+approximated by gauss Newton
+
+00:30:03.750 --> 00:30:06.930
+Hatian. Here, you only care
+about it the first order
+
+00:30:06.930 --> 00:30:09.720
+sensitivity information, you
+have that your Kobe value added
+
+00:30:09.720 --> 00:30:13.170
+the map point and here is that
+you can transpose this is Jacoby
+
+00:30:13.200 --> 00:30:17.670
+and the noise covers. So
+essentially, you need to compute
+
+00:30:17.790 --> 00:30:22.110
+this map point, and also the
+stick Cobian. Repeatedly again,
+
+00:30:22.110 --> 00:30:27.360
+again, for a given data y and
+also the design W. Apparently,
+
+00:30:27.390 --> 00:30:30.960
+this is quite challenging for
+large scale, a PDE, constrained,
+
+00:30:31.050 --> 00:30:35.400
+optimal experimental design
+problem. And so here, more
+
+00:30:35.400 --> 00:30:38.760
+recently, we developed this new
+Socata to grip teaming formed
+
+00:30:38.790 --> 00:30:43.590
+Jacoby a new operator, where the
+reason is because our dyno is
+
+00:30:43.590 --> 00:30:47.910
+derivative informed the new
+operator can compute the map
+
+00:30:47.910 --> 00:30:51.270
+point and pretty well, as we
+showed before. But however, for
+
+00:30:51.270 --> 00:30:55.080
+the future Cobian, the
+approximation error is actually
+
+00:30:55.080 --> 00:30:58.950
+quite large, are reduced the
+Jacobian that we measured is
+
+00:30:58.950 --> 00:31:01.590
+relatively small, but for the
+computation of the food
+
+00:31:01.590 --> 00:31:05.100
+Jacobian, which is needed here,
+as approximation is actually
+
+00:31:05.130 --> 00:31:09.210
+quite bad. So we developed this
+Jacoby new operator, where we
+
+00:31:09.210 --> 00:31:12.750
+perform a kopien projection,
+first of all projected with
+
+00:31:12.750 --> 00:31:17.280
+Chekhovian projection onto the
+subspace formed by the active
+
+00:31:17.280 --> 00:31:20.790
+subspace. And then we have
+reduced that Jacobian. We
+
+00:31:20.790 --> 00:31:24.510
+vectorize it again, for many
+different snapshots at different
+
+00:31:24.510 --> 00:31:28.950
+locations, and we perform
+another SPD on it. So
+
+00:31:28.950 --> 00:31:33.030
+essentially another projection,
+and we can get a relatively
+
+00:31:33.030 --> 00:31:38.250
+small dimensional quantity. Now
+we'll compute a neural network
+
+00:31:38.280 --> 00:31:41.340
+to approximate that Jacobian.
+And then we can reconstruct it
+
+00:31:41.340 --> 00:31:45.900
+this Jacoby and for this one, we
+call this Jacoby newer or
+
+00:31:45.900 --> 00:31:51.420
+brighter. And in fact, you would
+wonder, you know, here you have
+
+00:31:51.420 --> 00:31:54.510
+a parameter that can project
+into different subsets right,
+
+00:31:54.690 --> 00:31:59.340
+either a PCA subspace, and also
+active subspace. And in fact,
+
+00:31:59.370 --> 00:32:03.360
+for the computation of the map
+point, and also their you know,
+
+00:32:03.360 --> 00:32:06.990
+that Jacobian, the trust and
+determinant, we need to use a
+
+00:32:06.990 --> 00:32:10.560
+different projection basis for
+the input. And here's evidence.
+
+00:32:11.160 --> 00:32:14.520
+So on the left, we'll come
+observe, you know, this is the
+
+00:32:14.520 --> 00:32:17.700
+reconstruction of the map point,
+you computed the map point, and
+
+00:32:17.730 --> 00:32:20.850
+you project this map point into
+different bases, either active
+
+00:32:20.850 --> 00:32:25.320
+subspace or their PCs app space,
+as you can observe here, if you
+
+00:32:25.320 --> 00:32:28.350
+project it down to the PCs,
+opsbase was increasing number of
+
+00:32:28.350 --> 00:32:31.350
+bases, you get a smaller and
+smaller error. But if we project
+
+00:32:31.350 --> 00:32:34.860
+onto their active subspace,
+they're still remains quite
+
+00:32:34.860 --> 00:32:39.480
+large. And while the reason is
+because the map point is
+
+00:32:39.480 --> 00:32:42.990
+actually is a font, not only
+with respect to the data, but
+
+00:32:42.990 --> 00:32:45.990
+also there is a regulated
+regularization term, there's a
+
+00:32:45.990 --> 00:32:49.890
+PCA base is actually the Eigen
+basis of the prior covariance.
+
+00:32:51.060 --> 00:32:53.610
+And for the Jacoby to solve, you
+need to project it down to the
+
+00:32:53.610 --> 00:32:58.080
+active sub space in order to get
+us more approximation error of
+
+00:32:58.080 --> 00:33:02.070
+the Jacoby or reconstruction
+error further Jacobian. And then
+
+00:33:02.070 --> 00:33:05.610
+because of this, Jacoby depends
+sensitively on the first order
+
+00:33:05.610 --> 00:33:11.220
+information, right. Okay, so we
+apply to this, Jacoby Nia or
+
+00:33:11.220 --> 00:33:15.780
+predator for the evaluation of
+the address and also determining
+
+00:33:15.810 --> 00:33:18.840
+on the left it is a tres, we
+have a defined element of trust
+
+00:33:18.840 --> 00:33:22.290
+estimation. Essentially, we
+don't use a surrogate here, we
+
+00:33:22.290 --> 00:33:24.780
+take it as the truth. And we
+have a neural network of trust
+
+00:33:24.780 --> 00:33:29.490
+estimation, and it can see it is
+very highly correlated. And we
+
+00:33:29.490 --> 00:33:32.910
+have error, the mean of the
+error is about less than 1%
+
+00:33:32.940 --> 00:33:36.330
+standard deviations of 1.2%. And
+for the approximation of the
+
+00:33:36.330 --> 00:33:40.530
+determinant is about a 2.2.
+Point is for 3%. Also as a
+
+00:33:40.530 --> 00:33:44.220
+standard deviation 2.55%.
+Essentially, they're very highly
+
+00:33:44.220 --> 00:33:47.790
+correlated. So you can trust
+your new operator to select your
+
+00:33:47.790 --> 00:33:53.100
+sensors. Okay, now, let me come
+to the last one of a stochastic
+
+00:33:53.130 --> 00:33:58.650
+optimization problem. And so, as
+I mentioned before, this
+
+00:33:58.680 --> 00:34:01.860
+stochastic optimization problem
+can be formulated as you want to
+
+00:34:01.860 --> 00:34:06.660
+minimize a certain control or
+design Z in a certain admissible
+
+00:34:06.660 --> 00:34:10.860
+set. And you have sort of like a
+risk measure or statistical
+
+00:34:10.860 --> 00:34:14.220
+measure of your objective
+function q. And then they have a
+
+00:34:14.220 --> 00:34:19.500
+certain penalization term. Here
+we consider a special risk
+
+00:34:19.500 --> 00:34:23.610
+measure, which is the so called
+conditional value at risk. So,
+
+00:34:23.610 --> 00:34:27.090
+let me give you an example here.
+Here's a density of your queue.
+
+00:34:27.360 --> 00:34:32.310
+It is a one dimensional queue.
+And so here's the value at risk
+
+00:34:32.730 --> 00:34:37.110
+for given parameter beta. The
+beta is sort of sort of like the
+
+00:34:37.140 --> 00:34:41.730
+you know, better quintile, here
+is the the probability. This
+
+00:34:41.760 --> 00:34:45.120
+error is the probability and
+this one is the quintile, which
+
+00:34:45.120 --> 00:34:48.300
+we'll call this value at risk,
+the conditional Value at Risk
+
+00:34:48.300 --> 00:34:53.130
+essentially, the average or the
+anywhere offer this quantity of
+
+00:34:53.130 --> 00:34:56.430
+interest by the quantity of
+interest larger than this
+
+00:34:56.490 --> 00:35:00.930
+quintile. So essentially you
+take the average of This curious
+
+00:35:00.930 --> 00:35:05.880
+back to the probability density
+here. So, the conditional Value
+
+00:35:05.880 --> 00:35:10.980
+at Risk provides a more
+conservative risk measure. And
+
+00:35:11.790 --> 00:35:16.110
+in fact, it is often used in you
+know, their financial
+
+00:35:16.110 --> 00:35:19.740
+engineering risk management is
+also called expected shortfall
+
+00:35:19.830 --> 00:35:22.950
+the loss it varies between four
+different better if a better
+
+00:35:22.950 --> 00:35:29.040
+equals to zero then essentially
+you can use the risk neutral
+
+00:35:29.370 --> 00:35:33.240
+approximation risk unusual
+minimization and if a better
+
+00:35:33.270 --> 00:35:36.720
+because the one essentially care
+about their extreme case, which
+
+00:35:36.720 --> 00:35:40.950
+is worst case scenario
+optimization and this is C var
+
+00:35:41.460 --> 00:35:46.440
+can be reformulated as you know
+the minimization problem, I was
+
+00:35:46.440 --> 00:35:49.920
+back to a certain real number t
+and then you have here as q
+
+00:35:49.920 --> 00:35:53.880
+minus t, you take the positive
+part of the thresholded for the
+
+00:35:53.880 --> 00:35:57.120
+positive part. And since this is
+that stretch holding is non
+
+00:35:57.120 --> 00:36:02.430
+continuous is non
+differentiable. So, we're sorry
+
+00:36:02.430 --> 00:36:06.060
+it's not there's no Smos if we
+want to apply any less a
+
+00:36:06.060 --> 00:36:09.930
+gradient or hessian best
+optimization method we want to
+
+00:36:09.930 --> 00:36:13.620
+do some a smooth approximation
+as exploit in this resin paper
+
+00:36:15.840 --> 00:36:19.950
+Okay, so, for this oh yo yo
+problem according to like
+
+00:36:20.010 --> 00:36:24.150
+optimization under uncertainty
+oh you you problem will develop
+
+00:36:24.150 --> 00:36:27.570
+this so called multi input
+reduce basis derivative, we
+
+00:36:27.570 --> 00:36:30.780
+found it in your operator. So,
+the reduced reduced basis is
+
+00:36:30.780 --> 00:36:33.390
+quite clear, we use a reduced
+basis for input output
+
+00:36:33.390 --> 00:36:37.140
+projection, the bounded input is
+essentially you know, we have
+
+00:36:37.380 --> 00:36:41.070
+the input of the parameters
+theta and we do the projection
+
+00:36:41.070 --> 00:36:43.620
+of the parameter into low
+dimensions, we also have an
+
+00:36:43.650 --> 00:36:47.040
+optimization variable, so, we
+have multi input right. So,
+
+00:36:47.040 --> 00:36:50.310
+typically, here we can consider
+either high dimensional
+
+00:36:50.760 --> 00:36:53.670
+optimization variable or low
+dimensions. And in particular
+
+00:36:53.670 --> 00:36:56.790
+for this work we consider
+parametric optimization
+
+00:36:56.790 --> 00:36:59.910
+variables instead of function
+valued optimization variables.
+
+00:37:00.210 --> 00:37:04.950
+So, it becomes a relatively
+moderated dimensions. And so,
+
+00:37:04.950 --> 00:37:08.220
+now, we use the same pod
+projection for the output will
+
+00:37:08.220 --> 00:37:12.900
+build a neural network in
+between and then we also train
+
+00:37:12.930 --> 00:37:16.500
+our neural network by including
+the Jacoby Ian was back to the
+
+00:37:16.500 --> 00:37:19.380
+optimization variable instead of
+respect to the parameter now,
+
+00:37:19.950 --> 00:37:22.710
+because we need to solve the
+optimization with respect to the
+
+00:37:22.710 --> 00:37:29.220
+optimization variable and the
+Alright, so, now, our data
+
+00:37:29.220 --> 00:37:33.480
+generation and training are both
+scalable in the sense in our
+
+00:37:33.480 --> 00:37:36.540
+loss function as I briefly
+mentioned before we project
+
+00:37:36.540 --> 00:37:39.870
+everything down into the low
+dimensional subspace including
+
+00:37:39.870 --> 00:37:45.450
+their function itself and also
+digit Cobian. And, so, now, the
+
+00:37:45.450 --> 00:37:48.540
+quantity here in the last
+function is actually quite as
+
+00:37:48.540 --> 00:37:52.200
+more dimensional, but, one
+particular point is you have to
+
+00:37:52.200 --> 00:37:55.260
+compute this to Cobian right
+that you Copening of us back to
+
+00:37:55.260 --> 00:37:58.230
+Z, you have to generate the
+data, we would have wonder,
+
+00:37:58.410 --> 00:38:02.730
+could it be quite expensive and
+but, in fact, it is not we can
+
+00:38:02.730 --> 00:38:05.910
+solve it very efficiently by
+exploiting that joint invest
+
+00:38:05.910 --> 00:38:08.340
+measured. So, essentially here
+that you're coping data
+
+00:38:08.340 --> 00:38:12.900
+generation tax only this number
+of additional linearized a PDE
+
+00:38:12.900 --> 00:38:17.040
+solve and this number, you know,
+the projected a dimension for
+
+00:38:17.040 --> 00:38:21.240
+the output and also the
+dimension for z. And, so, this
+
+00:38:21.240 --> 00:38:25.680
+Jacoby and projected into their
+output dimension is given by
+
+00:38:25.680 --> 00:38:29.280
+this one by chain row of tech
+that Jacobian and you would have
+
+00:38:29.910 --> 00:38:34.230
+you know, this Jacobian of the
+predicate PD operator respect
+
+00:38:34.230 --> 00:38:36.930
+the state variable and this is
+actually Cobian was back to z.
+
+00:38:37.560 --> 00:38:41.940
+So, for this problem essentially
+have to solve because this is
+
+00:38:42.000 --> 00:38:45.390
+this becomes a linearized the
+PDE operator at a given you
+
+00:38:45.720 --> 00:38:50.400
+know, even if it is the PDF
+itself it is nonlinear. So, you
+
+00:38:50.400 --> 00:38:54.300
+can solve this sort of like
+linearize the PDE operator
+
+00:38:54.930 --> 00:38:59.580
+depending on their size of ru
+and a dz you can solve either
+
+00:38:59.940 --> 00:39:03.420
+here as a sort of like a
+linearized forward problem or
+
+00:39:03.420 --> 00:39:05.280
+linearized a joint problem
+
+00:39:06.599 --> 00:39:10.919
+and then again, so, you have to
+solve it for you know, perhaps
+
+00:39:10.949 --> 00:39:13.529
+like a talent or 100 times
+depending on this dimension
+
+00:39:13.529 --> 00:39:17.399
+right. But in fact, here, this
+is a SAM linearized operator,
+
+00:39:17.639 --> 00:39:20.999
+you can just factorize it once
+and reuse it as a director
+
+00:39:20.999 --> 00:39:24.689
+solver or preconditioner. So,
+here other two examples, let me
+
+00:39:24.959 --> 00:39:28.799
+let me focus on the 2d navier
+stokes equation to solve the
+
+00:39:28.829 --> 00:39:33.299
+standard PDE you have about 13
+seconds. But if a when are you
+
+00:39:33.299 --> 00:39:36.509
+factorization is only three
+second and after you factorize
+
+00:39:36.509 --> 00:39:42.239
+it a subsequent how you solve
+for this Jacoby generation TxA a
+
+00:39:42.239 --> 00:39:47.789
+small fraction of the time. So
+here's that cost accuracy
+
+00:39:47.789 --> 00:39:52.589
+comparison for the audio
+problem. And on the left, we
+
+00:39:52.589 --> 00:39:55.799
+counted there a computational
+cost in terms of how many PDE
+
+00:39:55.799 --> 00:40:00.089
+solves that we need. So we have
+either the new operator as As a
+
+00:40:00.089 --> 00:40:03.839
+surrogate, or we can solve the
+PDE directly, right as a
+
+00:40:03.839 --> 00:40:09.149
+reference. So in offline, we can
+generate the data, the solution
+
+00:40:09.149 --> 00:40:11.669
+that you're hoping for the new
+operator by solving a certain
+
+00:40:11.669 --> 00:40:15.299
+number of PDs. And in offline,
+we don't have to solve an MPD.
+
+00:40:15.299 --> 00:40:19.229
+If we use a PDE, best that oh,
+you measured, and in the online,
+
+00:40:19.319 --> 00:40:21.959
+we don't have to solve any PD
+for the new operator as a
+
+00:40:21.959 --> 00:40:26.489
+surrogate. And above for the PD,
+the CAS, we need to use some
+
+00:40:26.489 --> 00:40:30.239
+sample average approximation to
+compute is there a risk measure
+
+00:40:30.269 --> 00:40:33.269
+or the C bar for instance, and
+then we need to solve a lot of a
+
+00:40:33.269 --> 00:40:37.949
+PDE is each of the optimization
+step. And for the accuracy, it's
+
+00:40:37.949 --> 00:40:42.419
+essentially an approximation of
+the CVR. There is a apparently
+
+00:40:42.419 --> 00:40:45.749
+bias from this surrogate right
+but the variance can be very
+
+00:40:45.749 --> 00:40:50.009
+small, because you can afford to
+use a lot of samples to evaluate
+
+00:40:50.009 --> 00:40:54.449
+this a C bar, but for the PD
+UCAS there is no bias, but there
+
+00:40:54.449 --> 00:40:58.199
+is a sampling error, you can
+only afford it to solve so many
+
+00:40:58.199 --> 00:41:01.829
+PDE is to evaluate the C bar. So
+there is a stuff like this bias
+
+00:41:01.829 --> 00:41:06.239
+and variance tradeoff. So here
+for solving this or your your
+
+00:41:06.239 --> 00:41:10.199
+problem, we can use either, you
+know the surrogate, the new
+
+00:41:10.199 --> 00:41:14.489
+operator or the PDE. And we can
+measure the total cost divide
+
+00:41:14.489 --> 00:41:18.179
+the number of us that a PDE
+solves, and the standard PDE
+
+00:41:18.179 --> 00:41:21.719
+solves, I use the for you know
+the training data generation for
+
+00:41:21.719 --> 00:41:25.199
+the new operator. And also, you
+have to solve it if you use a
+
+00:41:25.199 --> 00:41:29.339
+PDE best optimization. And then
+we can solve the problem, we can
+
+00:41:29.339 --> 00:41:32.339
+compute a some reference
+solution or reference to choose
+
+00:41:32.339 --> 00:41:35.999
+a solution, which is a solve all
+the PDE best optimization
+
+00:41:36.119 --> 00:41:39.059
+problem with a sample size in
+the sample average
+
+00:41:39.059 --> 00:41:45.209
+approximation, pretty high 4000.
+And then now we can compare the
+
+00:41:45.209 --> 00:41:48.209
+C var essentially at optimal
+controls. And you can measure
+
+00:41:48.209 --> 00:41:51.869
+the relative error against the
+reference, this is what we're
+
+00:41:51.869 --> 00:41:58.019
+going to do to measure the cost
+and accuracy trade off. Here's
+
+00:41:58.019 --> 00:42:01.289
+an example which is a flow
+control or around a bluff body
+
+00:42:01.649 --> 00:42:06.209
+we have a uncertain input
+velocity field, it is a Gaussian
+
+00:42:06.209 --> 00:42:11.609
+random field, we assume that is
+only in one direction in their x
+
+00:42:11.609 --> 00:42:15.809
+direction and as a customer and
+a few it is Martin covers, and
+
+00:42:16.109 --> 00:42:18.959
+we have control variable along
+this two body which are
+
+00:42:18.959 --> 00:42:23.849
+parametrized by B splines, this
+phi of z is a control variable
+
+00:42:24.329 --> 00:42:28.409
+and the z z is a parametric
+control variable. Now I have to
+
+00:42:28.409 --> 00:42:31.439
+define the objective function
+when is the viscous dissipation
+
+00:42:31.499 --> 00:42:36.389
+objective function which is, you
+know, the sort of like a
+
+00:42:36.389 --> 00:42:40.349
+symmetric version is the tensive
+productive take the integral of
+
+00:42:40.349 --> 00:42:44.849
+it. And another tracking type of
+objective function, you want to
+
+00:42:44.849 --> 00:42:48.479
+minimize the difference between
+the u velocity and also target
+
+00:42:48.479 --> 00:42:52.019
+velocity, we have a pin
+elevation on the velocity on the
+
+00:42:52.019 --> 00:42:57.119
+control velocity here with the
+penalization parameter alpha. So
+
+00:42:57.119 --> 00:43:01.649
+here's our discretization, we
+use a non uniform mesh, and we
+
+00:43:01.649 --> 00:43:05.339
+just tell her how to find the
+element. We use alert and Lisa
+
+00:43:05.339 --> 00:43:09.089
+square stabilization for to
+stabilize the problem. And it
+
+00:43:09.089 --> 00:43:11.639
+was weakly imposed boundary
+condition for the duration that
+
+00:43:11.639 --> 00:43:14.759
+boundary condition and it also
+reduce the viscosity and
+
+00:43:14.759 --> 00:43:17.849
+continuation to solve the
+problem. So here's a full
+
+00:43:17.849 --> 00:43:20.699
+dimension of the static
+variables are 42,000 and they
+
+00:43:20.699 --> 00:43:23.939
+reduce the dimension is about
+200 and the parameter along the
+
+00:43:23.939 --> 00:43:27.179
+boundaries, right it's more it's
+about one unit one and it was
+
+00:43:27.179 --> 00:43:30.869
+due to their you know projection
+to this 100 and a control is
+
+00:43:30.869 --> 00:43:34.409
+that 18 dimensional is
+parametric. So, now, the full
+
+00:43:34.439 --> 00:43:37.199
+neural network architecture is
+actually quite a small the
+
+00:43:37.199 --> 00:43:41.669
+combined input is 118 dimension,
+the output is 200 dimension we
+
+00:43:41.669 --> 00:43:46.859
+use hidden layer, the dimension
+is that 402 hidden layers. And
+
+00:43:46.859 --> 00:43:49.979
+here's the result, we have
+minimize that viscous
+
+00:43:50.069 --> 00:43:53.069
+dissipation without a control
+here. And you can see there
+
+00:43:53.129 --> 00:43:55.739
+viscous dissipation is
+effectively minimize that by
+
+00:43:55.739 --> 00:44:00.299
+solving this problem. Well,
+let's take a look at it there,
+
+00:44:00.329 --> 00:44:05.159
+you know, the cost, accuracy,
+comparison or trade off. So here
+
+00:44:05.189 --> 00:44:09.539
+we present three different
+solvers. One is the PDE solver
+
+00:44:09.569 --> 00:44:13.319
+in black, we don't use any
+surrogate, but we use like a
+
+00:44:13.319 --> 00:44:16.469
+certain number of sample average
+approximation samples in order
+
+00:44:16.469 --> 00:44:20.099
+to compute their C bar and this
+is an increasing number of
+
+00:44:20.129 --> 00:44:24.539
+samples to compute the C bar and
+this is a total number of PD
+
+00:44:24.629 --> 00:44:29.699
+soft along other optimization
+steps and this is the relative
+
+00:44:29.729 --> 00:44:34.499
+optimal cost error we can see
+with increasing number of sample
+
+00:44:34.499 --> 00:44:39.899
+average approximation samples.
+You can have a smaller error
+
+00:44:39.959 --> 00:44:44.249
+error further optimal cost. And
+then here we have another two
+
+00:44:44.309 --> 00:44:47.729
+different surrogate Why is it
+without the Jacoby trainee and
+
+00:44:47.729 --> 00:44:50.999
+when is the wizard your coping
+training? So here this number is
+
+00:44:50.999 --> 00:44:53.699
+indicated there number of
+training samples, for instance,
+
+00:44:53.699 --> 00:44:58.739
+here we just 256 training
+samples we can achieve about at
+
+00:44:58.739 --> 00:45:06.899
+this error that is a comparable
+to hear the PD solve using this
+
+00:45:06.899 --> 00:45:10.439
+number of PD solves. So
+essentially there is about one
+
+00:45:10.439 --> 00:45:14.099
+order of magnitude reduction of
+total number of PD SOPs,
+
+00:45:14.249 --> 00:45:18.899
+including other offline data
+generation for the surrogate
+
+00:45:18.899 --> 00:45:23.069
+models, and apparently this
+Chekhovian 20. This dyno is much
+
+00:45:23.069 --> 00:45:28.499
+better than their neuro operator
+without your COVID. And here's a
+
+00:45:28.529 --> 00:45:31.649
+viscous dissipation. And here's
+a tracking type for the tracking
+
+00:45:31.649 --> 00:45:35.969
+type, as even more evident is
+essentially was about 256
+
+00:45:35.969 --> 00:45:39.209
+training samples that are
+achieved at the error that
+
+00:45:39.209 --> 00:45:43.799
+cannot be achieved by the PDE
+solve even up to this number of
+
+00:45:43.979 --> 00:45:47.009
+total PDE solve about a two
+orders of magnitude more PD
+
+00:45:47.009 --> 00:45:50.519
+solvers, you can still can
+achieve the same accuracy. So
+
+00:45:50.519 --> 00:45:55.169
+essentially, our Mr. Dyno
+achieves about like about 100 or
+
+00:45:55.169 --> 00:46:00.779
+100 to attend to 100 more sample
+efficiency compared to if just
+
+00:46:00.779 --> 00:46:04.589
+to solve the PDS. Alright, so
+here's an interesting
+
+00:46:04.589 --> 00:46:09.839
+comparison. So here on the left,
+which is compare the accuracy
+
+00:46:09.839 --> 00:46:12.989
+for their solution in our to
+error, right. So with the
+
+00:46:13.589 --> 00:46:18.179
+wizard, your coding training,
+about 256 samples we about we
+
+00:46:18.179 --> 00:46:22.709
+arrived at about 200 or 2% of
+error, which is larger than if
+
+00:46:22.709 --> 00:46:26.639
+you're not used to coding
+training. And but I've ever
+
+00:46:26.669 --> 00:46:30.179
+further Oh, you your problem, if
+you measure the optimal cost,
+
+00:46:30.479 --> 00:46:34.289
+and is actually smaller than if
+we do not use your coping
+
+00:46:34.289 --> 00:46:38.039
+trainee. So essentially, this
+Jacobian trainee, and does not
+
+00:46:38.069 --> 00:46:41.069
+only help to improve accuracy
+for the solution, but more
+
+00:46:41.069 --> 00:46:46.019
+importantly, it increased their
+accuracy for the Ojo solution.
+
+00:46:47.249 --> 00:46:52.619
+Alright, so here's a few other
+computational costs. So for the
+
+00:46:52.619 --> 00:46:55.829
+2d in every stocks equation,
+after you construct the one
+
+00:46:55.829 --> 00:46:59.729
+valuation textbook this second,
+and you can actually evaluate it
+
+00:46:59.729 --> 00:47:05.399
+and batch wise as we did. So
+about 2000, Assam posts, you can
+
+00:47:05.399 --> 00:47:11.339
+evaluate them together, it only
+takes about 0.3 seconds. And so
+
+00:47:11.339 --> 00:47:16.949
+essentially there is a
+acceleration about 100,000 times
+
+00:47:16.979 --> 00:47:21.989
+compared to the PDS off. And so
+here's the total cost breakdown
+
+00:47:21.989 --> 00:47:25.979
+of the total cost. Let's look
+again, for the Navier stocks, if
+
+00:47:25.979 --> 00:47:29.399
+you just generated the data of
+the solution without Jacobian
+
+00:47:29.849 --> 00:47:35.999
+This is the time about a 13,000
+seconds to generate the data. If
+
+00:47:35.999 --> 00:47:39.839
+you include that Jakab in data
+generation, it's only an
+
+00:47:39.869 --> 00:47:45.059
+incremental cost is about 25%
+more cost 16,000. So
+
+00:47:45.059 --> 00:47:47.429
+essentially, all the costs are
+actually spent on the data
+
+00:47:47.429 --> 00:47:51.089
+generation, the pre processing
+for you know the projection and
+
+00:47:51.089 --> 00:47:55.289
+also on the neural network a
+trainee actually very cheap
+
+00:47:55.289 --> 00:47:57.719
+because we do everything in the
+reduced the space.
+
+00:47:59.820 --> 00:48:03.480
+Alright, so here's the test Task
+Force 3d never stops the flow
+
+00:48:03.480 --> 00:48:08.130
+control problem. Again, we have
+this a similar setup, but it's
+
+00:48:08.130 --> 00:48:10.950
+in 3d. Now, the steady
+dimensions were merely the
+
+00:48:10.950 --> 00:48:14.040
+reduced the dimension was two
+years 200 And the parameter
+
+00:48:14.100 --> 00:48:18.030
+along the boundary now is two
+diecast is a 4000 and it reduced
+
+00:48:18.030 --> 00:48:21.030
+dimensions 100 Again, the
+control and dimension is about
+
+00:48:21.030 --> 00:48:26.070
+50. So, each of the forward to
+solve for this nonlinear 3d
+
+00:48:26.070 --> 00:48:30.360
+navier stokes equation, it takes
+about 30 minutes using 48 CPU
+
+00:48:30.360 --> 00:48:35.970
+cores. And we generate about 448
+samples for the training and
+
+00:48:35.970 --> 00:48:39.840
+after the training we can ship
+about 1.5% of the error for the
+
+00:48:39.840 --> 00:48:43.110
+approximation of the solution.
+And then each of the neural
+
+00:48:43.110 --> 00:48:47.250
+network evaluation is about like
+10 million times faster than the
+
+00:48:47.250 --> 00:48:52.230
+PD solve. And more importantly,
+we can solve the ODU problem
+
+00:48:52.290 --> 00:48:55.980
+optimal control problem subject
+to this uncertainty very
+
+00:48:56.010 --> 00:48:59.460
+efficiently. And here we have an
+uncontrolled cast for the
+
+00:48:59.520 --> 00:49:03.360
+viscous dissipation and here
+after their optimization, you
+
+00:49:03.360 --> 00:49:07.500
+have reduced the viscous
+dissipation and we solve this
+
+00:49:07.500 --> 00:49:11.340
+problem after the construction
+of a new operator we solve this
+
+00:49:11.340 --> 00:49:15.210
+whole problem under one minute
+and if you think about it, the
+
+00:49:15.210 --> 00:49:21.540
+one PD is already tech 32nd 30
+minutes and this is a very
+
+00:49:21.540 --> 00:49:27.150
+efficient Okay, let me come to
+my conclusion. So we developed
+
+00:49:27.150 --> 00:49:31.500
+this derivative we formed a new
+operators and all several of us
+
+00:49:31.500 --> 00:49:35.280
+different variants. And as sort
+of like the merit of the
+
+00:49:35.280 --> 00:49:38.730
+accurate approximation for their
+input to output a map right the
+
+00:49:38.730 --> 00:49:43.770
+map offers a solution solve that
+map of their from the parameter
+
+00:49:44.070 --> 00:49:48.330
+observation optimization
+variable to their objective
+
+00:49:48.330 --> 00:49:52.800
+function to the observables. So
+by using the dyno, this
+
+00:49:52.800 --> 00:49:55.710
+approximation becomes more
+accurate compared to without
+
+00:49:55.710 --> 00:50:00.000
+using that Jacobian training and
+more importantly, for the JUCO
+
+00:50:00.000 --> 00:50:02.760
+When the salt becomes very
+useful in the optimization
+
+00:50:02.760 --> 00:50:05.970
+problem and becomes more
+accurate, and we use the reduced
+
+00:50:05.970 --> 00:50:09.660
+basis architectures, and then we
+make the trainee in their
+
+00:50:09.660 --> 00:50:13.950
+reduced space, so on this
+training becomes scalable, as
+
+00:50:13.950 --> 00:50:16.260
+independent of the nominal
+dimension of the input and
+
+00:50:16.260 --> 00:50:20.910
+output space. And only. And
+also, we showed that, for this
+
+00:50:20.910 --> 00:50:24.930
+dyno, it only requires a small
+number for training data for our
+
+00:50:24.930 --> 00:50:30.570
+test cases, compared to without
+using that Jacobian. And, and
+
+00:50:30.570 --> 00:50:33.720
+also, it is very powerful for
+all these different optimization
+
+00:50:34.230 --> 00:50:36.570
+problems, including, you know,
+finding the map point and the
+
+00:50:36.570 --> 00:50:40.080
+inference, optimal experimental
+design, and optimal control
+
+00:50:40.080 --> 00:50:45.900
+problems on uncertainty. So,
+this work is sponsored by NSF,
+
+00:50:45.930 --> 00:50:50.550
+DOE and DOD, you can find, you
+know, pretty much the results in
+
+00:50:50.550 --> 00:50:55.050
+this slides, and this for
+different papers. Thank you very
+
+00:50:55.050 --> 00:50:56.190
+much for your attention.
+
+00:50:59.969 --> 00:51:04.349
+Thanks. Thank you for the
+wonderful talk Peng? Yeah, I
+
+00:51:04.349 --> 00:51:07.979
+find it very interesting. I
+think our audience do as well.
+
+00:51:08.309 --> 00:51:14.909
+So let's go to the q&amp;a section.
+Yeah, no, right now, we don't
+
+00:51:14.909 --> 00:51:18.959
+have any questions yet. If the
+audience have a question, please
+
+00:51:19.019 --> 00:51:24.029
+like use the raised hand or feel
+free to unmute yourself. By me,
+
+00:51:24.029 --> 00:51:28.949
+I can kick off with a question.
+So I, I myself find that they
+
+00:51:28.949 --> 00:51:32.609
+refuse training very, I mean,
+crucial and important question
+
+00:51:32.609 --> 00:51:35.819
+to think about in practical
+applications using all this
+
+00:51:35.819 --> 00:51:40.169
+nonlinear structures. And I'm
+curious about the details of the
+
+00:51:40.199 --> 00:51:44.789
+Jacobean compression using the
+basis that you show very, in the
+
+00:51:44.789 --> 00:51:50.129
+very beginning. So in my
+experience, this derivatives can
+
+00:51:50.129 --> 00:51:53.159
+be much harder to compress than
+the state variables. So that's
+
+00:51:53.159 --> 00:51:55.019
+it. Yeah. To your problems.
+
+00:51:56.520 --> 00:52:00.300
+Yeah, this is actually a quite a
+good point. Because typically,
+
+00:52:00.660 --> 00:52:05.880
+for the compression of, you
+know, this f this map itself, it
+
+00:52:05.880 --> 00:52:11.490
+is a much more, let's say, like,
+it's much easier than the
+
+00:52:11.490 --> 00:52:15.930
+compression of the Chekhovian.
+And in our tests that has, this
+
+00:52:15.930 --> 00:52:19.680
+decoding is also is quite hard
+to compress. That's why we apply
+
+00:52:19.890 --> 00:52:23.940
+this a two layer, sort of like a
+compression first, and we apply
+
+00:52:23.940 --> 00:52:28.710
+this input projection using this
+active subspace evidenced by
+
+00:52:28.710 --> 00:52:33.000
+here. And the active subspace is
+actually quite crucial. If not,
+
+00:52:33.330 --> 00:52:36.000
+then you'll see this
+reconstruction error is actually
+
+00:52:36.000 --> 00:52:39.480
+quite big if we just use a PCA.
+And the second day, we do
+
+00:52:39.510 --> 00:52:43.890
+another layer of compression by
+vectorize, that Jacoby matrix as
+
+00:52:43.890 --> 00:52:47.910
+a vector, and we perform another
+SVD on it. So this is a
+
+00:52:48.000 --> 00:52:51.750
+compression, like sort of like a
+two layer compression from very
+
+00:52:51.750 --> 00:52:56.670
+high dimensions as a matrix to
+small dimensional coefficient
+
+00:52:56.880 --> 00:52:57.480
+vector.
+
+00:52:58.739 --> 00:53:02.579
+I see Yeah, this sounds a very
+smart idea to like, circumvent
+
+00:53:02.609 --> 00:53:05.969
+those issues. Maybe I can take
+advantage of your smart idea.
+
+00:53:05.969 --> 00:53:09.149
+And next time when I have to,
+like do some compression to the
+
+00:53:09.149 --> 00:53:11.579
+derivatives. Yeah, sure. Talk
+
+00:53:11.579 --> 00:53:12.689
+more about it. Yeah.
+
+00:53:13.440 --> 00:53:17.700
+So John has a question. So he
+asked, When constructing a
+
+00:53:17.700 --> 00:53:20.820
+surrogate is to always sample
+the observation points
+
+00:53:20.850 --> 00:53:21.780
+uniformly?
+
+00:53:23.520 --> 00:53:28.650
+Yeah, that's another very good
+question. So in our projection,
+
+00:53:28.710 --> 00:53:32.190
+or construction, we actually we
+sample that pretty much all
+
+00:53:32.190 --> 00:53:38.100
+uniformly, we draw the samples
+from, let's say, here, here hear
+
+00:53:38.100 --> 00:53:40.320
+for the construction here, we
+draw the samples according to
+
+00:53:40.320 --> 00:53:43.260
+their distribution, let's say
+for the parameters, theta is
+
+00:53:43.470 --> 00:53:45.840
+Gaussian distributed, we draw
+samples from the Gaussian
+
+00:53:45.840 --> 00:53:49.770
+distribution. But this is not
+necessarily the most efficient
+
+00:53:49.800 --> 00:53:54.750
+sampling, for instance, in our
+last class of stochastic
+
+00:53:54.750 --> 00:53:59.520
+optimization, and if we want to
+sample more meaningful or
+
+00:53:59.520 --> 00:54:03.120
+helpful samples, for the C bar,
+right, we would draw samples
+
+00:54:03.120 --> 00:54:07.140
+from here instead of a lot of
+samples here. And but we haven't
+
+00:54:07.200 --> 00:54:08.790
+explored this idea yet.
+
+00:54:11.849 --> 00:54:17.429
+Okay, so thanks for your answer.
+So I don't see an error
+
+00:54:17.429 --> 00:54:22.859
+question. So maybe I can ask one
+more about the last very last
+
+00:54:22.889 --> 00:54:28.919
+application that you talked
+about the Yeah. The oh you like
+
+00:54:28.949 --> 00:54:33.569
+yeah, the authorization? And
+those are the I see, like, Yeah,
+
+00:54:33.569 --> 00:54:37.769
+this is a fantastic sample,
+like, I learned a lot, but, so
+
+00:54:37.799 --> 00:54:44.039
+the model problem here is still
+like, like a static I mean, time
+
+00:54:44.039 --> 00:54:49.019
+independent case. So do you see
+it like this? I mean, this
+
+00:54:49.019 --> 00:54:52.199
+approach can be extended to
+like, time dependent problems
+
+00:54:52.199 --> 00:54:54.059
+and what will be the difficulty
+is there.
+
+00:54:54.540 --> 00:54:57.750
+Yeah, this is excellent
+question. In fact, for this
+
+00:54:57.750 --> 00:55:01.200
+different cases that I showed,
+they're all All studies that
+
+00:55:01.650 --> 00:55:04.290
+depends on their, you know, NEAR
+operator approximation from
+
+00:55:04.290 --> 00:55:07.260
+their input function to output
+function. We're currently
+
+00:55:07.260 --> 00:55:12.030
+working on time dependent
+problems. Of course, there's a,
+
+00:55:12.480 --> 00:55:15.840
+first of all, our framework
+depends on the you know, reduced
+
+00:55:15.840 --> 00:55:18.990
+basis architecture, in time
+dependent problems, especially
+
+00:55:18.990 --> 00:55:21.630
+for like, for instance, wave
+propagation. This is an
+
+00:55:21.630 --> 00:55:25.830
+unnecessarily low dimensional,
+we can perform perhaps some
+
+00:55:25.830 --> 00:55:29.130
+other like encoder decoder with
+nonlinear dimension reduction.
+
+00:55:29.580 --> 00:55:33.210
+And secondarily, we need to
+adjust our new operator to also
+
+00:55:33.210 --> 00:55:36.900
+take into account that at that
+time input, for instance, there
+
+00:55:36.900 --> 00:55:41.580
+are a few different a purchase
+using like either a depot net,
+
+00:55:41.670 --> 00:55:46.050
+where you have to type in the
+trunk net, or like the newer PD
+
+00:55:46.080 --> 00:55:51.090
+or newer od type of approach.
+And there are also some other
+
+00:55:51.210 --> 00:55:53.070
+different approaches that we'll
+be exploring.
+
+00:55:54.510 --> 00:55:58.740
+I see Yeah, thanks for the
+answer. Like yeah, I find all
+
+00:55:58.740 --> 00:56:02.280
+the applications very
+interesting. And yeah, I think
+
+00:56:02.310 --> 00:56:06.990
+many audience in the lab will be
+interested in like knowing more
+
+00:56:06.990 --> 00:56:10.380
+about your work. So thanks for
+giving us the talk.
+

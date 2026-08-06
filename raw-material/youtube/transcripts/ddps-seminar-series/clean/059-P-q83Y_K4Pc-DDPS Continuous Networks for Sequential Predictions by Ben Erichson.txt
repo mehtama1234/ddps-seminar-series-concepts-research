@@ -1,0 +1,1646 @@
+all right welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rules and
+logistics first of all please mute
+yourself during the talk unless you have
+questions
+if you have questions you are welcome to
+unmute and ask otherwise please use chat
+room to post your questions so that we
+can address them in q and a session at
+the end
+second today's gdpr seminar is open to
+external audiences and therefore no
+classified discussion is allowed so
+please watch out finally the talk today
+will be recorded and uploaded in our
+youtube channel that's about it now let
+me introduce our speaker today
+it is an honor to host ben erickson who
+is an assistant professor for
+data-driven modeling and artificial
+intelligence in the department of
+mechanical engineering and material
+science at the university of pittsburgh
+before joining university of pittsburgh
+he was a postdoctoral researcher in the
+department of statistics at uc berkeley
+where he worked with michael mahoney
+he was also a postdoc at the department
+of applied mathematics at the university
+of washington
+um working with nathan cruz and stephen
+brunson he earned his phd in statistics
+at the university of saint andrews
+ben's work is broadly interested at the
+intersection of deep learning dynamical
+systems and robustness
+he is also interested in leveraging
+tools from randomized numerical linear
+algebra to build modern algorithms for
+data intensive applications such as
+fluid flows and climate science today
+then we'll talk about
+continuous networks for sequential uh
+predictions which is very interesting
+topics so please enjoy and expect a
+wonderful talk
+now without further ado let me pass the
+button to ben by asking one random
+question as usual
+this random question is i guess it's not
+random it's these days the same question
+okay what is your favorite things to do
+other than research
+oh okay
+i think i'm a passionate skier
+i do ski racing so
+yeah
+is there a city area in you know near
+the school well there is um i i actually
+been out this winter in some valley
+idaho because i
+i didn't have to teach but there's some
+some smaller ski resorts down here it's
+called seven springs
+i think which is about an hour south of
+pittsburgh well i i'm the beginner of
+the ski uh in the ski
+i guess i i better learn from yoga you
+and all right
+okay perfect thank you so much for for
+the introduction i'm very glad to be
+here
+and
+to talk a bit about my recent research
+on continuous networks for sequential
+predictions and that's a joint work with
+um
+liam
+alejandro sonju and omri and michael
+mahoney
+so let me start with giving you a little
+bit um
+a game plan for today's talks i start
+with a brief introduction and then i um
+kind of briefly talk about ode nets so
+just that we have all the same pickup
+point
+and then switch to
+kind of the discussion of continuous
+time recurrent neural networks in
+particular i will discuss three
+different formulations like lipsticks
+recurrent neural networks
+and then noisy iron ends and our latest
+work
+lengths long expressive memory
+i will not probably get to dynamic auto
+encoders um
+since since i just have roughly an hour
+um so yeah so the main talk will be will
+be focused or centered around for
+current neural networks
+um
+i assume you're all all very um aware of
+um what um sequence modeling involves
+right where we try to map an input
+sequence to a target sequence but there
+are many different variations to this
+problem
+so it's the simplest case we just want
+to have a single input which will map
+to a single
+target
+and then we have the other situation
+where we try to map a sequence to a
+single target
+or just a single input to a sequence or
+like i think the most challenging um
+problem set up is that we want to map a
+sequence to a sequence
+um
+in in general these problems can become
+very
+challenging if we deal with like
+[Music]
+data from
+some dynamic systems which feature
+rich multiscale and nonlinear temporal
+structure
+examples might be turbulent flows or
+some climate data
+but we have also this prediction if we
+have basically tried to analyze video
+streams which are recorded by a
+self-driving car
+there are many classical models for
+sequential predictions
+the simplest one are probably linear
+models or exponential smoothing a reamer
+these problems are
+very robust actually
+[Music]
+and by robust i mean they have low
+variations
+they don't give you a crazy
+a crazy prediction
+sorry for that
+[Music]
+and um but but the main challenge is
+that these problems do not really scale
+to high dimensional
+data so assume like you try to to model
+a fluid flow which has maybe
+which is typically very high dimensional
+or some climate data and they also
+obviously struggle with modeling very
+complex non-linear dynamics
+so neural networks
+are known for for
+known for being able to handle very high
+dimensional data so there's no surprise
+that there are many neural network based
+techniques for sequential
+predictions
+and
+one of the classic
+frame or architectures for this task our
+recurrent neural networks and um it's
+many variants like gated recurrent
+neural networks lstms and so on
+more recently there's a lot of interest
+in transformers
+which have like um basically shown great
+success for natural language processing
+but they are also now used in all kinds
+of uh related domains
+and there are also very interesting
+other techniques like cause a temporal
+convolutional networks
+but in this talk again i will mainly
+talk about uh recurrent neural networks
+um
+so one of the main issues of these
+i don't want to say traditional neural
+network techniques is um that they're
+quite often a little bit brittle and
+prone to fail um so they're not very
+robust and they give you very good point
+predictions but they can also
+failed dramatically and that's an issue
+if these models are used in
+mission-critical applications such as
+self-driving cars
+hey ben i'm sorry to interrupt but you
+know on the title area there's just some
+you know
+uh what is the firefox symbol and the
+video symbol is you can can you move
+that
+away um
+okay
+is it possible to move that
+if not don't worry about it i mean it's
+just
+um covering someone yeah i don't know
+what what do you see now i see the uh oh
+i see the yes i scream i i'm not uh sure
+oh yeah i see that's an issue um
+if you can move that's that that'll be a
+wonderful but if you cannot let's not
+worry about it like i'm not able to move
+it uh interesting
+sorry for that don't worry
+yeah okay um
+right above the title um
+[Music]
+okay so so one one idea to to tackle
+this problem is like to better
+understand like what is going on in in
+neural networks in
+these black box architectures and what
+you can do is like to break them into
+simpler building blocks that you then
+can study
+and i'm particularly interested in
+studying neural networks or simpler
+building blocks through the lens of
+dynamical systems
+so you
+you can view
+neural networks as a dynamical system
+and if you do that then you can actually
+port a lot of interesting theory
+from the dynamic assistance community
+over to um
+[Music]
+to machine learning to deep learning and
+try to understand better what is going
+on
+um so
+kind of this is slightly different than
+just applying machine learning to a
+dynamic assistant problem
+um
+[Music]
+and
+kind of what what are the connections at
+a high level for instance and i will
+talk a bit more about this later it's
+like there's like a rich connection
+between different network architecture
+textures and numerical methods and you
+can build a connection between
+different training schemes and stability
+and control theory
+so i will show a bit in this talk how
+how some of these ideas help us to
+better understand what is going on
+okay um let me talk a bit about ode nets
+um
+it keeps us really really brief um
+but
+just so that we are all on the same page
+i assume you're all
+familiar with
+[Music]
+an
+ode initial value problem
+but in in many situations
+we don't know the right hand side so
+we can't explicitly formulate um what f
+is so the best we can do is collect some
+observational data
+and then the idea of an ode net is to
+approximate the right hand side using a
+neural network
+given some data and
+you can here kind of plug in
+your favorite neural networks it can be
+a fully connected neural network or
+some convolutional neural network so
+depending on the problem whatever works
+best
+okay
+so what do we get from this formulation
+i mean first of all
+if i formulate it in continuous time i
+cannot train it
+because at the end if i want to train it
+i need some some just a discrete form uh
+so that i can build a computational
+graph
+um but like from theoretical point of
+view i can um
+kind of study some some of the behaviors
+of such a neural network which has been
+done recently very successfully
+and kind of this view is actually not
+new if you go back
+in time and look to early work by
+rosenblatt
+he formulated already
+networks
+neural networks in continuous time and
+then
+rico martinez has kind of
+proposed this formulation but it got
+really popularized just recently by
+by shen
+who got like a
+best nerfs
+paper award for his paper on neural
+odes
+okay so basically in order to train it
+we need to discretize the model and
+well we can
+just look into our textbooks
+on numerical analysis and pick some
+numerical integration scheme right so
+the simplest
+scheme we can pick would be an euler
+discretization and you see now
+immediately it's a resemblance to a rest
+net
+but we can also show some more
+interesting integration schemes like uh
+arca for classic
+and that would kind of if you look to
+the connection this would um looks very
+similar to a dense net
+um
+and
+kind of the difference is like that in a
+rest net we have to evaluate like our um
+neural network block only once where in
+an arc of four
+uh scheme we would not
+need like four evaluations so it's more
+computationally
+expensive to train
+a network with a scheme but i'll show
+you in a second that it in some
+situation has some advantages
+i do that i just want to make you aware
+that kind of this view is um
+at some point like we have to be a bit
+caution here right because numerical
+integration works in a different
+direction and
+learning the dynamics using a neural
+network so numerical integration
+typically we start with a known f
+and then we discretize it and then we
+generate some data
+what i'm proposing here with neural odes
+is we are given some data
+and then we minimize some loss function
+let's say like the mean squared error
+and we hope we get a good approximate
+obvious
+model r which is a good approximation
+for this unknown f
+um
+and that is what we see typically or
+quite often not the case in particular
+not if you use
+the forward euler integration okay
+here's a question i guess
+you can also train it with a joint
+sensitivity mess and it's like
+okay yeah that's that's a um it's a good
+good hint from uh robert
+um
+i haven't looked into into that um
+[Music]
+um into that but yeah very interesting
+so okay so robert
+commented that you can also train it
+with a add strong sensitivity methods
+like with
+c
+v o d es
+down here at lnl in the case you are
+still doing everything in the continuous
+method but you are only using the
+backdrop for the objective error at each
+integration point i i just read it
+for the folks who will watch this
+youtube video later for sure not have a
+access to the chat to kind of expand on
+that you can actually
+specify just a standard adjoint
+sensitivity optimization which is done
+with some software packages here but in
+that case um what you need to do is you
+have some goal function which is like
+the l2 norm of the error
+between
+like what you're outputting and what the
+training data is
+and then your
+all you need is the back propagation for
+your local neural network inside the i
+joint sensitivity to properly
+differentiate the goal of the l2 error
+at that integration point so you end up
+not needing to take a bunch of time
+steps you can use adaptive time stepping
+for the whole thing
+i see okay that's that's interesting so
+i i might ask you a follow-up question
+but let me go with a slide because sure
+um what what we saw it's like okay what
+surprised us a little bit um
+is um originally like a sec and what
+quite often um you read now in the
+literature is that a resnet is actually
+just a forward euler discretization but
+what we see in practice is that um
+kind of this forward or discretization
+of a network behaves different than what
+we would expect if it were an actual
+fault with a discretization so what do i
+mean by that so let's look like at a
+very simple um
+dynamical system just a non-linear
+pendulum
+and
+so we
+generate some ground truth data which is
+shown here in
+by these
+blue squares
+okay so if you use um the forward euler
+discretization and
+don't make the
+time step too small then we know a
+forward euler will diverge if we use a
+numerical integrator but what happens if
+we use the neural network
+discretized with forward euler it
+basically fits the data perfectly fine
+um similar with archer iv okay
+so it seems like um the forward oil
+discretization is learning
+through the integration integration
+scheme and
+provides us with good accurate point
+prediction
+but if
+like the function we have learned would
+were meaningful that means like during
+inference time we should be able to
+change like
+the delta t
+or delta t and kind of go be able to go
+smaller time steps
+and if we do this we see like this
+conversion plot on the right hand side
+and if you look to the red line here
+that's for the
+[Music]
+euler ode net we see like if we slightly
+change delta t during inference time
+then the error increases
+and that is not consistent with um with
+theory
+uh from numerical analysis where we
+would expect like for forward euler that
+the error is decreasing if we decrease
+delta t
+but if you train a neural network with
+archer 4
+then we see like that we have the right
+behavior that if we
+decrease delta t the error
+during inference time has also decreased
+so
+um it
+kind of
+matters how we discretize the neural
+network if we want for instance and use
+this model to interpolate points between
+two two points we have observed
+using just forward euler did not work we
+tried other time stepping methods and um
+on this problem he has a different
+schemes
+and they didn't they didn't do too well
+but it's a bit different a bit
+challenging to do this conversion
+analysis with those models
+but the point is we have to be very
+careful how we train a neural network if
+we want to use it for scientific
+applications
+particularly if you want to later
+interpolate data or extrapolate data and
+not just simply predict
+a single
+target given a single input
+and if you're more interested about this
+i don't want to draw too much on this
+topic
+but we have recently posted a paper on
+learning continuous models for
+continuous physics
+which exactly discusses this issue
+okay good
+so this was like just a brief overview
+of what i mean by um
+an ode net and um how i think about like
+a continuous time formulation of a
+neural network obviously there's a lot
+of exciting work going on so now i take
+this view and apply it to recurrent
+neural networks
+but if you have any questions i can
+pause for for a second
+do you do you have any challenge you
+know training the
+you know ode nets
+um
+so so it depends what what your task is
+so if again if i just want to get a good
+point prediction they're very easy to to
+train right this is a very simple
+networks i mean obviously it depends a
+bit on on the problem
+um you're looking at but um they're
+they're easy to train even i mean we
+just use backprop
+um
+see the the challenge is like to learn a
+meaningful approximation
+of
+the right-hand side of a differential
+equation right so but meaningful i i
+mean like that i'm able doing inference
+time to interpolate points in between
+data that i have observed that i can
+make delta t or my time step smaller or
+larger so that that is like
+indeed a bit tricky you have to be
+careful but using higher order
+integrator schemes help us to to learn a
+meaningful approximation for the
+continuous dynamics
+how about the large uh system of odes
+like you you have many many variables
+yep
+we have it works as well we have we have
+um applied it to to some um
+fluid flows um
+basically you can plug in like this
+framework or combine it with an auto
+encoder or an auto encoder um
+architecture
+um where you first learn an embedding
+and then basically learn the dynamics um
+in the middle to to evolve the system so
+um of course like it's a problem it gets
+gets larger i mean you you have you it
+is challenging but um
+we get good results yeah so it's pretty
+promising
+very good thank you ben okay
+perfect um okay let me switch to
+recurrent neural networks
+um they have somewhat a bad reputation
+for for some reason um
+mainly um i think there was like up to
+probably five six years it was somewhat
+challenging to to train the current
+neural networks
+because they have some stability issues
+um
+but
+i will show like that kind of this
+problem um
+can can can be solved
+and now i think modern modern recurrent
+network architectures um achieve
+state-of-the-art performance and quite
+often outperform lstms and in some cases
+even transformers if you have very
+[Music]
+uh basically very long um
+sequences you deal with because in in
+those situation a transformer is just
+not feasible
+um so just as a reminder
+what is a recurrent unit it's like a
+very simple architecture actually
+so we
+here's a difference to to a standard
+feed forward neural network is that we
+basically have some feedback connection
+or some form of a memory
+by learning a hidden state age
+and what we do at every
+update step or iteration in our model we
+we update h by using this update
+function on the right hand side
+where we basically have a w which is a
+hidden to hidden matrix
+and we have in addition like an input to
+hidden matrix which takes like the
+current input at time t
+and then you have a bias term
+and
+we just wrap around some non-linearity
+typically we use a ton h function here
+but there are some other versions of
+nonlinear functions that you can use as
+well
+depending on on the problem and you can
+expense this of course i mean instead of
+just having an input to hidden matrix
+you can put here some
+some
+encoder which is like nonlinear
+um
+but
+that is a simple basic recurrent unit
+which i don't know i think probably um
+it's like got popularized in in the late
+80s
+so it's around for a while
+okay but the problem is like just assume
+it we have like a linear
+discrete time dynamical systems and
+you're well aware right i mean that
+we we can have like an issue of um
+that that the dynamics either vanish or
+explode depending on the eigenvalues of
+this linear map
+um
+a and um
+in an opt or kind of at least for for
+learning the problem is like if or if
+the dynamics um
+um quickly converge
+then um we have um during trainings and
+this leads to a vanishing gradient
+problem on the other hand side if the
+dynamics
+um explode or sorry
+diverge then this leads to an exploding
+gradient problem during training so
+sometimes during training we would like
+a model
+which is on the edge of chaos that means
+like for a linear model we won't have
+eigenvalues on the unit circle
+okay but
+our
+current neural network is not linear
+it's non-linear so kind of the analysis
+is a bit a bit more challenging than
+just computing or looking at the
+eigenvalues
+of this model
+um i
+switch over this model so doing this
+analysis in discrete time can become um
+really challenging in particular if you
+consider an additional some gates or
+some more modern variants
+and it's actually much nicer if you um
+consider
+a continuous time formulation of a
+current network as i do here in equation
+four
+so a simple idea here is like if you
+formulate it in continuous time and you
+want to check
+whether
+your model is
+stable or or not or in whichever gene it
+is you can
+compute the jacobian
+and then
+you get some local analysis for for
+stability by checking the eigenvalues of
+the jacobian
+so one idea here which has been proposed
+like called the antisymmetric rn
+would be then from this analysis to
+consider an anti-symmetric matrix for w
+um which basically um leads to to a
+matrix that
+has only eigenvalues that are imaginary
+so you can show like this
+model
+[Music]
+neither has a diverging
+nor converging dynamics so it is on the
+edge of chaos
+and it does not has like these these
+issues of exploding or vanishing
+gradients
+uh in practice it turns out this is a
+little bit too restrictive
+um and also that provides the owner with
+a with a local analysis
+so what we tried to do in our lips
+recurrent neural networks is to come up
+with some global analysis
+and to do that we had to slightly change
+the architecture
+basically we introduce this additional
+linear term
+um in in front of the nonlinear term so
+we have like now um a unit which is um
+designed by like a linear component plus
+a literal sonarity
+and
+again we just assume here that
+this non-linearity or
+is like an m lipschitz function
+and if we if we do this then we can
+use some nice results
+from control theory
+to to study like
+basically the properties and show that
+this particular recurrent unit is
+globally exponentially stable under some
+mild condition on
+the
+hidden to hidden matrix a and w
+in in particular what we require is um
+that
+the eigenvalues of the symmetric part of
+a
+of a sum are strictly negative
+and that w is
+non-singular um and then we also need to
+ensure that the um
+the smallest
+singular value of asymmetric is larger
+than
+the
+largest singular value of w
+okay so if we can satisfy this condition
+then our current unit is globally
+exponentially stable
+so knowing this that helps us now to
+divide to define like some scheme to
+design
+a and w in a way so that we basically
+can
+satisfy
+these conditions
+and the idea is basically by using a
+symmetric skew decomposition for
+constructing these hidden matrices
+so we design like some matrix s or some
+weight matrix s
+as a convex combination of
+a symmetric matrix and an anti-symmetric
+matrix and in addition we have like this
+term gamma i which allows us to shift
+the eigenvalues
+to to the left
+and
+well it's not difficult to show that
+we can
+basically um
+also basically
+the eigenvalues of this matrix s
+lie in the following interval so what
+i'm saying here is we we can ensure by
+tuning beta and gamma
+so that the eigenvalues are
+strictly negative
+and we can also ensure that for instance
+like the smallest eigenvalue of a is
+smaller than the largest eigenvalue of w
+and i just want to just basically
+illustrate this quickly so here is like
+an arbitrary weight
+hidden to hidden matrix we said like
+beta 2.5 and gamma 0. so you see like
+this matrix um
+has eigenvalues
+that are
+like here positive eigenvalues so
+this matrix would like lead to
+exploding gradients
+but now if we crank up beta a little bit
+we squish like the eigenvalues towards
+the imaginary axis
+and then i can add like a little bit of
+gummer here
+and shift the eigenvalues so that all
+the eigenvalues are negative so in this
+case like the dynamics cannot
+diverge
+then
+like
+design and choose
+as ellipsis
+during training time
+um okay so here's putting everything
+together um basically we just plays like
+um a by our
+skew symmetric decomposition and w as
+well so the disadvantage is that you
+have like um addition two additional
+tuning or actually four additional
+tuning parameters but in practice we see
+like these
+choosing like these tuning parameters is
+um it's not very difficult so for all of
+our experiments we use basically the
+same tuning parameters
+so it works pretty pretty well out of
+the box
+for new problems
+okay and then
+again this was like a continuous time
+formulation which helped us to analyze
+uh what is going on motivate a new
+architecture
+bake in some structure into into our
+neural network and then in order to
+train it we we just pick some numerical
+scheme
+um
+for discretization and
+in our experiments we choose euler and
+aquaphor classic
+so let me show you some results that it
+actually works
+so i'm starting with a simple time
+series classification problem basically
+you have
+sequences or time series from which
+belong
+which program some belong to class are
+and some belong to class b
+and then the task is
+to
+basically classify a new time series
+during inference time
+um and so here why not using just a
+standard feed forward a neural network i
+mean the big advantage is with the
+recurrent neural networks you can deal
+with time series which which have
+different um
+or varying
+lengths
+um so that would be difficult to do with
+the with the feed forward neural network
+um
+okay so here are some some results to
+show that what we're doing works fine
+this is like on the pixel by pixel m
+nest
+um
+[Music]
+a
+benchmark problem
+um and there are two variations we kind
+of use the ordered sequence so basically
+what you you know you probably all know
+amnesty right so you have like a little
+thumbnail you flatten it and then you
+treat like um
+you treat it like as a sequence
+basically um and every time t you you um
+feed in a pixel at the t's location of
+your vector
+and then the other option is that you
+scramble all the pixels
+and work with a permuted sequence so
+that really requires the
+model to have some memory in order to do
+the right classification at the end
+and here you see like lstms do not do
+very good on the stars particularly not
+on the permuted tasks they get just 92
+percent uh or 1992.7
+accuracy
+more modern lstms like the momentum lstm
+is doing a little bit better
+um
+and we get um like with our um
+and basically this has 250k
+um
+parameters
+and with about 34k parameters we get
+96.3 percent
+address r n so indeed this model um it's
+easy to train and um it features um or
+has some some good expressive
+expressivity um and learns like to
+memorize important points
+um from the past
+okay
+um
+also what what was of interest to us is
+to understand whether such a model is
+more robust
+but here by robustness i mean like more
+robust to
+some small input perturbations
+and here's like a simple plot where we
+basically evaluate during inference
+times a test accuracy as a function of
+amount of
+noise that yet i think here we just
+added white noise and you can see that
+let's lip fits on an out of the box it's
+a bit more robust and
+for instance the antisymmetric rnn or
+other recently proposed on an rnn
+architectures
+such as the exponential iron in
+um or coupled or solitary uh
+rnn
+and i think like one of the reasons it's
+like really that um you you bake in some
+um
+some
+some stability here
+uh so you know your model is
+is
+stable in that way it is
+more robust to small input perturbation
+but kind of this motivated ascent to do
+a bit more work in into this direction
+and
+led to the formulation of noisy iron
+ends and basically the idea is like
+generalizing the idea by just
+considering an ode we
+can also consider a stochastic
+differential equation model
+for instance we can consider the
+following ito sde model here
+and kind of where f is
+some drift
+term and
+sigma here is diffusion uh term uh sorry
+so it's a bit confusing the sigma here
+is not a non-linearity um
+but um it's like referring to a
+diffusion coefficient
+um and then what we do is like we
+basically choose for f our lipsticks um
+uh the current unit
+and uh for sigma
+um we we
+basically choose some noise model and we
+consider here
+additive plus multiplicative noise
+so we have like in addition like two new
+tuning parameters
+to
+modify like these in noise levels
+and if you do this basically what we do
+is here is we start with an sde but it
+can be viewed like some form of
+noise injection
+um that we do and that helps us to
+improve robustness um what i want to
+stress here is we inject noise in in the
+latent space not in the input space
+right so that's slightly different to
+adversarial training
+where you
+where you add noise in in input space
+and kind of that's a simple noise model
+we consider here so depending on on your
+particular problem you might know what
+kind of noise um you deal with so you
+can switch out this noise model
+and here are some results which i think
+are interesting
+you can really see that
+for
+again for white and not a white white
+noise
+perturbation and salt and pepper noise
+perturbation the noisy iron and is
+essentially more robust
+compared to
+the ellipse it's on and then also to
+these other iron amps that i showed
+before
+but um it does not lose some
+much performance on on clean data in
+case if you don't see any perturbations
+and
+kind of
+the training time is
+roughly roughly the same
+so in practice right i mean the question
+is which which model would you prefer
+particularly if you have like a mission
+critical application or some medical
+application right it's a more robust one
+um or it's a less robust one so i would
+prefer like a more robust network which
+i know is less sensitive to small input
+perturbation during inference time
+and like using like this sde frameworks
+and dwelling too much on theory here but
+if you look to the paper you can like
+study this neural network through the
+lens of stahostic differential equation
+and for instance make statements about
+implicit regularization
+again about stability so kind of this
+view
+viewing like these neural networks
+through the lens of dynamic systems
+opens up just a nice tool box
+to do some interesting analysis and
+understand some nice properties
+here's another example where we look
+like at electrocardiogram
+um
+and again it's like a classification
+problem
+i think we use like here 500 sequences
+of length 140 for training and then four
+thousand sequences for testing and we
+want to classify whether
+the heartbeat of a patient
+has some severe
+heart failure or
+whether it's normal
+and kind of um our current neural
+network is doing a pretty good job to
+provide an accurate um
+prediction
+um so you see like you get 97.7
+um accuracy here and again like the
+noisy rn
+provides you with more robust
+predictions even if you have some
+perturbations in in the inputs
+okay
+so here's some some theory about a
+regularization but i ask him over this
+so if you're interested just have a look
+to the paper
+or you can drop me an email so i want to
+use like the last uh five to
+ten minutes um for talking about length
+that's our
+latest work um
+which just appeared at iclr
+in in spring
+so
+what
+basically
+they are like these two challenges by in
+sequence modeling using
+neural networks is on the one hand side
+you want a model that is very expressive
+but you want on the other side also a
+model that is able to learn long-term
+dependencies
+so lstms are known to be very expressive
+so that's why they're very popular
+um but they are not really good at
+learning like long term dependencies
+which i showed like before this mnist
+pixel to pixel mns where you have a very
+long sequence
+um and so they say under perform there
+but then like
+these other models um here particular
+like these continuous time models
+are not as expressive but they're really
+good
+at modeling long-term dependencies in
+particular unicorn
+and corn and they showed example that
+they can
+deal with sequences up to i think a
+length of 18 000 which is extremely long
+so that's very impressive so
+well what's what kind of um
+basically led us to the question how can
+we design a new model which is both
+expressive but also be able to learn
+some long-term dependencies
+and
+kind of so we asked like what what is
+the problem in general with the current
+models that we consider and one of the
+issues is that like um these ode based
+on ends assume a fixed time scale and
+that's a pretty strong assumption for
+for many
+um so many
+problems that we deal with
+so the idea is kind of to
+formulate like
+a model which allows to model
+many time skills so
+it's the simplest case right we could
+just start with some
+simple or consider a simple system of
+two scale odes here
+there you have like tau y and tau set
+that are kind of able to model two type
+skills
+um but two time scales is also very
+restrictive
+uh it's nice to have like the slow and
+fast variables here but we can
+generalize um this idea so that we can
+tackle more more complicated problems
+and if we do this we get like this nice
+multi-scale version
+let's provide it by this following set
+of odes here
+so here sigma hat is uh now um a sigmoid
+um uh function so basically
+the values you get here gets squished
+between zero and one
+so this first block here um
+is can be seen at some point as a gate
+or kind of modeling these different time
+scales
+which we then multiply
+with the second block where here sigma
+is a ton h function
+and um
+basically that is the um
+fast varying or models the fast bearing
+vari variables and then we have this
+second block here which models the slow
+varying
+scales
+so this is a coupled system
+and
+again we can discretize the system
+using some implicit explicit
+timestamping scheme which leads to these
+uh following
+equations here
+um so
+if you look at it it looks like a little
+bit like an lstm and under certain
+conditions there are similarities
+we discusses in this paper
+and what is nice is like if we study
+this discretization here we can show
+that
+this particular model is mitigating
+exploding and vanishing gradients
+and we can also show that this model is
+a universal approximation of general
+dynamical systems
+and also like a universal approximation
+of multi-scale dynamical systems so it's
+a pretty powerful formulation
+again motivated by
+dynamica system theory
+and if i show you some results here
+that is like on the google 12 task
+um which uh relates a thing that's
+that's like post estimation
+uh you you can you can see that the lam
+is outperforming um
+previous models quite quite a bit
+so that's like on expressive
+expressivity task but it's not that much
+better than a
+gated recurrent unit
+but quite a bit better than lstms
+and um
+indeed what we want to show here is
+better than like these exponential iron
+ants or corn and which are known to be
+not that expressive
+um and that's similar like to um like
+some
+natural language processing where we try
+to predict
+some characters in a sentence
+and we see like we can greatly improve
+the performance using lamps
+and
+simply the results are more impressive
+even on long-term dependency tasks again
+um at least compared to lstms so here's
+like um a task i could try to do heart
+rate prediction again but it's like with
+a longer sequence of 4000 so lstm really
+do not learn anything meaningful
+exponential rnn um
+is learning something but it's not
+really impressive
+and then lem is doing really good on
+this task
+um and this is like this eigenwarm
+problem which considers a very very long
+sequence
+it's a genomics data set
+and we get like some really good
+performance compared to other rnn's
+so
+in summary lem provides like a really
+interesting alternative to lstms out of
+the box we have also like a high
+performance implementation
+uh written in cuda so you can just plug
+it into
+um
+into um basically or just use it as a
+plug plug plug-in replacement for lstms
+and it's nice to see it has now recently
+been used or started to being used by by
+microsoft
+uh for for some uh of their problems so
+it gets some some traction
+uh it turns out to be
+actually useful in a broader range of
+applications
+here's a quick example like for a
+multi-scale system just to basically as
+a sanity check i mean do we actually
+learn
+some interesting multi-scale structure
+and here we can see yes so there's an
+advantage of of modeling like these
+different time scales using lam compared
+to other
+rnn and lstm models um
+sorry what i want to show here is um
+[Music]
+yeah um
+basically what we show here as well is
+just an ablation study and the second
+plot is like
+if you use lamb but you switch off the
+multi-scale structure then it does not
+learn
+really anything meaningful but
+if we allow the lamp to learn
+multi-skill structure then you get
+really good performance
+okay perfect i switch over to my summary
+so that there is like a little bit of
+time for question at the end
+um
+so
+mainly what i uh wanted to present here
+is so like motivated success this idea
+of ode networks or viewing neural
+networks as dynamic systems it's very
+useful for many physical
+or financial applications where
+differential equations are natural
+odenets are are good for modeling
+irregular sample data that can be done
+with
+standard discrete time neural networks
+and kind of i think exploiting this
+connection between dynamic assessment
+deep learning um allows us to to develop
+more interesting
+models that we can better understand and
+that also are more robust at the end
+i showed like that kind of uh using like
+a stochastic differential equation can
+be seen as some stahastic learning
+strategy and like it's a very simple
+trick to improve robustness and that's
+like really important in some
+[Music]
+applications where we know we deal with
+noisy data during the first time
+okay
+i stopped here and
+thank you thank you so much for the
+wonderful talk ben
+very nice very nice um thank you
+okay is there any question
+from audience and there is no
+question in the chat other than robert's
+the comments well let's while you guys
+think think about it
+um
+ben can you
+go back to
+the slide where you talk about lipstick
+recurring units sure it seems to be
+pretty interesting
+um
+and by looking at the
+you know the formulations
+i think here for instance this one
+yeah for instance that one and uh can it
+be viewed as okay so here you are
+designing the right hand side with a
+some linear term and yes
+non-linear temperature is represented by
+neural net yeah
+it can be viewed as a
+basically it is a dmd um
+is
+you know the
+taking
+you know the
+dmd kind of modeling is taking upon with
+the first terms like the linear terms
+and the second term is kind of
+representing the
+error of the dmd
+and quantified by the neural net
+sure sure i mean you you can probably
+have many many interpretations of
+viewpoints here right so to be fair
+originally my my motivation for this
+model so there's like in the control
+community there it's like um this class
+of lip ships ellipses systems which have
+exactly this form like a linear term
+plus a non-linear term
+and i think it is um
+this particular formulation allows you
+to
+do some global analysis
+which you can't just do if you have just
+this non-linear term so that was the
+motivation here considering this
+particular form to
+to do this global stability analysis
+you can think about in in many ways
+about the linear term why you have it
+there
+um
+and
+kind of from from from perspective on
+like yeah you can say okay there
+the linear term is modeling basically
+the
+linear component and then you have like
+the residual which is modeled by the
+non-linear term so that's it's different
+different uh viewpoints you can
+take
+sounds good okay um
+you know apollo on question um on this
+on this um
+topic
+uh the
+next probably next slide or previous
+slide do you show the you know
+conditions that
+the function needs to satisfy like the
+licious continuity
+yes
+and
+i i guess not all the available
+activation functions satisfy that yeah
+that's that's true not not all i am
+saying here not not all activations are
+m lip sets um but in in some sense i
+mean
+i mean
+most of the times for kernel networks we
+use a ton h function
+uh which satisfies um this condition i
+agree
+it's not it's not it's not very popular
+or you don't see many other
+um activation functions in the
+mainstream literature so there are there
+are like
+some more exotic one like
+some modified velo function and it's
+used i think in the in the exponential r
+and n but uh that typically doesn't work
+like in with other architectures so yeah
+um
+my following question is have you have
+you tried with those activation
+functions which does not satisfy the
+lich's continuity
+i see um does it still work i mean
+usually the theory and practice
+it's it's
+okay so one one thing is like of course
+i mean this is our i say like um
+conditions which needs to be satisfied
+in practice i mean we look to the
+eigenvalues so we do not um
+i mean depending on how you tune it you
+can exactly or you can actually
+um
+kind of meet those conditions but even
+if you
+don't meet the conditions we show like
+we have some ablation studies where we
+plot like the eigenvalues of a and w
+over time
+and
+it works surprisingly well if you're
+slightly off but then we show also
+ablation studies if you
+um basically if you choose like beater
+here like 0.5 you get really poor
+performance
+um so we get we have basically a plot
+which shows you like um
+that
+that you want to be somewhat in this
+regime here in the middle
+or even better here on the right hand
+side right but
+even if you have a situation where you
+do not
+satisfy the conditions exactly you still
+learn something but if you're too far
+away from satisfying the conditions and
+suddenly you don't learn anything
+anymore so there's a little bit of gap
+of
+what you see in practice and what you
+have in
+theory i also want to mention right the
+theory holds like for it's a continuous
+time formulation but we do the
+additional discretization step
+right so it depends also a little bit
+how how large you choose like your delta
+t
+for for discretization
+yeah so
+sometimes we haven't done this i mean we
+could do the analysis in discrete times
+uh discrete time as well but
+uh it was like more like conveying a
+point like
+having this idea of viewing a
+model as a
+dynamical systems and then doing doing
+doing this analysis and motivating like
+basically what was the motivation is
+like coming up with this symmetric skew
+scheme which turned out to work very
+well
+all right uh
+i shouldn't ask too many questions okay
+so there are questions from the uh yes
+that room
+by andrew he asked for the ecg example
+how long did it take to train the neural
+network um
+so i i don't know so there were like
+basically two ones so let's see um i
+think like the smaller one
+uh which had was
+used pretty short sequences i think the
+training time there was
+uh very fast i think
+maybe maybe half an hour or so but for
+the second example we considered lamps
+um for the hot for the long sequence
+that is of the order of days um that's
+like really challenging to train
+um so
+because like as long as the sequence
+gets us
+it's
+painfully slow to train require neural
+networks the unicorn model so is very
+fast so if you if you look for something
+extremely fast for these type of
+problems i would recommend to have a
+look at the unicorn paper
+all right
+next question is by rob rap
+when you oh
+um okay so when you uh look at the
+eigenvalues of the matrices being
+generated by your neural network are
+they close to what you would expect from
+a non-linear system analysis standpoint
+in other words do you end up generating
+stiff differential equations for steep
+problems
+um
+oh i see the second question
+yeah that's that's a good good question
+so in in some sense like these um mainly
+what we done with um iron and
+where look to the eigenvalues
+i haven't looked to too many
+too many
+dynamical system problems actually so
+here again the idea was like using ideas
+from dynamic systems to develop new
+neural network architectures um
+what i talked about before in in the ode
+context that's a good question we i
+haven't looked to the eigenvalues there
+so basically there we just did this
+conversion analysis
+so we considered a lot of different
+dynamical systems there
+and the question was just basically um
+does does the model pass the conversion
+test or not i haven't looked to
+the eigenvalues of neural ode so that's
+that's a good question but
+uh sadly i can't give a good good answer
+to it but something i should probably
+investigate
+but you do compare the
+solution itself not the eigenvalues but
+you know say again
+you do compare the solution itself like
+the solution from the underlying um
+yeah
+and and your neural or the recovery yeah
+that that said we do i i just don't know
+like um again i think we have considered
+stiff systems there
+um
+i think the um normally a pendulum in
+the x y was uh x y coordinates that's
+very stiff
+um and what we see in general it's
+harder to train these problems but i'm
+not exactly sure how the eigenvalues
+look like well i think if you go back to
+the beginning where you're showing some
+of your plots comparing the numerical
+oilers
+to what the network is producing like
+here's a case where euler's going crazy
+due to stiffness yeah yeah and um the
+neural network is doing just fine
+yeah so
+i what i suspect you will find is that
+um
+you don't have the stiffness that you
+would expect to have
+yeah in the integrator just looking at
+this plot and looking at the plots there
+on the right
+and i think it'd be really interesting
+because i think what your neural network
+is actually doing if you plug in the
+text
+time step it's actually solving both
+the
+[Music]
+numerical it's solving the right hand
+side and coming up with like a
+specialized integrator for that problem
+yeah
+i i guess so so that's my point right
+it's it's it's learning through the
+through the integrator um through right
+so it comes up with something in some
+sense right with you if you use forward
+sometimes basically if you use forward
+euler you have no inductive buyers
+um doing the training process with arka4
+if you use like boxes more complicated
+schemes so you give the room you
+introduce some inductive buyers and you
+give like the
+model less room to learn something
+outside of the scheme
+i i would be super interested if you say
+try to teach
+one of these neural networks on
+continuity
+so like take a problem where you have
+the analytical solution right yeah and
+then
+just very time step wildly
+um and plug in the analytical
+analytical solution and see if you can
+actually come up with a
+and have the um the time step be one of
+the parameters
+for your sequence
+and then see if you can develop a
+network that can integrate
+this thing in a stable manner no matter
+what the time step is because i mean as
+from a neural networks uh from like a
+sequence training point of view that's
+not super useful but from a numerical
+methods point of view
+that's extremely interesting yeah
+yeah maybe we should touch base offline
+and
+talk a bit about those ideas i think
+that would be great okay cool
+rob i have a question for you how wild
+time step variation are you thinking
+here
+as well as you want
+all right basically just enough to kind
+of teach the model continuity and
+sometimes i would like deliberately plug
+in like a time step of zero
+um just so it like hand handles the
+limit condition
+um but you kind of want to teach the
+model how to converge right because i
+mean the big problem i'm seeing with the
+when you do convergence on the neural
+network you train at different time
+steps it doesn't seem to be converging
+but i think you can train a neural
+network how to converge
+by varying the time step because i mean
+that's the constraint that we put on
+numerical systems and we know that they
+can do it so
+it'd be really interesting to see if the
+neural network could find those
+all right sounds good
+is there any other questions
+we passed the six minutes actually the
+promised time um well uh
+if not let's thank our speaker ben for
+the wonderful talk um i personally enjoy
+it a lot and i learned a lot from it
+from the talk and yeah and it's a
+wonderful job and
+i'm sure
+um there will be uh full future
+collaboration
+yeah thank you so much for the
+invitation again it was great
+awesome awesome
+all right let me stop the recording

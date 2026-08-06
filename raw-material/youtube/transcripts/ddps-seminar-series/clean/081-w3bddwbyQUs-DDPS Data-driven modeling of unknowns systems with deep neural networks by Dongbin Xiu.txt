@@ -1,0 +1,1832 @@
+all right welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rules and
+Logistics first of all please mute
+yourself during the talk unless you have
+questions if you have questions you are
+welcome to meet yourself and ask those
+questions otherwise please use chat room
+to post your questions so that we can
+address them in Q a session at the end
+second today is ddps seminar is open to
+external audiences finally The Talk
+today will be recorded and uploaded in
+our YouTube channel that's about it now
+let me introduce our speaker today it is
+an honor to host Professor dongbin XU
+who is a professor in the Department of
+Mathematics of the Ohio State University
+he received his PhD degree
+from division of Applied Mathematics of
+Brown University in 2004 he conducted
+postdoctoral studies in Los Alamos
+National Laboratory Princeton University
+and Brown University people joining the
+Department of Mathematics of Purdue
+University as an assistant professor in
+the fall of 2005. he was promoted to the
+rank of associate professor in 2009 and
+to full professor in 2012. in 2013 he
+moved to the University of Utah as a
+professor in the Department of
+Mathematics and scientific Computing and
+imaging Institute in 2016 he moved to
+the Ohio State University he has
+received NSF Courier award in 2007 as
+well as a number of teaching awards at
+Purdue he had served on the editorial
+board of several journals including Siam
+Journal of scientific Computing and
+journal of computational physics he's
+the founding associate editor-in-chief
+of the international journal for
+uncertainty quantification and the
+founding Editor in Chief of Journal of
+machine learning for modeling and
+Computing his research focuses on
+developing efficient numerical
+algorithms for uncertainty
+quantification
+stochastic Computing and machine
+learning today dongbin will present an
+exciting exciting topic which is
+data-driven modeling of unknown systems
+with deep neural network please enjoy
+and expect a wonderful talk now without
+further Ado let me pass the button to
+don't be in by asking one random
+question as usual
+um today's random question is what is
+your favorite season
+um from postseason
+oh okay ah
+well I guess
+I don't really have a strong preference
+but uh maybe four because where the user
+is lovely during the fall nice in Ohio
+yes I'm pretty sure I've been too far
+it's always Pleasant I think nice all
+right stage is yours all right thank you
+Dr Troy for the for the kind of
+introduction and also for the for the
+invite I'm very happy to be here today
+uh to share some of our research in the
+last few years as the title says this is
+about data through the modeling of
+unknown system with deep neural networks
+so but I would like to make a point
+throughout my talk that the neural
+network is deep neural net is a very
+powerful tool we use but what we are
+going to present is a fundamentally is a
+methodology that in principle you can
+use some other techniques but deep
+neural is very very powerful and I'm a
+big fan of neural network so let me
+start with some motivation this is
+preaching for the choir
+um this is something people might of my
+friends according in National Labs are
+very very familiar with that's that is
+how to analyze and predict the behavior
+of very very complex system like here I
+just borrow a few slides picture from
+the web and also some from my colleague
+in the past uh this complex system that
+is our primary goal for complex for
+scientific Computing and they have
+gotten so complex that we need to
+incorporate many many physical laws or
+mathematical models and most of them
+have very famous people's name attached
+to them because they are very well
+established mathematical equations to
+describe and govern uh with a very high
+fidelity of certain physical phenomena
+for example name is equation for basic
+fluid flow right and when we deal with
+very complex systems like that the
+climate will be the ultimate example and
+our approach has always been to let's
+try to incorporate as many equations as
+possible as more more physics as
+possible and as a result and our model
+eventually gets more and more complex
+the point I would like to
+emphasize here is what I would like to
+call we have reached the circle a point
+of diminishing return that is by simply
+adding more physics and more equations
+to the model does not necessarily buy us
+too much yes we sometimes we see a
+little Improvement maybe 10 percent in
+fact 10 is a lot sometimes we barely see
+any and at the end of day as model gets
+that models become more and more time
+consuming and we end up with things like
+this this is random picture put from CNN
+one of the hurricane forecast models in
+fact there are many many models here and
+I'm sure as you are aware of each one of
+these curves are produced by highly
+highly sophisticated computational
+expensive models but at the end of the
+day when we have prediction like that
+what do we do about them uh is it
+conceivable even possible that by adding
+even more equations uh including small
+terms in each one of this model maybe
+some of them will convert the physical
+shoes to be honest at this moment that
+answer is not that clear right so that
+brings us that short motivation brings
+us to the topic of so-called data driven
+modeling and the same message has been
+made by many research in the past few
+years that is it has always been data
+driven right so in the past is in fact
+especially for us it's best people in
+multiple myself included that we tend to
+think model As Nice equations but we
+sometimes forget
+why where the equations came from in the
+first place they came from a long time
+observations sometimes take decades or
+even centuries of observation and at
+some points on Smart brilliant mind came
+into play and they came out with nice
+equations of course the name after them
+and then we use this equation these are
+the models we are familiar with to
+predict and analyze the behavior of the
+system
+of course what we have already accepted
+that we are not able to solve all the
+equation these are simple enough but
+most models mathematical models we have
+today are so complicated and that's why
+we use computer and that's the whole
+discipline of scientific Computing and
+so this what I will argue so these days
+when we talk in the model the real model
+is in fact a piece of computer code it's
+a software and it's after all our
+discretization of the mathemat no matter
+how beautiful the equations are we still
+need to disretire them we need to
+approximate them and maybe along the way
+we even introduce a bug here and there
+in our computer code but essentially at
+the end of the day what's inside the
+computer is what we have to rely upon to
+predict and analyze the underlying
+physics so the whole idea of data driven
+model is that upon realizing this part
+we can use computer to help us solve the
+equation and realizing again our brain
+is not sufficient large enough to come
+up with a nice equation why don't we
+take this all the way let's come from
+the data let's just use the data to
+drive somehow get a piece of software
+and that as a model that we can execute
+and eventually let's just use this model
+to predict and analyze the underlying
+physics so that's whole idea of data
+driven models just to bypass human as
+much as possible so having said all that
+let me be a little bit more concrete
+about what I want to talk about in this
+about our research here the data driven
+modeling so our focus is in both
+basically on dynamic system so let's
+assume that I we have
+time history of data that's we will call
+this trajectory of data over a certain
+time in the body we can have many many
+of them and we don't know the laws
+behind the Dynamics we don't do not have
+the government equation if we do have
+the equation that by all means go ahead
+and solve them what we want to do is
+that using this trajectory data the the
+time history to come up with a sort of
+recursive model that we can March
+forward and predict this would be the
+model prediction the choose evaluate
+evaluated at the same time is let's
+choose such as our model prediction is
+the numerical model its approximation
+would be a very good approximation to
+the physical truth and if we have this
+model it's as if we have the equation
+and we can discretize it and it's a
+disquietal equation but we never will
+we're not we're not really in most cases
+can we cannot write down the mathematic
+equation but we do have this numerical
+scheme that can
+accomplish what we want to do which is
+prediction of the future so here we'll
+talk about prediction
+I want to make a few very important
+remarks uh two of them are very
+important one is that and I would
+emphasize in the next slides as well we
+even though the time is the data we have
+has time in there we will by all means
+do not we do not want to incorporate
+time as input variable
+and that is we try not to approximate X
+as a function of time why the reason is
+simple if we try to approximate the
+function as access function time this
+will be our training data or what we see
+and yes we based on this we can come up
+with a nice case nice approximation of X
+of T but our goal is prediction the
+prediction will go Way Beyond whatever
+we have observed in our training data
+and so if our approximates are coming
+from this we will always be
+extrapolating beyond what we observe no
+method is reliable when we extrapolate
+so that's the point I want to make that
+we will never try to
+think of X as function time as a
+conversely here we only think of X as a
+progressive recursive iteration over
+time so time will now come into play
+second what we observe X may not be the
+entire complete set of variables in the
+system so we do not know the system in
+the equation but to make matter what we
+may not be able to observe observe
+everything again climate maybe the
+automated example we can measure you
+know when uh pressure temperature a few
+variables but the entire column system
+made that if there is a closed
+mathematic model we may involve let's
+say 10 000 variables we do not have that
+we can only measure a few so this is a
+very big challenge that's also something
+we try to observe or we try to tackle
+what if what we observe the Dynamics
+data is only a small subset of the
+entire system which we don't have the
+equation in the first place all right so
+having said that let me uh come back to
+the part of we do not want time variable
+in this so this will be an example for
+the methodology I would describe in a
+moment we only need short burst of
+trajectory data time history data so you
+can take the so this will be example of
+I say I need eight points along a Time
+history so you can put this out from a
+single long management data file you can
+pull multiple pieces here uh you and it
+doesn't really matter what it is so at
+the end of the day we're going to
+collect them into a set of measurement
+of length of eight let's call this our
+training data and you can collect let's
+say 10 000 many of them if you have long
+treasure that treasure data time history
+you can do a lot of segments out of this
+thing
+um so we would prefer them to be from
+different projects but that's uh
+important and yet mind a secondary
+concern the most important thing is that
+we would next thing we do we will remove
+the time variable a simple thing we just
+drop them all right so by dropping them
+we will not know when exactly this
+trajectory occurred in time as opposed
+to goes in here all we see are the
+segments of traject times of eight
+entries and they are they are occur at a
+different time doesn't really matter to
+us all we carry that we only have each
+one of them is as if they start with the
+initial condition and mass forward seven
+times that's all we care okay so by
+doing so we will remove the time
+variable also it makes data acquisition
+collection much easier you don't need to
+record the time you just need to record
+the relative time so that's what we do
+here that's that's in fact very easy
+thing to accomplish
+having said that let me give the example
+how this can come into play so this will
+be very similar to what I just
+Illustrated earlier suppose I have time
+history this you will be example of
+so-called glucose induced insulin
+oscillation which is as many of you may
+be aware are very relevant to a diabetes
+study let's assume that we have
+measurement of insulin response after
+injection for certain individual I have
+exactly 0 to 15 16 points I do not care
+about time there's only 16 points
+separated by times of 0.05 certain unit
+I don't do not know exactly what time
+this is but this is only 16 points after
+initial points and also I have this
+response at certain so-called Baseline
+glucose level is a single constant
+parameter every individual have a
+glucose level for me sitting here I have
+a glucose level if I have a meal my
+glucose level would be different at
+different level if I go on exercise this
+number will be different it's a constant
+is an initial constant let's just say we
+can collect this kind of data that the
+different glucose level after injection
+the short time response offers against 0
+to 15 only 16 points of this time time
+step let's say we can collect many of
+them okay and uh it turns out people can
+collect a lot of data about uh diabetes
+but assume this is the only thing we
+have we only have at the different
+parameter based on glucose parameter
+level I have the early response of
+insulin we ask the questions can we view
+the model and understand the very long
+time behavior of this incident what what
+happened after this early stage so
+that's what we're going to do so let's
+try to do a data driven thing we don't
+do not have equation for that
+um so what we based on what we have I'm
+going to use a neural network and at the
+input I'm going to throw this single
+parameter into one node and for the
+measurement data from 0 to 15 I'm going
+to throw the 0 to 14 to the early nodes
+so I have this will be 15 plus one
+seeking inputs I will use a very last
+one as
+reinforce the output that's why we
+compute the mean square error to match
+the output to the 15th the last entry of
+my management data but in between will
+connect a very simple fully connected
+feed forward Network right so and then
+we have all this data
+and you do a neurons extremely I'm sure
+many of you are familiar how this goes
+to a minibus whatever automatization
+through this intensive flow or Pi torch
+at the end of the day once we've enforce
+this means we're a lot to a certain
+level we call this method Converse All
+right so this is what we then we have
+neural network create a model this model
+was given a initial parameter g0 given 0
+to 14 input I can recursive go forward
+in time get 15 then I can move 15 here I
+slide everything backwards and I can get
+16 I can recursively go forward in time
+for as long as I want to so this can
+give me a long time behavior of the
+insulin but the difference that we have
+now created a data-driven sort of a
+scalar model that doesn't require a
+knowledge of any other variables that's
+involved in this as you what you can
+imagine very complex math biology
+problem so the question is that we can
+always train Network and model the
+question how good this is so let's do
+some data Asian and plot a few other
+initial structures 0 to 15 same setting
+as before at the different glucose level
+each one and we can feed them into the
+network neural network model we just
+created is the one model we created will
+never touch it again we only execute on
+the different circumlets so let's fit
+this initial y a correspond to g010 put
+this into initial condition marks this
+forward in time for much longer time
+this is the result we get everything of
+the circle the circle would be what we
+feed into the network everything
+afterwards would be the prediction by
+Network itself as you can see the
+network prediction will be the blue very
+close to the truth I will tell you in a
+moment what choose is you can see the
+agreement is quite well and it's Rich
+statistic state which is obviously not
+very obvious from what we can observe on
+the initial Evolution right this goes
+steady state pick another curve 1.1 and
+the system again after in this condition
+the predicts by the network itself again
+goes to steady state with some
+oscillation earlier take another curve
+and yes against steady state and then
+also also this become a little more
+obvious at early stage another curve 1.3
+other certain the neuronic versus is a
+periodic state which is the match the
+truth and again everything at the circle
+is pure predicts no data anymore and
+makes a different g0 level this become
+even bigger oscillation all right so and
+you can see the match with the so-called
+truth here is very very close and now
+that we have this scalar model for
+single variable insulin for its long
+time Dynamic we can analyze that and now
+we see this accurate enough I can play
+God mode we can just simply interrogate
+this model to get all kinds of behavior
+out of this one thing people study in
+this phenomena is that people already
+know that g0 the single parameter pre
+plays the key role in determining the
+long-term behavioral system so in here
+it's a steady state and here is the
+periodic state so what you people do
+with that they just record the Max and
+mean of the when the system reaches the
+stable State and here maximum would be
+the same number here Max will be above
+here means here and you plot this Max
+mean against the single parameter you
+get this kind of by application diagram
+when g0 is quite small we have a steady
+state Max and B match each other and
+when G zeros passes the threshold it
+become a periodic State and the
+amplitude would become bigger and bigger
+and bigger and all of a sudden are
+passing here the system returns to the
+steady state again so it's quite
+interesting Behavior once again these
+are blue curve blue dots are produced by
+just interrogating this neural net model
+and the red is the truth okay so we can
+also do things like uh with different g0
+single parameter and the systems
+responsible different then if I have a
+meal my g0 will be at a different level
+the response would be different if I
+have another dessert and my t0 uh gets
+higher and higher anyway this is this
+can result people uh invested in the
+literature so having once again you can
+see here the the neural net model has
+very remarkable accuracy compared to the
+truth and what is the truth here we
+don't really have real data the choose
+in our case are is produced by synthetic
+data they are coming from this so the
+whole thing is about insulin response
+it's in some very complex math biology
+system I wish I have no idea about what
+we did that would there are several
+models to study this insulin response uh
+so we put this one from one well
+established textbook it's reasonably
+complex with this bifurcation B here
+this is the true model we use and has 4
+four state variables and about 16
+parameters we put all the parameters
+from the book everything used standard
+from textbook what we did that we solved
+this system with these parameters with
+Matlab with accuracy but we record for
+Network purpose we record only two
+things Y is it Z this g0 this single
+parameter in our modeling the other one
+is the early response of I that's 0 to
+15 the first 16 entries of the response
+everything else from the model we throw
+them away they are never recorded as if
+we don't know so this is just pretend in
+the real world we can only measure this
+and the early response of this based on
+this little thing you can see the neural
+network can build a model that analyze
+the long-time behavior of I without any
+knowledge of any other variables
+whatsoever okay the introduction
+everything you basically as if I have no
+idea how these physics involve what
+variables involved I just what do I see
+and what we model that's so I hope by
+this by this example at least is uh
+shows you that the you know it suggests
+that it is possible now that we can
+build very accurate model and close by
+itself and this closed main system
+closed this is the closed system right
+everything defined each other but
+self-close mode for only a subset of
+variable which in this case there is not
+a single mathematical model to govern
+the evolution I we have to rely on other
+variables for the data driven modeling
+it doesn't require that
+so having said that like I said uh when
+we have this data we throw them into a
+network it's not a random choice we make
+in fact this work was a result of a
+several about four or five years uh
+development over over this year when in
+fact the example is in none of these
+papers uh when we try the example we
+actually know there is no way it does
+not or it has to work it turns out to be
+one of the easiest examples to Trend and
+to get high accuracy so so this is what
+I want to talk to you about this
+so-called method so-called flow map uh
+learning I just call this FML how it
+works and how it makes gets us to the
+modeling of the sofa only a single
+variable in a much much bigger system so
+again this is the setting so just 10
+seconds of neural network we do not
+require any special uses of any special
+structure of neural network all we use
+that neural network does at the end of
+the day is a mapping from input to
+Output in this case would be input map
+to 8 R8 to four variables R4 and in
+between almost all our works we simply
+use fully connect feed forward network
+with nothing special user usually value
+as activation function and sometimes we
+use 10 H and we didn't use any of this
+this turns out there's no need for any
+of the special Network
+so let me come back to uh the basic
+settings so now let's let me start with
+a simpler system simple problem that is
+I have a dynamic system that we do not
+know the governing equation right so but
+we do have observation of X so we
+observe every variable in the system so
+this will be the evolution of X and
+again from the time history will pause
+trajectory out of this that's our
+training data
+it's a very very busy field of so-called
+data-driven uh equation recovery that is
+with the measurement time case of X
+let's try to recover F uh we do not do
+that in fact we have the equation we had
+some early work on that as well in this
+work we do not try to recover F at the
+point being that what if we recover f
+um with some error I mean f looks most
+likely is non-linear we still need to
+discretize it and make it into a
+computer code algorithm so here let's
+not try to do that let's again like I
+said let's do it in one shot we want to
+create a model directory in one step so
+we try to approximate the underlying
+flow map that's why where the name came
+from for the method what is flow map
+flow map is simple Concept in dynamic
+system is simply the mapping between
+Solutions one stage t0 can be any time
+to another state t so this is the
+mapping will parameterize
+oh
+what what do I
+do you see something something at me is
+right do you still need admin rights I
+just click ask X yes anyway
+hopefully I don't drop anyway
+um so
+the mapping is just in a pretty map
+solution from one time to another time
+for autonomous system like this only
+time difference method that's key thing
+so time doesn't really matter so let's
+to look at any ins any solution from
+data from one instant to the next and
+they're all separate let's assume the
+time step is constant Delta Delta T so
+the mapping this flow map is simply X
+map to the current time to the next
+stage right so that's current by exactly
+same map covers by the same parameter
+which if you assume constant is doesn't
+even matter here so this is simply
+mapped from RD to Rd and that's what we
+can do with any mapping so in this case
+we only need two data
+from any trajectory so you can pull a
+pair consecutive pair anywhere from time
+we should pull them out all right so and
+then I would just call this the first
+one X1 the second one is X2 they're all
+relative again time doesn't matter is
+only relative relative position
+everywhere here is X1 X2 X1 is currently
+State uh solution uh X2 is the next uh
+one step later and this is parameters by
+this map which are the two Rd the
+constant becomes we want fund Rd to Rd
+let's try to minimize these error so I
+would find the map approximately
+approximate amount to this such that my
+output by my mapping would try to match
+the real thing as much as possible mean
+Square loss and you if you minimize this
+problem it's like everything like
+is the least Square problem there's
+nothing fancy to that once we find this
+mapping and you can now execute given
+any X1 you can keep recursive going
+forward in time and that will give you
+predicts for a long long time it's a d
+dimensional function approximate it's
+not operator learning that's a key thing
+why because you only care about the
+function from RD to R the output D
+doesn't really matter but as I said it's
+not operator learning which is a busy
+Topic at these days is simply because
+again the fact that I said we did not
+ever ever try to write X as function T
+if you have a little T inside and become
+an operator but now we only look X as a
+vector so it's multi-dimensional
+coordinate is a function approximation
+for low Dimension you can do polynomial
+calcium process everything in fact if
+these reasons were small I would just
+say by all means go with polynomial it
+kills the problem with extraordinary
+high accuracy that's always in fact our
+first paper on this but most likely in
+practice D is not very small so neural
+network is essential very very powerful
+so this is how it works again where if
+you insist and we also Advocate use a
+neural network and then of course the
+network output which is minimal this
+error this is very simple fully conduct
+feedphone unit this would be a third
+friend and you can also do a restaurant
+which in our first paper we advocate of
+doing that the retina is simply says
+this mapping it just doesn't try to map
+from input to the output in fact this
+part is mapped to the the difference and
+as a result we need to do prediction you
+have to add this background you can then
+that will be the scheme that's only
+difference between these two they are
+absolutely equivalent mathematically
+there's no difference
+just plus minus one depending where you
+put them
+but this resnet structure looks like Ola
+forward stepping except it is not over
+forward
+um that in fact the entire Arrow here
+has nothing to do with delta T So this
+exact integrated in time there's no
+temporary error no explicit dependency
+on delta T there are the arrows
+basically the minimization of this
+training error so in our early work we
+have used resnet primarily to uh which I
+found this uh computationally Advanced
+advantageous but as we gain more and
+more experience we have found that you
+know this thing requires very high
+accuracy at the end of date the resident
+doesn't really matter so you it's your
+choice whether you use them use it or
+not we still keep resonating in most of
+our work it's just mostly for from the
+Legacy code all right so let me show you
+one example again this example has is a
+four-dimensional example so my state
+variable has U1 U2 V1 V2 sort of OD to
+algebraic constraint that's not really
+OD right so the mapping as I said would
+be R4 to R4 is reasonable low Dimension
+let's do in fact this result is produced
+by polynomial you do neural network you
+have same result all right so and this
+is the prediction of the 1000 steps
+again the training data is just one
+separate by one step you see
+extraordinary short time place which is
+one step right and I want to make again
+an effort is that uh upon you that you
+look at this function the V2 response
+and V1 as well as a function of time
+this extraordinary difficult function to
+approximate with the spikes like this
+there's always no method that can really
+approximate this kind of spikes with
+high accuracy fear it is very accurate
+why because once again as I said very
+beginning we never try to approximate X
+as a function of time we only try to
+approximate X how it evolved over one
+step as a function all right so once you
+get every one step correct it is
+eventually will produce the correct
+function over time this is exactly how
+any time indicator Max uh works if you
+knew the equation you can solve this by
+run the quota don't shoot looks exactly
+like that except n is well defined from
+the equation you know what this is here
+we just don't know what the end is we
+use data to try to learn this but the
+time stepper allows us to go Progressive
+in time accurately every step and
+eventually it can produce some vastly
+compressed Behavior over time but the
+function this thing as a function of
+time never come into play so that's the
+uh again the message I think have
+overstating a little bit but again this
+is the key feature of this method right
+so now let's move on to the very
+practical situation that in most cases
+we cannot measure every variables in the
+entire system so now let's have the
+whatever com autonomous system that's a
+big complexity that we don't know the
+equation we have no idea what the f is
+so in fact we probably don't even have
+idea how many axis variables we need to
+have a f is just we have no idea all
+right but we do have is that we can
+measure a few a subset of them so Z like
+I said in in climate modeling this can
+be temperature can be a pressure can be
+dense uh density uh or a few things and
+everything else W are the missing
+variables we may not even know how many
+were missing is it is it 5 50 5 000 10
+000 missing we have no idea because we
+don't know what the complete system look
+like but we have let's say you measure
+three variables that's all we have the
+question we asked based on time history
+of these three variables can we build a
+model for these three variables only in
+principle coming from autonomic system
+is is possible there's a so-called very
+well known more resounding formulas as
+you know this kind of equation does
+exist
+in principle it's not useful because it
+said the equation look like this this is
+my common term this sum integral term
+and that's initial condition we don't
+know usually treat it as a random
+variable so this is not important and
+what's not useful is that this formula
+is is exact formula but it's only sort
+of like existence it doesn't tell us how
+to get R how to get in most important is
+K the kernel thing okay so uh there has
+been a lot work on estimating
+approximating kernel k
+from here but that's based on the
+knowledge we know the letter F in the
+first place we are trying to get to K
+but here we do not know this anyway so
+there's no way we can have K but
+nonetheless we're going to use this as a
+motivation to design our data-driven
+approach all right so the motivation
+goes like this you look at this integral
+so if we want to know any the evolution
+of of Z The Observers at current time
+let's call this T this needs to go back
+from s equals zero with t naught minus
+it would be count time t s goes to T
+this T monthly will be zero so this
+requires our us to know the solution at
+the current time go all the way back to
+the initial condition we're going to mix
+a very mild but something that yes this
+is so-called memory memory doesn't go
+very long in most system so we only need
+to go back from the current time to some
+fixed time all right so you do not need
+to know your solution today or tomorrow
+you do not need to know everything has
+happened through the beginning of the
+universe in fact in most cases we go
+back to a certain amount of time that's
+enough anything further back in in
+history do not have any impact on the
+current state that's the final memory
+assumption which is almost universally
+true for any system and of course the
+difference is that the key that how long
+should we go back and we don't know but
+uh that's a problem dependent but let's
+assume we can we should only go back
+from here back towards final time that's
+how we go all right so now this integral
+is replaced by this with some negligible
+error that's the first milder sums now
+that we change this to a final integral
+that doesn't depends on T anymore and
+which is going to assume for finite
+integral we have we have some kind of
+approximation method that can compute
+this number very accurately based on
+small uh threshold based on whatever
+data in between these two in between
+current time to backtrack the memory
+time this again is easy because if we
+know the equation we can simply do some
+kind of gross quadrature this will be
+this exists here of course we do not
+know the integral but we always say you
+know what a good approximation exists
+that's all we need all right having said
+both now we see we exchange this to an
+approximate formulations that if we
+let's call the current time TN if we
+want to know the evolution are current
+on TN we just need to know this at the
+end and this entire integral depends on
+everything TN backtrack one step two
+step whatever number of steps that
+contend in the memory that's how we do
+so this is our approx discrete
+approximation to the more response
+equation based on very mild assumption
+and this just tells us
+we just need to find this and this but
+we don't have this that's what we do
+with data driven we just said our FL
+model cells in order to know one step in
+the future all we need is the current
+time step and something go back in time
+we need data on this and if we can
+create this mapping that's the model
+right so the the function approximation
+becomes that given this many data so
+this will be n map plus one times D the
+data to this mapping this will be our
+mapping we want to find this and this
+will be the network structure if we want
+to do all right so find this operator
+and this will be example says I I only
+need to go back two-step in memory this
+current this is the future if we go back
+one and two and if you have data if you
+have enough data of three mapped one you
+have data lengths at least four in your
+time history you can create input and
+output and you if you have many of these
+you tune a network that will be the
+model and the model is in fact coming
+from very rigorous derivation so as I
+said here this
+relationship here has nothing to do with
+neural network neural network is just a
+way to try to create this operator n
+right so anyway so this will be the
+example I showed you earlier like the
+instant example goes from 0 to 14 and
+with the one parameter here and to the
+next all right so so the the neural
+network mode of the training doesn't
+doesn't really give us more results this
+method eventually doesn't give it just
+gives us a direct predict model that we
+can go forward in time how does this
+compare to the more results that we
+don't know in fact as we're not even
+trying to recover more is once again in
+this case
+so let me show you example that linear
+system equations leadership turns out to
+be quite difficult to model
+um it's
+x dot equals ax let's say I have 20
+Vector of 20 a is 20 by 20 Matrix we
+come up with some random choice of this
+a and we can solve them with our
+authentic data we assume we don't know
+anything about
+10 component we have short time
+measurement time case of the first 10
+component of the X we do nothing about
+the 400 parameter in this system we know
+nothing about the missing 10 variables
+and in fact now you can see that the 10
+variables here do not give us a closed
+system to solve e always requires notice
+of Q right so I we can test in this case
+how long is the memory when we create a
+memory we need 0.6 let's call this
+second so it's very short
+trajectory we need we just need to see
+many many pieces of this we create a
+mapping and then we we're going to
+execute
+for the prediction of x one to ten
+forward in time to go all the way from
+zero to 150 very long time prediction
+this will be the X3 this will be the X6
+all right so and you can see the neural
+net model uh which is red compared to
+the truth by solving the entire system
+and is very very close after this
+long-time non-trivial Dynamic so it's
+not steady state it's not purely
+periodic state is is unclear what state
+is but anyway the accuracy is good uh
+let's make this a slightly slightly
+non-linear so let's deal with a not very
+chaotic but not very chaotic it's a fast
+slow variable so that x one two three
+are the slow variables and Y is a fast
+value how fast this depends on how small
+absent is
+we assume that we can measure through
+variable in most cases that's what it
+can fast variable too fast we cannot
+measure So based on that time Crystal
+data of x123 we want to create a model
+for the slow variables only so this is
+like cost graining homogenization you
+name it that's we always try to come up
+with the effect model for the slow
+variables the course variables in this
+particular case we're going to
+homogeneous mathematical homologization
+uh just get rid of this and that's the
+mathematical model which is exact when
+Epsilon go to zero right so here let's
+fix the case X absolutely is 0.1 so it's
+not exactly this is not very accurate
+but it's reasonably good uh at the same
+time we can use maximum data one two
+three let neural network create a model
+for x123 or you know homogenized model
+and this will be the prediction of let's
+see this prediction of X1 from 0 to 200
+to 400 I did not plot the first 200
+because if I do that everything
+cluttered looks like a random noise but
+upon code so if you zoom in they're not
+random no it's a deterministic chaotic
+system so the first 200 plus entirely is
+missing the memory is 1.2 that's the
+Trinity data we have we just need the
+data of x one two three of lens 1.2 this
+predicts up to 400 you can see neural
+network is the red the truth Computing
+from the real system and since that is
+the black you can see the red and black
+track is a really really really really
+well okay and the blue which is a human
+created
+a homogeneous system in a human
+approximate it's not too bad but you can
+visually see the difference compared to
+the truth if we compute the error over
+long time this will be the error by our
+human model human creative model right
+so the now is from zero to four hundred
+this is a typical error Behavior growth
+over time nothing surprising this error
+by the machine learning closed mode by
+neural network the arrow is a lot
+smaller and a lot more stable we do not
+have a full understanding of the runtime
+stability behavior of these neural net
+models just because we don't have enough
+mathematical tools to understand neural
+network but we have seen this kind of
+behavior very very often it's the
+long-time Behavior stability can often
+be
+surprised surprising but in a very
+pleasant way so
+let's make this fully chaotic so it's
+nice as much smaller system let's look
+at Lawrence 63 so this will be the exact
+Lawrence system through which we
+generate synthetic data and validation
+data and we tried to model only X that
+we only have X as a data we create a
+scalar mod of X but here I will show you
+X and Y because X and Y I can plot in
+two dimensional plot so let's pretend
+here we have recorded
+time case of X and Y only but we know
+nothing about Z right so this is the So
+based on X and Y we're going to use
+neural net this flow map learning to
+create a model for X and Y only and is
+we need history the history is point one
+times that 0.01 so this requires to have
+10 step of management data of X and Y
+this will be the two dimensional the
+neural network model the phase portrait
+starts from here this is up to 100 in
+fact I think it is more than 100 and
+maybe one thousand I forgot
+um but anyways long time integration was
+and this would be the exact model but
+the face part will project on X and Y
+the truth you can see visually this is
+very good we don't have good point wise
+arrow is chaotic system nothing would
+track the point-wide error accurately
+over a long time it's just natural
+chaotic system so here we just look
+visually they look quality qualitatively
+they are close enough we also based on
+this the data we compute a few measure
+for the how chaotic the system is the
+so-called correlation Dimension
+approximate the entropy liability of
+exponent there's a number from the
+neural net model this is a choose you
+can see that the number of reasonable
+closed captioning not available
+there are two cases first if we can
+measure we have times of all these
+variables it's a simple case you just
+create a one-step mapping your training
+data is only one two steps and you can
+get a lot of data even though in most
+new address training we do ten thousand
+twenty thousand history to Trend does
+but this ten thousand twenty dollars of
+one step data so the in overall data
+requirement is in fact very low thinking
+about if you do one system prediction
+sometimes solve system you can easily go
+one million step and you can put a lot
+of two-step data from here this is what
+it looked like if however what your data
+is only partial measurement then that
+requires memory and then this will be
+the mapping and you have more trim on
+the left all right in both cases we
+allocate the use of neural network
+because the dimension would be high keep
+in mind here for example here with
+two-step memory is three dimension but
+each Z is a vector if Z is a vector ten
+this is 30 Dimension so Dimension goes
+High very fast so and as I show you
+several examples it looks really really
+well we just make quick uh remarks that
+you can also model system with different
+controls and and all excitations the key
+of this there's some modifications have
+to go into that but at the end of the
+day you can do you can train your neural
+network model based on some control then
+the prediction the control can be
+entirely different that's never ever
+present in your training data so this is
+a very remarkable property we have found
+this from this thing by looking at the
+one step at a time never have time
+involved that allows us to do that so
+this paper has the detail on that so I
+don't have time on this I won't give you
+not just a few minutes a quick uh idea
+on how we do this with pde because we
+have discussed so much about dynamic
+system right
+um pde is what people really care about
+so now it's a similar setting suppose I
+have a set of grid on which I have data
+right so the data is my it now is a
+field so this is I can think of my
+observation as one Vector field as if
+this is the final element solver your
+grid your grid will be a vector lens
+let's say ten thousand if you have ten
+thousand nodes in your final item solver
+so it's one bigger vector
+suppose the autonomous supposedly
+observe every View and now it's fully
+observed system it's just like audio
+and it's nothing is missing so we just
+need to
+map from current state to One Step later
+you have this we can create a map and we
+can solve this learn this unknown PD
+right turns out it doesn't really work
+we we try this many many times no less
+than thousand different cases
+it just didn't work uh Y is because in
+dynamic system the mapping between these
+are the state variable X
+such as vectors they're components of
+vector nothing we can say about it's a
+dynamic system for PD is different the
+use are solution in space they are not
+random components of a vector U has
+smoothness and regularity they are
+connected in through them because PD has
+operated in them so there's a smoothness
+regardless in there that we are not
+enforcing here that's you know things
+when I say they don't work they don't
+really not work they just work sort of
+inconsistently and without the high
+accuracy I've similarly throughout this
+work we really demand accuracy to be
+high so we eventually find convolution
+network still didn't quite work again no
+less than a few thousand test cases
+still didn't quite work so we eventually
+were forced to develop for the first
+time a network structure to enforce
+something again it was it is motivated
+by the mathematics right so suppose I
+have a PD like this involves some kind
+of differential operator I don't know
+what they are I don't know what L is I
+don't know how many but I suppose I know
+the pde and suppose I have a set of grid
+I'm I can solve this by some kind of
+older fold I'm not going to do that but
+all of our does exist right so one step
+mapping from here this will be my
+operator and each spiritual would be
+replaced by some
+differentiation Matrix that's numeric
+analysis tells that is everything linear
+made through Vector product for
+derivatives this would be my very naive
+order forward its stability would most
+likely be an issue but we're not solving
+it we just need this to be on the
+conceptual conceptual level it exists it
+gives me some kind of truncation error
+one step I would just say that since we
+don't know this we don't know this
+derivative I would just say you know
+what we can make every different Matrix
+a non-linear operator it doesn't even
+need to be linear operation if I make
+everything lean non-linear is
+incorporate this as a special case so so
+the existing Olaf forces that exist an
+even bigger class and non-linear scheme
+such that my error one step right could
+be at least could be smaller it at work
+would be like this so it's a special
+thing just we're just making this class
+of method
+or much bigger much broader and we are
+saying that the arrow will commit over
+one step most likely would be smaller
+than this but at the worst case it would
+be just like this why because I can
+simply put this back into my linear
+Matrix that exists so that's all we need
+so this I went down we see this
+non-linear forward method does exist
+like this with some operator we don't
+know and this this output correspond to
+L this is how we design our neural
+network structure the input One Step
+input the vector over find element grid
+is here the output is here
+in between we have a sort of neural
+network in parallel goes for it in this
+way in parallel in this direction each
+one corresponds some kind of linear
+Opera without we do not know and then I
+have another Network horizontally acting
+component wise against all of them
+this is a non-linear operator here to
+learn the L here and if we connect this
+together that I can trim and this one
+works consistently in fact without this
+layer what we call assembly layer up to
+here these days it's resembles
+convolution natural very much all right
+so this is the key this is what we call
+the assembly block the assembly layer is
+what really makes everything worse to
+enforce regularity things like that let
+me quickly show you a few examples
+again the equation here only serves the
+purpose of generating training data and
+validation data so the equation may be
+simple okay u t plus u x equals zero the
+simplest equation analytically perhaps
+the most difficult one to solve
+accurately numerically again everything
+here just with on rely on one step
+Vector at here we have 15 nodes uh it
+will be the vector of 50 to 50 mapping
+so there's nothing missing just one step
+mapping in between have the December
+assembly block and this will be you know
+predicts over a fairly long time the 20
+uh two plus one you can see the accuracy
+quite well in fact the dispersion error
+is much much better than we expected
+many numerical method if you know we
+know the equation to solve this by some
+standard numerical method at T20 was so
+worth this person error but here is just
+by learning the equation lesson advising
+diffusion doesn't really matter I just
+want to show you that it works with
+non-uniform Grid in fact this case that
+the grid is not only non-uniform they
+are also ran normally permuted we do not
+this method doesn't require any
+knowledge of the physical structure of
+the grid the geometric structure
+connection is not required you can deal
+with higher derivative this is easier
+case because in more diffusive diffuse
+equations all be easy to simulate uh
+integral equation which in fact makes
+the effect to make this non-local
+problem again is diffusive is very easy
+accuracy is good
+Burgers equation would be an interesting
+example that again in this case when we
+generate the training sample we have 50
+nodes we solve this by some we actually
+don't at the beginning we only we solve
+this analytically
+and that means that our if our training
+data is created by some randomized
+Fourier series sine cosines we created
+their their final Series so they are
+very smooth we solve this by one times
+that which is 0.01002 nothing happened
+or one times and no shocks whatsoever so
+that's opportunity that all else we need
+a small sine cosine over one steps which
+is also simultaneous upon learning the
+operator mapping between the two steps
+if you execute this on the new initial
+conditions over much longer time when it
+the stock will appear it does appear so
+that's the thing I would like to
+emphasize here again is we do not need
+to see the physics in order to predict
+the physics in fact in a very if you
+recall in the very first instant example
+this already showed that none of the
+early stage the incident response has
+steady see the periodic State you never
+see that in training data but the
+Overland term the if you have the
+correct model it will produce the
+correct the physics is always very short
+time Dynamic it doesn't have any
+interesting fits in the short term you
+all ones have almost nothing happens
+to make matter a little more interesting
+here we assume that we can only observe
+grid value at right half in fact 40 of
+the domain
+and in this case we actually do need to
+use memory because these are 50 Vector
+50 or we only observe 20 of them so
+we're missing 30 component is missing
+variable we have memory but with
+sufficient number you can still predict
+facing here and this accuracy isn't that
+high but we say you know what in this
+case with shock and 40 domain you know I
+will give this a pass so let me just
+finish and do two dimensional unstructed
+grid this would be two Dimension but uh
+this PD but the entire one set of
+variable completely wiped out we only
+have data we this is very expensive this
+is like 50 by 50 grit so the vector will
+be 2500 length and with memory I believe
+we have 10 memory
+um so this will be 25
+000 input for the neural network so it's
+a little bit expensive but a long-term
+prediction the solution goes uh up down
+sort of sort of periodic with a little
+bit diffusion and you can see see the
+reference prediction looks fairly
+reasonable so anyway let me finish time
+is up
+um what I've discussed is what I call
+the FML the flow maplin is some method
+it's a methodology again I want to
+emphasize it's not it shows some
+capability that was never really we
+didn't really thought about before for
+example if we can model only things we
+observe so this should be very useful if
+we try to do some kind of multi-scale
+modeling or try to speed up competition
+by only predicting the cost variables
+which goes faster or you just blend this
+I only see this I model this right so
+um without worrying about any other
+variable that may or may not coupled
+with the things we want model
+but this capability if it's new in
+certain way like I hope this talk has
+Illustrated for you that it's not
+because the neural network is simply
+because we set up the problem
+mathematically correctly and we set it
+up at correct mapping from input to the
+output neural network is a very very
+powerful tool one which I a big fan fan
+of but it's not what brings the Magic
+The Magic is about setting that properly
+and in most cases our network is very
+small it's not really deep learning like
+this it's not very deep but anyway
+um there's no really need to use special
+structure the thing with memory one may
+ask someone you may ask can you a famous
+natural structure that in incorporate
+memory is lstm can you do that yes if
+you have missing variable if you do lstm
+you can accomplish about the same result
+we have our collaborator who has tested
+this soft extensively but then it's back
+to the question in our case if we know
+how it works why do we need to introduce
+this structure with a gate and
+everything either you know is a small
+plan Network would get it done so anyway
+one big thing I would emphasize is that
+and for many of you who have done neural
+Life Training uh who who really
+buy on the accuracy of things you know
+how hard it is to reproduce the result
+right it's for students who have trained
+that where you train that today tomorrow
+it may may not be the same you'll pull a
+code from GitHub from some of the paper
+and you try to replicate the result you
+cannot whose fault it is so in our group
+reproduce reproducibility is the number
+one criteria a good result about the
+result it better be reproducible so all
+we're in the process of organizing
+almost all the examples I discussed here
+in this talk and many of our papers
+how to generate the synthetic training
+data set in fact the trinidades that we
+use which is generally example more
+importantly we're going to put the data
+we used to plot the plots
+so that you can re-plot what we had in
+paper immediately and then compare to
+your results so uh I'm also in the
+process of writing a very detailed uh
+paper describing the computational
+details the the Arts how to create
+reproducible plots so anyway all of this
+will be available is in the process of
+getting uploaded at the moment I have a
+new website that I see in the making but
+anyway this will come up in just a few
+weeks so with this I will finish and
+take some questions thank you thank you
+so much for the wonderful talk I enjoyed
+it a lot I'm sure everyone else enjoyed
+it a lot as well although it's 11 how
+let's have a crane session I hope you
+have some time yeah I do have some time
+so I don't know how to see chat uh yeah
+well don't worry about it okay so
+Pat are you there are you
+still there and you post a lot of
+questions and yeah and and yeah just let
+let me let's just take the the most
+important ones yeah there are other
+questions too
+um that from other people
+um so so you seem to be assuming that
+that neural Nets are the way to go here
+rather than trying to discover
+the equations themselves in some
+Interpol form and there has been a lot
+of work uh for decades on that approach
+um so could you now I mean and of course
+there's also been a lot of recent work
+on on uh using neural Nets to do similar
+kinds of things because could you just
+talk about the pros and cons and why you
+think that this this doesn't have to be
+better right this could be just one
+among many approaches but you did
+suggest at times that you thought this
+would be better than other approaches
+including
+but implicitly better than learning the
+equations directly what's your opinion
+on this so yeah so I I I I do I did say
+that neon network is very powerful again
+like like I said in this but you don't
+have to do neural network so you you
+want that in in um in all these things
+we did here it's just a tool to uh to
+accomplish this kind of map so it's just
+a way to accomplish this mapping like I
+said if the dimension is low
+is the king but I I am a fan of neural
+network because many of cases the
+dimension is very high the infinite
+nodes and so let's do new on that so why
+do you believe that neural Nets will be
+better than say trying to discover the
+the equations in classic
+ode form so that's uh that's had nothing
+so again it's I want to be very clear is
+I will advocating getting this off model
+neural network can be part of community
+like that as opposed to discover F in
+the first so we have done similar things
+so let's see you won't discover F so
+let's just assume you can discover F
+analytically correct all right not
+analytically I'm talking about inducing
+it from the data in the same way you are
+with the neural network yes that's what
+I'm saying that if you can induce F from
+that the first of all you can never
+induce F exactly correct you have error
+in the first place right and then you
+have to D squaredize whatever the
+approximately F to solve you induce
+another error so error Compound on
+itself you're solving the wrong you're
+solving sort of slightly the wrong
+equation in the first place all right so
+just to be clear are you saying that
+forget about whether you're doing neural
+Nets it sounded as though you rather
+than learning a differential equation or
+a difference equation yeah whether it's
+in neural net or other form that you're
+learning a mapping directly from from
+the values at one time step to the next
+time step correct yes you're not
+learning the difference
+regardless whether you're where you come
+from you come twice recover F to do
+other form at the end of the day your
+prediction look like this one step to
+the next is the mapping so that's what
+we just try to go through this one step
+mapping in one shot because I want to
+use the word one shot there because it's
+overloaded it's still the partial means
+I have my data I want to create this one
+step mapping in one step that's all
+right and as opposed to separate the
+tasks you will introduce error in
+different stages they compound each
+other make their weak at each day is X N
+plus one equals x some kind of X we
+should we should follow up separately
+I've got I've got your email address
+um someone else had a question about
+noise
+uh nice uh a very good question noise
+there are two kinds of noise one is the
+standard measurement or you have if for
+example in this slide if I have X1 X2
+both have observation noise this is
+easier to deal with in the sense that
+you just do because at the end of the
+day the learning part the the uh the
+things I discussed here is really about
+minimizing the mean square error so
+let's just do this yeah so it's about
+minimizing the mean square error so we
+know is the least square is sort of
+robust against noise well you use the
+accuracy so your accuracy here sorry
+have you have you added noise to
+synthetic data and shown yes we have our
+paper I only showed you here without
+noise because I want to show the
+accuracy the is fundamental
+understanding so in some people we do
+have a noisy data example the lag
+accuracy will be less as expected
+nothing to do that so um but there are
+other things we do not fully understand
+sometimes so the other type of noise
+would be if your equation has stochastic
+driving it that that will become SD
+that's the entire different things that
+we have less understanding we won't have
+the very first paper just recent wrapped
+up I'm not ready to discuss that in
+extensive yet we have some understanding
+but we have struggle with SC for quite a
+long time so okay
+uh you said it early in the talk you
+said let me see what like if you were
+you were talking about uh not having
+time as part of the the learned that
+question and I thought you meant by that
+that you were simply making the markup
+assumption that you did not have memory
+but then later you introduced memory so
+I figured that I misunderstood you
+what did you did what did you mean in
+the early comments what what I meant is
+that we so uh which is the what's the
+best what I meant is for example if this
+is a new one so let's look at this my
+input x and x so we should never have t
+as Express input so for example I do not
+want
+um measure X as a function of T I should
+never have t as a node in here okay yeah
+and that and that's not the same as
+making the Markov assumption that's not
+that's not okay it's it it's it's if you
+make Market assumption that's true but
+it's it's weaker than that
+uh but they're all markov's right so uh
+anyway just how many steps with memory
+is not is not not making the markup or
+something but depends on how Define
+Markov that this one-stand Marco
+multi-stack markets though oh I see yeah
+okay yeah
+um fine but so
+yes well I think I think I think I don't
+that's not controversial I just I
+understand now what you're what you
+meant yeah okay
+and and I and and go ahead if there's
+any others there are definitely some
+others down below yeah um well let I
+want to invite the Rob Hayes um he asked
+about to know his data but he also he
+also asked another questions so Rob if
+you want to uphill yourself then
+um ask your questions directly that
+would be very helpful so it came down to
+the the it looked like the the process
+you're describing does require each
+successive data point to have the same
+time step so you're not folding the time
+step in you're not mapping it with that
+but they do require sequential time
+steps to be equal for all okay that's
+yeah
+we have not work out for simple cases we
+can do variable times typing but for
+this with memory we can't we we don't
+know how to do that yet so it is a
+requirement at the moment
+got it okay all right um
+just
+see more are you there
+uh yes I am yeah can you ask me a
+question directly uh so uh I had a
+question regarding just the comparison
+with other time series forecasting
+methods I was curious if uh the methods
+that you propose uh if they are
+comparable or are better
+than other conventional time series
+forecasting methods and if we have time
+I have some other questions
+about your other papers but it's
+probably going to be outside of the
+scope of this talks right
+um so we didn't do comparison with other
+I mean yeah there are a lot of
+statistical method to do that uh we
+didn't do that compass and I would guess
+look this kind of thing is hard to get
+without a method like I think
+I don't know I'm not aware of the method
+can get this kind of accuracy with this
+little data over this much long time to
+be honest and if you are aware of them
+please let me know I would be more than
+interested in looking into those methods
+okay
+but we did I didn't I wasn't aware we
+didn't do any comparison so yeah
+yeah thank you very much all right
+sounds good ah phase out how are you
+still there
+areas in the fast slogan
+all right phase out we heard you
+a bit can you
+um
+volume up
+we barely hear you okay
+well I I can just ask okay phase out
+asked in the fast slow example uh the GT
+and your NN do not diverse does it imply
+leopardino exponent of zero that's very
+nice uh I do not know to be honest
+all right uh
+Sean are you still there
+Sean Smith from Los Alamos
+if you're a mask question directly
+otherwise I can ask he asked
+um the motivation of this approach is
+that to use mathematical computational
+tools to circumvent the necessity for
+physical modeling however definition of
+the state space that you rely on is a
+large proportion of the physical
+modeling even when provided by
+experiments
+um selecting appropriate instruments
+requires insightful physical
+understanding
+even when the state space is only
+partially defined using Mori
+chuanzik and the selection of the subset
+of the state species in is even more
+critical in each of your examples the
+state space was defined by a physical
+model do you have any comment on that
+uh I'm trying to understand so
+it's a question is it
+if I guess is that about how to select
+what variable to to in order to
+understand the physics
+uh if that's the case I think it's a
+slightly different problem right it's an
+important problem so a question to ask
+even for password observe what variable
+I want observe in order to understand
+the Dynamics of of the problem and the
+this the method here is just assuming
+you that's what you observe so the the
+the limited case that whatever observes
+something that's completely useless I
+see nothing happens for example I
+observe uh uh for for a moving vehicle I
+observe the vertical location of the
+vehicle which is zero never changes but
+this must suggest that you've given that
+data and we produce the prediction zero
+uh the vertical location which will
+always be zero so which is still correct
+but the user is results so I think these
+are slightly different problem if I
+understand what you ask here so so
+identification of the variable to
+measure and this is a either important
+but a different question here is just If
+You observe this we're going to produce
+uh predictors which may be used this if
+you will observe the use of these
+variables I I hope I understand the
+question
+Sean said Thank you so okay sounds like
+yeah you answer them
+correctly well I don't see any other
+question but I have a couple of
+questions here okay no when you you know
+when you you know extend your method to
+the pde and you gave the nice examples
+and how you know gave gave us an Insight
+on how to extend your
+um FM FML method
+you know so you have introduced you know
+you can you can do so using some linear
+map and but why do you stick with a
+linear map you know extend that to you
+know non-linear map using the neural net
+and spatial I mean this is motivation
+yeah yeah yeah exactly right we didn't
+use this we just that this thing exists
+it's uh let's take this order for less
+like let's see it's the worst case a new
+one that can do because no one else
+would be make everything non-linear so
+it's just motivation is is how we
+design the network structure based on
+this because it's just after no less
+than a few thousand testing cases when
+nothing really worked consistently which
+is trying to find ways to see maybe we
+need a structure so we didn't know what
+to do so we look into Ola forward type
+of thing and then we decided based on
+this to design you understand structure
+mimicking this
+yeah exactly and then you change the D
+you know differentiation matrices to
+non-linear right functions and by doing
+so you are effectively introducing
+you know the space which is a lot bigger
+than just the linear right it's bigger
+than that so it can be a non-meter map
+so in some sense the training will be
+further than because then you will be
+more expensive because now we have the
+block thing so input output forget about
+this little thing that we have this
+parallel layers uh natural layers here
+and then this thing goes
+is a little bit more involved mostly
+because for PE the worker is much longer
+that's actually the the Killer part
+um right right so when I said uh you
+know if I can add in my finishing slide
+when I say most of our Network simple
+small apply to this case when we do PD
+here input one step for this we use
+physical with one layer and here we goes
+one layer like that like in this thing
+it works remarkably well and in our
+paper we actually did two layers it's
+simply because I told my student look if
+you don't do tell two layers people will
+ask why don't you go deep Network so
+that it's just one layer works fine so
+the moment it becomes nonlinear it works
+well
+okay well I I was wanted to ask you know
+there's a that sounds like there's a
+trade-off between you know you're making
+the training harder but um in some sense
+you're increasing the dimension of the
+parameter of space so you are hoping
+that you will get the better model at
+the end in principle we hope that yes
+yeah
+um so I guess that's the trader
+um
+you're talking about here oh by the way
+the last slide examples uh you said the
+pde with the missing
+um variable right it looked like a pde
+with a missing equations not not the
+variable well yeah it's an entire
+missing for you but it's a variable
+right this is 2500 V 2500 W we're
+missing 25 if you think the entire video
+has 5000 thing we are missing half of it
+so yeah it's amazing variable right but
+the first thing is
+there a pde equation so the first one
+you still have a V and W all of them
+together so we just we don't have W here
+it's a model of V only
+yeah this is only for V there's nothing
+you will only observe V we don't have W
+whatsoever oh got it oh okay I
+misunderstood this slide oh okay yeah
+all right
+sounds good I'm I'm sure there are more
+equipment more questions have I
+personally do but I think I can I can
+ask that okay if you have interest in
+this please feel free to write an email
+with I'd be more than happy to discuss
+offline I mean online offline to this
+talk so I'll be happy to answer any
+questions uh is that I mean explore some
+possibility to work uh collaborate as
+well so that'll be awesome yeah all
+right thank you so much all right let's
+let's thank our speaker today and uh for
+the one that we'll talk and as his
+Tongan said hopefully there is a future
+collaboration between us all right
+sounds good thank you thank you thank
+you very much thank you for the invite
+okay bye okay bye

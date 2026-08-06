@@ -1,0 +1,1313 @@
+welcome to the dtps seminar everyone it
+is an honor to your host Paul S Burger
+who is currently a professor at the
+Department of Mathematics of University
+of California Santa Barbara all right
+thank you I'd like to thank the
+organizers for this opportunity to talk
+today I thought I would share a little
+bit of work that we've been doing on
+leveraging recent developments in
+generative modeling in particular
+machine learning approaches that have
+been emerging especially in the Deep
+Learning Community for the purposes of
+developing multi-scale models reductions
+and other types of representations for
+non-linear dynamical systems of larger
+scientific simulations you know so fluid
+mechanics materials modeling and so on
+so I'm going to talk about a rather sort
+of small piece of the work that we're
+doing and this is relatively recent work
+and I'd be very happy to continue
+discussions offline about various
+directions and applications so just to
+set a little bit the context in which
+I'm motivated in developing these
+data-driven methods is what we're really
+after are ways that we can utilize
+observations either taken from
+experiment or higher Fidelity
+computation simulations and really use
+data-driven perspectives to essentially
+learn representations which we can use
+as a simulator either to predict future
+behaviors of the system or in the
+context of a much larger calculation
+where perhaps the part of the model that
+we're interested in replacing is very
+computationally expensive to compute at
+a high level of detail but for the
+purposes of larger scale phenomena that
+we're interested in a much sort of
+coarsened or simplified model would
+potentially do the trick but it might be
+very difficult to arrive at that through
+kind of traditional asymptotic
+techniques and so what I'm also
+interested in is in doing this in the
+context not only of deterministic
+systems but stochastic systems and
+that's primarily what I'll talk about
+today I feel like again to build some
+context I need to say a little bit about
+techniques that are out there and have
+been successfully applied for this type
+of problem so they can kind of compare a
+little bit and contrast some of the
+objectives of the techniques that were
+developed and so there's been a lot of
+work done over the years of course the
+data-driven modeling of Dynamics
+probably one of the most notable one is
+this proper orthogonal decomposition
+this is essentially a form of a
+principal component analysis where the
+basic strategy to build up your
+dynamical model
+um here I'm just showing a fluid
+mechanics model on the upper right would
+be to look at the modes in the system
+essentially that vary the most so
+essentially you would take your flow
+field create this very high dimensional
+Point cloud and effectively you're doing
+principal component on that a really
+nice development in the direction of
+incorporating Dynamics within this kind
+of linear Frameworks is the dynamic mode
+decomposition introduced by Schmid in
+2010 and lots of developments by by
+various groups and communities including
+abronto and Kutz in various directions
+and again this is a linear based model
+again that's there's a lot of advantages
+having lender-based models they're
+they're much more straightforward to
+build theory for and you know
+potentially computationally efficient
+then more efficient than training let's
+say deep in our networks and so the
+basic idea in things like Dynamic mode
+decomposition is you're basically going
+to take dynamical information into
+account by saying well which modes are
+sort of most indicative of that
+prediction of what's going to happen in
+the future over some set of snapshots so
+you're basically you looking for again
+the sort of best linear model and kind
+of the best basis in order to try to
+align your your linear predictor with
+the underlying data observations there's
+also been really nice work done on using
+symbolic approaches essentially uh L1
+regression things like the lasso
+combined with these symbolic
+dictionaries and that's a way that you
+can overcome some of the issues that I
+mentioned of these previous linner
+models and again lots of successes and
+nice applications of these techniques uh
+and but you know this has the drawback
+that you do need a sufficiently
+expressive Library so that you kind of
+have coverage over the space of
+potential Dynamic representations that
+are relevant for your system so my main
+point in mentioning these approaches I
+just want to give kind of some context
+of what's out there and it kind of just
+helps set a little bit the the
+overarching environment in which we're
+trying to develop these data-driven
+techniques I'm also going to incorporate
+noise so it'll also be a generative
+component that I'll be talking about in
+detail and so the objective is try to
+not just recapitate the behavior that
+you're seeing in the training set but
+really learns for intrinsic model so
+that you can make either longer term
+predictions or ideally in the context of
+a lot of these scientific Computing
+applications be able to replace one of
+your more expensive models with one
+that's much cheaper but a long time
+simulator and so that poses a lot of
+challenges from the data-driven modeling
+perspective because you know depending
+on how you go about this your model
+class might not have certain intrinsic
+properties that we're used to and we
+design into our numerical methods you
+know such as things like stability which
+obviously be very important for a long
+time prediction also another challenge
+is incorporating prior knowledge to the
+extent that we can we often know a lot
+about you know the physics of the system
+or other mathematical structure in the
+system and so we'd also like ways of
+including that as inductive biases in
+our data driven methods so I'll talk a
+little bit about where I think their
+opportunities do that as well in some of
+these nonlinear approximation approaches
+as I said these developments in the
+neural networks community in particular
+generative models and I'll kind of put
+it in a little bit larger probabilistic
+context and then there's a lot of
+interesting uh directions I think that
+this could be pursued uh for for a lot
+of the applications that I showed on the
+previous slides but going Beyond again
+the sort of linear approximations to to
+then incorporate various types of
+non-linear approximation classes
+um so it's two motivating examples and
+I'll come back and I'll give some
+results for these one of which is you
+know basically systems identification or
+extracting State information which is
+important in many different problems
+including things like control
+and the objective here basically is to
+learn key parameters from observations
+of the Dynamics these things go by you
+know many different names depending on
+the community uh and now what we're
+trying to utilize here as I showed in
+the upper right just a little animation
+if I'm trying to learn for example in
+this Ornstein Woolen back process uh you
+can think of it intuitively from the
+mechanics point of view as a bead spring
+system where I'm trying to learn
+simultaneously the stiffness the damping
+and the temperature of the system
+um you know what we want to do is
+somehow probe the Dynamics in a way that
+would be indicative of those different
+properties so there's going to be an
+interesting challenge whenever you're
+trying to estimate a model from the
+Dynamics that you may you have to be
+careful basically that you're probing
+the Dynamics on the appropriate time
+skills and that you have sufficient
+coverage over the response range that
+would be sensitive to those particular
+parameters but the overall objective
+here is to try to learn dynamical
+representations from observations sample
+trajectories also in reductions and
+course grading I'll show an example
+where um you know we're trying to learn
+essentially unknown Force laws and so
+how that can be done again for this
+General perspective in this case um this
+would be a non-parametric estimation
+problem where we want to learn an
+unknown Force law for example uh in
+something like longevon Dynamics and so
+problems analogous to this come up in a
+lot of different contexts in developing
+again reductions so that you can
+simulate things on larger time scales to
+overcome for example sources of
+stiffness or in coarse grain modeling of
+course which is very popular for example
+in the Material Sciences community so
+some of the interesting things that you
+could potentially do if you had good
+non-linear estimation methods is you
+know not have to hand craft your
+estimators for things like the the force
+law so one of the common ways you might
+try to go about doing this is to use
+something like maximum likelihood
+estimation but of course the immediate
+challenge you run into in the setting of
+these Dynamic representations is
+uh that you have to specify likelihood
+functions you have to compute those
+potentially on very high dimensional
+probability spaces and so I'm going to
+show some Alternatives uh to that
+approach all right so I just wanted to
+give some of the kind of key key
+motivations here in context of um where
+we're trying to develop uh these
+techniques just to give a a sort of
+overview of some of the issues that
+arise and I think there's a lot of
+potentially interesting ways again to
+leverage a lot of the recent
+developments in the machine Learning
+Community
+um in the case of stochastic Dynamics in
+some sense we're trying to learn an
+entire ensemble and so there'll be some
+interesting issues that arise there
+given the roles that noise plays in
+stochastic phenomena and then of course
+as I said before we'd like to do all
+this to obtain robust uh representations
+that are stable for the purposes of
+either a long time prediction or or
+simulation all right so I think I've
+said a you know enough at this sort of
+the high level and I'll start getting
+into some of the more uh details of the
+techniques that we're going to leverage
+and to further develop um so if you're
+not familiar with General adversarial
+networks I'm just going to go through
+really quick
+um what these techniques are these are
+recent developments in the machine
+Learning Community closely related to
+generative modeling statistics um and so
+what I'm going to do is just go through
+perspective on gendered adversarial
+networks this is basically a way for us
+to train a simulator or an implicit
+generative model that is uh this
+function that I'm showing here which is
+G of Z and G of Z basically has some
+noise source and what it's going to do
+is generate a sort of collection of
+samples and the objective here is to
+take our training data and take our
+implicit generator and have some way of
+comparing the samples that we get from
+the
+um the the training set with the samples
+that were produced uh by the generator
+now as I mentioned before you know one
+way that this has traditionally be done
+if you know a lot analytically about the
+generators you could use things like
+maximum likelihood estimation but if you
+do that right this requires a
+specification of likelihood functions
+requires you to go and and perform those
+calculations during the training Loop
+which could potentially be quite quite
+challenging the appeal of doing this
+adversarial training approach is instead
+of relying on a sort of pre-specified
+likelihood function what we're going to
+do is simultaneously train another model
+this could potentially well be a neural
+network but can be taken from any model
+class you like and I'll show a little
+bit about that in a minute and basically
+the job of this discriminator uh is to
+characterize how closely the samples
+that were produced by the generator
+differ and so the discriminator you can
+think of as playing a role analogous to
+a classifier and if I have this
+collection of samples its job is to say
+well did those samples come from the
+training set or the generator if it can
+distinguish that readily then your you
+know your generator uh needs to be
+improved you could think of this as kind
+of like a two-player game where if I had
+a classifier loss for example the
+discriminators would be aiming to
+minimize the loss while the generator
+would be aiming to maximize that loss
+for the discriminative and so by making
+different choices of the discriminator
+we can actually realize uh different
+divergences and metrics for comparing
+the empirical measures of the samples of
+generator with uh with that of the the
+training data distribution all right so
+that's a quick overview of Afghans so
+you have a generator G what's different
+from some of the other modeling
+approaches is we're not actually going
+to write down ever the probability
+distribution or measure directly we're
+simply going to have an algorithm that
+generates from some random input samples
+and then we're going to tune essentially
+that algorithm so that it produces high
+quality samples that agree with the
+training set and then discriminator the
+simplest case would be a binary
+classifier which I'll use for
+illustration and then I'll I'll show how
+we can extend that for the purposes of
+these uh learning of Dynamics if it were
+binary classifier basically the idea
+would be it would give us a number maybe
+between 0 and 1 telling us the
+probability that it thinks it was
+produced by the data distribution versus
+produced by the the implicit generator
+so I'm going to write these probability
+densities down for the purposes of
+having a theoretical perspective but in
+practice you're only going to be working
+with samples from G and D will only be
+operating on Sample sets from from G and
+the and the training except
+uh so basically you can think about a
+little bit like it's like a little game
+where G is kind of acting like a
+counterfeiter d is kind of a classifier
+seeing whether this is real or fake and
+your job is to create such good samples
+again that the discriminator uh can't
+can't tell all right and we'll we'll see
+what that how that plays out um
+mathematically
+um in in a little bit and uh and that'll
+inform our choices for uh the
+discriminator model classes all right so
+the way that we're gonna typically
+um play this game is what we'll do is
+we'll have a synthetic data set which is
+a mixture of samples that are taken from
+the generator samples that are taken
+from the um from the training set and
+those get mixed together and we put
+label one on everything from the
+training set and we put label zero on
+everything from the implicit generator
+and now in leverage results from the
+classification Theory to create a loss
+function for the discriminator model uh
+D and so the score of the discriminator
+is basically going to be you know the
+zero one loss for assigning the correct
+labels uh to those sample points now if
+we look at it from you know point of
+view of let's say the Bayesian
+classifier you can see that if D of X is
+interpreted as a probability the ideal
+way to try to classify would be for D to
+estimate the probability that the label
+is one given that sample point because
+you know you could have that both the
+generator and the data distribution
+produce the exact same sample of course
+in practice there'll be a little bit of
+smoothness that needs to come into the
+problem uh you know where you want this
+for X's that are close that they have
+the appropriate probability assigned
+um and then one minus D is basically the
+probability that the label y was
+assigned so of course the base
+classifier would be to just take the ARG
+Max of that conditional uh probability
+what we're basically trying to do is
+develop an algorithm to find effectively
+that Bayesian classifier for this mixed
+uh synthetic data set which which is
+acting in for the classifier's point of
+view is effectively like a training set
+but I call it synthetic uh training or
+synthetic label data just to not just to
+distinguish the original data from this
+synthetic one that we're using for the
+purposes of the yans and so if we mix
+together one half probability the things
+from the generator and one half
+probability from the um the original
+training data this would be the
+distribution that we're training the
+discriminator over and the base
+classifier actually can be worked out
+analytically to be this so it'll
+essentially just be the probability of
+the data distribution generating that
+sample over the sum of the probabilities
+of the data model distributions having
+generated that probability
+so you can see that the optimal if we
+were to actually perform all of our
+optimization perfectly the best
+discriminator the one that would
+minimize the the loss the zero one loss
+would be given by this analytic
+expression here of course in practice we
+don't get that but some interesting
+outcomes you see is that if I had that
+the data distribution the model
+distribution lined up perfectly I would
+have that this D of X is one half and
+that kind of means that the
+discriminator was maximally confused
+didn't know whether it should assign a
+label of zero or or one is the way you
+can intuitively interpret that so if you
+now go and you you get a little more
+mathematical about what we're actually
+Computing here we have the subjective
+function uh the Theta D here are the
+parameters for the model class of the
+discriminator and the Theta G here are
+the parameters of the model class of the
+generator what we're basically
+minimizing in the loss function is this
+expectation of the log label probability
+here this is that the usual zero one
+loss this is what that amounts to and
+now if you break it down for what we
+have for the synthetic set data set
+you'll see that it breaks into these two
+parts and this is the typical loss that
+would be used for discriminator in
+something like against now we're going
+to see there's some drawbacks to this
+and I'm going to have to reformulate the
+Gans for the purposes of learning these
+stochastic systems but I wanted to kind
+of show you the sort of standard uh and
+original formulation before I uh do
+those modifications so at the end of the
+day what you'd be doing is trying to
+find an ARG Min of this subjective
+function to get your discriminator
+basically you're trying to have the best
+classifier possible given that synthetic
+data set and then the generator's job is
+basically to try to mess up the
+discriminator's ability to achieve a low
+loss in other words make your samples so
+good looking that the discriminator
+really can't tell between the samples
+it's producing and those of the data
+distribution so that's sort of the
+underlying strategy and this is how it
+plays out mathematically I've used a
+little bit of a modified objective here
+just to avoid some issues with Vanishing
+gradients but nonetheless that's what
+this objective is ultimately achieving
+when you ARG Max it with respect to the
+the generator's parameters you know very
+prone to oscillations if you use kind of
+this alternative descent asset but
+anyway I just want to mention what the
+typical training objective is and we're
+going to use some analytic techniques to
+work around that issue of oscillations
+that arises I'll just show an example
+with learning something which is
+relatively simple which is a gaussian
+but the key point I really want to make
+here is you don't know an advanced tip
+typically what is a good noise source
+and so the real sort of issue here is
+the noise Source I took to be a uniform
+distribution I want to compute something
+like a gaussian you'll see that even
+trying to train as on a Model that's
+this simple Gans runs into some and you
+see immediately that you get a lot of
+oscillations during training and really
+what's going on here is it's very
+difficult often in Gans to to resolve
+the tails especially if you don't have a
+decaying Nori Source but you know you
+could replace this obviously with a
+gaussian noise source and you'd very
+readily be able to learn the model but
+this is really the scenario that you
+often encounter in practice is the noise
+Source often needs to undergo some
+pretty radical transformations in order
+to realize the target uh probability
+distribution so we want to be very
+careful about the the objectives that
+we're using to train the Gans and
+there's this issue of oscillations if we
+use simply this relaxation this gradient
+descent for discriminator granite asset
+for for the generators and so what we've
+done is introduced a way to modify the
+standard formulation of Gans to
+incorporate some additional features to
+deal with some of those issues related
+to oscillations to deal with some of the
+issues related to to the noise that I
+mentioned as well as the the high
+dimensionality and so refer to this as
+stochastic Dynamic Gans so the basic
+objective again is to learn a implicit
+generator and generative model G of Z
+here x would now be the trajectories
+that we'd like to be again a sample
+based so we'll use this setup with
+discriminators now if You observe
+stochastic trajectories the reason why I
+can't just use the standard Gans
+formulation is the dynamic trajectories
+would be very very high dimensional
+random variables and so you can imagine
+it being very prone to not having good
+sample coverage in fact if you do the
+standard against formulation that I
+showed before you can show that that
+loss that you ultimately get is based on
+callback libler Divergence you have to
+be very careful about probability
+distributions being absolutely
+continuous with respect to the other and
+so as a consequence getting coverage in
+the sample space would be quite
+challenging when you go to very high
+dimensions and so what we're going to do
+is we're going to use the probabilistic
+structure that we often know in advance
+about dynamical systems for example uh
+you know if we're looking at something
+like longify Dynamics we know that the
+the new state is likely to depend on
+some previous number of states in that
+case uh two states and so what I'm going
+to do is I'm going to develop my
+learning methods over the class of
+General m-step stochastic integrators
+and that's going to be the model class
+essentially for my implicit generators
+and by doing that I can sort of build in
+various inductive biases including
+learning within let's say the framework
+of numerical methods which are known to
+be stable at least for sufficiently
+small time steps and and basically from
+that I can then learn my representations
+in a way where I have a viable candidate
+simulator in hand so from the modeling
+point of view or probabilistic point of
+view you can think about us learning
+over essentially probabilistic graphical
+models where we're going to allow for
+State K there to be a dependence on the
+previous M steps okay so that's going to
+be the basic way that we deal with some
+of these high dimensionality issues and
+then I'll talk about how that
+probabilistic structure not only can be
+used for the full trajectory but we also
+can look at trajectory fragments as the
+signatures that we use in the
+discriminator to drive the generator
+towards the data distribution samples so
+the key idea here is really we want to
+we want to be completely sample based so
+we can avoid having to specify
+likelihood functions so throughout there
+will be no likelihood functions so you
+can think about these as being methods
+that are alternatives to maximum
+likelihood estimation all right so learn
+representations I'm going to use as my
+model class stochastic m-step methods so
+just to get some notation uh specified
+uh this is just saying that outing this
+um probabilistic graphical structure I'm
+showing here on the right will have that
+state J depends on the previous M States
+you can think of PSI J minus 1 as the
+update from time step or step J minus 1
+to J
+Omega J here will be the sample point
+because we're dealing with the
+stochastic process and then the P here
+will be whatever parameters we have of
+the system so these could be your
+weights of neural networks or they could
+be uh parameters of the physical system
+that you'd like to learn from your
+trajectory observations I'll also allow
+the parameters to influence the the
+initial conditions or you could think
+about that as coming from some Ensemble
+for the the initial conditions of the
+system all right so that's the basic
+setup in the model class that we're
+going to use for our implicit generators
+and this provides all kinds of ways to
+incorporate prior knowledge physical
+principles we can sort of design into
+this update all kinds of features I'm
+going to replace the standard um kind of
+Jensen Shannon Divergence approach of
+the original Gans formulation with
+another approach that's kernel based and
+that will also provide some other ways
+to incorporate inductive biases um and
+then as I said before this encodes
+essentially these probabilistic
+dependencies so we're not learning over
+the general space of you know r n times
+D random variables we're really learning
+over this class of uh graphical models
+now once you do that there's also a way
+to introduce different training
+protocols realize you can train this
+quite effectively not just using the
+full trajectory data but also using
+things like additional distributions or
+even just marginal distributions and
+this allows for potentially big
+reductions in the number of Dimensions
+you have to deal with during the
+training process because you can utilize
+trajectory fragments and so I'll show
+some results there as well as down
+sampling by using different time skills
+Tau so the overall objective then is
+going to be to develop appropriate
+discriminators and critics for this sort
+of dynamic scenario currently what we're
+developing are methods within the
+context of generalized moment methods or
+maximum mean discrepancy and and we
+found in practice this seems to lead to
+some nice results with respect to
+avoiding some of those oscillations like
+I showed you in the standard Gans
+formulation all right so those three
+training protocols I'll just say a
+little bit about them briefly because
+they'll kind of come back when I develop
+some of the algorithms so in the full
+trajectory case essentially what we're
+going to think of as the implicit
+generators distribution
+would just be essentially the sequence
+of snapshots of the dynamic trajectory
+and of course that's going to be very
+high dimensional and that's not very
+desirable in training because
+um you know again getting sample
+coverage in a high dimensional space is
+uh is quite challenging so you need
+rather large batches to get meaningful
+uh comparisons so what we're going to do
+often is down select in two different
+ways a delta T here that I'm mentioning
+doesn't necessarily have to be the time
+step of the m-step generator this could
+be much larger time steps so that you're
+only sampling at you know select times
+and that way you can get sensitivity to
+the dynamic responses on large time
+scales but the underlying numerics is
+using a much uh smaller sub step and so
+that's the strategy we'll typically use
+with these full trajectory approaches
+and that's what's being denoted here by
+this Tau that you're seeing there uh and
+so the conditional methods as the name
+implies this will be where we'll use uh
+trajectory fragments this would be most
+of appropriate where we're able to
+generate entries of the training set
+from something like a high fidelity
+simulation so these would start off with
+like the same local initial conditions
+and then evolve for some period of time
+it's kind of like a little local burst
+if you like of trajectories and then of
+course you're learning these probability
+distributions which are conditionals on
+those different samples for the initial
+conditions and that that that has
+obviously training benefits again if you
+have some control over initializing the
+the training debt set data and then the
+marginals don't require that the
+marginals simply just take a fragment of
+the trajectories and essentially you're
+just trying to learn marginal
+distributions for some specified ranges
+you can either do it as kind of like a
+sliding window or you could have it at
+one specific time so the main point I
+really want to make is there's all kinds
+of interesting variations and
+combinations of what I've specified here
+that can be used to greatly improve
+potentially training when you're trying
+to learn these dynamical models and so
+I'll focus on these kind of three
+standard cases all right so for the
+generator loss I'm going to reformulate
+it so I'm not simply using a zero one
+classifier and this is with the
+objective of trying to get a little bit
+more information about the dynamical
+trajectories that can be used as a
+learning signal in the gradient of the
+generator and so what I'm going to do is
+instead of using just a sort of binary
+classifier I'm instead going to learn a
+critic or a discriminator that is
+essentially a function which is going to
+aim to distinguish between the two
+probability distributions so you can
+think about this function as basically
+being like a signature that tells me how
+different these two random variables are
+where the function is restricted to come
+from some range of features or
+functional forms and I'll get into that
+in more detailed from the probability in
+statistics literature this is what's
+known as the integral probability metric
+depending how you choose this uh model
+class fancy F here you can get all kinds
+of interesting metrics including the
+cantarovics metric associated with
+optimal transport like the Veloster
+steam metric for example that would be
+the one Lipschitz functions for which
+it's constant less than or equal to one
+you can make other choices to get other
+well-known
+metrics and divergences the choice that
+we're going to make here and again the
+whole purpose of this is to compare the
+empirical distribution of the generator
+and the training set we're going to use
+a reproducing kernel filbert space for f
+for f here and we'll look at all of the
+functions that have uh Norm in that
+space less than or equal to one so
+there's a number of nice things that
+happen if we use that depending on our
+choice of Kernel this of course can give
+us rather Rich ability to distinguish
+between
+probability distributions while at the
+same time having some other structure
+which we can utilize for the purposes of
+training from these finite sample sets a
+lot of what will happen here is it'll be
+Sim similar to doing something like a
+kernel density estimate of the two
+distributions and kind of comparing
+their difference but of course what
+kernel you choose will affect what's
+being emphasized in those comparisons so
+the key property that I'm going to use
+for that kernel for now I'll just leave
+the kernel generic and I'll say a little
+bit more about what we use when I get
+into the examples is we'll use the fact
+that if we're in a reproducing Colonel
+Hilbert space then we can evaluate the
+function f at a particular value X by
+simply taking the inner product of f
+with the kernel Now using that property
+if I substitute that in above here it
+actually can be I can simplify the form
+of this optimization problem that I need
+to solve I'll use the notation mu P you
+can think about this as an embedding of
+the first probability distribution and
+muq as an embedding of the second
+probability distribution into the
+reproducing kernel Hilbert space I can
+use that along with this kernel property
+to basically commute the the inner
+product with the expectation and if I do
+that then this integral probability
+metric that I get can be expressed in
+this form this is what's known as
+maximum mean discrepancy and you can see
+readily now that optimizing over all
+Norm 1 functions would be given by
+simply taking the direction of that
+second vector or that second function
+and that's simply given by the
+difference between the embeddings over
+the norm of the embeddings and so when
+you work it all out you know again going
+back and using this property of kernels
+you can express this as the sum of
+Kernel expectations now all that looks
+great the one drawback of course of this
+is that these are second order
+statistics and we'll talk about how
+we'll deal with that in a little bit and
+so this provides us then uh from the
+sample based point of view this would
+provide us with a loss function for our
+generator in particular
+we can take this expectation quantity
+let's just Square it to get rid of the
+square root since at the end of the day
+we're interested in doing optimization
+minimizing and then we can use this
+unbiased estimator here which would then
+give us a sample based estimate of the
+nmd and so that's what we're going to
+use for our generator loss this is
+basically a way of determining the
+discriminator analytically so I don't
+have to go through a separate training
+or optimization problem like I did in
+the standard Gans formulation and so now
+that takes the discriminator
+optimization part out of the problem and
+now I can focus on simply minimizing or
+minimizing the objective for the the
+implicit generator and so that'll boil
+down to this loss function which I'm
+showing here which will amount to
+essentially the uh the the empirical
+estimator for the MMD that I'm showing
+in the upper right and this is uh just
+Computing nmd the unbiased estimator for
+effectively those empirical
+distributions of G and D all right so
+that's going to be the overall loss that
+I'm going to use in my generative
+formulation and now it boils down to how
+do I actually compute the this in
+practice for performing training using
+things like stochastic gradient descent
+and so what's really crucial here is
+that I'd be able to compute gradients of
+that loss function efficiently and it
+turns out that if I use just standard
+back propagation methods of the
+computational column graphs it should
+become prohibitively large for backpro
+so I'm going to you make use of more a
+mathematical structure of this loss
+function and so the first observation is
+just to note that we have to do these
+double sums over the samples not very
+computationally efficient again if we
+were to use a sort of direct back prop
+on the computed Expressions but we have
+a lot of probabilistic dependence here
+that we know in advance we know that the
+sample points for example come from
+those m-step updates we know a lot about
+the the structure of the objective
+function coming from the the kernel
+evaluations that I showed you before and
+so uh you know again High Dimensions
+having to deal with the second order
+statistics and that's what I'm going to
+address next so the basic approach that
+we're going to take is closely related
+to adjoint methods and we're going to
+use that died in a judicious way both
+for computing aspects of the second
+order statistics as well as the
+dependence on the stochastic
+trajectories and in this way then we'll
+have a viable training protocol for
+learning over those m-step methods with
+these MMD lawsuits uh so just to give a
+quick overview of those techniques what
+we're doing is we're ultimately trying
+to compute gradients of an expectation
+and so the way that we'll look at this
+from a mathematical perspective is we'll
+build all of the dependencies into the
+parameters P that we're trying to learn
+into the random variable so we'll assume
+there's some base measure I call that
+Omega you can view then the expectation
+in our case it's the MMD that we're
+taking expectations of the stochastic
+trajectories are being generated by an
+implicit generator that has some
+parameters P so the random variable is
+what has the P dependence not the base
+measure and in that case then we can
+commute taking gradients in the expected
+quantity with taking expectations of the
+grade of the random variable essentially
+right so that's just the key assumption
+that we're going to make in our notation
+essentially our formulation and of
+course what we're doing here is a
+discrete approximation of that
+expectation and it follows as I've shown
+here on the right to effectively being
+able to compute gradients of the sample
+terms okay so now if you look at the
+gradients of the sample terms the
+problematic part is having to create
+gradients in the stochastic trajectory
+components and if you were to go through
+again and kind of do this in a
+straightforward way using the chain rule
+this becomes rather expensive because
+you would compute gradients in all the
+different stochastic trajectories and
+then ultimately contract them with these
+partials X and Phi and so it turns out
+and this is an Insight that's used in
+adjoint approaches and control theory
+and other areas it turns out that
+because you're doing this contraction
+there's actually an alternative
+formulation of the contribution of this
+term and I'll walk you through how that
+plays out in the context of um of our
+methods so the challenge is to compute
+efficiently the contributions of those
+gradients in P of the sample set so as
+you adjust the parameters of the
+stochastic model right that's going to
+affect all of the the samples that are
+produced and that's what we need to deal
+with so the alternative approach that
+we're going to take is going to be based
+on an adjoint formulation and really
+what we're going to utilize is the fact
+that if you look at the solution to that
+m-step method you see that it solves
+this implicit equation here and so where
+F has these components and if we do that
+this implicit formulation allows us to
+utilize the implicit function theorem
+which basically says that if we take a
+derivative in the parameters we can
+express it in this way using the total
+derivative and we can actually solve for
+XP in terms of derivatives of f so we've
+kind of shifted everything off to the
+implicit function f instead of having to
+compute in terms of XP directly and that
+has a bunch of nice properties as you'll
+see because now what I can do is I can
+can contract this expression quite
+readily and often I'll get a problem
+that's much easier to solve than if I
+had constructed all of those explicit
+gradients all right so then XP can be
+expressed in terms of the Jacobian in
+this way in terms of derivatives of the
+implicit function f all right so I've
+just copied that over here on the left
+and the adjoint approach is to compute
+then the full derivative by plugging in
+this expression for XP and then just
+rearranging the order in which you're
+going to do the contractions and if you
+do that then you can show that this
+whole expression would boil down to
+essentially Contracting a vector r with
+FP where R satisfies this equation so
+the real challenge then I would say is
+they come up with a deficient way to
+compute each of the steps in this
+gradient computation which is to compute
+g x f x that gets you the Jacobian have
+an efficient solver for R then compute
+gpfp and then now you get your full
+gradient through combining those terms
+with that solution arm it's really the
+computation of R that's typically uh the
+part that um that could get
+computationally expensive I'll show you
+in the context of these m-step methods
+we actually can get very efficient
+algorithms in fact a solver which
+amounts to solving a system of
+recurrence equations to construct that
+Vector all right so that's the objective
+and in all that will be used to compute
+the gradients of these empirical
+estimators of the expectation all right
+so just to get through that the second
+order statistics I don't want to say too
+much about that you can basically use
+the chain Rule and again if you
+judiciously look at what you get it
+turns out that you can reduce things to
+essentially doing an adjoint method on
+this linear function I won't say very
+much about it but you can use the
+technique that I've showed you on the
+previous slide to construct then
+derivatives of the overarching loss so
+the real challenge then comes up to
+having effective adjoint methods for the
+stochastic trajectories and so I'll
+focus on that just in the interest of
+time and so up there on the upper left
+is the gradient method this is the
+implicit formulation including the
+initial conditions I'll go through this
+rather quick because I do want to have
+sufficient time to talk about results
+you can look in our paper for a lot of
+the details but just some notation fjd
+will be the the implicit equation for
+the jth step and D component and then
+when I take a derivative I'll just put
+that second index uh there so putting
+all these pieces together what you
+basically have to compute is for these
+implicit equations you have to compute
+the following Jacobian that's done
+rather straightforwardly using these
+fjdfk D Prime terms and you take the
+transpose this gives you a set of linear
+systems I'm going to break the r Vector
+down into components corresponding to
+this steps at the end of the trajectory
+all the way back to the beginning so
+what I'm really utilizing here is that
+probabilistic dependency that I have in
+particular the form of these updates and
+so if I do that I can first compute RN
+then use that to compute RN minus 1 all
+the way down to r0 put all those
+together composite that will get me R
+and I can use that in my gradient
+calculation to get the update so that's
+the strategy here I realize I'm going a
+little quick but I just in the interest
+of time want to go through this um
+briefly and I'll refer you to the paper
+for for a more in-depth discussion so at
+the end step you basically have this
+particular equation for the RN
+components you can solve that outright
+in terms of derivatives of feet uh now
+you have that if you go to step n minus
+1 and minus two and so on back you can
+again solve directly for our KD you put
+everything here on the right hand side
+notice those indexes are plus one plus l
+so you have those in hand from the
+previous step and then of course if
+you're more than M steps away from the
+end point then you get this generic
+formula that again allows you to solve
+for RK in terms of the previous iterates
+that you already have in hand so this
+gives you a very efficient solver now to
+get R and that's sort of the key
+component in our gradient calculations
+for doing stochastic grade Descent of
+this uh this generative modeling
+approach all right I'll refer you to the
+papers again for details there and I've
+already said a lot about the training
+protocols and and these can be obviously
+adapted and applied quite readily within
+each of these uh contexts all right so
+let me in the remaining time just talk a
+bit about some of our early results with
+these methods as I mentioned it's pretty
+recent and ongoing work so the first
+problem I mentioned was learning uh
+parameters of mechanical systems and in
+particular I'm going to look over uh the
+model class of longevon Dynamics these
+will be inertial Ornstein woolenback
+processes so you can think about that
+bead spring system and the objective
+here is from observations of the
+trajectories essentially to learn the
+stiffness of damping and the fluctuation
+related terms and I'd like to do that
+simultaneously using this generative
+approach the challenge of course with
+that is dimensionality these are
+basically what the observables are I
+don't have a lot of time to go into
+detail here but you can see that there
+are different time skills at which those
+different parameters are sensitive and
+that does play a role in how you
+ultimately formulate those those
+training protocols that I was referring
+to and I'll refer to the paper again for
+some more in-depth discussion of that
+and be happy to talk offline so I just
+want to point that out qualitatively you
+see that the way that'll manifest is
+when we're observing and doing our
+training if we use for example the
+conditionals and the the marginal
+distributions we're essentially training
+over observations that are analogous to
+what I'm showing here on the right all
+this is done for a three-dimensional
+system we're using a rational quadratic
+kernels I should mention and there's an
+important role that this time scale Tau
+that we sub-sample on plays in the
+training protocols so here's some
+quantitative results I'll just start
+with the stiffness you can see as we
+vary Tau we're able to get this quite
+accurately estimated we we estimated
+stiffness temperature damping
+simultaneously something interesting
+happens in the training in that just
+like with maximum likelihood estimation
+there's a tendency to get pulled towards
+a local minimizer where if you make the
+temperature very large of course that
+will make the training data quite
+plausible under your model but in a
+sub-optimal sense one of the nice things
+about the MMD that we noticed is that
+once the stiffness seems to get within
+the right ballpark it gets pulled away
+from that kind of local
+minimizer towards then the correct
+temperatures you're seeing here in this
+particular training run and similarly
+with the with the damping so you can see
+that there's also interesting
+sensitivity on the time scales here and
+just comparing the different protocols
+full conditional marginals for a
+relatively large sampling time scale
+versus a small sampling time scale you
+can see that that plays significant role
+in the accuracy of the results
+especially when we look at something
+like the conditionals we get very good
+accuracy for large time scales because
+there's sufficient sensitivity to
+stiffness whereas as we go to very small
+time scales essentially that learning
+signal that you would get for
+determining the stiffness parameter is
+getting washed out by other things like
+the thermal fluctuations and the damping
+so so these are important hyper
+parameters to keep in mind when training
+on these stochastic systems this just
+shows we get a very accurate result for
+stiffness we similarly did a study with
+temperature this is all all the
+parameters are changed trying
+simultaneously we're finding
+temperatures are much more challenging
+for them to pin down in detail partly
+because it can make up some of the
+discrepancy between the models by simply
+increasing the noise so if we don't have
+perfect overlap between the training
+samples and the generated samples it can
+kind of make those things line up and
+agree so it might be picking up simply
+on the sampling error and that's
+something we're currently investigating
+for many trading runs we'll see the
+behavior that you're seeing in terms of
+epochs here but for some of them they
+fail for the reasons that I leave it to
+similarly we can estimate the damping
+parameter and again you see some
+sensitivity there on the time scales at
+which the Dynamics are are probed and so
+we see in each case different pros and
+cons to those different training
+protocols but the SD Gans you can mix
+and match or choose between those
+approaches as well as tuning that time
+scale tab this is just showing real
+quickly some results for learning uh
+models where there's unknown Force laws
+and so in this case we have observations
+of a particle system and we're going to
+learn over the modeling class of again
+inertial longevon Dynamics and really
+the objective here is to learn neural
+network representation for the unknown
+Force law uh here I'll assume for now in
+this study that the damping and the
+thermal uh parameters are known but you
+also could try to learn those
+simultaneously as well but again you
+have that challenge of these very sort
+of high dimensional probability spaces
+but that graphical model structure will
+be utilized to exploit that those
+dependencies uh so here on the left is
+showing uh the kinds of observations we
+have obviously many more than just these
+three or four samples but just to show
+you what the data sets look like that
+we're training from essentially an
+ensemble of trajectories of that nature
+you'd be learning from observing those
+Dynamics on the right is learning over
+trajectory fragments we do that with the
+conditional and the marginals so this is
+just showing some results this is the
+case of we're doing a radial symmetric
+double well potential this is showing
+the force law that targeting we're using
+a neural network representation for this
+neural network so we're training again
+using the back custom back propagation
+approaches I showed before and this is
+showing the model that we learned and
+really I think the advantage of these
+approaches is that we're not reliant on
+things like the system having
+equilibrated which would be required for
+for techniques that make use of sort of
+a priority knowledge of the marginals we
+also can deal with systems that are
+potentially not in equilibrium because
+the primary driver of the statistics
+that we're trying to align are the the
+intrinsic longevonne Dynamics and so on
+the right is just showing training the
+double well potential and then the way
+we're going to characterize this is in
+terms of the L1 error of the radial
+distribution function this is not
+something that was used in the training
+but just to have reliable test errors
+which would govern a lot of the
+statistics ultimately of that model that
+you've learned and I'll just show some
+quick results for that this is just
+showing on the left the the Learned
+model so you can see that we get viable
+long-time simulator years and on the
+right is uh is showing um the the
+training data set
+and uh and then this is just showing
+some quantitative results and again we
+we did some studies as we varied the uh
+the temporal sampling uh parameter so I
+won't go into a lot of detail there
+which is to show that yeah we're able to
+learn non-linear um Force laws and uh
+we're kind of pushing this in a number
+of directions to uh improve both the
+dimensionality and the complexity of the
+problems that we can deal with but I
+hope this gives kind of a proof of
+concept of uh some of the recent work
+that we've been doing and I'd be happy
+to talk more about that offline I'll
+refer you to the papers so thanks again
+for having me um look forward to
+continuing discussions

@@ -1,0 +1,1327 @@
+okay welcome to the ddps seminar
+everyone before we introduce our invited
+speaker let's go over some rules and
+logistics first of all please mute
+yourself during the talk unless you have
+questions
+if you have questions you are welcome to
+unmute and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a session
+at the end
+second today's gdpr seminar is open to
+external audiences therefore no
+classified discussion is allowed so
+please watch out
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host ishan
+kujakar who is a phd candidate in the
+electrical and computer engineering
+department at university of florida
+advised by professor joelle harley
+his research interests include
+probabilistic machine learning
+uncertainty uncertainty quantification
+acoustic signal processing
+structural health monitoring and
+surrogate modeling ishan holds a
+master's in
+electrical engineering from texas a m
+university
+and a bachelor's degree in electronics
+engineering from
+bits pilani in india
+today ishan will talk about uncertainty
+aware
+guided wave structural health monitoring
+using ensembl learning now without
+further ado let me pass the button to
+ishan by asking a random question as
+usual
+that is
+today's random question uh let's try to
+be fun what is your supernatural power
+if you have any
+uh
+sometimes i have the
+tunnel syndrome i don't i don't
+understand what is happening in in in my
+surroundings when i'm trying to focus on
+something
+i i think a lot of people might have
+that
+but that is something i think that's
+unique for me very focused when you
+yeah
+okay so my daughter has that
+that power as well all right thank you
+so stage is yours
+hi um thank you yongsu for inviting me
+today
+uh
+i'm very excited to talk about my
+research uh today uh and so let's start
+i'm going to be talking about
+uncertainty aware machine learning for
+structural health monitoring
+so
+uh here's a brief outline of what i will
+be talking about i will introduce what
+structural health monitoring means i
+will talk about guided wave sensing
+approaches for shm then i will talk
+about uh damage detection and damage
+localization approaches and what are my
+contributions
+and finally i will i will conclude this
+task so i hope that all of you find
+something interesting learn something
+new today from this talk
+so structural health monitoring why is
+it important why should we care about it
+in recent times we are using a lot of
+buildings aeroplanes bridges roadways
+etc and this has led to a necessity to
+monitor their condition
+traditionally we have non-destructive
+testing methods
+where a person actually goes and
+inspects those structures
+but this needs a person to be actually
+doing that inspection and that is costly
+and time consuming so another approach
+to this is called a structural health
+monitoring shm in short and what is shm
+is you have an array of sensors that is
+permanently mounted on this structure
+and then based on the received signals
+you apply some signal processing
+techniques to detect the damage that is
+uh tell if there is a damage in the
+first place and then localize the damage
+find the location of that damage
+so
+even though there is a lot of research
+on structural health
+monitoring why is it difficult we see a
+lot of research that is not translated
+into actual industrial applications
+so what are the challenges that we have
+here
+most importantly uncertainty so no
+matter whatever application we have
+there is going to be some uncertainty
+that could be uncertainty due to the
+sensor noise or due to some incomplete
+knowledge about the underlying physical
+process
+so i like to go with this uh kind of
+distinction
+in scientific application you need to
+understand the uncertainty
+so let's say you're studying certain
+physical phenomena you need to find a
+way to quantify what is the uncertainty
+in your variable of interest
+whereas if you're working with
+engineering applications you need to
+manage the uncertainty
+that is let's say you're working with
+some system you want to
+ensure that the system performs reliably
+even when there is uncertainty
+so what happens in a sensing application
+that is you haven't you have a setup of
+sensors that are placed and these
+sensors are recording some signals you
+need to analyze some something from
+those sensor signals
+so you have this uncertainty at the
+sensor level you also have the
+uncertainty at the output level
+so my point here is no matter whatever
+our
+research areas are
+we
+have to deal with uncertainty and how we
+deal with that is based on our
+application of interest
+and in my presentation i will talk about
+hi how
+i am
+working with uncertainty in my research
+area
+so with that
+let's talk up talk a bit about guided
+wave sensing so guided wave setup is a
+popular approach for structural health
+monitoring
+and what it is is basically you have a
+structure there is a damage at some
+point that needs to be identified for
+that you place an array of sensors on
+this structure
+and these sensors then transmit and
+receive guided waves
+and based on the receive waves you do
+some signal processing analysis to
+either detect damage or localize damage
+so the received signals at the sensors
+are a combination of two signals so one
+is the direct signal that is traveling
+directly from the transmitter to the
+receiver and the second is the damage
+signal that is traveling from the
+transmitter to the damage and then to
+the receiver
+so for for the application what we need
+to do is subtract away the baseline that
+is the direct path signal so we are only
+left with the damage signal
+and the advantages of using guided wave
+setup is it is sensitive to damage it
+also has a large scanning range
+but there are certain challenges too
+the underlying physics of wave
+propagation is complicated you need to
+be developing the appropriate
+mathematical models to deal with that
+secondly you also have external
+variations such as
+snowfall rainfall that lead to
+temperature variations and this also
+affects the wave propagation
+so uh the common model used for guided
+waves is called as a lam wave model
+it was developed by a british
+mathematician physicist
+and uh the
+x that is the frequency domain
+representation
+uh at a particular frequency omega and
+at a distance r
+is given by this summation over n wave
+modes
+so every wave mode can be considered as
+a
+distinct signal component so your wave
+is made up of multiple such wave modes
+and the the term that we see in the
+square root the kappa that's the wave
+number so the kappa is dependent on the
+mode n and the frequency omega
+so this uh this wave number frequency
+relationship is captured in the
+dispersion curves and this is why the
+wave exhibits dispersive behavior
+so it can happen that at a particular
+frequency the wave is traveling in two
+different modes
+and the wave velocity can also be
+calculated by the inverse slope of the
+dispersion curve
+so uh on the left side we see dispersion
+curves so i have
+illustrated two modes here s0 mode and
+a0 mode those are the prominent modes
+that researchers work with for guided
+waves
+and these these lead to the simulated
+waveform that we see on the right you
+see the s0 mode occurring first followed
+by the a0 mode and this is what a
+typical uh simulation of a guided wave
+looks like
+so uh remember i mentioned briefly the
+need for baseline subtraction
+so here you will see on the left it's a
+signal without any damage
+on the right you have a signal with
+damage so you will see that the damage
+signal is really really
+incoherent or small
+and that
+that tells us that we need to be really
+doing baseline subtraction if we want to
+use this for damage detection or
+localization
+so with that background uh i'll talk
+about the first task that uh
+i have tackled that is damage detection
+so why do we need to do damage detection
+early on that is because it can reduce
+structural structural
+repair cost in the future
+it can also avoid catastrophic failures
+the only big real-time requirement is it
+should be robust to the external
+variations such as rainfall snowfall it
+should be able to give a good detection
+performance in spite of this external
+variations
+so the first challenge that we have with
+this is there is a mismatch between what
+the mathematical model tells us and what
+the actual experimental data looks like
+on the left side you see a simulated
+wave from from the lam wave model
+you can see the s0 and the a0 modes
+pretty clearly in the simulated waveform
+but on the right side you see actual
+experimental data
+and you'll see the s0 mode is
+almost absent
+the a0 mode is there but you also have
+an extra reflection
+and this comes because
+the experimental data is generally taken
+from a structure with some boundaries so
+you have these reflections coming from
+the boundaries
+so this is the first challenge that we
+have with guided waves there is a
+mismatch between the theoretical model
+and experimental data
+the second big challenge we have is that
+of the temperature variations
+so what we are seeing here is
+an illustration showing two waveforms at
+two
+different temperatures
+so as you can see later in time the
+there is a market difference between the
+two waveforms and this is a big source
+of uh challenge or
+some
+something we need to overcome for our
+damage detection
+so typical strategies for dealing with
+temperature
+they all
+occur at the baseline subtraction stage
+so one is you choose a baseline signal
+from a bank of baseline signals taken at
+different temperatures
+another approach is
+you stretch
+the observed signal to match a baseline
+signal
+but these are all at the baseline
+subtraction stage
+and the typical approach to guided wave
+damage detection one is you can use an
+energy based method that is you compare
+the energy of the two signals and
+threshold it appropriately to give a
+detection output
+you can think of damage detection as a
+binary classification damage
+there are also likelihood models that is
+you train
+uh let's say a machine learning model
+for doing damage localization based on
+gaussian likelihood and then you
+threshold the likelihood to give to also
+give a detection output
+but researchers have shown that
+likelihood models can also assign
+spurious values to out of distribution
+inputs
+so we ask the question can we cast
+damage detection as an anomaly detection
+problem
+and
+what we have is an approach for robust
+guided wave damage detection
+so the first point we have is ensemble
+learning
+we train an ensemble of variational auto
+encoders that are initialized randomly
+to enable robustness to the temperature
+variations
+second point is adversarial training
+we train on simulation data with
+adversarial perturbations the wave
+number that is the uh dispersive
+property of the wave
+and finally the variational autoencoder
+using that we can cast damage detection
+as an anomaly detection problem
+so some more details about using a
+variational auto encoder
+so
+we train the va on baseline subtracted
+data
+so that is
+uh let's say you have a structure with
+some damage when you do baseline
+subtraction ideally you are only going
+to be left with the damage signal and
+that is what we consider as in
+distribution
+and if there is no damage
+after baseline subtraction
+there is only going to be noise and the
+noise signal there is a no domain no
+damage signal is out of distribution
+and the detection statistic that we use
+is the output of the variational auto
+encoder that is the elbow value
+we
+take its average over all the ensembles
+and normalize it by the output dimension
+so the output dimension is
+let's say the number of time samples
+times the number of sensor pair signals
+that we have
+so this is a normalized
+value or detection statistic that i have
+at the output
+and this is a figure showing the entire
+setup i know there are a lot of things
+going here so let me try to break it
+down
+on the very left
+we fixed the simulation parameters that
+is the location of the sensor array
+and we
+use the lam way model in this blue box
+here that is the simulation engine
+we pass the data through some signal
+processing and we do some signal
+processing some filtering we do baseline
+subtraction
+and we generate random damage locations
+over the plate dimensions and this helps
+us to generate a data set of uh damage
+signals and this forms the training data
+and similarly we have an experimental
+setup that is shown in the orange box
+here that is
+we
+we uh observe that
+observe the data over the sensors we do
+some filtering the baseline subtraction
+and we store that as the test data set
+and finally the training data is
+inputted to the ensembl of variational
+auto encoders
+and after the training process we get
+this
+detection statistic that is the
+normalized
+value of the loss function of the
+vae
+so here is a architecture of the va that
+i use so compared to computer vision
+task that is a this is a shallow network
+but we have found that this works the
+best for our task
+we have two 1d convolutional layers at
+the start followed by our dense layers
+and then in the decoder phase of the va
+we have the
+transposed of the 1d convolutional
+layers
+so coming to the experimental setup
+we have this plate of aluminium
+of dimensions 1.2 times 1.2 meters
+and this is exposed to non-uniform
+temperature variations
+so what we do is place a heater at some
+point on this plate and that creates
+non-uniform temperature variations
+and the red diamond that you see here
+that's the damage location
+we collect 77 measurements over a
+duration of 6 hours
+and the damage is simulated by placing a
+mass that has the same scattering effect
+and it is placed from the 37th
+measurement onwards
+so you have some no damage samples and
+you have some damage samples from this
+experimental setup
+now coming to this topic of how can we
+quantify the effect of temperature at
+least approximately
+so typically researchers have
+approximated temperature effect as a
+time stretch operation
+so if we consider two signals
+x of t and s of t recorded at two
+different temperatures
+s of t can also be written as x of alpha
+times t where alpha is some stretch
+factor that needs to be estimated
+and the optimal stretch factor is the
+one that minimizes the residual energy
+between the two signals at two different
+temperatures
+and the stretch factor is computed using
+the scale transform which is a
+variant of the fourier transform
+and one interesting property about the
+scale transform is
+the time stretch a stretch in the time
+domain is equal to a phase shift in the
+frequency domain so this is similar to
+the fourier transform property that a
+delay in time domain is equivalent to a
+phase shift in the frequency domain
+so here is the illustration showing the
+effect of temperature variations
+so
+here we have plotted the correlation
+coefficient against the stretch factors
+stretch factor
+so um this is plotted for three
+different signals again against one
+reference signal
+so if we look at the x axis here the
+range is
+0.998 to 1.003
+so
+so this range of stretch factor
+corresponds to temperature variations of
+4 degrees to 19 degrees celsius
+and you can see that as the stretch
+factor deviates from one the correlation
+coefficient starts dropping
+substantially
+so this graph or this figure illustrates
+what is the effect of temperature
+variations on
+the guided waves
+so finally the detection performance
+that we see with our ensemble
+variational autoencoder approach
+this is a histogram showing the
+distinction between the damage and no
+damage cases
+so we see that the two uh distributions
+for damage and no damage are well
+separated
+signifying robustness
+but what about some numbers the actual
+performance of the detection method that
+we use
+so we compare these four methods
+one is an ensemble of
+variational autoencoders trained with
+adversarial data second is a ensemble of
+va trained on ideal data that is without
+any adversarial perturbations
+then we have the likelihood model that
+is a model train for some other
+localization task for example that is
+then
+used for this detection
+so we see that
+the probability of false alarm
+that is uh you have the the model
+predicts that there is a damage when
+there is actually no damage that is the
+probability of false alarm so both the
+likelihood models here they have a very
+high probability of false alarm and that
+is what researchers have shown to that
+likelihood models assign spurious values
+to out of distribution inputs
+and the first two rows here that is the
+ensemble va approach
+show uh
+a very uh probability of false alarm is
+zero but you can see that when we train
+the va with adversarial data we have a
+high probability of detection that is
+the network says there is a damage when
+there is actually a damage
+so we see that the va ensemble approach
+when trained on adversarial data has
+superior performance
+so that was all about damage detection
+now we move to the next task in
+structural health monitoring that is
+damage localization actually finding the
+location of the damage
+so traditional signal processing methods
+have tried to solve this inverse problem
+as
+by solving multiple forward problems
+so what we have is
+the sensors are collecting some
+measurements and you need to estimate
+some unknown quantity that is the damage
+location from these measurements
+so we have a mathematical model and
+by solving this mathematical model at
+every grid point
+you then correlate that with the
+experimental data
+so the point that gives the highest
+correlation between the mathematical
+model and the experimental data
+is the estimated location
+so on the right we have a figure called
+as a ambiguity surface so that's
+basically a heat map of the correlation
+values
+and this is to be noted is in ideal
+conditions
+so in in these conditions you can see
+that the correlation value is actually
+highest for the actual damage location
+so this shows a good performance
+but what happens in presence of the
+temperature variations
+it affects localization performance
+substantially
+so in this figure here we can see on the
+top
+that's ideal conditions
+that's when the localization performance
+is good but when we have environmental
+variations temperature variations the
+localization performance drops we can
+see that
+this region of high correlation
+is uh diffused it's not a relate it's
+not close to the actual damage location
+so we can see that the localization
+performance is affected by the
+temperature variations
+and as we discussed before there are
+certain temperature compensation methods
+such as choosing the right baseline
+stretching the baseline signal
+but all of them are at the baseline
+subtraction phase and they do not
+address the effect of these temperature
+variations on the localization
+algorithms
+that is
+maybe i want a metric of uncertainty in
+the output location
+how do i get that so that is one more
+challenge that we have with localization
+with that motivation
+we ask the question can we use deep
+learning for guided wave damage
+localization
+one
+one potential
+positive point is that deep neural
+networks have been shown to learn
+for a variety of scientific and
+engineering tasks with comp complex or
+complicated input data
+and deep learning systems can be used in
+can be used
+in test time with a single forward pass
+you can train the data you can train the
+network offline and then just have it
+predict using a single forward pass in
+real time so that is one more advantage
+that we have with deep learning
+but there are challenges and those are
+very critical challenges for this task
+so the first is uh
+any deep learning application needs
+as much training data as it can have
+right
+so
+but here we have the challenge that we
+only have limited experimental data sets
+we cannot go
+around creating new specimens and then
+breaking them with damages so that would
+take a lot of time and efforts
+so we need to find a way to bypass that
+challenge
+and then the second challenge is that
+these temperature variations that we
+have seen affect the detection and
+localization performance
+there needs to be a strategy of dealing
+with those
+external variations we need to show
+robust performance even in the presence
+of those variations
+and finally as a
+as an effect of these external
+variations there is also going to be
+uncertainty at the output
+so how can we build better methods that
+can
+express the output uncertainty quantify
+the output uncertainty
+so uh
+if if a deep network was trained in an
+end-to-end manner this is how it would
+look like you have this uh
+input signals at the
+at the input so we have this
+guided wave signal and now it's not just
+one signal you have the signals coming
+from all the sensors so you have
+multiple signals that can be inputted to
+a deep network and that gives a location
+prediction by minimizing the
+distance between the true and predicted
+damage locations
+so this is what a typical uh deep
+network process or framework would look
+like
+but we have these challenges that it
+we also need to show or visualize the
+output uncertainty
+and for that we propose a framework
+where we train on simulated data alone
+simulated guided wave data and test on
+experimental data
+we also uh
+enable robustness to the temperature
+variations by train by using an ensemble
+approach
+and finally
+as a result of this ensemble approach we
+can also quantify the output uncertainty
+as the ensemble standard deviation
+so
+here is a similar figure for
+damage localization so as before
+in this blue box we have the training
+data generation process
+where you have the lamb wave simulation
+engine that is generating data for us
+and for every data point you have a
+random damage location
+we do filtering we do baseline
+subtraction to get the training data set
+similarly we have the experimental setup
+that gives us the experimental
+observations and the
+and then we train this ensemble of
+neural networks that can give us
+the final damage location prediction and
+also the localization uncertainty
+um here is a table showing the
+uh network so the input is like i said a
+matrix of size
+uh let's say q cross m where q is the
+length of the signal and m is the number
+of sensor pairs we are using in our
+setup
+so typical sizes
+for this for my experiment would be
+1000 cross
+56 that would say the
+the length of the signal is thousand and
+i have 56 sensor pairs
+uh so eight sensors can lead to eight
+into seven that is 56 sensor pairs
+so those are my typical input sizes
+and then i have two 1d convolutional
+layers and then
+four dense layers and finally the output
+which gives the damage location
+to compare my approach with
+the existing methods
+we have two approaches
+so the delay and some imaging called as
+das
+that assumes that the wave travels with
+a constant group wave velocity that is a
+narrow band model and here
+one note is that the performance depends
+on the right choice of the group wave
+velocity and that needs some domain
+knowledge
+and the second
+method that i compare with is called as
+match field processing mfp
+and this uses a wideband model of wave
+propagation and researchers have also
+modified this approach using some data
+driven methods such as compressed
+sensing
+but they need access to the test time
+measurements
+so the comparison metrics that i have
+are the average localization error
+and the resolution that is the half
+amplitude width so basically
+if you're talking about the ensemble
+network i get this predictions from the
+ensembl network i uh
+i characterize that as a gaussian
+distribution with some mean and standard
+deviation and then i can
+calculate the half amplitude width
+and similarly for the
+delay and sum and match field processing
+i fit a gaussian curve to the normalized
+ambiguity surface or the heat map figure
+that we saw before
+so here is a table
+comparing the results so we can see our
+proposed average shown in red here
+it has
+it has a superior performance
+compared to the other methods for lower
+number of sensors the black box here
+shows the performance comparison for
+eight sensors
+and we can see our proposed approach has
+much better performance
+than the other methods
+and
+similarly our approach has comparable
+performance for more number of sensors
+so
+so one note here is as i mentioned the
+delay and sum
+needs knowledge about the group wave
+velocity
+and the delay and the match field
+processing the two
+dd-mfp methods shown here they need
+access to the test time measurements
+on the other hand our ensemble network
+is trained on simulated data alone
+without the
+without the need for any kind of
+more knowledge needed
+so here are some visual illustrations
+showing
+the different methods
+so the this figure on the extreme left
+and and the figure next to it those are
+the two mfp methods and this is the
+heat map that we have for
+for these methods and this is with
+simulated data in ideal conditions
+so we can see that for almost all the
+methods
+the performance is good the the the
+predicted damage location is close to
+the true damage location that is the red
+box that we are seeing here
+and on the extreme right we have our
+proposed approach the heat map for our
+approach
+and then what happens when we work with
+actual experimental data now this is
+where it gets interesting
+we can see that for the the first three
+figures here those are the
+traditional methods match field
+processing and delay and sum
+so we can see that the performance the
+localization performance
+drops substantially the peak is not
+localized
+whereas we can see for our approach on
+the extreme right
+we have a
+bigger region of uncertainty but uh the
+the peak of the region is near the true
+damage location
+signifying
+robust localization performance
+and we also plot the
+localization error versus the stretch
+factor so to note here again the stretch
+factor is a quantification of the degree
+of uh temperature variations
+so we can see that
+our approach the red curve
+has
+a
+comparatively better performance or
+lower localization error for all the
+stretch factors that we see in our
+experimental data
+and we see that there is no obvious
+trend with the stretch factor values too
+and this is where we vary the size of
+the ensemble
+and we can see that um as we go on
+increasing the ensemble size
+uh the localization error that is the
+blue bar
+it
+it goes on
+decreasing the localization error goes
+on decreasing
+but as we go above an ensemble size of
+the marginal increase in performance
+is
+not not too big so that's why we fix the
+size of our ensemble at 10.
+and finally this is where we talk about
+quantifying the output uncertainty
+so this is with simulation data
+i generate 100 test samples with random
+damage locations and for each sample
+we have a random stretch factor
+that is sampled from a range of 0.99 to
+1.01
+so just to remind you in our
+experimental data the stretch factor
+variations were 0.998 to 1.003
+and that corresponded to a temperature
+range of 4 to 19 degrees celsius
+so a range of 0.99 to 1.01 is even
+bigger than that
+so what we can see here is this is
+we choose the uncertainty metric as the
+mean of our standard deviation of the
+ensemble predictions
+so
+what we can see here here is the
+uncertainty metric plotted against the
+stretch factor
+and we can see that for stretch factor
+close to 1 that is
+ideal conditions the uncertainty metric
+value is the least close to zero but as
+we deviate from a value of one on both
+sides the uncertainty value rises
+so this serves as a good representation
+of
+or a good valid validation of our chosen
+uncertainty metric
+here is another
+illustration that i have
+so here i have generated a pattern in
+the test samples
+and they are stretched according to a
+pattern of repeating values
+so you can think of this as
+there's a heater at some point and that
+can be toggled in three different
+conditions
+off condition low condition and high
+condition
+so
+the stretch factor has
+three of distinct values 0.991 and 1.01
+corresponding to three these three
+hypothetical temperature conditions
+and the interesting trend we see here is
+when the stretch factor deviates from 1
+that is when the uncertainty metric the
+blue curve here also has high values for
+both uh for deviations from 1 both in in
+the
+in the direction of 0.99 as well as in
+1.01
+but when the stretch factor is close to
+1 here
+that's when the uncertainty metric value
+is also the lowest
+so
+this is similar to the earlier figure we
+saw that as we deviate from a stretch
+factor of 1 from the ideal condition the
+uncertainty value also rises
+so here are the results for the
+experimental data
+and uh we can see here slightly similar
+trends
+uh in the figure on the right we have
+the
+the stretch factor that is showing in
+oscillatory behavior
+so that is what
+was
+presented in our experimental setup a
+fan that was oscillating between
+different conditions
+and the uncertainty metric value the
+blue curve
+shows trends similar to before that is
+when the stretch factor deviates from 1
+the uncertainty metric value is high and
+when the stretch factor is close to 1
+the uncertainty metric value also drops
+so um to conclude
+what we have proposed here are
+machine learning networks for two tasks
+of damage detection and damage
+localization using guided waves
+so our approach has multiple advantages
+first is we train on simulated data
+alone and test on
+actual experimental data
+and secondly we have these robustness to
+temperature variations that can occur in
+a real time setup and we tackle that we
+attack we tackle those temperature
+variations using an ensemble approach
+we have superior performance
+in the lower sensor regime compared to
+the other signal processing methods
+and finally as a result of using the
+ensembl approach we can also quantify
+the output uncertainty
+what is next for us we want to do a
+sensitivity analysis that is how do
+different factors of input variations
+affect the detection and localization
+performance that is
+i can change the number of sensors i can
+change the positioning of the sensor
+area i can put them all in one corner of
+the structure or in a random location
+and see how that affects the performance
+and
+i need to do this in a simulation phase
+i cannot do it on the testing phase
+because the time and money is limited so
+how can i set up a
+framework for that
+and finally
+how can i extend this approach to
+different structure geometries so in the
+experimental setup i explained before we
+had a plate of
+square dimensions but how can we extend
+that to more complex geometries
+and those are all the points that we
+want to tackle in the future
+this is the work so far or
+what we are currently doing
+and this is our smart data lab at
+university of florida
+all excellent researchers and
+here is our pi professor joel harley who
+has a lot of
+varied research interests
+and thank you so much for listening to
+my talk and i'd be happy to answer any
+questions that anyone in the audience
+has thank you
+all right thank you so much for the
+wonderful talk uh ishaan
+so let's have a q a sessions um
+anyone has any questions
+i don't see any questions in q and a
+chat
+in in chat room
+um let me
+while you are thinking about the
+questions i can
+ask some
+qualification questions if you go to
+slide nine
+um
+[Music]
+yeah so so you said in a without damage
+and b with dimensions and
+basically
+from my eyeball norm i that looks the
+same
+yeah
+so what do you mean by bass lines
+obstructions
+and
+yeah how do you
+yeah i mean
+yeah so um
+so this this figure on the left that is
+without any damage in the structure and
+this figure on the right is
+with the damage um so baseline
+subtraction is so as as i explained here
+uh the received signal in at the sensor
+is a combination of these two signals
+the direct signal that is traveling from
+the transmitter to the receiver and the
+damage signal that is traveling
+from the transmitter to the damage to
+the receiver
+so baseline subtraction removes this
+direct signal
+and keeps only the damage signal
+so uh so this is before we do any
+baseline subtraction
+but once we do baseline subtraction we
+are left with only the damage signal
+and um
+how does it look like the damage signal
+um so it looks similar to the lamb wave
+that we have here uh in the figure b
+here and and then
+for that the damaged one
+and not damaged ones are
+clearly distinguishable yeah so if there
+is no damage and we still do baseline
+subtraction ideally we would be left
+only with noise
+and if there is damage we would see a
+signal like this
+i see
+all right great
+um
+is there any other questions from
+audience
+well if not i have another question if
+you go to slide 11
+you seems to
+know
+which one is a0 mode and feature one is
+as serial mode and which one is
+reflections
+as on
+non-experts
+i cannot tell which one is a0 mode and
+which is zero mode this one is
+reflection it looks like a
+a0 mode on the right is s0 mode and then
+reflection
+is a0 mode and
+so
+so with every mode uh there is a
+velocity associated
+so
+yeah so with this so this is known by
+the domain experts and you're right that
+it's hard for a
+different person to understand it so the
+so different modes travel with different
+velocities
+so you kind of know when to expect a
+particular mode based on the velocity
+right
+i see and if you don't see the signals
+then you you determine that there is no
+s series
+yes yes right got it got it okay so if
+you go to slide 18
+you said uh um
+you use um shallow
+net shell on your on that and you
+you found it that's the best right
+in terms of what and did you try other
+neural net or what else did you try
+so
+so in terms of the actual detection or
+localization performance
+we we found the networks to be of around
+this size to perform the best
+so
+some um some other alternatives that i
+tried was
+just having a very a bigger network with
+more number of layers
+or having different number of
+frequencies in the input or different
+number of sensor pairs
+so
+what we found out is
+obviously for different number of sensor
+pairs you need to appropriately increase
+the size of your hidden layers
+to to be able to
+accurately process the all the
+information
+um
+yeah and i think that was
+the
+experiments that we did in trying to
+determine this
+size of the neural network
+did you um did you use any
+neural net architecture search
+tools
+um
+no like hyper hyper
+and
+oh no no
+a tune
+yeah
+you might be
+you might want to use those tools
+in order to
+save some time
+right right
+all right uh
+okay there is a question by phillip in
+the chat
+he asked
+how well will this method adapt to
+different real systems such as aircraft
+bridges and buildings etc
+yeah that's a very important question
+because we
+ultimately want this to be
+applicable to some real world setup so
+the experiments that we do and a lot of
+researchers in this field do is
+with a
+square plate or or something of that
+sort
+and and it's actually a very
+uh challenging
+problem to be able to transfer that to
+some of these complex structures like
+aircrafts bridges or buildings but there
+are certain
+transfer learning methodologies that
+researchers are trying to come up with
+that removes any kind of dependence on
+the structure i mean i could train
+uh us
+a network for structure a and try to
+make it applicable to structure b
+but that is something
+we have not tried out in this work but
+we can try out later
+thank you for the question
+okay sounds good
+is there any other question from
+audiences
+okay um if you don't mind going a slide
+29.
+all right so the basically the blue
+spark that's the like
+your physics simulation your model yes
+yes and on the top and
+that is the experimental yes data the
+orange one and then you
+the physics simulation use it as a trend
+data and the experimental data you use
+it as a testing
+yes and then you you you you train the
+uh
+the 10 different neural net here
+yes right and then
+you know collect all the all the results
+and
+and based on some distributions you try
+to find the mean and standard deviations
+yes that's right
+um but uh all the neural net um is
+getting the exactly identical inputs
+like for the testing and training
+yeah yeah so the only difference is the
+weight in the weight initialization of
+the ensemble networks
+so that result was surprising to us also
+that and the neural net architectures
+are all the same
+yes
+the only thing different is um the
+dropout probabilities that we use and
+the weight initializations
+so one explanation that some researchers
+have is
+this ensemble approach explores
+different
+modes in the lost landscape
+that helps to achieve a robust
+performance
+yeah so so at the end of the day the
+mean and standard deviations you
+you you quantify
+that also is coming from the neural net
+yes
+the initialization seed
+itself
+yes
+yes i'm not sure how to interpret those
+uncertainty um
+interesting
+yeah so um
+so i think we can think of the
+uncertainty as um
+the conditional uncertainty right so
+given
+given this input we we have this output
+with so and so
+uh probability or the standard deviation
+yeah but those inputs and inputs are all
+the identical and architectures are all
+identical
+except the initial initial gas for
+wooden old and neural nets
+yeah so you're kind of trying to um
+you know to quantify the uncertainty in
+neural net training in some sense
+that could be one way of looking at it
+so i think what you're trying to get at
+is can we actually get the input
+uncertainty to propagate to the output
+yeah yeah exactly yeah
+okay
+we have this adversary perturbations at
+the input that
+simulates some of the temperature
+variation behavior
+yeah that actually if you do that then
+then you may
+include the uncertainty i mean that when
+you quantify the uncertainty you are
+uh you are counting those uncertainty
+but this very setting
+i think you only want to find
+uncertainty from the neuron that
+training
+all right um is there any other
+questions from audiences
+i that was all the older questions i
+have
+well i mean
+another comment i would make
+another project i'm i'm very
+you know involved right now is the
+earthquake
+source
+location detection
+right
+so there um
+[Music]
+we
+try to simulate the real altc
+thingy with the simulation and then
+generate the
+beta and there is some sensors on the
+on the ground
+and we
+measure those displacement velocity etc
+and then using only those sensors
+measured data we try to
+find out the
+location of the earth source location
+there we used
+a machine learning technique we haven't
+quantified any uncertainty it was all
+the deterministic way i think some of
+your methodology is applicable to
+earthquake
+uh project um i'm working on right now
+that is great
+all right
+if we do not have any more questions
+let's thank our speaker ishan thank you
+so much for the wonderful talk and
+giving
+and giving a talk i i understand that
+you will have a the defense
+of your phd defense next month right um
+so good luck with that
+and i'm sure you will pass
+right
+all right
+thank you
+have a good day
+bye bye thank you thank you everyone for
+joining
+oh
+[Music]

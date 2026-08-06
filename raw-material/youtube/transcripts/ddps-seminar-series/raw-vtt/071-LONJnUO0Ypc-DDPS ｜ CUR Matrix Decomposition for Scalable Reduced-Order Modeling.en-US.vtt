@@ -1,0 +1,3770 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:02.490 --> 00:00:07.920
+All right. All right. Welcome to
+the DDPS seminar everyone.
+
+00:00:08.430 --> 00:00:11.460
+Before we introduce our invited
+speaker, let's go over some
+
+00:00:11.460 --> 00:00:14.820
+rules and logistics. First of
+all, please mute yourself during
+
+00:00:14.820 --> 00:00:18.420
+the talk. Unless you have
+questions if you have questions,
+
+00:00:18.420 --> 00:00:22.020
+you're welcome to unmute and ask
+otherwise, please use chat room
+
+00:00:22.020 --> 00:00:25.470
+to post your questions so that
+we can address them in q&amp;a
+
+00:00:25.470 --> 00:00:29.370
+session at the end. Second,
+today's DDPS seminar is open to
+
+00:00:29.460 --> 00:00:34.920
+external audiences. So no class
+by discussion is allowed.
+
+00:00:35.160 --> 00:00:38.610
+Finally, the talk today will be
+recorded and uploaded in our
+
+00:00:38.610 --> 00:00:41.460
+YouTube channel. That's about
+it. Now, let me introduce our
+
+00:00:41.460 --> 00:00:47.400
+speaker today. It is an honor to
+host the Hussam babae, who is
+
+00:00:47.670 --> 00:00:51.330
+currently an assistant professor
+in the Department of Mechanical
+
+00:00:51.330 --> 00:00:55.200
+engineering and material science
+at the University of Pittsburgh.
+
+00:00:55.920 --> 00:00:59.850
+He earned his PhD in mechanical
+engineering and math Master's in
+
+00:00:59.850 --> 00:01:03.990
+applied mathematics both from
+Louisiana State University in
+
+00:01:04.320 --> 00:01:07.560
+2013. He then joined the
+mechanical engineering
+
+00:01:07.560 --> 00:01:11.700
+department at MIT for his
+postdoctoral research where he
+
+00:01:11.700 --> 00:01:15.900
+worked with Professor George
+Konya Dacus. He joined the
+
+00:01:15.900 --> 00:01:21.750
+University of Pittsburgh in
+January 2017. His research is
+
+00:01:21.750 --> 00:01:25.800
+focused on developing videos to
+the model and machine learning
+
+00:01:25.800 --> 00:01:28.950
+techniques or science and
+engineering problems. His
+
+00:01:28.950 --> 00:01:33.630
+research has been funded by many
+organizations including NASA,
+
+00:01:33.720 --> 00:01:39.540
+NSF, and NIH and the Air Force
+of scientific research. Today
+
+00:01:40.050 --> 00:01:45.810
+has some we'll talk about Kerr
+matrix decomposition for
+
+00:01:45.810 --> 00:01:48.780
+scalable reduced order modeling
+of nonlinear partial
+
+00:01:48.780 --> 00:01:52.560
+differential equations using
+time dependent basis. Please
+
+00:01:52.560 --> 00:01:55.950
+enjoy and expect a wonderful
+talk. Now without further ado,
+
+00:01:55.950 --> 00:02:00.600
+let me pass the baton to Hasan
+by asking one random questions.
+
+00:02:00.630 --> 00:02:05.970
+Today's random question is what
+is your idea of the perfect day?
+
+00:02:06.570 --> 00:02:08.640
+What do you find your perfect
+day?
+
+00:02:10.650 --> 00:02:16.440
+Okay, perfect day would be a
+sunny day by the beach with my
+
+00:02:16.440 --> 00:02:17.070
+family.
+
+00:02:17.550 --> 00:02:20.340
+Oh, nice. Right now in
+California. It's not a perfect
+
+00:02:20.340 --> 00:02:20.520
+day.
+
+00:02:21.270 --> 00:02:23.040
+My there is is here
+
+00:02:24.960 --> 00:02:25.680
+is yours.
+
+00:02:27.360 --> 00:02:31.710
+All right. Okay, thank you so
+much Yong Soo for the invitation
+
+00:02:31.710 --> 00:02:37.770
+and kind introduction. So, as
+you said, I have been working on
+
+00:02:37.800 --> 00:02:40.950
+on developing reducer modeling
+based on time dependent basis.
+
+00:02:40.950 --> 00:02:46.320
+So to just motivate that, and so
+let me play this animation, what
+
+00:02:46.320 --> 00:02:50.550
+you'll see on the left is a
+biologically reacting flow.
+
+00:02:51.060 --> 00:02:54.990
+These are you're seeing this
+species mass production of 23
+
+00:02:54.990 --> 00:02:58.800
+species here. And in order to
+solve this equation, you have to
+
+00:02:58.800 --> 00:03:05.250
+solve basically a system of PDE
+of 23 equations. And so, you can
+
+00:03:05.250 --> 00:03:09.330
+have larger mechanisms and you
+can go up to an order of 1000
+
+00:03:09.330 --> 00:03:12.570
+species, which I cannot show
+here. Obviously, solving the
+
+00:03:12.570 --> 00:03:15.630
+system of it is is
+computationally expensive, both
+
+00:03:15.660 --> 00:03:22.110
+in terms of memory, I Oh, and
+also flop CPU cost, right. So a
+
+00:03:22.110 --> 00:03:26.310
+floating point operation costs.
+So, but as you as you saw, let
+
+00:03:26.310 --> 00:03:29.940
+me play that again, you can see
+there is a lot of similarities
+
+00:03:29.940 --> 00:03:32.730
+or as we say, correlations
+between these different species
+
+00:03:32.730 --> 00:03:36.360
+instantaneously. And what I want
+to show you that you can use
+
+00:03:36.360 --> 00:03:40.440
+time dependent basis to both
+extract and also exploit these
+
+00:03:40.470 --> 00:03:44.340
+structures to reduce the
+computational costs of these,
+
+00:03:44.370 --> 00:03:50.940
+these these simulations, both in
+terms of memory and storage. And
+
+00:03:50.970 --> 00:03:55.050
+what I want to talk about which
+is the for the focus of the
+
+00:03:55.050 --> 00:04:00.000
+talk, is the CLR decomposition,
+which I can show you that that
+
+00:04:00.000 --> 00:04:04.380
+kind of decomposition can
+improve the flops cost. So
+
+00:04:04.620 --> 00:04:09.210
+without further ado, let me just
+go so these are all of my
+
+00:04:09.210 --> 00:04:11.430
+students and collaborators.
+These are the ones who actually
+
+00:04:11.460 --> 00:04:15.540
+contributed to some extent to
+this talk. So I have my
+
+00:04:15.540 --> 00:04:18.630
+postdocs, former postdocs and
+students and also my
+
+00:04:18.630 --> 00:04:20.790
+collaborators, Dr. Payment
+Gateway at University of
+
+00:04:20.790 --> 00:04:24.660
+Pittsburgh, Dr. Jackie Chan at
+Sandia, Dr. Mark Carpenter, at
+
+00:04:24.660 --> 00:04:28.500
+NASA Langley and our CO
+professor, David Fernandez at
+
+00:04:28.500 --> 00:04:30.960
+the University of Oregon.
+Alright, so this is an outline
+
+00:04:30.960 --> 00:04:33.960
+of my talk. So I'll just
+introduce this time dependent
+
+00:04:33.960 --> 00:04:38.130
+basis. I'll talk about some of
+the stuff that we did an
+
+00:04:39.120 --> 00:04:41.550
+application of time dependent
+basis, two competing
+
+00:04:41.550 --> 00:04:44.730
+sensitivities and also Turbulent
+Combustion. Then we'll talk
+
+00:04:44.730 --> 00:04:51.270
+about this CR factorization and
+how that can be used to speed up
+
+00:04:51.330 --> 00:04:54.510
+computation using these time
+dependent bases and I'll talk
+
+00:04:54.510 --> 00:04:57.690
+about some applications to
+answer the qualification. So let
+
+00:04:57.690 --> 00:05:01.260
+me just give you a brief
+overview of I have on the flight
+
+00:05:01.260 --> 00:05:05.160
+low rank approximation using
+time dependent basis. Really the
+
+00:05:05.160 --> 00:05:08.220
+motivation is solving high
+dimensional PDS. Even in the,
+
+00:05:08.430 --> 00:05:12.060
+when I say high dimensional, if
+you discretize, that system, the
+
+00:05:12.060 --> 00:05:16.110
+discrete vector has a very large
+number order of millions to
+
+00:05:16.110 --> 00:05:19.710
+billions. And so the way we
+solve this system of equations
+
+00:05:19.710 --> 00:05:21.990
+using traditional scientific
+computing techniques, we use
+
+00:05:21.990 --> 00:05:27.120
+this basis, we use them to
+choose them from classical
+
+00:05:27.120 --> 00:05:30.600
+techniques, it could be Fourier
+methods could be polynomial
+
+00:05:30.600 --> 00:05:35.940
+methods, polynomial spectral
+polynomials, so on and so forth.
+
+00:05:35.940 --> 00:05:38.850
+Well, we make a choice here, and
+then we do suppression of virus,
+
+00:05:38.850 --> 00:05:41.820
+this is like a traditional way
+of doing scientific computing.
+
+00:05:42.180 --> 00:05:45.930
+And actually, that choice is the
+core is the root of the
+
+00:05:45.930 --> 00:05:49.530
+problems, especially if we go to
+high dimensions, where the,
+
+00:05:50.010 --> 00:05:56.010
+these bases because they do not
+exploit correlations, then the
+
+00:05:56.010 --> 00:05:59.310
+computation resulting from this
+kind of discretization suffers
+
+00:05:59.310 --> 00:06:03.660
+from the curse of dimensionality
+meaning this n scales
+
+00:06:04.380 --> 00:06:08.760
+exponentially large with the
+number of dimension. So, there
+
+00:06:08.760 --> 00:06:12.690
+are a number of ways to tackle
+this. So, one way is to do data
+
+00:06:12.690 --> 00:06:17.490
+driven. So, let's gather data
+from these observed systems and
+
+00:06:17.490 --> 00:06:22.890
+then do some sort of dimension
+reduction. You can do auto
+
+00:06:22.890 --> 00:06:29.790
+encoder, you can do pod DMD, all
+kinds of damage reduction
+
+00:06:29.790 --> 00:06:32.790
+techniques, and then do some
+sort of projection. So, this is
+
+00:06:32.850 --> 00:06:38.730
+a typical way of, of solving
+this kind of problem. But
+
+00:06:38.760 --> 00:06:43.830
+whenever we do any kind of data
+driven dimension reduction,
+
+00:06:44.940 --> 00:06:48.780
+there is no guarantee that
+whenever we build that subspace,
+
+00:06:48.990 --> 00:06:56.370
+or manifold that that manifold
+can extrapolate to unseen data,
+
+00:06:56.400 --> 00:06:58.680
+right? So you always have that
+problem. And also you have the
+
+00:06:58.680 --> 00:07:02.670
+issue of actually having to
+solve that system full or more.
+
+00:07:03.000 --> 00:07:05.730
+Right. So it's for some of these
+applications, we can even solve
+
+00:07:05.730 --> 00:07:10.080
+that full normal at once, let
+alone generating data. And so,
+
+00:07:10.980 --> 00:07:15.810
+like I said, collectively, and
+these are the challenges of
+
+00:07:15.810 --> 00:07:20.790
+adopting a data driven type
+methodologies for these massive
+
+00:07:20.790 --> 00:07:23.370
+systems. So I'm talking about
+like Fokker Planck type
+
+00:07:23.370 --> 00:07:27.600
+equation, for example, where
+just solving this ones could be
+
+00:07:27.660 --> 00:07:35.100
+could be out of question. So the
+idea is to one way, one remedy
+
+00:07:35.130 --> 00:07:39.030
+that I've been focusing on is
+actually to don't choose these
+
+00:07:39.030 --> 00:07:42.120
+spaces, let the governing
+equation find these spaces for
+
+00:07:42.120 --> 00:07:44.550
+you in a way that exploits
+correlation, right. So this is
+
+00:07:44.550 --> 00:07:48.840
+the whole idea of of time
+dependent bases, they're in an
+
+00:07:48.840 --> 00:07:51.930
+abstract way that we don't
+choose these from a classical
+
+00:07:51.960 --> 00:07:54.750
+library, we actually let the
+governing equation to find it.
+
+00:07:54.750 --> 00:07:57.480
+And I'll show you how you can do
+that for different problems.
+
+00:07:57.960 --> 00:08:03.000
+Okay, so the idea if I want to
+go back to the challenges of
+
+00:08:03.000 --> 00:08:06.030
+data driven to do so modeling is
+that can we bypass the data
+
+00:08:06.030 --> 00:08:08.910
+generation and just directly for
+solve for these for these
+
+00:08:08.910 --> 00:08:12.060
+equations right there, there is
+a way to actually make this time
+
+00:08:12.060 --> 00:08:15.090
+dependent basis also data
+treatment. I'm not talking about
+
+00:08:15.090 --> 00:08:19.980
+those, those problems. Today,
+I'm focusing on the ones that
+
+00:08:19.980 --> 00:08:22.350
+actually we don't want to do
+that generation, we do want to
+
+00:08:22.350 --> 00:08:25.050
+directly solve the PDE. So if
+you think about it, we just want
+
+00:08:25.050 --> 00:08:29.040
+to solve the PDE by exploiting
+the structure correlative
+
+00:08:29.040 --> 00:08:32.070
+structures in the PDE. And once
+we do that, we can actually
+
+00:08:32.070 --> 00:08:37.110
+build that produced irmo on the
+fly. So this is like a an
+
+00:08:37.140 --> 00:08:43.020
+overview of reducer mining with
+time dependent bases. The very,
+
+00:08:43.020 --> 00:08:45.930
+very important distinction
+between this and like pod type
+
+00:08:45.960 --> 00:08:49.980
+decomposition is that this is
+applied to matrix differential
+
+00:08:49.980 --> 00:08:52.500
+equation. So you must have a
+matrix, you have to formulate
+
+00:08:52.500 --> 00:08:55.080
+your problem as a matrix
+differential equation, and you
+
+00:08:55.080 --> 00:08:58.080
+can extend that to also tensor
+differential equation. Let's say
+
+00:08:58.080 --> 00:09:00.480
+this is a matrix differential
+equation where fee is not a
+
+00:09:00.480 --> 00:09:05.310
+vector. It's actually a matrix.
+So here I'm showing a schematic
+
+00:09:05.310 --> 00:09:08.580
+of that, let's imagine this V is
+this matrix and it has many many
+
+00:09:08.580 --> 00:09:11.370
+columns, you can think of
+application of this as a UQ
+
+00:09:11.370 --> 00:09:14.970
+application, but each column is
+a random sample of the of the
+
+00:09:14.970 --> 00:09:20.130
+dynamical system. And if these
+this matrix is instantaneously
+
+00:09:20.130 --> 00:09:23.970
+low rank, you can approximate it
+with an SVD like approximation,
+
+00:09:23.970 --> 00:09:27.870
+this is just one scheme. I take
+this as an example. And if this
+
+00:09:27.870 --> 00:09:31.500
+is instantaneous low rank, you
+can reduce an S to R and
+
+00:09:31.500 --> 00:09:35.100
+hopefully R if this is a low
+rank matrix R is much smaller
+
+00:09:35.100 --> 00:09:40.680
+than that. And then basically,
+this is an SVD like
+
+00:09:40.680 --> 00:09:46.380
+decomposition. Within the time
+dependent reducer modeling
+
+00:09:46.380 --> 00:09:50.010
+formulation, you can actually
+derive evolution equation for
+
+00:09:50.010 --> 00:09:53.400
+all these three components
+without actually needing to
+
+00:09:53.400 --> 00:09:57.240
+generate data and these are
+based on if you want to know the
+
+00:09:57.270 --> 00:10:00.210
+background math behind this is
+actually beautiful. Remind Only
+
+00:10:00.210 --> 00:10:07.620
+an optimization where this the
+rank or matrices, you can show
+
+00:10:07.620 --> 00:10:10.830
+the rank or matrix, realize the
+space of rank or matrices,
+
+00:10:10.860 --> 00:10:15.600
+realize that this is smooth
+manifold. And then you can use
+
+00:10:15.600 --> 00:10:22.470
+that the remaining optimization
+tools to do projection on that
+
+00:10:22.470 --> 00:10:25.470
+manifold, find the tangent space
+and evolve that tangent space.
+
+00:10:25.470 --> 00:10:29.010
+So all of the math part that I'm
+not going to cover today is
+
+00:10:29.010 --> 00:10:33.510
+actually covered within the
+remaining optimization. But
+
+00:10:33.510 --> 00:10:36.390
+what's important is that like I
+said, there is no data required
+
+00:10:36.390 --> 00:10:38.400
+here other than the initial
+condition and boundary
+
+00:10:38.400 --> 00:10:42.840
+condition. So yes, that's data,
+but not observation of the
+
+00:10:42.840 --> 00:10:45.930
+physical system. Right. So and
+then you can derive evolution
+
+00:10:45.930 --> 00:10:49.980
+equation for for these matrices.
+And because there is no data
+
+00:10:49.980 --> 00:10:54.240
+evolve, right, so you this kind
+of low rank approximation
+
+00:10:54.270 --> 00:10:57.450
+doesn't even have the issue of
+extrapolating to unseen data,
+
+00:10:57.450 --> 00:10:59.700
+because there is no data
+involved in the whole workflow
+
+00:10:59.700 --> 00:11:03.930
+process. So I'll adapt to the
+changing conditions. And when
+
+00:11:03.990 --> 00:11:06.960
+and one of the nice thing about
+this kind of decomposition is
+
+00:11:06.960 --> 00:11:10.590
+that the system could be very
+high rank over time, but needs
+
+00:11:10.590 --> 00:11:14.100
+to be low rank instantaneously.
+So that's the key observation,
+
+00:11:14.280 --> 00:11:18.510
+if the system is very high rank
+instantaneously, this is not an
+
+00:11:18.510 --> 00:11:22.860
+efficient methodology. Alright,
+so because of connection to SVD,
+
+00:11:22.920 --> 00:11:25.590
+and I'll show you actually, this
+is very closely related to
+
+00:11:25.590 --> 00:11:28.890
+instantaneous SVD of that
+matrix, and closely approximates
+
+00:11:28.890 --> 00:11:32.340
+that without actually computing
+any SVD than that's the key.
+
+00:11:33.450 --> 00:11:37.140
+It's quite interpretable right,
+we know how to interpret an SVD
+
+00:11:37.530 --> 00:11:38.610
+dimension reduction.
+
+00:11:40.200 --> 00:11:43.290
+Just some some notes actually,
+this was originated in quantum
+
+00:11:43.290 --> 00:11:46.980
+chemistry community for solving
+short and get equation. And so,
+
+00:11:46.980 --> 00:11:50.430
+this goes back actually in the
+year 2000 There is this
+
+00:11:50.430 --> 00:11:53.640
+beautiful review paper, which
+shows how this kind of
+
+00:11:53.640 --> 00:11:58.980
+methodology which you decompose
+your matrix to three SVD like
+
+00:11:58.980 --> 00:12:03.330
+matrices, that you can solve you
+can use that for solving Sjodin
+
+00:12:03.330 --> 00:12:07.860
+get equation, then in this
+paper, this was put into a more
+
+00:12:07.860 --> 00:12:11.100
+general context, right. So this
+is exactly the same formulation
+
+00:12:11.100 --> 00:12:13.860
+here, but just put into more
+general context and this is now
+
+00:12:13.860 --> 00:12:19.260
+called dynamical low rank
+approximation. And, and sort of
+
+00:12:19.260 --> 00:12:23.640
+on a parallel universe. Another
+sort of decomposition, which is
+
+00:12:24.510 --> 00:12:28.560
+a two matrix decomposition was
+also developed. First we know is
+
+00:12:28.560 --> 00:12:32.430
+by tamis, SubSys, and the
+Macchu. At MIT, they developed
+
+00:12:32.430 --> 00:12:36.540
+dynamically orthogonal
+decomposition, and and later on,
+
+00:12:36.990 --> 00:12:39.480
+George Clooney, darqueze. And
+Tammy. saps has also worked
+
+00:12:39.480 --> 00:12:43.200
+together on this kind of
+methodology. And so myself, and
+
+00:12:43.200 --> 00:12:45.630
+there was another version of
+this again, a two matrix
+
+00:12:45.630 --> 00:12:48.870
+decomposition by orthonormal
+decomposition, it was shown that
+
+00:12:48.870 --> 00:12:52.890
+do A and B are exactly the same
+thing. There's also two two
+
+00:12:52.890 --> 00:12:55.800
+matrix decomposition, optimally
+time dependent decomposition
+
+00:12:55.800 --> 00:13:00.360
+that is applied to linear
+systems, which I worked with. I
+
+00:13:00.360 --> 00:13:04.950
+worked on that and also there is
+dynamically orthogonal duallie,
+
+00:13:04.950 --> 00:13:07.170
+dynamical orthogonality
+conditions, sorry, there's a
+
+00:13:07.170 --> 00:13:11.790
+typo here. What is this, all of
+these terminologies may sound
+
+00:13:11.790 --> 00:13:14.580
+confusing, but I want to show
+you that they all of these are
+
+00:13:14.610 --> 00:13:17.250
+actually equivalent to each
+other. Right? So actually, we
+
+00:13:17.250 --> 00:13:21.240
+show that in this paper that you
+can, that this dynamical low
+
+00:13:21.240 --> 00:13:25.830
+rank approximation, this triple
+matrices are actually is like a
+
+00:13:25.830 --> 00:13:29.970
+hybrid of do and build together.
+And they are equivalent. What do
+
+00:13:29.970 --> 00:13:33.120
+I mean by equivalent, they are
+exactly the same low rank
+
+00:13:33.120 --> 00:13:37.650
+matrices proximation of the full
+matrix. And so so as you see,
+
+00:13:37.650 --> 00:13:41.700
+throughout this talk, I use this
+or this, but you shouldn't get
+
+00:13:41.700 --> 00:13:45.150
+distracted by any of these
+triple matrix decomposition or
+
+00:13:45.150 --> 00:13:49.320
+two matrix decomposition. What
+is important to know is that
+
+00:13:49.320 --> 00:13:52.200
+they all follow the same
+principle, and they are
+
+00:13:52.200 --> 00:13:56.670
+equivalent. Okay, let me show
+you an example of that before I
+
+00:13:56.670 --> 00:13:59.670
+get to the CLR decomposition for
+competing sensitivities how you
+
+00:13:59.670 --> 00:14:05.460
+can use this kind of app this is
+an application of the VDS or
+
+00:14:05.460 --> 00:14:07.830
+mine based on time dependent
+basis. So this is applied to
+
+00:14:07.830 --> 00:14:13.230
+compute sensitivities of lots of
+high dimensional systems. So if
+
+00:14:13.230 --> 00:14:15.480
+you want to compute sensitivity
+of a high dimensional system,
+
+00:14:15.480 --> 00:14:18.180
+let's say this is an nonlinear
+dynamical system. Now, you want
+
+00:14:18.180 --> 00:14:21.780
+to perturb this with respect to
+some sort of parameters for each
+
+00:14:21.780 --> 00:14:23.940
+of those parameters, you would
+have to solve this linear
+
+00:14:23.940 --> 00:14:27.570
+sensitivity equation, right? So
+obviously, if the number of
+
+00:14:27.570 --> 00:14:30.510
+parameters is large, this is not
+a cost effective way. That's why
+
+00:14:30.510 --> 00:14:34.380
+people use our joint equation
+for agile equation, you only saw
+
+00:14:34.380 --> 00:14:37.800
+one equation backward in time.
+So you have to solve the forward
+
+00:14:37.800 --> 00:14:42.150
+equation and then solve one
+equation backward in time and
+
+00:14:42.150 --> 00:14:45.180
+then compute sensitivities for a
+given objective function with
+
+00:14:45.180 --> 00:14:49.350
+respect to all the parameters,
+but there is like two major
+
+00:14:49.350 --> 00:14:52.470
+problems with that joint one is
+actually i o because you have to
+
+00:14:52.470 --> 00:14:59.730
+store the full forward model and
+then and then to solve the
+
+00:14:59.730 --> 00:15:03.750
+actual equation backwards in
+time. So that I O is actually a
+
+00:15:03.750 --> 00:15:06.510
+major problem, especially for
+massive simulations like
+
+00:15:06.600 --> 00:15:09.480
+Turbulent Combustion problems
+where you can't store the
+
+00:15:09.480 --> 00:15:14.760
+forward solution at all in a
+time resolved manner. And also
+
+00:15:14.880 --> 00:15:19.200
+agile, you have to do diversion
+for any any given parameter for
+
+00:15:19.200 --> 00:15:21.360
+any given objective function. So
+if your objective function
+
+00:15:21.360 --> 00:15:25.230
+changes, you have to do another
+agent equation. But so yeah, so
+
+00:15:25.230 --> 00:15:29.010
+now let's look at it from a
+completely different
+
+00:15:29.010 --> 00:15:32.220
+perspective. And that is that
+these sensitivities, so if you
+
+00:15:32.220 --> 00:15:33.990
+look at these sensitivities,
+these are actually different
+
+00:15:33.990 --> 00:15:37.020
+sensitivities, respect to
+different parameters, they are
+
+00:15:37.020 --> 00:15:39.720
+correlated to each other
+instantaneously. If they are
+
+00:15:39.720 --> 00:15:42.390
+correlated, you don't need to
+solve for each one of those. And
+
+00:15:42.390 --> 00:15:44.820
+you can actually solve for a
+compressed version of those
+
+00:15:44.820 --> 00:15:47.850
+forward into, alright, so that's
+really the key observation here.
+
+00:15:48.240 --> 00:15:51.120
+And so if you look at this, this
+is again, you have a matrix
+
+00:15:51.120 --> 00:15:53.220
+differential equation. So you
+can look at the sensitivity
+
+00:15:53.220 --> 00:15:55.470
+equation as a matrix
+differential equation where
+
+00:15:55.470 --> 00:15:58.770
+you're evolving all of these
+sensitivities together. And like
+
+00:15:58.770 --> 00:16:01.290
+I said, if these are low rank,
+you can, you can compress them.
+
+00:16:01.290 --> 00:16:06.630
+So this is this work I was
+published last year in Siam. And
+
+00:16:06.630 --> 00:16:10.260
+this is, I'm using the Dubai
+decomposition here. But like I
+
+00:16:10.260 --> 00:16:14.250
+said, you can actually derive a
+triple decomposition here. So
+
+00:16:14.250 --> 00:16:17.190
+instead of solving for of this
+sensitivity, solve for only a
+
+00:16:17.190 --> 00:16:21.900
+rank r, would hopefully R is
+much smaller than D, solve for
+
+00:16:21.900 --> 00:16:24.510
+d. So you need to solve PDE. So
+this is not cheap to solve
+
+00:16:24.540 --> 00:16:28.380
+either. But at least you solve
+PDS of order R instead of d. And
+
+00:16:28.380 --> 00:16:32.130
+then these are really
+projections of the pool or more
+
+00:16:32.130 --> 00:16:35.040
+onto these bases. And this is
+where you get these coefficients
+
+00:16:35.040 --> 00:16:37.980
+by wrong, this approximation of
+this matrix is instantaneous
+
+00:16:37.980 --> 00:16:41.550
+law, right? It's a good
+approximation. And, and that's
+
+00:16:41.550 --> 00:16:47.340
+it. So the way we swap, we find
+the evolution equation for you.
+
+00:16:47.430 --> 00:16:50.730
+And why is by forming a
+variational principle, this
+
+00:16:50.730 --> 00:16:54.870
+variational principle is nothing
+but the residual that you get,
+
+00:16:54.870 --> 00:16:57.660
+because we are doing a low rank
+approximation. So instead of the
+
+00:16:57.660 --> 00:17:00.870
+whole matrix of sensitivity, we
+put you by transposing the full
+
+00:17:00.870 --> 00:17:04.230
+Ormeau. And because it's a low
+rank approximation, this is not
+
+00:17:04.230 --> 00:17:07.290
+going to be zero. But this is
+going to be some nonzero we want
+
+00:17:07.290 --> 00:17:11.490
+to minimize this by optimally
+updating the low rank basis, you
+
+00:17:11.520 --> 00:17:14.580
+and the coefficient, subject to
+this other normality condition,
+
+00:17:14.580 --> 00:17:18.210
+we want these bases to be
+orthonormal, you can actually
+
+00:17:18.210 --> 00:17:21.390
+solve this with Lagrange
+multiplier. Once you solve this
+
+00:17:21.390 --> 00:17:25.440
+equation, you get this close on
+evolution equation for these
+
+00:17:25.500 --> 00:17:29.550
+bases and the coefficients, and
+then you solve this, instead of
+
+00:17:29.550 --> 00:17:31.530
+solving this equation. And
+that's where you get the
+
+00:17:31.530 --> 00:17:34.410
+computational advantage, right,
+instead of solving for the
+
+00:17:34.410 --> 00:17:39.660
+fields, you solve for our
+fields. And d over r is what you
+
+00:17:39.660 --> 00:17:43.890
+get in terms of memory, saving,
+and also in terms of in terms of
+
+00:17:43.890 --> 00:17:50.100
+flops. So this is now we applied
+this to the same problem was
+
+00:17:50.100 --> 00:17:53.550
+showing you at the very first
+slide, this is the biochemical
+
+00:17:53.550 --> 00:17:58.620
+reactions, biological reaction.
+So these, these are reaction
+
+00:17:58.620 --> 00:18:03.300
+parameters. And it's very
+important to know how any
+
+00:18:03.300 --> 00:18:05.370
+quantity of interest is
+sensitive to any of these
+
+00:18:05.370 --> 00:18:08.250
+parameters, because the
+competing these measuring these
+
+00:18:08.250 --> 00:18:12.540
+quantities is very expensive.
+And you you can't afford to
+
+00:18:12.540 --> 00:18:15.300
+measure all of them super
+accurately, you have to do a
+
+00:18:15.300 --> 00:18:17.820
+budget allocation and say, okay,
+these 10 parameters are
+
+00:18:17.820 --> 00:18:21.600
+important, and which are those
+10 parameters. There are other
+
+00:18:21.600 --> 00:18:23.970
+applications as well. But this
+is just one skill, some other
+
+00:18:23.970 --> 00:18:26.520
+reduction is another one. So you
+can actually drop these
+
+00:18:26.520 --> 00:18:29.610
+reactions if they're not
+important if they're not, if the
+
+00:18:29.610 --> 00:18:31.770
+nothing is sensitive with
+respect to those and actually
+
+00:18:31.770 --> 00:18:37.110
+come up with the reduced
+mechanism. So if you look at
+
+00:18:37.110 --> 00:18:40.800
+this, this is actually a tensor
+because you've got like here 23
+
+00:18:40.800 --> 00:18:45.270
+species, and we have 34 reaction
+parameters, if you look at the
+
+00:18:45.270 --> 00:18:47.640
+entire matrix, the entire
+sensitivity is actually a
+
+00:18:47.640 --> 00:18:51.660
+tensor, you have parameters, you
+have a species here and then you
+
+00:18:51.660 --> 00:18:55.260
+have grid points, but, so, here
+what we do we flatten this
+
+00:18:55.260 --> 00:18:59.370
+tensor and then becomes a
+matrix. So, these are the
+
+00:18:59.400 --> 00:19:01.890
+sensitivities of different
+species with respect to
+
+00:19:01.890 --> 00:19:04.590
+different parameters and then we
+seek to approximate this with
+
+00:19:04.590 --> 00:19:09.360
+this low rank approximation. So,
+instead of solving 23 by 34,
+
+00:19:09.450 --> 00:19:12.990
+PDS, which would be forward
+sensitivity equations, or if you
+
+00:19:12.990 --> 00:19:15.630
+want to solve an equation, you
+have to solve an agile equation
+
+00:19:15.630 --> 00:19:18.870
+for each of these species or
+instead of solving 23 Agent
+
+00:19:18.870 --> 00:19:21.240
+equation, we want to do a low
+rank approximation of this and
+
+00:19:21.240 --> 00:19:25.590
+see what we get, we did that. So
+this particular formulation is
+
+00:19:25.590 --> 00:19:29.070
+called force optimal time
+dependent decomposition or fotd.
+
+00:19:30.840 --> 00:19:33.690
+Like I said, it's a particular
+variation of that time dependent
+
+00:19:33.690 --> 00:19:37.620
+basis just apply to linear
+sensitivity equation, I can see
+
+00:19:37.860 --> 00:19:41.010
+increasing grant from two to
+eight you can this is relative
+
+00:19:41.010 --> 00:19:44.130
+error, you can actually match
+you can reduce the error
+
+00:19:44.130 --> 00:19:47.730
+significantly. So this is with
+with five mods you can get less
+
+00:19:47.730 --> 00:19:51.270
+than one person error, relative
+error. And this would be
+
+00:19:51.270 --> 00:19:54.360
+optimal. We show we actually
+took resolve the full Oromo all
+
+00:19:54.360 --> 00:19:57.480
+of the sensitivities and we took
+instantaneous SVD of that that
+
+00:19:57.480 --> 00:20:00.540
+will be the best and lowest
+error that one could achieve and
+
+00:20:00.540 --> 00:20:04.140
+we see actually we are tracking
+the instantaneous SVD very well,
+
+00:20:04.440 --> 00:20:07.740
+like I said, we when we solve
+these equations, we do not take
+
+00:20:07.770 --> 00:20:11.070
+any SVD this is all evolution
+equation, but the evolution
+
+00:20:11.070 --> 00:20:14.250
+equation is such that they
+approximate this instantaneous
+
+00:20:14.250 --> 00:20:17.910
+SVD. And you can see here the
+singular values match with the S
+
+00:20:17.940 --> 00:20:21.240
+instantaneous SVD. So, that
+means we are actually very, very
+
+00:20:21.240 --> 00:20:26.790
+closely tracking the optimal sub
+space here. And with five modes
+
+00:20:26.850 --> 00:20:29.730
+basically is equivalent, the
+cost of solving for five modes
+
+00:20:29.730 --> 00:20:33.150
+is equivalent solving five PDS
+for five sensitivities as
+
+00:20:33.150 --> 00:20:36.810
+opposed to 782. And also memory
+storage is also the same we saw
+
+00:20:36.810 --> 00:20:40.140
+basically, we only need to
+restore five modes, the
+
+00:20:40.140 --> 00:20:43.440
+coefficients, those are in terms
+of restoring that those are
+
+00:20:43.440 --> 00:20:46.320
+negligible. And so, but it can
+visualize them,
+
+00:20:46.950 --> 00:20:50.430
+I can go back to the previous
+slide I, I don't usually stop
+
+00:20:50.430 --> 00:20:54.630
+the presentation, but I had to
+because I'm, I'm looking
+
+00:20:54.630 --> 00:21:00.180
+something so you're, so you're
+solving five PDE instead of 782.
+
+00:21:00.270 --> 00:21:06.300
+So, so from those five PDE IDs,
+you generate the data and Ami.
+
+00:21:06.300 --> 00:21:10.020
+But you said that you're not
+using the data to construct this
+
+00:21:10.020 --> 00:21:14.760
+evolutionary equations, am I
+missing something actually
+
+00:21:14.760 --> 00:21:16.320
+constructor, so
+
+00:21:17.400 --> 00:21:20.760
+it's off Wi Fi, these are five
+of these modes, and also you
+
+00:21:20.760 --> 00:21:23.910
+solve an OD for the evolution
+equation, anytime you want, you
+
+00:21:23.910 --> 00:21:26.460
+can reconstruct the full order
+of sensitivities
+
+00:21:26.520 --> 00:21:29.580
+and include this matrix matrix.
+So
+
+00:21:29.580 --> 00:21:33.360
+you solve for these two matrices
+as shown here, five PDS Yeah,
+
+00:21:33.390 --> 00:21:36.840
+the cost of this is really
+negligible compared to this. So
+
+00:21:36.840 --> 00:21:40.710
+five PDS and OD E with this is
+the wrong basically, but wrong
+
+00:21:40.740 --> 00:21:45.060
+is a instantaneous projection of
+your full or mo onto this basis.
+
+00:21:45.510 --> 00:21:49.530
+And based on that, you can
+reconstruct, you can multiply
+
+00:21:49.530 --> 00:21:52.260
+these two skinny matrices and
+reconstruct the full
+
+00:21:52.290 --> 00:21:55.320
+sensitivities anytime you want,
+but we don't do that I mean, but
+
+00:21:55.320 --> 00:21:57.480
+you can do that at any any point
+you want,
+
+00:21:57.630 --> 00:22:00.210
+and where the where the
+parameter comes in
+
+00:22:02.160 --> 00:22:05.040
+or the forcing, they show up by
+forcing in the sensitivity
+
+00:22:05.040 --> 00:22:07.770
+equation, right. So, when you
+take the linear sensitivity, you
+
+00:22:07.770 --> 00:22:10.680
+take the derivative of your full
+normal with respect to these
+
+00:22:10.680 --> 00:22:13.980
+parameters, they show us forcing
+in the right hand side of the
+
+00:22:14.160 --> 00:22:22.230
+NCCF shows up in all of these
+equations. Okay. Sure. Okay. And
+
+00:22:22.230 --> 00:22:27.060
+also, this actually, we have the
+details you can find in this
+
+00:22:27.060 --> 00:22:32.370
+paper, if you're interested. And
+so, let me go back to this
+
+00:22:32.400 --> 00:22:34.770
+slide. So, you can see actually,
+the modes here like I said, this
+
+00:22:34.770 --> 00:22:37.380
+is interpretable the modes
+actually captured the structure.
+
+00:22:37.380 --> 00:22:39.750
+So, this is the first mode the
+second or third mode, you see
+
+00:22:39.750 --> 00:22:42.000
+actually captures finer and
+finer structure. So these are
+
+00:22:42.000 --> 00:22:45.390
+the time dependent cyberspace
+that is evolving with your
+
+00:22:45.390 --> 00:22:48.960
+system, and like this is a
+convection dominated problem. So
+
+00:22:48.960 --> 00:22:51.960
+you cannot solve these problems
+with POD static basis, you have
+
+00:22:51.960 --> 00:22:55.560
+to resort to some sort of basis
+adaptivity and I know Jung Soo
+
+00:22:55.950 --> 00:22:58.740
+and also others actually have
+worked on adaptive basis, but
+
+00:22:58.740 --> 00:23:01.080
+this is a matrix differential
+equation. So I think that's
+
+00:23:01.080 --> 00:23:04.320
+really the difference here, not
+the vector revolution equation
+
+00:23:04.320 --> 00:23:08.490
+and also Benjamin pass refer and
+Karthik also, University of
+
+00:23:08.490 --> 00:23:11.970
+Michigan also worked on adaptive
+basis, but, but this is like I
+
+00:23:11.970 --> 00:23:14.610
+said, this is a matrix
+differential equation. Anyway,
+
+00:23:14.610 --> 00:23:17.010
+so, you once you solve this
+problem, you can actually take
+
+00:23:17.010 --> 00:23:20.730
+your y one and reconfigure that
+because this will be remember
+
+00:23:20.730 --> 00:23:23.550
+this was a tensor with flatten
+that and then you can actually
+
+00:23:23.550 --> 00:23:27.300
+see the sensitivities with
+respect to of all the species
+
+00:23:27.300 --> 00:23:29.670
+with respect to all 34
+parameters, this is just one of
+
+00:23:29.670 --> 00:23:33.930
+them out why one just visualize
+here and you can see which
+
+00:23:33.930 --> 00:23:37.020
+parameters is affecting which
+species immediately like I said,
+
+00:23:37.020 --> 00:23:40.860
+this is this actually has that
+simplified data representation
+
+00:23:40.860 --> 00:23:49.200
+that is immediately explainable
+interpretable so I want to talk
+
+00:23:49.200 --> 00:23:52.620
+about application Turbulent
+Combustion. This is another
+
+00:23:52.620 --> 00:23:55.200
+application where you have a
+matrix differential equation.
+
+00:23:55.200 --> 00:23:58.290
+Let's look at that. So to
+everyone combustion, you have to
+
+00:23:58.290 --> 00:24:00.690
+solve this compressible navier
+stokes equation, I'm taking
+
+00:24:00.690 --> 00:24:04.530
+DNSBL but this could be rands or
+alias, but then you need to
+
+00:24:04.530 --> 00:24:08.340
+solve this species transport
+equation. And for complex views,
+
+00:24:08.340 --> 00:24:13.590
+you may have even order of 1000
+species. So this is solving this
+
+00:24:13.590 --> 00:24:15.960
+equation is really the major
+costs of solving Turbulent
+
+00:24:15.960 --> 00:24:20.070
+Combustion because you have to
+first store this 1000 species,
+
+00:24:20.070 --> 00:24:22.950
+which is really just out of
+question for under DNS, great
+
+00:24:22.950 --> 00:24:26.820
+just storing a matrix with 1000
+species is out of question, and
+
+00:24:26.820 --> 00:24:29.850
+that is really the main
+bottleneck. And also the I O
+
+00:24:29.850 --> 00:24:33.480
+cost like it this is actually
+this one 2012 from Dr. Jackie
+
+00:24:33.480 --> 00:24:36.780
+Chan's group that and simulate
+this is a direct quote from the
+
+00:24:36.780 --> 00:24:41.760
+paper that because of I O
+limitation, we can only store
+
+00:24:41.760 --> 00:24:45.420
+like for every 400 trimesters of
+the solution. This is three
+
+00:24:45.420 --> 00:24:47.880
+dimensional simulation, whereas
+there are things happening or
+
+00:24:47.880 --> 00:24:51.810
+the order of 10 simulation time
+is completely missed. If you
+
+00:24:51.810 --> 00:24:54.990
+store the data every 400 times.
+So this is just i Oh, it's you
+
+00:24:54.990 --> 00:24:57.930
+can imagine the memory and
+solving the system and this is
+
+00:24:57.930 --> 00:25:02.370
+not for the 1000 species I think
+This is order of 100 species. So
+
+00:25:02.370 --> 00:25:06.540
+as we push this boundary to
+exascale computing, especially
+
+00:25:06.540 --> 00:25:10.080
+when memory and IO are the main
+issues actually solving this
+
+00:25:10.080 --> 00:25:13.530
+equation is a major challenge.
+And so how but if you look at
+
+00:25:13.530 --> 00:25:16.230
+this equation, this is a matrix
+differential equation and
+
+00:25:16.230 --> 00:25:19.920
+nonlinear matrix differential
+equation. And again, now here
+
+00:25:19.920 --> 00:25:21.900
+I'm using the tuple
+decomposition, but like I said,
+
+00:25:21.900 --> 00:25:24.810
+You shouldn't get distracted by
+to decompose by decomposition or
+
+00:25:24.810 --> 00:25:28.530
+cheaper decomposition, they are
+equivalent. So then you have
+
+00:25:28.530 --> 00:25:32.250
+this matrix decomposition, you
+can write this. So the this is a
+
+00:25:32.250 --> 00:25:35.610
+full order model evolution
+equation. Again, you can follow
+
+00:25:35.610 --> 00:25:40.080
+the same principle, which is a
+residual minimization, plug in
+
+00:25:40.080 --> 00:25:42.600
+this kind of low rank
+approximation. And this is a low
+
+00:25:42.600 --> 00:25:45.720
+rank approximation. So you've
+got some error here and plug it
+
+00:25:45.720 --> 00:25:49.140
+in here, because it's a low rank
+approximation is not going to
+
+00:25:49.140 --> 00:25:52.290
+satisfy the full remark. So you
+get this residual, and you want
+
+00:25:52.290 --> 00:25:55.260
+to minimize that residual by
+optimally updating all three
+
+00:25:55.260 --> 00:25:58.770
+components. Once you solve this
+minimization problem subject to
+
+00:25:58.770 --> 00:26:02.880
+the Arthur normality of view
+modes and y modes, then you get
+
+00:26:03.030 --> 00:26:06.900
+evolution equation here, you can
+find the details here in this
+
+00:26:06.900 --> 00:26:11.160
+paper. But just suffice to say
+that we are solving this solving
+
+00:26:11.160 --> 00:26:13.530
+this doesn't require some
+optimism, some iteration or
+
+00:26:13.530 --> 00:26:16.950
+anything, you get evolution
+equation as the optimality
+
+00:26:16.950 --> 00:26:20.040
+conditions. So the evolution
+equations are the optimality
+
+00:26:20.040 --> 00:26:22.530
+condition. So you don't need to
+solve a nonlinear optimization
+
+00:26:22.530 --> 00:26:25.620
+problem, and so on, so forth.
+This, these are the optimality
+
+00:26:25.620 --> 00:26:28.740
+conditions. So it's not like
+that you actually solve a
+
+00:26:28.740 --> 00:26:32.460
+gradient basis. These are
+actually what minimizes, if you
+
+00:26:32.550 --> 00:26:36.330
+if you and Sigmund was satisfied
+this governing equation, you're
+
+00:26:36.330 --> 00:26:42.540
+minimizing this residual. So we
+applied these two different
+
+00:26:42.540 --> 00:26:44.730
+views, I'll just show you a
+sample of this, this is a two
+
+00:26:44.730 --> 00:26:50.010
+dimensional Flog. This is GRI
+mechanism actually has quite
+
+00:26:50.040 --> 00:26:55.650
+complex chemistry, he's got 53
+species and 325 reactions. So
+
+00:26:55.650 --> 00:26:58.140
+this is a direct numerical
+simulation of that we are
+
+00:26:58.140 --> 00:27:03.420
+showing contours of temperature
+and O H. And this is a rank six
+
+00:27:03.480 --> 00:27:07.140
+approximation of this instead of
+solving for 53 species, we are
+
+00:27:07.140 --> 00:27:14.280
+solving for six effective the
+species. And so we have done
+
+00:27:14.670 --> 00:27:21.390
+more analysis here, I just all
+those results are in this paper
+
+00:27:21.390 --> 00:27:25.920
+that hopefully will be out soon.
+But I want to show you that like
+
+00:27:25.920 --> 00:27:29.460
+I said, for practitioners, these
+are this is not just a way to
+
+00:27:29.460 --> 00:27:32.640
+speed up computation, this is
+actually interpretable. So if
+
+00:27:32.640 --> 00:27:38.910
+you focus on the Y modes, here,
+the Y modes represent as a time
+
+00:27:38.910 --> 00:27:41.970
+dependence of a space in the
+comp in the thermal in the
+
+00:27:41.970 --> 00:27:44.550
+composition of space, right, so
+if you look at the composition
+
+00:27:44.550 --> 00:27:49.170
+of space is a 53 dimensional
+space. And each of these vectors
+
+00:27:49.200 --> 00:27:53.040
+is so this collectively is a
+subspace and I can visualize
+
+00:27:53.040 --> 00:27:56.580
+that cyberspace and also we have
+done instantaneous PCA that
+
+00:27:56.580 --> 00:27:59.760
+means instantaneous SVD of this
+matrix. And we show that this
+
+00:27:59.760 --> 00:28:07.530
+time dependent bases actually
+closely follow the the
+
+00:28:07.530 --> 00:28:11.820
+instantaneous PC, PCA, but there
+is also PCA that is done in
+
+00:28:11.820 --> 00:28:13.770
+combustion community.
+Unfortunately, I don't have to
+
+00:28:13.770 --> 00:28:16.740
+cover that. But that's really
+equivalent to like a pod
+
+00:28:16.740 --> 00:28:20.370
+approach. But for composition
+space, so that's static, you can
+
+00:28:20.370 --> 00:28:25.770
+see that the especially the
+higher modes vary in time a lot.
+
+00:28:26.670 --> 00:28:30.060
+And you can look at the singular
+value the singular values of
+
+00:28:30.060 --> 00:28:33.930
+that matrix. So we solve the DNS
+of that and we computed the
+
+00:28:33.930 --> 00:28:36.810
+singular values of that. And
+then we can see the singular
+
+00:28:36.810 --> 00:28:39.900
+values. With this low rank
+approximation, we can capture
+
+00:28:39.900 --> 00:28:47.310
+the leading modes very well. And
+these are, so I want to go over
+
+00:28:47.310 --> 00:28:50.070
+this just in the interest of
+time, but if you're interested
+
+00:28:50.070 --> 00:28:55.380
+in this, we have a lot more
+details in this manuscript. And
+
+00:28:55.380 --> 00:28:58.020
+so we have extended this to
+three dimensional simulation as
+
+00:28:58.020 --> 00:29:01.410
+well. This is for a different
+mechanism saying yes mechanism,
+
+00:29:01.410 --> 00:29:04.230
+it's similar and you can see the
+modes. Now the modes here are
+
+00:29:04.230 --> 00:29:09.330
+three dimensional modes. And
+this is a DNS mixture fraction
+
+00:29:09.330 --> 00:29:13.050
+of DNS, but these are the modes
+want the first mode the second
+
+00:29:13.050 --> 00:29:15.480
+or third mode, you can see the
+modes actually evolved with the
+
+00:29:15.480 --> 00:29:20.580
+flow, and they add that to the
+flow. This is another case done
+
+00:29:20.610 --> 00:29:27.090
+in Dr. Jackie Chan's group. And
+so this actually has a sudden
+
+00:29:27.090 --> 00:29:30.270
+transition at the end. So
+there's a propagation of this
+
+00:29:30.270 --> 00:29:35.550
+wave from right to left and then
+when it gets near the end, you
+
+00:29:35.550 --> 00:29:39.990
+will see a sudden transition in
+the chemistry and so, all the
+
+00:29:40.620 --> 00:29:42.930
+disaster 39 species
+
+00:29:44.790 --> 00:29:48.390
+This is solved in std COVID
+Eight or defined difference and
+
+00:29:48.390 --> 00:29:53.220
+all these details are here. Let
+me just show you. This problem
+
+00:29:53.220 --> 00:29:56.550
+is actually very high rank even
+this month, so we had to choose
+
+00:29:56.580 --> 00:30:01.050
+r equals to 29. So we are not
+really getting so much reduction
+
+00:30:01.050 --> 00:30:04.830
+here. And this is actually I
+want to show you this as one of
+
+00:30:04.830 --> 00:30:09.120
+the challenges of solving these
+systems. That is instantaneous
+
+00:30:09.120 --> 00:30:12.690
+is not that low rank was still
+you go from 39 to 29, you can
+
+00:30:12.690 --> 00:30:15.990
+see this, we can get the
+transport, but there's this
+
+00:30:15.990 --> 00:30:18.900
+sudden transition at the end
+that is kind of time dependent
+
+00:30:18.900 --> 00:30:22.620
+bases can capture that sudden
+transition. And if you look at
+
+00:30:22.710 --> 00:30:25.500
+and also this is a convection
+dominated problem. So this kind
+
+00:30:25.500 --> 00:30:30.000
+of reduce or mine handles
+convection really well, as I
+
+00:30:30.000 --> 00:30:34.320
+mentioned earlier, if you look
+at the composition of a species
+
+00:30:34.320 --> 00:30:37.680
+yet, you will see at the end,
+these two modes drastically
+
+00:30:37.680 --> 00:30:42.450
+change in time. The higher modes
+usually change in timing, in
+
+00:30:42.450 --> 00:30:44.940
+older cases that we have
+considered, but not the first
+
+00:30:44.940 --> 00:30:47.400
+two modes. And you can see at
+the end, once this animation
+
+00:30:47.640 --> 00:30:50.790
+approaches the end, these are
+the two most energetic modes,
+
+00:30:50.940 --> 00:30:54.780
+you can see that that
+composition changes drastically
+
+00:30:54.780 --> 00:31:00.330
+towards the end, as you saw here
+as a, this is actually an
+
+00:31:00.330 --> 00:31:04.140
+extremely challenging problem to
+solve. All right, now, I want to
+
+00:31:04.140 --> 00:31:07.110
+get to the CLR decomposition,
+this was really an introduction
+
+00:31:07.110 --> 00:31:10.830
+to this, I wanted to talk about
+some of the other challenges,
+
+00:31:10.920 --> 00:31:15.030
+especially how to solve this
+system of equations efficiently
+
+00:31:15.030 --> 00:31:19.590
+for for nonlinear, governed for
+nonlinear PDE s, right. So if
+
+00:31:19.590 --> 00:31:22.770
+you look at the evolution
+equation, this is this is this
+
+00:31:22.770 --> 00:31:25.650
+is evolution equation I showed
+in the previous slide, but just
+
+00:31:25.650 --> 00:31:28.860
+simplified in terms of linear
+algebra. So you solve an
+
+00:31:28.860 --> 00:31:33.180
+evolution equation for four
+modes U and sigma and why when
+
+00:31:33.210 --> 00:31:35.850
+but if the right hand side of
+the governing equation is
+
+00:31:35.850 --> 00:31:38.100
+nonlinear, so this is the right
+hand side of the governing
+
+00:31:38.100 --> 00:31:41.610
+equation, you have to compute
+this F, which is a nonlinear map
+
+00:31:41.610 --> 00:31:45.300
+of your governing equation. If
+you form this matrix, first of
+
+00:31:45.300 --> 00:31:48.690
+all, you lose all the advantages
+that this methodology has to
+
+00:31:48.690 --> 00:31:52.080
+offer, because you have to
+occupy the entire memory and
+
+00:31:52.080 --> 00:31:55.920
+then apply this nonlinear map on
+that decompress matrix. Even
+
+00:31:55.920 --> 00:31:58.410
+though when we come back here,
+we'll project it back to this
+
+00:31:58.410 --> 00:32:03.000
+other space. But this is the
+same problem that exists in
+
+00:32:03.000 --> 00:32:07.380
+nonlinear, reduced order
+modeling with POD also, we have
+
+00:32:07.380 --> 00:32:10.590
+the same issue. And this is
+exactly the same issue that
+
+00:32:10.590 --> 00:32:13.320
+shows up here. So you have you
+need to do some sort of hyper
+
+00:32:13.320 --> 00:32:16.560
+reduction here. And I want to
+show you that CLR is actually
+
+00:32:16.560 --> 00:32:19.650
+the way to do hyper reduction
+here for this matrix
+
+00:32:19.650 --> 00:32:24.660
+differential equation. So there
+are four issues with this is
+
+00:32:24.810 --> 00:32:29.790
+issue of cost, which is the one
+we are targeting here. And also
+
+00:32:29.790 --> 00:32:32.610
+if you want to get efficiency
+with solving this equation, if
+
+00:32:32.610 --> 00:32:36.240
+your governing equation is
+nonlinear, like a combustion
+
+00:32:36.240 --> 00:32:41.340
+problem, or a UQ problem, if it
+is quadratic non linearity, you
+
+00:32:41.340 --> 00:32:44.310
+can get the speed up solving
+this equation by just plugging
+
+00:32:44.310 --> 00:32:47.760
+in this expansion into the
+governing equation and work out
+
+00:32:47.940 --> 00:32:52.830
+in a painstaking way, all the
+terms and solve this evolution
+
+00:32:52.830 --> 00:32:55.350
+equation, but that's highly
+intrusive, so you can get
+
+00:32:55.380 --> 00:32:58.350
+efficiency for nonlinear
+equation, but at the cost of
+
+00:32:58.410 --> 00:33:03.150
+doing an extremely intrusive
+process. Those two, these two
+
+00:33:03.150 --> 00:33:06.480
+are really the major drawbacks
+of this kind of formulation. And
+
+00:33:06.480 --> 00:33:10.800
+so we wanted to see if we can
+actually go back and and be able
+
+00:33:10.800 --> 00:33:16.050
+to solve this system of equation
+for a generic non linearity, but
+
+00:33:16.050 --> 00:33:22.050
+keeping the cost the as low as
+solving just for only our
+
+00:33:22.050 --> 00:33:26.100
+samples of this equation, right.
+So our samples are is the rank
+
+00:33:26.100 --> 00:33:28.890
+of the reduction, that is the
+nominal cost of solving this
+
+00:33:28.890 --> 00:33:32.340
+equation, and also rank
+adaptivity. And also stability
+
+00:33:32.340 --> 00:33:35.010
+when there are two other issues
+with this system. So first of
+
+00:33:35.010 --> 00:33:37.620
+all, our doesn't have to be
+fixed, right? So the rank of a
+
+00:33:37.620 --> 00:33:41.190
+system evolves over time. So
+just fixing that, that's a
+
+00:33:41.190 --> 00:33:47.310
+problem. So, these problems
+actually have been this issue of
+
+00:33:47.310 --> 00:33:51.840
+inverting this matrix have been
+addressed in this beautiful
+
+00:33:51.840 --> 00:33:58.710
+work. But reformulating this
+problem to another problem, and
+
+00:33:58.710 --> 00:34:03.420
+actually resolving this issue of
+having various having to invert
+
+00:34:03.420 --> 00:34:06.360
+this matrix, this matrix could
+become ill conditioned,
+
+00:34:06.360 --> 00:34:08.850
+remember, this is a singular
+value matrix. And if you want to
+
+00:34:08.850 --> 00:34:12.030
+solve this system with high
+accuracy, you need to resolve
+
+00:34:12.060 --> 00:34:19.620
+very small singular values. And,
+and so this is so you, so you
+
+00:34:19.650 --> 00:34:24.390
+have to be able to invert this
+matrix, this integration scheme
+
+00:34:24.390 --> 00:34:29.880
+actually resolves that issue by
+the cost of three pill. The cost
+
+00:34:29.880 --> 00:34:32.940
+of solving this is a scheme
+proposed here is triple of the
+
+00:34:32.940 --> 00:34:36.180
+cost of two times as large as
+the cost of solving this system,
+
+00:34:36.180 --> 00:34:39.420
+but it doesn't have this issue.
+Rank adaptivity also has been
+
+00:34:39.420 --> 00:34:43.320
+proposed here with work of
+Daniella venturi for tensile
+
+00:34:43.320 --> 00:34:46.410
+revolution equation and also
+within this formulation, but not
+
+00:34:46.410 --> 00:34:49.290
+the issue of cost. So these two
+issues have not been addressed
+
+00:34:49.440 --> 00:34:54.060
+up to this point. And that's
+really, I feel like these are
+
+00:34:54.090 --> 00:34:58.080
+major bottlenecks of solving
+this equation and getting the
+
+00:34:58.080 --> 00:35:03.630
+scale that they can offer. Okay,
+so let me just go to. So the all
+
+00:35:03.630 --> 00:35:07.080
+the details here is in this
+paper that was recently
+
+00:35:07.080 --> 00:35:12.600
+published by myself and my, my
+student, Jose no dairy. So let
+
+00:35:12.600 --> 00:35:16.410
+me just give you an overview. So
+here I'm switching to a UQ
+
+00:35:16.410 --> 00:35:19.740
+problem, that's another
+application, where you actually
+
+00:35:19.830 --> 00:35:22.620
+UQ problem, you can formulate it
+as a matrix differential
+
+00:35:22.620 --> 00:35:26.250
+equation here, but all the
+samples are. So if you look at
+
+00:35:26.310 --> 00:35:30.780
+the UQ problem, you have a
+nonlinear differential equation,
+
+00:35:30.780 --> 00:35:34.020
+and you have some random
+parameters. So this is the
+
+00:35:34.020 --> 00:35:37.530
+matrix of all the samples where
+each column is one sample. And
+
+00:35:37.530 --> 00:35:39.840
+you want to do a low rank
+approximation of this matrix.
+
+00:35:39.840 --> 00:35:43.680
+Like I said, computing this f of
+V is as costly as solving the
+
+00:35:43.680 --> 00:35:47.160
+fuller Mall. So that's the thing
+you'll be wanting to work for
+
+00:35:47.160 --> 00:35:50.040
+generic non linearity. If the
+system is linear, like the
+
+00:35:50.040 --> 00:35:52.830
+examples I showed at the
+beginning, you can actually work
+
+00:35:52.830 --> 00:35:55.620
+it out and solve this system in
+the Compress for you. And you
+
+00:35:55.620 --> 00:35:58.890
+can actually achieve all the
+computational efficiency, but
+
+00:35:58.890 --> 00:36:03.780
+not if this system is nonlinear.
+And so the cost of this system
+
+00:36:03.780 --> 00:36:06.480
+if you don't handle this
+properly, it will scale with the
+
+00:36:06.480 --> 00:36:09.150
+number of rows and number of
+columns of this matrix and that
+
+00:36:09.150 --> 00:36:11.760
+exactly the cost that you want
+to avoid, you want to have this
+
+00:36:11.760 --> 00:36:17.280
+cost. So like I said, for linear
+quadratic system, we can do that
+
+00:36:17.280 --> 00:36:19.950
+at the cost of doing a highly
+intrusive process. So the
+
+00:36:19.950 --> 00:36:22.410
+question is, how can we reduce
+the computational cost of
+
+00:36:22.410 --> 00:36:26.670
+solving a rank or tdb wrong time
+dependent basis wrong to that of
+
+00:36:26.670 --> 00:36:30.330
+solving only to our samples of
+that full or more, that is the
+
+00:36:30.330 --> 00:36:37.830
+nominal cost of evolving these
+equations. So this is so that I
+
+00:36:37.830 --> 00:36:44.370
+want to explain CLR, which is
+really fantastic. And I believe
+
+00:36:45.480 --> 00:36:51.390
+under explored linear algebra
+decomposition. So this is, let
+
+00:36:51.390 --> 00:36:56.520
+me just explain that. So let's
+say you have a matrix G. And
+
+00:36:56.520 --> 00:36:59.310
+this matrix has low rank
+structure, right. So this you
+
+00:36:59.310 --> 00:37:02.070
+can approximate it like if you
+take SVD of this matrix with
+
+00:37:02.070 --> 00:37:06.270
+bank or you can approximate it
+well, you can actually get
+
+00:37:06.300 --> 00:37:10.290
+something super close to an SVD
+of this matrix by strategically
+
+00:37:10.290 --> 00:37:13.590
+sample the columns and rows of
+this matrix, all the blue ones
+
+00:37:13.620 --> 00:37:17.370
+and all the all the red ones.
+And then you can approximate
+
+00:37:17.370 --> 00:37:20.070
+this means this should be an
+approximation, but just the
+
+00:37:20.070 --> 00:37:23.340
+columns of this which are shown
+by blue color, and the rows of
+
+00:37:23.340 --> 00:37:26.130
+this matrix, which are shown by
+red and this matrix, which is
+
+00:37:26.130 --> 00:37:31.560
+the, the intersection of these
+inverted, and arrays. If you
+
+00:37:32.040 --> 00:37:34.890
+select these rows and columns,
+strategically, you can get
+
+00:37:34.890 --> 00:37:38.520
+something very close to an SVD.
+And this was shown by Sorenson
+
+00:37:38.520 --> 00:37:44.430
+Embry that this is dying induced
+car decomposition. Alright, so
+
+00:37:44.430 --> 00:37:45.150
+we adopted
+
+00:37:46.650 --> 00:37:50.760
+the same strategy here. In fact,
+we didn't know about this, I
+
+00:37:50.760 --> 00:37:53.880
+have to confess and we did
+develop this methodology. And
+
+00:37:53.880 --> 00:37:56.730
+later on, we show that actually,
+this is exactly as you are the
+
+00:37:56.730 --> 00:38:00.510
+composition. So instead of f of
+t is the right hand side of the
+
+00:38:00.540 --> 00:38:04.950
+governing equation. So we can be
+only sample that equation at
+
+00:38:04.950 --> 00:38:08.670
+these columns and rows, not that
+so anything you see here in
+
+00:38:08.670 --> 00:38:12.180
+gray, that is not computed. And
+based on that, we can compute
+
+00:38:12.180 --> 00:38:16.830
+this, you can also do triple or
+by decomposition of this matrix.
+
+00:38:16.830 --> 00:38:20.520
+So we compute this by by
+sampling the columns, you find
+
+00:38:20.520 --> 00:38:26.250
+the column space for the ortho
+normalize, that will be denoted
+
+00:38:26.250 --> 00:38:30.210
+by fee of D, this is really Q R
+of the columns that we sample.
+
+00:38:30.570 --> 00:38:32.910
+And then these are just the
+interpolation coefficients that
+
+00:38:32.910 --> 00:38:36.180
+you can get it by the by
+interpolating every other column
+
+00:38:36.180 --> 00:38:39.240
+of these matrix to these spaces.
+So this is an interpolate matrix
+
+00:38:39.240 --> 00:38:42.420
+interpolation, not a matrix
+project, not a matrix
+
+00:38:42.420 --> 00:38:45.960
+projection, that is very
+important. So there is really
+
+00:38:45.960 --> 00:38:49.890
+nice. This is actually an
+oblique projection rather than
+
+00:38:49.920 --> 00:38:53.280
+an orthogonal projection. So
+unfortunately, I don't have time
+
+00:38:53.280 --> 00:38:57.420
+to cover all of that. But the
+key is that, remember, we didn't
+
+00:38:57.420 --> 00:39:00.780
+want to compute this matrix
+entirely, we wanted to compete
+
+00:39:00.780 --> 00:39:04.500
+it only that was the cause.
+Right? So but if but this matrix
+
+00:39:04.620 --> 00:39:08.880
+does have low rank structure, if
+didn't have low rank structure,
+
+00:39:08.880 --> 00:39:11.580
+we wouldn't be able to do this
+time dependent basis to begin
+
+00:39:11.580 --> 00:39:15.690
+with. And so if it has a lot on
+construction, you can actually
+
+00:39:16.020 --> 00:39:19.410
+strategically sample this, the
+sampling strategy is based on
+
+00:39:19.410 --> 00:39:23.400
+direct empirical interpolation
+method. I'm not going to go over
+
+00:39:23.400 --> 00:39:27.990
+this all those details are in
+the paper how we do this. So we
+
+00:39:27.990 --> 00:39:31.380
+need to have SVD of the these
+methods to know where to sample
+
+00:39:31.440 --> 00:39:34.710
+we don't have this matrix to
+begin with, let alone the SVD of
+
+00:39:34.710 --> 00:39:39.480
+this, we use the previous time
+step SVD of the previous time
+
+00:39:39.480 --> 00:39:44.220
+step of this matrix which we
+have cheaply, and use those as
+
+00:39:44.220 --> 00:39:48.870
+as as to derive to tell us where
+to sample right. So that's an I
+
+00:39:48.870 --> 00:39:52.020
+don't want to go over all of
+this, it all details on that
+
+00:39:52.020 --> 00:39:58.050
+paper. And so this is really an
+overview of this strategy. Like
+
+00:39:58.050 --> 00:40:00.930
+I said, instead of f the key is
+that instead have F now we have
+
+00:40:00.960 --> 00:40:03.630
+two skinny matrices that we can
+plug in here. So instead of
+
+00:40:03.630 --> 00:40:07.890
+putting F here, remember, F was
+the source of all the all the
+
+00:40:07.920 --> 00:40:12.300
+each computational issues. Now
+we have a skinny factorization
+
+00:40:12.450 --> 00:40:15.660
+that is plugged in here. Once
+you plug that in here, these are
+
+00:40:15.690 --> 00:40:20.640
+extremely fast. And I mean, and
+also, it's really nice that this
+
+00:40:20.640 --> 00:40:24.600
+is actually relatively non
+intrusive, because you only saw
+
+00:40:24.630 --> 00:40:27.540
+sort of the fuller mouth, you
+sample the fuller mouth and the
+
+00:40:27.540 --> 00:40:30.330
+right hand side, this is
+strategic columns. And you only
+
+00:40:30.330 --> 00:40:33.120
+need to sample it at these grid
+points. These are different grid
+
+00:40:33.120 --> 00:40:36.720
+points. So this act, you don't
+need to derive a new set of
+
+00:40:36.720 --> 00:40:39.720
+equations for any new PDE
+solver, you can actually just
+
+00:40:39.750 --> 00:40:42.780
+use use this. In fact, there is
+a way to extend this to even
+
+00:40:42.780 --> 00:40:45.870
+blackbox solver and we are
+working on that. And to make
+
+00:40:45.870 --> 00:40:50.760
+this actually non intrusive.
+Because these systems up to this
+
+00:40:50.760 --> 00:40:55.200
+point are worse extremely
+intrusive to solve it takes few
+
+00:40:55.200 --> 00:40:59.910
+months of time to just implement
+it in a in a typical final
+
+00:40:59.910 --> 00:41:00.840
+element called
+
+00:41:02.670 --> 00:41:08.730
+sorry. Has some arm the previous
+slide. So though it's the sample
+
+00:41:08.730 --> 00:41:13.050
+job dependent on time, so every
+time steps is exactly the
+
+00:41:13.050 --> 00:41:13.560
+changing
+
+00:41:14.010 --> 00:41:17.370
+district. Exactly. Because these
+will be done with a fixed
+
+00:41:17.370 --> 00:41:20.190
+sample, you wouldn't be able to
+do this. And I'll show you next
+
+00:41:20.190 --> 00:41:22.800
+in the demonstration that
+exactly that's That's exactly
+
+00:41:22.800 --> 00:41:23.190
+right.
+
+00:41:23.580 --> 00:41:25.590
+Is it implementation of that?
+It's
+
+00:41:26.550 --> 00:41:29.730
+kind of interesting. No,
+
+00:41:29.760 --> 00:41:34.560
+well, you need to have access to
+the F right hand side, right. So
+
+00:41:34.770 --> 00:41:37.980
+yeah, right. So you can get it
+for sampling the fuller mall,
+
+00:41:38.040 --> 00:41:41.970
+but the rows are rows are
+intrusive. Because rows, you're
+
+00:41:41.970 --> 00:41:44.490
+actually need to know the terms
+of the equation. So that's the
+
+00:41:44.490 --> 00:41:46.920
+part to know all the terms in
+the governing equation.
+
+00:41:47.130 --> 00:41:49.680
+And that's changing every time
+step. So
+
+00:41:50.400 --> 00:41:53.400
+these rows and columns change
+every time you scan, it will
+
+00:41:53.400 --> 00:41:56.520
+look at this SVD and
+approximation or SVD of the
+
+00:41:56.520 --> 00:41:59.700
+previous time as above F and
+based on that or update this.
+
+00:42:00.060 --> 00:42:04.080
+Yes. And this, this kind of
+approximation, like I said, is
+
+00:42:04.080 --> 00:42:06.930
+quite rigorous actually. So
+instead of approximating it,
+
+00:42:06.960 --> 00:42:10.050
+basically we're approximating
+the entire matrix of f, we then
+
+00:42:10.050 --> 00:42:12.720
+f hat, which is a CR
+decomposition, which is this
+
+00:42:13.320 --> 00:42:17.490
+aprox, this multiplication of
+these two skinny matrices, you
+
+00:42:17.490 --> 00:42:19.740
+can show actually, the
+difference between the full
+
+00:42:19.770 --> 00:42:25.290
+matrix and this approximation in
+the second norm is sigma p one,
+
+00:42:25.320 --> 00:42:29.130
+if we were doing SVD, here, this
+error would be exactly equal to
+
+00:42:29.130 --> 00:42:32.400
+sigma p plus one, this would be
+the P plus one a singular value,
+
+00:42:32.730 --> 00:42:37.380
+here, we only get this a scaling
+of these two numbers. So times
+
+00:42:37.380 --> 00:42:40.590
+the optimal error that you can
+get with the rank, rank or
+
+00:42:40.590 --> 00:42:42.630
+approximation and dying
+procedure. And these are the
+
+00:42:42.630 --> 00:42:45.150
+condition number of the
+interpolation matrices. And
+
+00:42:45.150 --> 00:42:48.090
+dying procedure, in fact, is a
+greedy procedure to minimize
+
+00:42:48.090 --> 00:42:51.120
+these two numbers. So you get
+really small numbers for these
+
+00:42:51.120 --> 00:42:53.940
+two. So you get That's what I
+said, you get actually something
+
+00:42:53.940 --> 00:42:57.030
+similar to an SVD. That's,
+that's what I mean, but without
+
+00:42:57.030 --> 00:43:00.690
+actually forming that matrix at
+all. And, and you can form or
+
+00:43:00.690 --> 00:43:03.720
+you can make this number of
+sample points also adaptive
+
+00:43:03.720 --> 00:43:07.230
+because you can look at the last
+singular value that you're
+
+00:43:07.230 --> 00:43:11.130
+resolving divided, you can come
+up with different error, error
+
+00:43:11.130 --> 00:43:15.300
+criteria, but you can look at
+the last singular value divided
+
+00:43:15.300 --> 00:43:18.120
+by the summation of the results
+singular value. And if that's
+
+00:43:18.510 --> 00:43:22.260
+not within the bounds that you
+want, you can add with a sample
+
+00:43:22.260 --> 00:43:27.090
+F, add one more columns, and one
+more rolls. So let me show you
+
+00:43:27.090 --> 00:43:30.930
+some application to UQ. So this
+is a stochastic burgers
+
+00:43:30.930 --> 00:43:33.750
+equation, the randomness comes
+from the initial condition and
+
+00:43:33.750 --> 00:43:36.120
+the boundary condition. And
+we're using a spectral element
+
+00:43:36.120 --> 00:43:40.320
+to solve this equation. And so
+you can see here the singular
+
+00:43:40.320 --> 00:43:42.900
+values, let me show you that
+because in the interest of time,
+
+00:43:42.900 --> 00:43:46.050
+I'm going to show you the speed
+of actually get, and then I'll
+
+00:43:46.050 --> 00:43:49.140
+show you some of the error. So
+this is tdb. Wrong. This is if
+
+00:43:49.140 --> 00:43:53.280
+you don't use this kind of
+methodology. This is how the CPU
+
+00:43:53.280 --> 00:43:56.730
+time scales as you increase the
+number of grid points. So n is
+
+00:43:56.730 --> 00:43:59.280
+the number of grid points the
+number of rows, but this one
+
+00:43:59.280 --> 00:44:04.620
+actually scales linearly. And so
+and also this is as you increase
+
+00:44:04.620 --> 00:44:08.130
+the number of samples, so as the
+number of scales linearly, again
+
+00:44:08.130 --> 00:44:13.650
+here, but as your answer when
+you ask the time points are time
+
+00:44:13.650 --> 00:44:16.470
+dependent, and that's exactly
+the case. So we can use Dine or
+
+00:44:16.470 --> 00:44:19.950
+Q Dine, which is based on QR
+decomposition. And this is
+
+00:44:19.950 --> 00:44:24.120
+burgers with the with sharks. So
+you see the shot two sharks
+
+00:44:24.120 --> 00:44:28.080
+here. And you can see here that
+actually, the time points are
+
+00:44:28.080 --> 00:44:31.770
+changing with time this axis is
+time. This is just I'm just
+
+00:44:31.770 --> 00:44:35.040
+showing the row points, right.
+So I'm not showing the columns
+
+00:44:35.040 --> 00:44:37.230
+because there's a sparse
+sampling in the column as well.
+
+00:44:37.710 --> 00:44:40.350
+And you can see the Q diamond
+dam actually captured almost the
+
+00:44:40.350 --> 00:44:45.390
+same points. So one, one
+immediate way you can see the
+
+00:44:45.390 --> 00:44:48.510
+advantage of this if you go to
+the full or like the way we were
+
+00:44:48.510 --> 00:44:51.450
+doing these things before, we
+were actually competing the
+
+00:44:51.450 --> 00:44:54.150
+right hand side that all of
+these great points right now we
+
+00:44:54.150 --> 00:44:57.000
+are only competing the right
+hand side at these points. So
+
+00:44:57.000 --> 00:45:01.020
+that's just that just tells you
+one One quick way to To see how
+
+00:45:01.500 --> 00:45:04.170
+efficient this is, and here we
+are comparing the modes that we
+
+00:45:04.170 --> 00:45:07.500
+extract by doing this kind of
+approximation with carbon and
+
+00:45:07.500 --> 00:45:10.830
+over approximation of the full
+normal, which is the optimal
+
+00:45:10.830 --> 00:45:15.210
+base instantaneous spaces. And
+you can see, we have shock, and
+
+00:45:15.210 --> 00:45:20.850
+we are capturing the full amount
+really well. This is another
+
+00:45:20.850 --> 00:45:24.000
+example burgers equation has
+quadratic non linearity, maybe
+
+00:45:24.000 --> 00:45:28.260
+you were able to do, you can do
+that intrusively, and still get
+
+00:45:28.290 --> 00:45:31.110
+efficiency, but not even even
+you do it intuitively, you're
+
+00:45:31.110 --> 00:45:34.350
+not going to be as efficient as
+this methodology. But here this
+
+00:45:34.350 --> 00:45:36.750
+is a compressible flow rather
+than a linearity is non
+
+00:45:36.750 --> 00:45:39.480
+polynomial. So, you have
+actually rho u divided by rho,
+
+00:45:39.480 --> 00:45:43.560
+so you have non linearity of
+fracture non linearity. And if
+
+00:45:43.590 --> 00:45:48.090
+we discretize, this system, we
+have 262,000 rows, and then we
+
+00:45:48.090 --> 00:45:51.180
+have 200,000 samples. So, this
+is the case, if you want to do
+
+00:45:51.180 --> 00:45:55.500
+UQ. Here, you can even store
+this matrix in memory, like, we
+
+00:45:55.500 --> 00:46:00.420
+saw this CPU, and the laptop
+CPU. So, you can even store this
+
+00:46:00.420 --> 00:46:04.740
+on the laptop CPU. So, we never
+actually during the workflow, we
+
+00:46:04.740 --> 00:46:08.910
+never store the full matrix. And
+we only do this as per sampling.
+
+00:46:08.910 --> 00:46:13.140
+And you can see here, first, we
+did it for a small number of
+
+00:46:13.140 --> 00:46:15.810
+samples. So we can actually do
+error analysis. So we did here
+
+00:46:15.810 --> 00:46:19.740
+for 200 samples, and we show
+with this as per sampling, we
+
+00:46:19.740 --> 00:46:23.070
+recover. So this is the tdb rom
+if you don't do sparse sampling
+
+00:46:23.070 --> 00:46:27.600
+the blue line, but this is tdb
+wrong with six sparse samples,
+
+00:46:27.600 --> 00:46:31.470
+20 and 20 spot samples, this is
+for Diamond Q dime, and CB 20
+
+00:46:31.470 --> 00:46:34.950
+samples, we can actually recover
+almost the ones that you don't
+
+00:46:34.950 --> 00:46:38.850
+do this for sampling. And like I
+said, P is adaptive. So P
+
+00:46:38.850 --> 00:46:41.940
+changes in time. So how many how
+many samples you have for the
+
+00:46:41.940 --> 00:46:44.580
+right hand side, you can
+actually adaptively adjust that
+
+00:46:44.610 --> 00:46:49.350
+to keep the error of this your
+approximation below a given
+
+00:46:49.350 --> 00:46:53.640
+threshold. And you can see, as
+time goes on the actually get
+
+00:46:53.640 --> 00:46:57.750
+different numbers of p. So these
+are number of samples. This is
+
+00:46:57.750 --> 00:47:00.180
+actually when it's a time
+dependent. So this is actually
+
+00:47:00.420 --> 00:47:03.270
+this is the mean and the
+variance and you can see the
+
+00:47:03.270 --> 00:47:06.510
+sample points actually captures
+the action here where the action
+
+00:47:06.510 --> 00:47:11.460
+happens. And like I said, this
+is now with 200,000 samples. And
+
+00:47:11.490 --> 00:47:14.280
+these are the samples in the
+column space, which you can see
+
+00:47:14.310 --> 00:47:18.870
+actually, they are located on
+the joint pdf of y one and y
+
+00:47:18.870 --> 00:47:22.860
+two. And we did convergence
+study here by increasing number
+
+00:47:22.860 --> 00:47:25.650
+of going points. And you can see
+we are converging in the
+
+00:47:25.650 --> 00:47:28.560
+instantaneous singular values.
+By increasing the rank of the
+
+00:47:28.560 --> 00:47:31.650
+system, we are still converging
+by increasing the number of
+
+00:47:31.650 --> 00:47:35.970
+samples from 100,000 to 100,000.
+And we get convergence all of
+
+00:47:35.970 --> 00:47:39.480
+this is also in that paper. All
+right, I think I'm almost out of
+
+00:47:39.480 --> 00:47:43.410
+time. I'm already out of time.
+So let me just conclude here at
+
+00:47:43.410 --> 00:47:49.560
+this is the way I see this this
+field. And the contribution that
+
+00:47:49.560 --> 00:47:53.400
+this kind of reducer modeling
+can do. So if you look at the
+
+00:47:53.400 --> 00:47:56.250
+way we were we are doing
+classical scientific computing,
+
+00:47:56.280 --> 00:48:00.450
+we do suppression of variables,
+we put time and the coefficient
+
+00:48:00.450 --> 00:48:03.270
+and we choose the bases, right.
+So you've got these bases that
+
+00:48:03.270 --> 00:48:06.510
+you can choose from that
+library. I think another way of
+
+00:48:06.510 --> 00:48:09.780
+solving this equation, which is
+a structure resolving you don't
+
+00:48:09.780 --> 00:48:13.590
+actually this skater is a great
+you're actually captured linear
+
+00:48:13.590 --> 00:48:16.770
+nonlinear correlation is by
+doing physics informed neural
+
+00:48:16.770 --> 00:48:22.140
+network, I know Paris is online.
+And basically you don't. One way
+
+00:48:22.140 --> 00:48:25.050
+to look at physics and form
+Neural Network is that you're
+
+00:48:25.050 --> 00:48:28.260
+not choosing the basis, you let
+the optimization process to find
+
+00:48:28.260 --> 00:48:31.620
+the optimal places for you.
+Right, so that so that is
+
+00:48:31.620 --> 00:48:34.710
+another way to break the curse
+of dimensionality and applying
+
+00:48:34.710 --> 00:48:36.720
+this to high dimensional
+problem. That's why it's
+
+00:48:36.720 --> 00:48:41.160
+advantageous. This is also
+another way of doing that. But
+
+00:48:41.160 --> 00:48:45.180
+here, we don't solve a nonlinear
+optimization problem, right. But
+
+00:48:45.270 --> 00:48:48.780
+like I said, this has also its
+own limitation, but But you
+
+00:48:48.780 --> 00:48:52.680
+don't choose the basis again,
+from a library, you let it
+
+00:48:52.680 --> 00:48:56.490
+evolve the time. And you the
+physics of your equation. And
+
+00:48:56.490 --> 00:48:58.830
+the residual of the governing
+equation really determines that.
+
+00:48:58.830 --> 00:49:02.220
+So yeah, here we apply this to
+to the problem here. This is
+
+00:49:02.220 --> 00:49:04.500
+compressible, Navier. Stokes,
+and you can see the basis
+
+00:49:04.500 --> 00:49:07.380
+actually evolves, these are
+bases in the 1x, two direction,
+
+00:49:07.380 --> 00:49:10.560
+these are bases in the x one
+direction, and CB bases
+
+00:49:10.590 --> 00:49:13.680
+adaptively evolve in time, I
+mean for this kind of problem is
+
+00:49:13.680 --> 00:49:15.870
+not really important to use
+these bases. But for high
+
+00:49:15.870 --> 00:49:18.840
+dimensional problem, this
+localization and adaptivity of
+
+00:49:18.840 --> 00:49:21.540
+the basis is really the key to
+break the curse of
+
+00:49:21.540 --> 00:49:24.060
+dimensionality because you don't
+want to put degrees of freedom
+
+00:49:24.090 --> 00:49:27.600
+in places, especially in high
+dimensional spaces. You don't
+
+00:49:27.600 --> 00:49:30.180
+want to waste because of
+freedom. And so this can
+
+00:49:30.180 --> 00:49:32.940
+actually effectively do that.
+And we have applied this to
+
+00:49:32.940 --> 00:49:37.260
+tensor evolution equations as
+well, which I didn't have time
+
+00:49:37.260 --> 00:49:42.390
+to cover that today. Maybe some
+other time. Yeah. And so this is
+
+00:49:42.390 --> 00:49:45.120
+where I see the place of the so
+it's actually it's got good
+
+00:49:45.120 --> 00:49:47.880
+connections with classical
+computing and also with machine
+
+00:49:47.880 --> 00:49:50.670
+learning in in a way because
+this is a low rank
+
+00:49:50.670 --> 00:49:56.490
+approximation. Alright, so with
+that, I'll thank you and I'll
+
+00:49:56.490 --> 00:49:57.600
+take any questions.
+
+00:49:57.690 --> 00:50:01.710
+Wonderful. Wonderful. Thank you
+so much. Awesome. Oh, very
+
+00:50:01.710 --> 00:50:07.290
+interesting. Okay, so let's have
+a q&amp;a session. So we do have a
+
+00:50:07.350 --> 00:50:11.010
+question from Pat. Pat. Are you
+online?
+
+00:50:13.710 --> 00:50:14.640
+Yes. Hey,
+
+00:50:14.699 --> 00:50:17.999
+okay. Yeah. Why don't you ask
+questions directly?
+
+00:50:19.710 --> 00:50:23.940
+Thanks. think those were I
+really liked the the images and
+
+00:50:23.940 --> 00:50:27.420
+stuff that I think they they
+really helped. But I did have
+
+00:50:27.420 --> 00:50:32.820
+trouble understanding what the
+what the reduced set dimensions
+
+00:50:32.850 --> 00:50:36.450
+correspond to what are they?
+What are they representing? Are
+
+00:50:36.450 --> 00:50:40.680
+they friendly? In the chemical
+example? For example? Are you
+
+00:50:40.680 --> 00:50:45.600
+talked about having lots of
+species? The new, the new basis?
+
+00:50:45.630 --> 00:50:48.390
+Does each one correspond to an
+algebraic combination of the
+
+00:50:48.390 --> 00:50:50.010
+original species? Or is it
+something else?
+
+00:50:50.040 --> 00:50:53.190
+That's right. So every one of
+those, let me go back to that
+
+00:50:53.190 --> 00:50:55.740
+example. That's exactly right. I
+think you said it at the end.
+
+00:50:56.910 --> 00:51:02.190
+That, so if you look at this
+matrix as a matrix of the oldest
+
+00:51:02.190 --> 00:51:05.370
+species, we don't solve for
+these directly we solve for
+
+00:51:05.370 --> 00:51:09.720
+these modes, each of these modes
+are really a linear combination
+
+00:51:09.780 --> 00:51:11.370
+of all of the species.
+
+00:51:11.849 --> 00:51:17.369
+Okay. Yeah, it's always linear.
+It is always linear.
+
+00:51:17.370 --> 00:51:21.870
+But you can actually extend this
+to nonlinear answers as well.
+
+00:51:21.930 --> 00:51:25.470
+And that's why they're working.
+And that is actually, I think,
+
+00:51:25.470 --> 00:51:26.820
+the next really problem.
+
+00:51:27.360 --> 00:51:29.970
+So there might be cases where
+some of the species are
+
+00:51:29.970 --> 00:51:33.660
+effectively have to have no
+influence at all. But and
+
+00:51:33.660 --> 00:51:36.300
+there's others where there's
+really a mixture of them, but it
+
+00:51:36.300 --> 00:51:39.420
+my guess is, there's certain
+kinds of things that go on
+
+00:51:39.420 --> 00:51:46.380
+there, like you would probably
+ever have. My guess is that
+
+00:51:46.380 --> 00:51:50.310
+there would be the species would
+be clustered or some, right? I
+
+00:51:50.310 --> 00:51:53.100
+don't know if that's true. But I
+can imagine that being true.
+
+00:51:53.370 --> 00:51:53.820
+Absolutely.
+
+00:51:55.230 --> 00:51:58.290
+And that's exactly right. So
+that's, so what you're talking
+
+00:51:58.290 --> 00:52:02.910
+about is actually this, maybe
+not one global time dependent
+
+00:52:02.910 --> 00:52:05.310
+basis, but you can actually
+localize that or you get into
+
+00:52:05.310 --> 00:52:08.130
+composition, especially in the
+physical space. And I have an
+
+00:52:08.130 --> 00:52:11.520
+absolutely, so we are actually
+exactly working on that idea as
+
+00:52:11.520 --> 00:52:17.490
+well. And, and, and UBC actually
+amazing improvement compared to
+
+00:52:17.490 --> 00:52:19.290
+just using one oil global,
+
+00:52:19.800 --> 00:52:22.080
+I believe that I believe it
+speeds things up, I just want to
+
+00:52:22.080 --> 00:52:24.540
+understand what's going on. So
+these are like the species are
+
+00:52:24.540 --> 00:52:27.690
+like gang members, they hang out
+together. Exactly. They travel
+
+00:52:27.690 --> 00:52:31.590
+the same put together and so on.
+Okay, got it. Thank you.
+
+00:52:32.280 --> 00:52:37.320
+Alright. Then I had a second
+question about the car work,
+
+00:52:37.320 --> 00:52:41.880
+which seems very different. So.
+So in one example, you showed
+
+00:52:41.880 --> 00:52:45.330
+the some of the points, and it
+looked like those were the
+
+00:52:45.330 --> 00:52:48.930
+points that had sort of the
+extreme values. Was that
+
+00:52:48.960 --> 00:52:52.950
+is? That's right. So let me show
+the burgers equation. Exactly.
+
+00:52:52.950 --> 00:53:01.110
+So I think so what they actually
+these points correspond to so
+
+00:53:01.140 --> 00:53:04.500
+they actually concentrated over
+the shocks. Right? So there are
+
+00:53:04.500 --> 00:53:09.420
+two shocks here, right? So and
+the dime algorithm in a clever
+
+00:53:09.420 --> 00:53:12.840
+way actually picks up. So you
+don't need to sample this at all
+
+00:53:12.840 --> 00:53:16.200
+of the points here, you only
+need to sample it at these
+
+00:53:16.200 --> 00:53:19.680
+points. But this is usually
+where action happens.
+
+00:53:20.370 --> 00:53:22.500
+When I when I turn on the
+Weather Channel, and someone
+
+00:53:22.500 --> 00:53:25.440
+tells me well, there's a front
+moving through here, it's sort
+
+00:53:25.440 --> 00:53:29.100
+of like that, you can dare
+they're trying to identify the
+
+00:53:29.130 --> 00:53:35.370
+the interesting that this
+continuities or, or, or major
+
+00:53:35.370 --> 00:53:37.140
+change kind of kind of areas.
+
+00:53:37.590 --> 00:53:41.250
+In fact, one thing you can
+immediately see if you look at
+
+00:53:41.250 --> 00:53:44.730
+the damn procedure, if these are
+these are the two modes that are
+
+00:53:44.760 --> 00:53:48.510
+visually These are often almost
+each other. And so the time the
+
+00:53:48.510 --> 00:53:51.630
+first time point, if I want to
+the first the most important
+
+00:53:51.630 --> 00:53:57.000
+point is where this mode is, has
+a maximum value. That's actually
+
+00:53:57.000 --> 00:54:00.360
+the first point which is that is
+the if you want to pick one
+
+00:54:00.360 --> 00:54:02.670
+point in your system at that
+instant of time that has the
+
+00:54:02.670 --> 00:54:07.530
+most variance that's this point
+here. So it picks that one and
+
+00:54:07.530 --> 00:54:10.920
+then it sort of recursively
+takes out this mod out of the
+
+00:54:10.920 --> 00:54:15.660
+system and see what's left with
+the leftover then it starts in
+
+00:54:15.660 --> 00:54:19.800
+an A greedy way to pick up more
+points and it does that it's
+
+00:54:19.800 --> 00:54:23.460
+like a sort of a like a QR type
+approximation you'd layer by
+
+00:54:23.460 --> 00:54:27.780
+layer with each point you pick
+out what they are will be
+
+00:54:27.780 --> 00:54:30.540
+concentrated. So you see these
+modes are highly non local,
+
+00:54:30.570 --> 00:54:33.330
+highly localized, right? So
+they're very localized near the
+
+00:54:33.330 --> 00:54:38.070
+shot and between they're sort of
+flat. So Dan doesn't actually
+
+00:54:38.070 --> 00:54:41.580
+pick those points and brilliant
+methodology.
+
+00:54:42.030 --> 00:54:43.560
+Okay, thank you very much. Good.
+
+00:54:45.450 --> 00:54:51.600
+Okay, next question is from
+Maryam Maria Maria online. Yeah,
+
+00:54:51.600 --> 00:54:51.690
+I
+
+00:54:51.690 --> 00:54:56.580
+am online. Okay, you can
+actually ever I'm taking too how
+
+00:54:56.580 --> 00:55:00.930
+extent to what extent the metals
+could be used It's come to my
+
+00:55:00.930 --> 00:55:05.070
+mind that what are the exact
+conditions or requirements that
+
+00:55:05.760 --> 00:55:08.760
+PDE should have to can be
+applicative?
+
+00:55:09.480 --> 00:55:12.630
+Excellent question. So remember
+when I said at the beginning,
+
+00:55:12.630 --> 00:55:15.570
+these are low rank approximation
+for matrix differential
+
+00:55:15.570 --> 00:55:20.640
+equation? Number one, you have
+to formulate your problem as a
+
+00:55:20.640 --> 00:55:24.330
+matrix differential equation
+one, and then second, you need
+
+00:55:24.330 --> 00:55:28.800
+to see if that matrix
+instantaneously has low rank. If
+
+00:55:28.800 --> 00:55:33.810
+your problem meets these two
+criteria, then this is a really
+
+00:55:33.810 --> 00:55:39.090
+good method to use. If not,
+that's not the end of the story.
+
+00:55:39.630 --> 00:55:42.030
+That's actually a topic of
+future research.
+
+00:55:43.740 --> 00:55:47.760
+And maybe it's out of context.
+But just let me know if it
+
+00:55:47.760 --> 00:55:54.030
+doesn't make sense. The method
+is, is mainly developed for a
+
+00:55:54.030 --> 00:55:58.920
+time dependent PDS if you have
+another type of tape PDS that is
+
+00:55:58.920 --> 00:56:02.190
+partial differential but doesn't
+include the time do you think
+
+00:56:02.190 --> 00:56:03.150
+it's applicable to?
+
+00:56:04.380 --> 00:56:07.050
+You can do the absolutely you
+can do that for actually there
+
+00:56:07.050 --> 00:56:09.720
+are a lot of nice result
+theoretical results for the
+
+00:56:09.720 --> 00:56:14.400
+steady state PDS. So first of
+all, this this time iterations
+
+00:56:14.400 --> 00:56:18.510
+would become this time evolution
+becomes iterations in that
+
+00:56:18.510 --> 00:56:22.980
+context, and you can, you can
+take much larger leap and steps
+
+00:56:23.010 --> 00:56:25.890
+to convert, so you're not
+limited by the time so there are
+
+00:56:25.890 --> 00:56:29.610
+other algorithms that you can
+use to jump over that. And then
+
+00:56:29.940 --> 00:56:33.480
+then you can show actually
+converge to the SVD of that
+
+00:56:33.480 --> 00:56:36.870
+results. So there are a lot of
+nice things you can show. But
+
+00:56:36.900 --> 00:56:39.990
+yeah, absolutely, that you can
+apply this to steady state
+
+00:56:39.990 --> 00:56:41.550
+problems. Thank you.
+
+00:56:42.510 --> 00:56:45.720
+Well, following on Marian
+questions, you know, if you
+
+00:56:45.750 --> 00:56:51.090
+don't have a time dependent time
+stand, instead you have a 3d as
+
+00:56:51.120 --> 00:56:56.190
+your space show domain is 3d,
+then you can make them to matrix
+
+00:56:56.220 --> 00:57:01.860
+equations. by decomposing each
+dimension into ones you couldn't
+
+00:57:01.920 --> 00:57:02.340
+really
+
+00:57:02.700 --> 00:57:05.730
+use. There are I mean, even one
+dimensional equation can be
+
+00:57:05.730 --> 00:57:07.890
+turned into a matrix
+differential equation. So it's
+
+00:57:07.890 --> 00:57:11.100
+really that's actually where you
+have to be able to say a 3d
+
+00:57:11.100 --> 00:57:15.060
+problem can become, in a number
+of ways can become a matrix
+
+00:57:15.060 --> 00:57:19.290
+differential equation, right? So
+you can take the 2d slab as one
+
+00:57:19.290 --> 00:57:22.980
+direction, x one and x two and x
+three is another direction,
+
+00:57:23.010 --> 00:57:26.490
+right? So that's, or you can
+even do this for the tensor
+
+00:57:26.490 --> 00:57:28.680
+evolution equation, which I
+didn't talk about, right? So
+
+00:57:28.680 --> 00:57:31.800
+that's another way. So if a 3d
+problem naturally fits within a
+
+00:57:31.800 --> 00:57:34.890
+tensor evolution equation, and
+sensor evolution equation of
+
+00:57:34.890 --> 00:57:37.530
+this system is very similar to
+what I just presented, all the
+
+00:57:37.530 --> 00:57:41.490
+principles are the same. And you
+can derive that. But like I
+
+00:57:41.490 --> 00:57:46.200
+said, there are a number of ways
+you can make your size. So So
+
+00:57:46.200 --> 00:57:50.910
+for example, if you have a 1d
+example, no time dependence, how
+
+00:57:50.910 --> 00:57:56.040
+would you make it matrix
+equations? You have only one
+
+00:57:56.280 --> 00:57:56.880
+variable,
+
+00:57:57.269 --> 00:58:00.269
+you can do domain decomposition
+and put them next to each other.
+
+00:58:00.479 --> 00:58:02.789
+That's one way. I see.
+
+00:58:04.110 --> 00:58:09.660
+Interesting, interesting. Okay,
+so. Any other questions? From
+
+00:58:09.660 --> 00:58:19.560
+audience? No, we actually hit
+the 11 o'clock punctually. All
+
+00:58:19.560 --> 00:58:26.040
+right, magically. Well, thank
+you so much for the wonderful
+
+00:58:26.040 --> 00:58:31.740
+talk. And sounds like you have
+more topics to talk about.
+
+00:58:32.400 --> 00:58:39.510
+Let's, you know, reserve that
+for the second. Yeah. Well,
+
+00:58:39.540 --> 00:58:43.500
+let's thank our invited speaker
+has them for the wonderful talk.
+
+00:58:43.530 --> 00:58:45.480
+And yeah, so
+
+00:58:45.900 --> 00:58:48.480
+thank you so much. Appreciate
+the opportunity.
+
+00:58:49.740 --> 00:58:53.610
+Yeah, I learned a lot. And I, I
+promise you I'm going to look
+
+00:58:53.610 --> 00:58:55.320
+into this deeply.
+
+00:58:55.500 --> 00:58:59.670
+Yeah, exactly. It's stuff you
+do. Actually, this is very
+
+00:58:59.670 --> 00:59:05.400
+relevant. Yeah. Absolutely.
+Yeah. All right. Sounds good.
+
+00:59:05.850 --> 00:59:06.630
+Thank you so much.
+
+00:59:07.710 --> 00:59:12.150
+If you can share the slide with
+me. That would be wonderful.
+
+00:59:12.270 --> 00:59:14.850
+Okay, obviously, you can do
+that. Yeah, sure.
+
+00:59:15.030 --> 00:59:19.740
+Absolutely. All right. Well,
+thank you so much. All right.
+
+00:59:19.740 --> 00:59:21.270
+Thank you. Bye bye. All right.
+

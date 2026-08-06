@@ -1,0 +1,1885 @@
+WEBVTT
+Kind: captions
+Language: en-US
+
+00:00:02.000 --> 00:00:09.520
+Okay, welcome everyone to the DDPS seminar.&nbsp;
+Before we introduce our invited speaker,&nbsp;&nbsp;
+
+00:00:09.520 --> 00:00:15.120
+let's go over some rules and logistics. First&nbsp;
+of all, please mute yourself during the talk,&nbsp;&nbsp;
+
+00:00:15.120 --> 00:00:19.560
+but if you have questions, you can&nbsp;
+unmute and ask questions during the talk,&nbsp;&nbsp;
+
+00:00:19.560 --> 00:00:24.080
+or you can leave your questions in the&nbsp;
+chat room so that we can address them&nbsp;&nbsp;
+
+00:00:24.080 --> 00:00:29.960
+in Q A session at the end second, today's&nbsp;
+DDPS seminar is open to external audience,&nbsp;&nbsp;
+
+00:00:31.480 --> 00:00:37.640
+therefore no classified this question is allowed.&nbsp;
+So please watch out. Finally, the talk today will&nbsp;&nbsp;
+
+00:00:37.640 --> 00:00:44.760
+be recorded and uploaded in our YouTube channel.&nbsp;
+Alright, let me introduce our speaker today. It&nbsp;&nbsp;
+
+00:00:44.760 --> 00:00:51.480
+is an honor to host Doctor Akil nakki, who&nbsp;
+is a postdoctoral scholar in the Division&nbsp;&nbsp;
+
+00:00:51.480 --> 00:00:59.240
+of Engineering and Applied Sciences at Caltech. He&nbsp;
+received his PhD from the University of California&nbsp;&nbsp;
+
+00:00:59.240 --> 00:01:08.160
+San Diego in 2023 His research interests include&nbsp;
+reduced order modeling, hydrodynamic stability,&nbsp;&nbsp;
+
+00:01:08.160 --> 00:01:14.840
+aero acoustics and turbulent flows. He specializes&nbsp;
+in high fidelity numerical simulations and&nbsp;&nbsp;
+
+00:01:14.840 --> 00:01:22.040
+developing data driven techniques for flow&nbsp;
+control and the discovery of low physics. Today,&nbsp;&nbsp;
+
+00:01:22.040 --> 00:01:29.520
+Akhil will talk about data driven techniques for&nbsp;
+analysis of turbulent flows. I'm sure we are going&nbsp;&nbsp;
+
+00:01:29.520 --> 00:01:36.680
+to hear a wonderful talk from him before I&nbsp;
+pass the button to Akil as a tradition to&nbsp;&nbsp;
+
+00:01:36.680 --> 00:01:43.520
+the DDPS seminar, let me ask a somewhat informal&nbsp;
+questions to him, just to get to know him better.&nbsp;&nbsp;
+
+00:01:43.520 --> 00:01:52.760
+And today's questions to you, Akil is I happens&nbsp;
+to know that you like to listen to the audiobook,&nbsp;&nbsp;
+
+00:01:52.760 --> 00:02:01.560
+and you likes the non fictions. And if you&nbsp;
+recommend any non one, I mean, if you recommend&nbsp;&nbsp;
+
+00:02:01.560 --> 00:02:11.280
+one non fiction book to everyone, and and why, if&nbsp;
+you can share that with us, that would be awesome.
+
+00:02:11.280 --> 00:02:16.960
+Yeah. So the recently, I've been listening to&nbsp;
+this audio book called chaos, the making of a new&nbsp;&nbsp;
+
+00:02:16.960 --> 00:02:24.720
+science by James leek, yeah, I kind of like it,&nbsp;
+it's, it's, it's like difference. It's different&nbsp;&nbsp;
+
+00:02:24.720 --> 00:02:29.400
+stories of different scientists from various&nbsp;
+fields and how they encountered chaos and so on.&nbsp;&nbsp;
+
+00:02:29.400 --> 00:02:36.480
+So I find it, like, really interesting and, yeah,&nbsp;
+inspiring. So I probably recommend that. Is it,
+
+00:02:36.480 --> 00:02:38.440
+is it easy to read? Yeah,
+
+00:02:38.440 --> 00:02:41.520
+it's easy to read. Oh, cool. Okay. It's more like&nbsp;&nbsp;
+
+00:02:41.520 --> 00:02:45.160
+stories. You don't have any&nbsp;
+technical stuff, yeah? Okay,
+
+00:02:45.160 --> 00:02:49.680
+I might, I might listen to that as well. Thank&nbsp;
+you for recommendation. Okay, the flow is yours.
+
+00:02:50.960 --> 00:02:55.440
+Yeah? Thanks for the introduction. So today I'm&nbsp;
+going to talk about the recent advancements that&nbsp;&nbsp;
+
+00:02:55.440 --> 00:03:04.480
+we have made in data driven techniques&nbsp;
+for analysis of turbulent flows. Okay?
+
+00:03:04.480 --> 00:03:07.840
+Yeah. So turbulent flows are chaotic&nbsp;
+in nature, and as a result of which,&nbsp;&nbsp;
+
+00:03:07.840 --> 00:03:13.200
+they're very hard to predict. Additionally, they&nbsp;
+exhibit a wide range of scales, going from large&nbsp;&nbsp;
+
+00:03:13.200 --> 00:03:20.120
+scales to small scales. And it is these. To get a&nbsp;
+complete picture of these turbulent flows, we have&nbsp;&nbsp;
+
+00:03:20.120 --> 00:03:26.200
+to refine all these, even these very small scales,&nbsp;
+which requires a fine mesh, and this is this makes&nbsp;&nbsp;
+
+00:03:26.200 --> 00:03:31.560
+them computationally challenging to simulate.&nbsp;
+However, even within this highly chaotic nature,&nbsp;&nbsp;
+
+00:03:31.560 --> 00:03:37.200
+there exists some orderly patterns of motion,&nbsp;
+which we term them as coherent structures. And&nbsp;&nbsp;
+
+00:03:37.200 --> 00:03:41.800
+in these coherent structures are dynamically and&nbsp;
+also energetically important in these turbulent&nbsp;&nbsp;
+
+00:03:41.800 --> 00:03:49.360
+flows. As an example, here are the experiments&nbsp;
+of a mixing layer by Brown and Roscoe. As we can&nbsp;&nbsp;
+
+00:03:49.360 --> 00:03:55.160
+see here. These are this at the top panel is the&nbsp;
+lower Reynolds number. At the bottom panel is a&nbsp;&nbsp;
+
+00:03:55.160 --> 00:03:59.720
+higher Reynolds number, where we can see that&nbsp;
+even on increasing the higher Reynolds number,&nbsp;&nbsp;
+
+00:04:00.800 --> 00:04:05.120
+the large scale structure more or less doesn't&nbsp;
+change, but the num the small scale structure&nbsp;&nbsp;
+
+00:04:05.120 --> 00:04:11.720
+significantly changes. So this, this gives us&nbsp;
+an understanding of of why it is important to&nbsp;&nbsp;
+
+00:04:11.720 --> 00:04:16.800
+understand these large scale structures so that&nbsp;
+it can be easy to understand and model turbulent&nbsp;&nbsp;
+
+00:04:16.800 --> 00:04:23.000
+flows. And here are two additional examples of the&nbsp;
+wake of a flat plate where and a gulf stream where&nbsp;&nbsp;
+
+00:04:23.000 --> 00:04:28.720
+we see that. Here as well, we see the presence of&nbsp;
+a large scale structure that is representative of&nbsp;&nbsp;
+
+00:04:28.720 --> 00:04:35.560
+a Von Karman Water Street. And these coherent&nbsp;
+structures are are actually present in all kind&nbsp;&nbsp;
+
+00:04:35.560 --> 00:04:41.120
+of turbulent flows, and even in oceanographic&nbsp;
+flows. As an example of here is the presence&nbsp;&nbsp;
+
+00:04:41.120 --> 00:04:51.000
+of these large meso scales which are responsible&nbsp;
+for the circulatory motion of these ocean so one,&nbsp;&nbsp;
+
+00:04:51.000 --> 00:04:57.120
+the one application which I'm more interested&nbsp;
+about is which I focused in my research is the&nbsp;&nbsp;
+
+00:04:57.120 --> 00:05:02.880
+generation of jet noise. So here is. An&nbsp;
+example of a military jet during takeoff,&nbsp;&nbsp;
+
+00:05:02.880 --> 00:05:07.440
+and as the flow comes out from the nozzle&nbsp;
+exit, it interacts with the surrounding,&nbsp;&nbsp;
+
+00:05:07.440 --> 00:05:13.520
+ambient fluid and forms these coherent&nbsp;
+structures, which are the sources of&nbsp;&nbsp;
+
+00:05:13.520 --> 00:05:20.600
+jet noise. And this is a numerical rendition of&nbsp;
+this, where here we can see that these coherent&nbsp;&nbsp;
+
+00:05:20.600 --> 00:05:25.560
+structure emit radiations in the downstream&nbsp;
+direction and in the sideline direction,&nbsp;&nbsp;
+
+00:05:25.560 --> 00:05:34.040
+and especially the downstream propagating waves&nbsp;
+have are significantly loud and and can result,&nbsp;&nbsp;
+
+00:05:34.040 --> 00:05:39.520
+and can result about to hearing loss for the&nbsp;
+people working in the near field, and also to&nbsp;&nbsp;
+
+00:05:39.520 --> 00:05:46.640
+the people living nearby the airports during&nbsp;
+takeoff and landing and so and here is a neat&nbsp;&nbsp;
+
+00:05:46.640 --> 00:05:52.400
+example by from the taken from the work of Nichols&nbsp;
+and Lele where we can see the coherent structure&nbsp;&nbsp;
+
+00:05:52.400 --> 00:05:58.720
+being emitted from these radiation being emitted&nbsp;
+from this coherent structure. So the goal here is&nbsp;&nbsp;
+
+00:05:58.720 --> 00:06:05.040
+to first characterize these coherent structures,&nbsp;
+and then develop techniques so that we can control&nbsp;&nbsp;
+
+00:06:05.040 --> 00:06:12.480
+the emission of noise. So this is where these&nbsp;
+data driven techniques come into picture. So,&nbsp;&nbsp;
+
+00:06:12.480 --> 00:06:17.800
+so given a turbulent flow field, they help us&nbsp;
+in extracting these coherent structures. And by&nbsp;&nbsp;
+
+00:06:17.800 --> 00:06:22.240
+extracting these coherent structures we can they&nbsp;
+provide us a low dimensional representation of&nbsp;&nbsp;
+
+00:06:22.240 --> 00:06:26.800
+the system. And once we have a low dimensional&nbsp;
+representational system, we can then develop&nbsp;&nbsp;
+
+00:06:26.800 --> 00:06:33.800
+reduced order modeling of these flows, and&nbsp;
+then further perform flow control. And here&nbsp;&nbsp;
+
+00:06:33.800 --> 00:06:39.160
+is an example of the flow control performed by&nbsp;
+Mora et al, where they have used eigen system&nbsp;&nbsp;
+
+00:06:39.160 --> 00:06:46.480
+realization algorithm to perform, to delay the&nbsp;
+bypass transition in boundary layers. So first, by&nbsp;&nbsp;
+
+00:06:46.480 --> 00:06:52.040
+using these kind of techniques, one can not only&nbsp;
+reduce the computational complexity, but can also&nbsp;&nbsp;
+
+00:06:52.040 --> 00:06:58.880
+manipulate them for various different uses. So&nbsp;
+what kind of data driven techniques to use? There&nbsp;&nbsp;
+
+00:06:58.880 --> 00:07:03.440
+exists a wide range of data driven techniques&nbsp;
+existing from proper orthogonal decomposition,&nbsp;&nbsp;
+
+00:07:03.440 --> 00:07:10.640
+dynamic mode decomposition and various other&nbsp;
+techniques as well. So the in this talk, I will&nbsp;&nbsp;
+
+00:07:10.640 --> 00:07:16.720
+focus on spectral proper orthogonal decomposition,&nbsp;
+and recently it has emerged as a popular tool for&nbsp;&nbsp;
+
+00:07:16.720 --> 00:07:24.120
+analyzing turbulent flows. So it the original&nbsp;
+work, and traces back to the work of Lumley in&nbsp;&nbsp;
+
+00:07:24.120 --> 00:07:31.160
+late 1960s and early 70s, where he laid out the&nbsp;
+mathematical framework for it a essentially in one&nbsp;&nbsp;
+
+00:07:31.160 --> 00:07:36.920
+sentence. It is the frequency domain version&nbsp;
+of the principal component analysis, and its&nbsp;&nbsp;
+
+00:07:36.920 --> 00:07:42.880
+major advantage is that it extracts modes that&nbsp;
+are coherent in both space as well as in time.&nbsp;&nbsp;
+
+00:07:42.880 --> 00:07:49.760
+So what we do in in spod is we first compute the&nbsp;
+cross spectral density matrix and then solve this&nbsp;&nbsp;
+
+00:07:49.760 --> 00:07:55.240
+Eigenvalue problem to obtain the modes and the I&nbsp;
+and the eigenvalue the reason why it has become a&nbsp;&nbsp;
+
+00:07:55.240 --> 00:08:01.560
+powerful tool for analyzing turbulent flows is&nbsp;
+because of its equivalence with other methods,&nbsp;&nbsp;
+
+00:08:01.560 --> 00:08:08.520
+as shown recently by taune et al, where they&nbsp;
+show that spod has the counterpart with respect&nbsp;&nbsp;
+
+00:08:08.520 --> 00:08:15.200
+to the resolvent analysis, which is an operator&nbsp;
+driven method, and they have shown that the spod&nbsp;&nbsp;
+
+00:08:15.200 --> 00:08:22.480
+modes are nothing but the spatially uncorrelated&nbsp;
+white noise forcing resolvent response modes. And&nbsp;&nbsp;
+
+00:08:22.480 --> 00:08:28.400
+similarly, they have also shown that spod modes&nbsp;
+are optimally average DMD modes. So overall,&nbsp;&nbsp;
+
+00:08:28.400 --> 00:08:33.720
+considering the advantage of this and its&nbsp;
+equivalence with other methods we will use,&nbsp;&nbsp;
+
+00:08:33.720 --> 00:08:40.240
+I will, we will use this for various different&nbsp;
+extensions. So this brings me to the outline of&nbsp;&nbsp;
+
+00:08:40.240 --> 00:08:46.720
+my talk. So I have divided into three different&nbsp;
+parts. And in the first part of this talk I will,&nbsp;&nbsp;
+
+00:08:46.720 --> 00:08:52.560
+I will show how we extend this for estimating&nbsp;
+missing data in a flow field, and in the second&nbsp;&nbsp;
+
+00:08:52.560 --> 00:08:57.880
+in the second part, I will go over how we use this&nbsp;
+for identifying the intermittency of coherence&nbsp;&nbsp;
+
+00:08:57.880 --> 00:09:05.000
+structures. Excuse me. And in the third part, we&nbsp;
+will extend this to to higher order statistics,&nbsp;&nbsp;
+
+00:09:05.000 --> 00:09:12.600
+to the third order statistics to identify the&nbsp;
+triadic interactions. So first, why it is,&nbsp;&nbsp;
+
+00:09:12.600 --> 00:09:19.080
+why it is important to estimate the missing data.&nbsp;
+So many experimental measurements contain gaps or&nbsp;&nbsp;
+
+00:09:19.080 --> 00:09:24.600
+artifacts, for example, in particle image. Here is&nbsp;
+an example of particle image emerging velocimetry&nbsp;&nbsp;
+
+00:09:24.600 --> 00:09:30.080
+of gas Tur turbine combustion, where you can see&nbsp;
+the presence of these gaps. These gaps can occur&nbsp;&nbsp;
+
+00:09:30.080 --> 00:09:34.520
+due to various reasons, probably they they are&nbsp;
+due to reflection from the surface or the lack&nbsp;&nbsp;
+
+00:09:34.520 --> 00:09:40.280
+of seeding particles. And similarly, even in&nbsp;
+satellite measurements as well, the presence&nbsp;&nbsp;
+
+00:09:40.280 --> 00:09:45.560
+of the cloud cover can block these measurements,&nbsp;
+and as a result, we might get these gaps in the&nbsp;&nbsp;
+
+00:09:45.560 --> 00:09:52.320
+sea surface temperatures. So it is, as in, so&nbsp;
+it is essential to get a complete flow picture,&nbsp;&nbsp;
+
+00:09:52.320 --> 00:09:59.760
+to to to first analyze these flows, and in order&nbsp;
+to get, in order to get a complete data set.&nbsp;&nbsp;
+
+00:09:59.760 --> 00:10:04.960
+Uh. Researchers have used different techniques,&nbsp;
+which includes interpolation, Kriging and gappy&nbsp;&nbsp;
+
+00:10:04.960 --> 00:10:12.080
+pod. So Kriging can be both spatial and Interpol,&nbsp;
+spatial and temporal interpolation. And so the so&nbsp;&nbsp;
+
+00:10:12.080 --> 00:10:17.960
+the recent the gap epod was originally proposed&nbsp;
+by Everson and serovic and later extended by&nbsp;&nbsp;
+
+00:10:17.960 --> 00:10:22.520
+venturi karnatakas. And further, they have&nbsp;
+been significantly more extensions of this&nbsp;&nbsp;
+
+00:10:22.520 --> 00:10:29.880
+for different applications as well. So as opposed&nbsp;
+to this, what we do in this work is, is we propose&nbsp;&nbsp;
+
+00:10:29.880 --> 00:10:35.760
+a method that leverages both the spatial and&nbsp;
+temporal coherence for reconstructing this missing&nbsp;&nbsp;
+
+00:10:35.760 --> 00:10:42.640
+data and on doing so this we have that this method&nbsp;
+can has also has different various different&nbsp;&nbsp;
+
+00:10:42.640 --> 00:10:48.800
+applications. For example, they can be used in&nbsp;
+non linear model reduction and also, for example,&nbsp;&nbsp;
+
+00:10:48.800 --> 00:10:57.240
+in the optimal place placements of sensory and&nbsp;
+here is in here is the example of young et al,&nbsp;&nbsp;
+
+00:10:57.240 --> 00:11:04.960
+where they have optimal weather selected optimal&nbsp;
+placements of sensors for ocean measurements. And&nbsp;&nbsp;
+
+00:11:04.960 --> 00:11:14.360
+in this, in this work, they have used gappy&nbsp;
+pod. So we to demonstrate our method we use,&nbsp;&nbsp;
+
+00:11:14.360 --> 00:11:19.480
+we use the experimental data set that was&nbsp;
+acquired by Zhang katasta nuclei, where they have,&nbsp;&nbsp;
+
+00:11:20.640 --> 00:11:27.240
+where they have, where they have performed&nbsp;
+experiments of a turbulent cavity flow at a&nbsp;&nbsp;
+
+00:11:27.240 --> 00:11:33.040
+high Reynolds number of three to point 3.3. Into&nbsp;
+10 to power minus 10, Power Five and a Mach number&nbsp;&nbsp;
+
+00:11:33.040 --> 00:11:41.680
+of point six. And this data sets contains total&nbsp;
+about 16,000 snapshots. So before I go into the&nbsp;&nbsp;
+
+00:11:41.680 --> 00:11:47.720
+algorithm of the method. So this is just a quick&nbsp;
+sneak peek showing that even in the case where&nbsp;&nbsp;
+
+00:11:47.720 --> 00:11:54.480
+we remove 20% of missing data and where these&nbsp;
+data have been, these missing regions have been&nbsp;&nbsp;
+
+00:11:54.480 --> 00:12:00.960
+randomly seeded and sized, we observe that our&nbsp;
+algorithm is able to perform well and reconstruct&nbsp;&nbsp;
+
+00:12:00.960 --> 00:12:09.120
+the missing region, and it's comparable to that&nbsp;
+of the original data. So to first start off,&nbsp;&nbsp;
+
+00:12:09.120 --> 00:12:18.480
+I will first give an overview of spod, and then,&nbsp;
+and then our gap, gap epspod. So so spod first&nbsp;&nbsp;
+
+00:12:18.480 --> 00:12:23.840
+starts off by taking all the snapshot ensembles,&nbsp;
+and then once we have the snapshot on ensembles,&nbsp;&nbsp;
+
+00:12:23.840 --> 00:12:29.320
+we then divide them into overlapping blocks,&nbsp;
+and where each o each block is considered&nbsp;&nbsp;
+
+00:12:29.320 --> 00:12:34.360
+as a statistically independent realization&nbsp;
+according to the ergodic hypothesis. And then&nbsp;&nbsp;
+
+00:12:34.360 --> 00:12:41.520
+we perform Fourier transform on each block. So&nbsp;
+once we do this, we obtain different frequencies&nbsp;&nbsp;
+
+00:12:41.520 --> 00:12:46.720
+in each blocks, as seen by the different colors&nbsp;
+here, then we choose the same frequency from each&nbsp;&nbsp;
+
+00:12:46.720 --> 00:12:54.160
+block and arrange them into a new matrix. This&nbsp;
+is the matrix of Fourier realizations. So once&nbsp;&nbsp;
+
+00:12:54.160 --> 00:12:59.120
+we have this matrix of four realization we can&nbsp;
+then compute the cross spectral density matrix,
+
+00:13:00.400 --> 00:13:04.640
+which is given by this, and then solve this&nbsp;
+Eigenvalue problem to obtain the spod modes&nbsp;&nbsp;
+
+00:13:04.640 --> 00:13:13.360
+and eigenvalues that is lambda. So to give a quick&nbsp;
+example of performing spod on the turbulent cavity&nbsp;&nbsp;
+
+00:13:13.360 --> 00:13:19.160
+flow this. So this is the cavity flow. And if we&nbsp;
+perform spod on this, we get two main outputs. One&nbsp;&nbsp;
+
+00:13:19.160 --> 00:13:27.400
+is the eigenvalue spectrum, and two is the modes.&nbsp;
+So the eigenvalue spectrum shows us that how the&nbsp;&nbsp;
+
+00:13:27.400 --> 00:13:34.600
+energy is distributed across different frequencies&nbsp;
+and at one frequency, how it is distributed across&nbsp;&nbsp;
+
+00:13:34.600 --> 00:13:43.120
+different eigenvectors. So the first this&nbsp;
+spectrum is the first is the first spod mode,&nbsp;&nbsp;
+
+00:13:43.120 --> 00:13:48.120
+or the leading spod mode, and contains the most&nbsp;
+energy and is sorted in the decreasing order of&nbsp;&nbsp;
+
+00:13:48.120 --> 00:13:56.280
+its energy preference. And here I'm showing four&nbsp;
+different modes of a low frequency to higher&nbsp;&nbsp;
+
+00:13:56.280 --> 00:14:04.440
+frequencies, and two of which corresponds to the&nbsp;
+different Rossier frequencies. So using this,&nbsp;&nbsp;
+
+00:14:04.440 --> 00:14:11.040
+we can first identify the spod modes, which&nbsp;
+represents the different coherence structures.&nbsp;&nbsp;
+
+00:14:11.040 --> 00:14:18.280
+And now we will use these coherence structures&nbsp;
+to reconstruct back the original flow field.&nbsp;&nbsp;
+
+00:14:18.280 --> 00:14:25.720
+So to reconstruct back the original flow field.&nbsp;
+It requires an inverse spod process. So in this,&nbsp;&nbsp;
+
+00:14:25.720 --> 00:14:30.880
+what is required is, first you we can think&nbsp;
+of this as the data being decomposed as a&nbsp;&nbsp;
+
+00:14:30.880 --> 00:14:36.400
+linear combination of these different&nbsp;
+spod modes. And so for this, for this,&nbsp;&nbsp;
+
+00:14:36.400 --> 00:14:41.800
+we have to first obtain the expansion coefficient&nbsp;
+for each of these, each of these modes, which can&nbsp;&nbsp;
+
+00:14:41.800 --> 00:14:53.000
+be directly obtained from the spod by a rescaling&nbsp;
+of these of the of the Kronos, or psi given here.&nbsp;&nbsp;
+
+00:14:53.000 --> 00:14:59.040
+Once we have the expansion coefficients, we can&nbsp;
+then obtain back the Fourier realization by a&nbsp;&nbsp;
+
+00:14:59.040 --> 00:15:04.760
+multiplication of. The modes with with that of&nbsp;
+the expansion coefficient, and take the inverse,&nbsp;&nbsp;
+
+00:15:04.760 --> 00:15:10.080
+Fourier transform to obtain back the blocks, and&nbsp;
+finally, get back the data. Notice that we might&nbsp;&nbsp;
+
+00:15:10.080 --> 00:15:15.640
+have to consider into effect the of the of overlap&nbsp;
+between blocks, so we can do a weighted average&nbsp;&nbsp;
+
+00:15:15.640 --> 00:15:25.280
+to get get this back. So now, since we are able&nbsp;
+to reconstruct the data from that of the modes&nbsp;&nbsp;
+
+00:15:25.280 --> 00:15:33.440
+I will show how we have used extended this for&nbsp;
+for reconstructing of missing data. So consider,&nbsp;&nbsp;
+
+00:15:33.440 --> 00:15:40.120
+so consider a case where there is some missing&nbsp;
+data or has compromised region. So in this case,&nbsp;&nbsp;
+
+00:15:40.120 --> 00:15:47.320
+if we would form spod on the entire data set, that&nbsp;
+was that will that would result in modes which are&nbsp;&nbsp;
+
+00:15:48.160 --> 00:15:54.240
+that would result in modes which are corrupted or&nbsp;
+have these missing regions. So what we do is we to&nbsp;&nbsp;
+
+00:15:54.240 --> 00:16:00.960
+circumvent this. We first divide them into each&nbsp;
+blocks, and then remove the blocks that remove&nbsp;&nbsp;
+
+00:16:00.960 --> 00:16:06.880
+the blocks that contain these missing regions&nbsp;
+while performing spod, and then perform spod on&nbsp;&nbsp;
+
+00:16:06.880 --> 00:16:13.400
+the remaining blocks. So once we do this, we have&nbsp;
+all the expansion coefficients for the remaining&nbsp;&nbsp;
+
+00:16:13.400 --> 00:16:22.800
+blocks, but not for the the block that has this&nbsp;
+missing region. So to obtain this, what we do is&nbsp;&nbsp;
+
+00:16:22.800 --> 00:16:31.120
+we now we project these, these blocks, onto the&nbsp;
+good modes, that is, the modes that have been&nbsp;&nbsp;
+
+00:16:31.120 --> 00:16:38.080
+computed excluding these compromised regions. By&nbsp;
+doing this, we can get the expansion coefficients&nbsp;&nbsp;
+
+00:16:38.080 --> 00:16:44.680
+of these missing block for example. And once&nbsp;
+we get the expansion coefficient again, we form&nbsp;&nbsp;
+
+00:16:44.680 --> 00:16:52.480
+a same as a same same process as previously,&nbsp;
+where we get compute the Fourier realization,&nbsp;&nbsp;
+
+00:16:52.480 --> 00:16:58.840
+and then take the inverse Fourier transform to get&nbsp;
+back the blocks, and then use this to fill in the&nbsp;&nbsp;
+
+00:17:00.120 --> 00:17:09.280
+fill in the snapshot. Note that so this is we do&nbsp;
+this for one gap, and then we do this iteratively&nbsp;&nbsp;
+
+00:17:09.280 --> 00:17:15.120
+so that all the missing region in one particular&nbsp;
+gap has been converged. And by converge, I mean&nbsp;&nbsp;
+
+00:17:15.120 --> 00:17:23.360
+the the the solution that has been by predicted&nbsp;
+by our algorithm does not change even for even as&nbsp;&nbsp;
+
+00:17:23.360 --> 00:17:28.200
+the iteration number changes. So once it reaches&nbsp;
+that point, we assume it has reached convergence.&nbsp;&nbsp;
+
+00:17:28.200 --> 00:17:34.520
+So this is and we do this for one gap at a time,&nbsp;
+and then once we from, once we finish one gap, we&nbsp;&nbsp;
+
+00:17:34.520 --> 00:17:39.680
+move on to the next gap, and do this iteratively&nbsp;
+for all gaps. And this is what we term as the&nbsp;&nbsp;
+
+00:17:39.680 --> 00:17:47.240
+outer loop that is filling all the gaps once is&nbsp;
+considered as outer loop. And then we again repeat&nbsp;&nbsp;
+
+00:17:47.240 --> 00:17:55.640
+this process entirely over all gaps multiple times&nbsp;
+such that the entire solution does not change. And&nbsp;&nbsp;
+
+00:17:55.640 --> 00:18:05.240
+so this is what we term as the global loop for&nbsp;
+this algorithm. So now to look at some results.&nbsp;&nbsp;
+
+00:18:05.240 --> 00:18:13.120
+So here, here, here is the result of of the case&nbsp;
+of a 5% of missing data shown, shown by here,&nbsp;&nbsp;
+
+00:18:13.120 --> 00:18:22.440
+where these gaps also have been chosen random,&nbsp;
+chosen randomly. So what I'm plotting here is&nbsp;&nbsp;
+
+00:18:22.440 --> 00:18:29.200
+on the y axis, the global relative error. On the x&nbsp;
+axis is the iteration number. And as you can see,&nbsp;&nbsp;
+
+00:18:29.200 --> 00:18:33.200
+the global relate to error starts from one,&nbsp;
+and as each of the gaps starts getting filled,&nbsp;&nbsp;
+
+00:18:33.200 --> 00:18:39.320
+it decreases and finally converges to a certain&nbsp;
+value of here, it's about point two. Note that&nbsp;&nbsp;
+
+00:18:39.320 --> 00:18:47.520
+here in this the distance or the iteration numbers&nbsp;
+between these two gray dash lines represents the&nbsp;&nbsp;
+
+00:18:47.520 --> 00:18:53.600
+inner loop, that is each gap being filled up&nbsp;
+till convergence. So this is also shown here,&nbsp;&nbsp;
+
+00:18:53.600 --> 00:19:00.840
+where this relative error represents the relative&nbsp;
+error for each individual gap. And as for&nbsp;&nbsp;
+
+00:19:00.840 --> 00:19:06.480
+convergence. Here we have used a tolerance of 10&nbsp;
+to the power minus eight as a l2 norm. And if once&nbsp;&nbsp;
+
+00:19:06.480 --> 00:19:12.800
+the l2 norm reaches 10 power minus eight, then&nbsp;
+we assume that has converged for this particular&nbsp;&nbsp;
+
+00:19:12.800 --> 00:19:20.320
+gap. And so this here, I'm showing three different&nbsp;
+gaps. And so this is the inner loop here, and the&nbsp;&nbsp;
+
+00:19:20.320 --> 00:19:26.080
+outer loop represents the filling of all the gaps&nbsp;
+once that is filling of this, this, this, this,&nbsp;&nbsp;
+
+00:19:26.080 --> 00:19:33.600
+and so on up till end and that is given by this&nbsp;
+extent, and up to the blue, up to the blue solid&nbsp;&nbsp;
+
+00:19:33.600 --> 00:19:39.920
+line over here. And finally, global loop is the&nbsp;
+total number of iteration it takes for the final&nbsp;&nbsp;
+
+00:19:39.920 --> 00:19:49.480
+value to converge. So yeah. So here is an example&nbsp;
+of the 5% case. Now we also considered three&nbsp;&nbsp;
+
+00:19:49.480 --> 00:19:57.920
+different cases of 1% 5% and 20% and we observe&nbsp;
+that in all cases, our our algorithm is able to&nbsp;&nbsp;
+
+00:19:57.920 --> 00:20:08.000
+is able to reconstruct the data and. Also reaches&nbsp;
+about 20% in a relative error of 20% in each case,&nbsp;&nbsp;
+
+00:20:08.760 --> 00:20:14.520
+note that the only difference, for the significant&nbsp;
+difference here is, as you have higher number of&nbsp;&nbsp;
+
+00:20:14.520 --> 00:20:19.640
+data, you require a higher number of missing&nbsp;
+data. You require a more number of iterations&nbsp;&nbsp;
+
+00:20:19.640 --> 00:20:28.640
+to finally converge to the minimum value.&nbsp;
+And so now, till I've shown the quantitative&nbsp;&nbsp;
+
+00:20:29.800 --> 00:20:34.200
+estimates. Now here, for a qualitative&nbsp;
+representation, here I'm showing three&nbsp;&nbsp;
+
+00:20:34.200 --> 00:20:40.640
+different snapshots, and where the first snapshot&nbsp;
+represents the individual error which has maximum&nbsp;&nbsp;
+
+00:20:40.640 --> 00:20:45.320
+instantaneous error. As you can see here,&nbsp;
+a large part of the flow field over here&nbsp;&nbsp;
+
+00:20:45.320 --> 00:20:52.840
+is missing and but are even even in such a case,&nbsp;
+our method, as it leverages both the spatial and&nbsp;&nbsp;
+
+00:20:52.840 --> 00:20:59.520
+temporal coherence, it is able to reconstruct&nbsp;
+the flow field and is and is comparable to that&nbsp;&nbsp;
+
+00:20:59.520 --> 00:21:06.280
+of the of that of that of the original data over&nbsp;
+here. And this is also observed for two two other&nbsp;&nbsp;
+
+00:21:06.280 --> 00:21:12.640
+time instances which have been randomly chosen.&nbsp;
+And here as well, we observe that our algorithm&nbsp;&nbsp;
+
+00:21:12.640 --> 00:21:20.480
+is able to estimate the data in these regions. Now&nbsp;
+we compare our method to two standard methods such&nbsp;&nbsp;
+
+00:21:20.480 --> 00:21:27.680
+as Kriging and gappy pod. So here we I consider&nbsp;
+all three different cases and also another,&nbsp;&nbsp;
+
+00:21:27.680 --> 00:21:34.800
+another data set of a cylinder flow at a low&nbsp;
+Reynolds number. So overall, in all these cases,&nbsp;&nbsp;
+
+00:21:34.800 --> 00:21:42.280
+what we observe is our method, the gappy spod,&nbsp;
+outperforms with Kriging and gappy pod. So here,&nbsp;&nbsp;
+
+00:21:42.960 --> 00:21:49.560
+the relative error is shown on the y axis and the&nbsp;
+mode so the mode number is shown on the x axis.&nbsp;&nbsp;
+
+00:21:49.560 --> 00:21:55.680
+So note that this mode number arises due to the&nbsp;
+gappy pod, where they have a free parameter. So&nbsp;&nbsp;
+
+00:21:55.680 --> 00:22:01.240
+the what in gappy pod, what is done is they, they&nbsp;
+perform the analysis for different mode numbers,&nbsp;&nbsp;
+
+00:22:01.240 --> 00:22:08.840
+and finally, choose the mode which, which gives&nbsp;
+them the least, least error, not mode number,&nbsp;&nbsp;
+
+00:22:08.840 --> 00:22:16.760
+but the number of modes. So overall here,&nbsp;
+what we observe is, in all cases, gappy pod is&nbsp;&nbsp;
+
+00:22:16.760 --> 00:22:26.600
+significant, shows a significant lower error than&nbsp;
+both of that of gappy pod and that of clicking,
+
+00:22:26.600 --> 00:22:33.000
+I have a question. So as pod, gapy spod&nbsp;
+does not depends on the number of modes. No.
+
+00:22:33.000 --> 00:22:37.800
+So what we do is we use the entire number&nbsp;
+of modes. We use all the modes. Yes,&nbsp;&nbsp;
+
+00:22:37.800 --> 00:22:44.360
+so it does not depend. I mean, it can technically&nbsp;
+also depend by using a certain number of modes,&nbsp;&nbsp;
+
+00:22:44.360 --> 00:22:50.920
+but we find, yeah, you can also do that if, if&nbsp;
+there are some computational limitations to that,&nbsp;&nbsp;
+
+00:22:50.920 --> 00:22:58.560
+but it does not depend on that. And in what we&nbsp;
+observe is, if we use all the modes, is that that&nbsp;&nbsp;
+
+00:22:58.560 --> 00:23:04.440
+is when we get the least number of results, least&nbsp;
+error. So that's why it does not depend on board
+
+00:23:04.440 --> 00:23:12.120
+number, yeah, well, the computational cost&nbsp;
+of the spod would be higher than KP pod, then
+
+00:23:12.120 --> 00:23:18.560
+um, not technique. So technically, so was you&nbsp;
+using all I mean in terms of memory, yes. In terms&nbsp;&nbsp;
+
+00:23:18.560 --> 00:23:24.400
+of memory, yes, but in terms of computational&nbsp;
+time, probably not, because here for gap epod,&nbsp;&nbsp;
+
+00:23:24.400 --> 00:23:29.720
+the you have to converge it for each mode, and&nbsp;
+then move on to the next mode and then converge it&nbsp;&nbsp;
+
+00:23:29.720 --> 00:23:35.120
+for that, and so on, so on. And then you have to&nbsp;
+repeat this process for Repeat this entire process&nbsp;&nbsp;
+
+00:23:35.120 --> 00:23:41.400
+for filling in all the data for multiple for all&nbsp;
+different modes, number, right? Like if, let's say&nbsp;&nbsp;
+
+00:23:41.400 --> 00:23:46.800
+the data set has 10,000 snapshots, then you have&nbsp;
+10,000 different modes. So it requires doing all&nbsp;&nbsp;
+
+00:23:46.800 --> 00:23:55.000
+that. So computational in terms of time, it would&nbsp;
+probably be gappy pod is higher in some cases,&nbsp;&nbsp;
+
+00:23:55.000 --> 00:24:00.360
+in some cases it's not. It's overall similar.&nbsp;
+I mean, yeah, we have shown this in our paper,&nbsp;&nbsp;
+
+00:24:00.360 --> 00:24:07.560
+but we find that overall it's comparable in terms&nbsp;
+of memory. Yes, the spod is probably higher.
+
+00:24:07.560 --> 00:24:10.120
+Okay, looks like Palani has no questions.
+
+00:24:11.840 --> 00:24:18.360
+Yes, hi, thanks. Hi again. This is parni here&nbsp;
+from India. I have a question on the previous&nbsp;&nbsp;
+
+00:24:18.360 --> 00:24:27.200
+slide where you showed the global relative error&nbsp;
+coming down to 20% for all three different sets&nbsp;&nbsp;
+
+00:24:27.200 --> 00:24:33.160
+missing data of 1% or five or 20% is there&nbsp;
+any significance to why the global relative&nbsp;&nbsp;
+
+00:24:33.160 --> 00:24:39.400
+error comes down to 20% for all the cases,&nbsp;
+irrespective of the amount of missing data?
+
+00:24:39.400 --> 00:24:44.080
+I actually think it's like, I actually think it's&nbsp;
+a coincidence, and it's, there is no guaranteed&nbsp;&nbsp;
+
+00:24:44.080 --> 00:24:50.840
+measure. It's just a coincidence. Yeah, there is&nbsp;
+no significance, as you can so that is only what&nbsp;&nbsp;
+
+00:24:50.840 --> 00:24:55.640
+we observed in the presence of this cavity, for&nbsp;
+this cavity flow, whereas if you look actually&nbsp;&nbsp;
+
+00:24:55.640 --> 00:25:01.000
+at the cylinder flow, the error is you can&nbsp;
+see that as the for different. Percentages&nbsp;&nbsp;
+
+00:25:01.000 --> 00:25:09.880
+of missing data. The error is different, so I&nbsp;
+think it's just a coincidence. Yeah, thanks.
+
+00:25:09.880 --> 00:25:17.680
+I may ask 100% all these resources for the&nbsp;
+predictive case or the reproductive case,&nbsp;&nbsp;
+
+00:25:17.680 --> 00:25:25.320
+I mean you, you observe the data, and you&nbsp;
+try to predict the observed data again,&nbsp;&nbsp;
+
+00:25:25.960 --> 00:25:32.000
+or is it like try to predict the new
+
+00:25:32.000 --> 00:25:36.600
+Okay, so here, what we do is, actually we have&nbsp;
+the original data from the experiments, and&nbsp;&nbsp;
+
+00:25:36.600 --> 00:25:42.800
+what we do is we select regions which we remove&nbsp;
+those regions, right? And then we using this,&nbsp;&nbsp;
+
+00:25:42.800 --> 00:25:47.760
+we once the removed regions, we estimate these&nbsp;
+regions that we have removed using our algorithm,&nbsp;&nbsp;
+
+00:25:47.760 --> 00:25:52.200
+and then compared to that of the original data.&nbsp;
+So here what we have, we have the original data,&nbsp;&nbsp;
+
+00:25:52.200 --> 00:25:58.000
+but it's kind of, I mean, the model doesn't&nbsp;
+know that there, there was removed. Okay,
+
+00:25:59.760 --> 00:26:06.400
+I mean, so you could extend this algorithm&nbsp;
+to the parametric case, like by parametrizing&nbsp;&nbsp;
+
+00:26:06.400 --> 00:26:14.440
+this gappy spod model so that it can, not&nbsp;
+only, you know, recover the missing data,&nbsp;&nbsp;
+
+00:26:14.440 --> 00:26:20.000
+but also predict the new source. Yes,&nbsp;
+yeah, it has not been seen. Yes, yes,
+
+00:26:20.000 --> 00:26:28.560
+that that's that's we have been trying, with some&nbsp;
+collaborators doing working on that. Yeah, okay,&nbsp;&nbsp;
+
+00:26:28.560 --> 00:26:34.720
+okay, so to just summarize this part of&nbsp;
+my talk, so we have a new algorithm that&nbsp;&nbsp;
+
+00:26:34.720 --> 00:26:42.080
+leverages both spatial and temporal coherence of&nbsp;
+spod for reconstructing these missing data for&nbsp;&nbsp;
+
+00:26:42.080 --> 00:26:48.480
+especially for statistically stationary flows,&nbsp;
+and it outperforms both creaking and gappy pod&nbsp;&nbsp;
+
+00:26:48.480 --> 00:26:53.000
+and one thing which I've not shown here, but&nbsp;
+we have also observed, is that it works well&nbsp;&nbsp;
+
+00:26:53.000 --> 00:26:58.520
+in the presence of high noise. So here, even&nbsp;
+on remove, even on removing, once we remove&nbsp;&nbsp;
+
+00:26:58.520 --> 00:27:05.960
+this region. So even in the presence of noise, we&nbsp;
+can estimate this without the presence of noise,&nbsp;&nbsp;
+
+00:27:05.960 --> 00:27:10.640
+this might require some fine tuning, but we&nbsp;
+can, this can also be done for the presence&nbsp;&nbsp;
+
+00:27:10.640 --> 00:27:21.560
+of a noisy data. So now moving on to the second&nbsp;
+part of my talk. So in in this I will focus on&nbsp;&nbsp;
+
+00:27:21.560 --> 00:27:27.480
+characterizing the intermittency of these coherent&nbsp;
+structures and show how they will correspond to&nbsp;&nbsp;
+
+00:27:27.480 --> 00:27:34.800
+the different extreme events. So intermittency&nbsp;
+is a characteristic of turbulent flows. So here&nbsp;&nbsp;
+
+00:27:34.800 --> 00:27:39.200
+I'm showing two different examples. One is the&nbsp;
+bursting of these streaks. So streaks are this&nbsp;&nbsp;
+
+00:27:39.200 --> 00:27:46.360
+long meandering structures where they meander,&nbsp;
+and finally they burst into form these vertices.&nbsp;&nbsp;
+
+00:27:46.360 --> 00:27:52.720
+Another example of intermittency is in the case&nbsp;
+of super direct to radiation. As you can see here,&nbsp;&nbsp;
+
+00:27:52.720 --> 00:27:58.880
+this is a super direct to radiation being&nbsp;
+emitted in a jet. So if I choose a point&nbsp;&nbsp;
+
+00:27:58.880 --> 00:28:04.360
+in the far field and look at its pressure&nbsp;
+time series signal. So this is what we get,&nbsp;&nbsp;
+
+00:28:04.360 --> 00:28:11.600
+where you can clearly see this high regions of&nbsp;
+high activity. So the commonly used techniques&nbsp;&nbsp;
+
+00:28:11.600 --> 00:28:18.200
+for characterizing intermittency are are wavelet&nbsp;
+transform and short term Fourier transform. So&nbsp;&nbsp;
+
+00:28:18.200 --> 00:28:24.600
+if you perform wavelet transform on this time&nbsp;
+series signal, in addition to the time instances&nbsp;&nbsp;
+
+00:28:24.600 --> 00:28:31.120
+where we have this high activity, we also get the&nbsp;
+information of the frequency, as can be shown by&nbsp;&nbsp;
+
+00:28:31.120 --> 00:28:36.400
+here, y axis. So these methods, both wavelet&nbsp;
+transform and short term Fourier transform,&nbsp;&nbsp;
+
+00:28:36.400 --> 00:28:42.200
+only characterize intermittency locally, that&nbsp;
+is at each spatial location or instant so,&nbsp;&nbsp;
+
+00:28:42.200 --> 00:28:47.400
+as opposed to this, what we do is we propose&nbsp;
+a method that takes into account the entire&nbsp;&nbsp;
+
+00:28:47.400 --> 00:28:54.040
+spatially coherent flow structures and and tries&nbsp;
+to characterize the intermittency of this. For&nbsp;&nbsp;
+
+00:28:54.040 --> 00:29:01.720
+this, what we do is we will extend spod for for&nbsp;
+identifying the frequency time analysis. So,&nbsp;&nbsp;
+
+00:29:01.720 --> 00:29:08.200
+so in the previous part of my talk, where I&nbsp;
+have used inverse spod, in this case, we get&nbsp;&nbsp;
+
+00:29:08.200 --> 00:29:14.920
+the expansion coefficient for each block, but we&nbsp;
+actually require the expansion coefficients for&nbsp;&nbsp;
+
+00:29:14.920 --> 00:29:21.080
+each snapshot. That is, we require time continuous&nbsp;
+expansion coefficients. So in order to do this,&nbsp;&nbsp;
+
+00:29:21.080 --> 00:29:25.760
+if we would, we would actually require&nbsp;
+performing spod with a very high overlap,&nbsp;&nbsp;
+
+00:29:25.760 --> 00:29:31.360
+but this in many cases, is computationally&nbsp;
+intractable. So to circumvent this, what we&nbsp;&nbsp;
+
+00:29:31.360 --> 00:29:38.600
+do is we take a convolution approach, where we&nbsp;
+first project the data onto these spod modes and&nbsp;&nbsp;
+
+00:29:38.600 --> 00:29:44.080
+then move them one snapshot at a time, and then&nbsp;
+perform the convolution over each over each of&nbsp;&nbsp;
+
+00:29:44.080 --> 00:29:50.280
+this and to obtain the expansion coefficients A so&nbsp;
+these are time continuous now. So once we get this&nbsp;&nbsp;
+
+00:29:50.280 --> 00:29:58.400
+expansion coefficient, we can then reconstruct&nbsp;
+the back the data using this expression. So these&nbsp;&nbsp;
+
+00:29:58.400 --> 00:30:04.920
+expansion coefficients contain. Both the frequency&nbsp;
+as well as temporal information of that that of&nbsp;&nbsp;
+
+00:30:04.920 --> 00:30:12.120
+the corresponding of the corresponding spod modes.&nbsp;
+So this will give this will give us the idea,&nbsp;&nbsp;
+
+00:30:12.120 --> 00:30:18.760
+give us the information of intermittency&nbsp;
+corresponding to this coherent structures.&nbsp;&nbsp;
+
+00:30:18.760 --> 00:30:25.120
+So here, to identify the intermittency. What&nbsp;
+we use is, we use the frequency time diagrams&nbsp;&nbsp;
+
+00:30:25.120 --> 00:30:32.960
+that that we plot by taking the absolute value of&nbsp;
+these expansion coefficient and here, I'm showing&nbsp;&nbsp;
+
+00:30:32.960 --> 00:30:38.640
+the contribution of the leading 10 modes and that&nbsp;
+of the leading mode over here. And these, these&nbsp;&nbsp;
+
+00:30:38.640 --> 00:30:43.960
+regions where we have high intensity regions,&nbsp;
+or which is in represented in bright yellows,&nbsp;&nbsp;
+
+00:30:43.960 --> 00:30:50.440
+represents the time instances where there is&nbsp;
+a high similarity between the SPO spod mode of&nbsp;&nbsp;
+
+00:30:50.440 --> 00:30:57.560
+that corresponding to that frequency and that of&nbsp;
+that of the snapshot. And later, I will show that&nbsp;&nbsp;
+
+00:30:57.560 --> 00:31:03.720
+these actually also correspond to the high energy&nbsp;
+events. So, so these are, for example, represents&nbsp;&nbsp;
+
+00:31:03.720 --> 00:31:09.800
+these, these high instances where there's a&nbsp;
+high similarity between spod mode and that of&nbsp;&nbsp;
+
+00:31:09.800 --> 00:31:17.880
+the snapshot. So these frequency time analysis&nbsp;
+give us the temporal information, whereas the&nbsp;&nbsp;
+
+00:31:17.880 --> 00:31:26.560
+spod spectrum gives us the statistical information&nbsp;
+of these go of these spod modes. So if we would&nbsp;&nbsp;
+
+00:31:26.560 --> 00:31:33.480
+to take the expectation, expected value of the&nbsp;
+expansion coefficient of for each frequency, and&nbsp;&nbsp;
+
+00:31:33.480 --> 00:31:38.960
+we will see that they show a beautiful collapse&nbsp;
+to the to that of the eigenvalue spectrum. And&nbsp;&nbsp;
+
+00:31:38.960 --> 00:31:45.240
+then they are perfect in this case. So this only&nbsp;
+shows us two different sides of the same coin. So&nbsp;&nbsp;
+
+00:31:45.240 --> 00:31:50.080
+this represents the temporal information, and&nbsp;
+there is this only shows us the statistical&nbsp;&nbsp;
+
+00:31:50.080 --> 00:31:56.720
+information. So now to look at the presence of&nbsp;
+high energy events, what we do is, for example,&nbsp;&nbsp;
+
+00:31:56.720 --> 00:32:05.400
+we look at in this region where from 1200 to 1600&nbsp;
+and look at the instantaneous energy of the entire&nbsp;&nbsp;
+
+00:32:05.400 --> 00:32:11.880
+of the entire data, and rank on approximation of&nbsp;
+the data. And in both cases, what we observe is we&nbsp;&nbsp;
+
+00:32:11.880 --> 00:32:19.400
+observe that there is that the energy peaks at the&nbsp;
+same time instances that corresponds to this high&nbsp;&nbsp;
+
+00:32:19.400 --> 00:32:27.920
+energy event. So this corresponds to this bright&nbsp;
+yellow spot. So this indicates that, especially&nbsp;&nbsp;
+
+00:32:27.920 --> 00:32:32.280
+this region indicates that whenever there's&nbsp;
+a high similarity between the mode and that&nbsp;&nbsp;
+
+00:32:32.280 --> 00:32:42.560
+of the snapshot, that that actually corresponds&nbsp;
+to a high energy event of this and now finally,&nbsp;&nbsp;
+
+00:32:42.560 --> 00:32:49.040
+here I would like to show the deconstruction of&nbsp;
+the flow field and physical in a physical sense.&nbsp;&nbsp;
+
+00:32:49.040 --> 00:32:54.200
+So for here, I will choose a different frequency,&nbsp;
+the frequency of point five. This I have chosen&nbsp;&nbsp;
+
+00:32:54.200 --> 00:32:57.840
+specifically because it corresponds&nbsp;
+to the Kelvin Helmholtz wave packet.&nbsp;&nbsp;
+
+00:32:58.600 --> 00:33:05.320
+And here, what I'm showing is the absolute value&nbsp;
+of the expansion coefficient. And this is the&nbsp;&nbsp;
+
+00:33:05.320 --> 00:33:12.640
+this is the magnitude for this. And we know that&nbsp;
+this is the time instance that curves that has&nbsp;&nbsp;
+
+00:33:12.640 --> 00:33:18.080
+the maximum value, global maximum. So I will&nbsp;
+choose this and then plot the original field&nbsp;&nbsp;
+
+00:33:18.080 --> 00:33:23.880
+and compare that with the mode weighted by its&nbsp;
+expansion coefficient of here so on doing so,&nbsp;&nbsp;
+
+00:33:23.880 --> 00:33:30.600
+we can clearly see that at this time instant,&nbsp;
+the original flow field orients itself in such&nbsp;&nbsp;
+
+00:33:30.600 --> 00:33:37.480
+a way that it resembles the kiln Helmholtz wave&nbsp;
+packet in that of the near field. And whereas,&nbsp;&nbsp;
+
+00:33:37.480 --> 00:33:42.560
+obviously, the higher the larger wavelength&nbsp;
+structures are not obtained because they present.&nbsp;&nbsp;
+
+00:33:42.560 --> 00:33:49.680
+They are present in a much lower frequency, and&nbsp;
+even once, if we scale them with the expansion&nbsp;&nbsp;
+
+00:33:49.680 --> 00:33:57.880
+coefficient as well, we can obtain a good match&nbsp;
+over here. So this is a qualitative comparison for&nbsp;&nbsp;
+
+00:33:57.880 --> 00:34:02.960
+a quantitative comparison. Here, what I'm doing&nbsp;
+is I'm taking the real part of pressure along&nbsp;&nbsp;
+
+00:34:02.960 --> 00:34:08.400
+the lip line that is r equal to point five,&nbsp;
+and plot that for the that of the spod mode,&nbsp;&nbsp;
+
+00:34:08.400 --> 00:34:13.880
+for that of the original snapshot, and that of the&nbsp;
+mode weighted by this expansion coefficient shown&nbsp;&nbsp;
+
+00:34:13.880 --> 00:34:22.320
+on the on the right y axis. So here we observe a&nbsp;
+perfect phase alignment for this. So overall, what&nbsp;&nbsp;
+
+00:34:22.320 --> 00:34:29.120
+this shows is there are time so as the turbulent&nbsp;
+flow is intermittent in at some time instances, it&nbsp;&nbsp;
+
+00:34:29.120 --> 00:34:36.160
+orients itself into the form of a wave packet. And&nbsp;
+whenever this happens, it it actually corresponds&nbsp;&nbsp;
+
+00:34:36.160 --> 00:34:46.440
+to the high energy bus over here. And finally,&nbsp;
+to to conclude this part of my talk. So here,&nbsp;&nbsp;
+
+00:34:47.000 --> 00:34:51.720
+we have first shown how this can be used for&nbsp;
+identifying the intermittency of the different&nbsp;&nbsp;
+
+00:34:51.720 --> 00:34:57.960
+cohort structures, and how it can detect the&nbsp;
+frequency time analysis. So here, additionally,&nbsp;&nbsp;
+
+00:34:57.960 --> 00:35:03.000
+there are some other extensions which I've&nbsp;
+shown. So. But could not go right due to the&nbsp;&nbsp;
+
+00:35:03.000 --> 00:35:10.640
+constraint of time. This includes denoising&nbsp;
+and another work which was recently done by&nbsp;&nbsp;
+
+00:35:10.640 --> 00:35:15.040
+my colleague on reduced order modeling, where&nbsp;
+they use this expansion coefficient and a coupon&nbsp;&nbsp;
+
+00:35:15.040 --> 00:35:23.640
+based operator for modeling flows. Now, now&nbsp;
+I will move on to the last part of my talk,&nbsp;&nbsp;
+
+00:35:23.640 --> 00:35:32.120
+where I will focus on the triadic interactions. So&nbsp;
+that is, we extend spod to third order statistics,&nbsp;&nbsp;
+
+00:35:32.120 --> 00:35:40.080
+that is, to optimize the third order statistics&nbsp;
+and characterize these triadic interactions.
+
+00:35:40.080 --> 00:35:45.920
+So the quadratic non linearity arises from the&nbsp;
+convective term, convective term in the Navier&nbsp;&nbsp;
+
+00:35:45.920 --> 00:35:52.640
+stone equations that is given by this expression.&nbsp;
+So, so if we take the Fourier transform of the of&nbsp;&nbsp;
+
+00:35:52.640 --> 00:35:58.560
+the velocity, we get different frequencies. And&nbsp;
+if we plug this back into this expression, then&nbsp;&nbsp;
+
+00:35:58.560 --> 00:36:03.920
+there is a cross interaction between different&nbsp;
+frequencies, so f1 interacts with f2 to give&nbsp;&nbsp;
+
+00:36:03.920 --> 00:36:09.360
+rise to f1 plus f2 and various other different&nbsp;
+combinations. So this is what we consider.&nbsp;&nbsp;
+
+00:36:09.360 --> 00:36:15.160
+This is what we call it as a triad, where two&nbsp;
+frequencies are interacting to give rise to the&nbsp;&nbsp;
+
+00:36:15.160 --> 00:36:22.560
+third one. And this is the corresponding modal&nbsp;
+representation of this. So triads still now have&nbsp;&nbsp;
+
+00:36:22.560 --> 00:36:29.760
+more have mostly been investigated at at a single&nbsp;
+spatial location, but not not, but not between&nbsp;&nbsp;
+
+00:36:29.760 --> 00:36:35.360
+different coherent structures. So what we do is&nbsp;
+we focus, we take a more global perspective of&nbsp;&nbsp;
+
+00:36:35.360 --> 00:36:40.720
+this and use these. Use the BI spectral mode&nbsp;
+decomposition to identify these different&nbsp;&nbsp;
+
+00:36:40.720 --> 00:36:51.920
+triadic interactions. Yeah. So first to first give&nbsp;
+this. This is in in signal processing techniques.&nbsp;&nbsp;
+
+00:36:51.920 --> 00:36:57.800
+What people have done is the point wise by&nbsp;
+spectrum. So that is given by this expression,&nbsp;&nbsp;
+
+00:36:57.800 --> 00:37:05.920
+which is nothing but a expectation of three&nbsp;
+different frequencies. And what our method,&nbsp;&nbsp;
+
+00:37:05.920 --> 00:37:11.680
+that is the BI spectral mode decomposition, does&nbsp;
+is it take, it come, it essentially computes an&nbsp;&nbsp;
+
+00:37:11.680 --> 00:37:18.320
+intake spatial integral of these entire three,&nbsp;
+these three, three different frequencies over all&nbsp;&nbsp;
+
+00:37:18.320 --> 00:37:27.080
+different variables, and how to and on doing.&nbsp;
+So we get this BMD, or the mode by spectrum&nbsp;&nbsp;
+
+00:37:27.080 --> 00:37:32.800
+that is shown here. So to interpret this so we&nbsp;
+have on the x axis frequency one, and on the y&nbsp;&nbsp;
+
+00:37:32.800 --> 00:37:39.360
+axis frequency two, and along diagonals of slope&nbsp;
+minus one, the sum of these two frequencies are&nbsp;&nbsp;
+
+00:37:39.360 --> 00:37:46.320
+constant. So if we look at the top top isolator&nbsp;
+triangle, this represents the sum interactions&nbsp;&nbsp;
+
+00:37:46.320 --> 00:37:52.720
+between f1 and f2 and the bottom right triangle&nbsp;
+represents the difference interactions between&nbsp;&nbsp;
+
+00:37:52.720 --> 00:37:59.880
+f1 and minus f2 and a special case in the case of&nbsp;
+turbulent flows is along the lower diagonal, which&nbsp;&nbsp;
+
+00:37:59.880 --> 00:38:08.440
+where f2 is equal to minus f1 and corresponds, and&nbsp;
+corresponds to the mean flow deformation case. So,&nbsp;&nbsp;
+
+00:38:08.440 --> 00:38:18.160
+so And these, how and these modes by spectrum has&nbsp;
+has high intensity, regions which represents the&nbsp;&nbsp;
+
+00:38:18.160 --> 00:38:25.280
+highest, which represents the highest, radical&nbsp;
+interactions with the strongest intensity. So in&nbsp;&nbsp;
+
+00:38:25.280 --> 00:38:32.080
+BMD, what we do is we essentially, we essentially&nbsp;
+compute this bi spectral density matrix shown&nbsp;&nbsp;
+
+00:38:32.080 --> 00:38:38.680
+here, and know that this circle is nothing but a&nbsp;
+hard product here, and because this matrix b is&nbsp;&nbsp;
+
+00:38:38.680 --> 00:38:44.120
+non Hermitian, what we have to do is we have to&nbsp;
+solve a numerical radius problem, as opposed to&nbsp;&nbsp;
+
+00:38:44.120 --> 00:38:49.920
+the eigenvalue problem, to obtain a one. And once&nbsp;
+we obtain the expansion coefficients, we can then&nbsp;&nbsp;
+
+00:38:49.920 --> 00:38:55.480
+compute the mode by spectrum that is given by&nbsp;
+this and that of the DMD modes that corresponds&nbsp;&nbsp;
+
+00:38:55.480 --> 00:39:02.040
+to the to the different that that shows the that&nbsp;
+shows the coherent structures corresponding to&nbsp;&nbsp;
+
+00:39:02.040 --> 00:39:09.200
+the different triadic interval. Interactions.&nbsp;
+And to show the efficacy of our method. Here,&nbsp;&nbsp;
+
+00:39:09.200 --> 00:39:15.520
+what we do is we perform, we show it on a forced&nbsp;
+turbulent on first turbulent jets. And so we&nbsp;&nbsp;
+
+00:39:15.520 --> 00:39:21.120
+perform first turbulent jets as as it is a first&nbsp;
+step towards performing closed loop control of&nbsp;&nbsp;
+
+00:39:21.120 --> 00:39:31.120
+jet noise, and so. So we have first simulated&nbsp;
+an unforced, turbulent jet and then forced at&nbsp;&nbsp;
+
+00:39:31.120 --> 00:39:36.400
+different frequencies, and we have numbers. And&nbsp;
+we have also validated our simulations against the&nbsp;&nbsp;
+
+00:39:36.400 --> 00:39:41.880
+companion experiments that have been performed at&nbsp;
+University of poet a by Peter Jordan's group, and&nbsp;&nbsp;
+
+00:39:41.880 --> 00:39:49.960
+we observe a good match, both for the unforced as&nbsp;
+well as the for the first cases. So first, before&nbsp;&nbsp;
+
+00:39:49.960 --> 00:39:55.840
+I dive into the BI spectral analysis, I will,&nbsp;
+here, I will show an overall energetic analysis,&nbsp;&nbsp;
+
+00:39:55.840 --> 00:40:03.600
+so for the unforced case. So here different. M&nbsp;
+represents the different azimuthal wave numbers.&nbsp;&nbsp;
+
+00:40:03.600 --> 00:40:08.720
+So for the unforced case, we observe a broadband&nbsp;
+like spectrum, whereas for the first case,&nbsp;&nbsp;
+
+00:40:08.720 --> 00:40:14.280
+we observe peaks at different frequencies. In&nbsp;
+particular in the M equal to zero case, we observe&nbsp;&nbsp;
+
+00:40:14.280 --> 00:40:20.520
+peaks only for the axisymmetric component, whereas&nbsp;
+for the higher wave number forcing, we observe&nbsp;&nbsp;
+
+00:40:20.520 --> 00:40:27.320
+peaks at different wave numbers. In particular,&nbsp;
+if we first look at the m plus minus one forcing&nbsp;&nbsp;
+
+00:40:28.040 --> 00:40:36.040
+more clearly, we observe that we observe peaks&nbsp;
+at harmonic wave numbers. At harmonic peaks at&nbsp;&nbsp;
+
+00:40:36.040 --> 00:40:47.440
+even harmonic frequencies in even azimuthal wave&nbsp;
+numbers. That is m zero has 246, and and the odd&nbsp;&nbsp;
+
+00:40:47.440 --> 00:40:54.200
+azimuthal wave numbers have peaks at order, at odd&nbsp;
+harmonic frequencies. And in the coming slides,&nbsp;&nbsp;
+
+00:40:54.200 --> 00:40:59.480
+I will actually show that this is actually a&nbsp;
+resultant of the different hiding interactions&nbsp;&nbsp;
+
+00:40:59.480 --> 00:41:05.280
+they try, they occur in such a way that they&nbsp;
+only give rise to odd harmonic frequencies in&nbsp;&nbsp;
+
+00:41:05.280 --> 00:41:12.760
+order wave numbers and so on. So now, if we&nbsp;
+first perform by spectral mode decomposition&nbsp;&nbsp;
+
+00:41:12.760 --> 00:41:19.440
+for the unforced and forced jet, what we get are&nbsp;
+these two spectra, where, for the unsourced case,&nbsp;&nbsp;
+
+00:41:19.440 --> 00:41:24.480
+we get a similar to what we had observed&nbsp;
+previously, observed a broadband like nature,&nbsp;&nbsp;
+
+00:41:24.480 --> 00:41:32.320
+with most of the energy at low at low frequencies&nbsp;
+and and the energy decays significantly as we go&nbsp;&nbsp;
+
+00:41:32.320 --> 00:41:39.360
+to higher frequencies. Whereas for the force jet,&nbsp;
+we observe a grid like pattern, where with local&nbsp;&nbsp;
+
+00:41:39.360 --> 00:41:46.120
+maxima at the intersection of these grid lines,&nbsp;
+and here is a closed, closed zooming view for this&nbsp;&nbsp;
+
+00:41:46.120 --> 00:41:51.880
+where we observe that the most dominant triadic&nbsp;
+interactions are due to the self interaction of&nbsp;&nbsp;
+
+00:41:51.880 --> 00:41:57.360
+the forcing frequency with itself, and due to&nbsp;
+the destructive interference between the second&nbsp;&nbsp;
+
+00:41:57.360 --> 00:42:05.440
+harmonic and that of the fundamental frequency. So&nbsp;
+this is this triad is actually representative of&nbsp;&nbsp;
+
+00:42:05.440 --> 00:42:11.760
+a feedback or a backscatter effect. Backscatter&nbsp;
+effect where there is energy being going from a&nbsp;&nbsp;
+
+00:42:11.760 --> 00:42:19.400
+higher frequency to a lower frequency. So this&nbsp;
+show, this gives us a framework to identify&nbsp;&nbsp;
+
+00:42:19.400 --> 00:42:27.120
+the different triadic interactions in forced&nbsp;
+or tonal jets. So now, if we have to look at&nbsp;&nbsp;
+
+00:42:27.960 --> 00:42:33.200
+the plus minus one or plus minus six four&nbsp;
+cases, we have to, we have to shift to a&nbsp;&nbsp;
+
+00:42:33.200 --> 00:42:40.080
+three dimensional representation for this. So for&nbsp;
+this, I have different planes where corresponding&nbsp;&nbsp;
+
+00:42:40.080 --> 00:42:48.320
+to different azimuthal wave numbers. So&nbsp;
+we first harmonically force these two,&nbsp;&nbsp;
+
+00:42:48.320 --> 00:42:54.880
+these two modes, which are represented by&nbsp;
+these coherent structures. So on forcing them,&nbsp;&nbsp;
+
+00:42:54.880 --> 00:43:00.480
+what for the basic interaction is they&nbsp;
+interact with each other to give rise to m,&nbsp;&nbsp;
+
+00:43:00.480 --> 00:43:09.080
+m zero and the second harmonic of two SDF. Over&nbsp;
+here, another pathway also exist where these&nbsp;&nbsp;
+
+00:43:09.080 --> 00:43:16.720
+both can self interact to give rise to m2 and&nbsp;
+m minus two and two SDF and and in this case,&nbsp;&nbsp;
+
+00:43:16.720 --> 00:43:22.640
+what we have, what we observe is both these&nbsp;
+mode and this mode are actually symmetric,&nbsp;&nbsp;
+
+00:43:22.640 --> 00:43:30.680
+or complex symmetric. So what we observe, so&nbsp;
+that's why I will only represent them in the in&nbsp;&nbsp;
+
+00:43:30.680 --> 00:43:37.640
+the positive plane, and positive plane just for&nbsp;
+the sake of redundancy. And so this represents&nbsp;&nbsp;
+
+00:43:37.640 --> 00:43:45.320
+a forward cascade in a wave number as well as in&nbsp;
+frequency space. Furthermore, once we obtain, once&nbsp;&nbsp;
+
+00:43:45.320 --> 00:43:50.000
+we obtain these coherent structures by the result&nbsp;
+of the First Order interactions, then a higher&nbsp;&nbsp;
+
+00:43:50.000 --> 00:43:54.560
+order interactions will occur when this can&nbsp;
+interact with this to give rise to higher terms,&nbsp;&nbsp;
+
+00:43:55.400 --> 00:44:02.200
+as can be shown here. So in all these cases,&nbsp;
+what we observe is one and minus one will try&nbsp;&nbsp;
+
+00:44:02.200 --> 00:44:09.920
+to give two and zero and then higher terms. And&nbsp;
+the overall trend observed here is as interactions&nbsp;&nbsp;
+
+00:44:09.920 --> 00:44:15.600
+results in higher frequencies. They have a much&nbsp;
+smaller wavelengths, and these wavelengths and&nbsp;&nbsp;
+
+00:44:15.600 --> 00:44:22.440
+these coherent structures are concentrated in the&nbsp;
+region near to the nozzle lip and and for higher,&nbsp;&nbsp;
+
+00:44:22.440 --> 00:44:29.920
+higher freak, higher wave numbers, these exhibit&nbsp;
+a larger swirl and to finally explain what we had&nbsp;&nbsp;
+
+00:44:29.920 --> 00:44:35.880
+previously observed. So we can clearly see that&nbsp;
+these triadic interactions are the result why we&nbsp;&nbsp;
+
+00:44:35.880 --> 00:44:41.320
+only observed peaks in even harmonics in the&nbsp;
+even azimuthal wave numbers and peak set odd&nbsp;&nbsp;
+
+00:44:41.320 --> 00:44:48.160
+harmonics in the odd azimuthal wave numbers. So&nbsp;
+this, using the BI spectro mode decomposition and&nbsp;&nbsp;
+
+00:44:48.720 --> 00:44:52.880
+the different kind of forcing, we can clearly&nbsp;
+show the presence of triadic interactions that&nbsp;&nbsp;
+
+00:44:52.880 --> 00:45:01.720
+are that are important in turbulent flows. And&nbsp;
+finally, to summarize. Is this part of my talk.
+
+00:45:03.120 --> 00:45:09.280
+So here we have a new framework for identifying&nbsp;
+the triadic interactions due to external forcing&nbsp;&nbsp;
+
+00:45:09.280 --> 00:45:15.960
+or even any tonal frequency. And our method also&nbsp;
+identifies the coherent structures associated&nbsp;&nbsp;
+
+00:45:15.960 --> 00:45:21.080
+with these triadic interactions. And it can,&nbsp;
+it can quantify the non linear interactions&nbsp;&nbsp;
+
+00:45:21.080 --> 00:45:26.240
+across different frequencies and azimuthal&nbsp;
+numbers. And finally, to before conclude,&nbsp;&nbsp;
+
+00:45:26.240 --> 00:45:33.320
+I would like to acknowledge my advisors,&nbsp;
+PhD advisor, postdoctoralness and other&nbsp;&nbsp;
+
+00:45:33.320 --> 00:45:41.880
+collaborators. And I would also like to I would&nbsp;
+also like to thank NSF onr and afsr for their&nbsp;&nbsp;
+
+00:45:41.880 --> 00:45:48.960
+support in my research. And finally, to conclude,&nbsp;
+here we have here, I'm sure here, I've shown three&nbsp;&nbsp;
+
+00:45:48.960 --> 00:45:58.240
+different extensions of of spod and its various&nbsp;
+other approaches, where, in the first case,&nbsp;&nbsp;
+
+00:45:58.240 --> 00:46:02.840
+have looked at the reconstruction of missing data,&nbsp;
+and in second case, the intermittency of coherence&nbsp;&nbsp;
+
+00:46:02.840 --> 00:46:08.280
+structures. And the third case, a non linear&nbsp;
+technique for identifying triadic interactions&nbsp;&nbsp;
+
+00:46:08.280 --> 00:46:14.160
+with this I would like to thank thank you for&nbsp;
+your attention and happy to take questions.
+
+00:46:14.160 --> 00:46:18.680
+Thank you. Thank you so much for the&nbsp;
+wonderful talk. Okay, let's have a&nbsp;&nbsp;
+
+00:46:18.680 --> 00:46:26.920
+training sessions. If you have questions,&nbsp;
+please unmute yourself and ask questions.
+
+00:46:31.400 --> 00:46:38.440
+So let me start with my I guess&nbsp;
+it's a comment. So recently,&nbsp;&nbsp;
+
+00:46:38.440 --> 00:46:46.640
+we have came up with a gappy autoencoder. So&nbsp;
+it's, you know, extension of the gap P pod,&nbsp;&nbsp;
+
+00:46:46.640 --> 00:46:57.040
+but you extended that to the gap p s pod, but we&nbsp;
+have bothering extended to the gap P auto encoder,&nbsp;&nbsp;
+
+00:46:57.040 --> 00:47:04.120
+okay, the motivation of that is, a lot of&nbsp;
+times, you know, when you have the dynamics&nbsp;&nbsp;
+
+00:47:04.120 --> 00:47:11.320
+which is not easily compressible using the&nbsp;
+linear subspace representation. You know,&nbsp;&nbsp;
+
+00:47:11.320 --> 00:47:22.760
+both pod and spod uses the the linear compression,&nbsp;
+right? So for that, with the nonlinear manifold&nbsp;&nbsp;
+
+00:47:22.760 --> 00:47:30.960
+representations such as neural net through the&nbsp;
+autoencoder, shown pretty promising compression.&nbsp;&nbsp;
+
+00:47:31.720 --> 00:47:39.920
+So we use that, and then in order to apply that&nbsp;
+to the recovering the missing data, you know,&nbsp;&nbsp;
+
+00:47:39.920 --> 00:47:47.480
+develop the gapi alternative. So I, you know,&nbsp;
+would like to welcome you to check that out. Yeah,
+
+00:47:47.480 --> 00:47:52.920
+sure, that sounds really interesting. I mean, the&nbsp;
+one thing which I mean in many cases, Gabby spod&nbsp;&nbsp;
+
+00:47:52.920 --> 00:48:00.200
+can like be problematic, is because, in terms of&nbsp;
+like data sets, like convergence of data sets,&nbsp;&nbsp;
+
+00:48:00.200 --> 00:48:06.960
+for example, we require, we require more more&nbsp;
+data for it to work better. Right in if it's a if&nbsp;&nbsp;
+
+00:48:06.960 --> 00:48:13.480
+it's a very short time series, probably the&nbsp;
+results might not be as accurate because spod&nbsp;&nbsp;
+
+00:48:13.480 --> 00:48:18.560
+is entirely based on the statistically stationary&nbsp;
+assumption and requires a large amount of large&nbsp;&nbsp;
+
+00:48:18.560 --> 00:48:25.800
+time series. Lens for look for its conversion.&nbsp;
+So I think probably your auto encoder would&nbsp;&nbsp;
+
+00:48:25.800 --> 00:48:31.960
+not suffer from such a limitation. And yeah, it&nbsp;
+would be great to look at, look at that, yeah,
+
+00:48:31.960 --> 00:48:35.280
+yeah, that is awesome. Well, of&nbsp;
+course, it doesn't solve every,&nbsp;&nbsp;
+
+00:48:35.280 --> 00:48:39.800
+every problems, because the training of the&nbsp;
+auto encoder is a lot more expensive than,
+
+00:48:44.440 --> 00:48:45.920
+yeah,
+
+00:48:45.920 --> 00:48:50.740
+all right, well, I can see that&nbsp;
+like the application of this gap,&nbsp;&nbsp;
+
+00:48:50.740 --> 00:48:56.960
+PS, pod is not just the turbulence. It can&nbsp;
+be applied to many different applications.&nbsp;&nbsp;
+
+00:48:56.960 --> 00:49:05.760
+Have you reached out, you know, maybe in&nbsp;
+your university, probably for you know,&nbsp;&nbsp;
+
+00:49:05.760 --> 00:49:11.840
+those application guys were physicists who&nbsp;
+probably got a lot of benefits from your Kp,&nbsp;&nbsp;
+
+00:49:11.840 --> 00:49:18.880
+yeah. If you haven't done that,&nbsp;
+please do so. I mean, yeah,
+
+00:49:18.880 --> 00:49:22.880
+sure. I would like to. I mean, I have, like, I&nbsp;
+mean, most of my concentration has been, like,&nbsp;&nbsp;
+
+00:49:22.880 --> 00:49:27.320
+on turbulent flows and, like, simulating&nbsp;
+flows. So, I mean, more focused on this,&nbsp;&nbsp;
+
+00:49:27.320 --> 00:49:32.280
+but yeah. I mean, yeah, sure. I think it&nbsp;
+would be nice to reach out to other ones and,&nbsp;&nbsp;
+
+00:49:32.280 --> 00:49:37.360
+like, look at Yeah. Like, see how it's&nbsp;
+applicable for other cases as well. Yeah.
+
+00:49:37.360 --> 00:49:44.240
+I'm also would like to open that collaboration&nbsp;
+opportunity to the folks at Lawrence Livermore&nbsp;&nbsp;
+
+00:49:44.240 --> 00:49:50.680
+National Lab, yeah, as well as the people&nbsp;
+who just joined, you know, you know,&nbsp;&nbsp;
+
+00:49:50.680 --> 00:50:03.520
+in this DDPS seminar from everywhere. Yeah, all&nbsp;
+right. Any other, any questions from. Audience,
+
+00:50:03.520 --> 00:50:11.800
+yes, I have just one more question on the end of&nbsp;
+the second section. I think in the last slide,&nbsp;&nbsp;
+
+00:50:11.800 --> 00:50:17.120
+you had shown alias data with the&nbsp;
+noise, and then the gap is VOD, sort&nbsp;&nbsp;
+
+00:50:17.120 --> 00:50:26.360
+of regenerating without the noise.&nbsp;
+Is the nice in the Las data? Is that&nbsp;&nbsp;
+
+00:50:27.320 --> 00:50:33.120
+intentionally forced data? Or is&nbsp;
+it something created because of
+
+00:50:33.120 --> 00:50:44.720
+no, we intentionally included the noise? Yes.&nbsp;
+Okay, so that's, yeah, and I mean, the in this&nbsp;&nbsp;
+
+00:50:44.720 --> 00:50:51.680
+case, we have to probably fine tune the gappy spod&nbsp;
+algorithm a bit. The only fine tuning is like,&nbsp;&nbsp;
+
+00:50:51.680 --> 00:51:01.160
+for example. Let me just go back. What we see is,&nbsp;
+for example, this is what you get in a normal case&nbsp;&nbsp;
+
+00:51:01.160 --> 00:51:06.400
+where there's no noise, whereas in the presence&nbsp;
+of noise, you would get like a floor, like this,&nbsp;&nbsp;
+
+00:51:06.400 --> 00:51:12.040
+for example, it's you get these kind of peaks,&nbsp;
+and then you get like a white noise spectrum over,&nbsp;&nbsp;
+
+00:51:12.040 --> 00:51:17.480
+over some region. So then what you would have&nbsp;
+to do is you have to probably cut off the you,&nbsp;&nbsp;
+
+00:51:17.480 --> 00:51:22.080
+I mean, you can use it a proper threshold to&nbsp;
+cut, cut this off at that those frequencies&nbsp;&nbsp;
+
+00:51:22.080 --> 00:51:26.560
+and to then reconstruct this to avoid,&nbsp;
+to avoid any noise in reconstruction.&nbsp;&nbsp;
+
+00:51:28.560 --> 00:51:36.160
+So that's why, when we get this, we&nbsp;
+get the place without noise. Yeah.
+
+00:51:36.160 --> 00:51:45.760
+Thanks. Any other question, I
+
+00:51:45.760 --> 00:51:51.640
+Well, if not, let's thank our speaker, Akil, for&nbsp;
+the wonderful talk, and thank you so much for&nbsp;&nbsp;
+
+00:51:51.640 --> 00:51:58.640
+coming here and then gave a wonderful talk.&nbsp;
+And it was very awesome. It was very nice.
+
+00:51:59.400 --> 00:52:01.920
+Yeah, thanks. Thanks for Thanks for introducing,&nbsp;&nbsp;
+
+00:52:01.920 --> 00:52:08.160
+thanks for inviting me and giving, yeah, giving&nbsp;
+me the chance to reach out to many people. Yeah,
+
+00:52:08.160 --> 00:52:15.400
+awesome, awesome. Okay, so that conclude&nbsp;
+today's DDPS seminar. Let me start recording
+
+00:52:15.400 --> 00:52:17.600
+Yeah, if, if anyone has any&nbsp;
+questions and would like.
+

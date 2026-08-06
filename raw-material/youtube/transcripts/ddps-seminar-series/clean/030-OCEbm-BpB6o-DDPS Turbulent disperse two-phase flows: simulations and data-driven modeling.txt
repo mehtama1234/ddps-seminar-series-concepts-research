@@ -1,0 +1,1599 @@
+let's start
+all right um welcome to the ddps seminar
+everyone let's go over some logistics uh
+first please mute your yourself during
+the talk unless you have questions
+if you have questions you are welcome to
+meet and ask otherwise please use chat
+room to post your questions so that we
+can address them in q a session at the
+end
+second today's gdps seminar is open to
+external audiences therefore no
+classified discussion is allowed
+finally the talk today will be recorded
+and uploaded in our youtube channel
+that's about it now let me introduce our
+speaker today
+it is an honor to host jess
+kappa cilantro who is an
+assistant professor in the department of
+mechanical engineering and aerospace
+engineering at the university of
+michigan his research group develops
+numerical methods and data-driven
+approaches for the prediction and
+optimization
+of
+messy
+turbulent flows relevant to energy and
+the environment
+often multiphase and reacting
+prior to joining michigan in 2016 dr
+cappa cilantro
+was a research scientist at the center
+for exascale simulation of plasma
+coupled combustion at the university of
+illinois
+he received a
+bachelor's in science from sunni
+binghampton in 2009 a master in science
+from the university of colorado boulder
+in 2011 and phd from
+cornell in 2014. he is a recipient of
+the national science foundation
+career award office of naval research
+young investigator award and the asme
+pai tau sigma gold medal award
+all right today
+dr cappa cilantro
+will present an interesting topic which
+is turbulent dispersed two phase flows
+simulations and data-driven modeling
+please enjoy and expect a
+a wonderful talk now without further ado
+let me press the button
+by asking one random question as usual
+today's random question is what is your
+favorite sports team if you have any
+it's question for you guys
+okay
+um
+i grew up in new york and i i watched a
+lot of uh professional football and so
+it's a new york giants fan but
+but um
+yeah
+most of the sports i do now is a rock
+climbing ultimate frisbee and there's
+not a lot of uh
+professional teams so
+uh yeah i don't follow much sports
+anymore but used to be a giants fan
+thank you thank you jess it's all yours
+okay thanks so uh it's really an honor
+to be here this seminar series has been
+um i've been i've i've attended a couple
+of them and the lineup of speakers has
+been really fantastic so it's been a
+silver lining of this pandemic to uh
+um
+to be able to to watch and see these uh
+the seminars in this series
+so
+the talk today is is going to be on
+dispersed two-phase flows namely gas gas
+solid or gas particle flows and i like
+this image here this is from our
+collaborator um vahid who was at iowa
+state worked with chenkar subramaniam
+and we work closely with now looking at
+a direct numerical simulation through a
+suspension of particles and i like to
+show this on the title slide because
+um
+it's just a good image to have in your
+mind when we talk about this these types
+of flows where particles have an order
+one effect on on the background
+turbulence and so uh you can see here
+that there's um deflection of the stream
+lines there's wake shed past the
+particles and that's going to have an
+order one effect on on the background
+flow and that those are the those are
+the types of flows we'll be talking
+about today
+um so as was mentioned our group
+we tend to look at we're a computational
+group here at michigan
+i think everything we do
+is under the umbrella of turbulence we
+do turbulent combustion i have a student
+looking at adjoint based optimization
+which i know there might be folks in the
+audience here interested in that um
+but the talk today is focused on some of
+the multi-phase turbulence modeling that
+uh work we've been doing the past couple
+years
+but uh probably that my biggest focus
+now is on compressible gas particle
+flows which i'm not presenting today but
+it's a very i think exciting area of
+research there's been a lot of
+developments these past even just one to
+two years
+um
+and uh so i'm currently working on a
+review article on on compressible gas
+particle flows on on the modeling aspect
+so it's i think it's a very exciting
+area i'm happy to talk about that
+offline uh the work i'm presenting today
+is funded by nsf and it's mostly i'm
+mostly presenting work by my postdoc
+aaron latanzi
+um
+on some of the stochastic modeling he's
+been doing for drag
+and uh sarah who's uh in the audience
+here who is it for us she just just
+defended her phd and is a new faculty
+member at oakland university in michigan
+uh and so most of the stuff on the
+multi-phase turbulence modeling is is
+her work
+and uh this has been uh research we've
+done in collaboration with shane carr
+subramaniam his student vahed
+who's now florida state and rodney fox
+so
+turbulent dispersed two-phase flows are
+you know
+ubiquitous uh it's it's there are many
+different applications here i'm just
+highlighting a couple simulations that
+we've done um
+in the past uh a couple of years so some
+of the types of photos we're interested
+in just to give sort of an idea of you
+know the
+how you know the type of physics
+that's present in the vast range of of
+applications so uh this is from
+exploratory flows obviously related uh
+cover 19. um a lot of the flows we're
+talking about today is motivated by um
+conversion of uh
+catalytic particles
+aiding the conversion of fuel to useful
+uh or sorry feedstock to useful fuels so
+one example is biomass pyrolysis
+um but a lot of our work has been with
+with nasa who's interested in plume
+surface interactions so this is a euler
+lagrange simulation of an underexpanded
+jet on a bed of particles
+and uh we
+there's a lot of challenges with these
+types of simulations we've been doing a
+lot of modeling and method development
+for
+in the compressible regime
+so
+the talk today
+we want to look at turbulence modeling
+of what i call strongly coupled flows
+and so as an example i want to
+distinguish this with the more
+classically studied uh particle inflow
+and the dilute limit and so what i'm
+showing here on the left is a classic
+example where you have a heavy inertial
+particle solid particle
+in a turbulent flow where the volume
+fraction epsilon p is very small the
+density ratio is very high so think you
+know gas solid order of 1000 2000
+uh but in this case the the particle
+diameter smaller than the the smallest
+scales of turbulence and there's a lot
+known that
+you get preferential concentration you
+have enhanced settling as particles
+preferentially sampled certain size
+regions of the turbulence of eddies
+um
+and there's there's a lot of really nice
+work on on that regime
+the flow regime we're interested in
+today is sort of we're still looking at
+gas solid so large density ratio but now
+we're looking at finite volume fraction
+so for example this image on the right
+is a experiment
+done at the national energy technology
+lab the doe lab um and i think this was
+at about one or five percent
+concentration on average and so instead
+so here you know the volume fractions
+we're talking about going to vary
+between 1 and 10
+and the particle reynolds number the
+reynolds number based on the the
+particle diameter can be ordered 10. and
+you can see
+that there's these there's a lot of
+interesting dynamics you get these large
+scale clusters that form and unlike in
+the dilute limit on the left
+here uh the particles really have a
+large effect on the background flow and
+that introduces a lot of challenges for
+for turbulence modeling
+um
+so the next three slides i shamelessly
+stole from my from uh sarah's phd thesis
+but you know the main idea here is that
+uh the challenge is really that the
+classic
+uh uh energy cascade
+that we'd see in in single phase flow
+sort of breaks down because
+now the particles will induce wakes at
+the smallest small scales
+or if they um assemble into clusters
+they can induce very large scale wakes
+um that that introduces energy at the
+small scale that can then cascade back
+up and so that's
+one one place where where um you know
+the classical theories of turbulence
+starts to break down when you have these
+denser suspensions
+so
+there's a nice
+you know history of the development of
+turbulence modeling starting from the uh
+sort of the turn of the the 20th century
+the uh um
+the so-called boosnesque approximation
+uh and the and the eddie viscosity model
+i'm sure many people here are familiar
+with this kamagrav hypothesis so the the
+energy cascade and using that in the
+context of large eddy simulation has has
+been very successful
+in the 1970s the development of tensor
+basis and so um in invariant basis sets
+were developed and uh um which is
+required for uh rand's modeling and and
+the latter half of this talk is going to
+be focused on multi-phase rants modeling
+so we're going to really make use of
+this
+um and the so-called k epsilon model
+which is you know really the workhorse
+today in a lot of a lot of sectors
+um but what we see is there's been a
+lull over some time and then in the
+2000s and really i you know as
+everyone's aware the last just couple of
+years um data-driven modeling has
+exploded right and so uh this has taken
+forms of closure modeling uncertainty
+quantification model augmentation and
+most often in the context of of neural
+networks um
+the approach we take is going to be
+um
+an alternative to neural networks and
+i'll explain that a little later
+compared to single-phase turbulence
+modeling multi-phase turbulence modeling
+has really seen a
+it really lags the development so
+starting really in the 1980s there's
+been a lot of models proposed based on
+at least multi-phase rans models
+proposed that were largely derived from
+extensions of single-phase
+turbulence
+and
+in 2014 our collaborator rodney fox
+derived uh rigorously the the reynolds
+averaged uh two fluid equations and i'll
+show sort of that process a little later
+um but this leads to a very large number
+of unclosed terms that
+you a simple augmentation of a single
+phase model just won't work because
+they're in terms of drag and volume
+fraction that just don't exist in single
+phase flows
+so
+so today's talk i i've broken it up into
+two parts the first part is on some of
+some new developments in our group on
+us
+on modeling and simulation so this is uh
+specifically focusing on a new
+stochastic drag force to
+capture some of the detailed physics at
+the micro scale
+and then the latter half is going to use
+that modeling sort of framework which
+we'll call sort of it's an intermediate
+step between the dns and and rans
+using data from these simulations in
+order to develop multi-phase rance
+models
+okay so a couple of preliminaries
+the way i've i've
+decided to
+frame this this talk was um instead of
+doing a deep dive and really talk
+in detail about the the way we do the
+data-driven modeling um i thought it
+might be
+more interesting or at least
+helpful to really talk about some of the
+physics first and and uh motivate why
+you know these data-driven approaches
+are um
+uh
+you know show
+show promise and are needed compared to
+more classical classical approaches and
+so it won't be till that towards the end
+that we'll actually talk about some of
+the uh
+more machine learning type of stuff but
+that's uh
+the data driven aspect will be will
+definitely be relevant throughout
+so to begin um for this talk the flows
+we're interested in we have uh
+solid particles we'll assume are rigid
+and spherical in an incompressible flow
+so the nice thing is that we know those
+equations
+the nivea stokes equations
+with appropriate boundary conditions at
+the surface of each particle
+it describes these systems well i have
+an asterisk here because when you have
+melting or devolazation
+other phase change aspects this is
+challenging but but for at least for
+isothermal or inert particles
+the equations are known
+and you can see that the the force the
+fluid force on the particle shows up
+through this fluid stress tensor
+integrated at the surface of the
+particle
+which obviously requires sub-particle
+scale resolution so if we wanted to do a
+dns we would need to implement some type
+of same horse boundary method that i'm
+showing here with a resolution smaller
+than the particle and uh when i
+initially created these slides you know
+the state of the art at the time was
+ordered 10 of the three
+um there's been some recent papers
+looking at larger scale simulations so
+so uh more particles that are fully
+resolved though typically
+sacrificing the number of grid points
+across the diameter and so it's it's
+still very challenging to get more than
+a thousand fully resolved particles
+so
+the alternative approach you know
+whatever modeling approach we decide to
+take inevitably will require some type
+of averaging right so we have to solve
+an average set of equations um to look
+to be able to simulate larger scales
+which inevitably leads to unresolved or
+some good scale terms that need to be
+modeled
+and so
+sort of the idea here is that fluid
+stress tensor right so this is this is
+comprised of pressure and viscous stress
+we can think of applying an average or
+filter to it
+that's what i'm showing in this uh tau
+bar
+and that averaging operation has a
+length scale that's larger than the
+particle and so we can pull it outside
+this integral
+and so this represents
+fluid forces acting on the particle
+based on the larger resolved scale and
+then we have everything left over and
+it's not difficult to show
+all everything left over i.e the fluid
+stresses at the particle scale is exact
+is is essentially the drag force
+and so in order to close the system of
+equations or at least this equation here
+we need to introduce a model for this
+unresolved fluid stress near the along
+the surface of the particle and you know
+a classic classic closure is that from
+george stokes um who proposed in the
+limit of a small reynolds number an
+isolated particle um we have a mod
+stokes drag that's shown here
+uh now obviously if we have a um
+accelerating uh either reference frame
+or accelerating particles or there's
+non-uniform flow effects
+additional terms appear besides just
+stoke's drag and so what i'm showing
+here is that it's the so-called bbo
+equations so particles might exhibit an
+added mass force uh specifically for
+lower density ratio or bubbly flows a
+bass a history term this is really due
+to delayed boundary layer development
+again it's it's usually small for gas
+solid um and then this the so-called
+quasi-steady drag force which is where
+stokes drag would
+but for these denser suspensions when we
+have neighbor effects right one
+particle's wake might interact with
+another particle's wake
+we get volume fraction effects or finite
+reynolds number effects you can't
+readily apply um such an equation
+and so the idea then is
+again we have this newton's second law
+this ode for the particle position it
+fuels a resolved stress this is
+sometimes referred to as the undisturbed
+force or the pressure gradient force
+and then a uh um this fd is everything
+left over which is usually closed with
+uh correlations from either experiments
+or simulations and so
+in the last probably
+10 20 years or
+yeah i guess some of the first dns
+simulations about 20 years ago
+um
+several models have have been developed
+the idea is you have a box of particles
+you fully resolve it you play a mean
+pressure gradient and then you in these
+simulations the drag is an output
+and then you you run a bunch of
+simulations you come up with
+correlations and so one popular drag
+model is by uh tinnetti garg and
+subramaniam from 2011
+where you have a drag force over this
+represents the average drag force in
+that suspension and it's correlated
+based on the mean reynolds number and
+the volume fraction
+and this is really um
+commonly applied in most modern codes i
+mean the idea of applying a gi
+correlation to particles is standard
+practice
+every commercial software with particles
+does this now some of the challenges
+though is that
+when you go to larger scales or when you
+have some of these complex flows
+or high reynolds number flows
+this drag correlation really represents
+the mean
+but there could be significant deviation
+about that mean and at very large scales
+you can have clustering and not and
+heterogeneity existing that this drag
+such drag correlations just can't
+capture and
+work by out of anthony wax's group along
+with a balachandar's group from florida
+have published a number of papers where
+they show that the db
+the variation about that mean
+is quite large and so what this is
+showing is if we have a suspension of
+particles you look at a pdf of the drag
+force you know the existing correlations
+work pretty well to capture the mean um
+but the the standard deviation can be
+just as large as the mean which is uh um
+clearly not accounted for an existing
+models
+and
+using existing drag laws tends to fail
+at least it's difficult to capture some
+important statistics like the particle
+velocity variance or the dispersion and
+the main idea is if you can imagine
+having three scenarios so here i have a
+grid cell each grid cell has the same
+reynolds number right i have the same
+mean velocity and particle velocity and
+the same volume fraction each one has
+four particles but this particle in
+green should experience a significantly
+different drag force depending on the
+orientation of its neighbors um and so
+but using standard drag correlations
+would predict that these particles all
+have the same drag force so that that's
+what the where the issue comes from
+uh now there's been
+over the last uh five years i'd say a
+lot of focus on how to improve these
+drag laws there's been some nice work
+from bala shandar trying to do this
+deterministically
+where you loop through neighboring
+particles and try to map or superimpose
+the effect of neighbors on on that
+particle of interest but we've decided
+to take a different route the main idea
+here is that each particle will
+experience both a uh it's the drag force
+on on this particle i will have a
+contribution from sort of the mean drag
+that's that's where you know an existing
+drag correlation would give plus what's
+left over
+and that would be given by some
+distribution
+and it turns out that
+previous simulations have shown that
+that pdf tends to be gaussian which is
+convenient
+and so the way we're just we're modeling
+the the
+variation in that drag force is using
+the langevin equation so
+applying a language equation of the
+force results in orange signal and back
+process
+and here we can see the increment
+incremental change in the the drag force
+has these two terms here
+um which require which requires closure
+this tau f
+is an integral time scale of the the
+fluid force fluctuations and the sigma f
+represents the standard deviation
+and uh here w is a wiener process or
+essentially a gaussian white noise
+and work we've been doing from
+extracting these statistics from dns
+shows that this is a
+a good approximation of what's going on
+because we can the drag force is indeed
+gaussian
+and um the autocorrelation and the force
+fluctuations is indeed exponential and
+so treating this force as a language
+mean equation is uh should be promising
+and allow us to to capture uh important
+statistics
+a side note is um
+we treat the
+it's a lot more common to treat the
+velocity statistically so so this
+usually in most you know fluent or open
+foam
+these so-called random walk models tries
+to
+uh plug in the fluid velocity that's not
+known as a stochastic variable uh what
+we're finding is if you treat the force
+stochastically instead of the velocity
+you can guarantee certain statistics but
+more than that it
+results in the velocity to be markovian
+process which is which means that
+there's promise of doing such an
+approach
+um to capture history effects like added
+mass and so one thing we're interested
+in now is looking at stochastic added
+mass
+um but this is this is sort of how it
+works
+our particle will feel forces due to
+collisions maybe gravity the resolved
+stress so that's the pressure gradient
+force um and then what's left over
+what's left over is going to be uh the
+mean drag which we can model with
+existing correlations
+and then the uh fluctuating part
+the mean drag we already have
+correlation so that's good the
+fluctuating part is is described with
+this ou process
+we have found in our previous work that
+that time scale is is reasonably
+predicted using the time between
+successive collisions and from kinetic
+theory um we we have a model for that
+this is based on the granular
+temperature and the radial distribution
+function and so
+we readily have a model for this term
+but we need a model for the standard
+deviation
+and looking at
+particle resolve simulations it turns
+out we can get a nice collapse across
+volume fraction and across
+reynolds numbers if we normalize the
+standard deviation with the drag force
+for an isolated particle and so now we
+have a closed form expression for that
+for all of the terms in that model
+uh and and briefly we just want to see
+well how well does it work and how does
+it compare against uh existing methods
+um so
+uh what we do is we're looking at two
+canonical systems so the so-called
+homogeneous cooling and homogeneous
+heating case so imagine you have a box
+of particles there's no walls
+and you force a flow through there if
+the particles are at rest
+eventually its granular temperature or
+the velocity variance of the particles
+will increase and reach some steady
+value so that's the heating case
+alternatively if the particles start
+with some finite variance and finding
+velocity fluctuations it'll cool to some
+steady state
+and what we're showing here is uh that
+granular temperature or velocity
+variance uh normalized gives us a
+reynolds number based on the the
+granular temperature as a function of
+time
+the symbols are data from dns
+now just a side note that if you recall
+the closure we used one was based on
+kinetic theory for the time between
+successive collisions and one was based
+on the standard deviation of the force
+which was taken from fixed particle
+assemblies so and we're comparing this
+model to
+dns of freely evolving particles and so
+this is very much not an exercise of
+tuning any parameters
+it's truly it's a true prediction
+and what we see
+is the red is the
+oil of the grange method
+with the langevin force the stochastic
+force and we see we we both capture this
+the transient behavior in addition to
+this the steady state whereas the blue
+is showing the standard approach where
+you you only have the mean force which
+is unable to capture those fluctuations
+and similarly across reynolds numbers
+and volume fractions this is the heating
+case starting with
+uh particles are immobile you force a
+flow through and they their velocity
+fluctuations increase and eventually
+level off we see very good agreement
+um so this is just uh
+a new model that we've been developing
+and it's also showing promise
+looking at lower density ratio uh
+suspension so looking at bubbly flows as
+well
+but you know the title of the talk was
+on turbulence modeling and so
+what i'd like to do is now zoom out and
+look at some larger scale systems right
+this box of particles you know we're
+talking about i think on the order of
+100 particles very small scale
+um
+but let's zoom out and so as a
+representative example this is the uh
+that um chemical looping reactor where i
+showed that image earlier from that
+fluid in his bed
+and uh you know
+i just want to reiterate that
+this is very challenging when it comes
+to turbulence modeling because at the
+smallest scales you have collisions you
+have wakes past particles if there's
+heat transfer you can have a
+convection or conduction
+and what happens at the small scales
+feeds back to the large scales in terms
+of clustering and that has an order one
+effect on the background turbulence
+and so what we're going to do is
+first derive a set of intermediate
+equations and that these are the
+equations we're solving in the
+homogeneous heating and cooling uh for
+the model so the fluid phase we uh if
+you locally average the nivea stokes
+equations you get a new set of equations
+that look very similar except now we
+have fluid volume fraction appearing
+in addition to that in the momentum
+equation we have um this phi is mass
+loading and so this is just the relative
+mass of the particle the fluid phase
+and then we have our interphase exchange
+so this is how the fluid feels the
+effect of
+drag from the particles so it feels both
+the drag force
+and the
+resolve stresses
+now the the idea here is taking those
+equations
+uh instead of the original lava stokes
+equations and applying an averaging
+operation to that will allow us to
+retain more physics and so the idea here
+is what we're going to do the usual
+reynolds averaging but because there's
+volume fractions that pop up in lots of
+places
+we're going to do so-called phase
+averaging this is analogous to far of
+averaging for variable density flows but
+here we have volume fraction instead of
+density
+and so we could define a residual about
+the mean so a double prime is a
+fluctuation about the phase average
+fluid
+and then the triple prime or
+fluctuations about the uh
+sorry the double prime is the
+fluctuation about the particle phase
+phase average and the triple prime is
+based on the fluid
+and uh you can imagine doing this to the
+navy stocks equation is going to lead to
+a lot of unclosed terms so i want to
+just highlight one example where we have
+a channel flow meaning we have one
+non-homogeneous direction
+that'll be the wall normal direction and
+other terms will cancel out the home the
+derivatives and the homogeneous
+directions cancel out
+and what we end up with is
+a reynolds average equation so this
+looks should look very similar to what
+we'd have in single phase channel flow
+if we got rid of these terms in red
+and so the terms in blue are unclosed
+terms that appear in the rental stress
+model
+due to pressure redistribution
+production due to mean shear so due to
+mean gradients and a dissipation rate so
+this is exactly what appears for single
+phase turbulence
+but the terms in red are new and this is
+uh new in the sense they wouldn't exist
+if there were no particles so we have a
+so-called drag dissipation and exchange
+rate so this
+is how
+fluid turbulent kinetic energy is
+transferred between the phases and you
+can see it's proportional to the mass
+loading so the limit of low volume
+fraction this goes to zero
+and then we have a drag production term
+so this shows this is an interesting
+term because in homogeneous flows we
+have no mean gradients
+um you would have no production of tke
+because the the this p shear term would
+be zero but this shows that in the
+presence of particles through coupling
+from drag you can get production of tke
+even in the absence of mean shear
+and this ud is based on is a drift
+velocity so it's the mean phase
+difference so in order for particles to
+induce
+turbulence in the fluid
+you need two ingredients you need finite
+mass loading
+so particles need to have
+the high enough volume fraction and high
+enough density
+and you need to have locally a non-zero
+mean slip velocity
+so that's that's what drives turbulence
+in the particle phase
+and and the idea here is
+um we want to avoid going from the
+microscale directly averaging the niber
+stokes equations because that's going to
+end up lumping a lot of important
+physics into
+a very small number of unclosed terms
+and instead go from the microscale to
+inform these mesoscale equations and
+then the mesoscale apply that averaging
+um and then use that to inform the
+closure for the macroscale equations
+so here's just an example
+where we're solving this is uh in our
+in-house code um it's a you know pretty
+vanilla finite volume second order uh uh
+low mach number uh uh solver with
+lagrangian particle tracking here we're
+solving those volume filtered equations
+so it's the niagara stokes with the
+volume fraction and momentum exchange
+terms
+and what we see is we have a turbulent
+channel flow reynolds number is ten
+thousand density ratio is two thousand
+and if we look in the case of a very
+dilute flow
+the uh fluid velocity resembles what we
+might expect for a single phase flow and
+if we look at the budget of tke you get
+a balance between the shear production
+and viscous dissipation
+now if you keep everything the same
+but we only add more particles such that
+our mass loading is now order one here
+at the mass loading's two
+there's enhanced dissipation through
+drag through that drag exchange term
+which re-laminarizes the flow and you
+can see the budget's completely killed
+off
+and if we keep adding particles and now
+our mass loading is 20. again this is a
+3d simulation i'm just showing a 2d
+cross section
+the
+coupling between the phases leads to
+clustering and the clustering leads to
+large scale wakes and now we see fluid
+tke but it's a very different
+characteristic than the single phase
+turbulence and here the budget we have
+drag production balanced by drag
+exchange so
+um here you know reynolds number is
+constant the only thing changing is the
+mass loading and we have very different
+uh flow characteristics
+uh another interesting thing is if we
+look at the uh spectrum of tke
+uh up here is the single phase case so
+the classic k to the minus five thirds
+and in the dilute limit you can see that
+particles are really enhancing the tke
+at the largest wave numbers so that
+really represents um you know the wakes
+past individual particles but as you
+increase the mass loading and you get
+clustering the particles have a
+broadband effect and the tke is reduced
+across with numbers
+okay
+uh
+the final part of this talk i just want
+to talk about
+looking at how we develop closure models
+for the reynolds average terms
+and uh i want to focus on what i would
+consider the simplest possible
+case that's driven by coupling with the
+particles so
+the channel case is a great that it just
+showed is a is a nice
+uh uh framework uh for looking at these
+effects of particles on the turbulence
+but because of that wall normal
+direction it leads to a bunch of terms
+and so to simplify things we're going to
+consider a homogeneous box of particles
+so it's triply periodic particles are
+randomly distributed and uh
+they're the fluids initially at rest and
+we have gravity and because of gravity
+particles start to settle
+and here we're in the frame of reference
+of the fluid so we force the mass flow
+rate to be zero
+and due to the coupling uh particles
+will spontaneously form these dense
+clusters and we can see here the fluid
+velocity now
+we have these high speed vertical flow
+in between clusters meanwhile the
+clusters uh entrain the the
+flow downward and so in the absence of
+particles the flow would be at rest and
+here the fluid tke is entirely due to
+the coupling
+uh and we're going to consider a couple
+different cases so um different volume
+fractions from point one percent to five
+percent um which corresponds the mass
+loading between one and fifty
+and uh
+what we wanna do is evaluate those uh
+those unclosed terms that appear so
+that's the drag production term is one
+of the primary ones
+and before i joined michigan this was
+this is work i was doing with rodney fox
+i spent two summers in france on this
+work
+and it became apparently clear that you
+know there's a large number of terms and
+there's a huge dimensional space right
+so unlike in single phase flow where you
+really have a reynolds number here we
+have density ratio volume fraction
+a bunch of extra terms and direct
+coming up with robust closure models has
+been quite challenging and so the work
+that's my student sarah former student
+sarah has been doing is is looking at um
+using some data-driven approaches to
+come up with model closure and the
+approach we decided to take was we
+wanted to have a model that ends up with
+a nice algebraic form so we wanted to
+avoid using neural networks because we
+wanted to have an algebraic expression
+for these terms
+we also wanted to make sure that it had
+important and embedded important physics
+for example form and variance
+uh and so this
+what this follows is essentially a
+sparse regression technique that i'm
+sure a lot of people here are familiar
+with um and the idea here is we we take
+some tensorial data so this would be
+data that can come from either
+simulations or experiments in this case
+from the from the euler lagrange
+simulations
+and we want to postulate a model
+based on
+these coefficients beta which themselves
+can be non-linear
+but we're going to look at linear
+combinations of them
+and we have this t here our basis
+tensors which need to be formulated by
+the user based on knowledge of the
+physics
+and a couple key notes is that forming
+this as a tall skinny vectors
+ensures that the beta does not vary with
+orientation so that's an important
+ingredient for
+form and variance
+and
+by doing a linear combination of the
+basis functions guarantee is the
+galilean invariance as well
+and
+what we do is a
+sparse regression so essentially an
+optimization where we have an l2 norm
+where we regress the data onto the model
+and then we add an l1 penalty uh in
+order to induce sparsity so this ensures
+instead of enslaving the data the model
+to the data it'll identify which terms
+are important and which terms play less
+of a role which is quite useful
+now
+as i said we have these tensorbases and
+the user needs to decide you know input
+them
+we see this as a feature because you
+need to know something about the physics
+and as opposed to um you know being
+purely data driven
+and in the context of single phase flow
+you know if you look in for example uh
+professor stephen pope's textbook you
+can find a table of these basis tensors
+that exist
+and we in our physical review fluids
+paper we demonstrate this method on a
+single a bunch of single-phase flows and
+shows that it works quite well and is
+able to identify um
+the algebraic models for the renal
+stress terms using these these uh
+basis tensors but the basis tensors for
+multiphase flows
+haven't yet been developed and so in our
+uh a recent jfm paper sarah derived the
+uh um non-dimensional symmetric diva
+devatoric tensors for these coupled
+fluid particle flows and so they're
+basically a function of the relative
+velocity and the reynolds stresses of
+each phase
+and this is an example of what the
+simulations look like at point one
+percent concentration of five percent
+concentration
+uh and so if we if we use this data from
+the simulations and we look at what
+sparse regression gives us is an example
+of one of the terms this is that drag
+production term
+and we see here that we're able to come
+up with a compact algebraic expression
+based on in this case the mass loading
+and
+some of these tensor bases so based on
+the relative velocities and it works
+quite well across the volume fraction
+and reynolds number
+one thing we're curious about was all of
+this simulation data is statistically
+stationary so meaning the data we
+provide it's average in time it's
+essentially a single point and so it is
+we took the simulations and we reversed
+gravity and so we looked at the
+transient behavior and here we're
+looking at the the mean settling
+velocity the particle phase versus time
+and using the renal stress models from
+the
+stationary data
+still gives us a very reasonable
+prediction and so this is quite
+promising
+we're now using this approach
+for more complex systems both on channel
+flows uh and we have a recent paper
+that's that'll be appear soon
+online
+uh looking at the heat transfer so here
+we're looking at the effect of
+clustering on the uh thermal entrance
+length as you can imagine if you had a
+uniform distribution of particles and a
+temperature difference between the
+phases
+you would have a smaller entrance length
+meaning the distance that the fluid
+temperature relaxes to an equal
+equilibrium compared to a more realistic
+case we have strong clustering and we're
+able to come up with new uh these
+correlations for that entrance link in
+addition to
+um uh rental stress type models for the
+for the temperature
+and just a final note before i wrap up
+here
+one of the
+challenges with the sparse regression is
+that these the coefficients in beta need
+to be input by the user and what we're
+finding is that we can make use of gene
+expression programming
+i started to automate that process and
+so sarah has an archive paper here
+where we combine sparse regression with
+gene expression programming and the idea
+is
+we still want to end up with a compact
+algebraic
+expression we want to um leverage the
+the properties of the sparse regression
+for the
+form and variance
+but we also want to automate some of the
+challenging parts and so here
+what we're doing is using a gene
+expression programming to come up with
+the coefficients appearing in beta in
+order to come up with
+more general expressions for them closed
+terms
+um
+a couple notes on that uh gene
+expression programming uh does not
+enforce the relation that the models to
+be linear with respect to the basis
+tensors and so that's why sparse
+regression is important to um guarantee
+form and variance uh and so uh and
+preliminary results are showing that if
+you when you combine them
+uh
+it's
+it's it's able to um it's a nice
+compromise with with uh
+at least um embedding certain physics
+but also automating some of that process
+and so
+in conclusion uh you know we're talking
+here about these
+dispersed two-phase flows where the
+particle phase has a strong effect on
+the background turbulence uh the drag
+force acting on a dense suspension
+exhibits a large variation and so
+treating the force stochastically is is
+showing promise to guarantee certain
+statistics like particle velocity
+variance and dispersion
+multiphase turbulence modeling
+following traditional approaches of
+directly averaging average stokes is is
+challenging because it it really lumps a
+lot of the physics into a small number
+of terms um and so instead doing this
+sort of
+sequential approach of averaging locally
+averaging number stokes and then rentals
+averaging those intermediate equations
+um is allows us to retain more physics
+but it results in a large number of
+unclosed terms that need to be uh um
+modeled
+and sparse regression is showing promise
+for developing uh closures for those
+terms
+and uh with that i am happy to
+take any questions that anyone might
+have
+thank you thank you so much for the
+great talk um
+jesse um we do have a
+one question from um
+gavin um he was wondering about what is
+the gene uh expression programming oh
+yeah yeah
+i skimmed over that for two reasons
+uh one is
+it's very recent work um we have an
+archive paper here but it's it's very
+much um you know we're starting to look
+into it so gene expression programming
+is uh
+it's a
+considered and um
+what's it called
+a uh
+sorry the word slip on my mind an
+evolutionary algorithm in the sense it
+it's a symbolic method and so it can
+work with sine sine functions cosines
+exponentials and so forth and it tries
+to come up with um
+uh
+which what's the best combination of all
+these various symbolic expressions
+and there's very nice open source code
+online so we basically took a
+off-the-shelf
+open source gene expression matlab code
+to do this part
+and the nice thing is uh you know you
+can have options on how many terms and
+how complex those terms are so without
+the gene expression programming the user
+would have to decide what those kind of
+functional forms or combinations of
+these coefficients might look like the
+gene expression programming sort of
+tries to determine what those
+expressions are if that makes sense
+that sounds really similar to
+actually the work done by
+one of our own
+somehow i i
+i
+i forgot his name um
+but he he did uh come up with a some
+symbolic uh learning algorithm um
+yeah this archive paper uh
+sarah
+goes through there's been a couple
+people have used it for turbulence
+modeling and not not many but there have
+been a couple um
+and i'm sure
+you know it's i'm sure it's been used in
+other areas as well
+yeah i mean if i
+it'll come back to me so if if
+if his name comes back to me i will
+hold his name so that maybe you guys can
+connect it
+okay um
+all right i don't have any other
+questions from from the chat room but i
+have some of mine oh sure
+before
+before i go to
+my questions um there's another question
+from chandler
+he said hey jesse
+i really enjoyed reading your work on
+stochastic drag modeling uh have you
+have you put any thoughts towards
+how two-point stated statistics between
+uh particle positions and velocities
+for example radial distribution
+functions may impact your drag moments
+i uh this is fantastic question and it's
+exactly what we're looking at right now
+and so
+maybe to clarify to some folks
+you can imagine having that you have a
+suspension of particles that are going
+to evolve with the flow and uh you know
+one of the arguments i've been making is
+some of these deterministic you know if
+you have just two particles settling in
+a viscous flow right the particle
+upstream will fall in the wake of the
+other particle and catch up and it's the
+so-called uh drafting kissing tumbling
+right so meaning if two particles near
+each other they're going to be
+influenced by each other's waves uh a
+deterministic approach that directly
+accounts for neighboring effects should
+be able to capture that and i think
+balashonda has shown that
+a stochastic approach that i presented
+here
+won't right because we're sampling from
+a a a distribution and so it doesn't
+really have knowledge on the specific
+pairwise interactions
+but my argument's been well if we have
+millions of particles who cares what we
+care about is is getting the right
+statistics
+and that's something an argument i've
+posed but but at the same time my
+collaborator shane carson uranium
+has been looking at connecting this
+with two-point statistics and we believe
+that it is possible in this sort of
+language framework sarcastic framework
+to um
+capture the the radial distribution
+function or the two point statistics
+and the reason why i think it's
+extremely exciting is because
+um it's commonplace in in industry and
+and throughout academia to do reynolds
+average number stokes right
+you do rams for the fluid and they do
+lagrangian particle tracking and then
+you do a random stochastic random walk
+models for the for the particles to say
+my fluid
+has an unresolved uh turbulent motion
+i'm going to treat it stochastically
+those methods can't capture preferential
+concentration
+they're unable to get these pairwise
+interactions and i think
+this might be a missing link
+but it's something we're just now
+starting to look at and i think it's a
+really exciting direction
+i hope i hope that answers your question
+i hope that answers uh the chancellor's
+questions um
+okay he said thank you okay
+right okay um another question from um
+maxwell um he asked is there any
+technical reason why radiation is
+neglected in the chemical looking
+vector that's a good question um
+because it's hard
+so
+uh a lot of everything i've shown up to
+this point has been isothermal
+and if you look at the um you know the
+actual these experiments also are
+isothermal but obviously the motivating
+example is a thermally evolving you know
+catalytic
+type of reactor right so chemical
+looping reactors are
+operated at elevated temperature where
+radiation is likely important and
+obviously you know stanford has been
+doing a lot of great work on this in
+recent years
+mostly in the dilute limit
+so
+here we're looking at convection
+and we neglected radiation uh mostly
+saying that uh you know clustering
+affects the turbulence and that's going
+to affect the infected transport of the
+the temperature but you're absolutely
+right the radiation will play
+a role at high enough temperatures and i
+think there's
+there's a lot of good work to be done in
+these denser suspensions i don't know of
+any really good models that exist for
+radiative transport when you have these
+denser suspensions and you can imagine
+it's difficult because um
+you have a lot in terms of you know when
+you model radiation you you have to
+account for you do monte carlo type of
+simulations of all these angles and here
+you're going to have
+deflections off of all the surfaces of
+the particles and it becomes an end body
+problem
+so
+yeah it's it's an area of research i
+think that that's very exciting um
+where would be exciting i i don't know
+how how much is being pursued now at
+least at these volume fractions
+i see thank you thank you jesse um
+okay i don't see any question from
+chatroom um i have a question about the
+scalability you said um
+you're tackling the larger scale problem
+uh with the particle flow um how the
+what is what was the largest largest
+problem you could uh solve yeah
+i didn't do a good job i think ex
+talking about the um
+the simulations we were running right so
+here
+we're doing two things one was a
+stochastic modeling and that framework
+is used to
+for us to run these more canonical
+simulations to generate data now it
+turns out
+that and then i glanced over this um
+when we scale up i showed that
+homogeneous heating and cooling rate of
+order of 100 particles and there the
+stochastic model plays a big role it
+turns out for this cluster-induced
+turbulence most of the heterogeneity is
+driven by the larger scale cluster
+dynamics so in that case the stochastic
+modeling actually plays a little role in
+the existing drag models do a pretty
+good job and so the simulations were
+performing for to generate the data so
+these homogeneous simulations
+the channel flow i showed and these heat
+transfer simulations
+are
+on the order of you know we're tracking
+individual particles
+on the order of i think 30 million
+particles for this case um we've we've
+gone up to 500 million particles is
+probably the largest we've done
+um because they're you know there are
+grid spacings on the order of the
+particle diameter
+but
+even at that those scales
+we're never gonna tackle um
+the uh you know reactor scales and
+that's why
+we're doing the reynolds averaging right
+and so if we look here
+those hundred million particle
+simulations that's to generate these
+mesoscale simulations to generate the
+data
+and we're applying it to look at um
+rand's types of frameworks that could be
+applied here and that's where
+um we haven't this is the direction i
+want to go is actually start applying
+them in in
+rand solvers right everything to date
+has been more we've we've developed
+algebraic models but not actually tested
+them at full scale and that's that's an
+area i'm hoping to look at today
+yeah yeah sounds good thank you uh we do
+have a another questions
+um
+from maxwell again why is the
+performance of this approach for cases
+where the fluid and particle velocities
+are very
+close in magnitude
+sorry repeat that
+he asked why is the performance of this
+approach for cases where the fluids
+and particle velocities are very close
+in magnitude so the
+the difference between the fluid and
+particle velocity is you know what we
+call the slip velocity or the drift
+velocity
+um need not be small right so the the
+particle reynolds numbers characterized
+based on that velocity difference
+and it turns out in these sort of cases
+with clustering what you get is the the
+particles entrain the flow and that
+leads to smaller slip velocity and
+reduce drag and that's sort of the
+origin of the clustering itself
+but outside the clusters uh um the the
+slip velocities are quite different
+meaning we have particle reynolds
+numbers upwards of 50.
+um
+if you so that's based on the slip
+velocity and then the particle diameter
+and the viscosity
+so so
+this we're specifically looking at cases
+where we have finite slip velocity
+otherwise we wouldn't have uh turbine
+kinetic energy produced by the particles
+now
+you know some in this community in the
+incompressible flow world
+uh particle renault number 50 is usually
+considered quite high
+but i i don't know if you're maybe if
+your background is more incompressible
+flows you know or you know you think
+about ballistics those particle reynolds
+numbers go up to you know
+most drag laws go up to 200 000 and uh
+you know it's that's a very different
+type of regime here
+all right
+okay thank you jesse uh another question
+from fatty
+uh will you be considering uh magnus
+forces as the particle rotates um may
+you comment on the coli collision model
+in yeah yeah
+yeah
+i thought i would be really
+originally too many slides um
+i ever so i removed slides and talked
+really fast and ended much earlier than
+i thought but uh so our the clash of
+model we use a classic sauce for your
+collision model the idea is particles
+are treated as a mass spring damper so
+our simulation time step is restricted
+such that particles can't move more than
+one tenth of diameter per time step and
+so
+this is essentially we can account for
+rotation
+and
+inelastic
+collisions and the reason we use a soft
+sphere model is because in these types
+of flows you can have sustained contact
+with multiple particles and so a hard
+sphere type of approach might have a
+hard time with that
+but the idea of these lift forces is a
+good one
+we find in general uh you know in terms
+of lift you have safman lift so you have
+gradients in the fluid that can induce
+lift and then you have magnus lift
+meaning the particle is spinning and
+that can induce lift
+usually for these gas solid flows high
+density ratio those are
+usually not very important and so a long
+time ago i looked at magnus lift and it
+was really playing almost no role here
+but with that said we've we have a
+collaboration with a felipe coletti
+who's doing uh simulations of of uh
+of riser flows and ducks uh so
+wall-bounded flows in this sort of
+regime of like what near one percent
+concentration
+and uh
+really nice particle tracking
+velocimetry and so forth and we're
+finding that when you have wall-bounded
+flow lift might be more important um and
+so we're sort of doing a
+sensitivity analysis now on on those
+various forces but i don't think magnus
+is playing much of a role here
+and uh and to be clear our particle
+rotation is only due to collisions so
+when particles collide there's a
+tangential component that can induce
+rotation
+we don't have
+any fluid coupling for the torque but
+again the density ratios usually have
+2000 so it should be quite small so i
+don't think magnus effects can be very
+large for these flows
+okay thank you thank you very much jesse
+um i i do not see any other questions um
+um chat room so
+i don't know that doesn't mean uh
+it don't
+yeah but like i said i'm happy to take
+any questions offline um
+yeah uh and yeah and i do wanna mention
+my so my postdoc aaron is uh he's
+currently on the job market and he's
+restricting himself to the california
+region
+so uh um and he's fantastic he's
+absolutely fantastic so i just wanted to
+mention that before i uh before i sign
+off
+all right that sounds good well uh let's
+thank our speaker uh jesse today huh
+what a wonderful talk i mean the the
+the simulations you're dealing with is
+is really complicated and
+and i think you are doing wonderful
+research right now okay thank you so
+much
+and uh with that uh we're gonna end
+our ddps seminar today and uh next dps
+seminar is going to be next week so
+please stay tuned and
+yes um
+thank you thank you everyone thank you
+jesse
+thanks again

@@ -1,0 +1,1529 @@
+all right
+all right welcome to the ddk seminar
+everyone uh before we introduce our
+invited speaker let's go over some rules
+and Logistics first of all please mute
+yourself during the talk
+unless you have questions if you have
+questions you're welcome to mute and ask
+otherwise please use chat room to post
+your questions so that we can address
+them in Q a session at the end second
+today's gdps seminar is open to external
+audiences
+so no classified discussion is allowed
+finally The Talk today will be recorded
+and uploaded in our YouTube channel
+that's about it now let me introduce our
+speaker today it is an honor to host the
+handsome bye bye who is currently on a
+assistant professor in the department of
+mechanical engineering and Material
+Science at the University of Pittsburgh
+he earned his PhD in mechanical
+engineering and math Masters in Applied
+Mathematics both from Louisiana State
+University in 2013. he then joined the
+mechanical engineering department at MIT
+for his postdoctoral research where he
+worked with Professor George kanyadakis
+he joined the University of Pittsburgh
+in January 2017.
+his research is focused on developing
+videos to the model
+and the Machine learning techniques for
+Science and Engineering problems his
+research has been funded by many
+organizations including NASA NSF and NIH
+and the air force of scientific research
+today has some will talk about
+occur Matrix decomposition for scalable
+reduced Auto modeling of non-linear
+partial differential equations using
+time dependent basis
+please enjoy and expect a wonderful talk
+now without further Ado let me pass the
+button to Hassan by asking one random
+questions today's random question is
+what is your idea of the perfect day
+what defines your perfect day
+okay perfect day would be a sunny day by
+the beach with my family oh nice right
+now in California it's not a perfect day
+neither is is here okay stage is yours
+all right okay thank you so much Yang
+Soo for the invitation and your kind the
+introduction uh so as you said I have
+been working on on developing reducible
+modeling based on time dependent basis
+so to just motivate that and and so let
+me play this animation but you'll see on
+the left is a biologically reacting flow
+uh these are you're seeing this species
+mass production of 23 species here
+and in order to solve this equation you
+have to solve basically a system of PD
+of 23 equations and uh so uh you can
+have larger mechanisms and you can go up
+to order of a thousand species which I
+cannot show here obviously solving this
+system of videos is computationally
+expensive both in terms of memory uh IO
+and also flop CPU cost right so a
+floating Point operation cost so but as
+as you saw let me play that again you
+can see there is a lot of similarities
+so as we say correlations between these
+different species instantaneously and
+what I want to show you that you can use
+some independent basis to both extract
+and also exploit these structures to
+reduce the computational cost of this
+this these simulations both in terms of
+memory storage and what I want to talk
+about which is the the focus of the talk
+is the cor decomposition which I I can
+show you that that kind of decomposition
+can improve the flops cost so uh without
+further Ado let me just go so these are
+uh this is these are all my students and
+collaborators these are the ones who
+actually contributed uh to some extent
+to this talk so I have my post stocks
+for my postdocs and students and also my
+collaborators Dr Prem and give you at
+University of Pittsburgh Dr Jackie Chan
+at Sandia Dr Mark Carpenter at Nasa
+Langley and also Professor David
+Fernandez at the University of Laurel
+all right so this is an outline of white
+talks I'll I'll just introduce this time
+dependent basis uh I'll talk about some
+of the previous stuff that we did and
+application of time dependent basis to
+competing sensitivities and also
+turbulent combustion then I'll talk
+about this uh CR factorization and how
+that can be used
+to speed up computation using this time
+dependent basis and I'll talk about some
+applications to answer the
+quantification so let me just give you a
+brief overview of of on the flight low
+rank approximation using time dependent
+basis
+really the motivation is solving High
+dimensional PDS even in the car when I
+say high dimensional means if you
+descriptase that system the discrete
+Vector has a very large number order of
+millions to billions and so the way we
+solve this system of equations using
+traditional scientific Computing
+techniques we use this
+um
+basis we use them we choose them from
+classical techniques it could be Fourier
+methods could be polynomial methods
+polynomial spectral polynomials uh so on
+and so forth what we make a choice here
+and then we do separation of values this
+is like a traditional way of doing
+scientific Computing and actually that
+choice is is the core is the root of the
+problems especially if we go to High
+Dimensions where the these bases because
+they do not ex exploit correlations then
+then the computation resulting from this
+kind of discretization suffers from the
+curse of dimensionality meaning this and
+scales
+exponentially large with the number of
+dimensions
+so there are a number of ways to to
+tackle this so one way is to do data
+driven so let's gather data from this as
+observative systems and then do some
+sort of Dimension reduction
+um
+um you can do auto encoder uh you can do
+pod DMD all kinds of uh
+um Dimension reduction techniques and
+then do some sort of projection so this
+is a typical way of of solving this kind
+of problem uh
+but whenever we do any kind of data
+driven
+Dimension reduction
+um there is no guarantee that whenever
+we build that soft space or or manifold
+that
+um that manifold can extrapolate to to
+unseen data right so you always have
+that problem and also you have the issue
+of actually having to solve that system
+full or more right so it's for some of
+these applications we can even solve
+that full normal once let alone
+generating data right so and like I said
+the collectively and these are the
+challenges of of adopting a data-driven
+type methodologies for for these massive
+systems so I'm talking about like 4K
+applied type equation for example where
+just solving these ones could be could
+be out of a question
+so the idea is to one way one remedy is
+that that I've been focusing on is
+actually to don't choose these spaces
+let the governing equation find these
+spaces for you in a way that exploits
+correlation right so this is the whole
+idea of of time dependent basis the in
+an abstract way that we don't choose
+this from a classical Library we
+actually let the governing question to
+find it and I'll show you how you can do
+that for different problems okay so the
+idea if I want to go back to the
+uh challenges of that that you're going
+to do so following is that can be
+bypassed adapted generation and just
+directly solve for these for these
+equations right there are there is a way
+to actually make these time dependent
+basis also that treatment I'm not
+talking about those uh those uh uh
+problems today I'm focusing on the ones
+that actually we don't want to do the
+other generation we do want to directly
+solve the PD so if you think about it we
+just want to solve the pde by exploiting
+the structure correlative structures in
+the PD and and once we do that we can
+actually build that reduce or more on
+the Fly
+so this is like a an overview of reducer
+modeling with time dependent basis
+very very important distinction between
+these and like pod type decomposition is
+that this is applied to Matrix
+differential equations so you must have
+a matrix you have to formulate your
+problem as a matrix differential
+equation and you can extend that to also
+tensor differential equation let's say
+this is the Matrix differential equation
+number V is not a vector it's actually a
+matrix so here I'm showing a schematic
+of that let's imagine this space this
+Matrix and it has many many columns you
+can think of application of this as a uq
+application but each column is is a
+random sample of the of the dynamical
+system and if there is this Matrix is is
+instantaneously low rank you can
+approximate it with an SVD approximation
+this is just one scheme I check this as
+an example
+and if this is instantaneously low rank
+you can reduce NS to R and hopefully R
+if this is a low ranked Matrix R is much
+smaller than n and then
+basically this is an SVD like
+decomposition
+um within the time dependent uh reducer
+modeling formulation you can actually
+derive Evolution equation for all these
+three components without actually
+needing to generate data and these are
+based on uh if you want to know the
+background math behind this is actually
+beautiful Romanian optimization uh where
+this the rank or matrices uh you can
+show that rank or Matrix realize the
+space of rank or matrices realize that
+this is smooth
+manifold and then you can use that the
+remaining optimization
+tools to to do projection on that
+manifold find the tangent space and
+evolve that tangent space so all of the
+math part I I'm not going to cover today
+is actually in a cover within the
+riemannian optimization but what's
+important is that like I said there is
+no data required here other than the
+initial condition and boundary
+conditions so yes that's data but not
+observation of the physical ecosystem
+right so and then you can derive
+Evolution equation for for these
+matrices
+and because there is no data involved
+right so you this kind of low rank
+approximation doesn't even have the
+issue of extrapolating to unseen data
+because there is no data involved in the
+whole workflow process so or adapt to
+the changing conditions and one and one
+of the nice thing about this kind of
+decomposition is that the system could
+be very high rank over time but needs to
+be low rank instantaneously so that's
+the key observation if the system is
+very high rank instantaneously this is
+not an efficient methodology
+all right so because of connection to
+SVD and I'll show you actually this is
+very closely related to instantaneous
+SVD of that Matrix and closely
+approximates that without actually
+Computing any SVD then that's the key
+and it's quite interpretable right we
+know how to interpret an SVD Dimension
+reduction
+uh just some some notes actually this
+was originated in quantum chemistry
+Community for solving Schrodinger
+equation and so this goes back actually
+in in the year 2000 there is this
+beautiful review paper uh which shows
+how this kind of methodology which you
+you decompose your Matrix to three Rice
+video like matrices
+um that you can solve you can use that
+for for solving sure they get equation
+then in this paper this was uh put into
+a more General context right so this is
+exactly the same formulation here but
+just put into more General context and
+this is now called dynamic or low rank
+approximation
+uh and and sort of on an apparel
+Universe uh another sort of
+decomposition which is a a two Matrix
+decomposition was also developed first
+we know it's by temis sepsis and lemashu
+at MIT they developed dynamically
+orthogonal of the composition and and
+later on uh georgakis and Tammy sapses
+also worked together on this kind of
+methodology and also myself and there
+was another version of this again a two
+matches decomposition biophenormal
+decomposition it was shown that do and
+Bo are exactly the same thing there's
+also two two matrices decomposition
+optimally time dependent decomposition
+that is applied to linear systems which
+I worked with uh I worked on that and
+also there is a dynamically orthogonal
+dually dynamical decompositions sorry
+there's a typo here
+what it's like this all of these
+seminologists may sound confusing but I
+want to show you that all of these are
+actually equivalent to each other right
+so actually we showed that in this paper
+that you can uh that this dynamical low
+rank approximation this triple matrices
+are actually uh is like a hybrid of deal
+and build together and they are
+equivalent what do I mean by equivalent
+they are exactly the same low ranked
+Matrix approximation of the full Matrix
+and so so as you see throughout this
+talk I use uh s or or this but you
+shouldn't get distracted by any of these
+triple Matrix decomposition or two two
+Matrix decomposition
+what is important to know is that they
+all follow the same principle and they
+are equivalent okay let me show you an
+example of that before I get to the cor
+decomposition for computing
+sensitivities how you can use this kind
+of uh
+um this is an application of of doing
+videos Automotive based on time
+dependent basis so this is applied to
+compute sensitivities of of lot of of
+high-dimensional systems right so if you
+want to compute sensitivities of a high
+dimensional system let's say this is a
+non-linear dynamical system now you want
+to perturb this with respect to some
+sort of parameters for each of those
+parameters you would have to solve this
+linear sensitivity equation right so uh
+obviously if the number of parameters is
+large this is not a cost effective way
+that's why people use adjoint equation
+for adjunct equation you only saw one
+equation backward in time so you have to
+solve the forward equation and then
+solve one equation backward in time and
+and then compute sensitivities for a
+given objective function with respect to
+all the parameters but there is like two
+major problems with that join one is
+actually IO because you have to store
+the full forward model and then and then
+um to solve the action equation backward
+in time so that I O is actually a a
+major problem especially for massive
+simulations like table and combustion
+problems where you can store the forward
+solution at all in a Time resolved
+Manner and and also actually you have to
+derive agent for any any given parameter
+for any given objective function so if
+your objective function changes you have
+to do another iTunes equation but today
+so now let's look at it from a a
+completely different perspective and
+that is that these sensitivities so if
+you look at these sensitivities these
+are actually different sensitivities
+with respect to different parameters
+they are correlated to each other
+instantaneously if they are correlated
+you don't need to solve for each one of
+those and you can actually solve for a
+compressed version of those forward data
+right so that's really the key
+observation here and so if you look at
+this this is again you have a matrix
+differential equation so you can look at
+the sensitivity equation as a matrix
+differential equation where you are
+evolving all of these sensitivities
+together and like I said if these are
+low rank you can you can compress them
+so
+this is this work I was published last
+year in Siam uh and this is I I'm using
+the Dubai decomposition here like I said
+you can actually derive at triple
+decomposition here uh so instead of
+solving for all of the sensitivity
+software only a rank R would hopefully R
+is much smaller than D solve for D so
+you need to solve pde so this is not
+cheap to solve either but at least you
+solve pdes of order r instead of D and
+then these are really projections of the
+Polar model onto these bases and this is
+you get these coefficients by wrong this
+approximation if this Matrix is
+instantaneously low rack it's a good
+approximation and and that's it so the
+way we swap we
+um find the evolution equation for U and
+Y is by forming a variational principle
+this variational principle is nothing
+but the residual that you get because we
+are doing a low rank approximation so
+instead of the whole Matrix of
+sensitivity we put U by transpose in the
+full or more and because is a low rank
+approximation this is not going to be
+zero but this is going to be some
+non-zero we want to minimize this by
+optimally updating the low rank basis U
+and and the coefficient subject to this
+orthonormative condition we want this uh
+basis to be orthonormal you can actually
+solve this with LaGrange multiplier once
+you solve this equation you get this
+close from Evolution equation for this
+bases and the coefficients and then you
+solve this instead of solving this
+equation and that's where you get the
+computational advantage right instead of
+solving for D Fields you solve for R
+fields
+and and D over R is what you get in
+terms of memory saving and also in terms
+of in terms of flops
+so this is now we apply this to a
+H the same problem was showing you at
+the very first slide this is the
+biochemical reactions biological
+reactions so these uh these are reaction
+parameters and it is very important to
+know how the any quantity of interest is
+sensitive to any of these parameters
+because the Computing is measuring these
+quantities is very expensive and and you
+you can't afford to measure all of them
+super accurately you have to do a budget
+allocation and say okay these 10
+parameters are important and which are
+those 10 parameters
+there are other applications as well but
+this is just one a skeletal model
+reduction is another one so you can
+actually drop these reactions if they
+are not important if they're not if
+nothing is sensitive with respect to
+those and actually come up with the
+reduced uh mechanism
+so if you look at this this is actually
+a tensor because you've got like here 23
+species and you have 34 reaction
+parameters if you look at the entire
+Matrix the entire sensitivity is
+actually a tensor
+and you have parameters you have a
+species here and then you have grid
+points but so here what we do we flatten
+this tensor and then it becomes a matrix
+so these are the sensitivities of
+different species with respect to
+different parameters and then we seek to
+approximate this with this low rank
+approximation
+so instead of solving 23 by 34 pdes
+which would be forward sensitivity
+equations or if you want to solve Adrian
+equation you have to solve a natural
+equation for each of these species so or
+instead of solving 23 hydrogen equation
+we want to do a low rank approximation
+of this and see what we get now we did
+that so this
+particular formulation is called Force
+optimal time dependent decomposition or
+fotd and like I said it's a particular
+variation of that time dependent basis
+just applied to linear sensitivity
+equation and you can see with increasing
+rank from two to eight you can this is
+relative error you can actually match
+you can reduce the error significantly
+like I said this is with with five mods
+you can get less than one percent error
+relative error and this is what we
+optimal we show we actually took we
+solved the full order model all of the
+sensitivities and we took a continuous
+SVD of that that would be the best and
+lowest error that one could achieve and
+we see actually we are tracking the
+instantaneous SPD very well like I said
+we when we solve these equations we do
+not take any SVD this is all Evolution
+equation but the evolution equation is
+such that I approximate this
+instantaneous SVD and you can see here
+the singular values match with the S
+instantaneous SVD so that means we are
+actually very very closely tracking the
+optimal Subspace here
+and with five modes basically it's
+equivalent the cost of solving for five
+modes is equivalent solving five pdes
+for five sensitivities as opposed to 782
+and also memory storage is also the same
+we saw basically we only need to store
+five modes the coefficients those are in
+terms of storing that those are
+negligible and so but it can visualize
+them can you go back to the previous
+slide I've I don't usually stop the
+presentation but I had to because I'm
+I'm getting something so you're so
+you're solving five pdes instead of 782
+so
+so from those five pdes you generate the
+data and I mean but you said that you're
+not using the data to construct these
+evolutionary equations
+I'm missing something how do you
+actually construct so Evolution you saw
+five videos for five of these modes and
+also you solve an ode for the evolution
+equation anytime you want you can
+reconstruct the full order sensitivities
+and I promise you simply just Matrix
+Matrix so you saw for these two matrices
+as shown here five PDS here the cost of
+this is really negligible compared to
+this so five PDS and ode which this is a
+ROM basically but ROM is a instantaneous
+projection of your Fuller model onto
+this basis uh and and based on that you
+can re Recon you can multiply these two
+skinny matrices and reconstruct their
+full sensitivities anytime you want but
+we don't do that I mean but you can do
+that at any any point you want and and
+where are the where the parameter comes
+in
+um
+parameters are the forcing they show up
+by forcing in the sensitivity equation
+right so when you take the linearized
+sensitivity you take derivative of your
+full hormone with respect to these
+parameters the show of as forcing in the
+right hand side of the nccf shows up in
+all of these equations
+okay
+sure okay and also this actually be all
+of the details you can find in this
+paper if you are interested
+and so let me go back to this slide so
+you can see actually the modes here like
+I said this is interpretable the modes
+actually capture the structure so this
+is the first mode the second one and
+third one you see actually captures
+finder and finance structures so these
+are the time dependent Subspace that is
+evolving with your system and like this
+is a convection dominated problem so you
+cannot solve these problems with pod
+with static bases you have to resort to
+some sort of basis adaptivity and I know
+yongsu and also others actually have
+worked on adaptive basis but this is a
+matrix differential equation so I think
+that's really the the difference here
+not the vector Evolution equation and
+also Benjamin pestrofer and Karthik also
+the University of Michigan also have
+worked on an Adaptive basis but uh but
+this is like I said this is a matrix
+differential equation anyway so once you
+solve this problem you can actually take
+your y one and and reconfigure that
+because this we remember this was a
+tensor we flattened that and then you
+can actually see the sensitivities with
+respect to uh of all the species with
+respect to all 34 parameters this is
+just one of the most y1 just visualize
+here and you can see which parameters is
+affecting which species immediately like
+I said this is this actually has that
+simplified data representation that is
+immediately
+it's explainable interpretable so I want
+to talk about application turbulent
+combustion this is another application
+where you have a matrix differential
+equation let's look at that so turbine
+combustion you have to solve this
+compressible now with six equation I'm
+taking DNS here but this could be runs
+or Les but then yeah you need to solve
+this suspicious transport equation and
+for complex views you may have even
+order of a thousand species
+so this is
+solving this equation is really the
+major cost of solving turbulent
+combustion because you have to first
+store this 1000 species which is really
+just out of question four on the DNS
+grid just storing a matrix with 1000
+species is out of question and that is
+really the main bottleneck and also the
+i o cost like this is actually this is
+from 2012 from Dr Jackie Chan's group
+that uh simulate this is a direct quote
+from the paper that because of IO
+limitation you can we can only store
+like for every 400 times above the
+solution this is three-dimensional
+simulation whereas there are things
+happening or the order of 10 simulation
+time is that that are completely missed
+if you store the data every 400 times so
+this is just i o so you can imagine the
+memory and solving this system and this
+is not for a 1000 species I think this
+is order of 100 species so if as we push
+this uh boundary to exit scale Computing
+and especially when memory and I O are
+the main issues actually solving this
+equation is a major Challenge and so how
+but if you look at this equation this is
+a matrix differential equation a
+non-linear Matrix differential equation
+and again now here I'm using the triple
+decomposition but like I said you
+shouldn't get distracted by two
+different by decomposition or triple
+decomposition they are equivalent so
+then you have this Matrix decomposition
+you can write this so yeah this is a
+full order model Evolution equation
+again you can follow the same principle
+which is a residual minimization plug in
+this kind of low rank approximation and
+this is a low rank approximation so
+you've got some error here and plug it
+in here because it's a low rank
+approximation it's not going to satisfy
+the full or more so you get this
+residual you want to minimize that
+residual by optimally updating all three
+components once you solve this
+minimization problem subject to the
+other normality of U modes and Y modes
+then you get Evolution equation here you
+can find the details here in this paper
+but just suffice to say that we are
+solving this and solving this doesn't
+require some optimize some iteration or
+anything you get Evolution equation as
+the optimality condition so the
+evolution equations are the optimality
+conditions so you don't need to solve a
+non-linear optimization problem and so
+on and so forth these are the optimality
+conditions
+so it's not like that you actually solve
+a gradient base so these are actually
+what minimizes if you if U and sigma and
+what satisfy this governing equation you
+are minimizing this residual
+and so we apply this to uh different
+fuels I'll just show you a sample of
+this this is a two-dimensional Vlog uh
+this is gri mechanism
+actually has quite complex chemistry
+it's got 53 species and 325 reactions so
+this is a direct numerical simulation of
+that we are showing Contours of
+temperature and oh and this is a rank 6
+approximation of this instead of solving
+for 53 species we are solving for sixes
+effective species and and and and so we
+have done
+more error analysis here I I just and
+all those results are in this
+paper that hopefully will be out soon uh
+but I want to show you that like I said
+for for practitioners these are this is
+not just a way to speed up computation
+this is actually interpretable so if you
+focus on the Y modes here the Y modes uh
+represent uh as a Time dependent
+software space in the comp in the
+thermal in the composition space right
+so if you look at the composition this
+place is a 53 dimensional space
+and each of these vectors is is a so
+this collectively is is a Subspace and I
+can visualize that Subway space and also
+we have done instantaneous PCA that
+means instantaneous SVD of this Matrix
+and be sure that this time dependent
+basis actually uh closely followed uh
+the the
+um the instantaneous PC PCA but there is
+also PCA that is done in combustion
+Community unfortunately I don't have to
+cover that but that's really equivalent
+to like a pod approach but for
+composition space so that's static you
+can see uh that uh especially the higher
+modes vary in time a lot
+and you can look at the singular value
+the singular values of that Matrix so we
+solve the DNS of that and we computed
+the singular values of that and then we
+can see the singular values with this
+low rank approximation we can capture
+the leading modes very well
+and these are
+um so I want to go over this just in
+inches of time but if you're interested
+in this we have a lot more details in in
+this manuscript and so we have extended
+these two three-dimensional simulation
+as well this is for a different
+mechanism seeing gas mechanism it's
+similar and you can see the modes the
+now the modes here are three-dimensional
+modes and this is a DNS uh mixture
+fraction of DNS but these are the modes
+one the first mode the second one third
+more you can see the modes actually
+evolve with the flow and they adapt to
+the flow
+this is another case done in Dr Jackie
+Chan's group
+um and and so this actually has a sudden
+transition at the end so there's a
+propagation of this wave from right to
+left and then when it gets near the end
+you will see a sudden transition in the
+chemistry and so all the
+this has a 39 species
+and this is solved in s3d code with
+eight order defined difference and all
+these details are here let me just show
+you uh this problem is actually very
+high rank even in this mode so we had to
+choose R equals to 29 so we are not
+really getting so much
+reduction here and this is actually I
+want to show you this as one of the
+challenges of solving these systems uh
+that this instantaneously is not that
+low rank but still you go from 39 to 29
+you can see this that we can get that
+transport but there's this sudden
+transition at the end that this kind of
+time dependent basis can capture that
+certain transition and if you look at
+and also this is a convection dominated
+problem so this kind of reduce or more
+in handles convection really well as I
+mentioned earlier and if you look at the
+the compositions of a space you see it
+you will see at the end these two modes
+drastically change in time the higher
+modes usually change in time in in all
+the cases that we have considered but
+not the first two modes and you can see
+at the end once this animation
+approaches the end these are the two
+most energetic modes and you can see
+that that composition changes
+drastically towards the end as you saw
+here as a this is actually an extremely
+challenging problem to solve all right
+now I want to get to the cor
+decomposition this was really an
+introduction to this I wanted to talk
+about some of the other challenges
+especially how to solve this system of
+equation efficiently for
+for non-linear govern for non-linear
+pdas right so if you look at the
+evolution equation this is this is this
+is this Evolution equation I showed in
+the previous slide but just simplified
+in terms of linear algebra right so you
+solve an evolution equation for for
+modes U and sigma and Y but but if the
+right hand side of the Govern equation
+is non-linear so this is the right hand
+side of the governing equation you have
+to compute this F which is a non-linear
+map of your governing equation
+if you form these Matrix first of all
+you lose all the advantages that this
+methodology has to offer because you
+have to occupy the entire memory and
+then apply this non-linear map on that
+decompress Matrix even though when we
+come back here we project it back to
+this Subspace but this is the same
+problem that exists in non-linear
+reduce or more length with pod also we
+have the same issue and this it is
+exactly the same issue that shows up
+here so you have you need to do some
+sort of hyper reduction here and I want
+to show you that cor is actually the way
+to do hyper reduction here for this
+Matrix differential equation
+and so there are four issues with this
+there is issue of cost which is the one
+of your uh
+um targeting here and also if you want
+to get efficiency with solving this
+equation if you're a governing equation
+is non-linear like a combustion problem
+or a uq problem
+um if it is quadratic nonlinearity you
+can get a speed up solving this equation
+by just plugging in this expansion into
+the governing equation and work out in a
+painstaking way all the terms and and
+solve this Evolution equation but that's
+highly intrusive so you can get
+efficiency for non-linear equation but
+at the cost of doing an extremely
+intrusive process those two these two
+are really the major drawbacks of this
+kind of formulation and so we wanted to
+see if we can actually go back and and
+be able to solve this system of equation
+for a generic non-linearity but keeping
+the cost the uh as low as solving just
+for only R samples of this equation
+right so our samples R is the rank of
+the reduction that is the nominal cost
+of solving this equation and also Rank
+adaptivity and also stability when there
+are two other issues with this system so
+first of all R doesn't have to be fixed
+right so the rank of a system evolves
+over time so just fixing that that's a
+problem so these problems actually uh
+have been
+um
+this issue of inverting this Matrix have
+been addressed in this beautiful work
+by reformulating this problem uh to
+another problem uh and actually
+resolving this issue of having various
+uh having to invert this Matrix this
+matches could become ill-conditional
+remember this is the singular value
+Matrix and if you want to solve this
+system with a high accuracy you need to
+resolve very small singular values
+and and so this is uh so you so you have
+to be able to invert this Matrix this
+integration and scheme actually resolves
+that issue but the cost of
+triple the cost of solving this the skin
+propose here is triple of the cost of
+two times as large as the cost of
+solving this system but it doesn't have
+this issue rank adaptivity also has been
+proposed here with a work of Daniel 113
+for tensor Revolution equation and also
+within this formulation but not the
+issue of course so these two issues have
+not been addressed up to this point
+and that's really I feel like these are
+major
+bottlenecks of solving this equation and
+getting the scale that they can offer
+okay so let me just go to
+so the all the details here is in this
+paper that was recently published by
+myself and my my student Jose naderi uh
+so let me just give you an overview so
+here I'm switching to a uq problem
+that's another application where you
+actually a uq problem you can formulate
+it as a matrix differential equation
+here but all the samples are uh so if
+you look at the uq problem you have a
+non-linear
+um differential equation and you have
+some random parameters so this is the
+Matrix of of all the samples where each
+column is one sample and you want to do
+a low rank approximation of these Matrix
+like I said Computing this F of B is as
+costly as solving the full order model
+so that's the thing you want to work for
+generic non-linearity if the system is
+linear like the examples I showed at the
+beginning you can actually work it out
+and solve this system in the compressed
+one and you can actually achieve all the
+computational efficiency but not if this
+system is non-linear and so
+the cost of this system if you don't
+handle this properly will scale with the
+number of rows and number of columns of
+this Matrix and that exactly the cost
+that you want to what you want to have
+this cost
+so
+um like I said for linear quadratic
+system you can do that at the cost of
+doing a highly intrusive process so the
+question is how can we reduce the
+computational cost of solving a rank or
+tdb wrong time dependent basis wrong to
+that of solving only to our samples of
+that Fuller model that is the nominal
+cost of evolving these equations
+so
+this is a uh so I want to explain cor
+which is a really fantastic uh and I I
+believe uh underexplored
+linear algebra decomposition so this is
+let me just explain that so let's say
+you have a matrix G
+and this Matrix has low rank structure
+right so this you can approximately like
+if you take SVD of this Matrix with rank
+R you can approximate it well
+you can actually get something super
+close to an SVD of this matrix by
+strategically sample The Columns and
+rows of these Matrix all the blue ones
+and all the all the red ones and then
+you can approximate this this should be
+an approximation but just The Columns of
+this which are shown by blue color and
+the rows of this Matrix which are shown
+by red and this Matrix which is the the
+intersection of these inverted
+and this if you
+um select these rows and columns
+strategically you can get something very
+close to an SVD and this was shown by
+Sorensen and Embry uh that this is dying
+induced cor decomposition
+all right and so we adopted uh
+the same strategy here uh in fact we
+didn't know about this I have to confess
+and we derived we developed this
+methodology and later on we showed that
+actually this is exactly cor
+decomposition so instead of f of T is
+the right hand side of the governing
+equation so we can we only sample that
+equation at these columns and rows not
+that so anything you see here in gray
+that is not computed and based on that
+we can compute this uh you can also do
+triple or or or or by the composition of
+this message so we compute this by
+sampling The Columns we find the column
+space for we are to normalize that when
+we we
+denote that by V of T this is really QR
+of the columns that we sampled and then
+these are just the interpolation
+coefficients that you can get it by the
+by interpolating every other column of
+this Matrix to these spaces so this is
+an inter Matrix interpolation not a
+matrix project not a matrix projection
+and that is very important so there is
+really nice uh connect this is actually
+an oblique projection rather than
+orthogonal projection so okay
+unfortunately I don't have time to cover
+all of that but the key is that remember
+we didn't want to compute this Matrix
+entirely we wanted to compute it only
+that that was the cost right so but if
+but this Matrix does have low ranking
+structure it didn't have low ranking
+structure we wouldn't be able to do this
+time dependent basis to begin with
+and so if it has low ranking structure
+you can actually strategically sample
+this the sampling strategy is based on
+Direct empirical interpolation method
+I'm not going to go over this all of
+those details are in the paper how we do
+this so we need to have SVD of this
+message to Nowhere to sample we don't
+have this Matrix to begin with let alone
+the S video of this we use the previous
+time step
+uh SVD of the previous timer step of
+this Matrix which we have it cheaply and
+use those as as as to derive to tell us
+where to sample right so that's and I
+don't want to go over all of this but
+all the details on that paper
+um and so this is really an overview of
+of this strategy like I said instead of
+f the key is that instead of f now we
+have two skin images that we can plug in
+here so instead of putting F here
+remember F was the source of all the all
+the each computational issues now we
+have a skinny factorization that is
+plugged in here once you plug that in
+here these are extremely fast then I
+mean and also it's really nice that this
+is actually relatively non-intrusive
+because you only solve the Fuller Mall
+you sample the Fuller mall and the right
+hand side and this is the Strategic
+columns and you only need to sample it
+at these grid points these are different
+grid points so this act you don't need
+to derive a new set of equations for any
+new pde you solve you can actually just
+use it use this in fact there is a way
+to extend this to even Black Box solver
+and we are working on that and to make
+this actually
+non-intrusive because these systems up
+to this point are were so extremely
+intrusive to to solve it takes a few
+months of time to just implement it in a
+in in in in a typical file element code
+sorry
+the previous slide so those
+the samples are dependent on time so
+every time steps it exactly changing
+that's right exactly because these are
+without with a fixed sample you wouldn't
+be able to do this and I'll show you
+next in the demonstration that exactly
+that's that's exactly right it is an
+implementation of that it's
+kind of
+interested no well
+you need to have access to the F right
+hand side right so yeah right hand so
+you can get it for example in the Fuller
+model but the rows are rows are
+intrusive because rows you actually need
+to know the terms of the equation so
+that's the part to know all the terms in
+the governing equation and and that's
+changing every time step so that's right
+these rows and columns change every time
+you stand it'll look at this SVD and
+approximation of SVD of the previous
+time is above F and based on that I'll
+update this yes and this kind of
+approximation like I said is quite
+rigorous actually so instead of
+approximating it basically we're
+approximating the entire Matrix of f
+with an F hat which is the cor
+decomposition which is this uh approx
+this multiplication of these two skinny
+matrices you can show actually the
+difference between the full Matrix and
+this approximation in the second Norm is
+so Sigma P1 if we were doing SVD here
+this error would be exactly equal to
+Sigma or P plus one this would be Plus
+One Singular value here we only get this
+scaling of of these two numbers so times
+the optimal error that you can get with
+the rank up rank or approximation and
+dime procedure and these are the
+condition number of the interpolation
+matrices and dime procedure in fact is a
+greedy procedure to minimize these two
+numbers so you get really small numbers
+for these two so you get that's what I
+said you get actually something similar
+to an SVD that's that's what I mean but
+with that actually forming that Matrix
+at all and and you can form and you can
+make this number of sample points also
+adaptive because
+you can look at the last singular value
+that you are resolving so divided you
+can come up with different error error
+criteria but you can look at the last
+singular value divided by the summation
+of the resolved singular value and if
+that's not within the pound that you
+want you can add which is sample F at
+one more columns and one more rows
+so let me show you some application uh
+to uq so this is a stochastic various
+equation the randomness comes from the
+initial condition and the boundary
+condition and we're using a spectral
+element to solve this equation
+uh and so you can see here the singular
+values let me show you that because in
+the interest of time I want to show you
+the the speed up actually you get and
+then I'll show you some of the error so
+this is ttb ROM this is if you don't use
+this kind of methodology
+and this is how the CPU time scales as
+you increase the number of grid points
+so n is the number of grade points the
+number of rows but this one actually
+scales linearly
+and so and also this is as you increase
+the number of samples so as the number
+of scales linearly again here
+but and and young so when you ask the
+the time points are time dependent and
+that's exactly okay so we can use dime
+or Q dime which is based on QR
+decomposition and this is Burgers uh
+with this with sharks so you see the
+shot two shocks here and you can see
+here that actually the down points are
+changing with time this access is time
+this is just I'm just showing the raw
+points right so I'm not showing the
+columns because there's a spot sampling
+in the column as well as you can see the
+Q Diamond dime actually capture almost
+the same points uh so one one immediate
+way you can see the advantage of this if
+you go to the full or like the way we
+were doing these things before we were
+actually Computing the right hand side
+that all of these grid points right now
+we are only competing the right hand
+side at these points so that's just that
+just tells you one one quick way to to
+see how efficient this is and here we
+are comparing the modes that we extract
+by doing this kind of approximation with
+carbon and love approximation of the
+full all which is the optimal based
+instantaneous places and you can see we
+have shock and we are capturing the
+photo model really well
+um
+this is another example Vegas equation
+has quadratic non-linearity maybe you
+were able to do you can do that
+intrusively and still get efficiency but
+not even even you do it intrusively
+you're not going to be as efficient as
+this methodology but here this is a
+compressible flow by the non-linearity
+is non-polynomial so you have actually
+rho U divided by row so you have
+non-linearity of fractional
+non-linearity and if with this guitarist
+this system I have 262 000 rows and then
+we have 200 000 samples so this is the
+case if you want to do uq here you can
+even store this Matrix in memory like we
+we solve this in CPU and laptop CPU so
+you can't even store this on the laptop
+CPU so and we never actually during the
+workflow we never store the full Matrix
+and we only do this as for sampling and
+you can here first we did it for a small
+number of samples so we can actually do
+error analysis so we did here for 200
+samples and we show with this is for
+sampling we recover so this is the tdb
+ROM if you don't do sport sampling the
+blue line but this is TDP ROM with six
+Spar samples 20 and 20 spot samples this
+is for Diamond Q diamond and cv20
+samples you can actually recover almost
+the ones that you don't do this for
+sampling and like I said p is adaptive
+so P changes in time so how many how
+many samples you have for the right hand
+side you can actually adaptively adjust
+that to keep the error of this your
+approximation below a given threshold
+and you can see as time goes uh on the
+actually get different numbers of P
+so these are number of samples this is
+actually when you say time dependent so
+this is actually this is the mean and
+the variance and you can see the sample
+points actually captures the action here
+where the action happens and like I said
+this is now with 200 000 samples and
+these are the samples in the column
+space which you can see actually they
+are located on the joint PDF of y1 and
+Y2
+and we did conversion study here by
+increasing number of dying points and
+you can see we are converging in the
+instantaneous singular values by
+increasing the rank of the system we are
+still converging by increasing the
+number of samples from 100 000 to 100
+000 and navigation conversions all of
+this is also in that paper all right I
+think I'm almost out of time I'm already
+ahead of time so let me just conclude
+here and this is a
+the way I I see this this field and the
+contribution that this kind of reducer
+modeling can do so if you look at the
+way we were we are doing classical
+scientific Computing we do separation of
+variables we put time and the
+coefficient and we choose the basis
+right so you've got these spaces that
+you can choose from that Library I think
+another way of solving this equation
+which is the structure resolving you
+don't actually discretize the grade you
+are actually capture the linear
+non-linear correlation is by doing
+physics inform neural network I know
+policy is online
+uh and basically you don't one way to
+look at a physics inform neural network
+is that you're not choosing the bases
+you let the optimization process to find
+the optimal places for you right so
+there so that is another way to break
+the cares of dimensionality and applying
+this to high dimensional problems that's
+why it's advantageous
+this is also another way of doing that
+but here we don't solve a non-linear
+optimization problem right
+um but like I said this has also its own
+limitation but but you don't choose the
+basis again from a library you let it
+evolve with time and you the physics of
+your equation and the residual of the
+governing equation really determines
+that so here we apply this to 2D problem
+here this is compressible number so you
+can see the basis actually evolves these
+are bases in the one X2 Direction these
+are bases in the X1 Direction and C
+bases adaptively evolving time I mean
+for this kind of problem it's not really
+important to use these spaces but for
+high dimensional problem this
+localization and adaptivity of the basis
+is really the key to break the cursive
+dimensionality because you don't want to
+put decrease of freedom in in places
+especially in high dimensional spaces
+you don't want to wear stickers of
+freedom and so this can actually
+effectively do that and we have applied
+this to tensor Evolution equations as
+well uh which I didn't have time to
+cover that today a and maybe someone had
+time yeah and so this is where I see the
+place of this so it's actually it's got
+good connections with classical
+Computing and also with machine learning
+in in a way because this is a low rank
+approximation
+all right so I'll with that I'll uh
+thank you and I'll take any questions
+wonderful wonderful thank you so much
+handsome what a wonderful very
+interesting
+um
+okay so let's have a q a session so we
+do have a question from Pat Pat are you
+online
+yes hey okay yeah why don't you ask
+questions directly
+those were I really liked the the the
+images and stuff that I think they they
+really helped but I did have trouble
+understanding what the what the reduced
+submissions uh corresponded to what are
+they what are they representing are they
+for the in the chemical example for
+example or uh you talked about having
+lots of species a new uh the new basis
+that's each one correspond to an
+algebraic combination of the original
+species or is it something else that's
+right so every one of those let me go
+back to that example that's exactly
+right I think you said it at the end
+that
+so if you look at this Matrix as the
+Matrix of of the oldest species we don't
+solve for these directly we solve for
+these modes each of these modes are
+really a linear combination of all of
+this species
+okay this is yeah it's always linear
+it is always linear but you can actually
+extend this to uh non-linear answers as
+well and that's actually what we're
+working and and that is actually I think
+the next really Frontier so so there
+might be cases where some of the species
+are effectively have to have no
+influence at all
+but and there's others where it's really
+a mixture of them and my guess is
+there's certain kinds of things that go
+on there like you would probably never
+have
+um
+my guess is that there would be the
+species would be clustered or something
+I I don't know if that's true but I can
+imagine that being true absolutely
+and that's exactly right so that's so
+what you're talking about is actually
+this is maybe not one Global time
+dependent basis but you can actually
+localize that either in the composition
+especially in the physical space and I
+have and absolutely so we are actually
+exactly working on on that idea as well
+uh and and and and and we see actually
+amazing Improvement compared to just
+using one on global I believe that I
+believe it speeds things up I just want
+to understand what's going on so these
+are like the species are like gang
+members they hang out together exactly
+and they travel the same together and
+and and and and so on okay got it thank
+you of course great
+then I had a second question about the
+Cur work which seemed very different
+so so in one example you showed some of
+the points and it looked like those were
+the points that had sort of the extreme
+values
+was that is that right that's right so
+let me show the Berger's equation
+exactly so
+I think so what they actually these
+points correspond to so they actually
+concentrated over the shocks right so
+they're two shocks here right so and and
+the diamond algorithm in a clever way
+actually picks out so you don't need to
+sample this at all of the points here
+you only need to sample it at these
+points but this is usually where action
+happens right so when I when I turn on
+the Weather Channel and someone tells me
+well there's a front moving through here
+it's sort of like that you can you're
+they're trying to identify the the
+interesting the
+discontinuities or or or
+major change kind of kind of areas
+in fact one thing you can immediately
+see if you look at the dime procedure if
+these are these are the two modes that
+are visualized these are often normal
+modes to each other and so the time the
+first time point if I wanna the first
+the most important point is where this
+mode is has a maximum value
+that's actually the first point which is
+that is the if you want to pick one
+point in your system at the inside of
+time that has the most variance that's
+this point here so he picks that one and
+then it sort of recursively takes out
+this mode out of the system and see
+what's left within the leftover then it
+starts in a greedy way to pick up more
+points and it does that it's like it's
+sort of like a QR type approximation use
+layer by layer with each point you pick
+out okay so they are will be
+concentrated so you see these modes are
+highly non-local highly localized right
+so they are very localized near the shot
+and in between they're sort of flat so
+time doesn't actually pick those points
+and it's uh it's a brilliant methodology
+okay thank you very much of course
+okay next question is from Mariam Mariam
+online
+yeah I am online okay you can ask uh
+actually when I'm thinking to how extend
+to what extent the metals could be used
+it's come to my mind that what are the
+exact uh conditions or requirement that
+the pde should have to can be applicable
+excellent question so remember when I
+said the beginning these are Laurent
+hyproximation for Matrix differential
+equation number one you have to uh
+formulate your problem as a matrix
+differential equation one and then
+second you need to see if that Matrix
+instantaneously has low rank
+if your problem meets these two criteria
+then this is a really good method uh to
+use if not that's not the end of the
+story that's actually a topic of future
+research
+let me know if it doesn't make sense
+the method is uh is mainly developed for
+a Time dependent PDS if you have another
+type of PDs that it's partial
+differential but doesn't include the
+time do you think it's applicable today
+you can do it absolutely you can do that
+for actually there are a lot of nice
+results theoretical results for steady
+state PDS so first of all this this time
+iterations would become this time
+Evolution becomes iterations in in that
+context and you can you can take much
+larger leap and steps to convert not
+limited by the time so there are other
+algorithms that you can use to jump over
+that and then then you can show actually
+converge to the SVD of that result so
+there are a lot of nice things you can
+show but yeah absolutely the you can
+apply this to steady state problems
+thank you
+well following on Marion's questions you
+know if you don't have a time dependent
+times then instead you have a 3D this
+your space short domain is 3D then you
+can make them to Matrix equations by
+decomposing each Dimension into
+Infinity you there are I mean even a
+one-dimensional equation can be turned
+into a matrix differential equation so
+it's really that's actually when you
+have to be even so a 3D problem can
+become a
+in a number of ways can become a matrix
+differential equation right so you can
+take the 2D slab As One Direction yeah
+X1 and X2 and X3 is another direction
+right so that's or you can even do this
+for the tensor Revolution equation which
+I didn't talk about right so that's
+another way so I have a 3D problem
+naturally fits within a tensor Evolution
+equation and sensor Evolution equation
+of this system is very similar to what I
+just presented all the principles are
+the same and you can derive that but
+like I said there are a number of ways
+you can
+so so for example if you have a 1D
+example no time dependence how would you
+make it Matrix equations
+you have only one one variable you can
+do domain decomposition and put them
+next to each other that's one way
+I see
+interesting interesting okay so
+um any other questions
+from audience
+no we actually hit the 11 o'clock you
+know punctually
+all right
+medically
+um well thank you so much Hassan for the
+wonderful talk and
+sounds like you have more topics to talk
+about
+um let's you know Reserve that for the
+the second yes
+yeah well let's thank our invited
+speaker Hassan for the wonderful talk
+and um yeah so thank you so much we
+appreciate the opportunity to present
+yeah I learned a lot and I I promise you
+I'm going to look into this movie deeply
+yeah exactly the stuff you do actually
+this is very relevant very relevant yeah
+very relevant absolutely yes
+all right sounds good thank you so much
+if you can share the uh the slide with
+me that would be wonderful okay sure
+absolutely you can do that yeah sure
+absolutely
+all right okay thank you very much all
+right thank you bye-bye

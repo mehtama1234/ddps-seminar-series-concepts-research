@@ -1,0 +1,1765 @@
+Okay, welcome everyone to the DDPS
+webinar series.
+Before we introduce our invited speaker,
+let's go over some rules and logistics.
+First of all, please mute yourself
+during the talk unless you have
+questions. If you have questions, you're
+welcome to unmute and ask. Otherwise,
+please you use chat room to post your
+questions so that we can address them in
+Q&A session at the end.
+Second, today's DDPS seminar is open to
+external audiences. Therefore, no
+classified discussion is allowed, so
+please watch out. Finally, the talk
+today will be recorded and uploaded in
+our YouTube channel. That's about it.
+Now, let me introduce our speaker today.
+It is an honor to host Greg
+Beroza, who is the Wayne Loel Professor
+of Earth, Energy, and Environmental
+Sciences in the Department of
+Geophysics at Stanford University.
+His research concerns earthquake science
+broadly with a focus on developing
+techniques for analyzing seismograms to
+understand how earthquakes work and to
+quantify the hazards they pose.
+Since 2007, he has been first deputy
+director,
+then co-director of the Southern
+California Earthquake Center.
+Since 2013, he has also been co-director
+of the Stanford Center for induced and
+triggered seismicity.
+His current research includes using
+ambient field measurements for ground
+motion prediction, developing data
+mining and machine learning methods for
+earthquake detection and
+characterization,
+and understanding the systematics of
+induced slow and intermediate depth
+earthquakes.
+He has authored over 200 peered reviewed
+scientific journal articles.
+Um
+Dr. Berza was an NSF presidential young
+investigator, has been fellow of the AGU
+since 2008 and recipient of many other
+numerous uh the awards. Today,
+Greg will talk about towards
+complete machine learning based uh
+earthquake monitoring workflows. Uh
+please enjoy his wonderful talk. Now,
+without further ado, let me pass the
+baton to Greg by asking one random
+question as usual.
+Today's random question is, what is your
+favorite things to do other than
+research?
+Other than research, uh my favorite
+thing to do is probably play guitar.
+Oh, nice. You like music. I love music,
+too.
+I love music, yeah.
+Wonderful, wonderful.
+Okay. Well, thank you, Young Young Soo,
+for that very generous introduction, and
+and thank you to the audience
+for uh uh
+attending the the talk. So, as Young Soo
+said, I'm going to be talking about work
+in seismology, which is what I do, uh
+using methods of AI,
+almost entirely uh
+neural networks of one sort or another
+for improving earthquake monitoring. And
+And you see at the bottom of this first
+slide a long list of
+a lot of symbols of different
+organizations that have funded this work
+at at different points uh in time. So, I
+want to make sure to give credit to
+them.
+So,
+I gather this is a some somewhat of a
+broad audience, so I'd like to first
+make the case for why earthquakes are an
+interesting
+target from a data science point of
+view. So, one one thing that makes them
+interesting is that we have a lot of
+data. So, we don't know when earthquakes
+are going to happen ahead of time,
+unfortunately.
+Um so, we have to be measuring the
+motion of the ground all the time in
+order to detect them. So, that's we
+typically sample at 100 samples per
+second, and we do that 24 hours a day,
+365 days a year. Our networks range from
+isolated sensors of one to many tens of
+thousands of sensors. We have very many
+small earthquakes, as we'll see, they
+follow a power law, such that for each
+magnitude unit increase, we get 10 times
+more earthquakes.
+Our data has been digital since 1990,
+and we've saved all of it since about
+2000. So, there's a a lot of data to to
+sift through.
+The signals are interesting. They're
+broadband. They're um they have certain
+characteristic attributes. Adjacent
+events that occurred near one another
+have similar waveforms, and that's
+that's actually very important for what
+I'm going to be talking about today.
+Uh
+Our noise is also interesting. So, we
+have noise all the time. It has all
+sorts of sources uh from cultural, that
+is people moving around or driving
+around,
+to uh the oceans, the atmosphere. All
+these things couple into the earth and
+and make our readings noisy. It's
+non-stationary. Most of what we record
+is noise, actually, and we can use it
+for uh
+for um certain purposes.
+Earthquakes themselves are not
+completely understood, so there's a
+scientific frontier
+uh that makes them interesting. They
+tell us about processes that occur deep
+in the earth and are otherwise
+inaccessible. So, seismology is you can
+think of it as a sort of form of remote
+sensing. And then, of course, uh
+earthquakes are threatening. They're
+they're they cause great damage and
+uh loss of life when when they occur, if
+they occur in the wrong places. So, it's
+important to understand them as as best
+we can.
+So, an example of a destructive
+earthquake sequence
+that occurred over the past decade plus
+is in Central Italy. The Apennines of
+Italy are slowly spreading apart. And
+that manifests as occasional
+earthquakes.
+And in 2016-2017,
+there was a series of earthquakes, the
+magnitude 6 Amatrice earthquake that
+killed over 300 people
+followed by other damaging earthquakes
+including one near
+Norcia.
+And this this earthquake sequence
+happened over a period of over 10 years.
+And uh
+we that that sort of behavior where you
+have not just one earthquake but a
+sequence of earthquakes is
+characteristic of the Apennines. And so
+here and everywhere else,
+we'd like to understand earthquake
+sequences better better. We'd like to be
+able to forecast the the likelihood of
+future events better than we can do
+right now.
+And so we're the premise of this
+presentation is that we can use
+uh
+methods of AI to do this
+earthquake monitoring better than we do.
+And that that better monitoring will
+give us a deeper understanding of
+earthquake occurrence.
+So, shown on the left is
+a is is sort of the standard earthquake
+catalog. It It It's It's focused on the
+Amatrice main shock which is shown there
+with a yellow star. Each one of these
+red and blue dots represents a small
+earthquake color coded by time over a
+1-year period going from red
+to blue.
+And the topography of the Apennines is
+shown in in the background. And this is
+an inset is a zoom in on this overall
+decade-long
+decade plus long sequence. What's shown
+on the right is
+the catalog we were able to develop
+using the methods of mostly deep
+learning. It has a magnitude of
+completeness where we record all the
+earthquakes down to about magnitude 0.5.
+And because there's so many small
+earthquakes relative to large
+earthquakes, the information density
+goes up by an order of magnitude.
+There's 11
+No, I think that is 13 times more
+earthquakes on the figure on the right
+as compared to the left.
+And so we
+were able to generate these catalogs
+using exactly the same data, but just
+treating it
+a little more
+carefully, if you like.
+And so what I'm going to explain or try
+to explain during this talk is how how
+we develop these better catalogs. I'll
+call them deep catalogs for sort of a
+shorthand. And and and then towards the
+end I'll show some applications that
+demonstrate the sort of things we can
+learn from these deep catalogs.
+Our data are seismograms, so that's
+they're digital recordings of the motion
+of the ground. Typically, we measure
+velocity, not always, but typically.
+Ideally, we measure the the full vector,
+so the three components of velocity. I
+already mentioned that it's continuous
+and our our
+sensors
+are arrayed in networks of up to tens of
+thousands of
+instruments.
+Um
+one nice thing for machine learning
+for
+for supervised machine learning, for
+example, is that we have already
+existing earthquake catalogs that have
+very large
+labeled data sets. They're in
+almost ready to go
+that can be used for
+for training
+deep neural networks, but these catalogs
+have issues. So, I'll just illustrate a
+few of these issues. Sometimes we have a
+set of waveforms. So, this is a
+seismogram here. This is time increasing
+from left to right. This is 6 seconds of
+record. It's 100 samples per uh
+or 1,000 samples per second on this
+scale.
+And uh this is the motion uh of the
+ground in in digital counts. So, here's
+an example where we have
+the catalog says there's an earthquake,
+but there actually isn't anything in the
+waveforms. So, that those sort of
+blunders creep into catalogs.
+A more common thing really is it here we
+have a an earthquake. So, there's a very
+impulsive P-wave followed by an S-wave.
+That's sort of the characteristic
+signature of local earthquakes.
+But there's a smaller earthquake back
+here later in the record. And it's And
+there are a lot of these smaller
+earthquakes because of the power law
+behavior, these are the the events that
+are missing from the catalog that we'd
+like to find.
+So, having this, you know, if we were to
+consider this to be noise, that would be
+exactly wrong.
+Because those are the things we're
+looking for. So, we have to be careful
+with
+of of having say missing labels in in
+this instance.
+And
+during uh earthquake sequences like the
+one I showed, there might be a lot of
+these uh
+earthquakes. So, here's here's what a
+single earthquake that's um
+in the catalog shown with blue, but
+there are, you know, maybe a dozen or
+more earthquakes
+uh following it that are are not present
+in the catalog. And we
+we absolutely would not want to treat
+that
+as noise.
+And then sometimes there there just
+errors in the catalog. So, here's an
+example where the onset of the
+earthquake is supposed to happen uh at
+the blue. That's what the catalog says,
+and yet the the real beginning of it is
+is a second or so
+earlier.
+So, uh Mostafa Mousavi, who was a a
+postdoc and a
+research scientist now at uh research
+professor at Stanford, also at Google,
+put together a a large global data set
+of seismic signals
+for
+uh for AI.
+It was and it was based on earthquake
+catalogs, but it was uh but he did a
+whole lot of quality control, added many
+labels, put it in a data science
+friendly uh format together with some
+intro- some uh sort of introductory
+seismology
+such that it could be used by data
+science practitioners who weren't
+seismologists uh but who might be
+interested in in seismology. So, that's
+uh out there. This is published in um
+IEEE Access if if anybody's interested
+in exploring earthquake uh signals. We'd
+love to We'd love to have you involved.
+Okay, so what's the earthquake
+monitoring task? Well, we're we're
+listening, right? We're listening to the
+with our sensors to the motion of the
+ground.
+And uh
+so here's an example where we have six
+stations. They're shown in in Matthew
+here schematically with the black
+triangles. We have two earthquake
+sources, one shown in blue, one shown in
+yellow.
+And these are the waves that we record.
+Now, when we record these waves, we
+don't know where the earthquakes are.
+Uh we don't even know how many
+earthquakes there there are. So, our job
+is to figure out from these wiggles
+where the seismic waves are and how
+where or what how many events are uh
+are uh causing them. And when we do
+that, then, you know, we could color in
+the the blue seismograms for the blue
+events uh the blue event and the yellow
+seismograms for the yellow event, but we
+don't know that a priori. That's
+something we have to figure out. That
+process
+is called association because we're
+associating
+measured uh wave arrivals with the
+events that caused them. And it's
+central It's really central to this
+problem.
+So, how how is this done? Well, the
+standard approach
+uses
+is is called STA/LTA or there there
+other characteristic function based
+methods, but basically they're they're
+something similar to this where you take
+a short-term running average of the
+squared signal. So, here's our
+seismogram. Here's the squared signal.
+You take the ratio of a short-term and a
+long-term running average. When you have
+an impulsive arrival,
+that statistic gets large and if it's
+above a threshold, then we we say, "Hey,
+there's a there's a wave arriving at the
+station. We have to figure out what kind
+of wave it might be or or maybe it's
+it's not a it's not really a wave. Maybe
+it's a
+you know, some local noise source." But
+that's that's sort of the fundamental
+first step. Then we do that association
+that I talked about and if it's it's a
+real event, then we try to locate,
+figure out where it is with
+a form of triangulation based on the
+wave equation
+and then characterize it. So, calculate
+it's it's say it's magnitude.
+So, that's that sort of seems like an
+easy task, a straightforward task, but
+it's it's more like a lot of things,
+it's more difficult than it looks. So,
+here's here's an example. These are
+seismograms. Each one of these is 10
+minutes long now. And so, these are
+offset. Each of these lines is offset by
+10 minutes. Here's a nice earthquake.
+You can see it has a very impulsive
+first arrival. So, that STA/LTA
+statistic will be large
+and it, you know, will clearly register
+that event. But on this same record,
+there there are a bunch of small events
+just like before. We'd like to capture
+those, too, but they may not be strong
+enough to to trigger our
+sort of naive approach to
+to measuring the arrival time of seismic
+waves.
+We also have cases where the where the
+the earthquakes or events as we call
+them, emerge from the the noise such
+that the the LTA is large enough that
+the STA the short-term average doesn't
+pick up enough for them to be detected.
+And these are important cases. And then,
+perhaps even more important, is when we
+have when the earth is really active,
+when we have an earthquake swarm or a
+volcanic eruption or an aftershock
+sequence, the events are are closely
+spaced in time such that the the
+waveforms overlap such as shown here.
+This is an earthquake swarm in New
+Zealand.
+And so, information is pouring out of
+the earth,
+but our our standard approach for
+processing these data, uh you know,
+doesn't perform very well. So, that
+these are some of the challenges that we
+we face. There are other challenges
+related to noise, but but these are
+there. These are enough.
+Uh so, what I you know, what I promised
+to talk about was a a
+a workflow for earthquake monitoring.
+And uh that's shown sort of
+schematically here. I'll show variations
+of this a number of times, but here's
+our
+seismograms recorded over many stations
+in a network. That's our input. We have
+steps of pre-processing. That's cleaning
+up the data, maybe filtering it, getting
+rid of bad traces. We pick the seismic
+waves, detect the events. Those are sort
+of related um
+uh
+tasks. We associate the phases to uh
+events.
+And then, once we do that, we try to
+locate and and calculate the magnitude
+and and other uh
+parameters of the earthquake. And our
+output,
+we do this many, many times. And so,
+over time, we we get a uh what's shown
+here in sort of schematically a a
+catalog of discrete uh seismic events.
+Now, that the The way of doing this is
+that these are done in serial.
+So, one after the other and each time we
+do that, there's the potential for
+information loss and that information
+loss
+is is both in terms of the context, as
+I'll talk about, and also uh the the
+thresholding. So, we'll we'll return to
+that and show a possible workarounds
+that can help uh to avoid that.
+Okay, so the first thing I'm going to
+talk about just really quickly is
+pre-processing and that's uh
+and and that will be um using a a a very
+deep convolutional neural network that
+that we set uh to the task of
+differentiating between the signal and
+the noise.
+And so, you you can see it has has many
+many layers. We work in the time
+frequency
+uh
+domain.
+And uh it it has this standard uh
+encoder-decoder structure.
+And the the idea is that we we develop a
+a mask of real numbers that um
+that in time frequency space passes
+either the signal or its complement, the
+noise.
+This is, you know, there there many
+uh parameters to determine here, so we
+need a lot, you know, it's data hungry,
+we need a lot of uh examples and we
+develop these examples by recombining
+signal, known signal, with known noise
+at varying signal-to-noise ratios such
+that we have on the order of a billion
+examples uh for the training data.
+And so, that's enough
+to despite the fact that this is very
+deep, that's enough to to get a a model
+that's uh quite effective.
+So, here's here's our our simplistic
+notion of a seismogram we have. This is
+what we record, Y as a function of time
+and frequency. We have some signal, we
+have some noise, and we want to separate
+the two. And so, what what that might
+look like on a single trace is this. We
+have
+this noisy uh
+long period signal, some high frequency
+too, and then we have this earthquake
+here. So we take the the the Fourier
+transform of it and um
+in these examples where we So we have
+you know close to a billion examples
+where we know the right answer. So on
+the other side we have the
+the uh
+um you know the answer in our uh
+our loss function and we we train it to
+learn
+these two things here in these two masks
+in in time frequency space such that
+when this is applied to the complex
+spectrum it it passes the signal and
+this passes the noise. Then then we just
+inverse transform in order to get that
+back. That's the idea. Of course it
+depends, you know, it it works
+it works up to a point but it ultimately
+it will get defeated by noise if the the
+noise is too strong.
+And so this is sort of if you're
+familiar with Wiener filtering, this is
+sort of like that but but not quite. But
+it's the the same the same sort of uh
+idea.
+Okay. So here here here are examples of
+it. So of its application once trained.
+And so this is using it on independent
+test data. Here's our clean signal and
+I'll show a zoom in on the the part of
+the signal we care the most about which
+is the initial part of the signal.
+Here's our noise. And this is real
+noise. This isn't Gaussian band limited
+white noise or anything. This is, you
+know, this is how the ground moved as
+detected by a real
+um seismometer.
+Here's the sum of those two. So this is
+a noisy signal where where we have been
+in control of of what the SNR is cuz we
+multiply this by some number and we add
+it to that.
+Um and then we we ask the the
+pre-trained neural network to recover
+the uh signal and the noise. And so,
+this is what it comes up with.
+And if you look closely, you can Well,
+first of all, let's let's look here at
+at the uh at the initial parts of it.
+You can see it does a nice job of
+recovering the shape of the signal.
+There's very little pre-event noise.
+If you look closely at the noise level
+here, the recovered noise relative to
+the true noise, you see there is some
+diminution or lower lower amplitude
+here.
+So, there's crosstalk between the signal
+and the noise,
+but it it it it outperforms other
+denoising methods that that are
+available for um
+for seismology. This is looking in the
+time frequency uh space. And here again,
+you can see the recovered It's actually
+easiest to see in the recovered noise.
+You can see that the the the noise is
+not perfectly recovered. There's a sort
+of a dark area here where it's it's
+being attributed uh
+to the signal. But for the most part,
+we're we're able to recover the time
+frequency behavior of the signal as it
+was in the initial um
+in in what's what's ground truth.
+So, here's uh here's just another uh
+example
+where um this is the the noisy signal.
+Here's what we recover from it. It's
+very close to the original
+signal, particularly the things we care
+about, which is the initial care most
+about, which is the initial shape.
+Here's uh
+uh uh you know, just another example. I
+could show these all day. Here here we
+try to trick it by not giving it any
+signal at all and just giving it a bunch
+of noise. And it's smart enough, it's
+seen enough
+noisy data to uh to know that this and
+enough signals to know that this is not
+signal, that this is all noise. So, the
+recovered signal is it's basically It's
+not quite, but it's basically flatlined.
+So, we the So, we call this deep
+denoiser for obvious reasons. and it and
+it does a really nice job of cleaning up
+our time series. Um and if we apply the
+STA/LTA statistic for example to to try
+and pick the arrival time of this this
+wave, it basically fails
+uh on the noisy data but once it's
+cleaned up it it it works like a champ.
+So this pre-processing
+can um can make uh really a big
+difference
+um and help avoid false detections which
+can be a real problem as shown here for
+these uh simple methods.
+And this just shows kind of a weird plot
+but it shows
+the recovered signal-to-noise ratio
+versus the initial signal-to-noise
+ratio. You want it to be high and deep
+denoiser is the is the red crosses and
+it it outperforms uh these these other
+uh
+other methods for removing for
+separating signal from noise that are
+available in
+uh in seismology.
+Okay, so that's the pre-processing part
+of it. Now I'm going to talk about phase
+picking.
+And so this as uh as was deep denoiser
+was Weichang Zhu was the student who who
+worked on on this. He's now moved on.
+He's a post-doc at Caltech.
+But uh what we did here was to to
+classify
+use the the seismic signals that instead
+of doing uh STA/LTA
+we uh treated this as a classification
+problem where we where where we
+determined whether it was a P wave or an
+S wave or noise.
+And so here here's the data. The P wave
+is the first arrival. S wave comes in
+second. It's expressed most strongly on
+these horizontal components. This is
+east-west, north-south. And we just uh
+trained it such that it would it would
+recover a uh truncated Gaussian
+distribution
+so centered on the P wave or the S wave
+arrival time depending on the wave type.
+So, we're sort of
+classifying the wave type, but we're
+also sort of tricking this classifier
+into measuring
+an arrival time. And so, uh
+it it it works uh extremely well. It
+gets in in a in a and it generalizes
+well. Uh we trained it only on data from
+Northern California, but we've used it
+all around the world and others have
+too, and it measures the arrival time of
+seismic waves to within few hundreds of
+a second.
+So, this just shows the output on this
+independent
+uh data
+that was not used in the training. You
+can see that it
+very strongly on the on the P and the S
+wave appropriately as it should. That's
+a nice clean seismogram.
+Here's a seismogram that's that's
+clipped. So, the the
+the actually it's the telemetry system
+in this case
+uh no longer faithfully transmit the
+ground motion, but it's seen enough
+examples of that. It knows how to pick
+the P and S wave arrival times. And
+likewise with noisy data, even if we
+don't run deep denoiser, it can do quite
+a good job of recovering
+those uh
+uh the the P and S wave arrival times.
+Here it it's compared with a a sort of
+standard method. So, the standard
+standard method is this AR picker.
+Uh and this is compared with the closest
+thing we have to ground truth, which are
+picked by expert analysts. And so, what
+we'd like is a distribution that's
+narrow and that's centered on zero cuz
+that would mean that our uh automated
+method is reproducing what the expert
+seismologists do.
+So, PhaseNet does quite well for the uh
+for the P wave. This is this is two
+tenths of a second here. You can see the
+tails are almost nonexistent out there.
+so it's it's doing extremely well.
+Um AR picker does pretty well. It's a
+little It's skewed a little bit late to
+late arrivals. You can see there's more
+energy in the tails here, but it does
+pretty well on on the P wave. The P wave
+is the first arrival, so it's easier to
+pick. The S wave is is not the first
+arrival, so it's harder to pick because
+there are other scattered waves that are
+interfering with it. But uh PhaseNet
+does quite well with the S waves as
+well. This is, you know, maybe the
+energy's
+This is also plus or minus 2/10 of a
+second. So, that's
+uh there's more energy in the tails.
+Obviously, there's more dispersion about
+the mean, but the mean again is centered
+right around zero.
+And comparing that with the
+the uh the sort of existing uh method
+for S picks, you can see the
+distribution here is really fat. It's
+really skewed. Uh this information is
+really not uh super useful. So, uh deep
+learning in this case really
+dramatically outperformed other methods
+that don't have the ability to learn um
+in in picking the arrival time of
+seismic waves.
+So, that's that's really important cuz
+it's foundational to the steps that
+follow. The very next step is a step
+called association where we figure out
+how many earthquakes there they are and
+which waves are associated with each
+earthquake.
+So, association is is figuring out with
+what color each of these phases should
+be if you if you like. Um and question
+is why is it difficult to do
+association? We don't know a priori the
+number of earthquakes. Events that are
+close in time, like that swarm in New
+Zealand, overlap. And so the the arrival
+times are sort of tangled up with each
+other.
+Little earthquakes, and there are a lot
+of little earthquakes. Those little
+earthquakes are only recorded on a few
+station and the the recording network
+changes with time which you know
+complicates everything.
+Um in addition the background noise is
+non-stationary.
+We don't know the wave type a priori but
+with something like PhaseNet we do
+because we've trained it to pick the the
+P and S waves. So this is something we
+can fix.
+We have uh both true and false picks due
+to to noise. That's something we can
+control.
+And this sequential application of
+picking and then locating or associating
+and locating leads information loss
+which we can also
+uh deal with at at some computational
+cost.
+So we came up with a a new approach to
+doing this using a Gaussian mixture
+model so it it it treats these uh
+phases, phase arrival times as
+distributions
+and goes through an iterative soft
+clustering uh unsupervised clustering
+method to try to figure out how many
+events there are and which phases belong
+to what uh what events. And of course
+this is it iterative um
+and but it it converges quite quickly.
+It has some advantages over uh this
+process has some advantages over
+standard association algorithms. We
+built into it the ability to pick or the
+ability to use both P and S waves.
+So that's something we don't have to
+solve for. That's very helpful. And we
+we use some amplitude information as
+well which allows you know allows
+further resolution of ambiguity when
+there are multiple uh events.
+Okay, so just an example during a very
+intense earthquake sequence. This is the
+Ridgecrest, California aftershock
+sequence. This is uh
+what 300 seconds of record. What's shown
+here each each one of these
+small circles represents a seismic phase
+measurement. And the uh uh pluses
+represent
+uh events that we've been able to
+associate compared with few other uh
+studies of this earthquake sequence. The
+Southern California Seismic Network, the
+center catalog has three events during
+this time. We have about 10 times as
+many. We have about 50% more again than
+Ross et al. 2000 uh 19. That's not
+necessarily better because it's possible
+to have false uh
+false locations or false associations
+here, too. The The point in showing this
+is that we it it's very good at finding
+multiple events that are closely spaced
+uh
+in time, which is something that we
+wanted to be able to do.
+Okay.
+So, to this point, we've treated these
+these each of these tasks individually
+in a sort of modular way.
+But, it's because these these tasks are
+related, it's possible to combine
+them. So, we developed a method that we
+called earthquake transformer, we
+published it a year and a half ago
+that has uh
+has a attention mechanism, has a
+recurrent uh component to
+to uh capture the sequencing of seismic
+phases and has a convolutional component
+to to capture the features of the
+waveform.
+And And what it does is is it doesn't
+just uh pick the phases, but it also
+detects the the event waveform that they
+occur within. And that waveform context
+is uh helpful. So, here's Here's the uh
+Here's the what the network looks like.
+Just like PhaseNet, it has three
+components of data in. The pink are the
+convolutional parts. This is the the
+recurrent uh Or no, the yellow is the
+recurrent part. And the the global and
+and local attention mechanisms are here
+for
+in this case detecting the output is the
+is the duration of the waveform as shown
+here
+and uh
+phase and output similar to phase net a
+P and an S wave uh arrival time within
+that
+that waveform. So, that context allows
+us to estimate the arrival times a
+little bit better than uh phase net does
+at least in the test that we've uh
+carried out.
+Another kind of context is the context
+of the network. So, up to this point
+we've treated seismograms one at a time
+or or three components at a time, but
+one station at a time and we haven't uh
+we haven't really exploited the fact
+that
+nearby instruments should also record
+waves if if
+if if what if another uh
+that is nearby instruments should record
+the same waves with perhaps some
+time lag. So, this is shown
+uh skip
+here in what's called a record section.
+This is the distance from the earthquake
+and this is the the the this is time
+and what you can see is that there's
+there's a a set of wiggles that
+increase the arrival time increases. We
+call that move out
+with uh distance from the event. Now, if
+you were looking at an individual one of
+these seismograms, you might be hard
+pressed to say I think the P wave
+is is arriving right about here. But if
+you can see what's happening in the
+nearby stations, you can do a much
+better job.
+So, that information is really useful
+and that's what we um
+that's what we'd like to be able to use
+both to determine that where the P wave
+is say and where the S wave is
+sort of here and that there's an
+earthquake here.
+So, the methods I've shown so far, they
+just detected the waves,
+threshold that information, and then and
+then try to figure it all out where the
+events are.
+Um but this uh thing we call EQNet,
+which has multiple neural networks, uh
+tries to sort of do all of that at once.
+So, the idea is the input data is no
+longer a single from a single station or
+single sensor, but it's a a network or
+an array of instruments that are
+distributed across, say, Northern
+California.
+We have a feature extraction network
+that acts on the array
+rather than the individual seismograms.
+And from that, we train uh a a a a set
+of neural networks that pick the S-wave
+and the P-wave, and then uh
+and
+sort of crudely localize the event in in
+space
+and uh
+time.
+And so, the that looks something like
+this. This is a depiction of the feature
+space.
+Here's uh data. Here's the individual P
+and S-wave picks. And here's our
+localization in the origin time, which
+we don't know ahead of time, and X and
+Y, or if you like, latitude
+and longitude. Now, once we have these
+uh once we have things localized and we
+determine how many events there are,
+there there well uh
+developed algorithms for getting very
+precise locations from them. But getting
+to that stage is is sort of the key.
+Okay. And we've applied this to the
+Ridgecrest earthquake sequence, and it
+it performs comparably well
+to other deep learning-based
+methods. I think ultimately, this method
+or something like it is going to prevail
+because it has the the I should I should
+have mentioned when I was showing this,
+um we we train all of this part of it
+simultaneously.
+So, these neural networks have all the
+information to available them to them
+all the time. We don't sort of threshold
+and then and then move on.
+Okay. So, I think ultimately a strategy
+like that's going to prevail.
+Now, there's a a lot of
+processing involved here and
+nearly all of it, actually all of what
+I've uh talked to you about at this
+point is embarrassingly parallel.
+So, we've developed a a a workflow that
+takes advantage of the of that. It's we
+call it QuakeFlow. It's set up to run in
+the the cloud. It's deployed in
+Kubernetes, so it should be platform
+independent. And it should take
+advantage and have should have good
+scaling uh
+uh properties. And it it can be used in
+sort of two modes. One one mode would be
+to analyze very large archives of data
+that that we have for
+a order of a decade or two.
+Uh that's looking backwards, but it's
+also fast enough
+that it can and it supports uh
+streaming. Uh so, it can be used for
+real-time or near real-time
+processing with a minimal
+um minimal latency.
+And I my I should say that So, so all of
+all of this part is embarrassingly
+parallel. And then we have this add-on
+here. This is a a precise
+uh relative earthquake location method
+that called HypoDD. It's it's For those
+of you who are astronomers uh or
+familiar with astronomy, it's it's
+equivalent to adaptive optics, but
+applied to um
+seismology. So, that that's not
+not embarrassingly parallel. So, that's
+that's really uh tacked on to this. Um
+But anyway, it it it it runs uh uh quite
+quickly. So,
+looking at uh 70 stations worth of data
+uh for 3 years continuous
+for Puerto Rico.
+We we ran this with PhaseNet and with
+the associator that I described on it
+and it
+it I was worried about the cost of the
+cloud because I like most people I'm I'm
+new to the cloud but it it only cost us
+40 bucks. So that was quite reasonable
+and we found seven times more
+earthquakes close to 150,000 earthquakes
+than were previously in the earthquake
+catalog. So that's that's a real
+that's a real
+bargain. And we're we're able to see
+much just like with Italy we're able to
+see much more detail. So
+this is from a
+recently published study in
+seismological research letters. We have
+much many more earthquakes and much
+better definition of the Guyaneau rift
+which is this GR here and then the
+Puento Montavo fault shown
+shown there. So we
+we get seven times more earthquakes and
+we should be able to do much more
+with them.
+Same story for Hawaii. So we ran
+QuakeFlow in Hawaii
+just for the
+six months recently. We get over a
+factor of 10 more earthquakes than in
+the standard catalog. So this is the
+histogram of the number of earthquakes
+with time.
+Blue is what we find. Orange is what's
+in the standard catalog. There are all
+sorts of interesting things here. There
+are deep events under the erupting uh
+the actively erupting Kilauea caldera
+deep events under Mauna Kea
+shallow events along the
+erupting rifts or recently erupting
+rifts and then there's there's some
+enigmatic deep events such as this one
+which I'm not aware that anyone has seen
+before.
+Uh these are deep events. They're
+color-coded by depth that stretch from
+uh
+from under uh Kilauea to the
+to the northeast.
+So, this is not during the most active
+part of the eruption, but we we plan to
+process the entire eruptive episode and
+I you know, we're going to find millions
+of earthquakes, I'm I'm certain and
+we'll be able to get a better
+uh understanding, I suspect, of how
+they're related to eruptive
+activity.
+So, let me uh shift gears to some of the
+things to describe some of the things
+that we've learned from these deep uh
+catalogs. So, this is uh work done by
+current grad student Young Soo Park.
+He's applied uh PhaseNet to
+uh in multiple uh ways and in in this
+case, he's looking at a little over a
+year of of data.
+He detected or he was able to locate
+precisely almost 100,000 earthquakes. He
+detected many several times that many,
+but but we didn't have enough data to
+uh to locate them
+uh accurately.
+But, what he was able to find was and
+this is in central uh Arkansas, a a line
+of events that defines the Guy
+Greenbrier Fault. These are thought to
+be related to uh deep disposal
+wells and those wells are shown here
+with the numbers two with the hexagons.
+One, five, and two were the important
+ones.
+And then
+excuse me, these colored uh seismicity,
+those are due to hydraulic fracturing or
+or or fracturing and
+uh or fracking. And what um
+what Young Soo was able to show was that
+this this sequence on the main Guy
+Greenbrier Fault, where most of these
+earthquakes are, was actually two
+sequences.
+And
+that the the wells involved in them is
+thought to be uh
+wells uh
+Let's see here. Thought to be um
+primarily wells one and five. Uh
+probably well two was involved as well.
+So So, what's shown here, this is a
+cross-section of the plot going from
+south to north.
+Here are the three injecting
+wells. The seismicity started near wells
+one and five, and so those were the ones
+that were implicated in the entire
+sequence. And each one of these red dots
+represents a a a smaller earthquake that
+Young Soo was able to locate,
+detect and locate.
+And um so, it's it's perking along here.
+We're now in
+uh October 2010.
+In February
+2011,
+what the um the sequence a a second
+sequence actually started here
+and ruptured back progressively over the
+fault back towards these first two
+disposal wells. So, this that second
+sequence is not something that was seen
+before, despite the fact that it was
+studied by uh many investigators,
+including us. And you'll notice there's
+a big circle here. This was a
+a a large event, a magnitude 4.7 event,
+that led to the very expensive shut-in
+of wells one and five.
+Well two kept on pumping. It's not clear
+that was the right decision, policy
+decision. If you had had these this
+catalog, you might have decided to shut
+down well two and well five or perhaps
+something different. Anyway, the point
+is that this this sort of information
+would have been extremely useful to have
+in real time. And we could we could do
+that then. We couldn't back in 2010, but
+we can do that.
+Other things uh another thing we found
+out from this is that
+is that once we get and sort of fill in
+all the dots for for the earthquakes,
+um we see a a very characteristic
+pattern. So, this is a space-time plot.
+This is now a still plot. This is
+latitude on this axis and this is
+calendar time from left to right. And
+and each one of these dots, of course,
+are seismicity within this this gray
+population.
+And and what you see are, if you look
+closely, are these arc-shaped uh
+structures
+or parabolically shaped structures that
+that occur over many scales from the
+largest uh
+scale to the these sort of small scales.
+And this is the the sort of
+characteristic signature of a diffusive
+process.
+And you know, there's there's fluids
+being injected here. So, the natural
+thing to assume is that it's it's the
+propagation of fluids or perhaps fluid
+pressure. The this diffusivities we get
+are actually pretty high
+for
+for actual fluid flow unless it's
+completely fracture controlled. Um this
+is a zoom into some of those structures
+and and as usually happens when you do
+this, it doesn't look quite so
+impressive when you zoom in.
+But but this shows distance versus time
+for one of these arc-shaped structures.
+We fit a diffusivity to it. The numbers
+we get are 10 to 100 m squared per
+second. That's those are big numbers.
+Um and so, whether it's fracture
+controlled or it could be aseismic slip
+that's diffusing,
+regardless of what it is, uh if we had
+this information in real time, it would
+help us anticipate the evolution of the
+sequence while it was underway and that
+would be super useful for uh
+for regulators.
+So, YoungSoo has gone on to to study not
+just 1 year, but 10 years of seismicity
+for Oklahoma and Kansas where this has
+been happening at a very large scale.
+He he found over half a million events,
+but again, only a subset of them were we
+able to relocate accurately. That's
+still 316,000 events.
+Um the faults here are are close to
+vertical, and so it's easier to
+visualize them in map view than when the
+faults have
+have some dip to them or or cutting
+through the crust at an angle.
+So, we see some interesting uh things
+here. So, this is the the
+the Kansas-Oklahoma border. The
+triangles represent stations, and each
+one of those blue dots is a is an
+earthquake.
+This Nemaha Ridge here is thought to be
+a barrier to fluid flow, and you can see
+there's a a clear change in the behavior
+across it. Not much going on over here,
+very active over here, and the opposite
+of that up here.
+There are other features that appear
+equally clear but have don't have such
+an obvious uh
+explanation, but we'd like to we'd like
+to work with the geologists understand
+why there's this geographically variable
+uh responses uh
+important.
+And the the developments of catalogs of
+here have have changed over time. The
+original
+USGS comprehensive catalog
+had 11,517
+events in it.
+And uh the
+uh Yang Xu's catalog has over a quarter
+of a million over this This is over a
+7-year time
+period. So, that's a factor of 23 more
+earthquakes than in the standard
+catalog. Now,
+part of that comes from having more
+stations as these two studies do. So,
+you're able to get more
+stations. I think it's 13% more
+stations. So, it's
+it's helpful, but really almost all of
+this uh improvement in the depth of the
+catalog comes from applying machine
+learning to the
+uh to the seismic waveforms.
+The cool thing about it is that it
+allows you to,
+uh, sort of
+it allows structures that are only
+hinted at by the the earlier catalogs to
+really emerge very clearly. So, we can
+see quite clearly that that there's
+there are faults with with specific
+orientations that are at at, uh, what
+are called conjugate angles, and that
+tells us something about the friction
+that's active on these faults, and that
+these faults are are optimally or close
+to optimally
+oriented.
+Um, so from this, uh, decadal catalog,
+uh,
+Youngsoo has found that
+that most magnitude four and larger
+earthquakes, that is those earthquakes
+that are large enough to cause damage,
+occurred on structures that were
+illuminated
+by the by other smaller earthquakes
+before the larger earthquakes
+occurred. So, another way of putting
+that is that, um,
+12.
+that,
+uh,
+Let's see. What's I'm trying to remember
+the numbers here. Um, the
+You can construct what's the equivalent
+of a confusion matrix for for faults
+illuminated by seismicity that either
+did or did not host magnitude four
+earthquakes, and, uh, what what he found
+is that almost 90% of those events
+occurred on structures that had been
+could have been identified ahead of
+time. On the other hand, only 4.4%
+of those structures,
+uh, that were big enough to have
+earthquakes actually had earthquakes.
+So, you you need to be mindful of both
+of those numbers. Those probabilities
+are small, but they're they're as large
+in an absolute sense as those that, um,
+the USGS uses for uh, potential
+foreshocks on large strike-slip faults
+in California. So, the the absolute
+probabilities are low, but the
+probability gains relative to the
+background are quite high and and very
+useful. So, again, if we had this in
+real time, and we could do that now, um
+it this would have been useful for
+decision-making. I'll just zoom in on a
+few of those sequences before
+concluding. Here's the Woodward
+sequence. Uh this box is about 20 km
+across, so this is a a a big structure.
+It's capable of having magnitude four or
+or much larger earthquake they on it
+based on its extent. And yet, all the
+earthquakes were smaller than a
+magnitude four. There were 89
+earthquakes between magnitude three
+and four. So, not all of these, in fact,
+most of these larger structures don't
+pose
+large earthquakes, but but some of them
+do. There's also some This is
+color-coded by time. There's some
+interesting down dip and eastward
+migration with time uh that, you know,
+we could try to relate to the injection
+history of the wells around this region.
+Here's a a large structure that did have
+a large earthquake on it, a magnitude
+5.1 earthquake. It has prolific
+seismicity. It has these interesting
+structures. This is what geologists call
+a horse tail splay. And you can see
+there's the suggestion, or maybe more
+than a suggestion, of this of these
+characteristic faulting angles called
+conjugate uh
+faulting. Here it's expressed even
+better. This is in
+in central Oklahoma. There's a clearly
+preferred uh fault fabric. Should
+emphasize that these faults are
+unmapped. Uh almost all of them are
+unmapped. We only know about them
+because they they're illuminated by
+seismicity.
+Um
+and here's uh the largest earthquake
+that occurred there. It's a magnitude
+5.8. Uh caused some damage. This the
+Pawnee earthquake. It's actually the
+largest earthquake in the instrumental
+record for Oklahoma. And you can see
+this this really beautiful, uh,
+conjugate, uh, geometry.
+Beautiful and complex, uh,
+across, uh, different scales in this,
+uh, in this in the
+earthquakes involved in this sequence.
+So, that's it for the what I'll show now
+for the results. I'd like to emphasize
+that that PhaseNet is uh, available on
+and the the other methods once we
+publish them are available on GitHub
+being used widely nationally,
+internationally, and for diverse
+purposes,
+uh, whether it's natural earthquakes,
+induced earthquakes, uh, on the Earth or
+or Mars.
+And that there's a an emerging ecosystem
+for AI on in seismology. We're
+contributing to it, but, uh, it's being,
+uh, the Italians have have contributed,
+uh, a data set for AI. And there are,
+um,
+things like the SeisBench toolbox for
+machine learning algorithms in, uh,
+uh, seismology. The paper on that is,
+uh, available on archive. I I think it
+just got, uh, accepted for publication.
+And, um, and there and there many, uh,
+others. So, I, you know, I I'm I've
+become a believer in this kind of open
+science in the power of, uh,
+uh,
+this sort of, uh,
+approach and collaboration. So, I hope
+I've convinced you that that AI-based
+earthquake monitoring is, uh, effective
+and also worth emphasizing that it's
+ready to go.
+These deep catalogs I've been talking
+about are are
+available now and they're they're
+becoming something of a commodity.
+They're not so hard to generate anymore.
+And they're they're going to make
+seismologists' life complicated and
+interesting. So, what we're used to are
+earthquake catalogs that are sort of
+static
+uh in in time and they're sort of
+one-size-fits-all and they're
+authoritative. Um that landscape is
+going to change. We're going to have
+different catalogs for different
+purposes. That's ultimately a good
+thing, but the field's going to have to
+uh
+uh adapt to that.
+And then the the next challenge is to
+explore these deep catalogs, to develop
+a deeper understanding of earthquake
+processes. I've shown some pretty simple
+examples of that. I think unsupervised
+methods in uh
+AI are are are probably ideally suited
+for that uh that task and I look forward
+to
+uh using them uh
+for that. So, with that I'll I'll stop
+and
+and take any questions that you might
+have.
+Thank you. Thank you so much for the
+great talk, Rick. Um it was wonderful. I
+I learned a lot more about
+the earthquake. Yeah.
+And one of your students uh name is very
+close to mine.
+Yes, that's right.
+Yeah, so he doesn't have a U in it. He
+just uh
+Yeah, yeah, but the pronounce similar.
+Yeah. Okay, if you have any questions,
+please um um unmute yourself and ask or
+you can
+put that in the in the chat room.
+Um
+well,
+the
+the depth of the source locations is it
+it can be also precisely detected uh
+through through the flow.
+Yeah, so so the depth is is
+it can be determined. It's it's more
+difficult because we we all we may all
+our observations are on one side.
+They're all at the surface. Yeah. So,
+for things like latitude and longitude,
+you can surround the earthquake and
+constrain its location very
+uh
+closely. It's harder with depth because
+the
+the uh
+you know, all the observations are from
+the same in a sense from the surface in
+the same direction.
+Right. Yeah. Um but the um
+Um so so it's probably
+hard to know how precise
+fully correct your your the depth
+estimates from your algorithm. Clearly
+you don't have the truth.
+Yeah, I mean it is hard to be sure, but
+as usual we you know when when we solve
+these
+you know the
+earthquake location problem is is a big
+estimation problem and it comes with a
+covariance for what it's worth. It's a
+it's a non-linear it's a linearized
+problem typically. That's how we treat
+it. And so we have some nominal error.
+And and there you know there are
+opportunities for testing how good that
+error is. But but when we have similar
+earthquake sources so nearby events we
+can locate earthquakes to within
+a meters of of one another horizontally
+and tens of meters in depth.
+Oh wow.
+So that it it can be the that's
+precision not accuracy. The it can be
+super precise. Accuracy is a little
+harder.
+As you know.
+Yeah. Yeah. Okay.
+Sounds good.
+Okay. So all this you know the real time
+the the
+you know workflow you you guys have
+developed um
+with the abundant data
+um
+and I can see it's it would be really
+helpful for the decision making um
+whether
+uh you know by predicting you know okay
+so the earthquake is going to come um
+somewhere um so
+do something. Uh do do
+um
+Do do you have
+enough data from California to tell the
+residents in the California um you
+Yeah, so so we're we're just we're
+working on
+the the data for Northern California.
+So, you know, watch this space. We'll
+have something within a year. Um at at
+one of these deep catalogs for Northern
+California. Um the examples I showed
+were were for induced seismicity where
+people were injecting fluids
+um rather than naturally occurring
+seismicity. Um there are places like the
+geysers where people are injecting and
+extracting fluid and inducing
+earthquakes in the process
+where this could be useful for
+decision-making. But there are also
+decisions to be made when natural
+earthquakes are occurring, right? So,
+USGS
+you know, reports on
+earthquake activity and it you know,
+potential for larger earthquakes and
+that that's, you know, their their
+methods for
+introducing time dependence to that
+which could be interesting to pursue
+with deep catalogs like this.
+Okay. Sounds good. All right, and
+there's a question
+uh from Brian. He asked um oh, he said a
+fantastic talk. Uh can you point me to
+some papers or resources that describe
+your
+pre-processing steps? I'm working on a
+different application in the frequency
+domain and the noise
+seems to pollute our predictions. So,
+I'm curious on on tips that would help
+our
+Yeah, so I can't point you to it.
+Well, I I so it's the
+You you can find it with my name or or
+Zhu, Z H U is the first author. It was
+published in
+IEEE something. I forget the name of the
+journal. Uh but it's uh 2019. And if you
+look at you look for deep denoiser, you
+should find it. If if you have any
+trouble at all finding it, if it takes
+more than a minute,
+please send me an email and I'd be happy
+to to point you to it. Yeah. Oh, you can
+look at my it's in it's on my Google
+Scholar page.
+It's uh
+it has about 100 citations.
+Nice. Nice. Okay.
+All right. Is there any other questions?
+Yes, I have a a question. Um well, I'm
+um I'm wondering about the precursors of
+earthquakes.
+I I
+I think there were some ideas that you
+know, the tensions uh
+uh
+that uh
+exist before an earthquake. So, they
+manifest themselves in uh piezoelectric,
+you know, effects. There's electric
+field that can be detected on the
+surface or maybe from satellite. And
+is that uh something that can be used
+indeed?
+Well, you So, there there are claims to
+that effect. And there's an AGU um
+monograph on using electromagnetic
+methods and
+temperature and things like that to uh
+uh to forecast earthquakes.
+When people try to do that
+prospectively, that is before the
+earthquake happens, and they tend not to
+work so well. It's it's retrospectively
+that
+they
+um you know, claim to see anomalies. So,
+I guess I To this point, I'm very
+skeptical
+that those the those anomalies are real.
+If they were real, they are real, then
+sure, methods like this could be used to
+improve them, really. Uh uh
+But um
+Yeah. So, I mean, so so an any method
+where you're anything that involves
+signals, this would this sort of
+approach
+would be useful
+for.
+Okay.
+Okay. Thank you.
+Mhm.
+Okay. Sounds good. Any other question?
+Oh, the there is a question
+from
+Arkey. Great talk. Can you say something
+about how AI can help us build better
+earth models for wave propagation?
+Yeah, so so that's a priority.
+It's a great question. There there are
+um
+You know,
+what what I've done is is sort of the
+low-hanging fruit for AI and seismology.
+That is to do these fairly simple tasks.
+Um
+AI can be used
+for and and I think that's sort of would
+be more in line with the usual sort of
+talk you get here. So, AI can be used
+for
+uh
+for approximating simulation. So, you
+there are all sorts of way or
+approximating uh
+PDE solutions. So, the wave it could be
+used for solving the wave equation.
+It could be used uh
+and even if it did so only
+approximately, it would be enough to get
+um
+good uh good enough uh
+sensitivity kernels to do uh it
+inversions probably faster. Actually, if
+if you uh
+if you pose the problem
+it turns out that you can you can
+develop the adjoint um
+you can develop basically adjoint uh
+state methods using
+um automatic differentiation and
+which
+takes advantage of the optimization
+that's done for
+uh
+neural networks. That's that's sort of
+done for you in in tensor flow, things
+like that. So,
+and there and there there methods for
+dictionary type methods for doing um
+sparse tomography that I I think are
+also are related and and
+highly relevant. So, there are all kinds
+of ways
+and
+in addition to what I've, you know, just
+said as as sprung to mind here where
+um you could improve wave propagation
+and you could improve
+uh, information that's needed to do wave
+propagation accurately uh, in the
+in the earth.
+All right, sounds good. Um, is there any
+other questions?
+Yeah, I have one question. So, for the
+strategy of obtaining the models, you
+have like one strategy is training a
+series of models doing individual tasks
+and then chain them together to get the
+results. But then you have the another
+strategy that to train them as a whole
+whole like a problem set that to
+optimize together. But also like in one
+sense that this optimized together may
+provide more constraints from these
+different
+uh, problems. But on the other hand is
+that like maybe one of them will
+dominant the training and then affect
+the results. Can you say
+a little bit more details comparing
+these two strategies?
+Yeah, so so that's a that's a good
+question, Shinkai. And and it's you
+know, as with a lot of things, if you
+get the waiting wrong of of one versus
+the other,
+you'll get
+it will be worse than if you did them,
+say in this case, independently.
+So, I I you know, what I was referring
+to was that
+that that sort of approach where you
+consider them all together is
+theoretically
+optimum.
+And and what we've come up with to this
+point is
+is competitive with other, you know,
+with with doing it in a sort of serial
+modular way. So, I I guess I'm pretty
+confident in the long term, where long
+term is 5 to 10 years, that a an
+all-in-one kind of or end-to-end, if you
+want to call it that, method
+will be
+superior. But it's an open question that
+because I haven't proved it.
+I can't. Is Is that Is that what you
+were asking?
+Yeah, thank you. Yeah, I think I think
+like both these two strategies are very
+interesting and like uh
+Yeah, I think in like a in the long run
+maybe one will show you like more
+or better results. Yeah.
+Yeah, looking forward to see that.
+Yeah, and I I should also add that that
+the the place to start is to
+you know
+it takes some effort to develop these
+and to get people to use them, right?
+So,
+you know, doing it in a sort of modular
+way helps get helps people get started.
+Be harder if it were all at once, I
+think.
+Okay, sounds good. Any other questions?
+Okay, well, I I found the um
+the denoising paper of yours um
+correct? It's a It's titled seismic
+signal denoising and decomposition using
+deep neural networks. 2019 IEEE. So, I
+Okay.
+So, Brian said, "Thanks." Okay.
+Okay, that's great. Um
+so,
+well, let's thank our speaker today for
+the great talk and great uh Q&A session.
+Thank you so much for um accepting the
+invitation and gave us the You gave us
+the really talk uh Greg.
+Thanks. That was very kind. And thanks
+everybody.
+Thank you. Thank you so much.
+All right, bye-bye.
+Okay, bye.

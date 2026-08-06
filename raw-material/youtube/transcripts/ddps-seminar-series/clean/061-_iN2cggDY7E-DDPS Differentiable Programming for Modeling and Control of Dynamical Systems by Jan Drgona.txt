@@ -1,0 +1,1644 @@
+all right
+okay welcome to the ddk seminar everyone
+before we introduce our invited speaker
+let's go over uh some rules and
+Logistics first of all please meet
+yourself during the talk unless you have
+questions if you have questions you are
+welcome to admit and ask otherwise
+please use chat room to post your
+questions so that we can address them in
+Q a session at the end second today's
+gdps seminar is open to external
+audiences therefore no classified
+discussion is allowed so please watch
+out finally The Talk today will be
+recorded and uploaded in our YouTube
+channel that's about it now let me
+introduce our speaker today it is an
+honor to host uh Jan dugona who is a
+senior data scientist and the principal
+investigator in the physics and
+computational science division at pnnl
+Jan has a PHD in control engineering
+from the Slovak University of Technology
+in blood blood test blood Slover
+Slovakia and before joining pnnl he was
+a postdoc at the mechanical engineering
+department at KU leuven in Belgium his
+current research is focused on
+differential differentiable programming
+for scientific machine learning
+constraint optimization and model based
+optimal control with applications in the
+energy sector including building control
+and Power Systems optimization today Jan
+will talk about differentiable
+differential
+programming for modeling and control of
+dynamical systems which is very
+interesting topics so please enjoy now
+without further Ado let me pass the
+button to Yan by asking one random
+question as usual today's random
+question is what is the most beautiful
+place you have ever seen
+that's very very difficult to answer but
+I will be a little bit territorial right
+now in Washington State and I really
+fall in love with Washington State
+because of the mountains such as Mount
+Rainier and untouched nature glaciers
+Cascades everyone who should visit and
+if you are in the area we can go on a
+hike awesome okay so I guess you love
+hiking oh very much so nature is the
+best place to stay I totally agree all
+right okay stays is yours yeah
+thank you very much for this wonderful
+um introduction and also unexpected
+random question and uh for for having me
+it's a really great honor to be invited
+to as a speaker to this uh seminar which
+I was following uh throughout the year
+with great content and today I want to
+present the perspective of the broader
+team at p l which is consisting of
+people from Deep learning background
+power system background Aerospace
+electrical engineering control
+engineering that is working together on
+developing differential programming
+methods for modeling and control of
+dynamic systems with the first challenge
+being system modeling simulations are
+crucial for many areas of decision
+making and scientific discovery and
+National Labs in general are
+primed to develop large-scale High
+Fidelity simulation models and data
+driven models for complex Engineering
+Systems such as power system networks
+building energy systems or
+or unmanned vehicles for underwater
+measurements and there is a need to
+improve the computational efficiency and
+scalability of heterogeneous scientific
+simulations classically you are solving
+physics-based models with numerical
+methods but recently there is a new
+trend of
+bringing more machine learning in place
+and replacing interactive solvers with
+neural networks and a lot of new
+exciting areas of research of hybrid
+architectures with physics informed and
+neural networks or machine learning in
+our team we are on on the track of
+objectives of developing domain agnostic
+software tools and algorithmic
+Frameworks that could combine these
+scientific Computing methods with data
+science models and be supported by high
+performance Computing available at
+National Labs there are a lot of
+applications in optimization modeling of
+dynamic systems
+uh such as optimal control
+in general there are like two branches
+of control model base and model 3.
+a flagship of model based control is
+called Model predict control and there
+is a this statement from the Richard
+Murray from Caltech textbook on optimal
+control that says 95 of industrial
+control applications rpid
+control loops or proportional integral
+derivative controllers there are just
+three parameters very simple single
+input single output controllers the rest
+is model predicted control
+why why such a success of model-based
+approaches in Industry such as process
+control Automotive Aerospace or high
+performance robotics because the safety
+is number one performance in terms of
+the economical performance or or time is
+number two
+and typically these systems can be
+approximated by relatively lower order
+dynamical system models like
+differential equations or state-based
+models and you can have
+a reliable prior knowledge to build
+these physics-based models and you have
+typically budget to employ Army of phds
+to write down your differential
+equations cost and optimization problems
+or solve these problems uh with modern
+numerical methods
+on the other hand when you don't know
+the underlying physics or it's too
+expensive to obtain like for large power
+system networks we need to do something
+else
+the reinforcement learning has been very
+successful in domains where you have
+reliable digital environment model like
+computer games or board games or some
+complex simulation models that don't
+necessarily need to be differentiable or
+have specific properties that are
+required for computing Solutions like in
+model base approaches
+and you typically have massive compute
+to solve the problem by basically
+perturbing the emulator system with
+trial and error observing the response
+and learning the approximate Behavior to
+value functions and then obtain the
+control policies however the challenges
+of reinforcement learning are typically
+scalability you need to have a lot of
+data and it's sometimes or very often
+hard to satisfy performance guarantees
+and safety guarantees like you have in
+model-based approaches so what we see in
+both communities is the trend to go in
+the middle to create new hybrid methods
+that leverage performance guarantees of
+model based approaches and flexibility
+of reinforcement learning in in a
+coherent Frameworks and that's what we
+are interested in doing as well at p l
+in our team
+but before I provide the perspective on
+how we are doing that I want to take a
+step back and review the landscape of
+optimization methods that are Behind
+These approaches in model practice
+control
+we are typically dealing with online
+optimization solvers
+we reformulate the optimal control
+problem in standard
+constraint optimization problem with
+nonlinear objective inequality equality
+constraints and we are searching for
+optimal decision variables in this case
+it's X that represent our control
+actions
+with every new measurement of our
+initial conditions or boundary
+conditions or changing of the task we
+need to recompute the problem
+and this happens on the fly in real time
+so when you have reliable System model
+when you have sufficient compute you can
+do that very efficiently very robustly
+with
+very good performance guarantees but
+when you don't have these models or
+where you have computational limitations
+it's typical very tricky and you need to
+do a lot of scale down
+um to alleviate this problem of the
+computational
+requirements in real time when you have
+let's say systems microchips with
+limited memory or communication
+bandwidths people try to explore what is
+called parametric programming where
+instead of solving the optimization
+problem in real time with optimization
+solvers like interior point or active
+sets you are trying to analytically
+construct explicit solution map
+that solves the problem parametrically
+the unfortunate side of this is that
+classical methods that deal with active
+set exploration
+of all possible combinations in your
+car's conductor conditions
+just data on scale
+um they are fairly theoretical at this
+stage
+and here where machine learning comes
+people in these domains have been using
+imitation learning for quite some time
+to approximate these parametric
+Solutions with regression methods or
+classification methods on the label data
+sets of the control parameters like
+initial boundary conditions and map to
+the label data set of optimal decisions
+that are obtained by solving a
+distribution of the optimization
+problems with iterative solvers or by
+obtaining expert
+um as expert Solutions let's say by
+human drivers this is scalable
+but it requires relatively large amount
+of data to cover all the parametric
+space and it's very hard to obtain
+performance guarantees because you are
+just dealing with simple regression
+problems
+um
+then you still are requiring the expert
+to deliver your solution that can be
+expensive to have human expert or have
+optimization problem at the first place
+when you don't have the model so
+reinforcement learning is probably the
+most flexible approach where you have
+very little assumptions the only thing
+you need to have is the system you can
+per troop and observe the responses and
+the rewards to learn your critic and
+actor
+getting deep reinforcement learning both
+of them are deep neural networks and the
+critic is just mapping over State action
+pairs into reward signals scalar valued
+function of the fitness of your model
+now you can differentiate it to obtain
+the policy gradients that's the whole
+trick that you are using automatic
+differentiation here so the question is
+how can we alleviate the obstacles of
+reinforcement learning for safety
+critical systems by bringing more domain
+knowledge and how can we
+improve the scalability and flexibility
+of classical
+optimization-based approaches by
+leveraging the ideas behind
+reinforcement learning which is
+automatic differentiation
+and here we believe and what we see the
+evidence in the community is the
+differentiable programming is a emerging
+unifying approach for data-driven
+parametric optimization which Solutions
+are based on automatic differentiation
+of complex functionals not only simple
+machine learning functions like
+meansquare on or some tracking objective
+and I will quickly skim through
+influential papers in a differential
+programming landscape for scientific
+machine learning this is no way
+extensive uh list so I apologize uh for
+not having every single topic listed
+here
+I would probably start as a very good
+read a differential programming system
+to bridge machine learning and
+scientific Computing that is uh in 2019
+paper by the Julia crowd and I think
+they have been one of the first to nail
+the term of differentiable programming
+for cyano
+and we all know famous paper on physics
+and for neural networks for solving PDS
+neural differential equations and the
+extensions Universal differential
+equations are taking good various
+Dynamic systems domains by storm
+and maybe not as well known but very
+active area of research it's
+differentiable optimization where
+instead of having
+ah
+just neural network layers or
+some functional Transformations you are
+having optimization problems as
+differentiable layer within the network
+or you're using neural networks to
+obtain the solution for optimization
+problem and then you are using methods
+like projections to get you to the
+feasible region of your equality
+inequality constraints a lot of uh work
+being done very recently in this space
+very very exciting and now similar ideas
+can be used for control because
+model pretty control especially can be
+reformulated as a constraint
+optimization problem where you need to
+satisfy your dynamical constraints that
+can be represented by your neural
+differential or differential equations
+and your feasible region can be
+represented by some polytopic
+constraints
+so we see a lot of similarities
+in these domains and we are building on
+top of uh these Giants
+and I will now present this perspective
+how do we think mathematically about
+these problems in our team because we
+have like people from different domains
+how do we bring them together to speak
+the same language
+so we believe that this parametric
+optimization is a good
+framework and
+can represent kind of generalization of
+physics in from neural networks I will
+explain how so we start with some
+objective function that is General
+nonlinear differentiable function
+that
+is function of your Primal optimizers X
+that can be like your control decisions
+or
+um can be parameters of your
+differential equations you want to learn
+from data and you have some scenarios
+PSI
+that represents your parametric
+dependency in physics informed neural
+networks these are the collocation
+points yeah you would sample your domain
+space in order to obtain
+the inputs you are going to propagate
+through neural network that needs to
+satisfy the pde equation residuals but
+in this case we are having General
+inequality equality constraints
+that needs to be satisfied and we have
+the solution map that may or may not be
+neural network that is mapping the
+parameters to the primal optimizers
+that is parameterized by the Theta this
+is which is actually the
+variable you want to optimize in this
+overall parametric problem
+so if you would deal this in a classical
+sense you would need to pick one
+instance of the parameter fix the
+problem and uh called iterative solver
+this can be very costly when you have
+thousands of parameters and you want to
+solve this parametrically over the whole
+domain
+another way is to do it it's like in
+similar inspired by seasoning for neural
+networks you reformulate the problem in
+a lagrangian form
+where you put your equalities
+inequalities as penalties weighted
+penalties in Europe lagrangian
+objective function that now boils down
+to scalar value function that is taking
+basically expect
+expected value over the samples of your
+collocation points or pair parameters
+and now we have differentiable scalar
+value function that is amiable for
+gradient-based optimization with
+automatic differentiation so you can
+back propagate the sensitivities of this
+objective function
+with constraint penalties to obtain the
+gradients of
+this differential function be the Deep
+neural network that will approximate the
+solution of this constraint optimization
+problem
+by the way if you have any questions
+feel free to stop me and ask for
+clarification notation or anything that
+might come to mind
+okay so how do we solve these problems
+uh there are different approaches in the
+literature in our team we found out
+there are no robust toolboxes so we need
+to code everything ourselves but other
+teams are starting to emerge who are
+working on similar uh similar directions
+so this very exciting time to be
+in this research area
+what do we do here we call differential
+parametric programming because we saw
+parametric programming problems with
+automatic differentiation and we are
+developing python-based toolbox it's
+basically a set of classes and
+and functions on the top of Python's
+functionality which we call Neuromancer
+that's why the background
+which we
+which which stands for neural modules
+with adaptive nonlinear constraints and
+efficient regularizations
+essentially it allows us to
+formulate these type of problems where
+you have constraints nonlinear
+objectives and when you want to train
+neural network to satisfy these
+objectives and constraints given some
+data sets
+inspiration has been taken from
+constraint optimization Frameworks like
+CVX Pi pioma in python or jump in Julia
+yeah maybe Matlab that all are based on
+symbolic abstractions like you have
+variable class that's the basic
+primitive in these Frameworks and you
+can now symbolically construct
+computational graph on these variables
+what we are doing here that we are
+combining this with machine learning
+components like deep neural network here
+we have multi-layer perceptron that Maps
+variable P into X and Y
+and we can combine them all together
+and still work relatively comfortably in
+a high level API writing down your
+polynomial Expressions uh
+instantiating the objective functions
+and defining constraints without writing
+actual classes in Python so that's what
+we are developing now like automatically
+parse these high level Expressions into
+pytouch modules with differentiable
+overpasses that can be used
+um in this lagrangian approaches so you
+aggregate things in objective
+constraints and components and in couple
+of lines of code you are able to
+formulate constraint optimization
+problem
+and now depending on the type of solver
+the three most straightforward ways to
+do with penalty functions but you can do
+more advanced solvers like augmented
+lagrangian or like you can add
+projection layers that are
+differentiable within the architecture I
+will go through some of those in the
+following slides but the idea is that
+you have now
+constraint optimization problem that is
+implemented in pytorch that's
+differentiable forward powers and you
+can use stochastic gradient descent
+because you have scalar value objective
+function you can differentiate with auto
+grad
+we have been working on this for
+um about two years from from now and
+from the computational graph perspective
+from for computer science people you can
+see this mathematical formulation
+as a following
+a flow of information you have some data
+sets these are the parameters or
+collocation points RPD and this is your
+neural network and here are the
+objectives and constraints that needs to
+be satisfied like similar in PD you want
+to satisfy the residuals uh of those
+equations and you aggregate everything
+in the scalar value loss function beats
+penalty or augmented lagrangian but we
+are not solving pdes now we are solving
+constraint and optimization or optimal
+control problems that's the idea
+um these are just two examples of two
+two dimensional domains when you have
+non-linear objective like given in this
+Contours these are the canonical test
+functions like Rosenberg and email blog
+problem in constraint optimization and
+we have known convex
+uh feasible domain given by these blue
+constraints like we have this donut
+shape and the linear constant that we
+want to find the solution in these
+subspaces
+what we found out that we can get orders
+of magnitude faster online solution
+compared to iterative solvers like
+interior point because for each new
+variation in your problem when you shift
+your constraints or you tweak your
+objective function you would need to
+recompute the problem but when you
+pre-compute the problem with
+differentiable programming and learn
+explicit solution it will parametrically
+remember those
+solutions that has been trained offline
+and just spawn you an answer by single
+four parts of neural net
+we are getting somewhat close to Optimal
+Solutions of these iterative solvers in
+this green this is interior point and
+red is this differentiable programming
+approach it's still approximation it's
+not like hard constraint guarantees or
+hard uh satisfaction of the
+uh optimality Gap but we found it still
+like very intriguing to follow up
+because we can get a lot of orders of
+money to speed up and even if you have
+sub-optimal solution for some
+application this can be Game Changer
+whether we can actually use it or not
+uh in the following I want to focus on
+actual architecture of this
+computational graph these don't
+necessarily need to be fully connected
+neural networks can be any
+differentiable function
+for dynamic systems in particular people
+have been using neural State space
+models they can come in different shapes
+and
+and forms
+In classical control theory people love
+to use linear State space models and
+there are different variations when you
+add non-linearities in different parts
+like this input Dynamics this is State
+Dynamics and this is your observable
+function
+uh recently equipment operators are very
+popular
+here we are just listing different
+architectures you can embed as a
+computational graph and when you
+replace the neural network here with
+neural ordinary differential equations
+then
+with iterative solver then you have
+neural OD
+you can go even deeper in the domain
+knowledge not only through architecture
+of these recurrences you can also domain
+you can embed domain knowledge into a
+black box components let's say you have
+neural network
+but you know something about your system
+especially about its eigenvalues about
+the sparsity of the topology of the
+network you can use bunch of linear
+algebra priors that can help you to
+bound
+the singular values of the overall
+non-linear transformation here we are
+showing just two examples of what what
+we call here spectral map and param from
+a news map where on the left hand side
+you instead of training
+weights of neural network Black Box way
+you are factorizing them in the singular
+value fashion we are not solving SVD
+because that will be very expensive but
+we are clamping the singular values in
+the certain
+in certain bounds and we are
+either designing left and right matrices
+to be orthogonal or we are penalizing
+them as a regularization so you can see
+again you have additional constraints
+for certain properties of your layer and
+you are putting them either
+as additional to run in in your scalar
+value loss function
+like you want to minimize the residual
+like you're doing pins or you find some
+tricks that would allow you to do it
+let's say for free by doing uh in this
+inductive priors
+we implemented uh
+a bunch of these inductive priors in
+this open source GitHub repository which
+we call Slim structured linear Maps it's
+just nothing else just
+checking linear algebra writing the
+forward passes of of those in in
+pythagen using them instead of Weights
+as a drop in replacement so for any
+practitioner in pytharch feel free to
+uh test them out by by yourself and I
+would be happy to receive any feedback
+or like potential suggestions for
+expansion
+so that's more from methodological and
+like theoretical perspective what about
+practical problems
+um where we can use these domain priors
+one of them is modeling thermodynamics
+of building Energy Systems which you can
+represent as a multi-dimensional dynamic
+system
+under the hood is a partial differential
+equation that typically in domain
+Sciences is discretized into different
+collocation points and you have set of
+ordinary differential equations that you
+can linearize and solve with with
+iterative solvers
+Um this can be very labor intensive it
+takes months very often to design this
+type of physics-based models
+for single building of single system
+that's not rentable that's not uh
+scalable for large scale applications
+and for
+for any like uh monetary return of
+investment
+but we can use machine learning and
+domain knowledge and combining together
+to learn these Dynamic systems from
+small amount of data if we
+if you do it right
+for instance we can decompose the
+problem into different uh
+different dynamical modules like you
+have this abstract high level
+computation graph of your building model
+structure
+where building envelope represents your
+walls and ceilings basically the heat
+transfer to the structure
+and uh
+we know something about it we know it's
+dissipative what does it mean that it
+wants to get to the terminal equilibrium
+with the environment so it's dynamically
+stable then we can construct the
+recurrent neural net that resembles this
+computational graph and has this
+property which means that the singular
+values of this operator are bounded
+within the unit circle so it's
+contractive
+uh we can also know we also know that
+this heating ventilation air
+conditioning systems we did represent
+the inputs to the
+building envelope delivering the heat
+are also bounded in certain physical
+space and we can use like Metals through
+clamping or projections into certain
+State space of of that operator so
+everything now is combined together it's
+no longer Universal approximator it has
+a lot of domain priors where the
+partnership State space that it can can
+capture is limited but is limited uh in
+a good way you are going to learn only
+if those parameters which you don't know
+like uh what is the specific heat
+transfer between the the nodes
+how does it work on some real data here
+is a very messy time series data set
+with 20
+measurements which represents zones of
+the building temperatures in each of the
+rooms and we have 30 days which is not
+much it is one amount of data and we
+split these in three
+in three components like we first have
+data set for training 10 days second 10
+days we have for validation which is
+selecting the best model and the last 10
+days for testing the performance and
+this is the
+trajectory of the linear model where the
+red is the ground rule trajectory and
+the blue
+is the prediction of the model
+linear models can be very good local
+approximators you can obtain the model
+that is valid for a certain period of
+time but as the you shift your
+distribution of the disturbances
+operating conditions
+it can blow away it can diverge from its
+own predictions and you would need to
+retrain your model with new data again
+on the other hand when you use this
+neural network with Domino our priors
+you can get way more robust prediction
+because now you have your state space
+constraints
+in a way you are expecting the the
+behaviors of your model and you can
+train this to be generalizable
+for a longer period of time
+so this has been done on like real world
+data with buildings
+with the purpose of having reliable
+System Dynamics model they don't require
+a lot of data but they still leverage
+some domain Knowledge from the building
+physics engineers
+okay so that's the first step we can do
+forecast
+what can we do with these models Beyond
+forecast is control but how do we do
+control with
+these complex computational graphs that
+are no longer fitting the Frameworks of
+classical controller you need to have
+either State space model or differential
+equation now we have more complicated
+nonlinear transformations in place that
+are
+just not supported with the numerical
+solvers
+from the classical domain
+on this landscape we have been working
+on what we call differential operating
+control
+where the idea is nothing else again
+leverage automatic differentiation in
+the same way as we are doing system
+identification of dynamic systems or
+solving constant optimization problems
+in lagrangian forms so kind of the pins
+idea where you have
+distribution of your collocation points
+or control parameters these are the
+features that you propagate through the
+computation graph that is consisting of
+the control policy and System Dynamics
+model this is a closed loop system and
+now you see the resemblance with
+reinforcement learning for those people
+who are working in this dead space you
+have actor and you have your system
+model but the system model is not
+outside
+of your differentiable computation graph
+it's a part of it now we can
+differentiate through the model because
+you have learned this differentiable
+transformations
+this allows you to build model-based
+value functions you don't need to have
+black box neural network to represent
+your value function now you can embed
+prior knowledge
+by doing reference tracking parametric
+equations or doing penalties and
+constraints and you don't need to
+approximate that part
+so we have been working on this for last
+two years
+and I will show you example of this
+hello world in control theory of
+stabilize unstable double integrator
+with this parametric objective function
+or
+tracking the references for State space
+and
+minimizing the energy used while
+satisfying the boundary conditions for
+your control actions
+mathematically you can formula formulate
+this as a parametric optimal control
+problem
+where you are minimizing the scalar
+value loss function over the
+expectations of the sampled parametric
+scenarios or qualification points in
+your
+in your parametric space
+over the performance objective penalties
+on
+the state and control actions
+subject to
+this recurrent
+equality constraints that represents
+your dynamic system in this case it's
+simple linear system but it could be
+differential equation it could be neural
+differential equation anything that can
+approximate the behavior of a dynamic
+system
+and we have this neural network that is
+mapping the state space and the
+parametric space like
+changing inequality constraints into
+control actions
+and you can formulate this as a these
+nice computational graph that propagates
+the collocation points through the
+control policy System Dynamics model and
+you impose constraints on control
+actions the response of the Dynamics
+model that is unrolled over several
+steps ahead into the future in the model
+pretty control fashion and then you have
+this scalar valid loss function that
+Aggregates all together and because
+every single component is differentiable
+now you can compute the sensitivities
+with calling backward
+pass and applying simple chain Rule and
+this will allow you to propagate the
+sensitivities back to the control policy
+to obtain direct policy gradients it's a
+very same idea that you would use in
+reinforcement learning where you have
+your actor that's the policy
+and then you have your value function
+that's that's your critic but the critic
+is like basically approximating all of
+these components this is just taking
+step back from the engineering
+perspective
+let's decompose the critic into System
+Dynamics control objective control
+constraints and put them all together in
+weighted objective functions
+how does it work in training we found
+out if the problem is well posed it can
+train very fast in under 100 epochs we
+can stabilize this system you can see
+the trajectories on the left hand side
+and policy landscape on the right hand
+side and it can train very fast without
+too much of the compute and
+a maximum amount of data because you
+don't need to approximate the reward
+function or the value function it's
+already embedded through physics
+knowledge
+okay what happens when we don't have
+perfect physics knowledge of the system
+Dynamic model or we need to train it
+from
+from uncertain data we have been working
+on extension to stochastic
+dynamical systems again this is a Hello
+World example with linear systems spread
+to buy some distributions
+um
+technically the idea is very simple you
+are just adding orthogonally one more
+Dimension to sample
+and these are the answer to empty so
+alongside the parameters your sampling
+also uncertainties and you're training
+the control policies to to control the
+system like in this case stabilize
+to the reference or do the obstacle
+avoidance we turn non-linear constraints
+subject to changing parameters like
+positions or shape of the obstacle and
+varying signals of your perturbations
+that are sampled from some assumed
+distributions
+this works
+surprisingly well without
+much change of the code there are a
+couple of lines you add
+um but you pay the cost of having more
+collocation points and it becomes a
+little bit more expensive offline so it
+is open research like what is the right
+way of sampling
+your parametric space where do you need
+to sample like maybe on the decision
+boundaries of your constraints you would
+need to have more denser sampling and
+indeed in the interior of your physical
+region you need less dense sampling and
+there are similar ideas in pieces
+informed neural networks that use like
+let's say optimal transfer for answering
+the question so I leave it here as an
+open question
+um
+second
+important topic we are working on is how
+do we provide some kind of robustness
+and stability guarantees for this type
+of learning based controllers because
+everything is approximate you always get
+to the solution with some numerical
+threshold there will be always some
+residuals but sometimes in real world
+applications the residuals can be
+difference between failing and
+succeeding but the failure can have high
+implication you can break the system and
+it would be very costly or even like
+endangering human life so
+from this perspective
+there are some ideas in the literature
+leveraging lapino functions
+differentiable functions laptop is
+nothing else there's some kind of energy
+function that is a positive definite has
+trivial no space and basically is if you
+follow the trajectories alongside this
+landscape you will always converge you
+to the fixed Point equilibrium this is
+the phase space of two-dimensional
+uh dynamic system governing by the apno
+function over this close-up Dynamics
+so what we have been doing that we can
+learn these lapino functions even if we
+don't know them beforehand there are
+some papers that show how to design
+these lapino functions
+with hard guarantees on these properties
+and uh
+certify closely Dynamic systems to be
+converging to fixed points
+so we plug them in in the closed
+Dynamics and train them offline
+alongside with control policies and then
+in the real time we can use them as
+certain certificates that in certain
+State space we are converging we can
+even use them as in projections to
+correct our control actions if they will
+be diverging from from that certified
+State space
+for more details uh please you can see
+our papers
+and I will skip to the second topic
+which is exactly in the same area of
+safety
+that is dealing with control barrier
+functions
+the optional functions are
+basically positive definitely they want
+to push your energy towards the origin
+while the control barrier functions
+you can think of them as another form of
+energy functions that are informing you
+whether you are inside your feasible
+region of your constraints and if you
+are approaching to the constraint
+boundary you can trigger some Behavior
+like a trigger corrective control to
+keep you inside
+again I will skip the technical details
+but the ideas are very simple very
+simple implementation in terms of
+similarity with latino functions you
+just formulate your control barrier
+function either based on prior knowledge
+of your system or there are some papers
+that learn control value functions from
+data
+and these barrier functions will give
+you indicator of the constant
+satisfaction that can be penalized
+during training so you are like
+enforcing your control system to satisfy
+constraints offline and then upon
+deployment they can also learn as
+indicators for doing switching behavior
+when you are approaching the safety
+boundary you are going to switch to some
+backup controller to push you back to
+the feasible region again details are in
+those papers both of them have been
+accepted for conference and decision
+control there are our recent works on
+safety
+more from control theoretic perspective
+and how do we develop these methods from
+implementation perspective but once we
+have the landscape of tools
+our primary objective as a National Lab
+is to implement them in real world
+Engineering Systems
+such as building energy efficient
+control
+here we have simulation model of
+residential building that we assume
+that we have only time series data and
+some prior knowledge so we measure the
+temperatures the behavior of the control
+system and we learn the surrogate model
+the digital twin with this physics
+constraint
+direct rent
+model that we can then plug in in a
+closed loop dynamic system that
+represents polarametric optimal control
+and because we Implement everything as a
+differentiable component we can obtain
+the scalar valued functions that are
+fully model based and provide us with
+policy gradients of neural network that
+can satisfy State constraints action
+constraints for these higher dimensional
+state
+space
+with style wiring constraints so you can
+think of it as a
+as a control task with wiring control
+objectives yeah the parametric objective
+um
+so example of application
+would be done like a year ago was this
+multi-zone building control and
+the generality of the approach allows us
+to just change the system and use the
+same code base
+to tackle let's say economic dispatch
+problem
+where instead of the building now we
+have power system Network
+this is for example again nine bus
+system with generators and and consumers
+where you measure the voltages and your
+frequencies as a Time series data in
+this case we approximate the model with
+coupon operator with some domain priors
+when we know the
+steady stage and we can regularize them
+to those
+correct study States again domain ever
+surrogate model that can be plugged in a
+closer dynamic system and now we can
+simulate the closer dynamic system on
+our collocation points
+obtain
+the control objectives and compute the
+sensitivity of the objective with
+respect to neural network control policy
+and obtain explicit solution of this
+parametric optimal control problem that
+you would have to otherwise saw with
+iterative solver like interior point
+this can be very expensive especially
+when you are dealing with larger scale
+systems
+that can take minutes up to hours to
+compute their solution
+this means that you cannot use your
+real-time control
+in practice you can only use it for
+analytics afterwards and that's the the
+current bottleneck of classical control
+approaches but when we pre-compute the
+solution offline with these
+differentiable approaches we can obtain
+five orders of magnet to speed up in
+real time because we don't need to solve
+differential algebraic equation solver
+and interior Point solver in real time
+like in we do a model based approaches
+so this particular case gave us five
+original magnitude speed up which is the
+difference between using the approach as
+only analytical
+or actually deploying it and using it in
+real time controlling the the power
+Network and we also found that the
+solution quality was not lost too much
+like these are like from
+um generate uh the voltage generators
+from
+interior point the solid lines and
+dashed lines are from the differential
+programming approach so of course you
+are not nailing optimal solution but you
+are getting sub-optimal solution that is
+very close and satisfactory in terms of
+constant satisfaction and and most
+importantly the actually within your uh
+communication boundaries and and
+sampling rate that you can use as a
+real-time control
+the last slide on applications I'm
+showing very true example that can serve
+as a proof of concept for software or
+control as a service
+this work was done in collaboration with
+our colleagues from University of Slovak
+University of Technology in Bratislava
+and they had this very toy laboratory
+device when they have both floating in
+the tube
+that is controlled by Raspberry Pi
+controller
+what they did they measured the time
+series of data of per tube system and we
+did system identification on our hand
+and used the system ID model
+in differentiable control setting
+training the constraint policy offline
+and ship them the control policy to
+deploy on this real device and they need
+to compare this against classical
+methods like model pretty control but
+because of the computational limitations
+of the microcontroller they need to
+satisfy the memory bandwidth and CPU
+bandwidth so they cannot use full NPC
+they need to reduce the performance so
+we found that pre-computing solution
+offline
+can beat online solution of iterative
+solvers if you have limited bandwidth
+in terms of reference tracking
+constraint satisfaction here we are able
+to deal with timering constraints
+time varying references that are in
+Conflict often and with heavy
+um
+heavy noise of the measurement variable
+that was not able to be solved with
+classical model predict control because
+of the large computational demands but
+when you pre-compute it with
+differential programming and then you
+have just neural network that you can
+deploy and you don't need to solve the
+optimization problem in real time this
+can be again a game changer for
+deploying Advanced controls in devices
+that don't have the compute power at the
+first hand
+okay so that was a blitz through
+different
+methods and applications which you are
+working on
+at PLL but the underlying
+methods which you binding everything
+together is differentiable programming
+for
+constraint optimization
+and optimal control methods where we are
+dealing with
+dynamical systems can can be
+approximated by neural of these neural
+status models and now they can be
+embedded in constraint optimization
+problems
+that satisfy certain properties of
+convergence to fixed points or boundary
+conditions and we have means to
+transforming those problems into scalar
+valued objective actions that can be
+differentiated with modern automatic
+differentiation from Frameworks like
+pythons or you could Implement these
+methods in Julia or or Jax in Python
+that are in Swift
+our ongoing work is to focus more on
+optimization solvers constraint
+optimization solvers in these
+differential programming setting we are
+working on embedding graph neural
+networks in the framework because it's
+very suitable for Network Dynamic
+systems like power system networks or
+building thermal Networks
+having some robots uncertainty
+quantification that would allow you to
+do smart sampling of your collocation
+space and other uh interesting topic
+and as a community we see a lot of
+different uh
+research groups working on
+using differential programming for
+things like calls or Discovery
+discovering your uh
+underlying equations of the dynamic
+system discovering coupling between
+Network Dynamic systems
+Computing sensitivity of complex
+differentiable graphs doing stability
+analysis for machine learning models
+that will allow you to
+using conjunction with classical
+physics-based principles to solve
+large-scale parametric constraint
+optimization and optimal control
+problems that haven't been
+feasible with just classical methods
+before so we see this as a very exciting
+time to do researching a lot of research
+being done in other domains and other
+groups and we are looking forward for
+collaboration so if you are interested
+in what we are doing at piano please see
+our GitHub pages
+and here I would like to thank you
+everyone for your attention and thanks
+to Department of energy for sponsoring
+our work
+thank you thank you so much for the
+wonderful talk Jan uh very interesting
+talk okay uh great yeah of course
+uh let's have a uh the Q a sessions
+um if you have any questions please
+unmute yourself and
+um and ask questions let me start with a
+with a question
+if you go to slide 11
+.
+you mentioned that
+you know
+if yeah yeah differentiable Prime
+parametric
+oh was it
+yeah exactly so differentiable
+parametric programming um you compare
+the performance with the IPO iterative
+server you get the orders of magnitude
+faster online Solutions so I I was not
+clear about
+okay so in IPL you could solve this
+exact formulations you know
+you know the written in in the left hand
+side and you do compare the um
+um the performance that way
+yes so what we are doing here is that uh
+we have distribution of problems that
+you can think of this parametric PSI
+uh as right hand side in your
+you know let's say you have equality
+constraint a x equals B and this PSI can
+be the B Vector that is changing so
+you're actually changing your
+optimization problem
+if you are about to solve this interior
+Point method for each nuc PSI you need
+to resolve the problem again that's the
+specific problem you're solving
+but because we want to solve this
+parametrically for like the family of
+the problems with neural networks
+we use this lagrant generate formulation
+and this pin-based idea
+that will allow you to learn neural
+network that Maps these parameters that
+in in physics and for neural Nets would
+be uh your domain your X into your
+into your decision variable or solution
+of the pde in in pins and that's that's
+the difference between offline and
+online solution of course we are paying
+a lot of offline
+cost for that
+I mean it's so so it's a
+optimization context there is a nasty
+approach and you know
+all at once approach it seems like
+you're formulating in your framework
+your output taking the elastic approach
+where you embedded the you know those
+right hand side for example in linear
+system uh onto the
+um
+onto onto the domain
+on constraint system
+and in offline do you solve that and
+then feed that into your differentiable
+um the programming framework uh while
+but but my in my head I think that you
+can also formulate that with IPO and you
+can you don't have to resolve the
+optimization as every time the you know
+those
+what it was C value or the right hand
+side value is changing
+um by for example treating them as a on
+other optimization variable in IPO
+and as those changes
+simultaneously changing those C
+um and the optimization variable within
+IPO so I
+I don't know it sounds like it's a
+matter of formulations it definitely
+carry formulate the problems in
+different ways but in this case we treat
+this side as a parameters not as a
+decision variables yeah yeah so that
+could be like initial condition
+or boundary condition
+solving your OD type problem or optimal
+control problem
+uh typically you cannot treat the dose
+as a decision variables because they are
+given by the measurements or or some
+requirements on
+operational range
+right I totally understood what you're
+saying but in TD constraint optimization
+there is a different way of treating
+those the uh the parameter parameter
+variables within the optimization
+framework so I see so maybe I'm not
+familiar about that and I would love to
+hear this baby yeah leverage some of
+those methods in in this approach I
+would I would love to hear that all
+right sounds good thank you
+no no no problem okay so is there any
+other questions from audiences
+don't be shy
+all right
+um I found it slide 13th
+um you know the
+the concept of you know introduction of
+the concept the inductive prior
+um very
+uh interesting like constraining the
+singular values while you're doing the
+training
+um I'm very interested in that so I
+guess this is available as an open
+source code yes it's available as open
+source and in many of those uh priors we
+are just re-implementing published work
+by other groups so we are providing the
+references with those papers some of
+them we develop ourselves
+um just shopping to our old to good
+linear algebra for inspiration yeah
+exactly well I mean it's you know the
+neural net you know known to be a black
+box because we don't have a direct
+access to those the singular values and
+eigenvalue this information but looks
+like you're exploiting
+those areas and then take advantage of
+it
+um so not so much Black Box anymore if
+you exactly that's
+kind of philosophically in our team
+rather than finding uh wondering that
+rules them all one method that can solve
+any abstract problem we are approaching
+this on for instance per problem basis
+what do we know as an Engineers as a
+as Aerospace or electrical engineer or
+mechanical engineer about the system
+that could inform our architecture that
+could inform the formulation of our
+objective functions with regularization
+so we
+we don't learn a universal functional
+approximator that can go anywhere we
+just we can heavily
+constrain the parametric space and the
+output space of these functions that we
+are learning so it fits the domain right
+right right
+um but but this framework only works for
+the linear uh models I'm guessing well
+those Transformations technically are
+non-linear Transformations but they will
+act as a linear weight because they
+generate the linear matrices that change
+at each epoch
+but the idea of adding inductive priors
+it can go beyond linear layers so graph
+neural networks is one great example
+like a lot of work being done there
+people use Universal differential
+equations that's coming from Julia crowd
+where they combine Black Box neural
+networks and known differential
+equations on the right hand side of the
+neural ID and we found this as a very
+powerful
+concept as well nice
+all right I'm gonna take in two more
+about that
+um
+very interesting yeah all right okay
+um so people are shy today
+let's go to so I have a question yeah oh
+yeah go ahead hi thanks thanks for the
+talk I was wondering um uh do you think
+about any way of extending this for like
+discrete action spaces is there any uh
+good question of
+implementation wise we already have that
+but we didn't have a Manpower and time
+to actually do thorough empirical tests
+but we would welcome any potential
+collaboration interests in like pushing
+forward more more applications and
+expanding uh the framework method wise
+so discrete reduction space is in our
+interests but it's also on kind of uh
+midterm agenda I used to deal with
+hybrid Dynamic systems when you have uh
+State space under switching conditions
+there are some early papers that deal
+with neural hybrid differentiable hybrid
+automata where you have finite State
+machine
+that has discrete switches but in each
+of the state machine states you have
+differential equation
+that's very powerful concept and many
+Engineering Systems operate under these
+switching rules right right this Bing
+Bond or Bam Bam right controllers right
+exactly yeah
+[Music]
+yeah go ahead oh yeah this is true nice
+talk hi drunk hey um so I have a quick
+question um driven to to the current
+slide here um the structure linear Maps
+so here
+um
+you have a a general uh neural network
+which could be a non-linear map right
+and then you can enforce the eigenvalues
+property on that or
+or is it only applicable to certain
+um kind of linear mapping function here
+I I kind of have a hard time to
+understand this this yes so this uh
+GitHub repository slim structure linear
+maps are dropping replacement for linear
+weights in in pi touch that will allow
+you to bound those singular values in
+certain
+uh upper and lower bounds
+but there are some papers that
+will allow you to say something about
+the eigenvalue distribution of the whole
+neural network when you see what type of
+activation functions you're using uh we
+can I can send you offline some of the
+papers that are dealing with that
+okay so that would be great yeah because
+yeah this is basically composition of
+layers and then if your upper and lower
+bound of the eigenvalues of each of
+those layers irregardless if it is
+linear and nonlinear then you can say
+something about upper and lower bound of
+uh
+of the overall neural network okay I see
+yeah so so the current slim um two box
+here it can be applied to kind of the
+linear transformation right uh in neural
+network uh okay but it's not like the
+entire network from the input to the
+output right the the layer the the
+linear layer there okay exactly okay
+replacement for linear layers but you
+can use it as in composition to bound
+the eigenvaluation of the whole neural
+network I see I see all right thank you
+so much thank you
+very interesting okay any other
+questions
+oh well sounds good
+um if not let's thank our speaker today
+uh Jan for asking questions all right
+okay okay so this is thanks for very
+nice presentation so I was running when
+you uh establish your uh like control
+oriented model I saw you have a forward
+propagating and a backward propagating
+can you explain a little bit more on
+that
+I remember it's when you talk about the
+two like the the two optimization
+framework yeah this one yes
+well the idea of forward and backward
+path is like uh the standard in any
+differentiable framework like you have
+neural network layers
+linear or I find transformation for by
+non-linearity like classical deeper on
+it and then you back propagate the
+scalar value loss function through this
+composite function yeah
+because all of them are differentiable
+and you apply the chain rule here the
+idea is okay let's replace these black
+box layers with something more
+structured and
+previously I was talking about how to
+reform like constant optimization
+problem in this structured computation
+graph that you can compute the
+sensitivities and this is the idea of
+expanding that to Optimal control
+problems where you have control policy
+let's be neural network and your System
+Dynamics model it can be neural OD or
+differential equation
+and then you have some layer afterwards
+that represents your objective function
+so instead of like having me squarator
+of like being a regression function now
+it's a model pretty control type
+function there is like a huge family of
+control theory type functionals that you
+can place here as a domain priors
+does it answer your question
+yes cool thank you thank you very much
+wonderful is is there any other
+questions I mean we can take more
+questions
+um I'll keep going sure I have a
+question
+um and this was a great presentation
+thank you for compiling so many great
+resources along the way too
+um your future Direction you you
+mentioned the uncertainty quantification
+pieces and I want to ask what your team
+has been thinking about with the broader
+questions of of trusting these types of
+systems around maybe even verification
+and validation and the full
+um trust credibility pipeline that goes
+into why a decision maker would leverage
+these these approaches yeah excellent
+questions uh thank you very much Aaron
+so
+there is like a lot of work being done
+outside of our team and I would like to
+also acknowledge that like uh maybe in
+this slide
+um these differentiable optimization
+layers is one way to do so like this
+differentiable convex optimization you
+are embedding your optimization solver
+as a layer in neural network that has
+some constant satisfaction guarantees
+and another one is this like DC3
+learning method with higher constraints
+when you leverage projections
+uh some people call these methods deep
+declarative networks or end-to-end
+constraint optimization uh there is a
+whole landscape uh projections is one
+approach uh then similar idea is what we
+have been exploring through these
+barrier functions then you have some
+surrogate model
+that is providing you with the
+the fitness of not like the aggregate
+function but of some safety
+part of the problem like the constant
+satisfaction so if you are inside the
+interior of constraints you have
+indicator function that you are safe but
+as you are approaching the boundary your
+you are triggering some condition that
+can trigger corrective action
+so there are a lot of technical
+directions that could be
+applied here and I just don't know the
+answer what is the solution
+it is the most typically depends on the
+the requirements of the application
+yeah absolutely
+um but that's that's very helpful to
+help point back directly to where some
+of those aspects are are documented
+thank you I appreciate it and I see
+methods like uh spawning in literature
+like day by day it's a very active area
+of research right if you know something
+that I forgot please send me email I
+would really love to hear more ideas
+okay great thank you thank you
+wonderful all right um
+I guess one more chance
+if there's any other questions please
+don't be shy on mute yourself and ask
+questions
+well um
+I guess there's no more questions
+all right uh let's in that case let's
+thank our speaker
+um Ian they're gonna uh from cnnl uh for
+giving us a wonderful talk uh what's
+wrong with me uh thank you so much Jan
+uh it was really wonderful presentations
+I'm I'm sure
+um there will be
+um um you know a lot of people who would
+be very interested in collaborating with
+you uh including me so um expect that to
+getting a lot of emails from this books
+and with that let's uh you know end this
+seminar series seminar today and our
+ddps seminar next one is I'm not sure
+this is the next week or two weeks from
+now until then um
+please stay healthy all right thank you
+everyone
+thank you very much everyone thank you

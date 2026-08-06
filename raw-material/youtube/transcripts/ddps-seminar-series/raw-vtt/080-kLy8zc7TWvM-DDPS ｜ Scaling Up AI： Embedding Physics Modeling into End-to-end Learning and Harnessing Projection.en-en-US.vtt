@@ -1,0 +1,3006 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:03.899 --> 00:00:07.259
+All right. Welcome to the DDPS seminar, everyone. Before we introduce our invited speaker, let's go over some rules and logistics. First of all, please mute yourself during the talk unless you have questions. If you have questions, you're welcome to unmute yourself and ask those questions. Otherwise, please use the chat room to post your questions so that we can address them in training session at the end. Second, today, today's DDPS seminar is open to external audiences. So no close by discussion is allowed. And also and finally the talk today will be recorded and uploaded in our YouTube channel. That's about it. Let me introduce our speaker today. It is an honor to host Yasha su who is an assistant professor at Purdue University. The goal of Dr. Seuss research is to breach large scale constraint based reasoning and Optimization with state of the art machine learning techniques in order to enable intelligent agents to make optimal decisions in high dimensional and uncertain real world applications. More specifically, Dr. Seuss research focuses on scalable and accurate probable probabilistic reasoning techniques that is the core modeling of data and robust decision making under uncertainty. Recently, Dr. Su has been developing hybrid reasoning and learning approaches in the emerging area of AI driven scientific discovery today, Dr. Su will present an exciting topic, which is scaling, scaling up AI driven scientific discovery, please enjoy and expect a wonderful talk. Now without further ado, let me pass the baton to Dr. Su by asking one random question since today is Friday. In order to recommend a movie for the weekend, what is what is your favorite movie? What is my favorite movie? Shawshank Redemption Oh yeah, I have watched that. Yeah, that's a very inspiring movie. Okay, stage is yours. All right. Thank you. Thank you for the introduction. You also and sorry for this very long title. Today I'm mostly going to talk about scaling up AI driven scientific discovery. And I am here Sean from the Department of Computer Science here to do so we are in Indiana and this is work with Nasim, Nan Chong, how and Professor Xing, Anja and enter you know, as from Purdue. So, let me start by motivating, you know, AI driven scientific discovery. So, over the years, there's tremendous progress in scientific in the scientific discovery fields and especially with large scale simulations, that you know, given a physics model, you know, these large scale simulations is able to, you know, predict, you know, what will happen for these large scale physics models, and that can be compelled, somehow it's okay. So, that is can be compelled with experimental observations. And you know, the physicist can see you know, how well the the match between large scale simulation and experiments is, and if there is not a good match, then they will go back to the, you know, the physics models and try to update the model and do the simulation again and see if and to improve the match. And this overall, you know, leads to a scientific discovery, you know, loop that you loop in between models and simulations and experiments to discover new knowledge. So, this talk is mainly going to be using artificial intelligence to automate this process, and we ask the question, can machine learning be used to automatically discover new science? We will talk about an end to end framework for AI driven scientific discovery, integrating pattern recognition with physics simulation. We will also talk about how we scale up this AI driven scientific discovery framework. So, our approach was motivated by the real world applications have aI driven material discovery in extreme conditions. So for this application, we would like to search for strong materials under heavy irradiation and extreme high temperature. And we would like to understand the defect formation migration in these extreme conditions, and this is, you know, of course, meaning for, to discover new materials for future nuclear reactors. So, the kind of data that we work on are these insecurity experimental data, and we are collaborating with scientists from the Argonne National Lab. So, which is on you know, in the other side of the country, that they have this you know, Institute or experimental setup, that basically is a, you know, electric microscope, and you load your material sample here, and then the material sample is being, you know, baked, so, race to a high temperature, and at the same time, you know, bombarded by iron irradiations. So, under the electric microscope, you can actually see, you know, the microstructure of these. So, in this case, this is a copper, under nanoscale. And so, there are certain, you know, defect clusters of these in these copper material. And if you look at these, you know, the look at the these nanoclusters on the electric microscope, you'll see that over time, under these high temperature and irradiation, these void clusters, they actually change in their related relative positions, and size. So, the question we would like to ask is, you know, can you use a set of partial differential equations to describe, you know, the movement of these, these nano clusters, and that's, you know, is meaningful for material scientists in, you know, understand the underlying theory, behind these high temperature and the irradiation of bombardment, and come up with new materials. So, here is a institchu, a video of these, the Rio Institute video of this nano of this copper material under, you know, 350 degrees C, and current Ion irradiation. Now, if you focus on some of the small voids, so if you look at this one, and these small voids, you'll see that they indeed, are moving, and they are following some, you know, random moves. And our goal is to, you know, learn these physics models that can explain their movement. Now, I really want to say that, you know, novel, artificial intelligence enabled techniques are needed to analyze these large scale data. So Institute experiments provides terabytes of the data. In fact, you know, a 10 minute, a 10 minute video of these electric microscope, videos, they would provide data at a scale of terabytes. And it will cause to, you know, 3.75 months work for a full time PhD students to annotate and analyze these videos frame by frame. Even if he is working very fast, you know, he spent, you know, five minutes annotating periphery. So, that's actually, you know, really motivated our research. Today I'm going to talk about physics knowledge discovery via neuro differential equation embedding efficient learning of sparse and decomposable PDS using random projection and rabbit symbolic regression using scientific approaches, which are some recent work that we have been doing. So, as I have said, the task that we are trying to do is we have this institute of videos of nano voids, that they change over the changing size and move in related positions and We have some annotations, every few frames, the task we are trying to do first is, you know finishes the experimental is to really want us to track the position and the movements of these nano voids at the same time, we would like to learn, you know, the parameters of a set of physics models that can you know, predict the, you know, the evolvement of these nano voids. So, this is actually from our learned model, and you can see, to predict, you know, what is going to happen for these non avoid, and you can see that it's spatial and temporal movements are actually close to the original video and we have a, you know, learned explicit the physics model for that, how are we going to do this, well, we are motivated by you know, the scientific discovery process of physicists. So, as we have just talked about finances, they actually go through the scientific discovery loop by integrating simulation and updating their models and trying to you know, update their models repeatedly to match experiment observations with the simulations. So, what we are doing here, our work is really to replicate what the scientists are doing. However, with artificial intelligence. In particular, what we are doing is we have this institute of video frames and in the first step, we have a recognition neural nets, this is a you know, you know, we use neural nets that he is inspired from computer vision and these neural nets, we try to use these neural net to extract the values of the partial differential equation variable values from this institute video frames at two different timestamps then, you know, we have these seconds neural net, which is this neuro differential equation that, that takes the, you know, the the states of these partial differential equation variables, and try to predict what will happen for for this dynamic system at a later timestamp, and also, we have, you know, annotations. So, suppose, the, the recognition lads and the neuro differential equation that they are both trained, then, which means, the recognition that he is able to extract the values of these partial differential equations from the institute video data and the neuro differential equation that is able to simulate and it has the correct parameters and is able to predict, you know, correctly what the future is, then the simulated results, the recognized results at a later timestamp and the annotations, these three outcomes they should match. Now, of course, you know, in the beginning when you, you know, initialize randomly the recognition that and the neuro differential equation that randomly then, you know, this is not going to tell you, you know, what are the states of these PDE variables, and then your differential equation that is not able to, you know, readily predict into the future. We, therefore, and therefore, these three outcomes they won't match, what we do is we impose a loss function that actually penalizes the difference between the annotation, the simulation, and the recognitions. And we use backpropagation to update both neural nets. And, you know, our hypothesis is, when the training converges and the three outcomes they match the recognition that is able to extract the values of the PD equations automatically from these computer vision data and the neuro differential equation that is able to you know, learn the correct parameters of these partial differential equations. And, you know, in at the time we developed this, this work If we you know, independently, you know, identify that you know, this neuro differential equation that can be used, you know, formulated as a convolutional neural net. But, you know, later on we realized that, you know, other people have made, you know, similar discoveries as, as, during the same period of time, and really, you know, we see there is a rich literature, that actually are all about learning physics models from partial differential equation trajectories from the data and including many scientists probably here in the audience. And our work is, you know, we integrate, you know, pattern recognition, computer vision with neuro partial differential equation, that's, and, you know, we would like to you know, discover this, you know, the states of the FIDIC systems are automatically from the vision data without you know, so, so, most of these models need the trajectories of PDs given to them, we want to integrate computer vision together with neuro partial differential equation that So, if you look at our results, we have this Tm video, so, this is the input and some annotations, and we compare our our model with a, you know, blackbox neural network approach. So, firstly, in terms of tracking, so, here the red parts are denotes the attractive results for these nano voids, in terms of tracking, both results are doing, you know, quite good. So, the neural nets is also able to provide reliable tracking with very high accuracy. However, what makes it interesting is in terms of predicting into the future, so, this is the result, so, if you give a, you know, a TM image as a starting point, and then you ask the neural net, to predict, you know, what is going to happen, you know, into the future, how is this nonopioid going to change over time without embedding a FedEx model. So, what you see is, you know, the prediction quickly becomes non physical. So, this is, you know, some predictions, that is not cannot be the case, in real materials. But then we said, you know, this may be, you know, too difficult for the neural nets, because it's simultaneous, and he needs to predict the future, and at the same time, extract the values of these partial differential equations. So, how about we, you know, we actually feed the neural nets with the ground truth values of the partial differential equations, and ask the neural net to predict the future. And this is, you know, the, you know, in terms of the state of the partial differential equation variables. So, this is its prediction, as you can see that, it is still not able to, you know, reliably predict into the future, our approach, because we actually embed these phase field models, or, you know, these none avoids none avoid involvement, and we are able to, you know, reliably, you know, predict the future and the fact that these matches with the regional dynamics quite well. So, we also deployed our model in the analysis of real world Institute video, data. And so this is the real world data. So, it's a lot more noisy, and we can, you know, provides reliable tracking with high accuracy, we do have these, you know, sometimes these show up, not perfectly well, but overall, the accuracy is is good. We also show that, you know, our model can predict the, you know, the evolvement of, you know, of a new physics system that is not used during training. So, so it's works well generalizing to your new initial conditions. So, so this is the first part of the talk. That's, you know, we I presented a framework For physics knowledge discovery using neuro differential equation embedding, and then, you know, the second part of the talk that is, we are going to ask the question, you know, how we can scale up you know, AI driven scientific discovery, and in this case, we explore, you know, efficiency learning of sparse and decomposable, PDS using random projection. So, identifying PDS automatically from data has attracted great research interests. And however, this is very expensive. So, scientific simulation is already you know, highly expensive operations and the computations can take days or even weeks, because it actually you know, involves, you know, handling billions of mutually interacting elements. Now, the backward learning, the idea that I have just presented is even more expensive, because you actually need to embed this forward simulation into the, you know, the back propagation process and that results in a more even more expansive you know, framework. So, the question we are asking is, how can we expedite both forward simulation and backward learning? And our answer is, if we can use take advantages of the province structure. So, here the province structure that we are looking at are really inspired by the physics problem that we are dealing with. So, this is the non avoid evolvement and this is the grain boundary change the grain grows for materials and all these problems, they have a very nice property that they are interfacial problems meaning, you know, all the interesting phenomenon that you actually see are actually in the, you know, are actually in the, in the boundaries of the system. So, if you look at not avoid, you know, the, you know, the changes are really adds to this, you know, the boundary of these narrow voids, and similarly, the changes are along the boundaries of this you know, these Marty gray material systems, so, not only the the changes are concentrated on the, you know, on the, on the edge of the systems, the you know, the, if you write out the partial differential equations that describe the change, the partial differential equations are actually you know, easily decomposed into the linear combination of learning parameters times you know, a set of sparse features. So, here, you know, the red, you know, the parameters with the red underline are the parameters to learn from the data and the, you know, the, the the terms in blue are these the features. So, you see that, you know, not only the changes are sparse, the features also sparse, okay. Now, this is also true for other, you know, variables in the system, and is also true for grand gross. So, now, if you have this, you know, very sparse fitting system, what you can, what you immediately realize, is, you know, you're dealing with a, so this is the loss function of the learning problem that you're trying to learn that basically, you try to, you know, minimize the loss, the loss actually penalizes the difference between the observed update of the system and the predicted updates of from your current model. Now, if the, you know, the observe the update is highly sparse, and the features are also highly sparse, then if you look at this loss function, it is actually, you know, a gigantic sum with many, many elements, but most of the elements they do not have in most of the places they don't have any updates and all the features also zero. So, most of these loss terms are zero terms. So, you are actually dealing with a loss function That's a lot of places you don't actually need to worry about the change. Now, how can we a one caveat is, you know, if you know, well, the loss is going to be zero, right? If you know that beforehand, then you can carry out, you know, these learning in those places in those areas, that has only has a nonzero losses, and you can greatly, you know, greatly reduce your computational overhead. However, the problem is, you actually don't know these terms. So, these terms, any term can be nonzero over learning, you just know that, you know, overall, there is a small fraction of the terms that is nonzero in the, in this loss function. So what you can do is, you know, we use this random projection, the idea is to, you know, change the loss function a little bit. So, let's say, you know, you have these laws, and you and we multiply these laws with a random projection vector, and in this case, are the vectors of zeros and ones. So, now, in practice you you are not, you know, restricted to use a projecting vector of zeros and ones you can actually use, you know, different other projection vectors, but we just use these zeros and ones as a illustrating point. So, what we have are these, you know, these projection vector of zeros and ones, actually, due to your loss factor, well, either basically extract a few terms, which are the terms in which you have these ones and these corresponding locations, and you sum them up, right. So, basically, if you project these factor using these random 01 vectors, it is actually, you know, group a few of these last terms together and as well, some of them, okay. Now, this is actually you see that, you know, it's not that idea, because you are changing the loss function, you are, you know, combining many terms together and squirrel some term, instead of squirrel, sum them individually and add them up. However, the thing is, you know, the caveats, you realize is because most of these terms are zero. Now, even if you you know, combine several terms together, it is unlikely that more than two or two or more than two, you know, nonzero terms will be, you know, you know, grouped together, okay, so, you are changing. So, essentially, if you look at the, you know, you are changing the loss function, by grouping these terms, you know, terms together using this random, you know, projection matrices, but you're not changing the loss function too much, meaning that it's highly unlikely that you get many on the row terms that is being grouped together. So, in fact, you know, we have these, you know, theorem that is able to, you know, quantify, you know, what is the difference by doing these projections with these random random vectors, and we can see that, you know, the, the loss function, you know, it's actually brings you a constant approximation to the original loss function, which means, during learning, if you minimize your new loss function, which is the surrogate, it's, if you find a you know, you know, an optimality that minimize this loss function it at most, you will also find a good you know, solution to a few minimizing the original, highly expensive loss functions. So, because of that, you know, we develop this new idea that, based on random projections, we first you know, random project boasts the, you know, the features and the spatial and temporal changes into this compressed the space and then we carry out the learning you know, entirely in the compress the space without mo compress, you know, you know, project them back in original space. I want to say that the Our approach you know, the compression is done as a pre processing step. So, even though it is you know, the projection the compressing is a costly step, but it's only done once. So, the overall you know, computational overheads bringing by the, you know, the random projections are not that much in terms of experiments, we are able to see that, you know, the our models do learns, you know, still has really reasonable learning performance, even after the dimensionality has been projected to 0.05% of the original size. So, if you look at, you know, these are all these, this is basically not, not avoid evolution, if you have the data compressed to 0.05% of the original size, still the Learn model is able to simulate similar dynamics as the as the original, the model learned without compression. So, sir, I don't know if we are allowed to ask questions during the talk, or we will save the questions to the Yeah, okay, so we can pose and then we can, you know, take some questions. I'm actually in the chatroom, there are some Oh, they are okay. I didn't I don't know how to open the chat room. So well, actually, what parent Daniel was posing some questions. Do you guys want to unmute yourself and ask that? Yeah, Daniel should go first. And yeah, are you there? I guess it's not. Yeah. Well, we can read it. So Daniel's question is, the Nano voids seem to have high contrast against the background? Have you tried any mathematical operations to track them? Instead of statistical learning? Now, I didn't quite understand that. But I interpreted it as if you could identify these nano voids, then you could describe them as points and radii and radius or something. And you could you could describe why not describe them as od es rather than PDS? Yes. So that's a very good question. So the now did we try to use, you know, tracking algorithms for these, for these non avoids? Yes, we did. And, but what we are more interested is in the physics behind the nonopioid. So, so that is, you know, the whole point of, you know, we want to use a set of partial differential equations to describe that. So in terms of whether you can actually just say that, did you just say that? You know, I said, we use the tracking algorithms from computer vision. To track these narrow votes. Yes, yes. But but if you could do that, then you could describe the Nano voids in as, as objects, and you could just list as particles, and you could use od models rather than PDE models to describe their behavior. And that would be much simpler. And so it's a question of how you formulate the problem, would you have formulated a problem that way, it would clearly be computationally much more tractable. And so so that's, that's what I would like to know, I think that Daniel may have been heading in that direction, but he didn't, but he may have meant something different. Very good question. So, I think we can formulate the knot avoid evolution using ODS by basically, you know, looking at, you know, they'll you know, the changes of their diameters and assume this is a you know, this is a you know, a perfect feel, and they are, you know, being you know, and the change of the diameters of this sphere and so on. And you extract this using a few, you know, parameters like the, you know, the radius, the X and Y and Z locations and, you know, turn that into an OD problem to process it. So, that is that, I believe, is doable, and it will be a good you know, it's well be a good you know, good model that that actually, you know, show a lot of light to certain degrees. of this of this Vedic system now, but what makes this more interesting is we actually observe. So, if you think about it, why the you know, the the Nano voids actually move in the spatial and temporal domain is actually because, you know, the, the rate of shrinking of the narrow voids in different parts of the narrow voids, they are different. And therefore, you know, these, the difference of the rate actually caused another voice to move. And we also observed empirically that, you know, it's not not always sphere and they are and in some materials, you know, the shape of the Nano voids, they are, you know, in some physics systems that we are working on, you know, they have elongated nano voids, and so on. That's, you know, the shape is way, way more complex. So, it sounds like, you're saying that, typically, it's better to view this as a fluid of some kind rather than as a set of particles, and that PDS are more appropriate in that context. Is that where you're heading? Yes, yes. And it's May, you know, it may give us more physics, knowledge. Okay. So in the meantime, Ravi, Abram has, has made some comments, and you may want to let him speak. Yeah, Robbie, if you want to unmute, and go have just a just a thought on the loss functions, right? So I didn't see a parrot or the loss functions, if some of them are dominant, then you can exclusively select them out. And the second question is, of course, everywhere, you're tracking these objects in all these, as those mentioned, they could burst, right? So you're not looking at some equations where there are disruptions like typical shockwaves. Right? So in this example, there are none. So it's just a simplified ODS, with different loss functions. But if they are not, then potentially the bubble could burst. So that your question is, if I have paired to it like five or six of the loss functions to a higher degree or the rest, then you can almost predict faster, but at the same time, you should see if there are some disruptions that could happen. If the destroys happenstance isn't PDE better than OT? And the question is, are there disruptions in those PDS like a shock wave suddenly appearing? Right? We never examined those things, but there could be possibilities like that. It's just a question of saying, Okay, what's the probability that in the current situation right now 2.5 or four or five gaps in either collates or break apart? Very good question. So, the, the first part is, you know, do we have this, you know, random effect, that, you know, sometimes the, you know, the void burst and so on and so forth? That is very good. You know, indeed, in experiments, we, in experimental data, we see these kinds of things from happening, we see these kind of things happening, okay. And currently the model is, you know, the models, this, the theoretic physicists they come up, is they use some kind of, you know, random effect, to capture this, and our learning systems are not fully capturing that. And, but that is indeed very exciting. That's, we want to look into that. In as future work, and Robbie, what, what is your other question? The other question is, if you look, look at your loss function, you're telling there's a large sparseness between the ones and zeros all over the place, there's still a large data set, right. So you also mentioned not introducing ones and zeros parts, let's say some fractions, for example, some weighted fractions, if you really look at how this Pareto on the larger groups are, so imagine there are blue bubbles versus yellow bottles, I'm just throwing out right so then on the interface, so you're looking at something saying, okay, the nature of the initial conditions are all blues. So there's more likely that the blues remain right and that basically means you're not looking at just the large vector have waited on ones and zeros but only a small cluster waited on it. So then your the learning curves that you're trying to optimize on will become smaller and smaller. So you know, you can be faster than truncheons Yeah, I didn't quite, quite grasp your idea. I think, you know, probably we, let's, let's let's put this offline and I think you're talking about something exciting that you know, currently through this Telly communication, I am not fully grasping your, your idea, but I think that's our interesting ideas. Yeah, let's let's put that discussion later or offline, why don't you move on? Okay, yeah. So, the third part is about you know, symbolic regression using scientific approaches. So, for these parts, you know, this is some recent work that we have just been starting eventually, we would like to actually see this working out for learning partial differential equations, but we are starting on you know, small examples of learning mathematical equations from you know, these you know, these data. So, the, you know, the starting point is, you know, artificial intelligence has been, you know, you know, progressing tremendously in the in the, you know, in scientific domains, but, if you look at, you know, how scientists that are doing are learning these you know, scientific laws from data, they actually are very different from these neural network models in the sense that, you know, they often are able to learn, you know, these very elegant models from you know, an incredible small set set of surprising data and the the models, the learned models and the equations, they are, you know, highly elegant and they are interoperable and they all learning process is believable, not quite different from today's machine learning approach, that, you know, they actively form a hypothesis and they actively explore you know, the, you know, the experimental space with a purpose. So, these you know, these very, these different characteristics make us made me really think that you know, can we you know, use the currency you know, these neural networks based on stochastic gradient descent is able to give us you know, new science, it may be able to, you know, you know, refine our physics models, for example, this is the law of gravity, you know, it may be you know, the Refine Search on parameters is this inverse to our squelch or our to the 2.1 squelch also, but, you know, to what degree these can, you know, help us you know, discover new physics laws, that is the, the question that, you know, I have been, you know, asking, recently, so, I believe, you know, the next stage that for, you know, learning scientific data from, from learning scientific data, running scientific models from the data are really nice to be to have these reasoning power to learning approaches, that we actively form hypothesis and design experiments. And, you know, goes through these, you know, close to loop of experimentation, I possesses, and, you know, learning and for this is just some starting points of our recent work, that we would like to explore how, you know, control variable experiments as a classical scientific approach, whether these experiments can be used to to expedite scientific machine learning. So, you know, this is the symbolic regression task, that's basically you're given a data set, okay. So, here you have a data set of x and y, and you try to learn a, you know, a polynomial, a mathematical equation that maps from the x to the y's. So, this is of course, a good benchmark and making the scientific discovery process, we have been talking about surrounding partial differential equation models. This is a you know, A simplified version of that process. Now, this problem is also incredibly difficult because of the large search space of all the possible expressions. So, you know, some audience have seen this slide, but, you know, for the rest if you happen to see this slide, are you able to, you know, discover what is the mathematical equation that, you know maps from the x to the Y? Well, this is actually very difficult, because, you know, I actually intentionally make this very difficult. But, as you can see that, you know, this is a, a highly non trivial problem that's a you know, you're given a data set and you try to figure out what is the polynomial that map's the input to the output. But, you know, how about I asked you to only look into these rows and come up with an equation that maps from the input to the output x one plus x three Yes. So, so, I actually run these through you know, many undergraduate students here that they are able to figure this out, okay, they are able to figure out if you just look at the Israel's then x one plus x three is a equation that's that actually described, you know, so 2.5 plus 9.5 is 12 and so on and so forth. Now, how about this rose you know, I actually asked the undergraduate students and they are able to figure out that you know, these you know, these minus x one plus x ray is the equation that you know, actually you know, maps the inputs from the output. So, if you look at you know, minus three plus four is actually one minus you know, 2.4 point two plus 2.2 is minus two and so on and so forth. So, if you have this, you know, the Reds rows and the blue rows, you can actually you know, you can actually still add these equations a little bit and then you find out that oh, you know, in the red arrows, the X twos are actually are actually you know, one point knows in red and the blue rose the x two are set to be minus 1.0x. And if you look at the coefficients between before x one, then in the red arrows, these are the red one point o's and the blue arrows, these are minus 1.0. So, you know, by doing that, you should be able to guess oh is the equations, you know, x one times x two plus x three, and that is indeed the ground truth equation. So, if you powder through this process a little bit, then you will see that, you know, this process is really the process of you know, doing control variable experiments, you first hold X to be a 1.0 and then you find a, you know, I simplify the equation, honor these conditions, and then you host the, you know, the x two into minus one point O's, and then you see, you know, another simplified equation, and you are able to, you know, figure out the equations by actually looking at the outcomes of these control variable experiments. And so, you can see that, you know, these control variable experiments, greatly simplified symbolic regression. I see, there are a lot of discussions, um, it's very quick on my screen, so, I'm not able to follow you know, these discussions. Nothing serious, it's just carry on. Yeah, okay. Okay. All right. So, let me first talk a little bit about you know, what a control variable experiment is, this is indeed you know, this is indeed one of the oldest ideas in scientific discovery. So, it is a classic procedure widely implemented and proven useful in science. In control variable experiments, you have certain variables controlled meaning, that in one trial, they are whole, they are held at a single values and then you study the relationship between the dependent variables and independent variables with you know the you know these set of variables controlled now, the you also have these free variables which they allowed to change in values within one trial and four we assume that there is an underlying expression that generates the experimental data. So, this is a reasonable assumption if you try to do these symbolic regression tasks and you know when you are working on control variable experimental data because you have certain variables that is hold as constant then you know what's its you know appears to you is actually you know the you know the the equations are actually coming from a reduced form equation that you know the corresponding you know these control variables are replaced by the content by the constants. So, as a you know first step we recently explore these ideas of control variable genetic programming that you know, we first you know, do the A we try to you know do these learn these symbolic equations from control variable experiments in the first step, we actually hold most of the variables except for one as constants and we try to use genetic programming to actually learn a you know, an equation that links the output from the input. So, because we are only starting the dependence between the outputs and one input it is relatively easy. So, the in most cases the genetic programming algorithm is able to you know, discover the correct you know, reduce the form equation and then what we do is in a second step we let one variable to bury and now, we study the study the relationship between this output variable and two independent variables. And, so, in this case, you know, we you know, we asked her genetic programming to extend from the first step you know, what is the new equation that involves these two variables that can best explain these, these data and then we carry on in the third step and fourth step, finally, we let all the variables to bury and we are you know, we learn a and symbolically equation that maps the output from all the inputs and experimental results actually show that our approach is able to you know, outperform a series of you know, approaches from based on different ideas based on genetic programming, you know, risk seeking, reinforcement learning and, and more and more just just, you know, let me say that, you know, I actually, you know, discovered this, you know, and we are very excited about this and we actually, you know, later on and when we you know, actually, you know, present this as in one of the other values and we discovered that, you know, one of the pioneers, that they he actually is in the audience today, he actually pioneered this approach, many many years, in fact, like 30 years ago of this approach, but I believe this is the correct way of doing science and this, this exciting idea has been forgotten in some in some, you know, after these many years and instead of focusing on building you know, more and more sophisticated complicated neural networks, I think these old idea of based on how we do science can shy you know, in today's, you know, with the developments of these complicated and, you know, fancy neural networks with, with more computing power and so on, and this is also this is only a first step Next, we look at these very limited problems of equation discovery, symbolic discovery, and we will, you know, certainly push this to, you know, more complex scientific phenomena. Now, let me talk a little bit about, you know, some efforts that we want to see if this kind of ideas can be, you know, applied more broadly, in learning partial differential equations. So, here is a phase field model, that's actually, you know, if you simulate this phase field model, it's actually generates its growth a snowflake, out of these phase build models. Now, the question, you know, you can use, you know, the, you know, the learning approaches that we presented before, to actually try to learn these face build model, that, you know, that determine this process, it is actually very difficult because this function is highly nonlinear, what we do is, we try to set up these controller learning experiments, that we first generate data, in which, you know, the blue parameters, they don't matter, they don't matter, in predicting the future for those kinds of data. And in this case, the model can focus on learning the rat parameters alone. And then after we, you know, the learning converge on rank parameters converges, and, you know, they are, you know, they converges, we let, you know, we generate new data that allow the model to learn the blue parameters. Now, if you look at the experimental results, so this is the ground shoes, that's actually you grow, you know, it's a snowflake, but if you learn all the parameters at once, this is what you get, basically, you know, you get these snowflakes that, you know, it is still a, you know, a dendritic certification process, but the number of petals of this snowflake is actually wrong, okay, so it's a different shape. But if you follow, you know, this customize the, you know, control variable learning experiments, that you are able to, you know, learn these snowflake. That is, you know, exactly like, you know, the Gronk shoes. So, this is the last slide, in summary, you know, I talked about data driven scientific discovery, learning PD models, from the experimental data, integrate deep recognition networks with neuro PDE, Matt, and I talked a little bit about, you know, using random projection to improve the efficiency, and, you know, use scientific approaches based on control variable experiments to expedite equation discovery. And we deployed our message in searching for a human learning the nano structure evolution for materials under extreme conditions. And I know, there are, of course, a lot of future works, in terms of extending to now expires, PD updates, active scientific discoveries, and so on. So I see, there are a lot of discussions, I'm not able to follow them, because it's literally it's on my screen, there's, you know, this one seconds, and then they disappear. So, it's okay, I was I was giving people references to some of the older work, but also someone raised the issue of dealing, applying this this last part of your work to handle missing variables, things that are not observed, but that are still say, having a causal influence on the system. And I mentioned some early work we did, but I agree that's a really important issue. And if you have any thoughts on that, maybe you can tell us yeah, that's, you know, identifying missing values, that would be amazing. So you know, it's it's kind of like, you know, you will have to identify that you know, there are you know, the predictions are deviating from the from the experiments in none, you know, it is not caused by random noise there is in a systematic way, the, you know, the experiments are deviating from the, from the experiments are deviating from what the model predicts. And that involves, how you can identify that there is a systematic You know, mechanism that, that that is it's a systematic deviation. And that I think, yes, indeed it's, you know, probably can benefit from, you know, causal inference and other approaches. I don't have, you know, a, you know, a good answer for now. But that is very important and, and very important question and needs more future work. Sounds good. Well, any other any other exciting discussions we need to do? You can unmute yourself and freely not meet that. We've, uh, we should. I'm sorry, I haven't followed up after the symposium. But but I'm excited about about this. This work. And I'd love to collaborate. Pads. Yes. Yes, Pat. Yes. We should the follow up. Yes. Well, given the interest of the old worker pad, maybe you want to give the second DDPS seminar? Sure, it would be it would be interesting to i Well, actually, if you go back to the recording of the first seminar I gave, I actually did review. Oh, but but I could I we can we can explore that for sure. Yeah. Then and then you think can can can come and he can give me trouble during my talk. Okay, thank you. All right. Any other question from audience, you can unmute yourself. And this is very interesting. I've gone out of academia for a very long time. I'm in the professional supply chain business. So it was real fun. Thank you. Awesome. And your analysis looks like nods. Well, let's thank our speaker. Yes. Yang for the wonderful talk. And given the situations he has to go to the airport to catch the plane in a in an hour now. He was gracious to to still meet the talk today. Thank you so much for that. Well, thank you. Thank you also for hosting me. Thanks a lot. All right, sounds good. Um, hopefully after this talk, a lot of collaboration is going to be between you and Warren deliver more or even other external books. Yeah, thank you, Aisha. And this topic
+
+
+00:00:08.009 --> 00:00:11.609
+ 
+
+
+00:00:11.609 --> 00:00:15.149
+ 
+
+
+00:00:15.149 --> 00:00:18.089
+ 
+
+
+00:00:18.089 --> 00:00:20.999
+ 
+
+
+00:00:20.999 --> 00:00:25.019
+ 
+
+
+00:00:25.019 --> 00:00:28.109
+ 
+
+
+00:00:28.109 --> 00:00:32.429
+ 
+
+
+00:00:32.429 --> 00:00:38.399
+ 
+
+
+00:00:38.429 --> 00:00:42.869
+ 
+
+
+00:00:42.869 --> 00:00:45.899
+ 
+
+
+00:00:45.899 --> 00:00:51.419
+ 
+
+
+00:00:51.419 --> 00:00:57.089
+ 
+
+
+00:00:57.089 --> 00:01:01.499
+ 
+
+
+00:01:01.499 --> 00:01:04.499
+ 
+
+
+00:01:04.529 --> 00:01:09.329
+ 
+
+
+00:01:09.329 --> 00:01:11.789
+ 
+
+
+00:01:11.789 --> 00:01:18.269
+ 
+
+
+00:01:18.389 --> 00:01:22.889
+ 
+
+
+00:01:22.889 --> 00:01:26.129
+ 
+
+
+00:01:26.159 --> 00:01:29.819
+ 
+
+
+00:01:29.819 --> 00:01:32.789
+ 
+
+
+00:01:32.789 --> 00:01:37.499
+ 
+
+
+00:01:37.499 --> 00:01:42.569
+ 
+
+
+00:01:42.569 --> 00:01:47.459
+ 
+
+
+00:01:47.459 --> 00:01:51.329
+ 
+
+
+00:01:51.359 --> 00:01:55.799
+ 
+
+
+00:01:55.799 --> 00:02:01.199
+ 
+
+
+00:02:01.199 --> 00:02:06.599
+ 
+
+
+00:02:06.629 --> 00:02:07.949
+
+
+00:02:10.350 --> 00:02:12.090
+
+
+00:02:13.080 --> 00:02:17.460
+ 
+
+
+00:02:17.460 --> 00:02:20.280
+
+
+00:02:20.910 --> 00:02:24.510
+ 
+
+
+00:02:24.510 --> 00:02:29.790
+ 
+
+
+00:02:29.790 --> 00:02:35.280
+ 
+
+
+00:02:35.580 --> 00:02:39.180
+ 
+
+
+00:02:39.180 --> 00:02:46.830
+ 
+
+
+00:02:47.820 --> 00:02:52.770
+ 
+
+
+00:02:54.030 --> 00:02:58.590
+ 
+
+
+00:02:58.590 --> 00:03:05.400
+ 
+
+
+00:03:05.400 --> 00:03:11.730
+ 
+
+
+00:03:11.730 --> 00:03:17.490
+ 
+
+
+00:03:17.490 --> 00:03:21.090
+ 
+
+
+00:03:21.570 --> 00:03:25.440
+ 
+
+
+00:03:25.440 --> 00:03:31.500
+ 
+
+
+00:03:31.530 --> 00:03:35.850
+ 
+
+
+00:03:35.850 --> 00:03:41.910
+ 
+
+
+00:03:42.060 --> 00:03:47.220
+ 
+
+
+00:03:47.250 --> 00:03:52.680
+ 
+
+
+00:03:52.680 --> 00:03:56.400
+ 
+
+
+00:03:56.400 --> 00:04:00.870
+ 
+
+
+00:04:00.870 --> 00:04:04.740
+ 
+
+
+00:04:04.740 --> 00:04:10.800
+ 
+
+
+00:04:11.040 --> 00:04:18.480
+ 
+
+
+00:04:18.480 --> 00:04:23.340
+ 
+
+
+00:04:23.370 --> 00:04:28.800
+ 
+
+
+00:04:28.800 --> 00:04:32.790
+ 
+
+
+00:04:32.790 --> 00:04:38.970
+ 
+
+
+00:04:38.970 --> 00:04:44.010
+ 
+
+
+00:04:44.190 --> 00:04:49.020
+ 
+
+
+00:04:49.020 --> 00:04:55.470
+ 
+
+
+00:04:55.500 --> 00:05:01.140
+ 
+
+
+00:05:01.140 --> 00:05:07.140
+ 
+
+
+00:05:07.170 --> 00:05:12.300
+ 
+
+
+00:05:12.330 --> 00:05:18.000
+ 
+
+
+00:05:18.000 --> 00:05:23.640
+ 
+
+
+00:05:23.640 --> 00:05:28.380
+ 
+
+
+00:05:28.380 --> 00:05:33.600
+ 
+
+
+00:05:33.630 --> 00:05:38.250
+ 
+
+
+00:05:38.430 --> 00:05:42.240
+ 
+
+
+00:05:42.420 --> 00:05:47.430
+ 
+
+
+00:05:47.490 --> 00:05:51.930
+ 
+
+
+00:05:52.140 --> 00:05:55.320
+ 
+
+
+00:05:55.320 --> 00:06:00.300
+ 
+
+
+00:06:00.300 --> 00:06:04.680
+ 
+
+
+00:06:04.830 --> 00:06:09.600
+ 
+
+
+00:06:09.600 --> 00:06:14.190
+ 
+
+
+00:06:14.910 --> 00:06:18.480
+ 
+
+
+00:06:18.480 --> 00:06:23.010
+ 
+
+
+00:06:23.010 --> 00:06:29.760
+ 
+
+
+00:06:29.760 --> 00:06:33.900
+ 
+
+
+00:06:33.900 --> 00:06:39.870
+ 
+
+
+00:06:39.870 --> 00:06:45.330
+ 
+
+
+00:06:45.330 --> 00:06:51.300
+ 
+
+
+00:06:51.870 --> 00:06:58.740
+ 
+
+
+00:06:58.770 --> 00:07:05.550
+ 
+
+
+00:07:05.550 --> 00:07:11.430
+ 
+
+
+00:07:11.430 --> 00:07:18.150
+ 
+
+
+00:07:18.150 --> 00:07:24.030
+ 
+
+
+00:07:24.030 --> 00:07:28.620
+ 
+
+
+00:07:28.620 --> 00:07:32.520
+ 
+
+
+00:07:32.550 --> 00:07:38.940
+ 
+
+
+00:07:39.210 --> 00:07:46.920
+ 
+
+
+00:07:46.950 --> 00:07:55.050
+ 
+
+
+00:07:55.380 --> 00:08:00.900
+ 
+
+
+00:08:00.900 --> 00:08:05.400
+ 
+
+
+00:08:05.430 --> 00:08:09.600
+ 
+
+
+00:08:09.600 --> 00:08:15.390
+ 
+
+
+00:08:15.390 --> 00:08:21.630
+ 
+
+
+00:08:21.630 --> 00:08:27.120
+ 
+
+
+00:08:27.120 --> 00:08:32.940
+ 
+
+
+00:08:32.940 --> 00:08:37.950
+ 
+
+
+00:08:37.950 --> 00:08:45.000
+ 
+
+
+00:08:45.660 --> 00:08:50.910
+ 
+
+
+00:08:50.910 --> 00:08:57.690
+ 
+
+
+00:08:57.690 --> 00:09:05.280
+ 
+
+
+00:09:05.280 --> 00:09:10.260
+ 
+
+
+00:09:10.380 --> 00:09:14.430
+ 
+
+
+00:09:14.430 --> 00:09:20.520
+ 
+
+
+00:09:20.520 --> 00:09:24.420
+ 
+
+
+00:09:24.420 --> 00:09:29.370
+ 
+
+
+00:09:29.370 --> 00:09:32.430
+ 
+
+
+00:09:32.430 --> 00:09:37.050
+ 
+
+
+00:09:37.050 --> 00:09:39.990
+ 
+
+
+00:09:40.530 --> 00:09:49.230
+ 
+
+
+00:09:49.230 --> 00:09:54.540
+ 
+
+
+00:09:54.570 --> 00:10:00.810
+ 
+
+
+00:10:01.050 --> 00:10:06.090
+ 
+
+
+00:10:06.090 --> 00:10:10.380
+ 
+
+
+00:10:10.380 --> 00:10:14.970
+ 
+
+
+00:10:14.970 --> 00:10:19.500
+ 
+
+
+00:10:19.860 --> 00:10:24.570
+ 
+
+
+00:10:25.890 --> 00:10:30.750
+ 
+
+
+00:10:30.750 --> 00:10:36.060
+ 
+
+
+00:10:36.060 --> 00:10:39.720
+ 
+
+
+00:10:39.720 --> 00:10:44.130
+ 
+
+
+00:10:44.160 --> 00:10:50.010
+ 
+
+
+00:10:50.160 --> 00:10:56.010
+ 
+
+
+00:10:56.010 --> 00:11:00.870
+ 
+
+
+00:11:00.870 --> 00:11:08.310
+ 
+
+
+00:11:08.370 --> 00:11:11.640
+ 
+
+
+00:11:11.640 --> 00:11:16.830
+ 
+
+
+00:11:16.860 --> 00:11:20.880
+ 
+
+
+00:11:21.660 --> 00:11:26.490
+ 
+
+
+00:11:26.490 --> 00:11:33.360
+ 
+
+
+00:11:33.570 --> 00:11:38.130
+ 
+
+
+00:11:38.160 --> 00:11:45.720
+ 
+
+
+00:11:45.720 --> 00:11:53.940
+ 
+
+
+00:11:53.940 --> 00:11:58.200
+ 
+
+
+00:11:58.200 --> 00:12:01.890
+ 
+
+
+00:12:02.190 --> 00:12:07.350
+ 
+
+
+00:12:07.350 --> 00:12:11.220
+ 
+
+
+00:12:11.220 --> 00:12:16.980
+ 
+
+
+00:12:17.220 --> 00:12:18.300
+
+
+00:12:19.650 --> 00:12:24.240
+ 
+
+
+00:12:24.240 --> 00:12:29.790
+ 
+
+
+00:12:29.790 --> 00:12:34.980
+ 
+
+
+00:12:35.190 --> 00:12:41.760
+ 
+
+
+00:12:41.760 --> 00:12:46.740
+ 
+
+
+00:12:46.740 --> 00:12:54.750
+ 
+
+
+00:12:54.750 --> 00:12:59.190
+ 
+
+
+00:12:59.310 --> 00:13:03.390
+ 
+
+
+00:13:03.390 --> 00:13:06.720
+ 
+
+
+00:13:06.720 --> 00:13:11.310
+ 
+
+
+00:13:11.340 --> 00:13:17.670
+ 
+
+
+00:13:17.700 --> 00:13:22.230
+ 
+
+
+00:13:22.770 --> 00:13:27.360
+ 
+
+
+00:13:27.360 --> 00:13:33.810
+ 
+
+
+00:13:33.810 --> 00:13:38.910
+ 
+
+
+00:13:38.910 --> 00:13:43.800
+ 
+
+
+00:13:43.800 --> 00:13:49.020
+ 
+
+
+00:13:49.020 --> 00:13:53.370
+ 
+
+
+00:13:53.370 --> 00:13:55.860
+ 
+
+
+00:13:56.160 --> 00:14:01.860
+ 
+
+
+00:14:01.890 --> 00:14:05.730
+ 
+
+
+00:14:06.120 --> 00:14:11.580
+ 
+
+
+00:14:12.180 --> 00:14:16.260
+ 
+
+
+00:14:16.530 --> 00:14:21.030
+ 
+
+
+00:14:21.030 --> 00:14:27.240
+ 
+
+
+00:14:27.270 --> 00:14:33.180
+ 
+
+
+00:14:33.210 --> 00:14:39.450
+ 
+
+
+00:14:39.660 --> 00:14:44.070
+ 
+
+
+00:14:44.070 --> 00:14:47.640
+ 
+
+
+00:14:47.640 --> 00:14:54.210
+ 
+
+
+00:14:54.210 --> 00:15:01.110
+ 
+
+
+00:15:01.320 --> 00:15:05.820
+ 
+
+
+00:15:05.820 --> 00:15:08.610
+ 
+
+
+00:15:08.610 --> 00:15:13.770
+ 
+
+
+00:15:13.770 --> 00:15:17.370
+ 
+
+
+00:15:17.370 --> 00:15:21.510
+ 
+
+
+00:15:21.510 --> 00:15:28.260
+ 
+
+
+00:15:28.530 --> 00:15:33.090
+ 
+
+
+00:15:33.360 --> 00:15:36.990
+ 
+
+
+00:15:37.170 --> 00:15:42.990
+ 
+
+
+00:15:44.160 --> 00:15:48.420
+ 
+
+
+00:15:48.420 --> 00:15:54.300
+ 
+
+
+00:15:54.300 --> 00:15:58.950
+ 
+
+
+00:15:58.980 --> 00:16:04.470
+ 
+
+
+00:16:04.470 --> 00:16:10.440
+ 
+
+
+00:16:10.440 --> 00:16:14.970
+ 
+
+
+00:16:14.970 --> 00:16:20.100
+ 
+
+
+00:16:20.280 --> 00:16:25.830
+ 
+
+
+00:16:25.830 --> 00:16:31.830
+ 
+
+
+00:16:31.830 --> 00:16:38.970
+ 
+
+
+00:16:39.060 --> 00:16:43.710
+ 
+
+
+00:16:43.710 --> 00:16:49.620
+ 
+
+
+00:16:49.650 --> 00:16:55.470
+ 
+
+
+00:16:55.470 --> 00:16:59.970
+ 
+
+
+00:16:59.970 --> 00:17:03.360
+ 
+
+
+00:17:04.230 --> 00:17:09.480
+ 
+
+
+00:17:09.480 --> 00:17:14.310
+ 
+
+
+00:17:14.310 --> 00:17:19.230
+ 
+
+
+00:17:19.230 --> 00:17:22.650
+ 
+
+
+00:17:22.650 --> 00:17:27.450
+ 
+
+
+00:17:27.480 --> 00:17:32.370
+ 
+
+
+00:17:32.940 --> 00:17:37.920
+ 
+
+
+00:17:38.100 --> 00:17:42.600
+ 
+
+
+00:17:42.630 --> 00:17:49.050
+ 
+
+
+00:17:49.050 --> 00:17:53.280
+ 
+
+
+00:17:53.520 --> 00:17:57.330
+ 
+
+
+00:17:57.570 --> 00:18:01.860
+ 
+
+
+00:18:01.860 --> 00:18:07.560
+ 
+
+
+00:18:07.560 --> 00:18:11.430
+ 
+
+
+00:18:11.430 --> 00:18:14.190
+ 
+
+
+00:18:14.190 --> 00:18:19.830
+ 
+
+
+00:18:19.830 --> 00:18:22.680
+ 
+
+
+00:18:23.100 --> 00:18:28.050
+ 
+
+
+00:18:28.320 --> 00:18:33.870
+ 
+
+
+00:18:33.870 --> 00:18:40.050
+ 
+
+
+00:18:40.050 --> 00:18:46.200
+ 
+
+
+00:18:46.440 --> 00:18:51.000
+ 
+
+
+00:18:51.030 --> 00:18:54.210
+ 
+
+
+00:18:54.210 --> 00:19:02.160
+ 
+
+
+00:19:02.190 --> 00:19:07.710
+ 
+
+
+00:19:07.710 --> 00:19:12.660
+ 
+
+
+00:19:12.660 --> 00:19:18.120
+ 
+
+
+00:19:18.120 --> 00:19:24.030
+ 
+
+
+00:19:24.540 --> 00:19:29.430
+ 
+
+
+00:19:29.430 --> 00:19:36.810
+ 
+
+
+00:19:36.810 --> 00:19:42.480
+ 
+
+
+00:19:42.480 --> 00:19:48.960
+ 
+
+
+00:19:48.960 --> 00:19:57.090
+ 
+
+
+00:19:57.150 --> 00:20:00.960
+ 
+
+
+00:20:00.960 --> 00:20:04.320
+ 
+
+
+00:20:04.650 --> 00:20:09.270
+ 
+
+
+00:20:09.270 --> 00:20:13.140
+ 
+
+
+00:20:13.140 --> 00:20:17.790
+ 
+
+
+00:20:17.790 --> 00:20:22.020
+ 
+
+
+00:20:22.020 --> 00:20:29.820
+ 
+
+
+00:20:29.820 --> 00:20:32.940
+ 
+
+
+00:20:32.970 --> 00:20:40.800
+ 
+
+
+00:20:40.800 --> 00:20:46.530
+ 
+
+
+00:20:46.530 --> 00:20:51.180
+ 
+
+
+00:20:51.180 --> 00:20:55.620
+ 
+
+
+00:20:55.650 --> 00:21:00.600
+ 
+
+
+00:21:00.600 --> 00:21:06.240
+ 
+
+
+00:21:07.290 --> 00:21:14.010
+ 
+
+
+00:21:14.010 --> 00:21:18.420
+ 
+
+
+00:21:18.450 --> 00:21:20.220
+
+
+00:21:21.510 --> 00:21:26.100
+ 
+
+
+00:21:26.100 --> 00:21:29.940
+ 
+
+
+00:21:29.940 --> 00:21:35.940
+ 
+
+
+00:21:36.240 --> 00:21:40.710
+ 
+
+
+00:21:40.710 --> 00:21:44.310
+ 
+
+
+00:21:44.310 --> 00:21:50.220
+ 
+
+
+00:21:50.280 --> 00:21:54.960
+ 
+
+
+00:21:54.960 --> 00:21:58.320
+ 
+
+
+00:21:58.320 --> 00:22:03.210
+ 
+
+
+00:22:03.690 --> 00:22:08.820
+ 
+
+
+00:22:09.090 --> 00:22:13.710
+ 
+
+
+00:22:13.710 --> 00:22:18.840
+ 
+
+
+00:22:18.840 --> 00:22:22.620
+ 
+
+
+00:22:22.620 --> 00:22:26.460
+ 
+
+
+00:22:26.460 --> 00:22:31.740
+ 
+
+
+00:22:31.740 --> 00:22:37.920
+ 
+
+
+00:22:37.920 --> 00:22:43.200
+ 
+
+
+00:22:43.200 --> 00:22:51.720
+ 
+
+
+00:22:51.720 --> 00:22:56.040
+ 
+
+
+00:22:56.040 --> 00:22:59.970
+ 
+
+
+00:23:00.000 --> 00:23:04.980
+ 
+
+
+00:23:04.980 --> 00:23:11.910
+ 
+
+
+00:23:12.060 --> 00:23:16.800
+ 
+
+
+00:23:16.830 --> 00:23:22.170
+ 
+
+
+00:23:22.170 --> 00:23:28.950
+ 
+
+
+00:23:28.950 --> 00:23:32.880
+ 
+
+
+00:23:32.880 --> 00:23:39.090
+ 
+
+
+00:23:39.120 --> 00:23:44.070
+ 
+
+
+00:23:44.490 --> 00:23:53.010
+ 
+
+
+00:23:53.010 --> 00:23:58.530
+ 
+
+
+00:23:58.530 --> 00:24:02.820
+ 
+
+
+00:24:02.820 --> 00:24:06.420
+ 
+
+
+00:24:06.420 --> 00:24:11.580
+ 
+
+
+00:24:11.580 --> 00:24:17.790
+ 
+
+
+00:24:17.790 --> 00:24:26.550
+ 
+
+
+00:24:26.550 --> 00:24:31.740
+ 
+
+
+00:24:31.740 --> 00:24:36.600
+ 
+
+
+00:24:37.200 --> 00:24:41.040
+ 
+
+
+00:24:41.040 --> 00:24:45.300
+ 
+
+
+00:24:45.330 --> 00:24:49.890
+ 
+
+
+00:24:49.890 --> 00:24:56.130
+ 
+
+
+00:24:57.030 --> 00:25:02.100
+ 
+
+
+00:25:02.100 --> 00:25:06.600
+ 
+
+
+00:25:08.340 --> 00:25:15.450
+ 
+
+
+00:25:15.450 --> 00:25:19.380
+ 
+
+
+00:25:20.280 --> 00:25:24.540
+ 
+
+
+00:25:24.570 --> 00:25:31.380
+ 
+
+
+00:25:31.380 --> 00:25:34.920
+ 
+
+
+00:25:35.520 --> 00:25:39.990
+ 
+
+
+00:25:39.990 --> 00:25:43.080
+ 
+
+
+00:25:43.080 --> 00:25:48.120
+ 
+
+
+00:25:48.120 --> 00:25:52.890
+ 
+
+
+00:25:52.890 --> 00:25:59.370
+ 
+
+
+00:25:59.400 --> 00:26:03.990
+ 
+
+
+00:26:03.990 --> 00:26:08.460
+ 
+
+
+00:26:08.670 --> 00:26:14.430
+ 
+
+
+00:26:14.430 --> 00:26:19.110
+ 
+
+
+00:26:19.110 --> 00:26:25.650
+ 
+
+
+00:26:25.650 --> 00:26:30.420
+ 
+
+
+00:26:30.420 --> 00:26:34.830
+ 
+
+
+00:26:35.010 --> 00:26:39.780
+ 
+
+
+00:26:39.810 --> 00:26:43.590
+ 
+
+
+00:26:43.620 --> 00:26:49.230
+ 
+
+
+00:26:49.230 --> 00:26:54.870
+ 
+
+
+00:26:54.870 --> 00:26:57.240
+ 
+
+
+00:26:57.240 --> 00:27:00.720
+ 
+
+
+00:27:01.140 --> 00:27:06.120
+ 
+
+
+00:27:06.180 --> 00:27:13.200
+ 
+
+
+00:27:13.200 --> 00:27:18.570
+ 
+
+
+00:27:18.570 --> 00:27:22.410
+ 
+
+
+00:27:22.410 --> 00:27:26.130
+ 
+
+
+00:27:26.760 --> 00:27:31.890
+ 
+
+
+00:27:31.890 --> 00:27:36.450
+ 
+
+
+00:27:36.480 --> 00:27:41.340
+ 
+
+
+00:27:41.340 --> 00:27:48.540
+ 
+
+
+00:27:48.540 --> 00:27:56.310
+ 
+
+
+00:27:56.310 --> 00:28:01.560
+ 
+
+
+00:28:01.560 --> 00:28:06.450
+ 
+
+
+00:28:06.480 --> 00:28:10.290
+ 
+
+
+00:28:10.290 --> 00:28:16.170
+ 
+
+
+00:28:16.170 --> 00:28:21.600
+ 
+
+
+00:28:21.660 --> 00:28:25.440
+ 
+
+
+00:28:25.590 --> 00:28:30.900
+ 
+
+
+00:28:30.900 --> 00:28:37.320
+ 
+
+
+00:28:37.710 --> 00:28:40.470
+ 
+
+
+00:28:40.470 --> 00:28:45.210
+ 
+
+
+00:28:45.240 --> 00:28:50.730
+ 
+
+
+00:28:51.480 --> 00:28:54.690
+ 
+
+
+00:28:54.720 --> 00:28:58.290
+ 
+
+
+00:28:58.290 --> 00:29:02.880
+ 
+
+
+00:29:02.880 --> 00:29:10.410
+ 
+
+
+00:29:10.410 --> 00:29:15.030
+ 
+
+
+00:29:15.030 --> 00:29:19.830
+ 
+
+
+00:29:19.860 --> 00:29:26.940
+ 
+
+
+00:29:27.420 --> 00:29:30.660
+ 
+
+
+00:29:30.660 --> 00:29:37.290
+ 
+
+
+00:29:37.290 --> 00:29:41.130
+ 
+
+
+00:29:41.160 --> 00:29:45.180
+ 
+
+
+00:29:45.180 --> 00:29:51.060
+ 
+
+
+00:29:51.060 --> 00:29:56.580
+ 
+
+
+00:29:56.580 --> 00:30:01.470
+ 
+
+
+00:30:01.470 --> 00:30:05.550
+ 
+
+
+00:30:05.550 --> 00:30:10.170
+ 
+
+
+00:30:10.170 --> 00:30:14.610
+ 
+
+
+00:30:14.610 --> 00:30:18.240
+ 
+
+
+00:30:18.240 --> 00:30:24.150
+ 
+
+
+00:30:24.150 --> 00:30:30.510
+ 
+
+
+00:30:31.020 --> 00:30:35.640
+ 
+
+
+00:30:35.640 --> 00:30:42.390
+ 
+
+
+00:30:42.390 --> 00:30:46.680
+ 
+
+
+00:30:46.860 --> 00:30:52.980
+ 
+
+
+00:30:52.980 --> 00:30:58.710
+ 
+
+
+00:30:59.010 --> 00:31:04.560
+ 
+
+
+00:31:04.590 --> 00:31:15.420
+ 
+
+
+00:31:15.420 --> 00:31:19.230
+ 
+
+
+00:31:19.230 --> 00:31:21.510
+ 
+
+
+00:31:22.020 --> 00:31:27.390
+ 
+
+
+00:31:27.390 --> 00:31:30.990
+ 
+
+
+00:31:31.020 --> 00:31:35.130
+ 
+
+
+00:31:35.130 --> 00:31:37.140
+
+
+00:31:37.170 --> 00:31:42.450
+ 
+
+
+00:31:42.450 --> 00:31:45.720
+ 
+
+
+00:31:47.850 --> 00:31:55.230
+ 
+
+
+00:31:55.559 --> 00:31:59.489
+ 
+
+
+00:31:59.489 --> 00:32:04.379
+ 
+
+
+00:32:04.379 --> 00:32:07.349
+ 
+
+
+00:32:07.799 --> 00:32:13.589
+ 
+
+
+00:32:13.589 --> 00:32:17.939
+ 
+
+
+00:32:17.939 --> 00:32:21.629
+ 
+
+
+00:32:21.629 --> 00:32:24.329
+ 
+
+
+00:32:24.359 --> 00:32:26.639
+ 
+
+
+00:32:27.839 --> 00:32:35.999
+ 
+
+
+00:32:35.999 --> 00:32:41.459
+ 
+
+
+00:32:41.459 --> 00:32:46.979
+ 
+
+
+00:32:46.979 --> 00:32:54.089
+ 
+
+
+00:32:54.089 --> 00:32:57.089
+ 
+
+
+00:32:57.149 --> 00:33:01.289
+ 
+
+
+00:33:01.319 --> 00:33:02.939
+
+
+00:33:03.180 --> 00:33:05.940
+ 
+
+
+00:33:08.369 --> 00:33:12.779
+ 
+
+
+00:33:12.779 --> 00:33:18.809
+ 
+
+
+00:33:18.809 --> 00:33:22.739
+ 
+
+
+00:33:22.739 --> 00:33:28.319
+ 
+
+
+00:33:28.379 --> 00:33:32.129
+ 
+
+
+00:33:32.129 --> 00:33:34.709
+ 
+
+
+00:33:34.709 --> 00:33:38.129
+ 
+
+
+00:33:38.129 --> 00:33:41.429
+ 
+
+
+00:33:41.579 --> 00:33:43.679
+ 
+
+
+00:33:43.679 --> 00:33:48.479
+ 
+
+
+00:33:48.479 --> 00:33:51.179
+ 
+
+
+00:33:51.179 --> 00:33:54.089
+ 
+
+
+00:33:54.089 --> 00:33:54.589
+
+
+00:33:56.069 --> 00:34:03.449
+ 
+
+
+00:34:03.479 --> 00:34:07.079
+ 
+
+
+00:34:07.589 --> 00:34:12.899
+ 
+
+
+00:34:12.989 --> 00:34:19.349
+ 
+
+
+00:34:19.529 --> 00:34:24.359
+ 
+
+
+00:34:24.359 --> 00:34:29.699
+ 
+
+
+00:34:29.699 --> 00:34:35.699
+ 
+
+
+00:34:35.699 --> 00:34:40.049
+ 
+
+
+00:34:40.049 --> 00:34:46.919
+ 
+
+
+00:34:46.919 --> 00:34:52.709
+ 
+
+
+00:34:52.739 --> 00:34:58.679
+ 
+
+
+00:34:58.679 --> 00:35:07.019
+ 
+
+
+00:35:07.019 --> 00:35:12.389
+ 
+
+
+00:35:12.389 --> 00:35:16.469
+ 
+
+
+00:35:16.469 --> 00:35:21.359
+ 
+
+
+00:35:21.359 --> 00:35:29.849
+ 
+
+
+00:35:30.119 --> 00:35:35.159
+ 
+
+
+00:35:35.159 --> 00:35:39.449
+ 
+
+
+00:35:39.449 --> 00:35:44.639
+ 
+
+
+00:35:44.639 --> 00:35:52.229
+ 
+
+
+00:35:52.259 --> 00:35:56.009
+ 
+
+
+00:35:56.009 --> 00:36:01.229
+ 
+
+
+00:36:01.769 --> 00:36:06.119
+ 
+
+
+00:36:06.149 --> 00:36:10.409
+ 
+
+
+00:36:10.410 --> 00:36:14.160
+ 
+
+
+00:36:14.160 --> 00:36:17.310
+ 
+
+
+00:36:17.310 --> 00:36:21.330
+ 
+
+
+00:36:21.330 --> 00:36:22.230
+
+
+00:36:22.620 --> 00:36:26.790
+ 
+
+
+00:36:27.180 --> 00:36:29.310
+
+
+00:36:29.610 --> 00:36:33.210
+ 
+
+
+00:36:33.210 --> 00:36:34.740
+
+
+00:36:36.060 --> 00:36:38.940
+ 
+
+
+00:36:40.740 --> 00:36:43.800
+ 
+
+
+00:36:43.800 --> 00:36:46.830
+ 
+
+
+00:36:46.830 --> 00:36:50.640
+ 
+
+
+00:36:50.640 --> 00:36:54.390
+ 
+
+
+00:36:54.390 --> 00:36:58.200
+ 
+
+
+00:36:58.200 --> 00:37:02.220
+ 
+
+
+00:37:02.220 --> 00:37:06.570
+ 
+
+
+00:37:06.570 --> 00:37:10.020
+ 
+
+
+00:37:10.020 --> 00:37:13.530
+ 
+
+
+00:37:13.530 --> 00:37:16.740
+ 
+
+
+00:37:16.740 --> 00:37:19.500
+ 
+
+
+00:37:19.500 --> 00:37:23.010
+ 
+
+
+00:37:23.010 --> 00:37:25.320
+ 
+
+
+00:37:25.320 --> 00:37:25.820
+
+
+00:37:27.270 --> 00:37:32.520
+ 
+
+
+00:37:33.000 --> 00:37:36.240
+ 
+
+
+00:37:36.240 --> 00:37:39.840
+ 
+
+
+00:37:39.840 --> 00:37:42.750
+ 
+
+
+00:37:42.750 --> 00:37:45.240
+ 
+
+
+00:37:45.270 --> 00:37:49.080
+ 
+
+
+00:37:49.080 --> 00:37:50.610
+
+
+00:37:53.040 --> 00:38:00.840
+ 
+
+
+00:38:00.840 --> 00:38:04.440
+ 
+
+
+00:38:04.440 --> 00:38:09.270
+ 
+
+
+00:38:09.270 --> 00:38:15.390
+ 
+
+
+00:38:15.390 --> 00:38:20.820
+ 
+
+
+00:38:20.820 --> 00:38:24.720
+ 
+
+
+00:38:24.750 --> 00:38:33.030
+ 
+
+
+00:38:33.030 --> 00:38:38.280
+ 
+
+
+00:38:38.340 --> 00:38:45.630
+ 
+
+
+00:38:45.840 --> 00:38:54.330
+ 
+
+
+00:38:54.360 --> 00:39:03.720
+ 
+
+
+00:39:03.720 --> 00:39:06.810
+ 
+
+
+00:39:09.480 --> 00:39:12.060
+ 
+
+
+00:39:12.060 --> 00:39:14.730
+ 
+
+
+00:39:14.730 --> 00:39:17.640
+ 
+
+
+00:39:17.640 --> 00:39:22.230
+ 
+
+
+00:39:22.230 --> 00:39:25.230
+ 
+
+
+00:39:25.230 --> 00:39:28.800
+ 
+
+
+00:39:28.800 --> 00:39:32.400
+ 
+
+
+00:39:32.400 --> 00:39:34.920
+ 
+
+
+00:39:34.920 --> 00:39:38.160
+ 
+
+
+00:39:38.160 --> 00:39:42.270
+ 
+
+
+00:39:42.300 --> 00:39:46.110
+ 
+
+
+00:39:46.140 --> 00:39:50.070
+ 
+
+
+00:39:50.070 --> 00:39:53.610
+ 
+
+
+00:39:53.640 --> 00:39:56.460
+ 
+
+
+00:39:56.460 --> 00:39:59.820
+ 
+
+
+00:39:59.850 --> 00:40:00.600
+
+
+00:40:03.449 --> 00:40:08.429
+ 
+
+
+00:40:08.429 --> 00:40:12.719
+ 
+
+
+00:40:12.719 --> 00:40:16.559
+ 
+
+
+00:40:16.559 --> 00:40:22.169
+ 
+
+
+00:40:22.169 --> 00:40:26.849
+ 
+
+
+00:40:26.849 --> 00:40:28.799
+
+
+00:40:28.980 --> 00:40:34.200
+ 
+
+
+00:40:34.200 --> 00:40:37.770
+ 
+
+
+00:40:37.770 --> 00:40:43.620
+ 
+
+
+00:40:43.650 --> 00:40:49.530
+ 
+
+
+00:40:49.530 --> 00:40:54.480
+ 
+
+
+00:40:54.660 --> 00:40:59.430
+ 
+
+
+00:40:59.430 --> 00:41:03.540
+ 
+
+
+00:41:03.570 --> 00:41:09.000
+ 
+
+
+00:41:09.000 --> 00:41:13.590
+ 
+
+
+00:41:13.590 --> 00:41:17.430
+ 
+
+
+00:41:17.430 --> 00:41:22.200
+ 
+
+
+00:41:23.400 --> 00:41:29.310
+ 
+
+
+00:41:29.580 --> 00:41:34.860
+ 
+
+
+00:41:34.860 --> 00:41:40.110
+ 
+
+
+00:41:40.470 --> 00:41:46.170
+ 
+
+
+00:41:46.170 --> 00:41:49.620
+ 
+
+
+00:41:49.620 --> 00:41:55.890
+ 
+
+
+00:41:55.890 --> 00:42:01.140
+ 
+
+
+00:42:01.140 --> 00:42:07.140
+ 
+
+
+00:42:07.140 --> 00:42:13.290
+ 
+
+
+00:42:13.290 --> 00:42:20.190
+ 
+
+
+00:42:20.610 --> 00:42:25.050
+ 
+
+
+00:42:25.050 --> 00:42:30.750
+ 
+
+
+00:42:30.750 --> 00:42:37.170
+ 
+
+
+00:42:37.200 --> 00:42:43.560
+ 
+
+
+00:42:43.560 --> 00:42:48.210
+ 
+
+
+00:42:48.210 --> 00:42:53.040
+ 
+
+
+00:42:53.040 --> 00:42:57.840
+ 
+
+
+00:42:57.840 --> 00:43:01.230
+ 
+
+
+00:43:01.230 --> 00:43:06.480
+ 
+
+
+00:43:06.480 --> 00:43:11.310
+ 
+
+
+00:43:11.310 --> 00:43:18.510
+ 
+
+
+00:43:18.660 --> 00:43:25.320
+ 
+
+
+00:43:25.350 --> 00:43:28.590
+ 
+
+
+00:43:29.280 --> 00:43:36.360
+ 
+
+
+00:43:36.480 --> 00:43:43.260
+ 
+
+
+00:43:43.260 --> 00:43:46.380
+ 
+
+
+00:43:46.740 --> 00:43:50.010
+ 
+
+
+00:43:50.010 --> 00:43:54.000
+ 
+
+
+00:43:54.000 --> 00:43:59.580
+ 
+
+
+00:43:59.580 --> 00:44:02.970
+ 
+
+
+00:44:03.330 --> 00:44:09.840
+ 
+
+
+00:44:09.840 --> 00:44:15.090
+ 
+
+
+00:44:15.210 --> 00:44:18.330
+ 
+
+
+00:44:18.330 --> 00:44:22.470
+ 
+
+
+00:44:22.470 --> 00:44:28.530
+ 
+
+
+00:44:28.530 --> 00:44:32.010
+ 
+
+
+00:44:32.010 --> 00:44:38.040
+ 
+
+
+00:44:38.070 --> 00:44:44.370
+ 
+
+
+00:44:44.370 --> 00:44:51.270
+ 
+
+
+00:44:51.300 --> 00:44:55.170
+ 
+
+
+00:44:55.170 --> 00:44:57.060
+ 
+
+
+00:44:57.060 --> 00:45:02.190
+ 
+
+
+00:45:02.190 --> 00:45:06.390
+ 
+
+
+00:45:06.750 --> 00:45:10.470
+ 
+
+
+00:45:10.470 --> 00:45:17.760
+ 
+
+
+00:45:17.760 --> 00:45:21.750
+ 
+
+
+00:45:21.780 --> 00:45:24.510
+ 
+
+
+00:45:24.510 --> 00:45:28.800
+ 
+
+
+00:45:31.500 --> 00:45:36.300
+ 
+
+
+00:45:36.300 --> 00:45:40.170
+ 
+
+
+00:45:40.170 --> 00:45:43.860
+ 
+
+
+00:45:43.860 --> 00:45:47.250
+ 
+
+
+00:45:47.250 --> 00:45:51.360
+ 
+
+
+00:45:52.860 --> 00:45:59.490
+ 
+
+
+00:45:59.520 --> 00:46:06.510
+ 
+
+
+00:46:06.510 --> 00:46:07.140
+
+
+00:46:16.860 --> 00:46:18.480
+
+
+00:46:19.229 --> 00:46:26.459
+ 
+
+
+00:46:26.519 --> 00:46:30.929
+ 
+
+
+00:46:30.929 --> 00:46:33.569
+ 
+
+
+00:46:33.569 --> 00:46:39.509
+ 
+
+
+00:46:39.509 --> 00:46:44.039
+ 
+
+
+00:46:44.039 --> 00:46:50.009
+ 
+
+
+00:46:50.009 --> 00:46:53.069
+ 
+
+
+00:46:53.099 --> 00:46:58.379
+ 
+
+
+00:46:58.379 --> 00:47:04.199
+ 
+
+
+00:47:04.199 --> 00:47:09.089
+ 
+
+
+00:47:09.089 --> 00:47:15.209
+ 
+
+
+00:47:15.209 --> 00:47:20.399
+ 
+
+
+00:47:20.399 --> 00:47:27.479
+ 
+
+
+00:47:27.479 --> 00:47:32.639
+ 
+
+
+00:47:32.849 --> 00:47:37.319
+ 
+
+
+00:47:37.319 --> 00:47:46.169
+ 
+
+
+00:47:46.199 --> 00:47:52.379
+ 
+
+
+00:47:52.379 --> 00:47:56.669
+ 
+
+
+00:47:56.669 --> 00:48:00.089
+ 
+
+
+00:48:00.119 --> 00:48:06.149
+ 
+
+
+00:48:06.179 --> 00:48:11.279
+ 
+
+
+00:48:11.279 --> 00:48:15.899
+ 
+
+
+00:48:15.929 --> 00:48:21.239
+ 
+
+
+00:48:21.239 --> 00:48:26.939
+ 
+
+
+00:48:26.939 --> 00:48:30.569
+ 
+
+
+00:48:30.989 --> 00:48:36.539
+ 
+
+
+00:48:36.539 --> 00:48:40.469
+ 
+
+
+00:48:40.469 --> 00:48:48.149
+ 
+
+
+00:48:48.149 --> 00:48:53.399
+ 
+
+
+00:48:53.399 --> 00:48:58.019
+ 
+
+
+00:48:58.019 --> 00:49:01.559
+ 
+
+
+00:49:01.949 --> 00:49:04.889
+ 
+
+
+00:49:04.889 --> 00:49:12.329
+ 
+
+
+00:49:12.329 --> 00:49:16.379
+ 
+
+
+00:49:16.379 --> 00:49:22.259
+ 
+
+
+00:49:22.289 --> 00:49:23.069
+
+
+00:49:25.110 --> 00:49:26.880
+ 
+
+
+00:49:27.420 --> 00:49:33.660
+ 
+
+
+00:49:33.690 --> 00:49:37.080
+ 
+
+
+00:49:37.080 --> 00:49:44.070
+ 
+
+
+00:49:44.070 --> 00:49:49.410
+ 
+
+
+00:49:49.410 --> 00:49:53.280
+ 
+
+
+00:49:53.280 --> 00:49:56.310
+ 
+
+
+00:49:56.760 --> 00:50:00.330
+ 
+
+
+00:50:00.360 --> 00:50:04.140
+ 
+
+
+00:50:04.140 --> 00:50:08.850
+ 
+
+
+00:50:08.850 --> 00:50:14.340
+ 
+
+
+00:50:15.540 --> 00:50:18.840
+ 
+
+
+00:50:18.840 --> 00:50:26.760
+ 
+
+
+00:50:26.790 --> 00:50:30.480
+ 
+
+
+00:50:30.480 --> 00:50:35.820
+ 
+
+
+00:50:35.820 --> 00:50:42.810
+ 
+
+
+00:50:42.810 --> 00:50:47.400
+ 
+
+
+00:50:47.400 --> 00:50:53.460
+ 
+
+
+00:50:53.460 --> 00:51:00.330
+ 
+
+
+00:51:00.330 --> 00:51:04.200
+ 
+
+
+00:51:04.200 --> 00:51:09.510
+ 
+
+
+00:51:09.510 --> 00:51:14.100
+ 
+
+
+00:51:15.570 --> 00:51:23.400
+ 
+
+
+00:51:23.400 --> 00:51:28.110
+ 
+
+
+00:51:28.110 --> 00:51:35.460
+ 
+
+
+00:51:35.490 --> 00:51:40.770
+ 
+
+
+00:51:40.770 --> 00:51:44.880
+ 
+
+
+00:51:44.880 --> 00:51:50.700
+ 
+
+
+00:51:50.700 --> 00:51:55.950
+ 
+
+
+00:51:55.950 --> 00:52:01.500
+ 
+
+
+00:52:01.500 --> 00:52:07.170
+ 
+
+
+00:52:07.170 --> 00:52:10.890
+ 
+
+
+00:52:11.460 --> 00:52:16.530
+ 
+
+
+00:52:16.530 --> 00:52:23.430
+ 
+
+
+00:52:23.490 --> 00:52:27.870
+ 
+
+
+00:52:27.870 --> 00:52:32.790
+ 
+
+
+00:52:33.300 --> 00:52:38.880
+ 
+
+
+00:52:38.880 --> 00:52:46.740
+ 
+
+
+00:52:46.740 --> 00:52:50.490
+ 
+
+
+00:52:50.490 --> 00:52:55.890
+ 
+
+
+00:52:55.890 --> 00:53:00.540
+ 
+
+
+00:53:00.540 --> 00:53:06.300
+ 
+
+
+00:53:06.450 --> 00:53:13.560
+ 
+
+
+00:53:13.590 --> 00:53:18.810
+ 
+
+
+00:53:18.840 --> 00:53:25.440
+ 
+
+
+00:53:25.440 --> 00:53:29.070
+ 
+
+
+00:53:29.160 --> 00:53:37.410
+ 
+
+
+00:53:37.410 --> 00:53:43.290
+ 
+
+
+00:53:43.290 --> 00:53:47.580
+ 
+
+
+00:53:47.580 --> 00:53:53.310
+ 
+
+
+00:53:53.310 --> 00:53:57.120
+ 
+
+
+00:53:57.120 --> 00:54:01.860
+ 
+
+
+00:54:01.860 --> 00:54:05.580
+ 
+
+
+00:54:05.610 --> 00:54:11.280
+ 
+
+
+00:54:11.280 --> 00:54:15.180
+ 
+
+
+00:54:15.210 --> 00:54:23.190
+ 
+
+
+00:54:24.150 --> 00:54:29.940
+ 
+
+
+00:54:29.940 --> 00:54:33.150
+ 
+
+
+00:54:33.180 --> 00:54:39.030
+ 
+
+
+00:54:39.030 --> 00:54:45.990
+ 
+
+
+00:54:46.020 --> 00:54:50.760
+ 
+
+
+00:54:50.760 --> 00:54:56.070
+ 
+
+
+00:54:56.070 --> 00:55:01.770
+ 
+
+
+00:55:01.800 --> 00:55:07.440
+ 
+
+
+00:55:07.440 --> 00:55:14.040
+ 
+
+
+00:55:14.430 --> 00:55:19.200
+ 
+
+
+00:55:19.200 --> 00:55:23.190
+ 
+
+
+00:55:23.190 --> 00:55:29.250
+ 
+
+
+00:55:29.250 --> 00:55:33.570
+ 
+
+
+00:55:34.110 --> 00:55:38.940
+ 
+
+
+00:55:39.180 --> 00:55:42.690
+ 
+
+
+00:55:42.690 --> 00:55:49.380
+ 
+
+
+00:55:49.380 --> 00:55:53.430
+ 
+
+
+00:55:53.850 --> 00:55:57.600
+ 
+
+
+00:55:57.600 --> 00:56:01.890
+ 
+
+
+00:56:01.920 --> 00:56:06.030
+ 
+
+
+00:56:06.030 --> 00:56:12.180
+ 
+
+
+00:56:12.180 --> 00:56:16.020
+ 
+
+
+00:56:16.020 --> 00:56:21.270
+ 
+
+
+00:56:21.300 --> 00:56:26.190
+ 
+
+
+00:56:26.190 --> 00:56:30.900
+ 
+
+
+00:56:30.900 --> 00:56:37.440
+ 
+
+
+00:56:37.440 --> 00:56:41.850
+ 
+
+
+00:56:42.630 --> 00:56:46.860
+ 
+
+
+00:56:46.860 --> 00:56:50.790
+ 
+
+
+00:56:50.790 --> 00:56:54.810
+ 
+
+
+00:56:54.810 --> 00:56:58.560
+ 
+
+
+00:56:58.920 --> 00:57:03.690
+ 
+
+
+00:57:03.690 --> 00:57:09.630
+ 
+
+
+00:57:09.630 --> 00:57:13.500
+ 
+
+
+00:57:13.500 --> 00:57:17.670
+ 
+
+
+00:57:17.670 --> 00:57:22.350
+ 
+
+
+00:57:23.010 --> 00:57:26.490
+ 
+
+
+00:57:26.490 --> 00:57:30.870
+ 
+
+
+00:57:30.870 --> 00:57:36.150
+ 
+
+
+00:57:36.180 --> 00:57:41.550
+ 
+
+
+00:57:41.550 --> 00:57:45.030
+ 
+
+
+00:57:45.030 --> 00:57:48.030
+ 
+
+
+00:57:48.030 --> 00:57:52.710
+ 
+
+
+00:57:53.070 --> 00:57:56.790
+ 
+
+
+00:57:56.790 --> 00:58:00.750
+ 
+
+
+00:58:00.750 --> 00:58:04.080
+ 
+
+
+00:58:04.080 --> 00:58:10.380
+ 
+
+
+00:58:10.380 --> 00:58:14.400
+ 
+
+
+00:58:14.400 --> 00:58:19.470
+ 
+
+
+00:58:19.470 --> 00:58:23.190
+ 
+
+
+00:58:23.190 --> 00:58:27.540
+ 
+
+
+00:58:27.540 --> 00:58:33.360
+ 
+
+
+00:58:34.410 --> 00:58:39.000
+ 
+
+
+00:58:39.030 --> 00:58:43.200
+ 
+
+
+00:58:43.200 --> 00:58:45.330
+
+
+00:58:46.290 --> 00:58:49.860
+ 
+
+
+00:58:49.860 --> 00:58:54.540
+ 
+
+
+00:58:54.570 --> 00:58:58.260
+ 
+
+
+00:58:58.260 --> 00:59:02.370
+ 
+
+
+00:59:02.550 --> 00:59:06.330
+ 
+
+
+00:59:06.330 --> 00:59:08.820
+ 
+
+
+00:59:08.820 --> 00:59:11.070
+ 
+
+
+00:59:11.100 --> 00:59:11.640
+
+
+00:59:12.240 --> 00:59:15.870
+ 
+
+
+00:59:15.870 --> 00:59:23.340
+ 
+
+
+00:59:23.340 --> 00:59:27.240
+ 
+
+
+00:59:27.240 --> 00:59:31.920
+ 
+
+
+00:59:31.920 --> 00:59:40.380
+ 
+
+
+00:59:40.410 --> 00:59:45.210
+ 
+
+
+00:59:45.210 --> 00:59:50.850
+ 
+
+
+00:59:50.850 --> 00:59:56.100
+ 
+
+
+00:59:56.130 --> 01:00:00.990
+ 
+
+
+01:00:00.990 --> 01:00:06.990
+ 
+
+
+01:00:06.990 --> 01:00:11.760
+ 
+
+
+01:00:11.940 --> 01:00:20.760
+ 
+
+
+01:00:20.850 --> 01:00:24.780
+ 
+
+
+01:00:24.780 --> 01:00:31.440
+ 
+
+
+01:00:31.440 --> 01:00:34.590
+
+
+01:00:36.990 --> 01:00:40.710
+ 
+
+
+01:00:40.710 --> 01:00:49.020
+ 
+
+
+01:00:49.080 --> 01:00:52.440
+ 
+
+
+01:00:52.440 --> 01:00:56.970
+ 
+
+
+01:00:57.000 --> 01:00:59.370
+ 
+
+
+01:00:59.370 --> 01:01:02.520
+ 
+
+
+01:01:03.900 --> 01:01:07.740
+ 
+
+
+01:01:07.740 --> 01:01:09.660
+
+
+01:01:11.250 --> 01:01:14.790
+ 
+
+
+01:01:14.790 --> 01:01:18.420
+ 
+
+
+01:01:18.420 --> 01:01:28.530
+ 
+
+
+01:01:28.530 --> 01:01:32.670
+ 
+
+
+01:01:32.670 --> 01:01:34.260
+ 
+
+
+01:01:35.610 --> 01:01:41.250
+ 
+
+
+01:01:41.340 --> 01:01:42.840
+
+
+01:01:43.560 --> 01:01:46.500
+ 
+
+
+01:01:46.500 --> 01:01:48.930
+ 
+
+
+01:01:48.930 --> 01:01:51.180
+ 
+
+
+01:01:52.260 --> 01:01:54.390
+
+
+01:02:00.420 --> 01:02:05.490
+ 
+
+
+01:02:05.490 --> 01:02:10.410
+ 
+
+
+01:02:10.410 --> 01:02:14.820
+ 
+
+
+01:02:14.820 --> 01:02:20.010
+ 
+
+
+01:02:20.010 --> 01:02:20.510
+
+
+01:02:21.030 --> 01:02:24.690
+ 
+
+
+01:02:26.340 --> 01:02:29.490
+ 
+
+
+01:02:29.490 --> 01:02:34.830
+ 
+
+
+01:02:34.830 --> 01:02:39.510
+ 
+
+
+01:02:42.030 --> 01:02:42.870
+
+
