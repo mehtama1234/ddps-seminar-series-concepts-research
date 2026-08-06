@@ -592,5 +592,329 @@
       "Differentiability... optimize its motion controller or initial parameter settings to achieve a target state."
     ],
     "takeaway": "The lecture's first-principles lesson is that the evaluation target defines the simulator: graphics DDPS optimizes plausible controllable appearance, while engineering DDPS optimizes predictive reliability."
+  },
+  {
+    "id": "012-robust-accurate-tractable-roms",
+    "talk_index": 12,
+    "title": "Karthik Duraisamy: Towards Robust, Accurate And Tractable Reduced-Order Models",
+    "speaker": "Karthik Duraisamy",
+    "organization": "University of Michigan",
+    "one_sentence": "This lecture frames practical ROM development around three simultaneous requirements: robustness, accuracy, and tractability for multiscale multiphysics systems.",
+    "core_problem": "Projection ROMs are attractive because they replace a huge full-order system with a lower-dimensional model, but complex flows such as combustion dynamics combine stiffness, transport, acoustics, heat release, changing topology, and nonlinear residuals. A ROM that is accurate on one condition may become unstable, inconsistent, or too expensive when the physics or parameters change.",
+    "first_principles_model": "A ROM approximates the governing equations on a lower-dimensional manifold. For nonlinear systems, the reduced coordinates do not automatically make the residual cheap, stable, or conservative. Robust ROM design therefore needs structure-preserving variables and discretely consistent residual minimization for stability, adaptivity for parameter changes, and hyper-reduction for reducing residual evaluation cost.",
+    "key_claims": [
+      "Reduced-order modeling means solving the same governing equations on a lower-dimensional manifold.",
+      "Complex multiphysics flows create ROM challenges through stiffness, multiscale structure, transport, and topology changes.",
+      "Basic Galerkin ROMs can be appealing theoretically but may be unstable in difficult regimes.",
+      "Least-squares Petrov-Galerkin-style formulations can improve discrete consistency and robustness.",
+      "Hyper-reduction is required because nonlinear residual evaluation can still scale with the full-order model size.",
+      "Tractability matters most when full-order simulations are so expensive that even generating training data becomes difficult."
+    ],
+    "important_terms": [
+      {
+        "term": "Robust ROM",
+        "meaning": "A reduced model that remains stable and physically consistent under challenging dynamics or parameter changes."
+      },
+      {
+        "term": "Least-Squares Petrov-Galerkin",
+        "meaning": "A projection approach that minimizes a discrete residual over a trial space rather than only enforcing a standard Galerkin condition."
+      },
+      {
+        "term": "Structure-Preserving Transformation",
+        "meaning": "A change of variables designed to preserve conservation, symmetry, conditioning, or other important mathematical properties."
+      },
+      {
+        "term": "Hyper-Reduction",
+        "meaning": "Reducing online cost by evaluating nonlinear residuals or operators at selected samples instead of all full-order degrees of freedom."
+      },
+      {
+        "term": "Component ROM",
+        "meaning": "A reduced model built for a subsystem that can be coupled with other reduced or full-order components."
+      }
+    ],
+    "stanford_connections": [
+      "This lecture synthesizes the earlier ROM talks into an engineering checklist: accuracy alone is not enough.",
+      "It connects to hybrid twins because a deployable digital twin needs stable reduced components, not just fast surrogates.",
+      "It also links to entropy-stable schemes and differentiable simulation by emphasizing consistency between numerical structure and learned/reduced models."
+    ],
+    "practical_caution": "A ROM can fail even when the basis is good if the residual is inconsistent, the nonlinear terms are not hyper-reduced, or the operating condition changes the flow topology. Always evaluate stability, cost, and parameter adaptivity together.",
+    "selected_evidence": [
+      "The first part is on robustness and accuracy.",
+      "The third part of the talk is on tractability.",
+      "How to handle things like chaotic flows and big parameter changes.",
+      "For many problems stability is a major issue.",
+      "Hyper reduction... ensuring that the residual is only evaluated at a few points."
+    ],
+    "takeaway": "The first-principles lesson is that reduced dimension is not the same as reduced difficulty. Practical ROMs must preserve structure, adapt to changing physics, and reduce nonlinear evaluation cost."
+  },
+  {
+    "id": "013-adaptive-enrichment-pde-optimization",
+    "talk_index": 13,
+    "title": "Mario Ohlberger: Model Reduction With Adaptive Enrichment For Large Scale PDE-Constrained Optimization",
+    "speaker": "Mario Ohlberger",
+    "organization": "University of Muenster",
+    "one_sentence": "This lecture explains adaptive enrichment as a way to use reduced models inside large-scale PDE-constrained optimization without paying the full offline cost upfront.",
+    "core_problem": "Classical reduced-basis workflows rely on an expensive offline stage that builds a rich reduced space before online queries become cheap. In large-scale PDE-constrained optimization, uncertainty quantification, battery degradation, and multiscale settings, the offline solves themselves can be prohibitive, and a fixed reduced space may not be accurate where the optimizer actually travels.",
+    "first_principles_model": "A PDE-constrained optimization problem repeatedly solves a PDE while changing design or control variables. A reduced basis can accelerate those solves, but the optimizer must know when the reduced model is trustworthy. Adaptive enrichment starts with a smaller model and enriches it during the optimization process, often inside a trust-region framework that limits reduced-model use to regions where error is controlled.",
+    "key_claims": [
+      "Adaptive enrichment goes beyond the classical offline-online splitting of reduced-basis methods.",
+      "The target setting is large-scale PDE-constrained optimization and related uncertainty quantification problems.",
+      "Classical offline construction can require very large-scale solves and become prohibitive.",
+      "Reduced-basis methods need efficient a posteriori error estimators to identify where the current basis is weak.",
+      "Trust-region ideas can control when an approximate reduced model is reliable enough for optimization steps.",
+      "For hyperbolic, shock-forming, or slow Kolmogorov-width problems, linear reduced spaces may need nonlinear extensions."
+    ],
+    "important_terms": [
+      {
+        "term": "PDE-Constrained Optimization",
+        "meaning": "An optimization problem whose feasible states are governed by a partial differential equation."
+      },
+      {
+        "term": "Adaptive Enrichment",
+        "meaning": "Growing the reduced basis during the solve or optimization process when the current reduced model is insufficient."
+      },
+      {
+        "term": "Reduced Basis",
+        "meaning": "A low-dimensional space built from representative full-order solutions to accelerate later PDE solves."
+      },
+      {
+        "term": "A Posteriori Error Estimator",
+        "meaning": "A computable estimate of the reduced model error after a solution has been produced."
+      },
+      {
+        "term": "Trust Region",
+        "meaning": "An optimization region where the approximate model is judged reliable enough to guide a step."
+      }
+    ],
+    "stanford_connections": [
+      "This extends the ROM discussion from prediction to optimization loops, where repeated solves and reliability guarantees matter.",
+      "It connects to inverse problems and control because optimization requires deciding when a cheap model can replace an expensive PDE solve.",
+      "It also foreshadows nonlinear ROM talks by noting that linear reduced spaces cannot beat slow Kolmogorov-width decay."
+    ],
+    "practical_caution": "Do not build a giant offline reduced basis by default. If the optimizer only visits a small portion of parameter space, adaptive enrichment can spend expensive full-order solves where they are actually needed.",
+    "selected_evidence": [
+      "A new paradigm that goes beyond the classical offline online splitting.",
+      "Large scale PDE constraint optimization.",
+      "The classical approach has limitations because in the offline stage we usually need to solve very large scale problems.",
+      "Reduced basis trust region approach.",
+      "You will never beat the Kolmogorov... with a linear method."
+    ],
+    "takeaway": "The first-principles lesson is that ROMs in optimization must be managed dynamically: use the cheap model when valid, enrich it when needed, and let error control govern the loop."
+  },
+  {
+    "id": "014-registration-advection-dominated-rom",
+    "talk_index": 14,
+    "title": "Tommaso Taddei: Registration-Based Model Reduction Of Parameterized Advection-Dominated PDEs",
+    "speaker": "Tommaso Taddei",
+    "organization": "Inria / model reduction research community",
+    "one_sentence": "This lecture presents registration as a way to align moving features in advection-dominated PDEs so that a linear reduced model becomes effective in transformed coordinates.",
+    "core_problem": "Advection-dominated problems often contain parameter-dependent moving discontinuities, fronts, or shocks. In raw coordinates, these features make the solution manifold poorly approximated by a low-dimensional linear subspace. Standard projection ROMs then need too many modes or fail to preserve sharp features.",
+    "first_principles_model": "Registration introduces a mapping from the physical domain to a reference domain that aligns local solution features across parameter values. Once transported features are aligned, the transformed snapshots can become more linearly compressible. A reduced model can then combine registration, projection, and hyper-reduction to produce faster approximations.",
+    "key_claims": [
+      "Parameterized advection-dominated PDEs are difficult for model reduction because moving features are not well represented by fixed linear spaces.",
+      "Registration aligns local features in a reference configuration to improve compressibility of the solution manifold.",
+      "The method is intended to be largely equation-independent, focusing on geometric alignment before reduced modeling.",
+      "Registration can be paired with projection-based and multifidelity reduced modeling.",
+      "Hyper-reduced least-squares Petrov-Galerkin ingredients are part of the proposed workflow.",
+      "The transcript ASR is poor, so the strongest evidence comes from the talk abstract and only broad transcript fragments."
+    ],
+    "important_terms": [
+      {
+        "term": "Registration",
+        "meaning": "A procedure that finds transformations aligning solution features across samples or parameter values."
+      },
+      {
+        "term": "Reference Domain",
+        "meaning": "A common coordinate frame where transported or moving features are aligned before approximation."
+      },
+      {
+        "term": "Advection-Dominated PDE",
+        "meaning": "A PDE where transport of features dominates the behavior and often creates moving fronts or discontinuities."
+      },
+      {
+        "term": "Linear Compressibility",
+        "meaning": "How well a family of solutions can be represented by a low-dimensional linear space."
+      },
+      {
+        "term": "Multifidelity ROM",
+        "meaning": "A reduced modeling approach that combines data or models of different accuracy and cost."
+      }
+    ],
+    "stanford_connections": [
+      "This is the geometric counterpart to the nonlinear manifold ROM lectures: move the data into better coordinates before reducing it.",
+      "It connects directly to shock-wave and transport-dominated discussions because moving discontinuities create high apparent rank.",
+      "It also gives a useful pattern for scientific ML: sometimes the best model improvement is a physically meaningful preprocessing map."
+    ],
+    "practical_caution": "The local transcript for this talk is heavily corrupted by ASR. The deep dive should be treated as a conservative abstract-backed primer until a cleaner transcript or paper notes are added.",
+    "selected_evidence": [
+      "Parameterized advection-dominated problems.",
+      "Parameter-dependent discontinuities that cannot be adequately represented through linear approximation spaces.",
+      "Registration procedure to align local features in a fixed reference domain.",
+      "Improve the linear compressibility of the solution manifold.",
+      "Registration based projection based multi fidelity model."
+    ],
+    "takeaway": "The first-principles lesson is that transport problems may become reducible only after alignment. Registration tries to reduce motion before reducing state dimension."
+  },
+  {
+    "id": "015-hybrid-twins-physics-informed-ai",
+    "talk_index": 15,
+    "title": "Francisco Chinesta: Empowering Hybrid Twins From Physics-Informed Artificial Intelligence",
+    "speaker": "Francisco Chinesta",
+    "organization": "ENSAM Institute of Technology / ESI Group",
+    "one_sentence": "This lecture describes hybrid twins as the combination of physics-based models with learned gap models that correct what the physics model misses.",
+    "core_problem": "A classical simulator is only a model of reality. Industrial users increasingly care about real system performance under real loading histories, so the twin must represent both known physics and the unmodeled deviation between simulation and measurement. Pure physics may be incomplete; pure data may be unstructured and unreliable.",
+    "first_principles_model": "The lecture's central equation is reality equals known physics plus ignorance. A hybrid twin keeps the physics-based model for the known part and learns a data-driven model of the gap between predictions and measurements. When the physics model and deviation model are combined, the virtual twin becomes closer to the real system and can support diagnosis and prognosis.",
+    "key_claims": [
+      "Industrial modeling is shifting from selling products to guaranteeing performance under real usage.",
+      "A physics model is an approximation, so mismatch between prediction and measurement should be modeled explicitly.",
+      "Hybrid twins combine physics-based simulation with a data-driven model of the gap.",
+      "The learned gap model should respect physical consistency, including thermodynamic constraints when relevant.",
+      "Once the twin matches reality better, it can support diagnosis from data and prognosis about future behavior.",
+      "Model order reduction, regression, and machine learning can be viewed as related approximation tools in this hybrid paradigm."
+    ],
+    "important_terms": [
+      {
+        "term": "Hybrid Twin",
+        "meaning": "A digital twin that combines mechanistic simulation with learned correction or gap models."
+      },
+      {
+        "term": "Model Gap",
+        "meaning": "The difference between what a physics model predicts and what the real system measures."
+      },
+      {
+        "term": "Diagnosis",
+        "meaning": "Using current observations to infer the present state or defect of a system."
+      },
+      {
+        "term": "Prognosis",
+        "meaning": "Predicting future system behavior or failure based on the updated twin."
+      },
+      {
+        "term": "Thermodynamic Consistency",
+        "meaning": "A constraint that learned material or process models should not violate basic thermodynamic laws."
+      }
+    ],
+    "stanford_connections": [
+      "This is the clearest DDPS framing for hybrid physics-ML systems: learn the missing part, not the whole world from scratch.",
+      "It connects to robust ROMs because fast reduced physics models often form the core of a real-time twin.",
+      "It also connects to uncertainty and control because diagnosis and prognosis require the twin to stay aligned with real observations."
+    ],
+    "practical_caution": "A digital twin is not just a dashboard or a trained surrogate. If it does not separate known physics from learned deviation, it becomes hard to know when it is extrapolating beyond its evidence.",
+    "selected_evidence": [
+      "Reality... is equal to the things that you know... plus the things that you ignore.",
+      "The physics-based model... can be enriched with a data-driven model of the gap between predictions and measurements.",
+      "When you put both together... you obtain the physical reality.",
+      "Digital twin of the deviation.",
+      "Data serves in order to make diagnosis... and... prognosis."
+    ],
+    "takeaway": "The first-principles lesson is that hybrid twins are gap models around physics: keep what you know, learn what you do not, and update the twin against reality."
+  },
+  {
+    "id": "016-power-system-implicit-layers",
+    "talk_index": 16,
+    "title": "Priya Donti: Incorporating Power System Physics Into Deep Learning Via Implicit Layers",
+    "speaker": "Priya Donti",
+    "organization": "Carnegie Mellon University",
+    "one_sentence": "This lecture explains implicit layers as a way to put power-system constraints, optimization problems, and control structure inside neural networks.",
+    "core_problem": "Deep learning models can be accurate statistically while violating the hard physics and operational constraints of an electric grid. Power systems require supply-demand balance, network feasibility, stability, and constraint satisfaction, so predictions are only useful if they integrate with the optimization and control problems that operators must solve.",
+    "first_principles_model": "A neural network layer does not have to be an explicit formula. It can be the solution of an implicit problem: an optimization problem, differential equation, equilibrium, or control rule. If that implicit problem is differentiable through its optimality or KKT conditions, the layer can be trained end-to-end while enforcing domain structure.",
+    "key_claims": [
+      "Implicit layers can encode rich functions such as optimization problems, differential equations, and other structured computations.",
+      "Power-system physics and hard constraints can be incorporated into deep networks rather than handled only after prediction.",
+      "AC optimal power flow can be embedded by differentiating through a sequence of optimization steps or through KKT conditions.",
+      "Decision-driven models can optimize for downstream system performance rather than only forecast error.",
+      "Implicit layers can provide inductive bias by reflecting the physical relationships of the domain.",
+      "They can also enforce hard constraints and support robust control in physical systems."
+    ],
+    "important_terms": [
+      {
+        "term": "Implicit Layer",
+        "meaning": "A neural network layer defined by the solution of an equation, optimization problem, or dynamical system rather than by a direct feedforward formula."
+      },
+      {
+        "term": "Optimal Power Flow",
+        "meaning": "An optimization problem that chooses power generation and flows while satisfying network and physical constraints."
+      },
+      {
+        "term": "KKT Conditions",
+        "meaning": "Optimality conditions used to characterize and differentiate constrained optimization solutions."
+      },
+      {
+        "term": "Decision-Driven Learning",
+        "meaning": "Training a predictive model according to the quality of the downstream decision it enables."
+      },
+      {
+        "term": "Hard Constraint",
+        "meaning": "A requirement that must be satisfied exactly or provably, not merely encouraged by a soft penalty."
+      }
+    ],
+    "stanford_connections": [
+      "This talk broadens physics-informed learning from PDE residuals to optimization layers and operational constraints.",
+      "It connects to inverse problems and control because the model is trained around the decision or control problem it serves.",
+      "It also complements differentiable simulation: both make a structured physical computation part of the learning graph."
+    ],
+    "practical_caution": "A low forecast error is not enough in grid applications. The learned model must be evaluated by whether it produces feasible, stable, and useful decisions under the actual power-system constraints.",
+    "selected_evidence": [
+      "Incorporate physics and hard constraints from the electric power system into deep learning methods using... implicit layers.",
+      "Layers that encode... optimization problems.",
+      "Incorporate ACOPF into a neural network.",
+      "Differentiate through it... KKT conditions.",
+      "Implicit layers can be a really powerful tool for physical applications like energy systems."
+    ],
+    "takeaway": "The first-principles lesson is that a neural model for infrastructure should include the decision physics, not just predict quantities upstream of it."
+  },
+  {
+    "id": "017-les-reduced-order-models",
+    "talk_index": 17,
+    "title": "Traian Iliescu: Large Eddy Simulation Reduced Order Models",
+    "speaker": "Traian Iliescu",
+    "organization": "Virginia Tech",
+    "one_sentence": "This lecture explains LES-ROMs as reduced-order models for turbulent flows that explicitly address unresolved scales through ROM filtering and closure modeling.",
+    "core_problem": "Turbulent flows contain many interacting scales. A low-dimensional ROM can represent only the largest structures, so under-resolved modes can feed back onto the resolved dynamics and destabilize or bias the prediction. Standard projection ROMs do not automatically solve this closure problem.",
+    "first_principles_model": "Large eddy simulation separates resolved large scales from unresolved small scales using a filter, then models the effect of the unresolved scales through a closure term. LES-ROM applies the same idea to reduced-order models: define ROM spatial filters, evolve the resolved ROM modes, and add closure models for the effects of truncated modes.",
+    "key_claims": [
+      "Reduced-order modeling for turbulence is not a settled field.",
+      "Galerkin ROMs expand the solution in data-driven basis functions and project the PDE onto that basis.",
+      "When nonlinear equations are filtered, unresolved scales create a closure term that must be modeled.",
+      "ROM closures can be functional or structural, echoing LES closure terminology.",
+      "Pressure stabilization and other practical fixes may be less elegant than theory but useful in real computations.",
+      "Scaling laws for ROM closures may be problem-specific rather than universal across all Reynolds numbers and flows."
+    ],
+    "important_terms": [
+      {
+        "term": "Large Eddy Simulation",
+        "meaning": "A turbulence simulation strategy that resolves large scales and models the effect of unresolved small scales."
+      },
+      {
+        "term": "ROM Filter",
+        "meaning": "A reduced-order analogue of a spatial filter that defines which scales the ROM can resolve."
+      },
+      {
+        "term": "Closure Problem",
+        "meaning": "The need to model the effect of unresolved or truncated scales on the resolved variables."
+      },
+      {
+        "term": "Eddy Viscosity",
+        "meaning": "A functional closure idea that adds dissipative effects representing unresolved turbulent mixing."
+      },
+      {
+        "term": "Data-Driven Variational Multiscale ROM",
+        "meaning": "A ROM closure approach that combines variational multiscale ideas with data-driven modeling."
+      }
+    ],
+    "stanford_connections": [
+      "This connects entropy-stable fluid schemes, interpretable fluid ML, and ROMs around the common issue of unresolved scales.",
+      "It is a central caution for operator learning and neural surrogates of turbulence: the missing small scales still act on the large scales.",
+      "It also gives a first-principles reason why long-rollout validation matters for turbulent surrogate models."
+    ],
+    "practical_caution": "Do not expect one ROM closure coefficient or scaling law to work across arbitrary Reynolds numbers, geometries, and flow regimes. Turbulent ROM validation must be tied to the target flow family.",
+    "selected_evidence": [
+      "Reduced modeling is not... for turbulence... a settled field.",
+      "When you filter nonlinear equations you're gonna get the closure term.",
+      "The non-linear term... you have to model.",
+      "Functional means physical eddy viscosity type of thing and structural... mathematical.",
+      "Our models should not be expected to be valid over a range of Reynolds numbers."
+    ],
+    "takeaway": "The first-principles lesson is that turbulence ROMs are filtered models. If the unresolved scales are ignored, the reduced model is not merely lower-dimensional; it is missing physics."
   }
 ]
