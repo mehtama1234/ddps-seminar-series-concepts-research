@@ -92,6 +92,29 @@ def render_index(summary: dict[str, Any], concepts: list[dict[str, Any]], eviden
     (SITE / "index.html").write_text(page("DDPS Seminar Series Concept Lab", body), encoding="utf-8")
 
 
+def optional_sections(item: dict[str, Any]) -> str:
+    """Render deeper rubric sections when the source record supplies them.
+
+    Backward-compatible: records without these keys render nothing.
+    """
+    specs = [
+        ("worked_example", "Worked Example"),
+        ("deeper_mechanics", "One Level Deeper"),
+        ("failure_boundary", "Failure Boundary"),
+    ]
+    out = []
+    for key, heading in specs:
+        value = item.get(key)
+        if not value:
+            continue
+        if isinstance(value, list):
+            inner = "<ul>" + "".join(f"<li>{esc(v)}</li>" for v in value) + "</ul>"
+        else:
+            inner = "".join(f"<p>{esc(p)}</p>" for p in str(value).split("\n\n") if p.strip())
+        out.append(f'<section class="detail"><h2>{heading}</h2>{inner}</section>')
+    return "\n".join(out)
+
+
 def render_deep_dives(deep_dives: list[dict[str, Any]], talks_by_index: dict[int, dict[str, Any]]) -> None:
     cards = []
     for deep in deep_dives:
@@ -105,6 +128,7 @@ def render_deep_dives(deep_dives: list[dict[str, Any]], talks_by_index: dict[int
 </article>"""
         )
         claims = "".join(f"<li>{esc(item)}</li>" for item in deep["key_claims"])
+        deep_extra = optional_sections(deep)
         terms = "".join(f"<article class=\"detail\"><h3>{esc(item['term'])}</h3><p>{esc(item['meaning'])}</p></article>" for item in deep["important_terms"])
         connections = "".join(f"<li>{esc(item)}</li>" for item in deep["stanford_connections"])
         evidence = "".join(f"<blockquote>{esc(item)}</blockquote>" for item in deep["selected_evidence"])
@@ -124,6 +148,7 @@ def render_deep_dives(deep_dives: list[dict[str, Any]], talks_by_index: dict[int
   <h2>Key Claims</h2>
   <ul>{claims}</ul>
 </section>
+{deep_extra}
 <section>
   <h2>Important Terms</h2>
   <div class="two-col">{terms}</div>
@@ -186,6 +211,7 @@ def render_concepts(concepts: list[dict[str, Any]], evidence_by_id: dict[str, di
   <section class="detail"><h2>What Breaks Without It</h2><p>{esc(concept['what_breaks_without_it'])}</p></section>
   <section class="detail"><h2>Summit Role</h2><p>{esc(concept['course_role'])}</p></section>
 </div>
+{optional_sections(concept)}
 <section>
   <h2>Transcript Evidence</h2>
   {''.join(ev_html)}
