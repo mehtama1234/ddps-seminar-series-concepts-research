@@ -1,0 +1,37 @@
+{
+  "id": "physics-informed-learning",
+  "name": "Physics-Informed Learning",
+  "kick": "data-driven physical simulation · first principles · the equation is the teacher",
+  "title": "Physics-informed learning — solving an equation with no answers to learn from",
+  "lede": "Machine learning usually needs a mountain of examples: show a program thousands of right answers and it learns to copy them. But what if you have no answers at all — only the law the answer must obey? Physics-informed learning does exactly that. It trains a program to satisfy a physical equation directly, using the equation itself as the only teacher. Here is the idea, a real run where a small program learns a curve it was never shown, why it works, where it stumbles, and how the trick spread across scientific computing.",
+  "arc": [["problem","The problem"],["reframe","The reframe"],["run","Seen on a real run"],["why","Why the equation is enough"],["weakness","The one real weakness"],["surprise","The surprise"]],
+  "sections": [
+    {"id":"problem","h2":"1 · The problem — no examples to copy","blocks":[
+      {"t":"para","html":"Most machine learning is imitation. You gather a pile of solved cases — pictures already labelled, sentences already translated — and a <em>network</em> (a program with millions of small dials it tunes by trial and error until its answers match) learns to reproduce them. But in physics you often have the opposite situation: you know the <em>rule</em> the answer must follow — how heat spreads, how a beam bends, how a fluid pushes — yet you have no worked-out answers to hand the program. Generating them means running a slow, expensive simulation, which is the very cost you were trying to avoid."},
+      {"t":"para","html":"So the question is sharp: <strong>can a program learn the answer to a physical problem when nobody can show it a single correct answer to copy?</strong>"}
+    ]},
+    {"id":"reframe","h2":"2 · The reframe — grade the program against the law, not against answers","blocks":[
+      {"t":"para","html":"Here is the move. A physical law is usually a <em>differential equation</em> — a rule that ties a quantity to how fast it changes from point to point (how steeply the temperature rises, how sharply the beam curves). The rule holds at <em>every</em> point. So instead of comparing the program's output to known answers, feed the program's own guess back into the equation and measure how badly it breaks the rule. That mismatch — call it the physics error — becomes the score to drive down. Add one more demand: the answer must match the fixed values at the edges (a bar clamped at both ends, a temperature held at the boundary). Now the program has a teacher after all — the law itself, checked at a scatter of points — and needs no solved examples. A program trained this way is a <strong>physics-informed neural network</strong>, or PINN."}
+    ]},
+    {"id":"run","h2":"3 · Seen on a real run — a curve learned from the rule alone","blocks":[
+      {"t":"para","html":"We set a small program loose on a differential equation whose true answer is a smooth arch — the curve that rises and falls like a single hill across the span from 0 to 1. Crucially, the program was <em>never shown that curve</em>. Its only feedback was: plug yourself into the equation, and match the two pinned ends. We measured the largest gap between the program's answer and the true arch, before and after training."},
+      {"t":"bars","caption":"Largest gap between the program's answer and the exact curve, from the physics-only training. Numbers are the run's output verbatim.","rows":[["untrained (start)",1.0,"0.911"],["after training on the equation",0.0025,"0.0023"]]},
+      {"t":"insight","html":"<strong>The discovered fact: the largest error fell from 0.911 to 0.0023 — the program reconstructed the entire curve without ever seeing a single point of it.</strong> All it had was the equation, sampled at random points, plus the two fixed ends. The law carried all the information the examples would have."}
+    ]},
+    {"id":"why","h2":"4 · Why the equation is enough","blocks":[
+      {"t":"para","html":"A single solved example tells the program one thing: the answer here is this. A differential equation tells it something far stronger — a relationship that must hold at <em>every</em> point at once, plus the fixed values at the edges pin down which of the many curves obeying the rule is the right one. Sampling the equation at a few hundred scattered points hands the program a dense web of constraints that together squeeze its guess toward the one curve satisfying all of them. That is why no answer key is needed: the rule plus the boundary is already a complete description of the answer."}
+    ]},
+    {"id":"weakness","h2":"5 · The one real weakness — the training can quietly fail","blocks":[
+      {"t":"para","html":"The catch is that this training is genuinely hard to balance. The program is chasing two goals at once — obey the equation everywhere <em>and</em> hit the edge values — and the two can pull against each other, so the process can stall in a bad compromise that looks converged but is wrong. Sharp features (a sudden jump, a thin fast-moving front, a stiff fast-and-slow mix) make it worse: the physics error can look small while the real answer is badly off. Getting PINNs to train reliably on hard equations is an open, actively-studied problem — one of this seminar series' own deep dives is titled, plainly, why PINNs fail to train."}
+    ]},
+    {"id":"surprise","h2":"6 · The surprise — the trick became a whole toolkit","blocks":[
+      {"t":"para","html":"Turning a governing law into a training score turned out to be a master key. The same idea powers <a href=\"inverse-problems-and-control-deep.html\">inverse problems</a> — if the equation grades the fit, you can also hunt for an unknown ingredient in the equation (a hidden material property, a missing source) by making it another dial to tune. It blends with data: where you happen to have a few real measurements, you add them as extra terms and the physics fills in everywhere else. And it connects to <a href=\"operator-learning-deep.html\">operator learning</a> and <a href=\"hybrid-twins-deep.html\">hybrid twins</a>, where physics is baked into the model rather than learned from scratch. The lesson that spread across scientific machine learning: you do not always need data — sometimes you already know the law, and the law is enough to learn from."}
+    ]}
+  ],
+  "related": [["operator-learning-deep.html","operator learning"],["inverse-problems-and-control-deep.html","inverse problems"],["hybrid-twins-deep.html","hybrid twins"],["scientific-machine-learning-deep.html","scientific machine learning"]],
+  "recipe": {
+    "summary": "Train a small tanh network to satisfy a 1D differential equation whose exact solution is sin(pi x) on [0,1], using only the equation residual at random interior points plus the two boundary values as the loss — no solution data. Report the max absolute error vs the exact solution, before and after training.",
+    "eq": "solve  u''(x) = -pi^2 sin(pi x),  u(0)=u(1)=0,  exact  u(x)=sin(pi x)\nloss = mean( (u''(x) - f(x))^2 )  +  20 * mean( u(boundary)^2 )\nmax|u_net - u_exact|:  0.911  ->  0.0023",
+    "note": "Full script: scripts/experiments/ddps_run.py (EXP1), torch, fixed seed. Numbers are the run's output verbatim; no solution data was used in training."
+  }
+}

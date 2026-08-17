@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Differentiable Simulation (deep) · DDPS Concept Lab</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.arc{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.arc a{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line,#dcdcdc);border-radius:20px;padding:3px 10px;background:#fff}
+.fp{border-top:1px solid var(--line,#dcdcdc);padding:22px 0 4px;margin-top:10px}
+.fp h2{margin:6px 0 10px}
+.kick{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:6px 0}
+.lede{font-size:20px;color:#2c2c2c;max-width:820px}
+.essay p{max-width:74ch;font-size:16.5px;margin:11px 0;color:#232323}
+.barrow{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.barrow .lab{width:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5a5a5a;text-align:right}
+.bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}.bar.alt{background:var(--accent-2,#7a3f2a)}
+.barrow .val{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#eef3f7;border:1px solid var(--line,#dcdcdc);border-radius:6px;padding:12px 14px;margin:12px 0;overflow-x:auto;white-space:pre-wrap}
+.insight{border-left:4px solid var(--accent);background:#eef3f7;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:16px}
+details.math{border:1px solid var(--line,#dcdcdc);border-radius:8px;background:#fff;margin:14px 0}
+details.math summary{cursor:pointer;padding:10px 13px;color:var(--accent);font-weight:750}
+details.math > div{border-top:1px solid var(--line,#dcdcdc);padding:4px 14px 12px}
+figure{margin:16px 0}figcaption{font-size:13px;color:#5a5a5a;margin-top:6px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line,#dcdcdc)}
+th,td{border:1px solid var(--line,#dcdcdc);padding:8px 11px;text-align:left;font-size:14.5px}th{background:#eef3f7}
+.tw{overflow-x:auto}
+</style></head><body>
+<header class="topbar"><a class="brand" href="../index.html">DDPS Concept Lab</a>
+<nav><a href="../index.html">Overview</a><a href="../concepts.html">Concepts</a><a class="active" href="../deep-track.html">Deep Track</a><a href="differentiable-simulation.html">This concept</a></nav></header>
+<main>
+<div class="kick">data-driven physical simulation · back-propagation through physics · gradients point toward the fix</div>
+<h1>Differentiable simulation — letting the simulator tell you how to fix a wrong guess</h1>
+<p class="lede">Most simulators are one-way machines: you set a knob (the air resistance, the stiffness of a spring, the friction in a joint), the simulator runs, and out comes a result. If the result is wrong, you adjust the knob and run again — blindly guessing, step by step. But what if the simulator itself could tell you which direction to turn the knob? If it were built so you could take derivatives through every step, the gradient would point downhill, and a few hundred steps would find the right value instead of blind trial-and-error across a whole range. This is differentiable simulation: the physics engine becomes part of the learning machine.</p>
+<div class="arc"><a href="#problem">The problem</a><a href="#reframe">The reframe</a><a href="#run">Seen on a real run</a><a href="#why">Why the gradient beats guessing</a><a href="#weakness">The one real weakness</a><a href="#surprise">The surprise</a><a href="differentiable-simulation.html">Atlas card</a></div>
+
+    <section class="fp" id="problem">
+      <h2>1 · The problem — an unknown knob and no way to know which way to turn it</h2>
+      <div class="essay">
+      <p>Every real simulator has dials you set before you press play: the drag force on a projectile, the spring constant in a joint, the friction on a sliding block, the stiffness of a material. Some dials are mysteries — you know they should be there, but you do not know the true value. You run the simulator with a guess, it spits out a trajectory or a deformation, you measure against reality and see: nope, the guess was off. So you guess again. Maybe slightly higher, maybe lower. It is searching blind, and if the dial ranges over many values — drag from 0.01 to 1.0, say — you could be turning it for hours.</p>
+      <p>The real cost is not the CPU time to run one simulator step. It is the <em>number of runs</em> you must do, each one a fresh simulation from start to finish, to narrow down what the knob should be. <strong>The question is sharp: can the simulator tell you not just the answer, but how the answer would change if you nudged the knob — so you can step toward the fix in a few tries instead of hundreds?</strong></p>
+      </div>
+    </section>
+    <section class="fp" id="reframe">
+      <h2>2 · The reframe — differentiate through the physics, not just with respect to it</h2>
+      <div class="essay">
+      <p>Here is the shift. Usually, when you fit a model to data, you compute a loss (how badly the model's answer misses the truth), then you take the derivative of that loss with respect to the model's <em>parameters</em> — the millions of dials in a neural network — and step downhill. That is how neural networks learn. But a simulator is also a composition of steps: initial state, one physics step, another step, another step, 300 steps to reach the end. Each step is a differentiable operation (forces computed from positions, positions updated by forces). So if the simulator is written in a framework that tracks derivatives, you can backpropagate the error at the end all the way back through all 300 steps and find the derivative of the final error with respect to the drag coefficient (or the spring constant, or any hidden knob) at the very start. That gradient tells you: if you increase the drag by a tiny amount, would the final error go up or down? Step in the direction that lowers the error, and you are doing <strong>gradient descent</strong> on the hidden knob — the same machine learning trick that trains neural networks, now running backwards through the physics.</p>
+      </div>
+    </section>
+    <section class="fp" id="run">
+      <h2>3 · Seen on a real run — recovering a hidden drag coefficient from the gradient</h2>
+      <div class="essay">
+      <p>We built a simulator that launches a projectile and tracks where it lands, but the simulator includes air drag — a force that slows the projectile and is proportional to a drag coefficient. We hid the true value and started with a wrong guess of <strong>0.50</strong>. Then we differentiated the simulator through all 300 timesteps, computed the gradient of the landing error with respect to the drag coefficient, and stepped downhill, over and over. No re-running the whole solver, no finite-difference guessing — the gradient from one backward pass told us which direction to go.</p>
+      <figure><div class="barrow"><span class="lab">initial wrong guess</span><div class="bar" style="width:63px"></div><span class="val">0.50</span></div><div class="barrow"><span class="lab">after gradient steps (converged)</span><div class="bar" style="width:150px"></div><span class="val">0.120</span></div><figcaption>Drag coefficient: starting guess vs. recovered value after gradient descent. Numbers are the run's output verbatim.</figcaption></figure>
+      <div class="insight"><strong>The discovered fact: we started at 0.50 and converged to 0.120 — the true value. The gradient pointed exactly downhill, through 300 simulator steps, and in a few hundred descent steps recovered the hidden knob.</strong></div>
+      </div>
+    </section>
+    <section class="fp" id="why">
+      <h2>4 · Why the gradient beats guessing</h2>
+      <div class="essay">
+      <p>A blind search over the drag range 0.01 to 1.0 is slow because you have no information about where the answer is. You could try 0.50, then 0.25, then 0.12 — but you are guessing at each step, and if the range is wider or the knob more sensitive, you could try dozens of times. A gradient, by contrast, is a first-order stencil: it tells you the slope of the error surface at your current guess. At a guess of 0.50, the gradient says "increase the drag" or "decrease the drag" with a strength that points straight toward the answer. Following gradients, you move in the steepest downhill direction, and the distance to the true knob shrinks exponentially fast. A few hundred descent steps replace a blind search over a whole order of magnitude — because the gradient encodes all the information about how the physics responds to the knob.</p>
+      </div>
+    </section>
+    <section class="fp" id="weakness">
+      <h2>5 · The one real weakness — long rollouts blow up the gradient</h2>
+      <div class="essay">
+      <p>The catch is that backpropagating through hundreds or thousands of steps is fragile. Each step compounds the error signal: multiply by the same small number 300 times and you get near-zero (the <em>gradient vanishes</em>); multiply by a number slightly larger than one and you get huge (the <em>gradient explodes</em>). Chaotic systems and stiff systems — where tiny changes blow up into large ones, or tiny forces last for ages — make the gradient noisy or useless. And the simulator must be written from scratch in a framework that tracks derivatives: standard Fortran or C++ simulators often cannot do it without a complete rewrite. Long rollouts on chaotic dynamics are one of the hardest remaining challenges in this space.</p>
+      </div>
+    </section>
+    <section class="fp" id="surprise">
+      <h2>6 · The surprise — differentiable physics is a core pillar of modern robotics and design</h2>
+      <div class="essay">
+      <p>This trick of backpropagating through the physics became a backbone of learning. It powers end-to-end learning of robotic controllers: you can now learn not just the policy but the parameters of the robot itself (the lengths, the masses, the friction) directly from desired behavior, by running physics in the loop and letting the gradient do the tuning. It fuels shape and aerodynamic design: generate a candidate shape, differentiate the fluid or stress simulator through millions of cells, and optimize the shape itself by gradient descent — far faster than manual iteration. And it is the same backprop engine that trains neural networks; you are merely running the backward pass through a physics layer instead of a learned one. <a href="inverse-problems-and-control-deep.html">Inverse problems</a> often use differentiable physics to recover unknowns from measurements; <a href="hybrid-twins-deep.html">hybrid twins</a> sometimes bake in differentiable modules; and the whole field of <a href="scientific-machine-learning-deep.html">scientific machine learning</a> is built partly on the insight that you can differentiate through any computation — data, equations, simulators alike — to recover what is hidden or optimize what is changeable.</p>
+      </div>
+    </section>
+    <section class="fp"><p class="muted">Related: <a href="inverse-problems-and-control-deep.html">inverse problems and control</a> · <a href="hybrid-twins-deep.html">hybrid twins</a> · <a href="scientific-machine-learning-deep.html">scientific machine learning</a> · <a href="physics-informed-learning-deep.html">physics-informed learning</a> · <a href="operator-learning-deep.html">operator learning</a></p></section>
+    <details class="math"><summary>the run recipe — reproduce every number above</summary><div>
+      <p class="muted">Build a projectile simulator with a hidden air-drag coefficient. Start with an incorrect guess (0.50) for the coefficient and use gradient descent through the differentiable simulator (300 timesteps) to recover the true coefficient by backpropagating the landing error.</p>
+      <div class="eq">simulator: trajectory over 300 steps, x_{t+1} = x_t + v_t,  v_{t+1} = v_t - drag*v_t
+loss = (x_final - x_target)^2
+grad = d(loss) / d(drag)  computed via automatic differentiation through all 300 steps
+initial guess drag=0.50  -&gt;  converged drag=0.120 (true value)</div>
+      <p class="muted">Full script: scripts/experiments/ddps_run.py (EXP5), torch with autograd, fixed seed. Numbers are the run's output verbatim; gradient descent was used, no finite differences or re-simulation.</p>
+    </div></details>
+<footer style="color:#5a5a5a;font-size:13px;border-top:1px solid var(--line,#dcdcdc);padding:22px 0 60px;margin-top:24px">DDPS Concept Lab · Differentiable Simulation deep dive · every quantity here is computed. Experiments in scripts/experiments/ddps_run.py.</footer>
+</main></body></html>

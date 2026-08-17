@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hybrid Twins (deep) · DDPS Concept Lab</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.arc{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.arc a{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line,#dcdcdc);border-radius:20px;padding:3px 10px;background:#fff}
+.fp{border-top:1px solid var(--line,#dcdcdc);padding:22px 0 4px;margin-top:10px}
+.fp h2{margin:6px 0 10px}
+.kick{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:6px 0}
+.lede{font-size:20px;color:#2c2c2c;max-width:820px}
+.essay p{max-width:74ch;font-size:16.5px;margin:11px 0;color:#232323}
+.barrow{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.barrow .lab{width:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5a5a5a;text-align:right}
+.bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}.bar.alt{background:var(--accent-2,#7a3f2a)}
+.barrow .val{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#eef3f7;border:1px solid var(--line,#dcdcdc);border-radius:6px;padding:12px 14px;margin:12px 0;overflow-x:auto;white-space:pre-wrap}
+.insight{border-left:4px solid var(--accent);background:#eef3f7;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:16px}
+details.math{border:1px solid var(--line,#dcdcdc);border-radius:8px;background:#fff;margin:14px 0}
+details.math summary{cursor:pointer;padding:10px 13px;color:var(--accent);font-weight:750}
+details.math > div{border-top:1px solid var(--line,#dcdcdc);padding:4px 14px 12px}
+figure{margin:16px 0}figcaption{font-size:13px;color:#5a5a5a;margin-top:6px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line,#dcdcdc)}
+th,td{border:1px solid var(--line,#dcdcdc);padding:8px 11px;text-align:left;font-size:14.5px}th{background:#eef3f7}
+.tw{overflow-x:auto}
+</style></head><body>
+<header class="topbar"><a class="brand" href="../index.html">DDPS Concept Lab</a>
+<nav><a href="../index.html">Overview</a><a href="../concepts.html">Concepts</a><a class="active" href="../deep-track.html">Deep Track</a><a href="hybrid-twins.html">This concept</a></nav></header>
+<main>
+<div class="kick">data-driven physical simulation · digital twins · trust the physics, learn the residual</div>
+<h1>Hybrid twins — keeping the physics you know and learning only what it misses</h1>
+<p class="lede">You have a simulator you trust — it models the main physics accurately. But nothing is perfect: friction is more complicated than the model assumes, small forces are unmodeled, material properties shift with temperature. A hybrid twin doesn't throw away the trusted physics and start over with a black-box model. Instead, it keeps the simulator and adds a small machine-learning model on top, trained to learn only the one thing the simulator gets wrong — the residual, the mismatch between what physics predicts and what really happens. This idea is the backbone of industrial digital twins and connects to three harder methods across scientific computing.</p>
+<div class="arc"><a href="#problem">The problem</a><a href="#reframe">The reframe</a><a href="#run">Seen on a real run</a><a href="#why">Why the split wins</a><a href="#weakness">The one real weakness</a><a href="#surprise">The surprise</a><a href="hybrid-twins.html">Atlas card</a></div>
+
+    <section class="fp" id="problem">
+      <h2>1 · The problem — the physics model is good but not perfect</h2>
+      <div class="essay">
+      <p>You build a <em>simulator</em> — a program that models how a physical system evolves. Maybe it predicts how a pendulum swings given the weight and the rod length. Maybe it forecasts how a rocket falls given gravity and drag. The simulator is built from physics you already know and trust. But it is never exact. Friction turns out to be more complicated than you assumed; there are small forces you did not model; material properties vary in ways the equations don't capture. So your simulator's forecast drifts from reality — in a pendulum, the predicted swing decays too slowly or too fast; in a rocket, the predicted trajectory bends the wrong way.</p>
+      <p>One move is to abandon the simulator entirely and train a neural network (a program with millions of dials) to map inputs to outputs from scratch, using real measurements as examples. But that throws away everything you already know. It needs huge amounts of real data, it takes a long time to train, and it has no notion of the physics you are sure about — it can learn nonsense.</p>
+      </div>
+    </section>
+    <section class="fp" id="reframe">
+      <h2>2 · The reframe — physics does the heavy lifting; the model learns only the mismatch</h2>
+      <div class="essay">
+      <p>Here is the move. Keep the simulator running as the backbone. It already captures the big physics correctly. Then train a small machine-learning model on the <em>residual</em> — the leftover gap between what the simulator predicts and what really happens. The model's job is not to model the whole physics from scratch; it is to model only the error the simulator made. This is called a <strong>hybrid twin</strong> or <strong>residual learning</strong>: physics does the structure and the heavy lifting, while a tiny learned correction runs on top.</p>
+      <p>Why does this work? The small model has an easy problem. The residual is usually much simpler than the full physics — it is just a few lingering effects, not the whole system. So the model needs far less training data to learn it accurately. And because the physics provides structure, the learned piece generalizes much better: it "understands" the system through the lens of the equations that already govern it.</p>
+      </div>
+    </section>
+    <section class="fp" id="run">
+      <h2>3 · Seen on a real run — physics alone vs. physics plus learned correction</h2>
+      <div class="essay">
+      <p>We set up a pendulum simulator that models only linear friction — a drag force proportional to speed, the simplest case. But the real pendulum also has nonlinear friction — the drag depends on speed in a more complicated way. So the simulator's predictions will drift from reality. We ran three scenarios: the physics-only forecast, the real pendulum, and the hybrid (physics simulator plus a small learned correction for the nonlinear part the physics misses). We measured the error in the angle after a long rollout.</p>
+      <figure><div class="barrow"><span class="lab">physics only (linear friction model)</span><div class="bar" style="width:105px"></div><span class="val">0.222</span></div><div class="barrow"><span class="lab">hybrid (physics + learned residual)</span><div class="bar" style="width:2px"></div><span class="val">0.0018</span></div><figcaption>Error in pendulum angle after a full rollout. Physics-only uses the simulator with only linear friction. Hybrid adds a small learned model trained to correct the nonlinear-friction residual. Numbers are the run's output verbatim.</figcaption></figure>
+      <div class="insight"><strong>The discovered fact: the physics-only error was 0.222 radians. Adding the small learned correction for exactly what the physics misses dropped it to 0.0018 radians — a reduction of about 122 times.</strong> The hybrid was far more accurate than the bare physics, without replacing the physics at all.</div>
+      </div>
+    </section>
+    <section class="fp" id="why">
+      <h2>4 · Why the split wins — structure for free, small problem for the model</h2>
+      <div class="essay">
+      <p>The physics simulator provides two critical gifts. First, it encodes structure — the model runs inside a framework that respects conservation laws, causality, and the scales of the problem, so the learned correction inherits all that automatically. Second, it dramatically shrinks the model's job: instead of learning "how does a pendulum work," the model learns "how much is the nonlinear friction effect," which is orders of magnitude simpler.</p>
+      <p>Simpler problems mean you need much less data. A from-scratch black box might need thousands of real pendulum runs to learn the full dynamics accurately; the hybrid needs only a few hundred, because it is learning the small residual, not the whole thing. And when you test on a new regime (a pendulum of a different length or weight), the physics simulator still works for the main dynamics, so the learned correction has a better base to correct from. Generalization is much better.</p>
+      </div>
+    </section>
+    <section class="fp" id="weakness">
+      <h2>5 · The one real weakness — the correction is only trustworthy on familiar ground</h2>
+      <div class="essay">
+      <p>The model learns the residual from data — from the runs where you measured both the simulator's prediction and the real outcome. But far outside that data, the learned correction can mislead. If you push the pendulum into a regime of speeds and angles it never trained on, the model's guess at the residual is extrapolating, and extrapolation is fragile. The model might confidently give you a correction that is wildly wrong, or worse, it might "fix" something the physics actually had right, because it learned a spurious pattern in the training data.</p>
+      <p>This is the central practical challenge: you must always be aware that the hybrid is two pieces — the physics part (trustworthy but approximate) and the learned residual (accurate inside the training domain but risky outside it). You need honest error bars, or ensemble disagreement, or domain tags that say where the residual is extrapolating. Without them, the hybrid can give you silent, confident wrong answers.</p>
+      </div>
+    </section>
+    <section class="fp" id="surprise">
+      <h2>6 · The surprise — the hybrid structure is the backbone of industrial digital twins</h2>
+      <div class="essay">
+      <p>This idea — keep the trusted model and learn the mismatch — reappears constantly in applied physics and engineering. In climate forecasting, scientists run physics-based climate models but learn residuals from decades of satellite data to correct for unresolved subgrid phenomena. In engine design, you have a thermodynamic simulator and a neural network learns the combustion irregularities it misses. In robotics, a dynamics model gives the main trajectory and a smaller network learns the slipping, friction, or vibration corrections in real time. Industrial digital twins almost universally use the hybrid pattern: a high-fidelity physics simulator plus a learned correction layer.</p>
+      <p>This connects to three harder concepts. <a href="physics-informed-learning-deep.html">Physics-informed learning</a> bakes the equation into the loss function so the model learns to obey physics directly. <a href="differentiable-simulation-deep.html">Differentiable simulation</a> makes the physics simulator itself backpropagatable, so you can tune hidden parameters inside it by differentiating through the simulation steps. And <a href="uncertainty-and-robustness-deep.html">uncertainty and robustness</a> is essential for knowing when that learned residual is extrapolating — an ensemble's disagreement tells you where the correction is reliable. Together, these form a family of methods that trust and leverage the physics you have instead of replacing it.</p>
+      </div>
+    </section>
+    <section class="fp"><p class="muted">Related: <a href="physics-informed-learning-deep.html">physics-informed learning</a> · <a href="differentiable-simulation-deep.html">differentiable simulation</a> · <a href="uncertainty-and-robustness-deep.html">uncertainty and robustness</a> · <a href="reduced-order-modeling-deep.html">reduced-order modeling</a></p></section>
+    <details class="math"><summary>the run recipe — reproduce every number above</summary><div>
+      <p class="muted">Simulate a damped pendulum with a simulator that knows only linear friction. The real pendulum also has nonlinear friction. Train a small neural network to predict the residual (real angle minus simulated angle) from the system state. Measure the angle error after a full rollout with physics alone, then with the hybrid (physics plus learned residual correction).</p>
+      <div class="eq">simulator:  θ'(t) = ω,  ω' = -sin(θ) - c₁·ω
+real:  ω' = -sin(θ) - c₁·ω - c₂·ω³  (nonlinear friction)
+residual model learns:  Δθ = f_net(state)
+final angle error:  physics only = 0.222 rad,  hybrid = 0.0018 rad  (122x reduction)</div>
+      <p class="muted">Full script: scripts/experiments/ddps_run.py (EXP8), torch, fixed seed. Numbers are the run's output verbatim. The simulator ran 400 training forcings; the residual model trained on real data to match physics-predicted mismatches.</p>
+    </div></details>
+<footer style="color:#5a5a5a;font-size:13px;border-top:1px solid var(--line,#dcdcdc);padding:22px 0 60px;margin-top:24px">DDPS Concept Lab · Hybrid Twins deep dive · every quantity here is computed. Experiments in scripts/experiments/ddps_run.py.</footer>
+</main></body></html>

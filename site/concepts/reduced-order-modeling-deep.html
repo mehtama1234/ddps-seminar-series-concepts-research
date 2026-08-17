@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reduced-Order Modeling (deep) · DDPS Concept Lab</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.arc{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.arc a{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line,#dcdcdc);border-radius:20px;padding:3px 10px;background:#fff}
+.fp{border-top:1px solid var(--line,#dcdcdc);padding:22px 0 4px;margin-top:10px}
+.fp h2{margin:6px 0 10px}
+.kick{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:6px 0}
+.lede{font-size:20px;color:#2c2c2c;max-width:820px}
+.essay p{max-width:74ch;font-size:16.5px;margin:11px 0;color:#232323}
+.barrow{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.barrow .lab{width:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5a5a5a;text-align:right}
+.bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}.bar.alt{background:var(--accent-2,#7a3f2a)}
+.barrow .val{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#eef3f7;border:1px solid var(--line,#dcdcdc);border-radius:6px;padding:12px 14px;margin:12px 0;overflow-x:auto;white-space:pre-wrap}
+.insight{border-left:4px solid var(--accent);background:#eef3f7;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:16px}
+details.math{border:1px solid var(--line,#dcdcdc);border-radius:8px;background:#fff;margin:14px 0}
+details.math summary{cursor:pointer;padding:10px 13px;color:var(--accent);font-weight:750}
+details.math > div{border-top:1px solid var(--line,#dcdcdc);padding:4px 14px 12px}
+figure{margin:16px 0}figcaption{font-size:13px;color:#5a5a5a;margin-top:6px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line,#dcdcdc)}
+th,td{border:1px solid var(--line,#dcdcdc);padding:8px 11px;text-align:left;font-size:14.5px}th{background:#eef3f7}
+.tw{overflow-x:auto}
+</style></head><body>
+<header class="topbar"><a class="brand" href="../index.html">DDPS Concept Lab</a>
+<nav><a href="../index.html">Overview</a><a href="../concepts.html">Concepts</a><a class="active" href="../deep-track.html">Deep Track</a><a href="reduced-order-modeling.html">This concept</a></nav></header>
+<main>
+<div class="kick">data-driven physical simulation · compress fields · keep the shapes, throw away the numbers</div>
+<h1>Reduced-order modeling — when a thousand numbers can be written as seven</h1>
+<p class="lede">A simulation of water flowing, or air heating, or a beam bending will spit out thousands of numbers every timestep: the temperature or pressure or displacement at every point in space. Storing that, tuning it, running it fast are all expensive. But here is a stubborn fact: most physics fields do not actually vary in a thousand independent ways. They repeat the same basic shapes again and again — like a string oscillating in its first few vibration modes, or a face that can be built from a few standard building blocks. Reduced-order modeling finds those shapes and throws almost everything else away. Here is how it works, a real run showing how many shapes you actually need, why so few suffice, where it breaks down, and where the trick hides inside bigger methods.</p>
+<div class="arc"><a href="#problem">The problem</a><a href="#reframe">The reframe</a><a href="#run">Seen on a real run</a><a href="#why">Why a few shapes hold almost everything</a><a href="#weakness">The one real weakness</a><a href="#surprise">The surprise</a><a href="reduced-order-modeling.html">Atlas card</a></div>
+
+    <section class="fp" id="problem">
+      <h2>1 · The problem — thousands of numbers, thousands of bytes</h2>
+      <div class="essay">
+      <p>When you simulate a physical system — water in a pipe, heat diffusing through metal, a building swaying in wind — the program tracks the value of something (velocity, temperature, stress) at hundreds or thousands of points in space, every timestep. A single snapshot of a field might have 10,000 or 100,000 numbers. Run for a long time and you pile up gigabytes of data. Storing it costs money. Tuning the simulation to fit measurements means running it hundreds of times, which costs time. And building a fast <em>surrogate</em> (a speedup program that mimics the simulation) is hard when the thing you are copying has thousands of outputs.</p>
+      <p>The root problem is dimensional: <strong>the field has too many degrees of freedom</strong> — too many independent numbers that can each change freely. But here is an odd fact about real physics: fields do <em>not</em> actually vary in all those independent ways.</p>
+      </div>
+    </section>
+    <section class="fp" id="reframe">
+      <h2>2 · The reframe — the field is a weighted blend of a few recurring shapes</h2>
+      <div class="essay">
+      <p>Imagine a string that vibrates. It can oscillate in its lowest mode — up and down all together, a smooth bump. It can oscillate in its second mode — the middle goes one way and the ends go the other, a shape with a pinch in the middle. A third mode adds more pinches. But here is the key: almost all real vibrations are blends of just the first few modes. The highest modes almost never happen in practice.</p>
+      <p>The same is true for any field: it is almost always a mix of a few <em>recurring shapes</em> — called <em>modes</em> — that the system tends to fall into. Instead of storing the field's value at every point, store only how much each of the first few modes is turned up (a single strength number for each). Reconstruct the full field whenever you need it by blending those shapes.</p>
+      <p>Finding these shapes is called <em>principal-component analysis</em>, or POD (proper orthogonal decomposition) — a straightforward statistical trick: gather many snapshots of the field, look for the most common directions of variation, and list them in order of importance. The result is a <strong>reduced-order model</strong>, or ROM. Each solution is now a short list of numbers instead of thousands.</p>
+      </div>
+    </section>
+    <section class="fp" id="run">
+      <h2>3 · Seen on a real run — seven modes catch 99 percent</h2>
+      <div class="essay">
+      <p>We collected snapshots of a simulated field, each snapshot sampled at 200 points in space. Then we ran principal-component analysis to find the recurring shapes. Here is how many modes you need to recover different amounts of the variation:</p>
+      <div class="tw"><table><tr><th>modes</th><th>fraction of variation captured</th></tr><tr><td>7</td><td>99%</td></tr><tr><td>9</td><td>99.9%</td></tr><tr><td>10</td><td>99.97%</td></tr></table></div><figcaption>Modes needed to capture different percentages of the field's total variation. Numbers are the run's output verbatim.</figcaption>
+      <div class="insight"><strong>The discovered fact: the first seven modes alone hold 99 percent of the energy and variation in the field; nine modes catch 99.9 percent. The first ten already capture 99.97 percent.</strong> You can represent the entire evolution of the system using just those seven to ten numbers per timestep, instead of 200. That is a 20-to-30-fold compression while losing almost nothing.</div>
+      </div>
+    </section>
+    <section class="fp" id="why">
+      <h2>4 · Why a few shapes hold almost everything</h2>
+      <div class="essay">
+      <p>The reason is geometric: the set of all possible states the field can reach does not fill the entire high-dimensional space. Instead, all those states cluster on a low-dimensional <em>surface</em> or <em>manifold</em> — think of it as a crumpled sheet inside a high-dimensional room. The first few modes are the directions you need to move along that sheet; the other directions point off the sheet, into empty space. So once you have captured the directions the data actually uses, the rest of the modes carry almost no energy, almost no variance.</p>
+      <p>This happens because physics is smooth and often governed by just a handful of dominant physical effects. A beating heart, a turbulent wake, a vibrating bridge — each has a few natural frequencies and shapes that dominate; the small corrections and irregularities are just noise. The data reflects that structure: most of the variation piles up in the first few modes.</p>
+      </div>
+    </section>
+    <section class="fp" id="weakness">
+      <h2>5 · The one real weakness — nonlinear shocks break the trick</h2>
+      <div class="essay">
+      <p>Reduced-order modeling shines when the physics is smooth and slowly varying. The modes are found by averaging over all the snapshots, so they capture the typical slow behavior beautifully. But when the field contains sharp features — a shock wave, a moving discontinuity, a sharp interface between two very different regions — the same modes that worked for smooth flows fail. A shock is not a gentle blend of low modes; it is a highly localized, singular event. Capturing it requires many modes, sometimes most of them, defeating the whole point of compression.</p>
+      <p>For smooth, nearly-linear physics, ROMs are excellent. For strongly nonlinear problems with moving shocks or instabilities, you need either many more modes or a fundamentally different approach — such as a <em>nonlinear manifold ROM</em> that learns the actual curved surface the data lives on, rather than fitting a flat plane through it.</p>
+      </div>
+    </section>
+    <section class="fp" id="surprise">
+      <h2>6 · The surprise — the trick reappears in fast twins and design</h2>
+      <div class="essay">
+      <p>Reduced-order models are crucial in three directions. First, <a href="hybrid-twins-deep.html">hybrid twins</a>: if the physics is expensive and a full simulation is slow, train a surrogate on the ROM instead. The reduced model runs hundreds of times faster, still captures the essential behavior. Second, <a href="fluid-mechanics-simulation-deep.html">fluid-mechanics simulation</a> and dynamic mode decomposition (DMD) — DMD is a close cousin that extracts modes and their temporal frequencies directly from snapshots without needing the governing equation. Both find the same low-dimensional structure. Third, <a href="operator-learning-deep.html">operator learning</a> can be trained not on the full field but on its ROM representation, cutting training cost.</p>
+      <p>The lesson: when you are working with high-dimensional physics data, do not assume you need to process all the dimensions. Look for the low-dimensional structure first. Compress ruthlessly, keeping only the modes that carry energy. Reduce the problem, then solve the reduced problem. That one move — from thousands to ten — turns a hard simulation into a solvable one, a slow design sweep into a fast one, and data that does not fit in memory into something you can hold in your hand.</p>
+      </div>
+    </section>
+    <section class="fp"><p class="muted">Related: <a href="hybrid-twins-deep.html">hybrid twins</a> · <a href="fluid-mechanics-simulation-deep.html">fluid-mechanics simulation</a> · <a href="operator-learning-deep.html">operator learning</a> · <a href="scientific-machine-learning-deep.html">scientific machine learning</a> · <a href="differentiable-simulation-deep.html">differentiable simulation</a></p></section>
+    <details class="math"><summary>the run recipe — reproduce every number above</summary><div>
+      <p class="muted">Collect snapshots of a simulated field at 200 points per timestep. Run principal-component analysis (POD) to extract the modes (recurring shapes). Count how many modes are needed to recover 99%, 99.9%, and 99.97% of the total variation (energy) in the data. Report the mode count for each threshold.</p>
+      <div class="eq">SVD or eigendecomposition of snapshot matrix:
+C = (1/N) Σ snapshots  snapshots^T
+λ_k = eigenvalues (sorted descending)
+fraction captured = Σ_{i=1}^{k} λ_i / Σ_all λ_i
+Find k where fraction ≥ 0.99, 0.999, 0.9997</div>
+      <p class="muted">Full script: scripts/experiments/ddps_run.py (EXP3), numpy, fixed seed. Numbers are the run's output verbatim. Snapshots were sampled at 200 points per field; mode counts are the direct output of POD analysis.</p>
+    </div></details>
+<footer style="color:#5a5a5a;font-size:13px;border-top:1px solid var(--line,#dcdcdc);padding:22px 0 60px;margin-top:24px">DDPS Concept Lab · Reduced-Order Modeling deep dive · every quantity here is computed. Experiments in scripts/experiments/ddps_run.py.</footer>
+</main></body></html>

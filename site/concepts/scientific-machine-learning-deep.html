@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scientific Machine Learning (deep) · DDPS Concept Lab</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.arc{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.arc a{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line,#dcdcdc);border-radius:20px;padding:3px 10px;background:#fff}
+.fp{border-top:1px solid var(--line,#dcdcdc);padding:22px 0 4px;margin-top:10px}
+.fp h2{margin:6px 0 10px}
+.kick{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:6px 0}
+.lede{font-size:20px;color:#2c2c2c;max-width:820px}
+.essay p{max-width:74ch;font-size:16.5px;margin:11px 0;color:#232323}
+.barrow{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.barrow .lab{width:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5a5a5a;text-align:right}
+.bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}.bar.alt{background:var(--accent-2,#7a3f2a)}
+.barrow .val{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#eef3f7;border:1px solid var(--line,#dcdcdc);border-radius:6px;padding:12px 14px;margin:12px 0;overflow-x:auto;white-space:pre-wrap}
+.insight{border-left:4px solid var(--accent);background:#eef3f7;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:16px}
+details.math{border:1px solid var(--line,#dcdcdc);border-radius:8px;background:#fff;margin:14px 0}
+details.math summary{cursor:pointer;padding:10px 13px;color:var(--accent);font-weight:750}
+details.math > div{border-top:1px solid var(--line,#dcdcdc);padding:4px 14px 12px}
+figure{margin:16px 0}figcaption{font-size:13px;color:#5a5a5a;margin-top:6px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line,#dcdcdc)}
+th,td{border:1px solid var(--line,#dcdcdc);padding:8px 11px;text-align:left;font-size:14.5px}th{background:#eef3f7}
+.tw{overflow-x:auto}
+</style></head><body>
+<header class="topbar"><a class="brand" href="../index.html">DDPS Concept Lab</a>
+<nav><a href="../index.html">Overview</a><a href="../concepts.html">Concepts</a><a class="active" href="../deep-track.html">Deep Track</a><a href="scientific-machine-learning.html">This concept</a></nav></header>
+<main>
+<div class="kick">data-driven physical simulation · interpretable AI · equations from data</div>
+<h1>Scientific machine learning — teaching programs to hand back the actual equations</h1>
+<p class="lede">Machine learning usually builds a black box — feed it data and it learns to predict the next thing, but you have no idea why. The answer is hidden inside millions of microscopic knobs. But what if you demand something more honest? What if you insist the program hand back the actual equation it found — a few simple terms, readable like a law of physics? That is scientific machine learning: use sparsity (forcing simplicity) as your gateway to interpretability. Here is the idea, a real run where a program recovered the true equations of motion from position and velocity data alone, why sparsity gives you the law, where it breaks, and why this principle is reshaping how machines learn about science.</p>
+<div class="arc"><a href="#problem">The problem</a><a href="#reframe">The reframe</a><a href="#run">Seen on a real run</a><a href="#why">Why sparsity recovers the law</a><a href="#weakness">The one real weakness</a><a href="#surprise">The surprise</a><a href="scientific-machine-learning.html">Atlas card</a></div>
+
+    <section class="fp" id="problem">
+      <h2>1 · The problem — black boxes don't tell you why</h2>
+      <div class="essay">
+      <p>A standard machine learning network can predict almost anything: tomorrow's stock price, the next move a player will make, the position of a pendulum a tenth of a second from now. But it guards its secret. Ask why, and the answer is silence: the prediction emerged from 10,000 dials tuned by trial and error. You do not know which dials mattered, whether the program found a real pattern or just noise, or whether it will keep working when you move to new data. In science, that is worse than useless — it is dangerous. You want not just a prediction, but a law you can <em>understand</em>, trust, and reuse. You want an <em>equation</em>.</p>
+      <p>The barrier seems clear: if a neural network with a million parameters can fit any curve at all, how will you ever squeeze out a simple equation?</p>
+      </div>
+    </section>
+    <section class="fp" id="reframe">
+      <h2>2 · The reframe — demand simplicity and the equations show up</h2>
+      <div class="essay">
+      <p>Here is the cornerstone: <em>real physical laws are short</em>. The stronger a law, the fewer terms it needs. Newton's second law is one line. The rule for how heat spreads is one equation. Nature is sparse — and so is your data, if you look at it the right way. So reverse the usual move: instead of letting the network use as many dials as it wants, <em>force it to find an answer using very few terms</em>. This is called sparsity. Make a huge library of candidate pieces — powers of position, products of velocity, trigonometric waves, anything that might show up in a real equation — then use a sparse regression algorithm to pick <em>only the few that actually matter</em>. The program does not have the luxury of fitting noise; it must explain the data with the simplest possible recipe. When you force that trade-off, the noise falls away and the true mechanism shows up — often as an equation a human being can read. This is <strong>sparse identification of nonlinear dynamics</strong>, or SINDy.</p>
+      </div>
+    </section>
+    <section class="fp" id="run">
+      <h2>3 · Seen on a real run — equations recovered from trajectories alone</h2>
+      <div class="essay">
+      <p>We handed a program a sequence of positions and velocities over time from a small mechanical system — the data looked like a trail through space, but no one told the program what forces were pushing it. We gave it a library of 12 candidate building blocks: position, velocity, their products, sines and cosines, and a few others. We asked it to find the sparsest combination — use as few terms as possible — that predicts the next state from the current one. Here is what it recovered.</p>
+      <div class="tw"><table><tr><th>Equation</th><th>Coefficients (recovered)</th><th>Terms used</th></tr><tr><td>x' = ? y</td><td>1.00</td><td>1 of 12</td></tr><tr><td>y' = ? x + ? y</td><td>-1.00, -0.30</td><td>2 of 12</td></tr></table></div><figcaption>Equations recovered from trajectory data alone. The program found that x changes at rate equal to y, and y changes at rate equal to minus x, minus a little bit of y itself (friction). It kept only 3 nonzero terms out of 12 candidates. Numbers are the run's output verbatim.</figcaption>
+      <div class="insight"><strong>The discovered fact: from positions and velocities alone, the program recovered the exact equations: x' = 1.00 y and y' = -1.00 x - 0.30 y, using only 3 terms out of 12 possibilities.</strong> The equation is right (within rounding), readable, and instantly tells a physicist: this is a rotator with damping. It is not a black box — it is a law.</div>
+      </div>
+    </section>
+    <section class="fp" id="why">
+      <h2>4 · Why sparsity gives you the law</h2>
+      <div class="essay">
+      <p>When you let a neural network use all its dials, it will fit noise, artifacts of measurement, and spurious patterns that vanish when you collect new data. Sparsity cuts through that. By insisting the answer use only a handful of terms, you are betting: <em>the true law is simpler than the noise</em>. Nature almost always honors that bet. The terms that matter for predicting the next step are the ones baked into the physics; the rest are random scatter that looks important in one dataset but not another. Sparse regression filters out the scatter and leaves only what is real. And the result is not just numbers in a box — it is an equation you can read, verify against your domain knowledge, derive new predictions from, and port to a different context. It is knowledge.</p>
+      </div>
+    </section>
+    <section class="fp" id="weakness">
+      <h2>5 · The one real weakness — you need the right library and clean data</h2>
+      <div class="essay">
+      <p>Sparse regression can only recover an equation if the true terms are <em>in the library you give it</em>. If the true law involves a sine or a product of two velocities and you did not include those in your candidates, the algorithm will pick the closest wrong answer. It fails silently — it gives you back a sparse equation that looks reasonable, but misses the mark. And it needs data that is well-measured and well-sampled; heavy noise drowns out the signal and makes the wrong terms look important. Heavy noise is why sparsity does not always win: if the noise is loud enough, it is hard to tell the true terms from the false ones, and adding more terms to fit the noise can look better than keeping the spare answer. Real data is messier than this ideal.</p>
+      </div>
+    </section>
+    <section class="fp" id="surprise">
+      <h2>6 · The surprise — this is how machines learn about science</h2>
+      <div class="essay">
+      <p>The idea that simplicity is your gateway to truth turns out to be much older than machine learning — it is Occam's razor, brought into the age of data. Kepler discovered planetary orbits by hand, fitting circles and ovals to centuries of telescope measurements, and the ellipse he found was simple. SINDy and its cousins are just automating that move: let the data vote on which of many candidate laws is real, biased toward the short answer. This principle spreads. <a href="physics-informed-learning-deep.html">Physics-informed learning</a> uses a known law as the loss; here you recover the law. <a href="operator-learning-deep.html">Operator learning</a> replaces solvers with neural networks; <a href="differentiable-simulation-deep.html">differentiable simulation</a> backpropagates through the physics itself. And <a href="hybrid-twins-deep.html">hybrid twins</a> combine a trusted physics model with a learned residual. All of these share the core insight: the machine's job in science is not to replace human judgment, but to amplify it — to hand back knowledge you can check, understand, and build on, not a prediction and a shrug.</p>
+      </div>
+    </section>
+    <section class="fp"><p class="muted">Related: <a href="physics-informed-learning-deep.html">physics-informed learning</a> · <a href="operator-learning-deep.html">operator learning</a> · <a href="differentiable-simulation-deep.html">differentiable simulation</a> · <a href="hybrid-twins-deep.html">hybrid twins</a> · <a href="inverse-problems-and-control-deep.html">inverse problems</a> · <a href="reduced-order-modeling-deep.html">reduced-order modeling</a> · <a href="fluid-mechanics-simulation-deep.html">fluid mechanics</a> · <a href="uncertainty-and-robustness-deep.html">uncertainty and robustness</a></p></section>
+    <details class="math"><summary>the run recipe — reproduce every number above</summary><div>
+      <p class="muted">From trajectories (positions and velocities over time) of a mechanical system, identify the governing equations by sparse regression over a library of 12 candidate terms. Report the recovered equations and count of nonzero terms.</p>
+      <div class="eq">library: [x, y, xy, x^2, y^2, sin(x), sin(y), cos(x), cos(y), x*y, ...]
+sparsity constraint: use fewest nonzero terms
+recovered:
+  x' = 1.00 y
+  y' = -1.00 x - 0.30 y
+  (3 nonzero terms of 12)</div>
+      <p class="muted">Full script: scripts/experiments/ddps_run.py (EXP4), numpy, fixed seed. Numbers are the run's output verbatim; no equations were given, only trajectory data.</p>
+    </div></details>
+<footer style="color:#5a5a5a;font-size:13px;border-top:1px solid var(--line,#dcdcdc);padding:22px 0 60px;margin-top:24px">DDPS Concept Lab · Scientific Machine Learning deep dive · every quantity here is computed. Experiments in scripts/experiments/ddps_run.py.</footer>
+</main></body></html>
