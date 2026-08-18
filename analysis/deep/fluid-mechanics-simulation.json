@@ -4,34 +4,183 @@
   "kick": "data-driven physical simulation · coherent patterns · rhythms straight from snapshots",
   "title": "Fluid-mechanics simulation — reading the flow's hidden patterns without the equations",
   "lede": "Fluid flow is bewildering. At any instant, thousands of swirling numbers describe where the fluid is moving and how fast — and every number touches its neighbors in intricate ways that take expensive solvers hours to compute. But here is a surprise: even though the flow is complex, the same few patterns repeat and pulse throughout the motion, each one swelling or fading at its own rhythm. Data-driven fluid analysis does something remarkable — it yanks those patterns and their rhythms straight out of a stack of snapshots, without ever touching the equations that govern the flow. Here is the idea, a real run where the dominant oscillations were recovered exactly from the data alone, why it works, where it fails, and where this trick powers real flow control and prediction.",
-  "arc": [["problem","The problem"],["reframe","The reframe"],["run","Seen on a real run"],["why","Why patterns hide in the data"],["weakness","The one real weakness"],["surprise","The surprise"]],
-  "sections": [
-    {"id":"problem","h2":"1 · The problem — thousands of numbers, but they almost certainly repeat","blocks":[
-      {"t":"para","html":"Simulating fluid flow from first principles is punishing. You start with the physical laws — conservation of mass, conservation of momentum — and they spit back a complex rule, the Navier-Stokes equation, that ties the velocity and pressure of the fluid at each point to how they change in time and space. Solving it means breaking the space into millions of tiny cells, each one feeding data to its neighbors, and marching forward in time by tiny steps. A single day of simulated flow can take hours or days of computer time."},
-      {"t":"para","html":"But here is the catch: look at any animation of flow — water swirling, smoke rising, air bouncing around an airplane wing — and you see the same shapes repeating. Vortices (spiral cores of rotation) appear and disappear. Pressure waves pulse up and down. Certain regions oscillate back and forth as if tied to hidden rhythms. The data is high-dimensional — thousands of numbers per frame — but the <em>behavior</em> feels low-dimensional: only a handful of coherent motions are at play. The question becomes: <strong>can you read those patterns and their rhythms straight off the snapshots, with no knowledge of the underlying equations?</strong>"}
-    ]},
-    {"id":"reframe","h2":"2 · The reframe — treat snapshots as data and ask what few patterns add up to the movie","blocks":[
-      {"t":"para","html":"Here is the reframing move. Imagine you have a stack of snapshots of the flow — call it a time series of field measurements. Each snapshot is a point in a very high-dimensional space (thousands of velocity and pressure values). If only a handful of coherent <em>modes</em> (each mode is a spatial pattern that grows or shrinks or oscillates at its own rate) are doing the heavy lifting, then every snapshot should be close to a blend of those modes. This is exactly the same intuition as reduced-order modeling: if the data lives on a low-dimensional surface hiding inside the high-dimensional space, you can find that surface by asking which directions explain the most change. But for flow, there is more: instead of just decomposing a single snapshot, you can track how the modes <em>grow or decay and cycle</em> over time. Dynamic mode decomposition, or <strong>DMD</strong>, does this in one step. It stacks all your snapshots together and asks: what few mode shapes, each one multiplied by an exponential growth (or decay or oscillation) factor in time, can reproduce the entire sequence of snapshots? The answer falls right out of linear algebra, with no physics equations needed."}
-    ]},
-    {"id":"run","h2":"3 · Seen on a real run — the hidden frequencies revealed exactly","blocks":[
-      {"t":"para","html":"We fed DMD a series of snapshots of a synthetic evolving field that was built with two dominant oscillations baked into it: one that cycles once per unit time, and another that cycles 2.6 times per unit time. Crucially, DMD was told nothing about these frequencies. It only saw the raw spatial snapshots. We asked: what temporal frequencies does DMD extract from the data?"},
-      {"t":"bars","caption":"Temporal frequencies recovered by DMD from snapshots alone, with no knowledge of the governing equations. Numbers are the run's output verbatim.","rows":[["frequency 1 (true: 1.0)",0.5,"1.0"],["frequency 2 (true: 2.6)",1.0,"2.6"]]},
-      {"t":"insight","html":"<strong>The discovered fact: DMD recovered both frequencies exactly — 1.0 and 2.6 — from the snapshots alone.</strong> The algorithm pulled the dominant temporal rhythms straight out of the spatial data, with zero input about the underlying physics equations. This is what makes data-driven fluid analysis possible: no solver, no equation, just patterns and their clocks."}
-    ]},
-    {"id":"why","h2":"4 · Why patterns hide in the data","blocks":[
-      {"t":"para","html":"Here is the geometry. If only a few modes are at play, then the flow at each instant is a linear combination (a blend) of those mode shapes. So if you line up two consecutive snapshots in a matrix — one column from time t and the next from time t + Δt — the second is nearly a linear transformation of the first. DMD finds that transformation. The eigenvalues (special numbers) of that transformation encode the growth rates and oscillation frequencies. The eigenvectors (special directions) are the mode shapes themselves. Since you are working with raw data, no equation needed — the linear fit between consecutive frames reveals the oscillations and decay rates directly. This is why it works: the snapshots themselves embed both the spatial patterns and their time behavior in a way linear algebra can extract."}
-    ]},
-    {"id":"weakness","h2":"5 · The one real weakness — linearization breaks on turbulent or chaotic flow","blocks":[
-      {"t":"para","html":"The catch is fundamental: DMD assumes the dynamics are approximately linear frame-to-frame. When the flow is smooth and dominated by coherent structures (like a vortex shedding past a cylinder), this works beautifully. But turbulent flow — chaotic, nonlinear, every scale interacting with every other — violates the assumption. The modes DMD finds may not generalize if you only sampled sparsely in time, or if you missed the fast-moving, small-scale details. Also, DMD is only as good as your snapshots: if you sampled at the wrong time intervals, or missed a frequency that matters, DMD cannot recover what it never saw. For strongly nonlinear or turbulent flows, you need extensions like kernel DMD or higher-order variants, trading simplicity for robustness."}
-    ]},
-    {"id":"surprise","h2":"6 · The surprise — pattern-reading powers flow control, reduced models, and fast surrogates","blocks":[
-      {"t":"para","html":"The trick of reading modes and their rhythms opened up a whole ecosystem. DMD feeds directly into <a href=\"reduced-order-modeling-deep.html\">reduced-order modeling</a> — once you have the modes, you can simulate the flow by tracking just their time-dependent amplitudes instead of solving the full Navier-Stokes, dropping the cost from hours to seconds. Flow control uses the same modes: if you identify which mode is causing drag or instability, you can apply forces designed to damp exactly that mode. And as operator learning has matured, <a href=\"operator-learning-deep.html\">operator learning</a> now trains neural networks to act as fast surrogates for fluid solvers — given a new geometry or forcing, predict the flow in a forward pass. DMD, POD (proper orthogonal decomposition, a sister technique), and reduced-order modeling are the data-driven backbone of this ecosystem. The broader lesson: when the high-dimensional data is driven by a few coherent mechanisms, pulling out those mechanisms gives you understanding, control, and speed. This is why fluid machine learning is not just a black box — it is rooted in reading the flow's own structure."}
-    ]}
+  "arc": [
+    [
+      "problem",
+      "The problem"
+    ],
+    [
+      "reframe",
+      "The reframe"
+    ],
+    [
+      "run",
+      "Seen on a real run"
+    ],
+    [
+      "why",
+      "Why patterns hide in the data"
+    ],
+    [
+      "weakness",
+      "The one real weakness"
+    ],
+    [
+      "surprise",
+      "The surprise"
+    ],
+    [
+      "practice",
+      "In practice"
+    ]
   ],
-  "related": [["reduced-order-modeling-deep.html","reduced-order modeling"],["operator-learning-deep.html","operator learning"],["hybrid-twins-deep.html","hybrid twins"],["scientific-machine-learning-deep.html","scientific machine learning"],["uncertainty-and-robustness-deep.html","uncertainty and robustness"]],
+  "sections": [
+    {
+      "id": "problem",
+      "h2": "1 · The problem — thousands of numbers, but they almost certainly repeat",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Simulating fluid flow from first principles is punishing. You start with the physical laws — conservation of mass, conservation of momentum — and they spit back a complex rule, the Navier-Stokes equation, that ties the velocity and pressure of the fluid at each point to how they change in time and space. Solving it means breaking the space into millions of tiny cells, each one feeding data to its neighbors, and marching forward in time by tiny steps. A single day of simulated flow can take hours or days of computer time."
+        },
+        {
+          "t": "para",
+          "html": "But there is a catch: look at any animation of flow — water swirling, smoke rising, air bouncing around an airplane wing — and you see the same shapes repeating. Vortices (spiral cores of rotation) appear and disappear. Pressure waves pulse up and down. Certain regions oscillate back and forth as if tied to hidden rhythms. The data is high-dimensional — thousands of numbers per frame — but the <em>behavior</em> feels low-dimensional: only a handful of coherent motions are at play. The question becomes: <strong>can you read those patterns and their rhythms straight off the snapshots, with no knowledge of the underlying equations?</strong>"
+        }
+      ]
+    },
+    {
+      "id": "reframe",
+      "h2": "2 · The reframe — treat snapshots as data and ask what few patterns add up to the movie",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The reframing move: Suppose you have a stack of snapshots of the flow — call it a time series of field measurements. Each snapshot is a point in a very high-dimensional space (thousands of velocity and pressure values). If only a handful of coherent <em>modes</em> (each mode is a spatial pattern that grows or shrinks or oscillates at its own rate) are doing the heavy lifting, then every snapshot should be close to a blend of those modes. This is exactly the same intuition as reduced-order modeling: if the data lives on a low-dimensional surface hiding inside the high-dimensional space, you can find that surface by asking which directions explain the most change. But for flow, there is more: instead of just decomposing a single snapshot, you can track how the modes <em>grow or decay and cycle</em> over time. Dynamic mode decomposition, or <strong>DMD</strong>, does this in one step. It stacks all your snapshots together and asks: what few mode shapes, each one multiplied by an exponential growth (or decay or oscillation) factor in time, can reproduce the entire sequence of snapshots? The answer falls right out of linear algebra, with no physics equations needed."
+        },
+        {
+          "t": "para",
+          "html": "The hidden quantity is a handful of <em>modes</em> — each a fixed spatial pattern paired with a rate saying how fast it grows or fades and how quickly it oscillates. Add a few of these together, each rising or falling at its own rate, and you reproduce the whole changing flow."
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "h2": "3 · Seen on a real run — the hidden frequencies revealed exactly",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "We fed DMD a series of snapshots of a synthetic evolving field that was built with two dominant oscillations baked into it: one that cycles once per unit time, and another that cycles 2.6 times per unit time. Crucially, DMD was told nothing about these frequencies. It only saw the raw spatial snapshots. We asked: what temporal frequencies does DMD extract from the data?"
+        },
+        {
+          "t": "bars",
+          "caption": "Temporal frequencies recovered by DMD from snapshots alone, with no knowledge of the governing equations. Numbers are the run's output verbatim.",
+          "rows": [
+            [
+              "frequency 1 (true: 1.0)",
+              0.5,
+              "1.0"
+            ],
+            [
+              "frequency 2 (true: 2.6)",
+              1.0,
+              "2.6"
+            ]
+          ]
+        },
+        {
+          "t": "insight",
+          "html": "<strong>The discovered fact: DMD recovered both frequencies exactly — 1.0 and 2.6 — from the snapshots alone.</strong> The algorithm pulled the dominant temporal rhythms straight out of the spatial data, with zero input about the underlying physics equations. This is what makes data-driven fluid analysis possible: no solver, no equation, just patterns and their clocks."
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "h2": "4 · Why patterns hide in the data",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The geometry: If only a few modes are at play, then the flow at each instant is a linear combination (a blend) of those mode shapes. So if you line up two consecutive snapshots in a matrix — one column from time t and the next from time t + Δt — the second is nearly a linear transformation of the first. DMD finds that transformation. The eigenvalues (special numbers) of that transformation encode the growth rates and oscillation frequencies. The eigenvectors (special directions) are the mode shapes themselves. Since you are working with raw data, no equation needed — the linear fit between consecutive frames reveals the oscillations and decay rates directly. This is why it works: the snapshots themselves embed both the spatial patterns and their time behavior in a way linear algebra can extract."
+        }
+      ]
+    },
+    {
+      "id": "weakness",
+      "h2": "5 · The one real weakness — linearization breaks on turbulent or chaotic flow",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The catch is fundamental: DMD assumes the dynamics are approximately linear frame-to-frame. When the flow is smooth and dominated by coherent structures (like a vortex shedding past a cylinder), this works beautifully. But turbulent flow — chaotic, nonlinear, every scale interacting with every other — violates the assumption. The modes DMD finds may not generalize if you only sampled sparsely in time, or if you missed the fast-moving, small-scale details. Also, DMD is only as good as your snapshots: if you sampled at the wrong time intervals, or missed a frequency that matters, DMD cannot recover what it never saw. For strongly nonlinear or turbulent flows, you need extensions like kernel DMD or higher-order variants, trading simplicity for robustness."
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "h2": "6 · The surprise — pattern-reading powers flow control, reduced models, and fast surrogates",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The trick of reading modes and their rhythms opened up a whole ecosystem. DMD feeds directly into <a href=\"reduced-order-modeling-deep.html\">reduced-order modeling</a> — once you have the modes, you can simulate the flow by tracking just their time-dependent amplitudes instead of solving the full Navier-Stokes, dropping the cost from hours to seconds. Flow control uses the same modes: if you identify which mode is causing drag or instability, you can apply forces designed to damp exactly that mode. And as operator learning has matured, <a href=\"operator-learning-deep.html\">operator learning</a> now trains neural networks to act as fast surrogates for fluid solvers — given a new geometry or forcing, predict the flow in a forward pass. DMD, POD (proper orthogonal decomposition, a sister technique), and reduced-order modeling are the data-driven backbone of this ecosystem. The broader lesson: when the high-dimensional data is driven by a few coherent mechanisms, pulling out those mechanisms gives you understanding, control, and speed. This is why fluid machine learning is not just an unreadable predictor — it is rooted in reading the flow's own structure."
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "h2": "7 · Where it is used in practice — Reading flow rhythms from snapshots",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Data-driven fluid analysis (dynamic mode decomposition, proper orthogonal decomposition) is used in flow control for aircraft (damping flutter, reducing drag), in wind energy (understanding wake oscillations), in combustion instability (identifying dangerous pressure pulsations), and in postprocessing simulations or experiments where the sheer volume of snapshots makes traditional analysis intractable. Whenever coherent structures dominate the flow and you want to understand or control them, snapshots give up their secrets to modal analysis."
+        },
+        {
+          "t": "para",
+          "html": "An engineer collects snapshots (spatial velocity or pressure fields) from a wind tunnel test, a high-resolution simulation, or a particle imaging experiment. They apply dynamic mode decomposition: stack the snapshots in a matrix and find the few exponential growth (or decay or oscillation) modes that best reproduce the sequence. The modes reveal what is happening — a vortex shedding at a certain frequency, a pressure wave train, a jet instability — without ever solving the Navier-Stokes equation. A flow control specialist can then design forces (synthetic jets, plasma actuators, suction) to target the exact mode causing drag or instability. The modes drop cost from hours per simulation to seconds per ROM, and they hand control engineers interpretable targets."
+        },
+        {
+          "t": "insight",
+          "html": "The method assumes the flow is approximately linear frame-to-frame; turbulent, chaotic, or strongly nonlinear flows violate this assumption and demand extensions or denser temporal sampling."
+        }
+      ]
+    }
+  ],
+  "related": [
+    [
+      "reduced-order-modeling-deep.html",
+      "reduced-order modeling"
+    ],
+    [
+      "operator-learning-deep.html",
+      "operator learning"
+    ],
+    [
+      "hybrid-twins-deep.html",
+      "hybrid twins"
+    ],
+    [
+      "scientific-machine-learning-deep.html",
+      "scientific machine learning"
+    ],
+    [
+      "uncertainty-and-robustness-deep.html",
+      "uncertainty and robustness"
+    ]
+  ],
   "recipe": {
     "summary": "Feed DMD a time series of snapshots from a synthetic field with two temporal frequencies (1.0 and 2.6) baked into the dynamics. Apply dynamic mode decomposition to extract the dominant oscillations. Report the recovered frequencies vs the ground truth.",
     "eq": "Data: snapshots X_1, X_2, ..., X_n of a field evolving over time.\nGoal: find modes Φ and eigenvalues λ such that snapshots ≈ Φ × diag(λ^t) × c,\nwhere λ encodes growth, decay, or oscillation, and c are amplitudes.\nExtract λ via linear fit between consecutive snapshots and eigenvalue decomposition.\nRecovered frequencies: 1.0 (true 1.0), 2.6 (true 2.6).",
     "note": "Full script: scripts/experiments/ddps_run.py (EXP7), numpy, fixed seed. Numbers are the run's output verbatim; no physics equations were used in the decomposition."
-  }
+  },
+  "connects": [
+    {
+      "course": "brunton",
+      "id": "dynamic-mode-decomposition",
+      "label": "DMD",
+      "note": "Reading a flow as a few growing and oscillating modes is exactly dynamic mode decomposition."
+    },
+    {
+      "course": "brunton",
+      "id": "proper-orthogonal-decomposition",
+      "label": "POD",
+      "note": "The spatial patterns it keeps are the same ones POD extracts."
+    }
+  ]
 }

@@ -4,39 +4,209 @@
   "kick": "data-driven physical simulation · compress fields · keep the shapes, throw away the numbers",
   "title": "Reduced-order modeling — when a thousand numbers can be written as seven",
   "lede": "A simulation of water flowing, or air heating, or a beam bending will spit out thousands of numbers every timestep: the temperature or pressure or displacement at every point in space. Storing that, tuning it, running it fast are all expensive. But here is a stubborn fact: most physics fields do not actually vary in a thousand independent ways. They repeat the same basic shapes again and again — like a string oscillating in its first few vibration modes, or a face that can be built from a few standard building blocks. Reduced-order modeling finds those shapes and throws almost everything else away. Here is how it works, a real run showing how many shapes you actually need, why so few suffice, where it breaks down, and where the trick hides inside bigger methods.",
-  "arc": [["problem","The problem"],["reframe","The reframe"],["run","Seen on a real run"],["why","Why a few shapes hold almost everything"],["weakness","The one real weakness"],["surprise","The surprise"]],
-  "sections": [
-    {"id":"problem","h2":"1 · The problem — thousands of numbers, thousands of bytes","blocks":[
-      {"t":"para","html":"When you simulate a physical system — water in a pipe, heat diffusing through metal, a building swaying in wind — the program tracks the value of something (velocity, temperature, stress) at hundreds or thousands of points in space, every timestep. A single snapshot of a field might have 10,000 or 100,000 numbers. Run for a long time and you pile up gigabytes of data. Storing it costs money. Tuning the simulation to fit measurements means running it hundreds of times, which costs time. And building a fast <em>surrogate</em> (a speedup program that mimics the simulation) is hard when the thing you are copying has thousands of outputs."},
-      {"t":"para","html":"The root problem is dimensional: <strong>the field has too many degrees of freedom</strong> — too many independent numbers that can each change freely. But here is an odd fact about real physics: fields do <em>not</em> actually vary in all those independent ways."}
-    ]},
-    {"id":"reframe","h2":"2 · The reframe — the field is a weighted blend of a few recurring shapes","blocks":[
-      {"t":"para","html":"Imagine a string that vibrates. It can oscillate in its lowest mode — up and down all together, a smooth bump. It can oscillate in its second mode — the middle goes one way and the ends go the other, a shape with a pinch in the middle. A third mode adds more pinches. But here is the key: almost all real vibrations are blends of just the first few modes. The highest modes almost never happen in practice."},
-      {"t":"para","html":"The same is true for any field: it is almost always a mix of a few <em>recurring shapes</em> — called <em>modes</em> — that the system tends to fall into. Instead of storing the field's value at every point, store only how much each of the first few modes is turned up (a single strength number for each). Reconstruct the full field whenever you need it by blending those shapes."},
-      {"t":"para","html":"Finding these shapes is called <em>principal-component analysis</em>, or POD (proper orthogonal decomposition) — a straightforward statistical trick: gather many snapshots of the field, look for the most common directions of variation, and list them in order of importance. The result is a <strong>reduced-order model</strong>, or ROM. Each solution is now a short list of numbers instead of thousands."}
-    ]},
-    {"id":"run","h2":"3 · Seen on a real run — seven modes catch 99 percent","blocks":[
-      {"t":"para","html":"We collected snapshots of a simulated field, each snapshot sampled at 200 points in space. Then we ran principal-component analysis to find the recurring shapes. Here is how many modes you need to recover different amounts of the variation:"},
-      {"t":"table","headers":["modes","fraction of variation captured"],"rows":[["7","99%"],["9","99.9%"],["10","99.97%"]],"caption":"Modes needed to capture different percentages of the field's total variation. Numbers are the run's output verbatim."},
-      {"t":"insight","html":"<strong>The discovered fact: the first seven modes alone hold 99 percent of the energy and variation in the field; nine modes catch 99.9 percent. The first ten already capture 99.97 percent.</strong> You can represent the entire evolution of the system using just those seven to ten numbers per timestep, instead of 200. That is a 20-to-30-fold compression while losing almost nothing."}
-    ]},
-    {"id":"why","h2":"4 · Why a few shapes hold almost everything","blocks":[
-      {"t":"para","html":"The reason is geometric: the set of all possible states the field can reach does not fill the entire high-dimensional space. Instead, all those states cluster on a low-dimensional <em>surface</em> or <em>manifold</em> — think of it as a crumpled sheet inside a high-dimensional room. The first few modes are the directions you need to move along that sheet; the other directions point off the sheet, into empty space. So once you have captured the directions the data actually uses, the rest of the modes carry almost no energy, almost no variance."},
-      {"t":"para","html":"This happens because physics is smooth and often governed by just a handful of dominant physical effects. A beating heart, a turbulent wake, a vibrating bridge — each has a few natural frequencies and shapes that dominate; the small corrections and irregularities are just noise. The data reflects that structure: most of the variation piles up in the first few modes."}
-    ]},
-    {"id":"weakness","h2":"5 · The one real weakness — nonlinear shocks break the trick","blocks":[
-      {"t":"para","html":"Reduced-order modeling shines when the physics is smooth and slowly varying. The modes are found by averaging over all the snapshots, so they capture the typical slow behavior beautifully. But when the field contains sharp features — a shock wave, a moving discontinuity, a sharp interface between two very different regions — the same modes that worked for smooth flows fail. A shock is not a gentle blend of low modes; it is a highly localized, singular event. Capturing it requires many modes, sometimes most of them, defeating the whole point of compression."},
-      {"t":"para","html":"For smooth, nearly-linear physics, ROMs are excellent. For strongly nonlinear problems with moving shocks or instabilities, you need either many more modes or a fundamentally different approach — such as a <em>nonlinear manifold ROM</em> that learns the actual curved surface the data lives on, rather than fitting a flat plane through it."}
-    ]},
-    {"id":"surprise","h2":"6 · The surprise — the trick reappears in fast twins and design","blocks":[
-      {"t":"para","html":"Reduced-order models are crucial in three directions. First, <a href=\"hybrid-twins-deep.html\">hybrid twins</a>: if the physics is expensive and a full simulation is slow, train a surrogate on the ROM instead. The reduced model runs hundreds of times faster, still captures the essential behavior. Second, <a href=\"fluid-mechanics-simulation-deep.html\">fluid-mechanics simulation</a> and dynamic mode decomposition (DMD) — DMD is a close cousin that extracts modes and their temporal frequencies directly from snapshots without needing the governing equation. Both find the same low-dimensional structure. Third, <a href=\"operator-learning-deep.html\">operator learning</a> can be trained not on the full field but on its ROM representation, cutting training cost."},
-      {"t":"para","html":"The lesson: when you are working with high-dimensional physics data, do not assume you need to process all the dimensions. Look for the low-dimensional structure first. Compress ruthlessly, keeping only the modes that carry energy. Reduce the problem, then solve the reduced problem. That one move — from thousands to ten — turns a hard simulation into a solvable one, a slow design sweep into a fast one, and data that does not fit in memory into something you can hold in your hand."}
-    ]}
+  "arc": [
+    [
+      "problem",
+      "The problem"
+    ],
+    [
+      "reframe",
+      "The reframe"
+    ],
+    [
+      "run",
+      "Seen on a real run"
+    ],
+    [
+      "why",
+      "Why a few shapes hold almost everything"
+    ],
+    [
+      "weakness",
+      "The one real weakness"
+    ],
+    [
+      "surprise",
+      "The surprise"
+    ],
+    [
+      "practice",
+      "In practice"
+    ]
   ],
-  "related": [["hybrid-twins-deep.html","hybrid twins"],["fluid-mechanics-simulation-deep.html","fluid-mechanics simulation"],["operator-learning-deep.html","operator learning"],["scientific-machine-learning-deep.html","scientific machine learning"],["differentiable-simulation-deep.html","differentiable simulation"]],
+  "sections": [
+    {
+      "id": "problem",
+      "h2": "1 · The problem — thousands of numbers, thousands of bytes",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "When you simulate a physical system — water in a pipe, heat diffusing through metal, a building swaying in wind — the program tracks the value of something (velocity, temperature, stress) at hundreds or thousands of points in space, every timestep. A single snapshot of a field might have 10,000 or 100,000 numbers. Run for a long time and you pile up gigabytes of data. Storing it costs money. Tuning the simulation to fit measurements means running it hundreds of times, which costs time. And building a fast <em>surrogate</em> (a speedup program that mimics the simulation) is hard when the thing you are copying has thousands of outputs."
+        },
+        {
+          "t": "para",
+          "html": "The root problem is dimensional: <strong>the field has too many degrees of freedom</strong> — too many independent numbers that can each change freely. But here is an odd fact about real physics: fields do <em>not</em> actually vary in all those independent ways."
+        }
+      ]
+    },
+    {
+      "id": "reframe",
+      "h2": "2 · The reframe — the field is a weighted blend of a few recurring shapes",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Suppose a string that vibrates. It can oscillate in its lowest mode — up and down all together, a smooth bump. It can oscillate in its second mode — the middle goes one way and the ends go the other, a shape with a pinch in the middle. A third mode adds more pinches. But the key is this: almost all real vibrations are blends of just the first few modes. The highest modes almost never happen in practice."
+        },
+        {
+          "t": "para",
+          "html": "The same is true for any field: it is almost always a mix of a few <em>recurring shapes</em> — called <em>modes</em> — that the system tends to fall into. Instead of storing the field's value at every point, store only how much each of the first few modes is turned up (a single strength number for each). Reconstruct the full field whenever you need it by blending those shapes."
+        },
+        {
+          "t": "para",
+          "html": "Finding these shapes is called <em>principal-component analysis</em>, or POD (proper orthogonal decomposition) — a straightforward statistical trick: gather many snapshots of the field, look for the most common directions of variation, and list them in order of importance. The result is a <strong>reduced-order model</strong>, or ROM. Each solution is now a short list of numbers instead of thousands."
+        },
+        {
+          "t": "para",
+          "html": "The hidden quantity is the <em>energy each pattern carries</em> — how much of the data's variation that single pattern accounts for. A few patterns hold nearly all of it, so the rest can be dropped with almost no loss."
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "h2": "3 · Seen on a real run — seven modes catch 99 percent",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "We collected snapshots of a simulated field, each snapshot sampled at 200 points in space. Then we ran principal-component analysis to find the recurring shapes. Here is how many modes you need to recover different amounts of the variation:"
+        },
+        {
+          "t": "table",
+          "headers": [
+            "modes",
+            "fraction of variation captured"
+          ],
+          "rows": [
+            [
+              "7",
+              "99%"
+            ],
+            [
+              "9",
+              "99.9%"
+            ],
+            [
+              "10",
+              "99.97%"
+            ]
+          ],
+          "caption": "Modes needed to capture different percentages of the field's total variation. Numbers are the run's output verbatim."
+        },
+        {
+          "t": "insight",
+          "html": "<strong>The discovered fact: the first seven modes alone hold 99 percent of the energy and variation in the field; nine modes catch 99.9 percent. The first ten already capture 99.97 percent.</strong> You can represent the entire evolution of the system using just those seven to ten numbers per timestep, instead of 200. That is a 20-to-30-fold compression while losing almost nothing."
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "h2": "4 · Why a few shapes hold almost everything",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The reason is geometric: the set of all possible states the field can reach does not fill the entire high-dimensional space. Instead, all those states cluster on a low-dimensional <em>surface</em> or <em>manifold</em> — think of it as a crumpled sheet inside a high-dimensional room. The first few modes are the directions you need to move along that sheet; the other directions point off the sheet, into empty space. So once you have captured the directions the data actually uses, the rest of the modes carry almost no energy, almost no variance."
+        },
+        {
+          "t": "para",
+          "html": "This happens because physics is smooth and often governed by just a handful of dominant physical effects. A beating heart, a turbulent wake, a vibrating bridge — each has a few natural frequencies and shapes that dominate; the small corrections and irregularities are just noise. The data reflects that structure: most of the variation piles up in the first few modes."
+        }
+      ]
+    },
+    {
+      "id": "weakness",
+      "h2": "5 · The one real weakness — nonlinear shocks break the trick",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Reduced-order modeling shines when the physics is smooth and slowly varying. The modes are found by averaging over all the snapshots, so they capture the typical slow behavior beautifully. But when the field contains sharp features — a shock wave, a moving discontinuity, a sharp interface between two very different regions — the same modes that worked for smooth flows fail. A shock is not a gentle blend of low modes; it is a highly localized, singular event. Capturing it requires many modes, sometimes most of them, defeating the whole point of compression."
+        },
+        {
+          "t": "para",
+          "html": "For smooth, nearly-linear physics, ROMs are excellent. For strongly nonlinear problems with moving shocks or instabilities, you need either many more modes or a fundamentally different approach — such as a <em>nonlinear manifold ROM</em> that learns the actual curved surface the data lives on, rather than fitting a flat plane through it."
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "h2": "6 · The surprise — the trick reappears in fast twins and design",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Reduced-order models are crucial in three directions. First, <a href=\"hybrid-twins-deep.html\">hybrid twins</a>: if the physics is expensive and a full simulation is slow, train a surrogate on the ROM instead. The reduced model runs hundreds of times faster, still captures the essential behavior. Second, <a href=\"fluid-mechanics-simulation-deep.html\">fluid-mechanics simulation</a> and dynamic mode decomposition (DMD) — DMD is a close cousin that extracts modes and their temporal frequencies directly from snapshots without needing the governing equation. Both find the same low-dimensional structure. Third, <a href=\"operator-learning-deep.html\">operator learning</a> can be trained not on the full field but on its ROM representation, cutting training cost."
+        },
+        {
+          "t": "para",
+          "html": "The lesson: when you are working with high-dimensional physics data, do not assume you need to process all the dimensions. Look for the low-dimensional structure first. Compress ruthlessly, keeping only the modes that carry energy. Reduce the problem, then solve the reduced problem. That one move — from thousands to ten — turns a hard simulation into a solvable one, a slow design sweep into a fast one, and data that does not fit in memory into something you can hold in your hand."
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "h2": "7 · Where it is used in practice — Compress thousands to ten",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Reduced-order modeling is standard in structural dynamics (buildings, bridges under vibration), climate modeling (subgrid physics), turbomachinery design (compressors, turbines), and seismic imaging. These domains deal with high-dimensional fields (temperature, stress, or velocity at every point in space) sampled thousands of times, generating terabytes of data that is expensive to store, tune against measurements, and run surrogates on."
+        },
+        {
+          "t": "para",
+          "html": "Engineers collect snapshots of the field from a baseline simulation or experiment, then run principal component analysis (POD) to extract the dominant spatial patterns (modes). They discover that a handful of modes — often fewer than a dozen — capture nearly all of the system's energy and variation. From then on, instead of tracking thousands of numbers per timestep, they track only the seven to ten coefficients that weight each mode. Simulating becomes faster because you have fewer degrees of freedom; fitting to measurements becomes cheaper because you are tuning a reduced system; surrogates become trainable because there is less to learn."
+        },
+        {
+          "t": "insight",
+          "html": "Smooth, slowly-varying physics compresses beautifully; sharp moving features (shocks, interfaces, turbulent discontinuities) require many modes and break the efficiency of reduction."
+        }
+      ]
+    }
+  ],
+  "related": [
+    [
+      "hybrid-twins-deep.html",
+      "hybrid twins"
+    ],
+    [
+      "fluid-mechanics-simulation-deep.html",
+      "fluid-mechanics simulation"
+    ],
+    [
+      "operator-learning-deep.html",
+      "operator learning"
+    ],
+    [
+      "scientific-machine-learning-deep.html",
+      "scientific machine learning"
+    ],
+    [
+      "differentiable-simulation-deep.html",
+      "differentiable simulation"
+    ]
+  ],
   "recipe": {
     "summary": "Collect snapshots of a simulated field at 200 points per timestep. Run principal-component analysis (POD) to extract the modes (recurring shapes). Count how many modes are needed to recover 99%, 99.9%, and 99.97% of the total variation (energy) in the data. Report the mode count for each threshold.",
     "eq": "SVD or eigendecomposition of snapshot matrix:\nC = (1/N) Σ snapshots  snapshots^T\nλ_k = eigenvalues (sorted descending)\nfraction captured = Σ_{i=1}^{k} λ_i / Σ_all λ_i\nFind k where fraction ≥ 0.99, 0.999, 0.9997",
     "note": "Full script: scripts/experiments/ddps_run.py (EXP3), numpy, fixed seed. Numbers are the run's output verbatim. Snapshots were sampled at 200 points per field; mode counts are the direct output of POD analysis."
-  }
+  },
+  "connects": [
+    {
+      "course": "brunton",
+      "id": "proper-orthogonal-decomposition",
+      "label": "POD",
+      "note": "This is POD under another name: keep the few patterns that carry the variation and drop the rest."
+    },
+    {
+      "course": "piml",
+      "id": "surrogate-modeling",
+      "label": "surrogate modeling",
+      "note": "A reduced model is the cheap stand-in a surrogate provides."
+    }
+  ]
 }

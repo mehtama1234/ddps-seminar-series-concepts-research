@@ -4,38 +4,195 @@
   "kick": "data-driven physical simulation · running physics backward · when measurement noise explodes",
   "title": "Inverse problems and control — recovering the hidden cause from a blurred measurement",
   "lede": "Physics usually runs forward easily: blur a sharp picture, heat spreads outward, a ball follows a parabola. But real science often works backward: you measure a blurry image and want to know what the sharp original looked like; you observe how a disease spreads and want to find the patient zero; you feel how a structure vibrates and want to know what forces are hitting it. Running physics backward is treacherous — tiny measurement noise blows up into absurd answers. The trick is to bring a prior belief about what the answer should look like (smooth, bounded, sparse) into the problem as a tie-breaker. Here is why backward is hard, how a prior fixes it, a real run where naive inversion explodes to meaningless noise but regularization brings it down to 3%, where this idea reappears across medicine and weather forecasting, and why the choice of prior is a genuine judgment call.",
-  "arc": [["problem","The problem"],["reframe","The reframe"],["run","Seen on a real run"],["why","Why backward is unstable"],["weakness","The one real weakness"],["surprise","The surprise"]],
-  "sections": [
-    {"id":"problem","h2":"1 · The problem — forward is easy, backward is a trap","blocks":[
-      {"t":"para","html":"Running physics forward is stable and straightforward. Spread a heat source across a bar, and the bar warms up in a smooth, predictable way. Blur a sharp photograph with a camera lens, and the result is deterministic. Press down on one end of a beam and it bends in a calculable shape. You give the cause and compute the effect, and small changes to the cause produce small changes to the effect."},
-      {"t":"para","html":"Now reverse the arrow. You observe the blurred photo and want to recover the sharp original. You measure how heat has spread and want to pinpoint where the source was. You feel how a building sways and want to know what wind forces caused it. <strong>This is an inverse problem: given the effect, find the cause.</strong> And it is unstable. Measurement always comes with noise — a tiny wiggle in the data. When you try to invert the measurement to recover the cause, that small noise can explode into a wildly wrong answer. The problem is mathematically fragile: many very different causes can produce almost the same measurement, so noise is free to bounce between them."}
-    ]},
-    {"id":"reframe","h2":"2 · The reframe — add a tie-breaker about what the answer should look like","blocks":[
-      {"t":"para","html":"Here is the move. Instead of naively inverting the measurement (which blows up), add one more ingredient: knowledge about what the cause should look like. For instance: the source should be smooth, not wildly spiky. The object we are searching for should be bounded (not infinitely large). The recovering force should be sparse (concentrated at just a few points, not everywhere). These are called <em>priors</em> or <em>regularization</em> terms."},
-      {"t":"para","html":"Now the problem becomes a search: find the cause that (1) produces the measurement we observed AND (2) matches what we believe the answer should be. When noise pushes toward a crazy spike-filled answer that technically fits the data, the prior says: no, keep it smooth. The prior is a tie-breaker among the many possible causes that fit the blurry measurement. This is a <strong>regularized inverse problem</strong>, and it is solvable."}
-    ]},
-    {"id":"run","h2":"3 · Seen on a real run — naive inversion explodes, regularization brings it down to 3%","blocks":[
-      {"t":"para","html":"We set up a simple inverse problem: a two-bump source spread across a physical domain, blurred by a smoothing filter, and then corrupted by random measurement noise. The true source is sharp and localized — two distinct bumps. Our goal was to recover it from the noisy, blurred measurement."},
-      {"t":"para","html":"We tried two approaches. First, naive direct inversion: take the blurred measurement and invert the blurring filter algebraically to recover the source. Second, regularized inversion: solve the same recovery problem but add a smoothness prior that penalizes wild oscillations. We measured the relative error — how far the recovered source was from the truth — for each."},
-      {"t":"bars","caption":"Relative error when recovering a two-bump source from blurred, noisy measurement. The naive approach explodes; regularization brings it down. Numbers are the run's output verbatim.","rows":[["naive direct inversion",1.0,"over forty million percent"],["with smoothness prior (regularization)",0.000075,"about 3%"]]},
-      {"t":"insight","html":"<strong>The discovered fact: naive direct inversion fails catastrophically, yielding error over forty million percent — the answer is meaningless noise. Adding regularization brings the error down to about 3% and recovers both bumps clearly.</strong> The prior is not an optional nicety; it is what makes the problem solvable at all."}
-    ]},
-    {"id":"why","h2":"4 · Why backward is unstable — many causes, one noisy measurement","blocks":[
-      {"t":"para","html":"The reason backward is hard is simple: the physics is not one-to-one. Many different sources can blur to nearly the same measurement. A thin, sharp bump and a slightly wider, slightly smaller bump blur to almost identical results. When you try to invert that measurement, the measurement noise (random jitter, tiny errors in the sensor) is free to flip you toward any of the many causes that fit the noisy data. The noise is amplified because you are chasing a target that is barely sensitive to your cause anyway."},
-      {"t":"para","html":"A prior rules out the crazy possibilities. If you insist the source be smooth, only a narrow slice of the causes that fit the data remain plausible. Noise might push around within that slice, but it cannot send you toward a spiky, unphysical answer. The prior is an extra constraint that collapses the set of possible answers from infinite (and noise-sensitive) to a tidy region (and robust)."}
-    ]},
-    {"id":"weakness","h2":"5 · The one real weakness — the prior is a choice, and the wrong choice erases the truth","blocks":[
-      {"t":"para","html":"The catch is that the prior is not handed to you by the mathematics; you have to choose it. If you insist too much on smoothness, the solver will erase real sharp features — two distinct bumps will blur into one wide lump. If you barely regularize at all, the noise leaks back and the answer becomes noisy junk again. Choosing the strength of the prior is a genuine judgment call, and it depends on what you actually believe about the answer and how much you trust your measurement. Pick wrong and you either lose information or get noise. This is why inverting real data — medical imaging, seismic surveying, weather data assimilation — requires domain expertise and often trial and error."}
-    ]},
-    {"id":"surprise","h2":"6 · The surprise — the trick is behind medical imaging, weather forecasting, and optimal control","blocks":[
-      {"t":"para","html":"Inverse problems sit at the heart of modern science and engineering. <a href=\"differentiable-simulation-deep.html\">Differentiable simulation</a> is an inverse problem in time: you measure the final state and run the simulator backward to recover parameters or design choices. In medical imaging, a CT or MRI scan recovers the internal density (the cause) from the measured radiation or magnetic signal (the effect), and regularization is what prevents the reconstruction from splintering into noise. In weather forecasting, <em>data assimilation</em> combines incomplete, noisy measurements from instruments and satellites with a physics model of the atmosphere; the physics acts as the regularizer. In optimal control, you want to steer a system from one state to another — that is an inverse problem where time is the dimension and the control input is the hidden cause you are hunting for."},
-      {"t":"para","html":"The principle ties directly to <a href=\"physics-informed-learning-deep.html\">physics-informed learning</a> — where the equation grades the fit — and <a href=\"uncertainty-and-robustness-deep.html\">uncertainty and robustness</a>, because an honest regularization approach must admit what it does not know. The strength of the prior is a form of uncertainty; it is your confidence about the answer before any data arrived. Get it wrong, and you are either hallucinating detail or erasing signal."}
-    ]}
+  "arc": [
+    [
+      "problem",
+      "The problem"
+    ],
+    [
+      "reframe",
+      "The reframe"
+    ],
+    [
+      "run",
+      "Seen on a real run"
+    ],
+    [
+      "why",
+      "Why backward is unstable"
+    ],
+    [
+      "weakness",
+      "The one real weakness"
+    ],
+    [
+      "surprise",
+      "The surprise"
+    ],
+    [
+      "practice",
+      "In practice"
+    ]
   ],
-  "related": [["differentiable-simulation-deep.html","differentiable simulation"],["physics-informed-learning-deep.html","physics-informed learning"],["uncertainty-and-robustness-deep.html","uncertainty and robustness"],["hybrid-twins-deep.html","hybrid twins"]],
+  "sections": [
+    {
+      "id": "problem",
+      "h2": "1 · The problem — forward is easy, backward is a trap",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Running physics forward is stable and straightforward. Spread a heat source across a bar, and the bar warms up in a smooth, predictable way. Blur a sharp photograph with a camera lens, and the result is deterministic. Press down on one end of a beam and it bends in a calculable shape. You give the cause and compute the effect, and small changes to the cause produce small changes to the effect."
+        },
+        {
+          "t": "para",
+          "html": "Now reverse the arrow. You observe the blurred photo and want to recover the sharp original. You measure how heat has spread and want to pinpoint where the source was. You feel how a building sways and want to know what wind forces caused it. <strong>This is an inverse problem: given the effect, find the cause.</strong> And it is unstable. Measurement always comes with noise — a tiny wiggle in the data. When you try to invert the measurement to recover the cause, that small noise can explode into a wildly wrong answer. The problem is mathematically fragile: many very different causes can produce almost the same measurement, so noise is free to bounce between them."
+        }
+      ]
+    },
+    {
+      "id": "reframe",
+      "h2": "2 · The reframe — add a tie-breaker about what the answer should look like",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The move is this. Instead of naively inverting the measurement (which blows up), add one more ingredient: knowledge about what the cause should look like. For instance: the source should be smooth, not wildly spiky. The object we are searching for should be bounded (not infinitely large). The recovering force should be sparse (concentrated at just a few points, not everywhere). These are called <em>priors</em> or <em>regularization</em> terms."
+        },
+        {
+          "t": "para",
+          "html": "Now the problem becomes a search: find the cause that (1) produces the measurement we observed AND (2) matches what we believe the answer should be. When noise pushes toward a crazy spike-filled answer that technically fits the data, the prior says: no, keep it smooth. The prior is a tie-breaker among the many possible causes that fit the blurry measurement. This is a <strong>regularized inverse problem</strong>, and it is solvable."
+        },
+        {
+          "t": "para",
+          "html": "A <em>prior</em> is what you already believe about the answer before seeing any data — for instance that it should be smooth. <em>Regularization</em> is the extra penalty you add so the fit respects that belief. Both encode what you already know, which is what pins down a single answer when many different causes would match the same measurements."
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "h2": "3 · Seen on a real run — naive inversion explodes, regularization brings it down to 3%",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "We set up a simple inverse problem: a two-bump source spread across a physical domain, blurred by a smoothing filter, and then corrupted by random measurement noise. The true source is sharp and localized — two distinct bumps. Our goal was to recover it from the noisy, blurred measurement."
+        },
+        {
+          "t": "para",
+          "html": "We tried two approaches. First, naive direct inversion: take the blurred measurement and invert the blurring filter algebraically to recover the source. Second, regularized inversion: solve the same recovery problem but add a smoothness prior that penalizes wild oscillations. We measured the relative error — how far the recovered source was from the truth — for each."
+        },
+        {
+          "t": "bars",
+          "caption": "Relative error when recovering a two-bump source from blurred, noisy measurement. The naive approach explodes; regularization brings it down. Numbers are the run's output verbatim.",
+          "rows": [
+            [
+              "naive direct inversion",
+              1.0,
+              "over forty million percent"
+            ],
+            [
+              "with smoothness prior (regularization)",
+              7.5e-05,
+              "about 3%"
+            ]
+          ]
+        },
+        {
+          "t": "insight",
+          "html": "<strong>The discovered fact: naive direct inversion fails catastrophically, yielding error over forty million percent — the answer is meaningless noise. Adding regularization brings the error down to about 3% and recovers both bumps clearly.</strong> The prior is not an optional nicety; it is what makes the problem solvable at all."
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "h2": "4 · Why backward is unstable — many causes, one noisy measurement",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The reason backward is hard is simple: the physics is not one-to-one. Many different sources can blur to nearly the same measurement. A thin, sharp bump and a slightly wider, slightly smaller bump blur to almost identical results. When you try to invert that measurement, the measurement noise (random jitter, tiny errors in the sensor) is free to flip you toward any of the many causes that fit the noisy data. The noise is amplified because you are chasing a target that is barely sensitive to your cause anyway."
+        },
+        {
+          "t": "para",
+          "html": "A prior rules out the crazy possibilities. If you insist the source be smooth, only a narrow slice of the causes that fit the data remain plausible. Noise might push around within that slice, but it cannot send you toward a spiky, unphysical answer. The prior is an extra constraint that collapses the set of possible answers from infinite (and noise-sensitive) to a tidy region (and robust)."
+        }
+      ]
+    },
+    {
+      "id": "weakness",
+      "h2": "5 · The one real weakness — the prior is a choice, and the wrong choice erases the truth",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The catch is that the prior is not handed to you by the mathematics; you have to choose it. If you insist too much on smoothness, the solver will erase real sharp features — two distinct bumps will blur into one wide lump. If you barely regularize at all, the noise leaks back and the answer becomes noisy junk again. Choosing the strength of the prior is a genuine judgment call, and it depends on what you actually believe about the answer and how much you trust your measurement. Pick wrong and you either lose information or get noise. This is why inverting real data — medical imaging, seismic surveying, weather data assimilation — requires domain expertise and often trial and error."
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "h2": "6 · The surprise — the trick is behind medical imaging, weather forecasting, and optimal control",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Inverse problems sit at the heart of modern science and engineering. <a href=\"differentiable-simulation-deep.html\">Differentiable simulation</a> is an inverse problem in time: you measure the final state and run the simulator backward to recover parameters or design choices. In medical imaging, a CT or MRI scan recovers the internal density (the cause) from the measured radiation or magnetic signal (the effect), and regularization is what prevents the reconstruction from splintering into noise. In weather forecasting, <em>data assimilation</em> combines incomplete, noisy measurements from instruments and satellites with a physics model of the atmosphere; the physics acts as the regularizer. In optimal control, you want to steer a system from one state to another — that is an inverse problem where time is the dimension and the control input is the hidden cause you are hunting for."
+        },
+        {
+          "t": "para",
+          "html": "The principle ties directly to <a href=\"physics-informed-learning-deep.html\">physics-informed learning</a> — where the equation grades the fit — and <a href=\"uncertainty-and-robustness-deep.html\">uncertainty and robustness</a>, because an honest regularization approach must admit what it does not know. The strength of the prior is a form of uncertainty; it is your confidence about the answer before any data arrived. Get it wrong, and you are either hallucinating detail or erasing signal."
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "h2": "7 · Where it is used in practice — Running physics backward safely",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Inverse problems appear in medical imaging (CT, MRI reconstructions), geophysics (seismic inversion to find subsurface structure), weather data assimilation (fusing satellite and surface measurements with an atmospheric model), image restoration, and non-destructive materials testing. In each case, you observe a blurred or noisy effect (an X-ray image, seismic waves, satellite brightness) and must infer the sharp cause (the organ, the geology, the cloud field) that produced it."
+        },
+        {
+          "t": "para",
+          "html": "A practitioner formulates the problem: minimize how badly the forward model (the physics) applied to the unknown cause reproduces the observed effect, plus a regularization term that encodes a prior belief about what the cause should look like (smooth, sparse, bounded). They solve this jointly: the data pulls the estimate toward fitting the measurement, while the prior pulls it toward plausibility. In medical imaging, a radiologist relies on the regularizer to prevent the reconstruction from fragmenting into noise. In weather forecasting, the physics model acts as the regularizer, keeping the recovered atmospheric state consistent with conservation laws."
+        },
+        {
+          "t": "insight",
+          "html": "The choice of regularization strength is a judgment call — too strong and you erase real signal; too weak and noise dominates — requiring domain expertise and often trial-and-error."
+        }
+      ]
+    }
+  ],
+  "related": [
+    [
+      "differentiable-simulation-deep.html",
+      "differentiable simulation"
+    ],
+    [
+      "physics-informed-learning-deep.html",
+      "physics-informed learning"
+    ],
+    [
+      "uncertainty-and-robustness-deep.html",
+      "uncertainty and robustness"
+    ],
+    [
+      "hybrid-twins-deep.html",
+      "hybrid twins"
+    ]
+  ],
   "recipe": {
     "summary": "Recover a two-bump source distribution from a blurred, noisy measurement (an ill-posed inverse problem). Test naive algebraic inversion versus a regularized solve that adds a smoothness prior. Compare the relative error in the recovered source against the ground truth.",
     "eq": "forward:  blurred_measurement = blur_filter ⊗ source + noise\ninverse:  minimize ||blur_filter ⊗ source - measurement||^2 + λ||∇source||^2\nnaive:  source = blur_filter^(-1) ⊗ measurement\nrelative_error = ||recovered - truth|| / ||truth||\nnaive error: over 40,000,000% | regularized error: about 3%",
     "note": "Full script: scripts/experiments/ddps_run.py (EXP6), numpy, fixed seed. Numbers are the run's output verbatim. Regularization strength λ was tuned to balance data fit and smoothness."
-  }
+  },
+  "connects": [
+    {
+      "course": "aa203",
+      "id": "optimal-control-problem",
+      "label": "optimal control problem",
+      "note": "Recovering unknown inputs from measurements and solving for the best controls are the same optimisation seen from two sides."
+    },
+    {
+      "course": "piml",
+      "id": "uncertainty-and-generalization",
+      "label": "uncertainty & generalization",
+      "note": "An inverse problem's ill-posedness is why quantifying uncertainty matters."
+    }
+  ]
 }

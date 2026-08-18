@@ -4,34 +4,200 @@
   "kick": "data-driven physical simulation · interpretable AI · equations from data",
   "title": "Scientific machine learning — teaching programs to hand back the actual equations",
   "lede": "Machine learning usually builds a black box — feed it data and it learns to predict the next thing, but you have no idea why. The answer is hidden inside millions of microscopic knobs. But what if you demand something more honest? What if you insist the program hand back the actual equation it found — a few simple terms, readable like a law of physics? That is scientific machine learning: use sparsity (forcing simplicity) as your gateway to interpretability. Here is the idea, a real run where a program recovered the true equations of motion from position and velocity data alone, why sparsity gives you the law, where it breaks, and why this principle is reshaping how machines learn about science.",
-  "arc": [["problem","The problem"],["reframe","The reframe"],["run","Seen on a real run"],["why","Why sparsity recovers the law"],["weakness","The one real weakness"],["surprise","The surprise"]],
-  "sections": [
-    {"id":"problem","h2":"1 · The problem — black boxes don't tell you why","blocks":[
-      {"t":"para","html":"A standard machine learning network can predict almost anything: tomorrow's stock price, the next move a player will make, the position of a pendulum a tenth of a second from now. But it guards its secret. Ask why, and the answer is silence: the prediction emerged from 10,000 dials tuned by trial and error. You do not know which dials mattered, whether the program found a real pattern or just noise, or whether it will keep working when you move to new data. In science, that is worse than useless — it is dangerous. You want not just a prediction, but a law you can <em>understand</em>, trust, and reuse. You want an <em>equation</em>."},
-      {"t":"para","html":"The barrier seems clear: if a neural network with a million parameters can fit any curve at all, how will you ever squeeze out a simple equation?"}
-    ]},
-    {"id":"reframe","h2":"2 · The reframe — demand simplicity and the equations show up","blocks":[
-      {"t":"para","html":"Here is the cornerstone: <em>real physical laws are short</em>. The stronger a law, the fewer terms it needs. Newton's second law is one line. The rule for how heat spreads is one equation. Nature is sparse — and so is your data, if you look at it the right way. So reverse the usual move: instead of letting the network use as many dials as it wants, <em>force it to find an answer using very few terms</em>. This is called sparsity. Make a huge library of candidate pieces — powers of position, products of velocity, trigonometric waves, anything that might show up in a real equation — then use a sparse regression algorithm to pick <em>only the few that actually matter</em>. The program does not have the luxury of fitting noise; it must explain the data with the simplest possible recipe. When you force that trade-off, the noise falls away and the true mechanism shows up — often as an equation a human being can read. This is <strong>sparse identification of nonlinear dynamics</strong>, or SINDy."}
-    ]},
-    {"id":"run","h2":"3 · Seen on a real run — equations recovered from trajectories alone","blocks":[
-      {"t":"para","html":"We handed a program a sequence of positions and velocities over time from a small mechanical system — the data looked like a trail through space, but no one told the program what forces were pushing it. We gave it a library of 12 candidate building blocks: position, velocity, their products, sines and cosines, and a few others. We asked it to find the sparsest combination — use as few terms as possible — that predicts the next state from the current one. Here is what it recovered."},
-      {"t":"table","headers":["Equation","Coefficients (recovered)","Terms used"],"rows":[["x' = ? y","1.00","1 of 12"],["y' = ? x + ? y","-1.00, -0.30","2 of 12"]],"caption":"Equations recovered from trajectory data alone. The program found that x changes at rate equal to y, and y changes at rate equal to minus x, minus a little bit of y itself (friction). It kept only 3 nonzero terms out of 12 candidates. Numbers are the run's output verbatim."},
-      {"t":"insight","html":"<strong>The discovered fact: from positions and velocities alone, the program recovered the exact equations: x' = 1.00 y and y' = -1.00 x - 0.30 y, using only 3 terms out of 12 possibilities.</strong> The equation is right (within rounding), readable, and instantly tells a physicist: this is a rotator with damping. It is not a black box — it is a law."}
-    ]},
-    {"id":"why","h2":"4 · Why sparsity gives you the law","blocks":[
-      {"t":"para","html":"When you let a neural network use all its dials, it will fit noise, artifacts of measurement, and spurious patterns that vanish when you collect new data. Sparsity cuts through that. By insisting the answer use only a handful of terms, you are betting: <em>the true law is simpler than the noise</em>. Nature almost always honors that bet. The terms that matter for predicting the next step are the ones baked into the physics; the rest are random scatter that looks important in one dataset but not another. Sparse regression filters out the scatter and leaves only what is real. And the result is not just numbers in a box — it is an equation you can read, verify against your domain knowledge, derive new predictions from, and port to a different context. It is knowledge."}
-    ]},
-    {"id":"weakness","h2":"5 · The one real weakness — you need the right library and clean data","blocks":[
-      {"t":"para","html":"Sparse regression can only recover an equation if the true terms are <em>in the library you give it</em>. If the true law involves a sine or a product of two velocities and you did not include those in your candidates, the algorithm will pick the closest wrong answer. It fails silently — it gives you back a sparse equation that looks reasonable, but misses the mark. And it needs data that is well-measured and well-sampled; heavy noise drowns out the signal and makes the wrong terms look important. Heavy noise is why sparsity does not always win: if the noise is loud enough, it is hard to tell the true terms from the false ones, and adding more terms to fit the noise can look better than keeping the spare answer. Real data is messier than this ideal."}
-    ]},
-    {"id":"surprise","h2":"6 · The surprise — this is how machines learn about science","blocks":[
-      {"t":"para","html":"The idea that simplicity is your gateway to truth turns out to be much older than machine learning — it is Occam's razor, brought into the age of data. Kepler discovered planetary orbits by hand, fitting circles and ovals to centuries of telescope measurements, and the ellipse he found was simple. SINDy and its cousins are just automating that move: let the data vote on which of many candidate laws is real, biased toward the short answer. This principle spreads. <a href=\"physics-informed-learning-deep.html\">Physics-informed learning</a> uses a known law as the loss; here you recover the law. <a href=\"operator-learning-deep.html\">Operator learning</a> replaces solvers with neural networks; <a href=\"differentiable-simulation-deep.html\">differentiable simulation</a> backpropagates through the physics itself. And <a href=\"hybrid-twins-deep.html\">hybrid twins</a> combine a trusted physics model with a learned residual. All of these share the core insight: the machine's job in science is not to replace human judgment, but to amplify it — to hand back knowledge you can check, understand, and build on, not a prediction and a shrug."}
-    ]}
+  "arc": [
+    [
+      "problem",
+      "The problem"
+    ],
+    [
+      "reframe",
+      "The reframe"
+    ],
+    [
+      "run",
+      "Seen on a real run"
+    ],
+    [
+      "why",
+      "Why sparsity recovers the law"
+    ],
+    [
+      "weakness",
+      "The one real weakness"
+    ],
+    [
+      "surprise",
+      "The surprise"
+    ],
+    [
+      "practice",
+      "In practice"
+    ]
   ],
-  "related": [["physics-informed-learning-deep.html","physics-informed learning"],["operator-learning-deep.html","operator learning"],["differentiable-simulation-deep.html","differentiable simulation"],["hybrid-twins-deep.html","hybrid twins"],["inverse-problems-and-control-deep.html","inverse problems"],["reduced-order-modeling-deep.html","reduced-order modeling"],["fluid-mechanics-simulation-deep.html","fluid mechanics"],["uncertainty-and-robustness-deep.html","uncertainty and robustness"]],
+  "sections": [
+    {
+      "id": "problem",
+      "h2": "1 · The problem — black boxes don't tell you why",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "A standard machine learning network can predict almost anything: tomorrow's stock price, the next move a player will make, the position of a pendulum a tenth of a second from now. But it guards its secret. Ask why, and the answer is silence: the prediction emerged from 10,000 dials tuned by trial and error. You do not know which dials mattered, whether the program found a real pattern or just noise, or whether it will keep working when you move to new data. In science, that is worse than useless — it is dangerous. You want not just a prediction, but a law you can <em>understand</em>, trust, and reuse. You want an <em>equation</em>."
+        },
+        {
+          "t": "para",
+          "html": "The barrier seems clear: if a neural network with a million parameters can fit any curve at all, how will you ever squeeze out a simple equation?"
+        }
+      ]
+    },
+    {
+      "id": "reframe",
+      "h2": "2 · The reframe — demand simplicity and the equations show up",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The cornerstone: <em>real physical laws are short</em>. The stronger a law, the fewer terms it needs. Newton's second law is one line. The rule for how heat spreads is one equation. Nature is sparse — and so is your data, if you look at it the right way. So reverse the usual move: instead of letting the network use as many dials as it wants, <em>force it to find an answer using very few terms</em>. This is called sparsity. Make a huge library of candidate pieces — powers of position, products of velocity, trigonometric waves, anything that might show up in a real equation — then use a sparse regression algorithm to pick <em>only the few that actually matter</em>. The program does not have the luxury of fitting noise; it must explain the data with the simplest possible recipe. When you force that trade-off, the noise falls away and the true mechanism shows up — often as an equation a human being can read. This is <strong>sparse identification of nonlinear dynamics</strong>, or SINDy."
+        }
+      ]
+    },
+    {
+      "id": "run",
+      "h2": "3 · Seen on a real run — equations recovered from trajectories alone",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "We handed a program a sequence of positions and velocities over time from a small mechanical system — the data looked like a trail through space, but no one told the program what forces were pushing it. We gave it a library of 12 candidate building blocks: position, velocity, their products, sines and cosines, and a few others. We asked it to find the sparsest combination — use as few terms as possible — that predicts the next state from the current one. Here is what it recovered."
+        },
+        {
+          "t": "table",
+          "headers": [
+            "Equation",
+            "Coefficients (recovered)",
+            "Terms used"
+          ],
+          "rows": [
+            [
+              "x' = ? y",
+              "1.00",
+              "1 of 12"
+            ],
+            [
+              "y' = ? x + ? y",
+              "-1.00, -0.30",
+              "2 of 12"
+            ]
+          ],
+          "caption": "Equations recovered from trajectory data alone. The program found that x changes at rate equal to y, and y changes at rate equal to minus x, minus a little bit of y itself (friction). It kept only 3 nonzero terms out of 12 candidates. Numbers are the run's output verbatim."
+        },
+        {
+          "t": "insight",
+          "html": "<strong>The discovered fact: from positions and velocities alone, the program recovered the exact equations: x' = 1.00 y and y' = -1.00 x - 0.30 y, using only 3 terms out of 12 possibilities.</strong> The equation is right (within rounding), readable, and instantly tells a physicist: this is a rotator with damping. It is not an unreadable predictor — it is a law."
+        }
+      ]
+    },
+    {
+      "id": "why",
+      "h2": "4 · Why sparsity gives you the law",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "When you let a neural network use all its dials, it will fit noise, artifacts of measurement, and spurious patterns that vanish when you collect new data. Sparsity cuts through that. By insisting the answer use only a handful of terms, you are betting: <em>the true law is simpler than the noise</em>. Nature almost always honors that bet. The terms that matter for predicting the next step are the ones baked into the physics; the rest are random scatter that looks important in one dataset but not another. Sparse regression filters out the scatter and leaves only what is real. And the result is not just numbers in a box — it is an equation you can read, verify against your domain knowledge, derive new predictions from, and port to a different context. It is knowledge."
+        },
+        {
+          "t": "para",
+          "html": "The hidden quantity is the <em>sparsity</em> of the true law — that only a few terms out of a long candidate list actually belong. Real terms show up consistently across the whole record while noise appears only here and there, so preferring the fewest terms that still fit selects the law and discards the noise."
+        }
+      ]
+    },
+    {
+      "id": "weakness",
+      "h2": "5 · The one real weakness — you need the right library and clean data",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Sparse regression can only recover an equation if the true terms are <em>in the library you give it</em>. If the true law involves a sine or a product of two velocities and you did not include those in your candidates, the algorithm will pick the closest wrong answer. It fails silently — it gives you back a sparse equation that looks reasonable, but misses the mark. And it needs data that is well-measured and well-sampled; heavy noise drowns out the signal and makes the wrong terms look important. Heavy noise is why sparsity does not always win: if the noise is loud enough, it is hard to tell the true terms from the false ones, and adding more terms to fit the noise can look better than keeping the spare answer. Real data is messier than this ideal."
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "h2": "6 · The surprise — this is how machines learn about science",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "The idea that simplicity is your gateway to truth turns out to be much older than machine learning — it is Occam's razor, brought into the age of data. Kepler discovered planetary orbits by hand, fitting circles and ovals to centuries of telescope measurements, and the ellipse he found was simple. SINDy and its cousins are just automating that move: let the data vote on which of many candidate laws is real, biased toward the short answer. This principle spreads. <a href=\"physics-informed-learning-deep.html\">Physics-informed learning</a> uses a known law as the loss; here you recover the law. <a href=\"operator-learning-deep.html\">Operator learning</a> replaces solvers with neural networks; <a href=\"differentiable-simulation-deep.html\">differentiable simulation</a> backpropagates through the physics itself. And <a href=\"hybrid-twins-deep.html\">hybrid twins</a> combine a trusted physics model with a learned residual. All of these share the core insight: the machine's job in science is not to replace human judgment, but to amplify it — to hand back knowledge you can check, understand, and build on, not a prediction and a shrug."
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "h2": "7 · Where it is used in practice — Forcing the machine to hand back equations",
+      "blocks": [
+        {
+          "t": "para",
+          "html": "Scientific machine learning is used to discover physical laws from experimental time series (recovering equations of motion from oscilloscope traces or position sensors), to extract hidden dynamics from biological measurements (neural firing patterns, protein folding trajectories), and to validate or falsify proposed models in materials science and geophysics. Anywhere an unknown mechanism is suspected and data is available, sparse identification can pull out a readable law."
+        },
+        {
+          "t": "para",
+          "html": "A scientist feeds trajectory or time-series data (positions, velocities, concentrations, currents over time) and a large library of candidate mathematical terms (powers, products, trig functions) into a sparse regression solver. The solver is forced to construct the simplest possible model — using as few library terms as possible — that still fits the data well. The result is not a neural network with millions of opaque weights, but a handful of explicit terms and their coefficients: an equation. A molecular dynamicist observing atomic positions can recover the interatomic potential; a biophysicist observing protein motion can extract the effective energy landscape; a mechanical engineer observing vibrations can back out the damping and stiffness."
+        },
+        {
+          "t": "insight",
+          "html": "The recovered equation is only as good as the library of terms provided; if the true physics involves a mechanism you did not include, the algorithm finds the best wrong answer silently."
+        }
+      ]
+    }
+  ],
+  "related": [
+    [
+      "physics-informed-learning-deep.html",
+      "physics-informed learning"
+    ],
+    [
+      "operator-learning-deep.html",
+      "operator learning"
+    ],
+    [
+      "differentiable-simulation-deep.html",
+      "differentiable simulation"
+    ],
+    [
+      "hybrid-twins-deep.html",
+      "hybrid twins"
+    ],
+    [
+      "inverse-problems-and-control-deep.html",
+      "inverse problems"
+    ],
+    [
+      "reduced-order-modeling-deep.html",
+      "reduced-order modeling"
+    ],
+    [
+      "fluid-mechanics-simulation-deep.html",
+      "fluid mechanics"
+    ],
+    [
+      "uncertainty-and-robustness-deep.html",
+      "uncertainty and robustness"
+    ]
+  ],
   "recipe": {
     "summary": "From trajectories (positions and velocities over time) of a mechanical system, identify the governing equations by sparse regression over a library of 12 candidate terms. Report the recovered equations and count of nonzero terms.",
     "eq": "library: [x, y, xy, x^2, y^2, sin(x), sin(y), cos(x), cos(y), x*y, ...]\nsparsity constraint: use fewest nonzero terms\nrecovered:\n  x' = 1.00 y\n  y' = -1.00 x - 0.30 y\n  (3 nonzero terms of 12)",
     "note": "Full script: scripts/experiments/ddps_run.py (EXP4), numpy, fixed seed. Numbers are the run's output verbatim; no equations were given, only trajectory data."
-  }
+  },
+  "connects": [
+    {
+      "course": "brunton",
+      "id": "sindy",
+      "label": "SINDy",
+      "note": "This is SINDy: select the few terms that make up the governing law from data."
+    },
+    {
+      "course": "piml",
+      "id": "symbolic-regression",
+      "label": "symbolic regression",
+      "note": "The same sparse-selection idea, taught in the physics-informed-ML course."
+    }
+  ]
 }
