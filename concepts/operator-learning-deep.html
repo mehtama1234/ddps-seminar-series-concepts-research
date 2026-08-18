@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator Learning (deep) · DDPS Concept Lab</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<style>
+.arc{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.arc a{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid var(--line,#dcdcdc);border-radius:20px;padding:3px 10px;background:#fff}
+.fp{border-top:1px solid var(--line,#dcdcdc);padding:22px 0 4px;margin-top:10px}
+.fp h2{margin:6px 0 10px}
+.kick{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:6px 0}
+.lede{font-size:20px;color:#2c2c2c;max-width:820px}
+.essay p{max-width:74ch;font-size:16.5px;margin:11px 0;color:#232323}
+.barrow{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.barrow .lab{width:160px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#5a5a5a;text-align:right}
+.bar{height:16px;border-radius:3px;background:var(--accent);min-width:2px}.bar.alt{background:var(--accent-2,#7a3f2a)}
+.barrow .val{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.eq{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;background:#eef3f7;border:1px solid var(--line,#dcdcdc);border-radius:6px;padding:12px 14px;margin:12px 0;overflow-x:auto;white-space:pre-wrap}
+.insight{border-left:4px solid var(--accent);background:#eef3f7;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:16px}
+details.math{border:1px solid var(--line,#dcdcdc);border-radius:8px;background:#fff;margin:14px 0}
+details.math summary{cursor:pointer;padding:10px 13px;color:var(--accent);font-weight:750}
+details.math > div{border-top:1px solid var(--line,#dcdcdc);padding:4px 14px 12px}
+figure{margin:16px 0}figcaption{font-size:13px;color:#5a5a5a;margin-top:6px}
+table{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--line,#dcdcdc)}
+th,td{border:1px solid var(--line,#dcdcdc);padding:8px 11px;text-align:left;font-size:14.5px}th{background:#eef3f7}
+.tw{overflow-x:auto}
+</style></head><body>
+<header class="topbar"><a class="brand" href="../index.html">DDPS Concept Lab</a>
+<nav><a href="../index.html">Overview</a><a href="../concepts.html">Concepts</a><a class="active" href="../deep-track.html">Deep Track</a><a href="operator-learning.html">This concept</a></nav></header>
+<main>
+<div class="kick">data-driven physical simulation · function to function · one map, any input</div>
+<h1>Operator learning — training one network to answer the entire family of problems at once</h1>
+<p class="lede">When you have a physics problem to solve, you usually solve it once. The wind pushes differently each day; a material breaks under different loads; a piece of metal heated from different places cools in different patterns. But you solve the same equation each time — just different numbers plugged in. Operator learning flips this: instead of solving the equation over and over, train one network to be the solver itself. Feed it a new pushing force and get the answer instantly. Here is the idea, a real run where a single program learned to solve an entire family of problems after seeing only 400 of them, why this works, where it fails, and how the trick now runs inside solvers for weather, fluids, and materials science.</p>
+<div class="arc"><a href="#problem">The problem</a><a href="#reframe">The reframe</a><a href="#run">Seen on a real run</a><a href="#why">Why one map generalizes</a><a href="#weakness">The one real weakness</a><a href="#surprise">The surprise</a><a href="#practice">In practice</a><a href="operator-learning.html">Atlas card</a></div>
+
+    <section class="fp" id="problem">
+      <h2>1 · The problem — solving the same equation a thousand different ways</h2>
+      <div class="essay">
+      <p>An engineer has a bar clamped at both ends. Wind pushes along its length. How much does it bend? Answer the equation: push equals the way the shape curves. But tomorrow a different wind, a different push, the same equation. Next week a different material, still the same equation. A year of different cases, same law, solved again and again. Each solve is a trip to the simulator — expensive, slow, and pointless because you know the pattern: the equation has learned nothing from the previous thousand solves. Every case is independent.</p>
+      <p>The waste is this: all these solves are teaching the equation nothing. The equation does not change. The structure of the solution does not change — it is still "push → shape", still moving smoothly from one end to the other. Only the numbers change. So the question is: <strong>can you train a program to learn the solution structure once, so new problems answer instantly with no solver call?</strong></p>
+      </div>
+    </section>
+    <section class="fp" id="reframe">
+      <h2>2 · The reframe — learn the input-to-output map itself, not one answer</h2>
+      <div class="essay">
+      <p>The move is this. Instead of thinking "solve for the shape", think "learn the machine that turns a forcing into a shape". The forcing is a <em>function</em> — a curve describing the push at every point along the bar. The shape is also a <em>function</em> — the deflection at every point. You want to train a program to map the entire first function to the entire second function in one forward pass. Call this map an <em>operator</em>: a function-to-function machine, not a number-to-number one. The program is fed whole forcing curves (from solved examples) and learns to spit out the shape each one produces. Once trained, any new forcing — even ones the program never saw during training — gets answered the same way: one forward pass, no solver. This is <strong>operator learning</strong>.</p>
+      </div>
+    </section>
+    <section class="fp" id="run">
+      <h2>3 · Seen on a real run — one network solves one hundred unseen cases</h2>
+      <div class="essay">
+      <p>We trained a program on 400 different forcings (pushes along a bar), each solved exactly using a traditional solver. The equation was fixed: push equals curvature, both ends pinned to zero. Then we tested the program on 100 brand-new forcings it had never seen during training — the ultimate test of whether it learned the structure, not just copied the 400 examples.</p>
+      <figure><div class="barrow"><span class="lab">trained network on 100 new forcings</span><div class="bar" style="width:6px"></div><span class="val">3.69%</span></div><figcaption>Mean relative error on 100 unseen forcings. Numbers are the run's output verbatim.</figcaption></figure>
+      <div class="insight"><strong>The discovered fact: mean error 3.69% on 100 brand-new forcings, and one forward pass replaces a fresh solve.</strong> The program did not just memorize the training set — it learned something general about how any forcing maps to a shape, so it interpolated smoothly to new territory.</div>
+      </div>
+    </section>
+    <section class="fp" id="why">
+      <h2>4 · Why one map generalizes to new cases</h2>
+      <div class="essay">
+      <p>The secret is that all solutions to the same equation share a deep structure. A light push produces a small shallow curve; a strong push produces a big deep one. But the shape of the curve — the way it transitions from the pinned ends to the peak — follows the same pattern every time. The program learns this pattern by seeing 400 different magnitudes and shapes of forcing, all answered the same way: smoothly curving from the edges. When a 401st forcing arrives that it never saw, the program recognizes it as a variation on the patterns it learned — similar inputs in the direction of similar outputs — and interpolates. The solutions live in a smooth low-dimensional family, and training on 400 of them teaches the whole family's structure to the network.</p>
+      <p>The hidden quantity is the <em>family of solutions</em> the method lives on — the smooth, low-dimensional set of all valid input-and-output pairs. The network learns to move around inside that family, so a new input lands smoothly between ones it has already seen.</p>
+      </div>
+    </section>
+    <section class="fp" id="weakness">
+      <h2>5 · The one real weakness — it only works inside the training family</h2>
+      <div class="essay">
+      <p>The operator's trust ends at the boundary. If your training set is all smooth gentle forcings, and you hand it a sudden sharp shock, the program will guess and be wrong — it has never learned what sharp does. Extrapolating far outside the family of training inputs fails badly. This is especially true for nonlinear equations: a program trained on small deflections will not know what happens when the bar bends so much it changes its behavior. Building a robust operator requires either a training set that covers the whole range of cases you care about, or else a way to know when you are leaving familiar territory. (That is where uncertainty quantification comes in — asking: is the operator confident here?)</p>
+      </div>
+    </section>
+    <section class="fp" id="surprise">
+      <h2>6 · The surprise — the trick became a shortcut for simulators everywhere</h2>
+      <div class="essay">
+      <p>Operator learning turned out to unlock a whole new way to run scientific simulation. Instead of solving differential equations on the fly, you train an operator once, then use it as a drop-in replacement. This is now baked into solvers for weather prediction (turning raw atmospheric data into next-day fields), fluid dynamics (swirling eddies and turbulence), and materials modeling (stress spreading through a solid). Neural operators and DeepONet are the names the method goes by. It sits alongside <a href="reduced-order-modeling-deep.html">reduced-order modeling</a> — which compresses a high-dimensional field down to a handful of modes — and <a href="physics-informed-learning-deep.html">physics-informed learning</a> — which trains a network to satisfy the equation itself. When combined with <a href="uncertainty-and-robustness-deep.html">uncertainty quantification</a>, it becomes a tool for knowing which predictions to trust. And <a href="differentiable-simulation-deep.html">differentiable simulation</a> can differentiate through it to recover hidden parameters. The lesson: once you learn the map from one family of inputs to outputs, you have a fast surrogate for the entire problem class.</p>
+      </div>
+    </section>
+    <section class="fp" id="practice">
+      <h2>7 · Where it is used in practice — One network solves the whole family</h2>
+      <div class="essay">
+      <p>Operator learning powers weather prediction systems where the same atmospheric equation must be solved for thousands of different initial conditions, aerodynamic simulators that need to evaluate many candidate designs, materials simulation where thermal and mechanical properties vary per material, and digital twins in manufacturing that must handle many different operating regimes. The common thread: you have one equation but many different inputs, and solving it hundreds of times is the bottleneck.</p>
+      <p>Instead of training a network to predict a single output from a single input, an operator is trained to be a function-to-function map: feed it an entire forcing curve or initial condition field, and it outputs the corresponding solution field in a single forward pass. The training data consists of examples where you have solved the equation exactly (or with a trusted solver) for various inputs. Once trained, a new case that the network never saw during training is answered instantly with no simulation calls. A weather center can run an ensemble of future forecasts by feeding different atmospheric measurements through the same learned operator; an aerospace firm can test a new wing design shape by querying the operator instead of launching a mesh and solver.</p>
+      <div class="insight">An operator's accuracy degrades outside the envelope of training inputs, especially for nonlinear problems where inputs are far from the training regime — understanding the boundary of trustworthiness is essential.</div>
+      </div>
+    </section>
+    <section class="fp" id="connects"><h2>Where this connects — across the machine</h2><p class="muted">DDPS is the &ldquo;use the model&rdquo; layer &mdash; several of these ideas are the same object taught in a sister course. Links open the concept it mirrors, feeds, or is fed by, in the wider data&rarr;model&rarr;control pipeline.</p><ul style="list-style:none;padding:14px 16px;margin:12px 0;border:1px solid var(--line,#d7ddd9);border-radius:10px;background:#fff"><li style="margin:9px 0;padding-left:14px;border-left:3px solid #8b3f18"><a href="https://mehtama1234.github.io/physics-informed-machine-learning-concepts-research/topics/operator-learning-deep.html" style="font-weight:700">operator learning</a> <span class="muted" style="font-size:13px">· physics-informed ML</span><div style="font-size:14.5px;margin-top:3px">The same concept, taught here for simulation: learn a map from whole inputs to whole solution fields.</div></li></ul></section>
+    <section class="fp"><p class="muted">Related: <a href="reduced-order-modeling-deep.html">reduced-order modeling</a> · <a href="physics-informed-learning-deep.html">physics-informed learning</a> · <a href="uncertainty-and-robustness-deep.html">uncertainty and robustness</a> · <a href="differentiable-simulation-deep.html">differentiable simulation</a> · <a href="hybrid-twins-deep.html">hybrid twins</a> · <a href="scientific-machine-learning-deep.html">scientific machine learning</a></p></section>
+    <details class="math"><summary>the run recipe — reproduce every number above</summary><div>
+      <p class="muted">Train a small neural network to be a function-to-function map (an operator) for the equation -u''=f, with both ends pinned to zero. The operator takes a forcing (input function) and outputs the shape (solution function). Train on 400 random forcings solved exactly; test on 100 brand-new forcings never seen during training. Report the mean relative error on the test set.</p>
+      <div class="eq">equation:  -u''(x) = f(x),  u(0) = u(1) = 0
+operator:  f(x)  -&gt;  u(x)   (function to function)
+train: 400 solved (f, u) pairs
+test: 100 new forcings never seen
+mean relative error on unseen test: 3.69%</div>
+      <p class="muted">Full script: scripts/experiments/ddps_run.py (EXP2), torch, fixed seed. Numbers are the run's output verbatim; the operator was trained on 400 solved pairs and tested on 100 unseen forcings.</p>
+    </div></details>
+<footer style="color:#5a5a5a;font-size:13px;border-top:1px solid var(--line,#dcdcdc);padding:22px 0 60px;margin-top:24px">DDPS Concept Lab · Operator Learning deep dive · every quantity here is computed. Experiments in scripts/experiments/ddps_run.py.</footer>
+</main></body></html>
