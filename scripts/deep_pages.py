@@ -102,7 +102,7 @@ def render(spec: dict) -> str:
         out.append("      </div>")
         out.append("    </section>")
     if spec.get("connects"):
-        BASES = {"aa203": "http://localhost:8011/concepts/", "brunton": "http://localhost:8012/", "piml": "http://localhost:8013/topics/", "ddps": "http://localhost:8014/concepts/"}
+        BASES = {"aa203": "https://mehtama1234.github.io/stanford-aa203-optimal-learning-control-concepts-research/concepts/", "brunton": "https://mehtama1234.github.io/eigensteve-concepts-research/", "piml": "https://mehtama1234.github.io/physics-informed-machine-learning-concepts-research/topics/", "ddps": "https://mehtama1234.github.io/ddps-seminar-series-concepts-research/concepts/"}
         CLABEL = {"aa203": "AA203 · control", "brunton": "Brunton · data-driven", "piml": "physics-informed ML", "ddps": "DDPS · data-driven physics"}
         items = ""
         for c in spec["connects"]:
